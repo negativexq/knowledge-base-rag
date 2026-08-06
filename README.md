@@ -14,10 +14,22 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprint 0** (foundation + core pipeline port) is complete — see the
-[Sprint 0 closing note](docs/PLANNING.md#kapan%C4%B1%C5%9F-notu) in
-`docs/PLANNING.md` and the module-by-module port table in
-[docs/sprint-00-plan.md](docs/sprint-00-plan.md).
+**Sprint 0** (foundation + core pipeline port) and **Sprint 1** (LLM
+provider abstraction) are complete — see `docs/PLANNING.md`'s closing
+notes and [docs/sprint-00-plan.md](docs/sprint-00-plan.md) /
+[docs/sprint-01-plan.md](docs/sprint-01-plan.md).
+
+## LLM providers
+
+Generation (chat) and embedding are independent, config-driven choices —
+Claude has no embedding endpoint, so embedding always stays on Ollama
+regardless of which chat provider is selected:
+
+```bash
+GENERATION_PROVIDER=ollama   # or claude — local-first default
+EMBEDDING_PROVIDER=ollama    # only option today
+CLAUDE_API_KEY=sk-ant-...    # required if GENERATION_PROVIDER=claude
+```
 
 ## Citation format
 

@@ -31,11 +31,15 @@ COLLECTION = "test_pipeline_e2e_hermetic"
 
 class _FakeSparseEncoder:
     def embed_document(self, text: str) -> SparseVector:
-        # crude term-presence hash so shared vocabulary produces overlap
+        # crude term-presence hash so shared vocabulary produces overlap.
+        # Indices are deduped through a set (not just the input words) —
+        # Python's string hash is randomized per process (PYTHONHASHSEED),
+        # so two different words landing on the same `% 5000` bucket is a
+        # real, seed-dependent occurrence, and Qdrant's local mode rejects
+        # a sparse vector with duplicate indices.
         words = {w.lower() for w in text.split()}
-        return SparseVector(
-            indices=sorted(hash(w) % 5000 for w in words), values=[1.0] * len(words)
-        )
+        indices = sorted({hash(w) % 5000 for w in words})
+        return SparseVector(indices=indices, values=[1.0] * len(indices))
 
     def embed_query(self, text: str) -> SparseVector:
         return self.embed_document(text)

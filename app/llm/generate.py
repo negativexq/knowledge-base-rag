@@ -1,22 +1,18 @@
 from collections.abc import AsyncIterator
-from typing import Protocol
 
 from opentelemetry import trace
 
 from app.llm.grounding import check_grounding
 from app.llm.prompt import build_messages
+from app.llm.provider import ChatProvider
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.tracing import get_tracer
-
-
-class StreamingOllamaProtocol(Protocol):
-    def stream_chat(self, messages: list[dict], model: str) -> AsyncIterator[str]: ...
 
 
 async def stream_answer(
     query: str,
     chunks: list[SearchResult],
-    ollama: StreamingOllamaProtocol,
+    ollama: ChatProvider,
     model: str,
     prompt_version: str,
     tracer: trace.Tracer | None = None,

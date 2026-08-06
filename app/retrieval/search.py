@@ -4,6 +4,7 @@ from opentelemetry import trace
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
+from app.llm.provider import EmbeddingProvider
 from app.retrieval.filters import build_filter
 from app.retrieval.hybrid_search import SearchResult, hybrid_search
 from app.retrieval.sparse import SparseVector
@@ -20,10 +21,6 @@ RERANK_CANDIDATE_K = 20  # how many hybrid candidates to fetch before reranking
 RERANK_TOP_N = 5  # how many results to return after reranking
 
 
-class OllamaEmbedProtocol(Protocol):
-    async def embed(self, text: str, model: str, prefix: str = "") -> list[float]: ...
-
-
 class SparseEncoderProtocol(Protocol):
     def embed_query(self, text: str) -> SparseVector: ...
 
@@ -36,7 +33,7 @@ class RerankerProtocol(Protocol):
 
 async def search(
     query: str,
-    ollama: OllamaEmbedProtocol,
+    ollama: EmbeddingProvider,
     sparse_encoder: SparseEncoderProtocol,
     qdrant_client: QdrantClient,
     collection_name: str,
