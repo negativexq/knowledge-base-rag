@@ -252,6 +252,38 @@ Scope:
 
 DoD: bir sync koşumu Jaeger'da uçtan uca izlenebiliyor, hangi connector'ın ne kadar sürdüğü görülüyor.
 
+### Kapanış notu
+
+**Kod okunarak (koşup Jaeger'a bakmadan ÖNCE) üç gerçek kör nokta bulundu** (bkz. `docs/sprint-08-plan.md`):
+
+1. **Bir sync koşumu tek trace DEĞİLDİ.** `ingest_connector` hiçbir üst span açmıyordu; her `ingest_document`/`delete_document` çağrısı kendi başına yeni bir trace root'u oluyordu (OpenTelemetry kuralı: parent context'i olmayan span = yeni trace). 3 dokümanlı bir sync, Jaeger'da 3 ayrı, ilişkisiz trace üretiyordu — DoD'yi doğrudan ihlal ediyordu.
+2. **Connector I/O hiç span'lenmiyordu.** `connector.list_documents()` ve her doküman için `get_content_hash()` span'siz çağrılıyordu — Notion için bunlar gerçek ağ istekleri + 429 backoff sleep'leri, tamamen görünmezdi. `NotionConnector.fetch_content()` ise `parse_and_chunk`'ın İÇİNE gömülüydü, ağ süresini CPU-bound parse süresinden ayırt etmek imkansızdı.
+3. **Atlanan (skip) dokümanlar tamamen görünmezdi.** `has_changed() == False` olan dokümanlar için hiçbir span açılmıyordu, sadece bir sayaç artıyordu.
+
+**Düzeltmeler:** `ingest_connector`'ın tüm gövdesi yeni bir `ingest_connector` üst span'ine sarıldı (`source_type` + final `files_processed/skipped/deleted/chunks_upserted` attribute'ları). Yeni `fetch_documents` span'i (`list_documents()`'ı sarıyor, `fetch.document_count`). Yeni `check_document` span'i — her doküman için, SKIP edilse bile (`check.changed` attribute'u), artık atlanan dokümanlar da trace'de görünüyor. Notion'ın `fetch_content()`'ı kendi `fetch` span'ine ayrıldı, `parse_and_chunk`'tan bağımsız ölçülüyor.
+
+**`trace_id` kararı: EVET, `sync_runs` tablosuna yazılıyor.** `SyncManager.trigger_sync()` artık TÜM denemeyi (REDDEDİLEN durum dahil) saran bir `sync_run` span'i açıyor; `format(span.get_span_context().trace_id, "032x")` ile (Sprint 0'ın `generate.py`'sindeki AYNI desen) trace_id çıkarılıp `SyncHistory.start_run()`'a (henüz sync bitmeden, ÇALIŞAN bir sync'in trace'ine de erken erişilebilsin diye) yazılıyor. `sync_runs`'a yeni bir `trace_id TEXT` kolonu eklendi, API'nin hem `POST /sync/{source_type}` hem `GET /sync/{source_type}/history` yanıtlarına `trace_id` eklendi — Sprint 10'un "Sync Status" sayfası doğrudan Jaeger'a link verebilecek.
+
+**Gerçek Jaeger'a karşı GERÇEKTEN doğrulandı (mock değil).** Bu makinede Docker çalıştığı için (Sprint 1/6'daki API-key-yok durumundan FARKLI olarak burada gerçek doğrulama mümkündü): `docker compose up -d jaeger qdrant`, gerçek `setup_tracing()`, gerçek bir filesystem sync koşumu, sonra Jaeger'ın HTTP API'sinden (`GET /api/traces/{trace_id}`) trace GERÇEKTEN sorgulandı. Sonuç: TEK trace altında 9 span, doğru hiyerarşi:
+
+```
+sync_run (103.7ms)
+  ingest_connector (102.9ms)
+    fetch_documents (0.2ms)
+    check_document (0.1ms)
+    ingest_document (13.4ms)
+      parse_and_chunk (0.1ms)
+      delete_stale_chunks (7.7ms)
+      embed_batch (0.02ms)
+      upsert_batch (5.4ms)
+```
+
+Her span'in tag'leri tek tek kontrol edildi — hiçbirinde tam chunk metni veya doküman içeriği yok, sadece sayılar/kimlikler (`fetch.document_count`, `check.source_id`, `ingest.chunk_count` gibi). Doğrulama sonrası container'lar durduruldu (`docker compose down`), ortam olduğu gibi bırakıldı.
+
+**Bilinen küçük bir kozmetik eksiklik:** `SyncManager`, kendi tracer'ını (`get_tracer("app.sync.manager")`) `ingest_connector`'a açıkça geçiriyor (testlerin izole `TracerProvider`'ları yakalayabilmesi için gerekli) — bunun bedeli, Jaeger'da TÜM span'lerin `otel.scope.name`'inin `app.sync.manager` görünmesi (üretildikleri gerçek modül — `app.ingestion.ingest` — değil). Trace hiyerarşisini/isimlerini/attribute'ları ETKİLEMİYOR, sadece "instrumentation scope" etiketi jenerik — bilinçli bir basitleştirme, düzeltmeye değecek bir maliyeti yok.
+
+291 test yeşil (7'si gerçek servis/API key gerektirdiği için skip, değişmedi — bu sprintte +14 yeni test), `ruff check` temiz, 5 ardışık çalıştırmada flakiness yok.
+
 ## Sprint 9 — Evaluation
 
 Amaç: Çoklu kaynak tipini kapsayan bir golden set ile kalite ölçümü.

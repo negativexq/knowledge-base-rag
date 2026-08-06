@@ -25,6 +25,7 @@ class SyncRun:
     files_deleted: int | None
     chunks_upserted: int | None
     error_message: str | None
+    trace_id: str | None
 
 
 @dataclass(frozen=True)
@@ -34,3 +35,4 @@ class SyncRunResult:
     run_id: int | None
     stats: IngestStats | None
     error: str | None
+    trace_id: str | None = None

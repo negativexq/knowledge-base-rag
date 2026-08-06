@@ -16,18 +16,19 @@ CREATE TABLE IF NOT EXISTS sync_runs (
     files_skipped   INTEGER,
     files_deleted   INTEGER,
     chunks_upserted INTEGER,
-    error_message   TEXT
+    error_message   TEXT,
+    trace_id        TEXT
 );
 """
 
 _COLUMNS = (
     "id, source_type, trigger, status, started_at, finished_at, "
-    "files_processed, files_skipped, files_deleted, chunks_upserted, error_message"
+    "files_processed, files_skipped, files_deleted, chunks_upserted, error_message, trace_id"
 )
 
 _INSERT = """
-INSERT INTO sync_runs (source_type, trigger, status, started_at)
-VALUES (:source_type, :trigger, :status, :started_at);
+INSERT INTO sync_runs (source_type, trigger, status, started_at, trace_id)
+VALUES (:source_type, :trigger, :status, :started_at, :trace_id);
 """
 
 _FINISH = """
@@ -64,6 +65,7 @@ def _row_to_run(row: tuple) -> SyncRun:
         files_deleted,
         chunks_upserted,
         error_message,
+        trace_id,
     ) = row
     return SyncRun(
         id=run_id,
@@ -77,6 +79,7 @@ def _row_to_run(row: tuple) -> SyncRun:
         files_deleted=files_deleted,
         chunks_upserted=chunks_upserted,
         error_message=error_message,
+        trace_id=trace_id,
     )
 
 
@@ -95,7 +98,11 @@ class SyncHistory:
         with self._conn:
             self._conn.execute(_SCHEMA)
 
-    def start_run(self, source_type: str, trigger: str) -> int:
+    def start_run(self, source_type: str, trigger: str, trace_id: str | None = None) -> int:
+        # trace_id written at start (not just at finish) so an
+        # IN-PROGRESS run can already be linked to its Jaeger trace — see
+        # docs/sprint-08-plan.md for why this matters ("why is this sync
+        # still running" is exactly when you want the trace link).
         started_at = datetime.now(UTC).isoformat()
         with self._conn:
             cursor = self._conn.execute(
@@ -105,6 +112,7 @@ class SyncHistory:
                     "trigger": trigger,
                     "status": STATUS_RUNNING,
                     "started_at": started_at,
+                    "trace_id": trace_id,
                 },
             )
         return cursor.lastrowid

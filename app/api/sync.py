@@ -15,6 +15,7 @@ def _result_body(result) -> dict:
         "run_id": result.run_id,
         "error": result.error,
         "stats": asdict(result.stats) if result.stats is not None else None,
+        "trace_id": result.trace_id,
     }
 
 
@@ -31,6 +32,7 @@ def _run_body(run) -> dict:
         "files_deleted": run.files_deleted,
         "chunks_upserted": run.chunks_upserted,
         "error_message": run.error_message,
+        "trace_id": run.trace_id,
     }
 
 

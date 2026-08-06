@@ -54,6 +54,7 @@ def test_post_sync_triggers_a_real_ingest_and_returns_the_result(tmp_path):
     assert body["status"] == STATUS_SUCCESS
     assert body["stats"]["files_processed"] == 1
     assert body["run_id"] is not None
+    assert body["trace_id"] is not None
 
 
 def test_post_sync_for_unknown_connector_returns_404(tmp_path):
@@ -99,6 +100,7 @@ def test_get_sync_history_returns_recorded_runs(tmp_path):
     assert runs[0]["source_type"] == "filesystem"
     assert runs[0]["status"] == STATUS_SUCCESS
     assert runs[0]["files_processed"] == 1
+    assert runs[0]["trace_id"] is not None
 
 
 def test_get_sync_history_for_a_source_with_no_runs_returns_empty_list(tmp_path):

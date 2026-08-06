@@ -125,103 +125,135 @@ async def ingest_connector(
     network via connector.fetch_content() instead of reading document.path),
     and awaiting the connector's now-async methods (see
     docs/sprint-06-plan.md for why the Protocol itself had to become async).
+
+    Sprint 8: the whole call is wrapped in one "ingest_connector" span so
+    every document's work (fetch/parse/embed/upsert/cleanup, and even
+    skipped documents) shares a single trace_id — before this, each
+    "ingest_document"/"delete_document" span had no parent and became its
+    own separate, unrelated trace. See docs/sprint-08-plan.md for the two
+    other blind spots fixed alongside it: connector I/O (list_documents,
+    get_content_hash, Notion's fetch_content) wasn't spanned at all, and
+    skipped documents produced zero trace evidence they were even checked.
     """
     tracer = tracer or get_tracer(__name__)
-    store.ensure_collection()
 
-    files_processed = 0
-    chunks_upserted = 0
-    files_skipped = 0
-    files_deleted = 0
+    with tracer.start_as_current_span("ingest_connector") as sync_span:
+        sync_span.set_attribute("ingest.source_type", connector.source_type)
+        store.ensure_collection()
 
-    current_documents = await connector.list_documents()
-    seen_source_ids = {document.source_id for document in current_documents}
+        files_processed = 0
+        chunks_upserted = 0
+        files_skipped = 0
+        files_deleted = 0
 
-    for record in registry.list_documents(source_type=connector.source_type):
-        if record.source_id in seen_source_ids:
-            continue
+        with tracer.start_as_current_span("fetch_documents") as span:
+            current_documents = await connector.list_documents()
+            span.set_attribute("fetch.document_count", len(current_documents))
+        seen_source_ids = {document.source_id for document in current_documents}
 
-        with tracer.start_as_current_span("delete_document") as span:
-            span.set_attribute("delete.source_type", connector.source_type)
-            span.set_attribute("delete.source_id", record.source_id)
-            store.delete_by_source(connector.source_type, record.source_id)
-            registry.delete_document(connector.source_type, record.source_id)
-        files_deleted += 1
+        for record in registry.list_documents(source_type=connector.source_type):
+            if record.source_id in seen_source_ids:
+                continue
 
-    for document in current_documents:
-        content_hash = await connector.get_content_hash(document)
+            with tracer.start_as_current_span("delete_document") as span:
+                span.set_attribute("delete.source_type", connector.source_type)
+                span.set_attribute("delete.source_id", record.source_id)
+                store.delete_by_source(connector.source_type, record.source_id)
+                registry.delete_document(connector.source_type, record.source_id)
+            files_deleted += 1
 
-        if not registry.has_changed(connector.source_type, document.source_id, content_hash):
-            files_skipped += 1
-            continue
+        for document in current_documents:
+            with tracer.start_as_current_span("check_document") as check_span:
+                check_span.set_attribute("check.source_type", connector.source_type)
+                check_span.set_attribute("check.source_id", document.source_id)
+                content_hash = await connector.get_content_hash(document)
+                changed = registry.has_changed(
+                    connector.source_type, document.source_id, content_hash
+                )
+                check_span.set_attribute("check.changed", changed)
 
-        with tracer.start_as_current_span("ingest_document") as doc_span:
-            doc_span.set_attribute("ingest.source_type", connector.source_type)
-            doc_span.set_attribute("ingest.source_id", document.source_id)
-            doc_span.set_attribute("ingest.content_type", document.content_type)
+            if not changed:
+                files_skipped += 1
+                continue
 
-            with tracer.start_as_current_span("parse_and_chunk") as span:
-                if document.content_type == "pdf":
-                    chunks = chunk_document(
-                        str(document.path),
-                        document.source_id,
-                        connector.source_type,
-                        chunk_size_tokens,
-                        overlap_tokens,
-                        doc_id=content_hash,
-                    )
-                elif document.content_type == "markdown":
-                    chunks = chunk_markdown_document(
-                        str(document.path),
-                        document.source_id,
-                        connector.source_type,
-                        chunk_size_tokens,
-                        overlap_tokens,
-                        doc_id=content_hash,
-                    )
-                elif document.content_type == "notion":
-                    content_bytes = await connector.fetch_content(document)
-                    chunks = chunk_markdown_text(
-                        content_bytes.decode("utf-8"),
-                        document.source_id,
-                        connector.source_type,
-                        content_hash,
-                        chunk_size_tokens,
-                        overlap_tokens,
-                    )
-                else:
-                    raise ValueError(f"Unsupported content_type: {document.content_type!r}")
-                span.set_attribute("parse.chunk_count", len(chunks))
+            with tracer.start_as_current_span("ingest_document") as doc_span:
+                doc_span.set_attribute("ingest.source_type", connector.source_type)
+                doc_span.set_attribute("ingest.source_id", document.source_id)
+                doc_span.set_attribute("ingest.content_type", document.content_type)
 
-            with tracer.start_as_current_span("delete_stale_chunks") as span:
-                span.set_attribute("delete_stale_chunks.source_id", document.source_id)
-                store.delete_by_source(connector.source_type, document.source_id)
+                if document.content_type == "notion":
+                    with tracer.start_as_current_span("fetch") as span:
+                        span.set_attribute("fetch.source_id", document.source_id)
+                        content_bytes = await connector.fetch_content(document)
 
-            for batch_start in range(0, len(chunks), batch_size):
-                batch = chunks[batch_start : batch_start + batch_size]
+                with tracer.start_as_current_span("parse_and_chunk") as span:
+                    if document.content_type == "pdf":
+                        chunks = chunk_document(
+                            str(document.path),
+                            document.source_id,
+                            connector.source_type,
+                            chunk_size_tokens,
+                            overlap_tokens,
+                            doc_id=content_hash,
+                        )
+                    elif document.content_type == "markdown":
+                        chunks = chunk_markdown_document(
+                            str(document.path),
+                            document.source_id,
+                            connector.source_type,
+                            chunk_size_tokens,
+                            overlap_tokens,
+                            doc_id=content_hash,
+                        )
+                    elif document.content_type == "notion":
+                        chunks = chunk_markdown_text(
+                            content_bytes.decode("utf-8"),
+                            document.source_id,
+                            connector.source_type,
+                            content_hash,
+                            chunk_size_tokens,
+                            overlap_tokens,
+                        )
+                    else:
+                        raise ValueError(f"Unsupported content_type: {document.content_type!r}")
+                    span.set_attribute("parse.chunk_count", len(chunks))
 
-                with tracer.start_as_current_span("embed_batch") as span:
-                    span.set_attribute("embed.chunk_count", len(batch))
-                    dense_vectors = [await embed_fn(chunk.text) for chunk in batch]
-                    sparse_vectors = [sparse_encoder.embed_document(chunk.text) for chunk in batch]
+                with tracer.start_as_current_span("delete_stale_chunks") as span:
+                    span.set_attribute("delete_stale_chunks.source_id", document.source_id)
+                    store.delete_by_source(connector.source_type, document.source_id)
 
-                with tracer.start_as_current_span("upsert_batch") as span:
-                    span.set_attribute("upsert.chunk_count", len(batch))
-                    store.upsert_chunks(batch, dense_vectors, sparse_vectors)
+                for batch_start in range(0, len(chunks), batch_size):
+                    batch = chunks[batch_start : batch_start + batch_size]
 
-                chunks_upserted += len(batch)
+                    with tracer.start_as_current_span("embed_batch") as span:
+                        span.set_attribute("embed.chunk_count", len(batch))
+                        dense_vectors = [await embed_fn(chunk.text) for chunk in batch]
+                        sparse_vectors = [
+                            sparse_encoder.embed_document(chunk.text) for chunk in batch
+                        ]
 
-            doc_span.set_attribute("ingest.chunk_count", len(chunks))
+                    with tracer.start_as_current_span("upsert_batch") as span:
+                        span.set_attribute("upsert.chunk_count", len(batch))
+                        store.upsert_chunks(batch, dense_vectors, sparse_vectors)
 
-        # Registered only after a successful chunk+upsert, so a failure
-        # partway through doesn't leave the registry claiming a document
-        # was ingested when it wasn't.
-        registry.upsert_document(connector.source_type, document.source_id, content_hash)
-        files_processed += 1
+                    chunks_upserted += len(batch)
 
-    return IngestStats(
-        files_processed=files_processed,
-        chunks_upserted=chunks_upserted,
-        files_skipped=files_skipped,
-        files_deleted=files_deleted,
-    )
+                doc_span.set_attribute("ingest.chunk_count", len(chunks))
+
+            # Registered only after a successful chunk+upsert, so a failure
+            # partway through doesn't leave the registry claiming a document
+            # was ingested when it wasn't.
+            registry.upsert_document(connector.source_type, document.source_id, content_hash)
+            files_processed += 1
+
+        sync_span.set_attribute("ingest.files_processed", files_processed)
+        sync_span.set_attribute("ingest.files_skipped", files_skipped)
+        sync_span.set_attribute("ingest.files_deleted", files_deleted)
+        sync_span.set_attribute("ingest.chunks_upserted", chunks_upserted)
+
+        return IngestStats(
+            files_processed=files_processed,
+            chunks_upserted=chunks_upserted,
+            files_skipped=files_skipped,
+            files_deleted=files_deleted,
+        )

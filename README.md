@@ -14,18 +14,20 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–7** are complete: foundation + core pipeline port, LLM provider
+**Sprints 0–8** are complete: foundation + core pipeline port, LLM provider
 abstraction (Ollama + Claude), a SQLite-backed document registry, a
 filesystem `Connector` that ingests mixed PDF/Markdown folders, hash-based
 incremental sync (skip unchanged, update changed, delete vanished — no
 orphan chunks), end-to-end proof that citations can't leak across
 documents that collide on location, a web page parser (trafilatura), the
-first remote connector (`NotionConnector`), and a sync scheduler (periodic
-+ manual "sync now" via a FastAPI endpoint, with sync history and
-overlap-safe concurrent-sync handling). See `docs/PLANNING.md`'s closing
-notes and the `docs/sprint-0{0..4,6,7}-plan.md` files for the design
-decisions behind each (Sprint 5 was verification-only, no new plan doc —
-see its closing note). **Notion has not been tested against a real
+first remote connector (`NotionConnector`), a sync scheduler (periodic +
+manual "sync now" via a FastAPI endpoint, with sync history and
+overlap-safe concurrent-sync handling), and full tracing across the sync
+pipeline — a real sync run is one Jaeger trace end to end, verified
+against a real local Jaeger, not just unit-tested. See `docs/PLANNING.md`'s
+closing notes and the `docs/sprint-0{0..4,6,7,8}-plan.md` files for the
+design decisions behind each (Sprint 5 was verification-only, no new plan
+doc — see its closing note). **Notion has not been tested against a real
 workspace** on this machine (no `NOTION_API_KEY`) — see the Sprint 6
 closing note.
 

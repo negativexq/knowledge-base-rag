@@ -1,7 +1,10 @@
+from opentelemetry import trace
+
 from app.connectors.base import Connector
 from app.ingestion.ingest import EmbedFn, SparseEncoderProtocol, ingest_connector
 from app.ingestion.qdrant_store import QdrantStore
 from app.registry.store import DocumentRegistry
+from app.shared.tracing import get_tracer
 from app.sync.history import SyncHistory
 from app.sync.models import (
     STATUS_ERROR,
@@ -39,6 +42,7 @@ class SyncManager:
         history: SyncHistory,
         embed_fn: EmbedFn,
         sparse_encoder: SparseEncoderProtocol,
+        tracer: trace.Tracer | None = None,
     ):
         self._connectors = connectors
         self._store = store
@@ -46,6 +50,7 @@ class SyncManager:
         self._history = history
         self._embed_fn = embed_fn
         self._sparse_encoder = sparse_encoder
+        self._tracer = tracer or get_tracer(__name__)
         self._running: dict[str, bool] = dict.fromkeys(connectors, False)
 
     @property
@@ -59,49 +64,67 @@ class SyncManager:
         if source_type not in self._connectors:
             raise UnknownConnectorError(f"No connector configured for source_type {source_type!r}")
 
-        if self._running[source_type]:
-            return SyncRunResult(
-                source_type=source_type,
-                status=STATUS_REJECTED,
-                run_id=None,
-                stats=None,
-                error=None,
-            )
+        # Wraps the WHOLE attempt, rejection included, so even a rejected
+        # trigger leaves trace evidence it happened — and so this span's
+        # trace_id is the one and only trace_id for the entire sync run
+        # (ingest_connector's own top-level span, opened while this one is
+        # current, becomes its child automatically via context
+        # propagation — no need to thread a shared tracer object through).
+        with self._tracer.start_as_current_span("sync_run") as span:
+            span.set_attribute("sync.source_type", source_type)
+            span.set_attribute("sync.trigger", trigger)
+            trace_id = format(span.get_span_context().trace_id, "032x")
 
-        self._running[source_type] = True
-        run_id = self._history.start_run(source_type, trigger)
-        try:
-            stats = await ingest_connector(
-                self._connectors[source_type],
-                self._store,
-                self._registry,
-                self._embed_fn,
-                self._sparse_encoder,
-            )
-        except Exception as exc:
-            self._history.finish_run(run_id, status=STATUS_ERROR, error_message=str(exc))
-            return SyncRunResult(
-                source_type=source_type,
-                status=STATUS_ERROR,
-                run_id=run_id,
-                stats=None,
-                error=str(exc),
-            )
-        else:
-            self._history.finish_run(
-                run_id,
-                status=STATUS_SUCCESS,
-                files_processed=stats.files_processed,
-                files_skipped=stats.files_skipped,
-                files_deleted=stats.files_deleted,
-                chunks_upserted=stats.chunks_upserted,
-            )
-            return SyncRunResult(
-                source_type=source_type,
-                status=STATUS_SUCCESS,
-                run_id=run_id,
-                stats=stats,
-                error=None,
-            )
-        finally:
-            self._running[source_type] = False
+            if self._running[source_type]:
+                span.set_attribute("sync.status", STATUS_REJECTED)
+                return SyncRunResult(
+                    source_type=source_type,
+                    status=STATUS_REJECTED,
+                    run_id=None,
+                    stats=None,
+                    error=None,
+                    trace_id=trace_id,
+                )
+
+            self._running[source_type] = True
+            run_id = self._history.start_run(source_type, trigger, trace_id=trace_id)
+            try:
+                stats = await ingest_connector(
+                    self._connectors[source_type],
+                    self._store,
+                    self._registry,
+                    self._embed_fn,
+                    self._sparse_encoder,
+                    tracer=self._tracer,
+                )
+            except Exception as exc:
+                span.set_attribute("sync.status", STATUS_ERROR)
+                self._history.finish_run(run_id, status=STATUS_ERROR, error_message=str(exc))
+                return SyncRunResult(
+                    source_type=source_type,
+                    status=STATUS_ERROR,
+                    run_id=run_id,
+                    stats=None,
+                    error=str(exc),
+                    trace_id=trace_id,
+                )
+            else:
+                span.set_attribute("sync.status", STATUS_SUCCESS)
+                self._history.finish_run(
+                    run_id,
+                    status=STATUS_SUCCESS,
+                    files_processed=stats.files_processed,
+                    files_skipped=stats.files_skipped,
+                    files_deleted=stats.files_deleted,
+                    chunks_upserted=stats.chunks_upserted,
+                )
+                return SyncRunResult(
+                    source_type=source_type,
+                    status=STATUS_SUCCESS,
+                    run_id=run_id,
+                    stats=stats,
+                    error=None,
+                    trace_id=trace_id,
+                )
+            finally:
+                self._running[source_type] = False
