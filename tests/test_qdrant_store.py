@@ -172,3 +172,60 @@ def test_chunks_from_different_source_types_produce_different_point_ids():
     chunk_b = _chunk(source_type="markdown")
 
     assert QdrantStore.point_id_for(chunk_a) != QdrantStore.point_id_for(chunk_b)
+
+
+def test_delete_by_source_removes_all_points_for_that_document():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(source_id="doc1", char_range=(0, 10)),
+            _chunk(source_id="doc1", char_range=(10, 20)),
+        ],
+        [_dense_vector(), _dense_vector()],
+        [_sparse_vector(), _sparse_vector()],
+    )
+
+    store.delete_by_source("pdf", "doc1")
+
+    assert store.count() == 0
+
+
+def test_delete_by_source_does_not_touch_other_documents():
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(source_id="doc1"), _chunk(source_id="doc2")],
+        [_dense_vector(), _dense_vector()],
+        [_sparse_vector(), _sparse_vector()],
+    )
+
+    store.delete_by_source("pdf", "doc1")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["source_id"] == "doc2"
+
+
+def test_delete_by_source_does_not_touch_a_different_source_type_with_the_same_source_id():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(source_type="pdf", source_id="readme"),
+            _chunk(source_type="markdown", source_id="readme"),
+        ],
+        [_dense_vector(), _dense_vector()],
+        [_sparse_vector(), _sparse_vector()],
+    )
+
+    store.delete_by_source("pdf", "readme")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["source_type"] == "markdown"
+
+
+def test_delete_by_source_on_a_document_with_no_points_is_a_no_op():
+    store = _store()
+
+    store.delete_by_source("pdf", "never-existed")  # must not raise
+
+    assert store.count() == 0

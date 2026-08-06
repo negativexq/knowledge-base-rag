@@ -14,11 +14,13 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–3** are complete: foundation + core pipeline port, LLM provider
-abstraction (Ollama + Claude), a SQLite-backed document registry, and a
-filesystem `Connector` that ingests mixed PDF/Markdown folders. See
-`docs/PLANNING.md`'s closing notes and the `docs/sprint-0{0..3}-plan.md`
-files for the design decisions behind each.
+**Sprints 0–4** are complete: foundation + core pipeline port, LLM provider
+abstraction (Ollama + Claude), a SQLite-backed document registry, a
+filesystem `Connector` that ingests mixed PDF/Markdown folders, and
+hash-based incremental sync (skip unchanged, update changed, delete
+vanished — no orphan chunks). See `docs/PLANNING.md`'s closing notes and
+the `docs/sprint-0{0..4}-plan.md` files for the design decisions behind
+each.
 
 ## LLM providers
 

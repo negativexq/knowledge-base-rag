@@ -30,6 +30,8 @@ class SparseEncoderProtocol(Protocol):
 class IngestStats:
     files_processed: int
     chunks_upserted: int
+    files_skipped: int = 0
+    files_deleted: int = 0
 
 
 async def ingest_path(
@@ -94,15 +96,26 @@ async def ingest_connector(
     batch_size: int = 64,
     tracer: trace.Tracer | None = None,
 ) -> IngestStats:
-    """Connector-driven, multi-format ingestion — the Sprint 3 entry point
-    (ingest_path above is Sprint 0's PDF-only, folder-glob entry point,
-    unchanged and still valid for pure-PDF folders).
+    """Connector-driven, multi-format, INCREMENTAL ingestion — the Sprint 4
+    upgrade of Sprint 3's ingest_connector (ingest_path above is Sprint 0's
+    PDF-only, folder-glob, registry-less entry point; still unchanged).
 
-    No incremental sync yet (Sprint 4): every call re-scans and re-ingests
-    every document the connector lists, even if its content_hash hasn't
-    changed. registry.upsert_document is still called for each one, so
-    DocumentRegistry.has_changed already answers correctly — ingest_connector
-    just doesn't act on that answer yet.
+    Three-phase sync, using registry as the source of truth for "what did
+    we already know":
+
+    1. Deletions — a registry row for this connector's source_type whose
+       source_id the connector no longer lists means the document vanished
+       from its source. Its Qdrant points and registry row are removed.
+    2. Unchanged — registry.has_changed() says no: skipped entirely, zero
+       Qdrant calls (no re-parse, re-embed, or re-upsert), and the registry
+       row is left untouched too (no last_synced_at refresh — see
+       docs/sprint-04-plan.md for why that's an accepted simplification).
+    3. New/changed — every existing point for (source_type, source_id) is
+       deleted BEFORE re-ingesting, keyed on that stable identity rather
+       than the old content-hash doc_id (see docs/sprint-04-plan.md for why
+       this is the more robust choice — it can't leave orphans behind even
+       if the chunk count shrank). Safe to call on a brand new document too
+       (deletes zero points).
 
     Typed against LocalFilesystemConnector specifically, not the generic
     Connector Protocol — see docs/sprint-03-plan.md: generalizing this
@@ -114,9 +127,29 @@ async def ingest_connector(
 
     files_processed = 0
     chunks_upserted = 0
+    files_skipped = 0
+    files_deleted = 0
 
-    for document in connector.list_documents():
+    current_documents = connector.list_documents()
+    seen_source_ids = {document.source_id for document in current_documents}
+
+    for record in registry.list_documents(source_type=connector.source_type):
+        if record.source_id in seen_source_ids:
+            continue
+
+        with tracer.start_as_current_span("delete_document") as span:
+            span.set_attribute("delete.source_type", connector.source_type)
+            span.set_attribute("delete.source_id", record.source_id)
+            store.delete_by_source(connector.source_type, record.source_id)
+            registry.delete_document(connector.source_type, record.source_id)
+        files_deleted += 1
+
+    for document in current_documents:
         content_hash = connector.get_content_hash(document)
+
+        if not registry.has_changed(connector.source_type, document.source_id, content_hash):
+            files_skipped += 1
+            continue
 
         with tracer.start_as_current_span("ingest_document") as doc_span:
             doc_span.set_attribute("ingest.source_type", connector.source_type)
@@ -146,6 +179,10 @@ async def ingest_connector(
                     raise ValueError(f"Unsupported content_type: {document.content_type!r}")
                 span.set_attribute("parse.chunk_count", len(chunks))
 
+            with tracer.start_as_current_span("delete_stale_chunks") as span:
+                span.set_attribute("delete_stale_chunks.source_id", document.source_id)
+                store.delete_by_source(connector.source_type, document.source_id)
+
             for batch_start in range(0, len(chunks), batch_size):
                 batch = chunks[batch_start : batch_start + batch_size]
 
@@ -168,4 +205,9 @@ async def ingest_connector(
         registry.upsert_document(connector.source_type, document.source_id, content_hash)
         files_processed += 1
 
-    return IngestStats(files_processed=files_processed, chunks_upserted=chunks_upserted)
+    return IngestStats(
+        files_processed=files_processed,
+        chunks_upserted=chunks_upserted,
+        files_skipped=files_skipped,
+        files_deleted=files_deleted,
+    )

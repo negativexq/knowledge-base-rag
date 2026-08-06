@@ -43,6 +43,32 @@ class QdrantStore:
     def count(self) -> int:
         return self._client.count(self._collection_name, exact=True).count
 
+    def delete_by_source(self, source_type: str, source_id: str) -> None:
+        """Delete every point belonging to one document, identified by its
+        life-of-the-document-stable (source_type, source_id) pair — not by
+        doc_id, which is a content hash and changes on every edit. Used by
+        sync (Sprint 4) before re-ingesting a changed document (so a chunk
+        count decrease can't leave orphaned points behind) and before
+        forgetting a document that's vanished from its source entirely.
+        Safe to call when the document has no points yet (e.g. brand new) —
+        deletes zero, no error.
+        """
+        self._client.delete(
+            collection_name=self._collection_name,
+            points_selector=qmodels.FilterSelector(
+                filter=qmodels.Filter(
+                    must=[
+                        qmodels.FieldCondition(
+                            key="source_type", match=qmodels.MatchValue(value=source_type)
+                        ),
+                        qmodels.FieldCondition(
+                            key="source_id", match=qmodels.MatchValue(value=source_id)
+                        ),
+                    ]
+                )
+            ),
+        )
+
     def upsert_chunks(
         self,
         chunks: list[Chunk],
