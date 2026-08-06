@@ -40,3 +40,7 @@ def test_claude_api_key_defaults_to_none():
 
 def test_claude_model_has_a_default():
     assert Settings().claude_model
+
+
+def test_registry_db_path_has_a_default():
+    assert Settings().registry_db_path == "data/registry.db"

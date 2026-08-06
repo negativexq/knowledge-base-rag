@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     qdrant_url: str = "http://localhost:6333"
     qdrant_collection_name: str = "kb_chunks"
 
+    registry_db_path: str = "data/registry.db"
+
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
     active_prompt_version: str = "v1"
