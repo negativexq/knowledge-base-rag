@@ -43,5 +43,13 @@ class Settings(BaseSettings):
 
     active_prompt_version: str = "v1"
 
+    # DeepEval judge model for app/evaluation — deliberately independent of
+    # ollama_model (generation). production-rag-platform found a smaller
+    # judge (qwen2.5:3b-instruct) gave an internally inconsistent
+    # verdict/reason pair; 7B fixed it. Kept as its own setting so a
+    # golden-set run can use a different (typically smaller/faster) model
+    # for generation than for judging, matching the reference project.
+    eval_judge_model: str = "qwen2.5:7b-instruct"
+
 
 settings = Settings()

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "pdf-free-storage",
+    "question": "Nimbus'ta ücretsiz hesap kaç GB depolama alanı içerir?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "1/0"]],
+    "reference_answer": "15GB"
+  },
+  {
+    "id": "pdf-2fa-sms",
+    "question": "Nimbus'ta SMS tabanlı iki faktörlü kimlik doğrulama destekleniyor mu?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "1/0"]],
+    "reference_answer": "No, SMS-based 2FA is not supported."
+  },
+  {
+    "id": "pdf-plus-tier-price",
+    "question": "Nimbus'un Plus paket fiyatı nedir ve ne kadar depolama sunar?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "2/0"]],
+    "reference_answer": "$7.99/month for 1TB"
+  },
+  {
+    "id": "pdf-shared-link-expiry",
+    "question": "Paylaşılan bağlantılar için varsayılan son kullanma süresi nedir?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "3/0"]],
+    "reference_answer": "30 days"
+  },
+  {
+    "id": "pdf-sync-paused-cause",
+    "question": "Masaüstü senkronizasyon istemcisinde 'Sync Paused' durumunun en yaygın nedeni nedir?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "4/0"]],
+    "reference_answer": "Local disk running below 5GB of free space."
+  },
+  {
+    "id": "pdf-annual-refund-window",
+    "question": "Yıllık planlar kaç gün içinde tam iade edilebilir?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "5/0"]],
+    "reference_answer": "14 days"
+  },
+  {
+    "id": "md-install-command",
+    "question": "Nimbus CLI nasıl kurulur ve hangi Python sürümü gerekir?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Kurulum"]],
+    "reference_answer": "pip install nimbus-cli, Python 3.9 or higher"
+  },
+  {
+    "id": "md-windows-shell-support",
+    "question": "Windows'ta Nimbus CLI hangi kabuk (shell) üzerinden resmi olarak destekleniyor?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Kurulum/Sistem Gereksinimleri"]],
+    "reference_answer": "PowerShell"
+  },
+  {
+    "id": "md-token-lifetime",
+    "question": "Nimbus CLI erişim token'ları kaç gün geçerlidir?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Kimlik Doğrulama/Token Süresi"]],
+    "reference_answer": "90 days"
+  },
+  {
+    "id": "md-sync-conflict-flags",
+    "question": "Bir senkronizasyon çakışmasında yerel sürümü zorla yüklemek için hangi bayrak kullanılır?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Senkronizasyon Komutları/Çakışma Çözümü"]],
+    "reference_answer": "--force-local"
+  },
+  {
+    "id": "md-proxy-env-var",
+    "question": "Nimbus CLI için proxy sunucusu belirtmek amacıyla hangi ortam değişkeni kullanılır?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Sorun Giderme/Bağlantı Hataları"]],
+    "reference_answer": "NIMBUS_PROXY"
+  },
+  {
+    "id": "not-found-unrelated",
+    "question": "Nimbus'un merkez ofisi hangi şehirde bulunuyor?",
+    "content_type": "pdf",
+    "expected_locations": [],
+    "expect_not_found": true
+  }
+]

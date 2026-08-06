@@ -296,6 +296,128 @@ Scope:
 
 DoD: golden set komutla çalıştırılabiliyor, kaynak tipi bazında kırılım raporlanıyor.
 
+### Kapanış notu
+
+**RAGAS tekrar denenmedi.** production-rag-platform'un o kararı gerçek bir
+bağımlılık çakışmasıyla (varsayım değil, test edilip belgelenmiş bir gerçek)
+verdiği kabul edildi; bu sprint doğrudan DeepEval + yerel Ollama judge
+(`qwen2.5:7b-instruct`) ile başladı, aynı yaklaşımın kanıtlanmış nedeni
+tekrar araştırılmadı.
+
+**İki gerçek bug tekrar araştırıldı, ikisi de bu projede farklı çıktı:**
+
+1. **Harness'in model değiştirme yavaşlığı** — production-rag-platform'da
+   judge/generation çağrıları iç içe geçtiğinde Ollama neredeyse her
+   çağrıda modeli değiştiriyordu (~11 dk beklenen koşum 40+ dk sürüyordu).
+   `app/evaluation/harness.py::run_evaluation()` bu projede de AYNI
+   iki-fazlı yapıyla (önce TÜM retrieval+generation, sonra TÜM judge
+   skorlama) korundu — koşullu değil, yapısal bir karar, çünkü
+   `generation_provider`/`ollama_model` kullanıcı tarafından
+   yapılandırılabilir ve generation ile judge farklı model kullanabilir.
+   Bunu GERÇEKTEN test etmek için golden-set koşumunda generation için
+   `qwen2.5:3b-instruct`, judge için `qwen2.5:7b-instruct` — iki FARKLI
+   model — kullanıldı. Sonuç: 12 soru, 8 dakika 42 saniyede tamamlandı
+   (production-rag-platform'un ~11dk/20 soru referansıyla orantılı,
+   40+ dk'lık thrashing belirtisi yok) — iki-fazlı tasarımın burada da
+   işe yaradığı gerçekten ölçüldü, varsayılmadı.
+
+2. **`OllamaClient`'ın kısa timeout'u** — bu projenin KENDİ
+   `app/llm/ollama_client.py::OllamaClient`'ı bu düzeltmeyi Sprint 0'dan
+   beri zaten taşıyor (`DEFAULT_TIMEOUT_SECONDS = 120.0`, tam da bu bug'ı
+   referans alan bir yorumla). Ama bu sprintte DAHA ÖNCE hiç incelenmemiş
+   İKİNCİ bir HTTP yolu bulundu: DeepEval'in judge wrapper'ı
+   (`deepeval.models.OllamaModel`) `OllamaClient`'ı KULLANMIYOR — resmi
+   `ollama` PyPI paketinin kendi `Client`'ını kullanıyor. `ollama` v0.6.2
+   kaynağı okunarak (`BaseClient.__init__(..., timeout: Any = None, ...)`)
+   ve gerçekten test edilerek (`httpx.Client(timeout=None).timeout` →
+   `Timeout(timeout=None)`) doğrulandı: httpx'te `timeout=None` timeout'u
+   TAMAMEN DEVRE DIŞI bırakır — "kısa varsayılana düş" değil. Yani bu yol
+   "timeout çok kısa" bug sınıfını hiç üretemez; tam tersi bir risk
+   (sınırsız bekleme) var ama bu makinede bir 7B judge çağrısı onlarca
+   saniyede bitiyor, gerçek bir sorun değil. `build_default_metrics()`'e
+   ek bir timeout override EKLENMEDİ — eklemeye gerek olmadığı, varsayım
+   değil, okunmuş kaynak koduyla doğrulandı.
+
+**Kaynak tipi bazında kırılım: `content_type`, `source_type` DEĞİL.**
+Görev metni "PDF sorularında mı, Markdown sorularında mı sistem daha
+zayıf" diyor — bu bir FORMAT sorusu, connector sorusu değil. Bu projede
+(Sprint 3) `source_type` connector'ı (`filesystem`), `content_type` ise
+formatı (`pdf`/`markdown`) tanımlıyor; golden set'teki hem PDF hem
+Markdown soruları AYNI connector'dan (`LocalFilesystemConnector`,
+`source_type="filesystem"`) geliyor — `source_type` bazında kırılım
+ikisini ayırt edemezdi. `GoldenQuestion.content_type` alanı eklendi,
+`build_report()` hem global hem `by_content_type` kırılımını
+hesaplıyor.
+
+**Golden set: gerçek, ingest edilmiş içerikten, 12 soru.** PDF tarafı
+`tests/fixtures/golden_source.py`'nin mevcut Nimbus Cloud Storage el
+kitabını (6 sayfa) yeniden kullandı; Markdown tarafı için yeni
+`tests/fixtures/golden_markdown_source.py` yazıldı (Nimbus CLI referans
+dokümanı, 4 üst başlık + 4 alt başlık). İkisi de gerçek `ingest_connector()`
++ gerçek Ollama embedding ile ayrı bir Qdrant koleksiyonuna (`kb_eval_golden`)
+ingest edildi, sonra koleksiyon `scroll` ile okunarak GERÇEK chunk
+konumları (`location_for()` çıktısı) doğrulandı ve `expected_locations`
+bu gerçek değerlerden yazıldı — tahmin edilmedi.
+`tests/fixtures/golden_set.json`: 7 PDF sorusu, 4 Markdown sorusu, 1
+`expect_not_found` sorusu.
+
+**Notion kapsanmadı.** `NOTION_API_KEY` bu makinede tanımlı değil (Sprint 1
+ve 6'daki aynı, zaten belgelenmiş boşluk) — golden set'e Notion sorusu
+eklenmedi.
+
+**Gerçek koşum sonucu (12 soru, `qwen2.5:3b-instruct` generation +
+`qwen2.5:7b-instruct` judge, `python -m app.evaluation.cli --golden-set
+tests/fixtures/golden_set.json --collection kb_eval_golden`):**
+
+```json
+{
+  "question_count": 12,
+  "mean_precision": 0.133,
+  "mean_recall": 0.667,
+  "mean_faithfulness": 0.857,
+  "mean_answer_relevancy": 0.762,
+  "not_found_accuracy": 1.0,
+  "by_content_type": {
+    "markdown": {"question_count": 5, "mean_precision": 0.2, "mean_recall": 1.0,
+                 "mean_faithfulness": 0.8, "mean_answer_relevancy": 0.667},
+    "pdf":      {"question_count": 7, "mean_precision": 0.086, "mean_recall": 0.429,
+                 "mean_faithfulness": 1.0, "mean_answer_relevancy": 1.0}
+  }
+}
+```
+
+**Kırılım yorumu — PDF, RETRIEVAL'da daha zayıf; Markdown, GENERATION'da
+biraz daha zayıf.** Markdown sorularının tamamında (recall=1.0) doğru
+chunk top-5 içinde bulundu; PDF sorularının sadece ~%43'ünde bulundu
+(recall=0.429) — retrieval, PDF'de belirgin şekilde daha zayıf. Tersine,
+doğru chunk bulunduğunda üretilen cevapların sadıklığı/uygunluğu PDF'de
+daha yüksek (faithfulness/relevancy = 1.0 vs. Markdown'da 0.8/0.667) —
+muhtemelen PDF chunk'larının (sayfa başına birleşik metin) Markdown'ın
+kısa, başlık-altı bloklarına göre generation modeline daha fazla bağlam
+sağlaması. `mean_precision`'ın genel olarak düşük görünmesi (0.086–0.2)
+bir hata değil, yapısal bir sınır: `search()` varsayılan olarak top-5
+chunk döndürüyor (`RERANK_TOP_N=5`), her golden soru tek bir beklenen
+konuma sahip, yani mükemmel retrieval'de bile precision tavanı 1/5=0.2 —
+Markdown'ın 0.2'ye ulaşması aslında "her seferinde doğru chunk top-5'te"
+demek.
+
+**DeepEval bu projede de sorunsuz çalıştı** — production-rag-platform'daki
+gibi, ek bir workaround gerekmedi (yukarıdaki timeout doğrulaması dışında,
+ki o da "değişiklik gerekmiyor" sonucuna vardı).
+
+**Test kapsamı:** metrik hesaplama mantığı (retrieval precision/recall,
+generation metric toplama, iki-fazlı sıralama, `by_content_type` kırılımı)
+sahte (fake) fonksiyonlarla birim test edildi; ayrıca küçük (2 soru) ama
+GERÇEK bir e2e test (`tests/test_evaluation_e2e.py`, gerçek Ollama+Qdrant+
+7B judge, Ollama/Qdrant erişilemezse otomatik skip) eklendi — tam golden
+set (12 soru, iki farklı model) elle çalıştırılıp yukarıdaki sonuçla
+doğrulandı, her testte koşulmuyor (çok yavaş).
+
+318 test toplam (bu sprintte +27 yeni test — retrieval/generation/harness
+birim testleri + 1 yeni gerçek eval e2e testi), 316'sı geçiyor, 2'si servis
+gerektirdiği için skip (değişmedi: Notion API key yok, Claude+Ollama
+kombinasyonu), `ruff check` temiz, 3 ardışık çalıştırmada flakiness yok.
+
 ## Sprint 10 — UI (Multi-page Streamlit)
 
 Amaç: Chat + kaynak yönetimi + sync durumunu ayrı sayfalarda sunmak.
