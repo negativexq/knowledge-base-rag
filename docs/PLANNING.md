@@ -169,6 +169,21 @@ Scope:
 
 DoD: karışık kaynaklı bir koleksiyonda (PDF+Markdown) citation'lar doğru kaynağa işaret ediyor, yanlış kaynağa sızma yok — production-rag-platform'daki bug'ın regression testi burada da var.
 
+### Kapanış notu — doğrulama sprint'i
+
+Bu sprintin kapsamı büyük ölçüde Sprint 3'te zaten karşılanmıştı (o sprint markdown desteği eklerken citation formatını genellemek ZORUNDA kaldı — bkz. Sprint 3 kapanış notu). Varsaymak yerine kod ve testler tek tek tarandı; sonuç madde madde:
+
+* **Citation formatı `[s.SOURCE_TYPE:SOURCE_ID/LOCATION]`** — ✅ Sprint 3'te tamamlandı (`app/llm/prompt.py::citation_tag`, `app/llm/citation_location.py::location_for`). Kanıt: `tests/test_prompt.py`, `tests/test_citation_formatting.py`.
+* **Grounding'in `(source_type, source_id, location)` üçlüsüne göre çalışması** — ✅ Sprint 3'te tamamlandı (`app/llm/grounding.py`). Kanıt: `tests/test_grounding.py` (9 test).
+* **production-rag-platform'daki doc-scoping bug'ının regression testi** — ✅ Sprint 0'da taşınmıştı, Sprint 3'te yeni 3-tuple formatına uyarlandı, hâlâ mevcut ve yeşil: `tests/test_grounding.py::test_grounding_rejects_citation_whose_page_paragraph_matches_a_different_source`.
+* **Karışık kaynaklı (PDF+Markdown) koleksiyonda citation'ların doğru kaynağa işaret ettiği, gerçek bir sorguyla gösterilmesi** — ✅ Sprint 3'te tamamlandı: `tests/test_pipeline_connector_e2e_hermetic.py`, gerçek ingest → gerçek hybrid search → gerçek generate → gerçek grounding.
+* **"Yanlış kaynağa sızma yok" — çakışan location'lı iki dokümanla özel bir sızma testi** — ❌ EKSİKTİ. Mevcut olan (`test_grounding.py`'deki doc-scoping testi) sadece UNIT seviyesinde, elle uydurulmuş (synthetic) payload'larla çalışıyordu — gerçek ingest edilmiş, gerçek bir çakışmayla (örn. iki farklı PDF'in doğal olarak ikisinin de sayfa 1/paragraf 0'da chunk'ı olması) FULL PIPELINE seviyesinde hiç kanıtlanmamıştı. Bu sprintte eklendi: `tests/test_citation_cross_source_leak_e2e.py` (3 test) — iki gerçek PDF (page 1/paragraph 0'da doğal çakışma) ve iki gerçek Markdown dosyası (aynı `# Giriş` başlığında doğal çakışma) gerçekten ingest edilip TEK bir koleksiyona yazılıyor, çakışma gerçekten doğrulanıyor (`assert ... == (1, 0)` iki belge için de), sonra:
+  * her dokümanın KENDİ citation'ı karışık context'e karşı doğrulanıyor (grounded=True),
+  * bir dokümanın tag'i SADECE öteki dokümanın chunk'ını içeren context'e karşı test edilip REDDEDİLDİĞİ kanıtlanıyor (`grounded=False`) — location eşleşse bile,
+  * üçüncü test bunu `check_grounding`'i doğrudan çağırmak yerine gerçek `stream_answer` üretim akışından geçirerek kanıtlıyor: model, context'te OLMAYAN bir dokümanın gerçeğini context'teki dokümanın tag'iyle etiketlediğinde (`[s.filesystem:handbook_pdf/1/0]` ama context'te sadece `cv_pdf` var), grounding bunu doğru şekilde `ungrounded_citations=[("filesystem", "handbook_pdf", "1/0")]` olarak yakalıyor.
+
+208 test yeşil (6'sı gerçek servis gerektirdiği için skip, değişmedi — bu sprintte +3 yeni test), `ruff check` temiz, 5 ardışık çalıştırmada flakiness yok. Yeni kod yazılmadı (grounding/citation mantığı zaten Sprint 3'te doğruydu) — sadece eksik olan kanıt eklendi.
+
 ## Sprint 6 — Web Page Parser + İlk Uzak Connector (Notion)
 
 Amaç: Uzak/canlı bir kaynağı sisteme bağlamak.
