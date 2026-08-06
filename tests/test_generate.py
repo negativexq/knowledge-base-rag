@@ -100,7 +100,7 @@ async def test_stream_answer_emits_grounding_event_last():
 
     assert events[-1]["type"] == "grounding"
     assert events[-1]["grounded"] is True
-    assert events[-1]["citations_found"] == [("pdf", "doc", 2, 0)]
+    assert events[-1]["citations_found"] == [("pdf", "doc", "2/0")]
 
 
 @pytest.mark.asyncio
@@ -112,7 +112,7 @@ async def test_stream_answer_grounding_event_flags_fabricated_citation():
 
     grounding_event = events[-1]
     assert grounding_event["grounded"] is False
-    assert grounding_event["ungrounded_citations"] == [("pdf", "doc", 99, 0)]
+    assert grounding_event["ungrounded_citations"] == [("pdf", "doc", "99/0")]
 
 
 @pytest.mark.asyncio

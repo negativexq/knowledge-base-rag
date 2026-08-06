@@ -17,6 +17,25 @@ def _result(
     )
 
 
+def _markdown_result(
+    heading_path: tuple[str, ...],
+    text: str,
+    source_type: str = "markdown",
+    source_id: str = "readme",
+) -> SearchResult:
+    return SearchResult(
+        score=0.9,
+        payload={
+            "page_number": 0,
+            "paragraph_index": 0,
+            "heading_path": list(heading_path),
+            "text": text,
+            "source_type": source_type,
+            "source_id": source_id,
+        },
+    )
+
+
 def test_grounding_passes_when_all_citations_match_context():
     chunks = [_result(2, 0, "Refunds are processed within 30 days.")]
     answer = "Refunds take 30 days [s.pdf:doc/2/0]."
@@ -24,7 +43,7 @@ def test_grounding_passes_when_all_citations_match_context():
     result = check_grounding(answer, chunks)
 
     assert result.grounded is True
-    assert result.citations_found == [("pdf", "doc", 2, 0)]
+    assert result.citations_found == [("pdf", "doc", "2/0")]
     assert result.ungrounded_citations == []
 
 
@@ -39,7 +58,7 @@ def test_grounding_fails_on_a_deliberately_fabricated_citation():
     result = check_grounding(fabricated_answer, chunks)
 
     assert result.grounded is False
-    assert result.ungrounded_citations == [("pdf", "doc", 99, 0)]
+    assert result.ungrounded_citations == [("pdf", "doc", "99/0")]
 
 
 def test_grounding_reports_only_the_fabricated_citation_when_mixed():
@@ -53,11 +72,11 @@ def test_grounding_reports_only_the_fabricated_citation_when_mixed():
 
     assert result.grounded is False
     assert result.citations_found == [
-        ("pdf", "doc", 2, 0),
-        ("pdf", "doc", 5, 1),
-        ("pdf", "doc", 7, 3),
+        ("pdf", "doc", "2/0"),
+        ("pdf", "doc", "5/1"),
+        ("pdf", "doc", "7/3"),
     ]
-    assert result.ungrounded_citations == [("pdf", "doc", 7, 3)]
+    assert result.ungrounded_citations == [("pdf", "doc", "7/3")]
 
 
 def test_grounding_with_no_citations_at_all_is_considered_grounded():
@@ -86,7 +105,7 @@ def test_grounding_rejects_citation_whose_page_paragraph_matches_a_different_sou
     result = check_grounding(answer, chunks)
 
     assert result.grounded is False
-    assert result.ungrounded_citations == [("pdf", "cv", 2, 0)]
+    assert result.ungrounded_citations == [("pdf", "cv", "2/0")]
 
 
 def test_grounding_rejects_citation_whose_source_type_differs_even_with_same_source_id():
@@ -99,4 +118,37 @@ def test_grounding_rejects_citation_whose_source_type_differs_even_with_same_sou
     result = check_grounding(answer, chunks)
 
     assert result.grounded is False
-    assert result.ungrounded_citations == [("markdown", "readme", 2, 0)]
+    assert result.ungrounded_citations == [("markdown", "readme", "2/0")]
+
+
+def test_grounding_passes_for_a_markdown_heading_path_citation():
+    chunks = [_markdown_result(("Kurulum", "Adım 1"), "Do this first.")]
+    answer = "Do this first [s.markdown:readme/Kurulum/Adım 1]."
+
+    result = check_grounding(answer, chunks)
+
+    assert result.grounded is True
+    assert result.citations_found == [("markdown", "readme", "Kurulum/Adım 1")]
+
+
+def test_grounding_fails_on_a_fabricated_markdown_heading_citation():
+    chunks = [_markdown_result(("Kurulum",), "Install steps.")]
+    fabricated_answer = "Install steps [s.markdown:readme/Sorun Giderme]."
+
+    result = check_grounding(fabricated_answer, chunks)
+
+    assert result.grounded is False
+    assert result.ungrounded_citations == [("markdown", "readme", "Sorun Giderme")]
+
+
+def test_grounding_distinguishes_pdf_and_markdown_locations_for_the_same_source_id():
+    """A PDF and a markdown doc sharing a source_id (e.g. both "readme")
+    must not have their locations cross-validate — "2/0" as a PDF page/
+    paragraph is a different claim than "2/0" as a markdown heading path.
+    """
+    chunks = [_result(2, 0, "PDF content.", source_type="pdf", source_id="readme")]
+    answer = "Some claim [s.pdf:readme/3/0]."  # never in context
+
+    result = check_grounding(answer, chunks)
+
+    assert result.grounded is False

@@ -125,9 +125,8 @@ async def test_single_pdf_end_to_end_with_multisource_citation_format(sample_pdf
 
     grounding_event = next(e for e in events if e["type"] == "grounding")
     assert grounding_event["grounded"] is True
-    assert grounding_event["citations_found"] == [
-        ("pdf", "handbook", top.payload["page_number"], top.payload["paragraph_index"])
-    ]
+    expected_location = f"{top.payload['page_number']}/{top.payload['paragraph_index']}"
+    assert grounding_event["citations_found"] == [("pdf", "handbook", expected_location)]
 
     # cross-check with the standalone grounding function directly too
     assert check_grounding(tokens, results).grounded is True

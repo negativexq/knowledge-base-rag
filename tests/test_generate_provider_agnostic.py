@@ -112,7 +112,7 @@ async def test_ollama_and_claude_providers_produce_identical_grounding_result():
     assert ollama_grounding["grounded"] is True
     assert claude_grounding["grounded"] is True
     assert ollama_grounding["citations_found"] == claude_grounding["citations_found"]
-    assert ollama_grounding["citations_found"] == [("pdf", "handbook", 2, 0)]
+    assert ollama_grounding["citations_found"] == [("pdf", "handbook", "2/0")]
 
 
 @pytest.mark.asyncio
@@ -146,4 +146,4 @@ async def test_ollama_and_claude_providers_both_flag_the_same_fabricated_citatio
     assert ollama_grounding["grounded"] is False
     assert claude_grounding["grounded"] is False
     assert ollama_grounding["ungrounded_citations"] == claude_grounding["ungrounded_citations"]
-    assert ollama_grounding["ungrounded_citations"] == [("pdf", "handbook", 99, 0)]
+    assert ollama_grounding["ungrounded_citations"] == [("pdf", "handbook", "99/0")]

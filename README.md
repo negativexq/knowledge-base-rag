@@ -14,10 +14,11 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprint 0** (foundation + core pipeline port) and **Sprint 1** (LLM
-provider abstraction) are complete — see `docs/PLANNING.md`'s closing
-notes and [docs/sprint-00-plan.md](docs/sprint-00-plan.md) /
-[docs/sprint-01-plan.md](docs/sprint-01-plan.md).
+**Sprints 0–3** are complete: foundation + core pipeline port, LLM provider
+abstraction (Ollama + Claude), a SQLite-backed document registry, and a
+filesystem `Connector` that ingests mixed PDF/Markdown folders. See
+`docs/PLANNING.md`'s closing notes and the `docs/sprint-0{0..3}-plan.md`
+files for the design decisions behind each.
 
 ## LLM providers
 
@@ -36,13 +37,16 @@ CLAUDE_API_KEY=sk-ant-...    # required if GENERATION_PROVIDER=claude
 Citations are multi-source from the start:
 
 ```
-[s.<source_type>:<source_id>/<page>/<paragraph>]
-example: [s.pdf:handbook/2/0]
+[s.<source_type>:<source_id>/<location>]
+examples: [s.filesystem:handbook_pdf/2/0]           (PDF: page/paragraph)
+          [s.filesystem:readme_md/Kurulum/Adım 1]   (Markdown: heading path)
 ```
 
-Grounding is checked against the full `(source_type, source_id, page,
-paragraph)` tuple, so two different sources can safely share the same
-page/paragraph coordinates without one masquerading as the other.
+`source_type` identifies the connector a document came from (`filesystem`
+today; `notion`/`confluence` later), not its file format — the same
+connector can ingest multiple formats. Grounding is checked against the
+full `(source_type, source_id, location)` triple, so two different sources
+can safely share the same location without one masquerading as the other.
 
 ## Getting started
 

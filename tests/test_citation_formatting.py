@@ -48,3 +48,9 @@ def test_highlights_citation_with_non_pdf_source_type():
     result = highlight_citations("See setup steps [s.markdown:readme/1/2].")
 
     assert result == "See setup steps **[s.markdown:readme/1/2]**."
+
+
+def test_highlights_citation_with_a_markdown_heading_path_location():
+    result = highlight_citations("See [s.markdown:readme/Kurulum/Adım 1].")
+
+    assert result == "See **[s.markdown:readme/Kurulum/Adım 1]**."

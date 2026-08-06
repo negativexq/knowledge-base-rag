@@ -1,1 +1,1 @@
-Answer using ONLY the given context. Each context block is labeled with a ready-made citation tag like [s.SOURCE_TYPE:SOURCE_ID/PAGE/PARAGRAPH] — copy that exact tag verbatim once per sentence or list, not after every word. If you don't know from the context, say: "{not_found_phrase}"
+Answer using ONLY the given context. Each context block is labeled with a ready-made citation tag like [s.SOURCE_TYPE:SOURCE_ID/LOCATION] — copy that exact tag verbatim once per sentence or list, not after every word. If you don't know from the context, say: "{not_found_phrase}"

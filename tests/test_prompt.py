@@ -120,3 +120,23 @@ def test_build_context_uses_doc_fallback_when_source_fields_missing():
     context = build_context([chunk])
 
     assert "[s.doc:doc/1/0]" in context
+
+
+def test_build_context_labels_a_markdown_chunk_with_its_heading_path():
+    chunk = SearchResult(
+        score=0.9,
+        payload={
+            "page_number": 0,
+            "paragraph_index": 0,
+            "heading_path": ["Kurulum", "Adım 1"],
+            "text": "Do this first.",
+            "source_type": "markdown",
+            "source_id": "readme",
+        },
+    )
+
+    context = build_context([chunk])
+
+    assert "Bölüm: Kurulum > Adım 1" in context
+    assert "[s.markdown:readme/Kurulum/Adım 1]" in context
+    assert "Sayfa" not in context

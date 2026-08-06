@@ -1,5 +1,6 @@
 import hashlib
 import re
+from dataclasses import dataclass
 
 from app.ingestion.models import Chunk
 from app.parsing.models import Paragraph
@@ -55,22 +56,36 @@ def _extend_to_sentence_end(text: str, pos: int) -> int:
     return pos
 
 
+@dataclass(frozen=True)
+class ChunkSpan:
+    """A chunk's position/text within one "unit" of a document (a PDF page,
+    or — reused by app/ingestion/markdown_chunker.py — a markdown heading
+    section), before doc_id/source_type/source_id/heading_path are stamped
+    onto it. Kept separate from Chunk so this module's word/sentence-
+    boundary splitting logic (_build_page_text, _chunk_page_text,
+    _extend_to_sentence_end) can be reused for markdown without markdown
+    sections pretending to be PDF pages at the Chunk level.
+    """
+
+    page_number: int
+    paragraph_index: int
+    char_range: tuple[int, int]
+    text: str
+
+
 def _chunk_page_text(
     page_text: str,
     offsets: list[tuple[int, int, int]],
-    doc_id: str,
-    source_type: str,
-    source_id: str,
     page_number: int,
     chunk_size_tokens: int,
     overlap_tokens: int,
-) -> list[Chunk]:
+) -> list[ChunkSpan]:
     words = list(re.finditer(r"\S+", page_text))
     if not words:
         return []
 
     step = max(chunk_size_tokens - overlap_tokens, 1)
-    chunks: list[Chunk] = []
+    spans: list[ChunkSpan] = []
     i = 0
     while i < len(words):
         j = min(i + chunk_size_tokens, len(words))
@@ -82,11 +97,8 @@ def _chunk_page_text(
         text = page_text[start_char:end_char].strip()
         if text:
             paragraph_index = _paragraph_index_for_char(offsets, start_char)
-            chunks.append(
-                Chunk(
-                    doc_id=doc_id,
-                    source_type=source_type,
-                    source_id=source_id,
+            spans.append(
+                ChunkSpan(
                     page_number=page_number,
                     paragraph_index=paragraph_index,
                     char_range=(start_char, end_char),
@@ -98,7 +110,7 @@ def _chunk_page_text(
             break
         i += step
 
-    return chunks
+    return spans
 
 
 def chunk_document(
@@ -107,28 +119,31 @@ def chunk_document(
     source_type: str = "pdf",
     chunk_size_tokens: int = DEFAULT_CHUNK_SIZE_TOKENS,
     overlap_tokens: int = DEFAULT_OVERLAP_TOKENS,
+    doc_id: str | None = None,
 ) -> list[Chunk]:
-    doc_id = compute_doc_id(pdf_path)
+    doc_id = doc_id or compute_doc_id(pdf_path)
     paragraphs = extract_paragraphs(pdf_path)
 
     paragraphs_by_page: dict[int, list[Paragraph]] = {}
     for paragraph in paragraphs:
         paragraphs_by_page.setdefault(paragraph.page_number, []).append(paragraph)
 
-    chunks: list[Chunk] = []
+    spans: list[ChunkSpan] = []
     for page_number, page_paragraphs in paragraphs_by_page.items():
         page_text, offsets = _build_page_text(page_paragraphs)
-        chunks.extend(
-            _chunk_page_text(
-                page_text,
-                offsets,
-                doc_id,
-                source_type,
-                source_id,
-                page_number,
-                chunk_size_tokens,
-                overlap_tokens,
-            )
+        spans.extend(
+            _chunk_page_text(page_text, offsets, page_number, chunk_size_tokens, overlap_tokens)
         )
 
-    return chunks
+    return [
+        Chunk(
+            doc_id=doc_id,
+            source_type=source_type,
+            source_id=source_id,
+            page_number=span.page_number,
+            paragraph_index=span.paragraph_index,
+            char_range=span.char_range,
+            text=span.text,
+        )
+        for span in spans
+    ]

@@ -57,9 +57,6 @@ def test_chunk_page_text_never_splits_a_sentence_across_non_final_chunks():
     chunks = _chunk_page_text(
         page_text,
         offsets,
-        doc_id="doc",
-        source_type="pdf",
-        source_id="doc",
         page_number=1,
         chunk_size_tokens=15,
         overlap_tokens=5,
@@ -79,9 +76,6 @@ def test_chunk_page_text_overlaps_consecutive_chunks():
     chunks = _chunk_page_text(
         page_text,
         offsets,
-        doc_id="doc",
-        source_type="pdf",
-        source_id="doc",
         page_number=1,
         chunk_size_tokens=15,
         overlap_tokens=5,
@@ -126,6 +120,24 @@ def test_chunk_document_defaults_source_type_to_pdf(sample_pdf):
     chunks = chunk_document(sample_pdf, source_id="sample", chunk_size_tokens=20, overlap_tokens=5)
 
     assert all(chunk.source_type == "pdf" for chunk in chunks)
+
+
+def test_chunk_document_pdf_chunks_have_empty_heading_path(sample_pdf):
+    chunks = chunk_document(sample_pdf, source_id="sample", chunk_size_tokens=20, overlap_tokens=5)
+
+    assert all(chunk.heading_path == () for chunk in chunks)
+
+
+def test_chunk_document_accepts_an_explicit_doc_id_override(sample_pdf):
+    chunks = chunk_document(
+        sample_pdf,
+        source_id="sample",
+        chunk_size_tokens=20,
+        overlap_tokens=5,
+        doc_id="explicit-hash",
+    )
+
+    assert all(chunk.doc_id == "explicit-hash" for chunk in chunks)
 
 
 def _long_paragraph() -> str:

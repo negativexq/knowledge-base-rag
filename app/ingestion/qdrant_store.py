@@ -85,5 +85,6 @@ class QdrantStore:
                 "paragraph_index": chunk.paragraph_index,
                 "char_range": list(chunk.char_range),
                 "text": chunk.text,
+                "heading_path": list(chunk.heading_path),
             },
         )

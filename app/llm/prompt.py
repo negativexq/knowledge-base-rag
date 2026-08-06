@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent.parent / "prompts"
@@ -13,8 +14,15 @@ def load_system_prompt(version: str) -> str:
     return path.read_text().format(not_found_phrase=NOT_FOUND_PHRASE)
 
 
-def citation_tag(source_type: str, source_id: str, page: int, paragraph: int) -> str:
-    return f"[s.{source_type}:{source_id}/{page}/{paragraph}]"
+def citation_tag(source_type: str, source_id: str, location: str) -> str:
+    return f"[s.{source_type}:{source_id}/{location}]"
+
+
+def _human_label(payload: dict, location: str) -> str:
+    heading_path = payload.get("heading_path") or []
+    if heading_path:
+        return f"Bölüm: {' > '.join(heading_path)}"
+    return f"Sayfa {payload['page_number']}, Paragraf {payload['paragraph_index']}"
 
 
 def build_context(chunks: list[SearchResult]) -> str:
@@ -23,11 +31,10 @@ def build_context(chunks: list[SearchResult]) -> str:
         payload = chunk.payload
         source_type = payload.get("source_type", "doc")
         source_id = payload.get("source_id", "doc")
-        page = payload["page_number"]
-        paragraph = payload["paragraph_index"]
-        tag = citation_tag(source_type, source_id, page, paragraph)
+        location = location_for(payload)
+        tag = citation_tag(source_type, source_id, location)
         label = (
-            f"[Kaynak: {source_type}:{source_id}, Sayfa {page}, Paragraf {paragraph} "
+            f"[Kaynak: {source_type}:{source_id}, {_human_label(payload, location)} "
             f"— citation tag: {tag}]"
         )
         parts.append(f"{label}\n{payload['text']}")

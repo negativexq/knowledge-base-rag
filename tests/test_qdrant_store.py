@@ -103,7 +103,27 @@ def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
         "paragraph_index": chunk.paragraph_index,
         "char_range": list(chunk.char_range),
         "text": chunk.text,
+        "heading_path": list(chunk.heading_path),
     }
+
+
+def test_upsert_chunks_stores_heading_path_for_a_markdown_chunk():
+    store = _store()
+    chunk = Chunk(
+        doc_id="doc1",
+        source_type="markdown",
+        source_id="readme",
+        page_number=0,
+        paragraph_index=0,
+        char_range=(0, 10),
+        text="hello world",
+        heading_path=("Kurulum", "Adım 1"),
+    )
+
+    store.upsert_chunks([chunk], [_dense_vector()], [_sparse_vector()])
+
+    point = store._client.retrieve(COLLECTION, ids=[QdrantStore.point_id_for(chunk)])[0]
+    assert point.payload["heading_path"] == ["Kurulum", "Adım 1"]
 
 
 def test_upsert_chunks_writes_both_dense_and_sparse_vectors():
