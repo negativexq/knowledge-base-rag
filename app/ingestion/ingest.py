@@ -5,9 +5,9 @@ from typing import Protocol
 
 from opentelemetry import trace
 
-from app.connectors.filesystem import LocalFilesystemConnector
+from app.connectors.base import Connector
 from app.ingestion.chunker import DEFAULT_CHUNK_SIZE_TOKENS, DEFAULT_OVERLAP_TOKENS, chunk_document
-from app.ingestion.markdown_chunker import chunk_markdown_document
+from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
 from app.ingestion.qdrant_store import QdrantStore
 from app.registry.store import DocumentRegistry
 from app.retrieval.sparse import SparseVector
@@ -86,7 +86,7 @@ async def ingest_path(
 
 
 async def ingest_connector(
-    connector: LocalFilesystemConnector,
+    connector: Connector,
     store: QdrantStore,
     registry: DocumentRegistry,
     embed_fn: EmbedFn,
@@ -117,10 +117,14 @@ async def ingest_connector(
        if the chunk count shrank). Safe to call on a brand new document too
        (deletes zero points).
 
-    Typed against LocalFilesystemConnector specifically, not the generic
-    Connector Protocol — see docs/sprint-03-plan.md: generalizing this
-    dispatch (currently keyed on document.path) is deferred until Sprint 6
-    adds a second, real connector to design it against.
+    Typed against the generic Connector Protocol — Sprint 3/4 kept this
+    typed to LocalFilesystemConnector specifically ("generalize once a
+    second connector proves what's needed"); Sprint 6's NotionConnector is
+    that second connector, and requires two real changes here: content
+    with no local path (content_type == "notion" fetches bytes over the
+    network via connector.fetch_content() instead of reading document.path),
+    and awaiting the connector's now-async methods (see
+    docs/sprint-06-plan.md for why the Protocol itself had to become async).
     """
     tracer = tracer or get_tracer(__name__)
     store.ensure_collection()
@@ -130,7 +134,7 @@ async def ingest_connector(
     files_skipped = 0
     files_deleted = 0
 
-    current_documents = connector.list_documents()
+    current_documents = await connector.list_documents()
     seen_source_ids = {document.source_id for document in current_documents}
 
     for record in registry.list_documents(source_type=connector.source_type):
@@ -145,7 +149,7 @@ async def ingest_connector(
         files_deleted += 1
 
     for document in current_documents:
-        content_hash = connector.get_content_hash(document)
+        content_hash = await connector.get_content_hash(document)
 
         if not registry.has_changed(connector.source_type, document.source_id, content_hash):
             files_skipped += 1
@@ -174,6 +178,16 @@ async def ingest_connector(
                         chunk_size_tokens,
                         overlap_tokens,
                         doc_id=content_hash,
+                    )
+                elif document.content_type == "notion":
+                    content_bytes = await connector.fetch_content(document)
+                    chunks = chunk_markdown_text(
+                        content_bytes.decode("utf-8"),
+                        document.source_id,
+                        connector.source_type,
+                        content_hash,
+                        chunk_size_tokens,
+                        overlap_tokens,
                     )
                 else:
                     raise ValueError(f"Unsupported content_type: {document.content_type!r}")

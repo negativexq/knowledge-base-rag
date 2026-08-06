@@ -14,15 +14,18 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–5** are complete: foundation + core pipeline port, LLM provider
+**Sprints 0–6** are complete: foundation + core pipeline port, LLM provider
 abstraction (Ollama + Claude), a SQLite-backed document registry, a
 filesystem `Connector` that ingests mixed PDF/Markdown folders, hash-based
 incremental sync (skip unchanged, update changed, delete vanished — no
-orphan chunks), and end-to-end proof that citations can't leak across
-documents that collide on location. See `docs/PLANNING.md`'s closing notes
-and the `docs/sprint-0{0..4}-plan.md` files for the design decisions
-behind each (Sprint 5 was a verification-only sprint, no new plan doc —
-see its closing note).
+orphan chunks), end-to-end proof that citations can't leak across
+documents that collide on location, a web page parser (trafilatura), and
+the first remote connector (`NotionConnector`). See `docs/PLANNING.md`'s
+closing notes and the `docs/sprint-0{0..4,6}-plan.md` files for the design
+decisions behind each (Sprint 5 was verification-only, no new plan doc —
+see its closing note). **Notion has not been tested against a real
+workspace** on this machine (no `NOTION_API_KEY`) — see the Sprint 6
+closing note.
 
 ## LLM providers
 
@@ -35,6 +38,14 @@ GENERATION_PROVIDER=ollama   # or claude — local-first default
 EMBEDDING_PROVIDER=ollama    # only option today
 CLAUDE_API_KEY=sk-ant-...    # required if GENERATION_PROVIDER=claude
 ```
+
+## Connectors
+
+Two `Connector` implementations exist: `LocalFilesystemConnector`
+(PDF/Markdown from a local folder) and `NotionConnector` (real Notion API
+calls — search + block-children endpoints, with 429 retry/backoff; needs
+`NOTION_API_KEY`). Both go through the same `ingest_connector()` incremental
+sync pipeline (skip/update/delete), unmodified.
 
 ## Citation format
 

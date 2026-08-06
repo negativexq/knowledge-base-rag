@@ -196,6 +196,25 @@ Scope:
 
 DoD: bir Notion workspace'inden (test workspace) içerik gerçekten çekilip ingest ediliyor, registry'de `source_type=notion`olarak görünüyor.
 
+### Kapanış notu
+
+**`Connector` interface'inde Sprint 3'ten beri saklı iki gerçek varsayım, ikinci implementasyonla ortaya çıktı ve düzeltildi** (bkz. `docs/sprint-06-plan.md`):
+
+1. **Protocol metotları senkrondu.** `list_documents()`/`fetch_content()`/`get_content_hash()` `def` idi — `LocalFilesystemConnector` için sorun değildi (disk I/O), ama `NotionConnector` gerçek ağ çağrıları için `async` OLMAK ZORUNDA. Üç metot da `async def` oldu; `LocalFilesystemConnector` bunu bedelsiz karşıladı (senkron kod `async def` içine sarıldı, davranış değişmedi). Bu yön (senkron→async genelleştirme) doğruydu çünkü tersi (async bir connector'ı senkron bir arayüze sığdırmak) blocking hack'ler olmadan mümkün değil.
+2. **`get_content_hash()` her zaman tam içerik getirmeyi varsayıyordu.** Yerelde bedelsiz (dosya zaten okunuyor), ama Notion'da HER sync taramasında (Sprint 4'ün `has_changed()` kontrolü) tüm sayfa bloklarını çekmek incremental sync'in amacını baltalar. `ConnectorDocument`'a `etag: str | None = None` eklendi (`path` alanının kurduğu presedansla aynı desen) — `NotionConnector` bunu `list_documents()` sırasında zaten ucuza aldığı `last_edited_time` ile dolduruyor, `get_content_hash()` SADECE bunu hash'liyor, `fetch_content()`'i hiç çağırmıyor. `LocalFilesystemConnector` değişmedi (`etag` hep `None`).
+
+Bunlar dışında Sprint 3'ün tasarladığı `Connector` Protocol'ü (üç metot + `source_type`) doğrulandı, değişmedi.
+
+**Web parser: Sprint 3'ün markdown location şemasının doğrudan yeniden kullanımı.** `trafilatura.extract(html, output_format="markdown", include_formatting=True)` GERÇEKTEN denendi (varsayılmadı) — `include_formatting=True` olmadan trafilatura başlık işaretleyicisi OLMAYAN düz metin döndürüyor (boş bir varsayım olurdu, canlı deneyle yakalandı). Doğru ayarla nav/header/footer/aside gerçekten atılıyor, gerçek içerik `#`/`##` ile markdown olarak geliyor. Bu, HTML için ayrı bir location şeması icat etmek yerine `app/parsing/markdown_parser.py::extract_blocks()`'u DOĞRUDAN yeniden kullanmayı sağladı. Bunu mümkün kılmak için `chunk_markdown_document()`'ın metin işleme çekirdeği `chunk_markdown_text(text, source_id, source_type, doc_id, ...)` olarak ayrıştırıldı (public imza değişmedi) — hem web parser hem `NotionConnector` (Notion blokları markdown'a render edilip) bu ORTAK fonksiyonu kullanıyor.
+
+**Bu sprintte `WebConnector` YOK — bilinçli kapsam sınırı.** DoD'nin tam metni sadece "bir web sayfası gerçekten parse edilip location'lı chunk'lara ayrılıyor" istiyor, uçtan uca ingest değil. Bir connector (URL listesi/keşif kavramı) tanımlamak spekülatif olurdu — `app/parsing/web_parser.py` + `app/ingestion/web_chunker.py` gerçek bir HTML fixture'ıyla kanıtlandı, connector'a bağlanması gerçek ihtiyaç netleşince yapılacak.
+
+**Notion API'ye gerçekten karşı test edildi mi? HAYIR.** Bu makinede `NOTION_API_KEY` yok, `.env` yok (Sprint 1'deki `ANTHROPIC_API_KEY` durumunun birebir aynısı, aynı dürüstlükle belgeleniyor). `NotionConnector`'ın 16 testi `httpx.MockTransport` ile resmi Notion API dokümantasyonundaki GERÇEK JSON şekillerini (arama sayfalama, blocks sayfalama, 429+Retry-After, diğer hatalar) simüle ediyor. `tests/test_notion_e2e.py`, Sprint 1'in `test_provider_comparison_e2e.py` desenini izleyen, `NOTION_API_KEY` set edilirse gerçekten çalışacak otomatik-skip bir test — şu an skip. DoD'nin bu kısmı AÇIK kalıyor.
+
+**Sprint 2-4'ün registry/sync mantığı Notion için hiçbir ek değişiklik gerektirmeden çalıştı** (yukarıdaki iki interface düzeltmesi dışında) — `tests/test_notion_pipeline_e2e_hermetic.py` (4 test, mock'lı ama TAM `ingest_connector` + gerçek Qdrant + gerçek SQLite registry üzerinden) Sprint 4'ün üç senaryosunu (skip/update/delete) Notion için AYNI kod yoluyla, sahte ama durumsal bir Notion workspace'i (testler arasında mutasyona uğrayan bir `dict`) ile kanıtlıyor: değişmeyen sayfa sıfır Qdrant yazması ile atlanıyor, düzenlenen sayfa SADECE kendi chunk'larını güncelliyor (diğer sayfanın point'leri ID/payload dahil birebir aynı kalıyor), workspace'ten silinen sayfa hem Qdrant'tan hem registry'den temizleniyor.
+
+244 test yeşil (7'si gerçek servis/API key gerektirdiği için skip — 6'sı önceki sprintlerden, +1 bu sprintin `NOTION_API_KEY` testi), `ruff check` temiz, 5 ardışık çalıştırmada flakiness yok.
+
 ## Sprint 7 — Sync Scheduler
 
 Amaç: Periyodik ve manuel sync tetiklemeyi otomatikleştirmek.

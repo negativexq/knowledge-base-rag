@@ -18,7 +18,7 @@ class LocalFilesystemConnector:
     def __init__(self, root: str | Path):
         self._root = Path(root)
 
-    def list_documents(self) -> list[ConnectorDocument]:
+    async def list_documents(self) -> list[ConnectorDocument]:
         paths = sorted(
             p
             for p in self._root.iterdir()
@@ -37,12 +37,12 @@ class LocalFilesystemConnector:
             for p in paths
         ]
 
-    def fetch_content(self, document: ConnectorDocument) -> bytes:
+    async def fetch_content(self, document: ConnectorDocument) -> bytes:
         return document.path.read_bytes()
 
-    def get_content_hash(self, document: ConnectorDocument) -> str:
+    async def get_content_hash(self, document: ConnectorDocument) -> str:
         # Same algorithm as app/ingestion/chunker.py::compute_doc_id (sha256
         # of raw file bytes) — ingest_connector passes this hash straight
         # into chunk_document/chunk_markdown_document's doc_id override, so
         # the file is never read+hashed twice with a risk of divergence.
-        return hashlib.sha256(self.fetch_content(document)).hexdigest()
+        return hashlib.sha256(await self.fetch_content(document)).hexdigest()

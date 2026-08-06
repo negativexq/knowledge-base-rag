@@ -131,9 +131,9 @@ async def test_ingest_connector_registry_hash_matches_connector_hash(sample_pdf,
 
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
 
-    for document in connector.list_documents():
+    for document in await connector.list_documents():
         record = registry.get_document(connector.source_type, document.source_id)
-        assert record.content_hash == connector.get_content_hash(document)
+        assert record.content_hash == await connector.get_content_hash(document)
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,5 @@
 from app.ingestion.chunker import compute_doc_id
-from app.ingestion.markdown_chunker import chunk_markdown_document
+from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
 
 
 def _write_md(tmp_path, text: str, name: str = "doc.md") -> str:
@@ -97,3 +97,28 @@ def test_chunk_markdown_document_empty_file_produces_no_chunks(tmp_path):
     chunks = chunk_markdown_document(md_path, source_id="doc")
 
     assert chunks == []
+
+
+def test_chunk_markdown_text_requires_no_file_and_uses_given_doc_id():
+    chunks = chunk_markdown_text(
+        "# Kurulum\n\nText from memory, no file involved.",
+        source_id="notion-page-id",
+        source_type="notion",
+        doc_id="explicit-hash",
+    )
+
+    assert len(chunks) == 1
+    assert chunks[0].doc_id == "explicit-hash"
+    assert chunks[0].source_type == "notion"
+    assert chunks[0].heading_path == ("Kurulum",)
+
+
+def test_chunk_markdown_document_delegates_to_chunk_markdown_text(tmp_path):
+    md_path = _write_md(tmp_path, "# A\n\ntext")
+
+    via_document = chunk_markdown_document(md_path, source_id="doc", doc_id="h")
+    via_text = chunk_markdown_text(
+        "# A\n\ntext", source_id="doc", source_type="markdown", doc_id="h"
+    )
+
+    assert via_document == via_text

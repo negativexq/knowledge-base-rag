@@ -29,6 +29,8 @@ class Settings(BaseSettings):
 
     registry_db_path: str = "data/registry.db"
 
+    notion_api_key: str | None = None
+
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
     active_prompt_version: str = "v1"
