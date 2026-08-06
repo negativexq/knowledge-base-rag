@@ -14,14 +14,16 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–6** are complete: foundation + core pipeline port, LLM provider
+**Sprints 0–7** are complete: foundation + core pipeline port, LLM provider
 abstraction (Ollama + Claude), a SQLite-backed document registry, a
 filesystem `Connector` that ingests mixed PDF/Markdown folders, hash-based
 incremental sync (skip unchanged, update changed, delete vanished — no
 orphan chunks), end-to-end proof that citations can't leak across
-documents that collide on location, a web page parser (trafilatura), and
-the first remote connector (`NotionConnector`). See `docs/PLANNING.md`'s
-closing notes and the `docs/sprint-0{0..4,6}-plan.md` files for the design
+documents that collide on location, a web page parser (trafilatura), the
+first remote connector (`NotionConnector`), and a sync scheduler (periodic
++ manual "sync now" via a FastAPI endpoint, with sync history and
+overlap-safe concurrent-sync handling). See `docs/PLANNING.md`'s closing
+notes and the `docs/sprint-0{0..4,6,7}-plan.md` files for the design
 decisions behind each (Sprint 5 was verification-only, no new plan doc —
 see its closing note). **Notion has not been tested against a real
 workspace** on this machine (no `NOTION_API_KEY`) — see the Sprint 6
@@ -46,6 +48,21 @@ Two `Connector` implementations exist: `LocalFilesystemConnector`
 calls — search + block-children endpoints, with 429 retry/backoff; needs
 `NOTION_API_KEY`). Both go through the same `ingest_connector()` incremental
 sync pipeline (skip/update/delete), unmodified.
+
+## Sync
+
+Each connector syncs on its own interval (`FILESYSTEM_SYNC_INTERVAL_SECONDS`,
+`NOTION_SYNC_INTERVAL_SECONDS`), plus a manual trigger:
+
+```bash
+curl -X POST http://localhost:8000/sync/filesystem
+curl http://localhost:8000/sync/filesystem/history
+```
+
+Two syncs of the *same* connector never run concurrently — a second
+attempt while one is in progress is rejected immediately (`409`), not
+queued. Every run (scheduled or manual) is recorded with its outcome,
+duration, and how many documents changed/were skipped/deleted.
 
 ## Citation format
 

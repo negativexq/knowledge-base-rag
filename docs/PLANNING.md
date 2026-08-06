@@ -227,6 +227,20 @@ Scope:
 
 DoD: connector'lar config'deki sıklığa göre otomatik sync oluyor, manuel tetikleme de çalışıyor, sync geçmişi (başarı/hata) kaydediliyor.
 
+### Kapanış notu
+
+**Scheduler kararı: düz `asyncio` döngüsü, APScheduler YOK** (bkz. `docs/sprint-07-plan.md`, Sprint 2'nin SQLite/SQLAlchemy kararıyla aynı usul). Gerekçe: gerçek ihtiyaç sadece "N connector, her biri sabit bir aralıkta" — cron ifadeleri, kalıcı job store, misfire/coalescing gibi APScheduler'ın çözdüğü problemlerin hiçbiri yok. `SyncScheduler`, connector başına `asyncio.create_task` + `while True: sleep(interval); trigger_sync(...)` — kısa interval'larla (`0.03s`–`0.12s`) gerçek zamanlı test edildi, 5 ardışık çalıştırmada flakiness yok.
+
+**Kilit stratejisi: `asyncio.Lock` DEĞİL, connector başına düz bir `bool` bayrak, REDDET (queue etme).** `SyncManager._running[source_type]` check-and-set arasında hiçbir `await` yok — asyncio'nun tek-thread'li cooperative modelinde bu iki satır arasına başka bir coroutine giremiyor, dolayısıyla ek bir lock nesnesi gerekmeden atomik. DoD "biri beklerken/reddedilirken diğeri çalışıyor" dediği için REDDETMEYİ seçtik (queue değil) — manuel API endpoint'i belirsiz süre bloklanmasın diye (409 ile anında cevap). Gerçek bir race condition testiyle kanıtlandı: `asyncio.gather` ile iki `trigger_sync()` GERÇEKTEN eşzamanlı başlatıldı (embed_fn 0.2s yapay gecikmeli), sonuç: biri `success`, diğeri `rejected_already_running`, Qdrant'a sadece BİR upsert çağrısı gitti, toplam süre `0.2s`'nin ~1.5 katını geçmedi (queue edilseydi ~0.4s'yi bulurdu) — `tests/test_sync_manager.py::test_concurrent_sync_of_the_same_connector_rejects_the_second_attempt`.
+
+**`sync_runs` şeması** (`docs/sprint-07-plan.md`'de tasarlandığı gibi, registry ile AYNI SQLite dosyasında yeni bir tablo): `id, source_type, trigger, status, started_at, finished_at, files_processed, files_skipped, files_deleted, chunks_upserted, error_message`. `IngestStats`'ın dört alanı birebir buraya yazılıyor — Sprint 10'un "Sync Status" sayfası için ekstra hesaplama gerekmiyor.
+
+**API endpoint senkron kaldı, arka plan görevi YOK** — `POST /sync/{source_type}` sync bitene kadar bekliyor. Test edilebilirlik için `app/main.py::create_app(sync_manager, sync_history)` bir FACTORY fonksiyonu (modül yüklenirken gerçek Qdrant/Ollama'ya bağlanan bir singleton değil) — testler `TestClient(create_app(fake_manager, fake_history))` ile gerçek ASGI request/response üzerinden, sahte bileşenlerle çalışıyor. Gerçek servis wiring'i (uvicorn ile deploy) Sprint 11'e (docker compose) bırakıldı.
+
+**Beklenmeyen ama gerçek bir bug: FastAPI `TestClient`, ASGI app'i AYRI BİR THREAD'DE çalıştırıyor.** `DocumentRegistry`/`SyncHistory`'nin sqlite3 bağlantıları varsayılan olarak `check_same_thread=True` idi — test çalıştırılınca gerçek bir `sqlite3.ProgrammingError` fırlattı (varsayılmadı, gerçek hatayla yakalandı). Her iki sınıfa da `check_same_thread=False` eklendi — kullanım deseni (bir seferde tek thread, gerçek eşzamanlı çoklu-thread erişim yok) bunu güvenli kılıyor; bu düzeltme olmadan Sprint 11'in gerçek ASGI dağıtımı da aynı şekilde patlardı, bu yüzden Sprint 2'nin registry'sine de geriye dönük uygulandı.
+
+277 test yeşil (7'si gerçek servis/API key gerektirdiği için skip, değişmedi), `ruff check` temiz, 5 ardışık çalıştırmada (zamanlama-hassas scheduler/concurrency testleri dahil) flakiness yok.
+
 ## Sprint 8 — Observability Extension
 
 Amaç: Tracing'i sync/ingestion pipeline'ına genişletmek (query tarafı Sprint 0'dan zaten taşınmıştı).

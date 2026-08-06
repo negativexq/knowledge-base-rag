@@ -44,3 +44,11 @@ def test_claude_model_has_a_default():
 
 def test_registry_db_path_has_a_default():
     assert Settings().registry_db_path == "data/registry.db"
+
+
+def test_filesystem_sync_interval_defaults_to_five_minutes():
+    assert Settings().filesystem_sync_interval_seconds == 300.0
+
+
+def test_notion_sync_interval_defaults_to_thirty_minutes():
+    assert Settings().notion_sync_interval_seconds == 1800.0

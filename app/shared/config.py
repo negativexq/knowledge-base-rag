@@ -31,6 +31,14 @@ class Settings(BaseSettings):
 
     notion_api_key: str | None = None
 
+    # Per-connector sync intervals — a plain field per connector (same
+    # pattern as claude_*/notion_api_key above), not a generic mapping in
+    # Settings; app/sync/scheduler.py::SyncScheduler itself takes a generic
+    # dict[str, float] built from these at app-wiring time, so the
+    # scheduler stays connector-agnostic even though Settings isn't.
+    filesystem_sync_interval_seconds: float = 300.0
+    notion_sync_interval_seconds: float = 1800.0
+
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
     active_prompt_version: str = "v1"

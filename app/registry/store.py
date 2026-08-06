@@ -71,7 +71,14 @@ class DocumentRegistry:
     """
 
     def __init__(self, db_path: str | Path):
-        self._conn = sqlite3.connect(str(db_path))
+        # check_same_thread=False: an ASGI server (uvicorn, or FastAPI's
+        # TestClient in tests — confirmed via a real ProgrammingError, not
+        # assumed) can run request handlers in a worker thread different
+        # from the one that constructed this object. Usage stays
+        # effectively single-threaded (one request at a time in that
+        # worker), so this doesn't introduce real concurrent access — it
+        # just allows the creation-thread/usage-thread mismatch.
+        self._conn = sqlite3.connect(str(db_path), check_same_thread=False)
         with self._conn:
             self._conn.execute(_SCHEMA)
 
