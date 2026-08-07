@@ -602,3 +602,53 @@ def test_delete_by_source_on_a_document_with_no_points_is_a_no_op():
     store.delete_by_source("pdf", "never-existed")  # must not raise
 
     assert store.count() == 0
+
+
+def test_has_document_version_is_true_when_a_matching_point_exists():
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
+    )
+
+    assert store.has_document_version("pdf", "doc1", document_version="v1") is True
+
+
+def test_has_document_version_is_false_when_no_points_exist():
+    store = _store()
+
+    assert store.has_document_version("pdf", "never-existed", document_version="v1") is False
+
+
+def test_has_document_version_is_false_after_the_points_are_deleted():
+    """Sprint 17.2: the real scenario this method exists for — a
+    document's Qdrant points disappearing by some means other than this
+    app's own delete calls (manual deletion, external tooling, data
+    loss) while the registry never finds out.
+    """
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
+    )
+    assert store.has_document_version("pdf", "doc1", document_version="v1") is True
+
+    store.delete_by_source("pdf", "doc1")  # simulates external/manual deletion
+
+    assert store.has_document_version("pdf", "doc1", document_version="v1") is False
+
+
+def test_has_document_version_is_false_for_a_different_version_of_the_same_document():
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
+    )
+
+    assert store.has_document_version("pdf", "doc1", document_version="v2") is False
+
+
+def test_has_document_version_is_false_for_a_different_source_id_with_the_same_version():
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
+    )
+
+    assert store.has_document_version("pdf", "doc2", document_version="v1") is False

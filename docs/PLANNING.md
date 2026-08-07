@@ -1395,6 +1395,102 @@ testi; `tests/test_sync_manager.py` +1 — SyncManager seviyesinde aynı
 test), 8'i servis/API key gerektirdiği için skip, `ruff check app tests
 scripts` temiz.
 
+## Sprint 17.2 — Index Reconciliation
+
+Amaç: Registry ve Qdrant'ın iki ayrı persistent state olarak birbirinden kopabileceği mimari boşluğunu kapatmak.
+
+Scope:
+
+1. `QdrantStore.has_document_version()` — ucuz bir presence check
+2. Incremental sync: `content_unchanged AND index_present` ikisi de gerekli, index yoksa yeniden ingest
+3. Bonus: `chunk_count` tracking, partial-index tespiti
+4. "Registry taze, Qdrant eski" senaryosu belgelendi — reconciliation (madde 2) kendiliğinden ele alıyor, tek dezavantajı çakışma etkilenmiş bir dokümanın duplicate point'lerle kalabilmesi (data loss değil, disclosed edge case)
+5. Downgrade testi (`CURRENT_INDEX_SCHEMA_VERSION + 1`)
+6. Metadata bozulmasında (sayısal olmayan versiyon) düzgün `IndexSchemaMismatchError`
+7. README'deki son "grounded generation with citations" ifadesi düzeltildi
+
+DoD: Qdrant'tan manuel silinen bir dokümanın registry hash'i değişmemiş olsa bile bir sonraki sync'te otomatik olarak yeniden indexlendiği kanıtlanmış; downgrade testi var; metadata bozulması düzgün hata veriyor; testler ve lint temiz.
+
+Bu sprint'ten sonra proje gerçekten donduruluyor.
+
+### Kapanış notu
+
+**Reconciliation mekanizması nasıl çalışıyor.** İki katman eklendi:
+
+1. **Presence check** (`QdrantStore.has_document_version`, ucuz bir
+   `scroll(limit=1)`): `ingest_connector`'ın skip kararı artık
+   `content_unchanged AND index_present` — ikisi de gerekli. Content
+   değişmemiş olsa bile Qdrant'ta o `(source_type, source_id,
+   document_version)` için hiç point yoksa, doküman "changed" ile aynı
+   yola girip GERÇEKTEN yeniden ingest ediliyor. **Review'ın verdiği tam
+   senaryo gerçekten simüle edildi**: gerçek bir dosya ingest edildi,
+   registry'ye HİÇ dokunmadan `store.delete_by_source(...)` ile Qdrant'tan
+   point'ler silindi, ikinci sync'te dokümanın skip edilmediği
+   (`files_processed == 1`, `files_skipped == 0`) ve içerik hash'inin
+   gerçekten değişmediği (aynı `content_hash`) doğrulandı — fix'ten önce
+   bu test GERÇEKTEN `files_processed == 0` ile fail etti.
+2. **Bonus — partial-loss detection** (`chunk_count` tracking +
+   `QdrantStore.count_for_document_version`, tam bir count sorgusu):
+   registry'ye yeni bir `chunk_count` kolonu eklendi (mevcut DB'ler için
+   gerçek bir `ALTER TABLE` migration'ı ile — `CREATE TABLE IF NOT
+   EXISTS` tek başına eski bir tabloya yeni kolon eklemiyor, bu da gerçek
+   bir pre-migration state simüle edilerek test edildi). Presence check
+   geçtikten SONRA, VE registry'de gerçek bir beklenen sayı varsa (0 =
+   "hiç izlenmedi", spurious re-index tetiklemiyor), gerçek sayı
+   karşılaştırılıyor — eşleşmiyorsa (kısmi kayıp) yine "changed" yoluna
+   giriyor. Bu da gerçek bir kısmi silme senaryosuyla kanıtlandı: 7+
+   chunk'lı bir doküman ingest edilip TEK bir point silindi (tam silme
+   değil), sonraki sync'in bunu tespit edip tam chunk sayısını
+   restore ettiği doğrulandı — hatta bu testin GERÇEKTEN chunk_count
+   karşılaştırmasına dayandığı (sadece presence check'e değil), o
+   karşılaştırmayı geçici olarak devre dışı bırakıp testin GERÇEKTEN
+   fail ettiği doğrulanarak kanıtlandı.
+
+**Performans etkisi: ölçülmedi (gerçek Qdrant yükü altında), ama
+gerekçelendirildi.** Presence check sadece "unchanged" dalında çalışıyor
+— "changed" dalı zaten tam bir re-embed+upsert'e maliyet ödediği için ek
+bir Qdrant çağrısı orada önemsiz. `scroll(limit=1)` sınırlı bir sorgu,
+koleksiyon taraması değil. Exact-count karşılaştırması (bonus) daha
+pahalı olduğu için sadece presence check zaten geçtiğinde VE registry'de
+gerçek bir izlenen sayı varken çalışıyor — bu da onu nadir hale getiriyor
+(çoğu "unchanged" doküman için sadece 1 ucuz presence check, ek count
+sorgusu yok). Gerçek bir throughput ölçümü (Sprint 14'ün embedding
+benchmark'ı gibi) bu sprintte yapılmadı — sync'lerin doküman sayısı bu
+projede bunu ölçülebilir bir darboğaz haline getirecek kadar büyük
+olmadığından (Sprint 14'ün kendi bulgusu: Qdrant'ın yazma yolu asıl
+darboğaz değildi), ama gelecekte çok sayıda dokümanlı bir sync'te bunun
+gerçek maliyeti ölçülmeli — bu açık bir şekilde kapanış notunda
+belirtiliyor, sessizce varsayılmıyor.
+
+**Diğer maddeler**: "registry taze, Qdrant eski" senaryosu incelendi —
+`docker-compose.yml`'de hem `qdrant_storage` hem `registry_data`'nın
+aynı named volume grubu altında olduğu doğrulandı, yani belgelenen
+migration yolu (`down -v`) ikisini birlikte siliyor; bu senaryo sadece
+standart olmayan bir operatör eylemiyle (sadece registry'yi silmek)
+ortaya çıkabilir, ve o durumda bile boş registry her dokümanı "changed"
+sayıp tam re-ingest yapıyor — tek disclosed edge case, çakışmadan
+etkilenmemiş bir dokümanın eski-format point'lerinin
+`delete_stale_versions`'ın document_version filtresi eşleştiği için
+temizlenmemesi (duplicate, veri kaybı değil). Downgrade testi
+(`CURRENT_INDEX_SCHEMA_VERSION + 1`) yazıldı — mevcut mantığın zaten
+doğru davrandığı kanıtlandı (özel bir "ileri versiyon" dalı yoktu, ikisi
+de aynı raise yoluna düşüyordu). Metadata bozulması (`index_schema_version`
+sayısal değilse) artık ham `ValueError` yerine `IndexSchemaMismatchError`
+fırlatıyor — fix'ten önce GERÇEKTEN `ValueError` ile fail ettiği
+doğrulandı. README'nin son "grounded generation with citations" ifadesi
+"citation-aware generation" olarak düzeltildi.
+
+**406 test yeşil** (bu sprintte +13 yeni test:
+`tests/test_qdrant_store.py` +5 — `has_document_version` testleri;
+`tests/test_document_registry.py` +5 — chunk_count testleri, migration
+testi, downgrade testi, metadata-bozulması testi; `tests/test_sync_scenarios.py`
++3 — gerçek reconciliation senaryosu, intact-index-hâlâ-skip-ediliyor
+kontrolü, partial-loss senaryosu), 8'i servis/API key gerektirdiği için
+skip, `ruff check app tests scripts` temiz.
+
+**Proje burada donduruluyor — dördüncü ve beşinci review turlarının
+kapanışı bu oldu.**
+
 ## Sprint 18 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

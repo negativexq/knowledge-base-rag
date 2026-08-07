@@ -143,6 +143,65 @@ class QdrantStore:
     def count(self) -> int:
         return self._client.count(self._collection_name, exact=True).count
 
+    def has_document_version(self, source_type: str, source_id: str, document_version: str) -> bool:
+        """Cheap presence check: does at least one point exist for this
+        (source_type, source_id, document_version)? A limit=1 scroll, not
+        an exact count — used by ingest_connector (Sprint 17.2) to detect
+        registry/Qdrant drift: a document whose content_hash hasn't
+        changed can still have had its Qdrant points disappear by some
+        means other than this app's own delete calls (manual deletion,
+        external tooling, data loss) while the registry has no way to
+        notice on its own. See docs/sprint-17-2-plan.md.
+        """
+        points, _ = self._client.scroll(
+            collection_name=self._collection_name,
+            scroll_filter=qmodels.Filter(
+                must=[
+                    qmodels.FieldCondition(
+                        key="source_type", match=qmodels.MatchValue(value=source_type)
+                    ),
+                    qmodels.FieldCondition(
+                        key="source_id", match=qmodels.MatchValue(value=source_id)
+                    ),
+                    qmodels.FieldCondition(
+                        key="document_version",
+                        match=qmodels.MatchValue(value=document_version),
+                    ),
+                ]
+            ),
+            limit=1,
+        )
+        return len(points) > 0
+
+    def count_for_document_version(
+        self, source_type: str, source_id: str, document_version: str
+    ) -> int:
+        """Exact count of points for this (source_type, source_id,
+        document_version) — more expensive than has_document_version
+        (a real count query, not a bounded presence scroll). Used
+        (Sprint 17.2 bonus) to detect PARTIAL index loss — some but not
+        all of a multi-chunk document's points missing — which a plain
+        presence check can't distinguish from a fully-intact index.
+        """
+        return self._client.count(
+            collection_name=self._collection_name,
+            count_filter=qmodels.Filter(
+                must=[
+                    qmodels.FieldCondition(
+                        key="source_type", match=qmodels.MatchValue(value=source_type)
+                    ),
+                    qmodels.FieldCondition(
+                        key="source_id", match=qmodels.MatchValue(value=source_id)
+                    ),
+                    qmodels.FieldCondition(
+                        key="document_version",
+                        match=qmodels.MatchValue(value=document_version),
+                    ),
+                ]
+            ),
+            exact=True,
+        ).count
+
     def delete_by_source(self, source_type: str, source_id: str) -> None:
         """Delete EVERY point belonging to one document, identified by its
         life-of-the-document-stable (source_type, source_id) pair — not by

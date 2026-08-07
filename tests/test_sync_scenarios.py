@@ -205,3 +205,123 @@ async def test_sync_creates_delete_document_spans_for_removed_files(tmp_path):
     delete_spans = [s for s in exporter.get_finished_spans() if s.name == "delete_document"]
     assert len(delete_spans) == 1
     assert delete_spans[0].attributes["delete.source_id"] == "a_md"
+
+
+@pytest.mark.asyncio
+async def test_manually_deleting_qdrant_points_triggers_automatic_reindex_on_next_sync(tmp_path):
+    """Sprint 17.2, the review's exact scenario: the registry and Qdrant
+    are two separate persistent stores that can silently drift apart.
+    Ingest a document for real, then delete its Qdrant points directly
+    (store.delete_by_source — simulating data loss by any means OTHER
+    than this app's own writes: manual deletion, external tooling, a
+    lost volume) WITHOUT touching the registry at all, so content_hash
+    stays identical. Before this fix, `registry.has_changed()` alone
+    decided the skip — content unchanged meant skip forever, even with
+    zero points actually in Qdrant. Now the document must be detected as
+    missing from the index and automatically re-ingested.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "a.md").write_text("# A\n\nOriginal content, never edited again.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    first = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    assert first.files_processed == 1
+    assert store.count() > 0
+    hash_before = registry.get_document("filesystem", "a_md").content_hash
+
+    # Simulate external data loss — NOT this app's own delete path, and
+    # the registry is never touched.
+    store.delete_by_source("filesystem", "a_md")
+    assert store.count() == 0
+
+    second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    # The document must NOT have been silently skipped — it was
+    # re-processed even though its content_hash never changed.
+    assert second.files_processed == 1
+    assert second.files_skipped == 0
+    assert store.count() > 0
+
+    # Content is genuinely unchanged, so the registry's hash is the same
+    # as before — this proves the trigger was the missing index, not a
+    # content edit.
+    assert registry.get_document("filesystem", "a_md").content_hash == hash_before
+
+
+@pytest.mark.asyncio
+async def test_intact_index_is_still_skipped_not_needlessly_reindexed(tmp_path):
+    """The other half of the reconciliation logic: an unchanged document
+    whose index IS still intact must still be skipped — reconciliation
+    must not turn every sync into a full re-index.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "a.md").write_text("# A\n\nContent that never changes.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    assert second.files_processed == 0
+    assert second.files_skipped == 1
+
+
+@pytest.mark.asyncio
+async def test_partial_qdrant_point_loss_is_detected_and_triggers_reindex(tmp_path):
+    """Sprint 17.2 bonus: a presence-only check (has_document_version)
+    can't tell "some points missing" apart from "all points present" —
+    both report at least one point exists. chunk_count tracking lets a
+    partial loss be detected too: delete only SOME of a multi-chunk
+    document's points (registry untouched, chunk_count still says the
+    original total), and the next sync must notice the mismatch and
+    restore the full chunk count.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    sentences = [f"Sentence number {i} about a topic that never changes." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(sentences))
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    first = await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5,
+    )
+    assert first.files_processed == 1
+    original_chunk_count = registry.get_document("filesystem", "doc_md").chunk_count
+    assert original_chunk_count >= 3  # sanity: really did split into several chunks
+
+    all_points = _all_points(store)
+    doc_points = [p for p in all_points if p.payload["source_id"] == "doc_md"]
+    assert len(doc_points) == original_chunk_count
+
+    # Delete only ONE point, not the whole document — a partial loss,
+    # not a total one.
+    store._client.delete(COLLECTION, points_selector=[doc_points[0].id])
+    remaining = [
+        p for p in _all_points(store) if p.payload["source_id"] == "doc_md"
+    ]
+    assert len(remaining) == original_chunk_count - 1  # confirmed: genuinely partial
+
+    second = await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5,
+    )
+
+    assert second.files_processed == 1  # re-indexed, not skipped
+    assert second.files_skipped == 0
+
+    restored = [
+        p for p in _all_points(store) if p.payload["source_id"] == "doc_md"
+    ]
+    assert len(restored) == original_chunk_count  # full chunk count restored

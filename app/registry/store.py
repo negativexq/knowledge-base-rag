@@ -12,9 +12,19 @@ CREATE TABLE IF NOT EXISTS documents (
     last_synced_at TEXT    NOT NULL,
     version        INTEGER NOT NULL,
     status         TEXT    NOT NULL,
+    chunk_count    INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (source_type, source_id)
 );
 """
+
+def _migrate_add_chunk_count_column(conn: sqlite3.Connection) -> None:
+    # Sprint 17.2: CREATE TABLE IF NOT EXISTS alone doesn't add a new
+    # column to a table that already exists from before this column was
+    # introduced — a real ALTER TABLE migration is needed for those.
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
+    if "chunk_count" not in columns:
+        conn.execute("ALTER TABLE documents ADD COLUMN chunk_count INTEGER NOT NULL DEFAULT 0")
+
 
 _METADATA_SCHEMA = """
 CREATE TABLE IF NOT EXISTS registry_metadata (
@@ -64,12 +74,14 @@ class IndexSchemaMismatchError(Exception):
 # later sprint's "skip unchanged documents" logic can tell "still current"
 # apart from "content actually changed" using version alone.
 _UPSERT = """
-INSERT INTO documents (source_type, source_id, content_hash, last_synced_at, version, status)
-VALUES (:source_type, :source_id, :content_hash, :last_synced_at, 1, :status)
+INSERT INTO documents
+    (source_type, source_id, content_hash, last_synced_at, version, status, chunk_count)
+VALUES (:source_type, :source_id, :content_hash, :last_synced_at, 1, :status, :chunk_count)
 ON CONFLICT(source_type, source_id) DO UPDATE SET
     content_hash = excluded.content_hash,
     last_synced_at = excluded.last_synced_at,
     status = excluded.status,
+    chunk_count = excluded.chunk_count,
     version = CASE WHEN documents.content_hash != excluded.content_hash
                     THEN documents.version + 1
                     ELSE documents.version
@@ -77,12 +89,12 @@ ON CONFLICT(source_type, source_id) DO UPDATE SET
 """
 
 _SELECT_ONE = """
-SELECT source_type, source_id, content_hash, last_synced_at, version, status
+SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count
 FROM documents WHERE source_type = ? AND source_id = ?;
 """
 
 _SELECT_ALL = """
-SELECT source_type, source_id, content_hash, last_synced_at, version, status
+SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count
 FROM documents ORDER BY source_type, source_id;
 """
 
@@ -94,7 +106,7 @@ _DELETE_ONE = "DELETE FROM documents WHERE source_type = ? AND source_id = ?;"
 
 
 def _row_to_record(row: tuple) -> DocumentRecord:
-    source_type, source_id, content_hash, last_synced_at, version, status = row
+    source_type, source_id, content_hash, last_synced_at, version, status, chunk_count = row
     return DocumentRecord(
         source_type=source_type,
         source_id=source_id,
@@ -102,6 +114,7 @@ def _row_to_record(row: tuple) -> DocumentRecord:
         last_synced_at=datetime.fromisoformat(last_synced_at),
         version=version,
         status=status,
+        chunk_count=chunk_count,
     )
 
 
@@ -124,6 +137,7 @@ class DocumentRegistry:
         self._conn = sqlite3.connect(str(db_path), check_same_thread=False)
         with self._conn:
             self._conn.execute(_SCHEMA)
+            _migrate_add_chunk_count_column(self._conn)
             self._conn.execute(_METADATA_SCHEMA)
 
     def upsert_document(
@@ -132,6 +146,7 @@ class DocumentRegistry:
         source_id: str,
         content_hash: str,
         status: str = DEFAULT_STATUS,
+        chunk_count: int = 0,
     ) -> DocumentRecord:
         # Timestamp is written as an ISO 8601 string, not a datetime object —
         # sqlite3's implicit datetime adapters were deprecated in Python
@@ -146,6 +161,7 @@ class DocumentRegistry:
                     "content_hash": content_hash,
                     "last_synced_at": last_synced_at,
                     "status": status,
+                    "chunk_count": chunk_count,
                 },
             )
         return self.get_document(source_type, source_id)
@@ -175,7 +191,19 @@ class DocumentRegistry:
         row = self._conn.execute(
             "SELECT value FROM registry_metadata WHERE key = ?", (_INDEX_SCHEMA_VERSION_KEY,)
         ).fetchone()
-        return int(row[0]) if row else None
+        if row is None:
+            return None
+        try:
+            return int(row[0])
+        except ValueError as exc:
+            # Sprint 17.2: a corrupted/non-numeric stored value must
+            # fail the same clear way every other schema-mismatch path
+            # in this codebase does, not a raw ValueError.
+            raise IndexSchemaMismatchError(
+                f"registry_metadata.{_INDEX_SCHEMA_VERSION_KEY!r} is not a valid integer: "
+                f"{row[0]!r}. Wipe and rebuild the index: "
+                "`docker compose down -v && docker compose up`."
+            ) from exc
 
     def _set_index_schema_version(self, version: int) -> None:
         with self._conn:

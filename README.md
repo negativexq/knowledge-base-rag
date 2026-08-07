@@ -4,7 +4,7 @@ Multi-source knowledge base RAG platform with automatic incremental sync.
 
 Builds on [production-rag-platform](https://github.com/negativexq/production-rag-platform)'s
 proven core pipeline (chunking, hybrid dense+sparse search, cross-encoder
-reranking, grounded generation with citations, OpenTelemetry tracing) rather
+reranking, citation-aware generation, OpenTelemetry tracing) rather
 than rewriting it from scratch. The new value-add here: ingesting multiple
 document types (PDF, Markdown, Notion) through a shared `Connector`
 interface — plus a standalone web-page parser (`app/parsing/web_parser.py`)

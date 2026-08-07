@@ -32,6 +32,24 @@ def test_upsert_document_creates_a_new_record_at_version_1(tmp_path):
     assert record.content_hash == "hash-a"
     assert record.version == 1
     assert record.status == "active"
+    assert record.chunk_count == 0  # not passed, defaults to "never tracked"
+
+
+def test_upsert_document_records_the_given_chunk_count(tmp_path):
+    registry = _registry(tmp_path)
+
+    record = registry.upsert_document("pdf", "handbook", "hash-a", chunk_count=7)
+
+    assert record.chunk_count == 7
+
+
+def test_upsert_document_chunk_count_updates_on_re_ingest(tmp_path):
+    registry = _registry(tmp_path)
+    registry.upsert_document("pdf", "handbook", "hash-a", chunk_count=7)
+
+    record = registry.upsert_document("pdf", "handbook", "hash-b", chunk_count=9)
+
+    assert record.chunk_count == 9
 
 
 def test_upsert_document_with_unchanged_hash_does_not_bump_version(tmp_path):
@@ -189,7 +207,45 @@ def test_schema_creates_documents_table_with_expected_columns(tmp_path):
         "last_synced_at",
         "version",
         "status",
+        "chunk_count",
     }
+
+
+def test_a_pre_sprint_17_2_registry_file_gets_the_chunk_count_column_migrated(tmp_path):
+    """Sprint 17.2: an existing registry.db built before chunk_count
+    existed has a `documents` table without that column — CREATE TABLE
+    IF NOT EXISTS alone can't add it, so a real ALTER TABLE migration
+    must run. Simulates that real pre-migration state directly (not
+    via DocumentRegistry, which already has the new column baked into
+    its own CREATE TABLE).
+    """
+    db_path = tmp_path / "old_registry.db"
+    raw_conn = sqlite3.connect(str(db_path))
+    raw_conn.execute(
+        """
+        CREATE TABLE documents (
+            source_type    TEXT    NOT NULL,
+            source_id      TEXT    NOT NULL,
+            content_hash   TEXT    NOT NULL,
+            last_synced_at TEXT    NOT NULL,
+            version        INTEGER NOT NULL,
+            status         TEXT    NOT NULL,
+            PRIMARY KEY (source_type, source_id)
+        );
+        """
+    )
+    raw_conn.execute(
+        "INSERT INTO documents VALUES ('pdf', 'old-doc', 'hash-x', '2020-01-01T00:00:00+00:00', "
+        "1, 'active')"
+    )
+    raw_conn.commit()
+    raw_conn.close()
+
+    registry = DocumentRegistry(db_path)  # must migrate on open, not crash
+
+    record = registry.get_document("pdf", "old-doc")
+    assert record is not None
+    assert record.chunk_count == 0  # pre-existing row, never tracked — defaults, doesn't crash
 
 
 def test_last_synced_at_is_a_real_datetime_with_timezone(tmp_path):
@@ -234,6 +290,43 @@ def test_a_registry_with_an_explicit_stale_version_row_is_detected(tmp_path):
     registry = _registry(tmp_path)
     registry.upsert_document("filesystem", "handbook", "hash-a")
     registry._set_index_schema_version(CURRENT_INDEX_SCHEMA_VERSION - 1)
+
+    with pytest.raises(IndexSchemaMismatchError):
+        registry.ensure_index_schema_version()
+
+
+def test_a_registry_with_a_version_ahead_of_current_is_detected_as_a_downgrade(tmp_path):
+    """Sprint 17.2: simulates the app being downgraded after a registry
+    was built by a NEWER version of the code (stored version >
+    CURRENT_INDEX_SCHEMA_VERSION). ensure_index_schema_version()'s only
+    real branch condition is equality with CURRENT — this test proves
+    (not just assumes) that a version ahead of current also falls into
+    the raise path, not a silent accept.
+    """
+    registry = _registry(tmp_path)
+    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry._set_index_schema_version(CURRENT_INDEX_SCHEMA_VERSION + 1)
+
+    with pytest.raises(IndexSchemaMismatchError):
+        registry.ensure_index_schema_version()
+
+
+def test_corrupted_non_numeric_schema_version_metadata_raises_index_schema_mismatch(tmp_path):
+    """Sprint 17.2: get_index_schema_version() used to do int(row[0])
+    with no error handling — a non-numeric value in registry_metadata
+    (corruption, manual tampering, a future schema change writing a
+    different value shape) raised a raw ValueError instead of the
+    intended IndexSchemaMismatchError, breaking the "tell the human
+    clearly" contract every other schema-mismatch path in this codebase
+    follows.
+    """
+    registry = _registry(tmp_path)
+    registry.upsert_document("filesystem", "handbook", "hash-a")
+    with registry._conn:
+        registry._conn.execute(
+            "INSERT INTO registry_metadata (key, value) VALUES ('index_schema_version', "
+            "'not-a-number') ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+        )
 
     with pytest.raises(IndexSchemaMismatchError):
         registry.ensure_index_schema_version()

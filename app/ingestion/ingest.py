@@ -234,7 +234,45 @@ async def ingest_connector(
                 )
                 check_span.set_attribute("check.changed", changed)
 
-            if not changed:
+                # Sprint 17.2: content_hash unchanged is necessary but no
+                # longer sufficient to skip — the registry and Qdrant are
+                # two separate persistent stores that can silently drift
+                # apart (a manual point deletion, external tooling, lost
+                # data — anything other than this app's own delete
+                # calls). Only checked on the unchanged branch: a changed
+                # document already pays for a full re-embed+upsert
+                # regardless, so this adds no extra Qdrant call there.
+                # See docs/sprint-17-2-plan.md.
+                index_present = True
+                index_complete = True
+                if not changed:
+                    index_present = store.has_document_version(
+                        connector.source_type, document.source_id, content_hash
+                    )
+                    check_span.set_attribute("check.index_present", index_present)
+
+                    # Bonus: PARTIAL loss (some but not all points
+                    # missing) can't be told apart from a fully-intact
+                    # index by presence alone — only checked when
+                    # presence already succeeded, and only when the
+                    # registry has a real tracked count to compare
+                    # against (chunk_count == 0 means "never tracked,"
+                    # e.g. a pre-Sprint-17.2 row — treated as
+                    # "no expectation," not "expected zero chunks," so
+                    # it doesn't trigger a spurious re-index).
+                    if index_present:
+                        record = registry.get_document(
+                            connector.source_type, document.source_id
+                        )
+                        expected_chunk_count = record.chunk_count if record else 0
+                        if expected_chunk_count > 0:
+                            actual_chunk_count = store.count_for_document_version(
+                                connector.source_type, document.source_id, content_hash
+                            )
+                            index_complete = actual_chunk_count == expected_chunk_count
+                            check_span.set_attribute("check.index_complete", index_complete)
+
+            if not changed and index_present and index_complete:
                 files_skipped += 1
                 continue
 
@@ -387,7 +425,9 @@ async def ingest_connector(
             # Registered only after a successful chunk+upsert, so a failure
             # partway through doesn't leave the registry claiming a document
             # was ingested when it wasn't.
-            registry.upsert_document(connector.source_type, document.source_id, content_hash)
+            registry.upsert_document(
+                connector.source_type, document.source_id, content_hash, chunk_count=len(chunks)
+            )
             files_processed += 1
 
         sync_span.set_attribute("ingest.files_processed", files_processed)
