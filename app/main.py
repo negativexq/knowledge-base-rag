@@ -1,7 +1,13 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from typing import Protocol
+
 from fastapi import FastAPI
 
 from app.api.chat import ChatDependencies
 from app.api.chat import router as chat_router
+from app.api.health import ListModelsFn
+from app.api.health import router as health_router
 from app.api.sources import router as sources_router
 from app.api.sync import router as sync_router
 from app.registry.store import DocumentRegistry
@@ -9,11 +15,23 @@ from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
 
 
+class SchedulerProtocol(Protocol):
+    """Shape of app.sync.scheduler.SyncScheduler — kept as a Protocol
+    (rather than importing SyncScheduler directly) so tests can pass a
+    plain spy without constructing a real one.
+    """
+
+    def start(self) -> None: ...
+    async def stop(self) -> None: ...
+
+
 def create_app(
     sync_manager: SyncManager,
     sync_history: SyncHistory,
     registry: DocumentRegistry,
     chat_deps: ChatDependencies | None = None,
+    list_ollama_models: ListModelsFn | None = None,
+    scheduler: SchedulerProtocol | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -31,13 +49,31 @@ def create_app(
 
     `chat_deps` is optional: tests that only exercise /sync or /sources
     never need it, and POST /chat simply isn't reachable without it.
+
+    `scheduler` is optional too: when given, its start()/stop() are wired
+    into this app's own startup/shutdown via FastAPI's lifespan mechanism
+    (Sprint 7 built SyncScheduler but never started it anywhere — Sprint
+    10 deferred that wiring, Sprint 11 does it here). Every existing test
+    passes None, so none of them get a real background asyncio loop
+    running during a unit test.
     """
-    app = FastAPI(title="Knowledge Base RAG")
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        if scheduler is not None:
+            scheduler.start()
+        yield
+        if scheduler is not None:
+            await scheduler.stop()
+
+    app = FastAPI(title="Knowledge Base RAG", lifespan=lifespan)
     app.state.sync_manager = sync_manager
     app.state.sync_history = sync_history
     app.state.registry = registry
     app.state.chat_deps = chat_deps
+    app.state.list_ollama_models = list_ollama_models
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)
+    app.include_router(health_router)
     return app

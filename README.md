@@ -14,7 +14,7 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–10** are complete: foundation + core pipeline port, LLM provider
+**Sprints 0–11** are complete: foundation + core pipeline port, LLM provider
 abstraction (Ollama + Claude), a SQLite-backed document registry, a
 filesystem `Connector` that ingests mixed PDF/Markdown folders, hash-based
 incremental sync (skip unchanged, update changed, delete vanished — no
@@ -27,17 +27,83 @@ pipeline — a real sync run is one Jaeger trace end to end, verified
 against a real local Jaeger — a golden-set evaluation harness (DeepEval +
 a local `qwen2.5:7b-instruct` judge, `python -m app.evaluation.cli
 --golden-set <path>`) reporting retrieval and generation metrics broken
-down by content format (PDF vs. Markdown), and a multi-page Streamlit UI
+down by content format (PDF vs. Markdown), a multi-page Streamlit UI
 (Chat with streaming/citations/a live Jaeger pipeline-trace panel,
-Sources, Sync Status) backed by a real FastAPI backend
-(`app/server.py`/`app/wiring.py`), all verified against real services in
-a real browser. See `docs/PLANNING.md`'s closing notes and the
-`docs/sprint-0{0..4,6,7,8,9,10}-plan.md` files for the design decisions
-behind each (Sprint 5 was verification-only, no new plan doc — see its
-closing note). **Notion has not been tested against a real workspace** on
-this machine (no `NOTION_API_KEY`), and the evaluation golden set
-correspondingly has no Notion questions — see the Sprint 6 and Sprint 9
-closing notes.
+Sources, Sync Status), and a one-command Docker Compose setup — Qdrant +
+Jaeger + the backend all run in containers (Ollama stays native), the
+document registry and sync history survive a container restart (a real
+named volume, not assumed), and the periodic sync scheduler actually
+starts on container boot (wired into FastAPI's lifespan, verified with a
+real short-interval run, not just code review). See `docs/PLANNING.md`'s
+closing notes and the `docs/sprint-0{0..4,6,7,8,9,10,11}-plan.md` files
+for the design decisions behind each (Sprint 5 was verification-only, no
+new plan doc — see its closing note). **Notion has not been tested
+against a real workspace** on this machine (no `NOTION_API_KEY`), and the
+evaluation golden set correspondingly has no Notion questions — see the
+Sprint 6 and Sprint 9 closing notes.
+
+## Architecture
+
+```mermaid
+graph TD
+    subgraph Host["Host machine"]
+        Ollama["Native Ollama<br/>(generation + embedding)"]
+        UI["Streamlit UI<br/>(.venv-ui, make ui)"]
+        DocsFolder["./data/documents<br/>(bind-mounted)"]
+    end
+
+    subgraph Compose["docker compose"]
+        Backend["FastAPI backend<br/>app.server:app"]
+        Scheduler["SyncScheduler<br/>(periodic, per-connector interval)"]
+        Manager["SyncManager"]
+        Connectors["Connectors<br/>(filesystem, notion)"]
+        Registry[("registry.db<br/>documents + sync_runs<br/>named volume")]
+        Qdrant[("Qdrant<br/>hybrid dense+sparse index")]
+        Jaeger["Jaeger<br/>(OTLP traces)"]
+    end
+
+    UI -->|"POST /chat, /sync/*, GET /sources"| Backend
+    Backend -->|"embed + generate"| Ollama
+    Backend -->|"hybrid search"| Qdrant
+    Backend -->|"OTLP spans"| Jaeger
+    Backend -. "starts on boot (lifespan)" .-> Scheduler
+    Scheduler --> Manager
+    Manager --> Connectors
+    Manager --> Registry
+    Manager --> Qdrant
+    Connectors --> DocsFolder
+```
+
+## Quick start (Docker Compose)
+
+Requires a native [Ollama](https://ollama.com) install — Docker Desktop on
+macOS has no Metal GPU passthrough, so Ollama runs on the host and the
+backend container reaches it via `host.docker.internal`, not in a
+container.
+
+```bash
+ollama pull qwen2.5:7b-instruct
+ollama pull nomic-embed-text
+docker compose up -d --build   # Qdrant + Jaeger + backend
+```
+
+`NOTION_API_KEY` is optional — set it in a repo-root `.env` (read by
+Docker Compose for variable substitution) before `up` only if the Notion
+connector should actually run; leave it unset and `filesystem` is the only
+active connector, same as running on bare Python.
+
+Drop real files into `./data/documents/` (bind-mounted into the
+container), then either wait for the next scheduled sync or trigger one
+now:
+
+```bash
+curl -X POST http://localhost:8000/sync/filesystem
+curl http://localhost:8000/health/ollama   # proves the container can reach native Ollama
+```
+
+The registry/sync-history SQLite file lives in a named volume
+(`registry_data`) — it survives `docker compose restart`/`stop`+`start`;
+only `docker compose down -v` wipes it (genuinely fresh install).
 
 ## LLM providers
 
@@ -101,25 +167,26 @@ backend's venv:
 ```bash
 python3.12 -m venv .venv-ui
 .venv-ui/bin/pip install -r requirements-ui.txt
-make dev   # real backend: uvicorn app.server:app
-make ui    # streamlit, in a second terminal
+make ui    # streamlit — points at BACKEND_URL (default http://localhost:8000)
 ```
 
-The UI is a pure HTTP client — it never imports backend code directly, only
-`POST /chat`, `GET/POST /sync/...`, `GET /sources`, and Jaeger's own HTTP
-API.
+It works against either backend: the containerized one (`docker compose up`,
+above) or a host-run one (`make dev`, below) — it's a pure HTTP client,
+never importing backend code directly, only `POST /chat`, `GET/POST
+/sync/...`, `GET /sources`, and Jaeger's own HTTP API.
 
-## Getting started
+## Development setup (host venv, for running tests)
 
 Requires Python 3.11+ and a native [Ollama](https://ollama.com) install
-(runs on the host, not in Docker — no Metal GPU passthrough on macOS).
+(same host-only reasoning as the Docker Compose setup above).
 
 ```bash
 python3.12 -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt
-docker compose up -d   # Qdrant + Jaeger
+docker compose up -d qdrant jaeger   # just the two stateless services
 ollama pull qwen2.5:7b-instruct
 ollama pull nomic-embed-text
+make dev   # real backend on the host: uvicorn app.server:app --reload
 ```
 
 Run the test suite:

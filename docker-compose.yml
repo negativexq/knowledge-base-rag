@@ -20,5 +20,56 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
     restart: unless-stopped
 
+  backend:
+    build: .
+    container_name: kb-rag-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Ollama stays native on the host (Metal GPU passthrough isn't
+      # available to Docker Desktop on macOS, see docs/sprint-11-plan.md)
+      # — reached from the container via host.docker.internal. qdrant/
+      # jaeger use their in-compose service names, not localhost.
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - QDRANT_URL=http://qdrant:6333
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      # LocalFilesystemConnector's scan root is bind-mounted separately
+      # from the registry_data named volume below (non-overlapping mount
+      # points — see docs/sprint-11-plan.md for why).
+      - FILESYSTEM_ROOT_PATH=documents
+      # Optional — unset means the Notion connector simply isn't wired in
+      # (app/wiring.py::build_connectors), same as running on the host.
+      - NOTION_API_KEY=${NOTION_API_KEY:-}
+    extra_hosts:
+      # host.docker.internal resolves natively on Docker Desktop (macOS);
+      # this makes the same compose file work on Linux hosts too.
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Registry + sync-history SQLite file (Sprint 2/7) — opaque runtime
+      # state, not something a user edits directly, so a named volume
+      # rather than a bind mount (matches qdrant_storage's precedent).
+      # Survives `docker compose restart`/`stop`+`start`; only removed by
+      # `down -v`.
+      - registry_data:/app/data
+      # User-facing folder people drop real files into — a bind mount so
+      # host-side edits are visible immediately, no volume indirection.
+      - ./data/documents:/app/documents
+      # Cross-encoder/sparse-encoder models download from HuggingFace on
+      # first use (~9s+, see Sprint 5/8) — cached so `down`+`up` doesn't
+      # re-download every time.
+      - hf_cache:/root/.cache/huggingface
+    depends_on:
+      - qdrant
+      - jaeger
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
 volumes:
   qdrant_storage:
+  registry_data:
+  hf_cache:

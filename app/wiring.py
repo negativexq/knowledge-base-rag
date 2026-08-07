@@ -20,6 +20,7 @@ from app.shared.config import Settings
 from app.shared.tracing import setup_tracing
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
+from app.sync.scheduler import SyncScheduler, sync_intervals_from_settings
 
 
 def build_connectors(settings: Settings) -> dict[str, Connector]:
@@ -106,5 +107,13 @@ def build_app(settings: Settings) -> FastAPI:
         sparse_encoder=sparse_encoder,
     )
     chat_deps = build_chat_dependencies(settings, qdrant_client, ollama, sparse_encoder)
+    scheduler = SyncScheduler(manager, sync_intervals_from_settings(settings))
 
-    return create_app(manager, history, registry, chat_deps=chat_deps)
+    return create_app(
+        manager,
+        history,
+        registry,
+        chat_deps=chat_deps,
+        list_ollama_models=ollama.list_models,
+        scheduler=scheduler,
+    )

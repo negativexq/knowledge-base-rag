@@ -537,6 +537,111 @@ Scope:
 
 DoD: sıfırdan kurulum (`docker compose down -v` + `up`) uçtan uca çalışıyor, gerçekten test edilmiş.
 
+### Kapanış notu
+
+**Registry DB kararı: SQLite dosyası kaldı, ek container gerekmedi** — plan
+metnindeki açık soru buydu. PostgreSQL'e geçiş için gerçek bir gerekçe
+(çoklu backend replikası, eşzamanlı yazma yükü) bu projede hiç ortaya
+çıkmadı; SQLite dosyası tek backend container'ı içinde `check_same_thread=False`
+ile zaten sorunsuz çalışıyordu (Sprint 2/7). Karar: dosya olarak kaldı,
+sadece NEREDE yaşayacağı (volume stratejisi) bu sprintin gerçek işiydi.
+
+**Volume stratejisi — iki farklı veri, iki farklı mount türü, gerekçeyle:**
+
+1. **`registry_data` (named volume) → `/app/data`.** `registry.db`
+   (documents + sync_runs tabloları, Sprint 2/7) opak çalışma zamanı
+   durumu — kullanıcı doğrudan düzenlemiyor. `qdrant_storage`'ın zaten
+   kurduğu named-volume presedansıyla tutarlı; container'ın sahip olduğu
+   bir dosya için host-OS izin uyuşmazlığı riski taşıyan bir bind mount'tan
+   kaçınıldı.
+2. **Bind mount → `/app/documents`.** `data/documents/` (Sprint 10'un
+   `LocalFilesystemConnector` tarama kökü) kullanıcının host'tan gerçek
+   dosya bıraktığı bir klasör — bind mount, host değişikliklerinin anında
+   görünmesini sağlıyor. `FILESYSTEM_ROOT_PATH=documents` (container
+   içinde `/app/documents`'a karşılık gelir) `registry_data`'nın
+   mount noktasıyla (`/app/data`) KASITLI olarak ÇAKIŞMAYAN bir yola
+   ayarlandı — iki volume'ün iç içe geçen mount noktalarına güvenmek
+   yerine, en baştan kardeş (sibling) yollar seçildi.
+3. **`hf_cache` (named volume) → `/root/.cache/huggingface`** —
+   production-rag-platform'un aynı deseni, cross-encoder/sparse-encoder
+   modellerinin her `down`+`up`'ta yeniden indirilmesini önlüyor.
+
+**İkisi de GERÇEKTEN test edildi, varsayılmadı:**
+
+- **Sıfırdan kurulum**: `docker compose down -v` (TÜM volume'lar dahil
+  silindi) + `docker compose up -d --build`. Image ~12 saniyede `healthy`
+  oldu. `GET /health/ollama` GERÇEKTEN çağrıldı — container'ın
+  `host.docker.internal` üzerinden native Ollama'ya GERÇEKTEN ulaştığı
+  (Sprint 0'dan beri hiç test edilmemiş bir varsayımdı) tam model
+  listesiyle (`qwen2.5:7b-instruct, nomic-embed-text:latest,
+  qwen2.5:3b-instruct, gemma2:2b`) kanıtlandı. Sonra `data/documents/`'a
+  gerçek bir Markdown dosyası kondu, `POST /sync/filesystem` container'a
+  karşı GERÇEKTEN çağrıldı (`files_processed=1, chunks_upserted=2`), ve
+  gerçek bir `/chat` isteği (`Nimbus CLI nasıl kurulur?`) doğru citation'la
+  (`[s.filesystem:nimbus_cli_md/Kurulum]`) ve `grounded: true` ile
+  streaming cevap verdi — tüm pipeline (embed → retrieve → rerank →
+  generate, container'dan native Ollama'ya) uçtan uca çalıştı.
+- **Restart kalıcılığı**: 6 sync run'ı (1 manuel + zamanlanmış — aşağıya
+  bakın) kaydedildikten sonra `docker compose restart backend` çalıştırıldı.
+  Container yeniden `healthy` olduktan sonra `GET
+  /sync/filesystem/history` AYNI 6 run'ı, aynı `id`'lerle (`[6,5,4,3,2,1]`)
+  döndü — `registry_data` named volume'unun kalıcılığı doğrudan
+  kanıtlandı, sadece compose dosyasında volume'un VAR OLDUĞU değil.
+
+**Scheduler'ın container'da GERÇEKTEN otomatik başladığı kanıtlandı**
+(sadece kod incelemesiyle değil): `app/main.py::create_app()` opsiyonel
+bir `scheduler` parametresi kazandı — verildiğinde FastAPI'nin native
+`lifespan` mekanizmasıyla (`asynccontextmanager`) `scheduler.start()`
+başlangıçta, `await scheduler.stop()` kapanışta çağrılıyor. Mevcut TÜM
+testler `scheduler=None` geçtiği için hiçbiri gerçek bir arka plan
+asyncio döngüsü çalıştırmıyor (`test_app_lifespan.py`, sahte bir
+`_SpyScheduler` ile `TestClient`'ı context manager olarak kullanarak
+GERÇEK lifespan event'lerini tetikliyor ve `start()`/`stop()`'un
+GERÇEKTEN çağrıldığını doğruluyor). Gerçek container'da da ayrıca
+doğrulandı: `FILESYSTEM_SYNC_INTERVAL_SECONDS=5` ile geçici bir ikinci
+container başlatıldı (aynı `registry_data`/`qdrant` ağına bağlı), HİÇBİR
+manuel API çağrısı yapılmadan `trigger=scheduled` bir sync run'ının
+GERÇEKTEN kendiliğinden belirdiği `GET /sync/filesystem/history`'de
+görüldü — `app/wiring.py::build_app()`'ın `SyncScheduler`'ı gerçekten
+inşa edip `create_app()`'e geçirdiği, sadece kodda yazılı durmadığı
+kanıtlandı.
+
+**CUDA/torch önlemi burada da uygulandı** — bu projenin
+`app/reranker/cross_encoder.py`'si production-rag-platform'un aynı
+`sentence-transformers` kütüphanesini kullanıyor, aynı riski taşıyordu.
+`Dockerfile`'da CPU-only torch wheel'i `requirements.txt`'ten ÖNCE
+kuruldu (aynı fix, tekrar keşfedilmedi). Gerçekten doğrulandı:
+`docker exec kb-rag-backend python -c "import torch; print(torch.__version__)"`
+→ `2.13.0+cpu`, `torch.cuda.is_available()` → `False`. İmaj boyutu 2.3GB
+(CUDA wheel'i olsaydı ~2GB fazladan).
+
+**Yeni endpoint'ler: `/health` (canlılık) ve `/health/ollama` (gerçek
+bağlanabilirlik kontrolü)** — bu projede daha önce hiç yoktu, hiçbir
+deployment hedefi gerektirmemişti. `/health/ollama`, zaten var olan ama
+kullanılmayan `OllamaClient.list_models()`'ı yeniden kullanıyor.
+`docker-compose.yml`'in `healthcheck:`'i `/health`'i çağırıyor.
+
+**README'ye Mermaid mimari diyagramı ve tek-komutla kurulum bölümü
+eklendi** — registry/connector'lar/scheduler dahil güncel resmi
+gösteriyor; `NOTION_API_KEY`'in opsiyonel olduğu (yoksa sadece
+`filesystem` connector aktif) ve native Ollama'nın ön koşul olduğu açıkça
+belirtildi.
+
+**Kapsam dışı bırakılanlar (bilinçli, referans projeninkiyle aynı
+gerekçe):** `make ingest`/`app.evaluation.cli`/Streamlit UI container'a
+GİRMEDİ — host-side, isteğe bağlı araçlar (batch iş, manuel eval koşumu,
+zaten kendi venv'inden çalışan bir UI), container'a taşımak bu sprintin
+asıl DoD'si (sıfırdan kurulum + kalıcılık) için gereksiz mount/venv
+karmaşıklığı eklerdi.
+
+345 test yeşil (bu sprintte +6 yeni test — health endpoint'leri +
+lifespan wiring), 2'si servis gerektirdiği için skip (değişmedi), `ruff
+check` temiz, 3 ardışık çalıştırmada flakiness yok. Doğrulama sonrası
+container'lar, volume'lar ve build edilen image tamamen temizlendi
+(`docker compose down -v`, `docker image rm`).
+
+Proje Sprint 0'dan 11'e kadar plana göre tamamlandı.
+
 ## Sprint 12 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

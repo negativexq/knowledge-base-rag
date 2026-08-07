@@ -1,0 +1,17 @@
+.venv/
+.venv-ui/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.git/
+.env
+tests/
+docs/
+scripts/
+data/
+.deepeval/
+*.egg-info/
+.DS_Store
+.claude/
