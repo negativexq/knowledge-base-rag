@@ -8,6 +8,7 @@ from app.evaluation.generation_metrics import build_default_metrics, compute_gen
 from app.evaluation.harness import build_report, load_golden_set, run_evaluation
 from app.llm.generate import stream_answer
 from app.llm.ollama_client import OllamaClient
+from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
@@ -15,7 +16,10 @@ from app.shared.config import settings
 
 
 async def run_golden_set(
-    golden_set_path: str, generation_model: str, collection_name: str | None = None
+    golden_set_path: str,
+    generation_model: str,
+    collection_name: str | None = None,
+    use_reranker: bool = True,
 ) -> dict:
     """Real-component wiring for a golden-set run: real Ollama (embedding +
     generation), real Qdrant, real sparse encoder, real DeepEval judge.
@@ -23,6 +27,14 @@ async def run_golden_set(
     purpose — the two-phase harness's payoff (avoiding Ollama's
     model-swap-per-call cost) only shows up when generation and judging use
     different models, so the CLI defaults them differently.
+
+    Sprint 17.5: `use_reranker` defaults to True and wires in the same
+    `CrossEncoderReranker` app/wiring.py uses for the production chat path
+    (search(..., reranker=reranker)) — before this, the eval CLI measured
+    hybrid retrieval BEFORE reranking, a different pipeline than what a
+    real user's query actually goes through. `--no-reranker` (main() below)
+    sets this False for a pre-rerank retrieval-only benchmark instead. See
+    docs/sprint-17-5-plan.md.
     """
     questions = load_golden_set(golden_set_path)
     collection_name = collection_name or settings.qdrant_collection_name
@@ -30,6 +42,7 @@ async def run_golden_set(
     ollama = OllamaClient(base_url=settings.ollama_base_url)
     qdrant_client = QdrantClient(url=settings.qdrant_url)
     sparse_encoder = SparseEncoder()
+    reranker = CrossEncoderReranker() if use_reranker else None
     metrics = build_default_metrics(
         judge_model_name=settings.eval_judge_model, base_url=settings.ollama_base_url
     )
@@ -42,6 +55,7 @@ async def run_golden_set(
             qdrant_client,
             collection_name,
             settings.ollama_embed_model,
+            reranker=reranker,
         )
 
     async def generate_fn(question: str, chunks: list[SearchResult]) -> str:
@@ -82,10 +96,23 @@ def main() -> None:
         default=None,
         help="Qdrant collection to search (defaults to settings.qdrant_collection_name)",
     )
+    parser.add_argument(
+        "--no-reranker",
+        action="store_true",
+        help=(
+            "Skip CrossEncoderReranker and measure pre-rerank hybrid retrieval only. "
+            "Default (reranker ON) matches the production chat pipeline."
+        ),
+    )
     args = parser.parse_args()
 
     report = asyncio.run(
-        run_golden_set(args.golden_set, args.generation_model, collection_name=args.collection)
+        run_golden_set(
+            args.golden_set,
+            args.generation_model,
+            collection_name=args.collection,
+            use_reranker=not args.no_reranker,
+        )
     )
     print(json.dumps(report, indent=2))
 

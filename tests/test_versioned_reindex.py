@@ -435,9 +435,10 @@ async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(
 
 
 async def test_cancellation_rollback_failure_does_not_mask_the_original_cancelledError(tmp_path):
-    """Sprint 17.1: the CancelledError rollback block's own
-    store.delete_version(...) call had no error handling — if IT raised
-    (e.g. Qdrant unreachable mid-shutdown, a real possibility since the
+    """Sprint 17.1: the CancelledError rollback block's own rollback call
+    (store.delete_points(...) since Sprint 17.5) had no error handling —
+    if IT raised (e.g. Qdrant unreachable mid-shutdown, a real possibility
+    since the
     same shutdown sequence that triggered the cancellation may have
     already started tearing down connections), the new exception would
     propagate instead of the original CancelledError, and a caller
@@ -462,7 +463,7 @@ async def test_cancellation_rollback_failure_does_not_mask_the_original_cancelle
     (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(new_sentences))
 
     class _RollbackFailsStore(QdrantStore):
-        def delete_version(self, source_type, source_id, document_version):
+        def delete_points(self, point_ids):
             raise RuntimeError("simulated Qdrant failure during rollback itself")
 
     failing_store = _RollbackFailsStore(
@@ -494,3 +495,92 @@ async def test_cancellation_rollback_failure_does_not_mask_the_original_cancelle
     # RuntimeError — even though the rollback itself failed internally.
     with pytest.raises(asyncio.CancelledError):
         await task
+
+
+async def test_failed_reconciliation_repair_does_not_delete_previously_healthy_points(tmp_path):
+    """Sprint 17.5: the review's exact scenario. Sprint 16's rollback
+    (`store.delete_version(..., content_hash)`) assumed the try block it
+    guards always represents a real A->B version change, so no point
+    under the NEW content_hash could possibly be healthy before the
+    attempt starts. Sprint 17.2's reconciliation broke that assumption:
+    an UNCHANGED document (content_hash == the version already in
+    Qdrant) can re-enter this same try block when its index is detected
+    partial — meaning some points under that exact version are ALREADY
+    healthy. Pre-fix, a failed repair attempt's rollback deleted the
+    WHOLE version, including points that were never touched by this
+    attempt — a 7-healthy-out-of-8 document could be dropped to 0/8
+    searchable by a repair attempt that only ever failed to fix the 1
+    missing chunk.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    sentences = [f"Original sentence number {i} about apples." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(sentences))
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store("test_reconciliation_rollback_safety")
+    registry = _registry(tmp_path)
+
+    await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+    )
+    doc_hash = registry.get_document("filesystem", "doc_md").content_hash
+    healthy_points_before = [
+        p for p in _all_points(store, "test_reconciliation_rollback_safety")
+        if p.payload["source_id"] == "doc_md"
+    ]
+    total_chunk_count = len(healthy_points_before)
+    assert total_chunk_count >= 6  # sanity: enough chunks for a multi-batch repair
+
+    # Simulate real, external partial data loss (Sprint 17.2's whole
+    # premise): Qdrant loses one point, the registry's content_hash and
+    # chunk_count are untouched — a real drift scenario, not a
+    # hypothetical one.
+    store.delete_points([healthy_points_before[0].id])
+    points_after_loss = [
+        p for p in _all_points(store, "test_reconciliation_rollback_safety")
+        if p.payload["source_id"] == "doc_md"
+    ]
+    assert len(points_after_loss) == total_chunk_count - 1
+
+    call_count = 0
+
+    async def flaky_embed(text: str) -> list[float]:
+        nonlocal call_count
+        call_count += 1
+        # Let batch 1 (2 chunks) succeed, then fail partway through
+        # batch 2 — the repair re-embeds every chunk (content is
+        # unchanged, but a repair re-ingests the whole document), so
+        # this reliably fails after the index is already known partial.
+        if call_count > 3:
+            raise SimulatedEmbedFailure("simulated failure mid-repair")
+        return await _fake_embed(text)
+
+    try:
+        await ingest_connector(
+            connector, store, registry, flaky_embed, _FakeSparseEncoder(),
+            chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        )
+        raise AssertionError("expected the simulated embed failure to propagate")
+    except SimulatedEmbedFailure:
+        pass
+
+    # The core assertion: the failed repair must not have dropped the
+    # document below what it already had. Pre-fix, this was 0 — the
+    # buggy delete_version(..., doc_hash) rollback wiped the whole
+    # version, including the N-1 points that were never touched by this
+    # attempt.
+    points_after_failed_repair = [
+        p for p in _all_points(store, "test_reconciliation_rollback_safety")
+        if p.payload["source_id"] == "doc_md"
+    ]
+    assert len(points_after_failed_repair) == total_chunk_count - 1
+    surviving_ids = {p.id for p in points_after_failed_repair}
+    original_surviving_ids = {p.id for p in points_after_loss}
+    assert surviving_ids == original_surviving_ids
+
+    # Content is unchanged, so the registry's content_hash is untouched
+    # either way — this isn't what proves the fix, the point count above
+    # is.
+    assert registry.get_document("filesystem", "doc_md").content_hash == doc_hash

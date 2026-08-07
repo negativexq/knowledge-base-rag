@@ -372,6 +372,24 @@ async def ingest_connector(
                 # collection to "only the OLD version, nothing from the
                 # new one" for the whole document, not just its first
                 # batch.
+                #
+                # Sprint 17.5: that rollback assumed content_hash always
+                # names a version Qdrant has never seen before — true for
+                # a real A->B content change, but false since Sprint 17.2
+                # added reconciliation repair: an unchanged document
+                # (content_hash == the CURRENT version) can re-enter this
+                # same try block when its index is detected incomplete,
+                # meaning some points under this exact content_hash are
+                # ALREADY healthy before this attempt starts. A "before"
+                # snapshot of this version's point IDs lets rollback
+                # delete only what THIS attempt added (after - before)
+                # instead of wiping the whole version — see
+                # docs/sprint-17-5-plan.md. For a real A->B change this
+                # snapshot is always empty, so rollback behavior there is
+                # unchanged.
+                points_before_attempt = store.list_point_ids_for_version(
+                    connector.source_type, document.source_id, document_version=content_hash
+                )
                 try:
                     for batch_start in range(0, len(chunks), upsert_batch_size):
                         batch = chunks[batch_start : batch_start + upsert_batch_size]
@@ -419,12 +437,19 @@ async def ingest_connector(
                         # the ORIGINAL cancellation, not a rollback
                         # failure.
                         try:
-                            store.delete_version(
-                                connector.source_type, document.source_id, content_hash
+                            points_after_attempt = store.list_point_ids_for_version(
+                                connector.source_type,
+                                document.source_id,
+                                document_version=content_hash,
                             )
+                            added_by_this_attempt = points_after_attempt - points_before_attempt
+                            span.set_attribute(
+                                "rollback.points_deleted", len(added_by_this_attempt)
+                            )
+                            store.delete_points(list(added_by_this_attempt))
                         except Exception:
                             logger.exception(
-                                "rollback delete_version failed during cancellation for "
+                                "rollback delete_points failed during cancellation for "
                                 "%s:%s — original CancelledError still propagates",
                                 connector.source_type,
                                 document.source_id,
@@ -435,9 +460,12 @@ async def ingest_connector(
                         span.set_attribute("rollback.source_id", document.source_id)
                         span.set_attribute("rollback.document_version", content_hash)
                         span.set_attribute("rollback.reason", "error")
-                        store.delete_version(
-                            connector.source_type, document.source_id, content_hash
+                        points_after_attempt = store.list_point_ids_for_version(
+                            connector.source_type, document.source_id, document_version=content_hash
                         )
+                        added_by_this_attempt = points_after_attempt - points_before_attempt
+                        span.set_attribute("rollback.points_deleted", len(added_by_this_attempt))
+                        store.delete_points(list(added_by_this_attempt))
                     raise
 
                 doc_span.set_attribute("ingest.chunk_count", len(chunks))

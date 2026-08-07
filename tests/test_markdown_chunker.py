@@ -122,3 +122,33 @@ def test_chunk_markdown_document_delegates_to_chunk_markdown_text(tmp_path):
     )
 
     assert via_document == via_text
+
+
+def test_repeated_heading_path_produces_chunks_with_distinct_occurrence_and_no_text_bleed():
+    """Sprint 17.5: before the fix, `surrogate_by_heading` was keyed only
+    by heading_path, so a second, independent "# Overview" section reused
+    the FIRST occurrence's surrogate — its paragraphs were appended onto
+    the same "page" as the first occurrence's, merging two unrelated
+    sections' text into one chunking pass and making their citation
+    identity indistinguishable.
+    """
+    text = (
+        "# Overview\n\nFirst overview text about apples.\n\n"
+        "# Other\n\nUnrelated middle section.\n\n"
+        "# Overview\n\nSecond overview text about oranges."
+    )
+
+    chunks = chunk_markdown_text(text, source_id="doc", source_type="markdown", doc_id="h")
+
+    overview_chunks = [c for c in chunks if c.heading_path == ("Overview",)]
+    assert len(overview_chunks) == 2
+    first, second = sorted(overview_chunks, key=lambda c: c.heading_occurrence)
+
+    assert first.heading_occurrence == 0
+    assert second.heading_occurrence == 1
+    # No text bleed: each occurrence's chunk only contains its own text.
+    assert "apples" in first.text and "oranges" not in first.text
+    assert "oranges" in second.text and "apples" not in second.text
+    # Different surrogate "page" -> different page_number -> different
+    # point_id_for(...) identity even though heading_path is identical.
+    assert first.page_number != second.page_number

@@ -194,6 +194,43 @@ async def test_cancellation_recording_failure_does_not_mask_the_original_cancell
 
 
 @pytest.mark.asyncio
+async def test_start_run_failure_does_not_leave_is_running_stuck_true(tmp_path):
+    """Sprint 17.5: start_run() (a SQLite INSERT) used to run BEFORE the
+    try block, with `self._running[source_type] = True` already set. If
+    start_run itself raised, the exception propagated straight past the
+    try/finally below it (never entered), so `finally: self._running[...]
+    = False` never ran — the connector was locked out (every future
+    trigger_sync sees STATUS_REJECTED) until the process restarted.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "readme.md").write_text("# A\n\nSome content.")
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _CountingStore(client=QdrantClient(":memory:"), collection_name=COLLECTION)
+    registry = DocumentRegistry(tmp_path / "registry.db")
+
+    class _StartRunFailsHistory(SyncHistory):
+        def start_run(self, *args, **kwargs):
+            raise RuntimeError("simulated sqlite failure during start_run")
+
+    history = _StartRunFailsHistory(tmp_path / "registry.db")
+    manager = SyncManager(
+        connectors={"filesystem": connector},
+        store=store,
+        registry=registry,
+        history=history,
+        embed_fn=_fast_embed_fn(),
+        sparse_encoder=_FakeSparseEncoder(),
+    )
+
+    assert manager.is_running("filesystem") is False
+    with pytest.raises(RuntimeError, match="simulated sqlite failure"):
+        await manager.trigger_sync("filesystem", TRIGGER_MANUAL)
+
+    assert manager.is_running("filesystem") is False
+
+
+@pytest.mark.asyncio
 async def test_is_running_reflects_current_state(tmp_path):
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()

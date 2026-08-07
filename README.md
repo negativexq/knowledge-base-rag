@@ -501,11 +501,27 @@ check of the code/tests where noted.
   `tests/test_provider_comparison_e2e.py` auto-skips. This is "the test
   never ran," not "no difference was found" — the comparison stays an
   open question.
-- **PDF retrieval recall is measurably weaker than Markdown's** in the
-  Sprint 9 golden-set run (0.429 vs. 1.0, 12 real questions) — the root
-  cause (page-level chunk granularity vs. Markdown's heading-scoped
-  blocks giving the retriever a harder or easier target?) was observed
-  but not investigated further.
+- **PDF retrieval recall is measurably weaker than Markdown's, and the
+  reranker makes it WORSE, not better.** The eval CLI (`app.evaluation.cli`)
+  used to measure hybrid retrieval BEFORE reranking — a different
+  pipeline than what a real chat query actually goes through
+  (`app/wiring.py` always passes a `CrossEncoderReranker` to `search()`).
+  Sprint 17.5 wired the same reranker into the CLI (default ON, matching
+  production; `--no-reranker` opt-out for the old pre-rerank
+  measurement) and re-ran the 12-question golden set against real
+  Ollama+Qdrant. Pre-rerank numbers reproduced the original Sprint 9
+  result almost exactly (PDF recall 0.429, Markdown 1.0 — the
+  methodology is stable). With the reranker on — the number that
+  actually reflects what a user sees — PDF recall dropped further, to
+  0.143 (Markdown stayed at 1.0). `cross-encoder/ms-marco-MiniLM-L-6-v2`
+  is an English-trained model scoring Turkish-language query/chunk pairs
+  (the golden set is Turkish); a plausible cause, not confirmed by
+  further investigation, same disclosure standard as the still-open root
+  cause below.
+- **The root cause of PDF's weaker retrieval** (page-level chunk
+  granularity vs. Markdown's heading-scoped blocks giving the retriever
+  a harder or easier target?) was observed in Sprint 9 but not
+  investigated further.
 - **No `WebConnector` exists** — only the web page parser
   (`app/parsing/web_parser.py`, `trafilatura`) and its chunker are built
   and tested against a real HTML fixture (Sprint 6). There's no

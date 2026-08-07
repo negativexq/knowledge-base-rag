@@ -89,3 +89,32 @@ def test_empty_document_produces_no_blocks():
 
 def test_blank_only_document_produces_no_blocks():
     assert extract_blocks("\n\n   \n\n") == []
+
+
+def test_repeated_heading_path_gets_distinct_occurrence_numbers():
+    """Sprint 17.5: the same heading_path (here "Overview", reached via
+    two separate, non-adjacent H1 sections) used to be indistinguishable
+    — block_index restarted at 0 for the second occurrence just like the
+    first, with nothing marking them as different sections.
+    """
+    text = (
+        "# Overview\n\nFirst overview text.\n\n"
+        "# Other\n\nUnrelated.\n\n"
+        "# Overview\n\nSecond overview text."
+    )
+
+    blocks = extract_blocks(text)
+
+    assert [(b.heading_path, b.heading_occurrence, b.text) for b in blocks] == [
+        (("Overview",), 0, "First overview text."),
+        (("Other",), 0, "Unrelated."),
+        (("Overview",), 1, "Second overview text."),
+    ]
+
+
+def test_non_repeated_headings_keep_occurrence_zero():
+    text = "# A\n\nFirst.\n\n# B\n\nSecond."
+
+    blocks = extract_blocks(text)
+
+    assert all(b.heading_occurrence == 0 for b in blocks)

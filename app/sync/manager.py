@@ -100,8 +100,20 @@ class SyncManager:
                 )
 
             self._running[source_type] = True
-            run_id = self._history.start_run(source_type, trigger, trace_id=trace_id)
+            run_id: str | None = None
             try:
+                # Sprint 17.5: start_run (a SQLite INSERT) used to run
+                # OUTSIDE this try block, with `self._running[source_type]
+                # = True` already set above it. If start_run itself
+                # raised, nothing caught it — the `finally` below never
+                # ran (it belongs to this try, which was never entered),
+                # leaving _running stuck True forever, indistinguishable
+                # from a real in-progress sync. Moving it inside means a
+                # start_run failure now takes the same `except Exception`
+                # path as any other failure, so `finally` always resets
+                # _running regardless of where the failure came from. See
+                # docs/sprint-17-5-plan.md.
+                run_id = self._history.start_run(source_type, trigger, trace_id=trace_id)
                 stats = await ingest_connector(
                     self._connectors[source_type],
                     self._store,
@@ -125,19 +137,31 @@ class SyncManager:
                 # triggered this cancellation may already be tearing
                 # down the sqlite connection). Log it, but never let it
                 # replace the CancelledError the caller needs to see.
-                try:
-                    self._history.finish_run(
-                        run_id, status=STATUS_CANCELLED, error_message="Sync was cancelled"
-                    )
-                except Exception:
-                    logger.exception(
-                        "finish_run(status=cancelled) failed for run_id=%s — original "
-                        "CancelledError still propagates",
-                        run_id,
-                    )
+                # Sprint 17.5: run_id can now be None (start_run itself
+                # was cancelled before ever returning) — nothing was
+                # recorded as started, so there's nothing to finish.
+                if run_id is not None:
+                    try:
+                        self._history.finish_run(
+                            run_id, status=STATUS_CANCELLED, error_message="Sync was cancelled"
+                        )
+                    except Exception:
+                        logger.exception(
+                            "finish_run(status=cancelled) failed for run_id=%s — original "
+                            "CancelledError still propagates",
+                            run_id,
+                        )
                 raise
             except Exception as exc:
                 span.set_attribute("sync.status", STATUS_ERROR)
+                # Sprint 17.5: run_id is None only when start_run itself
+                # raised exc — there's no run row to finish, and the
+                # caller needs to see this failure directly rather than
+                # a swallowed SyncRunResult(status=ERROR), since (unlike
+                # an ingest_connector failure) it isn't a normal "the
+                # sync ran and failed" outcome.
+                if run_id is None:
+                    raise
                 self._history.finish_run(run_id, status=STATUS_ERROR, error_message=str(exc))
                 return SyncRunResult(
                     source_type=source_type,

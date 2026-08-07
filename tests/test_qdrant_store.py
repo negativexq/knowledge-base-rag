@@ -294,6 +294,7 @@ def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
         "char_range": list(chunk.char_range),
         "text": chunk.text,
         "heading_path": list(chunk.heading_path),
+        "heading_occurrence": chunk.heading_occurrence,
         "document_version": chunk.document_version,
     }
 

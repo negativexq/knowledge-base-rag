@@ -1701,6 +1701,185 @@ hardening sprint'i PLANLANMIYOR. Sprint 18 (Confluence connector) hâlâ
 "stretch" olarak listeleniyor ama zorunlu değil ve bu proje bağlamında
 aktif olarak beklenmiyor.
 
+## Sprint 17.5 — Reconciliation Rollback Safety & Eval Parity — GERÇEKTEN SON sprint
+
+Amaç: Sekizinci bir dış kod review'ından çıkan, reconciliation+rollback
+etkileşiminden doğan gerçek bir regresyonu ve üç başka önemli bulguyu
+kapatmak. Bkz. docs/sprint-17-5-plan.md.
+
+Scope:
+
+1. Reconciliation rollback sağlam point'leri silebiliyor (EN KRİTİK)
+2. `SyncManager.start_run()` try/finally dışında — SQLite hatasında kilitleniyor
+3. Eval/production parity — CLI production'ın CrossEncoderReranker'ını kullanmıyordu
+4. Tekrarlanan Markdown heading identity çakışması
+
+DoD: başarısız bir reconciliation repair'i artık önceden sağlam olan
+point'leri silmiyor (kanıtlanmış); SyncManager SQLite hatasında
+kilitlenmiyor; eval production'la aynı pipeline'ı ölçüyor, sayılar
+güncellenmiş; tekrarlanan heading'ler ayrı citation identity'sine sahip;
+testler ve lint temiz.
+
+### Kapanış notu
+
+**1. Reconciliation rollback'in sağlam point'leri sildiği bug GERÇEKTEN
+reprodüklendi, sonra düzeltildi.** `app/ingestion/ingest.py`'deki
+rollback (Sprint 16), `store.delete_version(..., content_hash)` çağrısıyla
+try bloğuna giren content_hash'e ait TÜM point'leri siliyordu — bu, try
+bloğunun her zaman gerçek bir A→B version değişiklikliği temsil ettiği
+(yani o content_hash'e ait Qdrant'ta önceden HİÇBİR sağlam point
+olmadığı) varsayımına dayanıyordu. Sprint 17.2'nin reconciliation'ı bu
+varsayımı sessizce bozdu: content DEĞİŞMEMİŞKEN de (`content_hash` =
+Qdrant'taki MEVCUT version) index eksik/bozuk tespit edilirse aynı try
+bloğuna bir "repair" denemesiyle girilebiliyor — bu durumda try'a giren
+version'ın bir kısmı ZATEN sağlam. Review'ın verdiği senaryo GERÇEKTEN
+kuruldu: gerçek bir doküman (12 chunk) normal ingest edildi, Qdrant'tan
+DOĞRUDAN 1 point silindi (11/12 sağlam, registry hâlâ eski chunk_count=12
+diyor), bir sonraki sync repair denemesi başlattı, batch 2'de simüle
+edilmiş bir embed hatası fırlatıldı. Fix'ten ÖNCE (kod geçici olarak
+geri alınıp doğrulandı): rollback `delete_version` çağırdı, kalan point
+sayısı 0'a düştü — 11 sağlam point de silindi, `assert 0 == 11` ile
+GERÇEKTEN fail etti. Fix: try bloğuna girmeden hemen önce
+`store.list_point_ids_for_version(...)` ile bir "before" snapshot
+alınıyor; rollback tetiklenirse (`CancelledError` ve `Exception` her iki
+branch'te de) "after" point ID'leri tekrar okunuyor, `after - before`
+farkı (yani SADECE bu denemenin eklediği point'ler)
+`store.delete_points(...)` ile siliniyor — `delete_version` artık
+rollback'te hiç çağrılmıyor. Fix sonrası aynı senaryo: rollback sonrası
+kalan point sayısı hâlâ 11 (0 değil), hangi point'lerin hayatta kaldığı
+(ID bazında) tam olarak kayıptan ÖNCEKİ 11 ile birebir aynı. Normal A→B
+senaryosu (yeni içerik) için "before" snapshot boş küme olduğundan
+(`after - {} == after`) davranış değişmedi — Sprint 16'nın orijinal
+multi-batch rollback testi hâlâ yeşil.
+
+**2. `SyncManager.start_run()` fix'i, gerçek bir kilitlenme senaryosuyla
+kanıtlandı.** `start_run()` (bir SQLite INSERT) `try:` bloğunun DIŞINDA
+çalışıyordu, ama `self._running[source_type] = True` zaten atanmıştı —
+`start_run` hata fırlatırsa hiçbir `except`/`finally` çalışmıyordu,
+`_running` sonsuza kadar `True` kalıyordu. Fix ÖNCESİ test (sahte bir
+`start_run` her zaman `RuntimeError` fırlatıyor) GERÇEKTEN
+`manager.is_running("filesystem") is True` ile fail etti (beklenen
+`False`). Fix: `run_id: str | None = None` başlangıcıyla `start_run(...)`
+çağrısı `try:` bloğunun İLK satırına taşındı; `except Exception`
+branch'i artık `run_id is None` olduğunda (yani `start_run`'ın kendisi
+patladığında) `finish_run` çağırmadan doğrudan `raise` ediyor —
+`ingest_connector` hatası için olan "swallow edip
+`SyncRunResult(status=ERROR)` dön" davranışından kasıtlı olarak farklı,
+çünkü kaydedilecek bir run_id yok. `except CancelledError` branch'i de
+aynı `run_id is not None` koruması eklendi. Fix sonrası: exception
+gerçekten yukarı veriliyor (`pytest.raises(RuntimeError)`) VE
+`is_running("filesystem")` hemen `False` (finally her zaman çalışıyor).
+
+**3. Eval/production parity — CrossEncoderReranker eklendi, golden set
+GERÇEK Ollama+Qdrant'a karşı yeniden ölçüldü.** `app/evaluation/cli.py`,
+`search()`'i `reranker=` parametresi vermeden çağırıyordu — production
+chat path'inin (`app/wiring.py`, her zaman bir `CrossEncoderReranker`
+geçiriyor) ÖLÇMEDİĞİ bir pipeline'ı ölçüyordu. Fix: `run_golden_set`'e
+`use_reranker: bool = True` parametresi eklendi (varsayılan production'la
+eşleşiyor), CLI'ye `--no-reranker` bayrağı (eski pre-rerank ölçüm modu
+için) eklendi. Golden set (12 soru, `tests/fixtures/golden_set.json`,
+aynı `qwen2.5:3b-instruct` generation + `qwen2.5:7b-instruct` judge
+kurulumu, gerçek native Ollama + docker-compose Qdrant'a karşı) YENİDEN
+koşuldu:
+
+```
+                    pre-rerank (--no-reranker)   reranked (varsayılan, production-parity)
+mean_recall (all)   0.667                        0.500
+mean_precision      0.133                        0.100
+markdown recall     1.0                          1.0
+markdown precision  0.2                           0.2
+pdf recall          0.429                         0.143
+pdf precision       0.086                         0.029
+```
+
+Pre-rerank sütunu Sprint 9'un ORİJİNAL sayılarını neredeyse birebir
+tekrarladı (PDF recall 0.429, Markdown recall 1.0) — golden set
+metodolojisinin kararlı olduğunu doğruluyor. Reranked sütun (artık
+kullanıcının GERÇEKTEN gördüğü pipeline) PDF recall'ını DAHA DA
+DÜŞÜRDÜ (0.429 → 0.143) — reranker'ın PDF retrieval'ı İYİLEŞTİRMEK
+yerine KÖTÜLEŞTİRDİĞİ gerçek, ölçülmüş bir bulgu. Olası neden (ayrıca
+araştırılmadı, sadece gözlemlendi — Sprint 9'un kendi "root cause
+araştırılmadı" ifşasıyla aynı standart): `cross-encoder/ms-marco-MiniLM-
+L-6-v2` İngilizce eğitilmiş bir model, golden set Türkçe soru/chunk
+çiftleri içeriyor. README güncellendi — sayılar iyileşmedi, olduğu gibi
+raporlandı.
+
+**Not: ilk koşum yanlış dosya adlarıyla yapılmış, GERÇEKTEN yanlış
+sonuç üretti, kendi kendine yakalandı.** Golden set'i yeniden ingest
+ederken kaynak dosyalar yanlışlıkla `handbook.pdf`/`cli.md` olarak
+adlandırıldı (`nimbus_handbook.pdf`/`nimbus_cli.md` yerine) —
+`LocalFilesystemConnector`'ın slugify'ı farklı `source_id`'ler üretti
+(`handbook_pdf` vs. golden_set.json'ın beklediği `nimbus_handbook_pdf`),
+bu da TÜM sorularda `mean_recall=0.0`/`mean_precision=0.0` ile
+sonuçlandı. Bu, gerçek sayıları raporlamadan önce fark edildi (0.0'ın
+"reranker her şeyi mahvetti" değil bir kurulum hatası olduğu, doğru
+dosya adlarıyla yeniden ingest edilip location'ların
+`nimbus_handbook_pdf`/`nimbus_cli_md` ile eşleştiği doğrudan Qdrant
+`scroll` + `location_for()` ile doğrulanarak anlaşıldı), düzeltilip
+koşum tekrarlandı — yukarıdaki tablo düzeltilmiş, doğrulanmış sonuç.
+
+**4. Tekrarlanan Markdown heading identity çakışması, gerçek text-bleed
+kanıtıyla düzeltildi.** `app/parsing/markdown_parser.py::extract_blocks`,
+`block_counts`'u sadece `heading_path`'e göre anahtarlıyordu —
+`app/ingestion/markdown_chunker.py::chunk_markdown_text`'teki
+`surrogate_by_heading` de aynı şekilde. Aynı heading_path'in (örn. iki
+ayrı "# Overview" section'ı) bir dokümanda birden fazla kez geçmesi,
+İKİNCİ occurrence'ın paragraflarının BİRİNCİ occurrence'ın surrogate
+"sayfası" altına eklenmesine yol açıyordu — iki bağımsız section'ın
+metni TEK bir chunking geçişinde birleşiyordu. Test GERÇEKTEN bunu
+kanıtladı (fix öncesi, geçici geri alma ile): iki "# Overview"
+section'ı (aralarında farklı bir heading) tek bir chunk'a
+birleşiyordu (`len(overview_chunks) == 1`, beklenen 2), ikinci
+occurrence'ın metni ("oranges") birincinin chunk'ının İÇİNDE
+bulunuyordu. Fix: `MarkdownBlock`'a `heading_occurrence: int` eklendi
+(`extract_blocks`, her heading satırında bu path için bir occurrence
+sayacı artırıyor); `Chunk`'a da aynı alan eklendi; `surrogate_by_heading`
+artık `(heading_path, heading_occurrence)` ile anahtarlanıyor — iki
+occurrence artık AYRI surrogate'ler, AYRI chunk'lar, farklı
+`page_number`'lar (dolayısıyla `point_id_for`'da otomatik olarak farklı
+point ID'ler — `point_id_for` zaten `page_number`'ı kullanıyor).
+İnsan-okunur citation label'ı (`app/llm/prompt.py::_human_label`)
+DEĞİŞMEDİ — hâlâ düz heading path gösteriyor. İnternal citation
+LOCATION'ı (`app/llm/citation_location.py::location_for`) occurrence
+sıfırdan büyükse "#N" son eki ekliyor (örn. ikinci "Overview" →
+"Overview#2") — tekrarlamayan (yaygın durum) heading'ler İÇİN LOCATION
+STRING'İ HİÇ DEĞİŞMEDİ, `heading_occurrence` payload'ta yoksa bile
+(`payload.get("heading_occurrence") or 0`, eski point'lerle geriye
+dönük uyumlu).
+
+**435 test yeşil** (bu sprintte +9 yeni test:
+`tests/test_versioned_reindex.py` +1 — reconciliation rollback
+point-safety senaryosu (review'ın verdiği tam senaryo); mevcut
+cancellation-rollback-failure testi `delete_version` yerine
+`delete_points`'i mock'layacak şekilde güncellendi; `tests/test_sync_manager.py`
++1 — start_run hatası kilitlenmiyor; `tests/test_markdown_parser.py` +2
+— occurrence numaralandırma, normal heading'lerin occurrence=0 kalması;
+`tests/test_markdown_chunker.py` +1 — text-bleed olmadan ayrı occurrence
+chunk'ları; `tests/test_citation_location.py` (yeni dosya) +4 — PDF
+fallback, normal heading, ilk occurrence'ın geriye dönük uyumluluğu,
+tekrarlanan heading'in ayırt edici son eki), 8'i servis/API key
+gerektirdiği için skip, `ruff check app tests scripts` temiz.
+
+**PROJE GERÇEKTEN, KESİN OLARAK VE SEKİZİNCİ KEZ DONDURULDU.** Sprint
+15'ten 17.5'e kadar sekiz dış review turu sırasıyla: sprint-geçmişi
+yorum temizliği ve shutdown handling; multi-batch re-index rollback ve
+config/schema hardening; point-ID collision ve cancellation safety;
+index schema migration guard'ı ve test false-positive temizliği;
+registry/Qdrant reconciliation; reconciliation'ın kendi yarattığı iki
+regresyonun kapatılması; o kapatmanın kendi migration yolundaki iki
+bug'ın kapatılması; ve son olarak reconciliation+rollback
+etkileşiminden doğan bir veri kaybı regresyonu, bir kilitlenme bug'ı,
+yanlış ölçülen bir eval pipeline'ı ve bir citation identity çakışması.
+Sekiz turun ortak deseni: her düzeltme bir öncekinin varsaymadığı bir
+etkileşimi açığa çıkardı (rollback + reconciliation, migration +
+gerçek şema, cancellation + rollback'in kendi hatası) — bu yüzden bu
+notta "artık kesinlikle bitti" iddiası tekrarlanmıyor, sadece: sekiz
+turdur her review gerçek, reprodüklenebilir bir bug buldu ve her biri
+gerçek kanıtla (fix öncesi fail eden test, gerçek reprodüksiyon,
+gerçek ölçüm) kapatıldı. Daha fazla hardening sprint'i planlanmıyor.
+Sprint 18 (Confluence connector) hâlâ "stretch" olarak listeleniyor
+ama zorunlu değil.
+
 ## Sprint 18 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

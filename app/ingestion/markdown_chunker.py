@@ -37,13 +37,22 @@ def chunk_markdown_text(
     """
     blocks = extract_blocks(text)
 
-    surrogate_by_heading: dict[tuple[str, ...], int] = {}
+    # Sprint 17.5: keyed by (heading_path, heading_occurrence), not
+    # heading_path alone — two separate occurrences of the same
+    # heading_path (e.g. two independent "# Overview" sections) must get
+    # DIFFERENT surrogate "pages", or their blocks get merged into one
+    # continuous section and their citation identity becomes
+    # indistinguishable. See docs/sprint-17-5-plan.md.
+    surrogate_by_heading: dict[tuple[tuple[str, ...], int], int] = {}
     heading_by_surrogate: dict[int, tuple[str, ...]] = {}
+    occurrence_by_surrogate: dict[int, int] = {}
     paragraphs_by_surrogate: dict[int, list[Paragraph]] = {}
 
     for block in blocks:
-        surrogate = surrogate_by_heading.setdefault(block.heading_path, len(surrogate_by_heading))
+        key = (block.heading_path, block.heading_occurrence)
+        surrogate = surrogate_by_heading.setdefault(key, len(surrogate_by_heading))
         heading_by_surrogate[surrogate] = block.heading_path
+        occurrence_by_surrogate[surrogate] = block.heading_occurrence
         paragraphs_by_surrogate.setdefault(surrogate, []).append(
             Paragraph(page_number=surrogate, paragraph_index=block.block_index, text=block.text)
         )
@@ -55,6 +64,7 @@ def chunk_markdown_text(
             section_text, offsets, surrogate, chunk_size_tokens, overlap_tokens
         )
         heading_path = heading_by_surrogate[surrogate]
+        heading_occurrence = occurrence_by_surrogate[surrogate]
         for span in spans:
             chunks.append(
                 Chunk(
@@ -66,6 +76,7 @@ def chunk_markdown_text(
                     char_range=span.char_range,
                     text=span.text,
                     heading_path=heading_path,
+                    heading_occurrence=heading_occurrence,
                     document_version=doc_id,
                 )
             )
