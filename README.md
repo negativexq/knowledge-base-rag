@@ -12,6 +12,46 @@ changed content gets re-indexed.
 
 Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
+## Highlights
+
+- **Multi-source ingestion** — filesystem (PDF/Markdown) and Notion behind
+  one `Connector` interface, with hash-based incremental sync (skip
+  unchanged, update changed, delete vanished — no orphan chunks)
+- **Hybrid search** — dense + sparse (BM25) retrieval with native Qdrant
+  RRF fusion, cross-encoder reranking
+- **Grounded, multi-source citations** — every citation is checked against
+  the exact `(source_type, source_id, location)` it was generated from, so
+  two different documents can never spoof each other's citations (proven
+  with a dedicated cross-source-leak test, not just claimed)
+- **Full distributed tracing** — a sync run or a chat request is one
+  Jaeger trace end to end, cross-checked span-by-span against Jaeger's own
+  API, not just visually inspected
+- **LLM-judged evaluation harness** — DeepEval + a local `qwen2.5:7b`
+  judge, reporting retrieval/generation metrics broken down by content
+  type from a real golden set
+- **One-command deployment** — `docker compose up` brings up the full
+  stack; sync history survives a container restart (a real named volume,
+  verified, not assumed)
+- **340+ tests**, almost all against real dependencies (real SQLite files,
+  a real Qdrant instance, real Jaeger, real browser automation for the
+  UI) rather than mocks — see [Known Limitations](#known-limitations) for
+  what's honestly *not* covered yet
+
+## Table of Contents
+
+- [Status](#status)
+- [Architecture](#architecture)
+- [Technologies Used](#technologies-used)
+- [Quick start (Docker Compose)](#quick-start-docker-compose)
+- [LLM providers](#llm-providers)
+- [Connectors](#connectors)
+- [Sync](#sync)
+- [Citation format](#citation-format)
+- [UI](#ui)
+- [Development setup](#development-setup-host-venv-for-running-tests)
+- [Known Limitations](#known-limitations)
+- [License](#license)
+
 ## Status
 
 **Sprints 0–11 complete** — the platform is fully working end to end:
