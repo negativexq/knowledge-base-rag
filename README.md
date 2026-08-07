@@ -9,8 +9,10 @@ than rewriting it from scratch. The new value-add here: ingesting multiple
 document types (PDF, Markdown, Notion) through a shared `Connector`
 interface — plus a standalone web-page parser (`app/parsing/web_parser.py`)
 not yet wired into a connector, see [Known Limitations](#known-limitations)
-— and automatic incremental re-sync — only changed content gets
-re-indexed.
+— and automatic incremental re-sync: unchanged, healthy content is
+skipped, and detected index drift (points missing, partially missing,
+or orphaned in Qdrant) is automatically repaired rather than silently
+trusted.
 
 Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
@@ -45,6 +47,7 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 - [Status](#status)
 - [Architecture](#architecture)
+- [Beyond the Happy Path](#beyond-the-happy-path)
 - [Technologies Used](#technologies-used)
 - [Quick start (Docker Compose)](#quick-start-docker-compose)
 - [LLM providers](#llm-providers)
@@ -58,7 +61,8 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–17 complete** — the platform is fully working end to end:
+**Sprints 0–17 complete, including 17.1–17.4 hardening** — the platform
+is fully working end to end:
 
 - Core RAG pipeline (parsing, hybrid search, reranking, citation-aware
   generation) ported from production-rag-platform
@@ -111,6 +115,83 @@ graph TD
     Manager --> Qdrant
     Connectors --> DocsFolder
 ```
+
+## Beyond the Happy Path
+
+This section exists because "ingest a PDF, put it in Qdrant, ask an LLM"
+is the easy 80%. Seven rounds of independent code review (Sprints 12,
+16, 17, 17.1, 17.2, 17.3, 17.4) found real bugs in the other 20% — the
+kind that only show up once a system has to survive its own edge cases,
+not just its demo path. Each item below is a real bug, found and fixed,
+not a hypothetical.
+
+- **Point identity, not just point storage.** `QdrantStore.point_id_for`'s
+  key was built from `doc_id` (a content hash) without `source_id` —
+  two *different* documents with byte-identical content (e.g. a PDF
+  duplicated under two filenames) silently collided on the same point
+  ID, and the second upsert overwrote the first with no error. The
+  review that found this also found the existing regression test was
+  *itself* hiding the bug — a shared default in a test helper meant
+  both "different" documents in the test were already colliding before
+  the test's own assertions ever ran. Both the bug and the test that
+  failed to catch it were fixed together (Sprint 17), with a new
+  end-to-end test proving two identical-content files keep independent
+  registry and Qdrant identity.
+- **Versioned re-index with real cancellation safety.** A re-index
+  embeds and upserts a document's new version *before* deleting the
+  old one, so a failure mid-embed leaves the old version searchable
+  instead of the document going dark (Sprint 13). A later review found
+  that guarantee only held within a single batch — a multi-batch
+  failure could leave a partial new version stranded forever — and
+  that `asyncio.CancelledError` (a real app-shutdown or scheduler-stop
+  signal) bypassed the rollback entirely, since it inherits from
+  `BaseException`, not `Exception` (Sprint 16, Sprint 17). Both are
+  proven with a real `task.cancel()` delivered mid-embed via
+  `asyncio.Event`, not a manually-raised substitute standing in for one.
+- **Registry and Qdrant are two separate stores that can drift apart —
+  and now self-heal.** Incremental sync originally trusted a single
+  signal: "has the content hash changed?" A review pointed out that
+  Qdrant's data can disappear by means the app never sees (manual
+  deletion, external tooling, partial data loss) while the registry's
+  hash stays exactly the same, so a document could silently stay
+  unsearchable forever. `QdrantStore.has_document_version()` and
+  `count_for_document_version()` now reconcile the two on every sync
+  (Sprint 17.2) — proven by deleting a document's Qdrant points
+  directly, leaving the registry untouched, and watching the very next
+  sync detect and repair it automatically, with no manual intervention.
+- **A schema migration tested against the schema it actually has to
+  migrate, not a simplified stand-in.** SQLite has no `ALTER COLUMN`
+  to relax a `NOT NULL` constraint. A migration meant to make a
+  `chunk_count` column nullable was validated against a fixture that
+  simulated "the column doesn't exist yet" — but a real database from
+  the previous sprint already had the column, as `NOT NULL DEFAULT 0`,
+  so the migration was a silent no-op against it and could raise
+  `sqlite3.IntegrityError` on a real upgrade. The fix was tested against
+  a fixture that reproduces the *actual* prior schema byte-for-byte,
+  confirmed to fail first, then rebuilds the table (SQLite's own
+  workaround for the missing `ALTER COLUMN`) to genuinely drop the
+  constraint (Sprint 17.4).
+- **A recurring theme, not a one-off: green tests that hid real bugs.**
+  This happened at least three separate times across the hardening
+  sprints — the point-identity test above (Sprint 17), two Qdrant
+  schema-validation tests that started passing for the wrong reason
+  once a new check was added earlier in the same function, masking the
+  dense-vector check they claimed to exercise (Sprint 17.1), and the
+  migration test that only ever covered the easy case (Sprint 17.4).
+  Each time, the fix wasn't just the code — it was proving the test
+  would have failed *before* the fix, and rewriting the test alongside
+  the bug.
+- **In real numbers**: 426 tests (most against real dependencies — a
+  real SQLite file, a real Qdrant instance, real Jaeger traces, real
+  browser automation — not mocks), across seven independent review
+  rounds. The embedding-concurrency default wasn't guessed: a real
+  benchmark against native Ollama, later hardened with warmup runs,
+  repeated samples, and randomized ordering after a review questioned
+  the first pass's methodology, found `concurrency=4` (57.1 mean
+  chunks/sec) and `concurrency=8` (55.6 mean chunks/sec) statistically
+  indistinguishable — well within each other's measured variance — so
+  4 stayed the default rather than doubling open connections for no
+  measured gain.
 
 ## Technologies Used
 
