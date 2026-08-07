@@ -112,7 +112,21 @@ async def test_stream_answer_grounding_event_flags_fabricated_citation():
 
     grounding_event = events[-1]
     assert grounding_event["grounded"] is False
+    assert grounding_event["has_citations"] is True
     assert grounding_event["ungrounded_citations"] == [("pdf", "doc", "99/0")]
+
+
+@pytest.mark.asyncio
+async def test_stream_answer_grounding_event_is_not_grounded_with_zero_citations():
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["I could not find this in the document."])
+
+    events = await _collect("How long?", chunks, ollama)
+
+    grounding_event = events[-1]
+    assert grounding_event["grounded"] is False
+    assert grounding_event["has_citations"] is False
+    assert grounding_event["citations_found"] == []
 
 
 @pytest.mark.asyncio

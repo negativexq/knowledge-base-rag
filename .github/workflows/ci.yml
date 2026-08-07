@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check app tests
+
+  test:
+    runs-on: ubuntu-latest
+    # A real Qdrant instance, not just Ollama, is deliberately available
+    # here: the whole suite already skip-guards on a live port check
+    # (see tests/test_filters_e2e.py), so this is free real coverage, not
+    # new test-writing. Ollama is NOT started — it needs a native binary
+    # plus multi-GB model pulls, too slow/flaky for CI; every
+    # Ollama-gated test already skips cleanly when :11434 isn't
+    # reachable. See docs/sprint-12-plan.md.
+    services:
+      qdrant:
+        image: qdrant/qdrant:v1.12.4
+        ports:
+          - 6333:6333
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -q
+        env:
+          QDRANT_URL: http://localhost:6333
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      # Build only, no run: a smoke-run would eagerly download the
+      # cross-encoder/sparse-encoder models from HuggingFace at import
+      # time (app/wiring.py), a real network dependency this job isn't
+      # meant to depend on. A build failure alone already catches a
+      # broken Dockerfile or a requirements.txt resolution problem
+      # (including a CUDA/torch wheel creeping back in — Sprint 11).
+      - run: docker build -t kb-rag-backend .

@@ -123,7 +123,7 @@ verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
 | Vector DB | Qdrant | Dense + sparse (BM25 via FastEmbed `Qdrant/bm25`) hybrid search with native RRF fusion |
 | Reranking | `sentence-transformers` CrossEncoder, `ms-marco-MiniLM-L-6-v2` | Candidate k=20 → top n=5 (Sprint 5) |
 | Backend | FastAPI | SSE streaming for `/chat`; containerized since Sprint 11 |
-| Citations | `[s.source_type:source_id/location]` | `location` is `page/paragraph` for PDF or a heading path for Markdown/web/Notion — grounding checks the full triple so two sources can't spoof each other's citations (Sprint 0/3/5) |
+| Citations | `[s.source_type:source_id/location]` | `location` is `page/paragraph` for PDF or a heading path for Markdown/web/Notion — checked against the full triple so two sources can't spoof each other's citations; citation *integrity*, not semantic grounding (Sprint 0/3/5/12, see [Citation format](#citation-format)) |
 | Observability | OpenTelemetry + Jaeger | A full sync run and a full chat request are each a single trace end to end (Sprint 8) |
 | Evaluation | DeepEval + `qwen2.5:7b-instruct` (judge) | RAGAS was tried and rejected in production-rag-platform for a real dependency conflict — not re-attempted here (Sprint 9) |
 | UI | Streamlit, multi-page (`st.navigation`) | Separate venv (`.venv-ui`) — a real, confirmed `starlette` version conflict with FastAPI's pin (Sprint 10) |
@@ -207,9 +207,30 @@ examples: [s.filesystem:handbook_pdf/2/0]           (PDF: page/paragraph)
 
 `source_type` identifies the connector a document came from (`filesystem`
 today; `notion`/`confluence` later), not its file format — the same
-connector can ingest multiple formats. Grounding is checked against the
-full `(source_type, source_id, location)` triple, so two different sources
-can safely share the same location without one masquerading as the other.
+connector can ingest multiple formats. Every citation is checked against
+the full `(source_type, source_id, location)` triple, so two different
+sources can safely share the same location without one masquerading as
+the other.
+
+### Citation integrity validation, not semantic grounding
+
+`app/llm/grounding.py::check_grounding` proves every citation tag in an
+answer points to a chunk that was actually in the retrieved context, from
+the source it claims. It does **not** prove the specific claim next to
+that citation is actually *supported by* the chunk's text — a model could
+cite a real, correctly-attributed chunk beside a claim that chunk doesn't
+support, and this check still reports it as grounded. This is citation
+**integrity** validation, not semantic grounding, and the UI/API name it
+accordingly (`GroundingResult.grounded` requires both `has_citations` and
+`citations_valid` — an answer with zero citations is not grounded, the
+most dangerous hallucination shape since there's no citation tag at all
+to question).
+
+**Future work**: claim-level semantic support checking (e.g. an
+NLI/entailment check between each claim and its cited chunk's text) would
+close this gap — not attempted yet. See the Sprint 12 closing note in
+[docs/PLANNING.md](docs/PLANNING.md) for the real bug this sprint fixed
+(a citation-free answer used to be reported `grounded: True`).
 
 ## UI
 

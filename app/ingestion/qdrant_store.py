@@ -12,6 +12,18 @@ EMBEDDING_DIM = 768  # nomic-embed-text native output size, verified via /api/em
 _POINT_ID_NAMESPACE = uuid.UUID("f0f6f7d2-8f7d-4c3d-9c1a-6b2e6a1f9d4e")
 
 
+class UnexpectedCollectionSchemaError(Exception):
+    """Raised when a Qdrant collection with the configured name already
+    exists but doesn't have the sparse vector this app requires — instead
+    of silently deleting and recreating it (a real, irreversible
+    data-loss risk if the name is misconfigured or the collection
+    predates this schema and holds real data). See
+    docs/sprint-12-plan.md. Fix by deleting the collection yourself if
+    it's genuinely safe to, or pointing QDRANT_COLLECTION_NAME at a fresh
+    name.
+    """
+
+
 class QdrantStore:
     def __init__(self, client: QdrantClient, collection_name: str):
         self._client = client
@@ -22,9 +34,13 @@ class QdrantStore:
             info = self._client.get_collection(self._collection_name)
             if SPARSE_VECTOR_NAME in (info.config.params.sparse_vectors or {}):
                 return
-            # Qdrant can't add a named vector to an existing collection —
-            # recreate it. Safe here because dev collections are re-ingestable.
-            self._client.delete_collection(self._collection_name)
+            raise UnexpectedCollectionSchemaError(
+                f"Collection {self._collection_name!r} already exists but is missing the "
+                f"{SPARSE_VECTOR_NAME!r} sparse vector this app requires. Qdrant can't add a "
+                "named vector to an existing collection, and this collection was left "
+                "untouched rather than deleted and recreated — delete it yourself if that's "
+                "genuinely safe, or point QDRANT_COLLECTION_NAME at a fresh collection name."
+            )
 
         self._client.create_collection(
             collection_name=self._collection_name,

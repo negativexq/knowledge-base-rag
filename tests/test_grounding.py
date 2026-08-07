@@ -79,14 +79,43 @@ def test_grounding_reports_only_the_fabricated_citation_when_mixed():
     assert result.ungrounded_citations == [("pdf", "doc", "7/3")]
 
 
-def test_grounding_with_no_citations_at_all_is_considered_grounded():
-    # e.g. the "not found in document" reply has no citations to check
+def test_grounding_with_no_citations_at_all_is_not_grounded():
+    """A citation-free answer is the most dangerous hallucination shape —
+    no citation tag at all for a reader to even question. `grounded` must
+    be False, distinguishable from "has citations but they're invalid" via
+    `has_citations`. See docs/sprint-12-plan.md.
+    """
     chunks = [_result(2, 0, "Refunds are processed within 30 days.")]
 
     result = check_grounding("I could not find this in the document.", chunks)
 
-    assert result.grounded is True
+    assert result.grounded is False
+    assert result.has_citations is False
+    assert result.citations_valid is True  # vacuously — nothing to invalidate
     assert result.citations_found == []
+    assert result.ungrounded_citations == []
+
+
+def test_grounding_has_citations_true_and_valid_when_all_match():
+    chunks = [_result(2, 0, "Refunds are processed within 30 days.")]
+    answer = "Refunds take 30 days [s.pdf:doc/2/0]."
+
+    result = check_grounding(answer, chunks)
+
+    assert result.has_citations is True
+    assert result.citations_valid is True
+    assert result.grounded is True
+
+
+def test_grounding_has_citations_true_but_invalid_when_fabricated():
+    chunks = [_result(2, 0, "Refunds are processed within 30 days.")]
+    answer = "Refunds take 30 days [s.pdf:doc/99/0]."
+
+    result = check_grounding(answer, chunks)
+
+    assert result.has_citations is True
+    assert result.citations_valid is False
+    assert result.grounded is False
 
 
 def test_grounding_rejects_citation_whose_page_paragraph_matches_a_different_source():

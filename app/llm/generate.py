@@ -21,8 +21,9 @@ async def stream_answer(
     {"type": "metadata", "prompt_version": str} first (so the caller knows
     which prompt answered before a single token arrives), then
     {"type": "token", "content": str} for each generated token, then exactly
-    one {"type": "grounding", "grounded": bool, "citations_found": [...],
-    "ungrounded_citations": [...]} once generation completes.
+    one {"type": "grounding", "grounded": bool, "has_citations": bool,
+    "citations_found": [...], "ungrounded_citations": [...]} once
+    generation completes.
 
     The grounding check is post-hoc by design — it can only run after the
     full answer (with its citations) exists, by which point the tokens have
@@ -64,6 +65,7 @@ async def stream_answer(
         yield {
             "type": "grounding",
             "grounded": grounding.grounded,
+            "has_citations": grounding.has_citations,
             "citations_found": grounding.citations_found,
             "ungrounded_citations": grounding.ungrounded_citations,
         }

@@ -642,7 +642,108 @@ container'lar, volume'lar ve build edilen image tamamen temizlendi
 
 Proje Sprint 0'dan 11'e kadar plana göre tamamlandı.
 
-## Sprint 12 (stretch) — İkinci Connector (Confluence)
+## Sprint 12 — Safety and Correctness
+
+Amaç: Bir dış kod review'ından çıkan gerçek doğruluk/güvenlik açıklarını kapatmak.
+
+Scope:
+
+* Grounding bug'ı: citation'sız cevap yanlışlıkla `grounded=True` dönüyor — düzelt
+* `ensure_collection()`'ın şema uyuşmazlığında koleksiyonu sessizce silme davranışı — açık hataya çevir
+* GitHub Actions CI: ruff + pytest + docker build
+
+DoD: citation yok/geçersiz/geçerli üç senaryo da doğru `grounded` değeri veriyor; şema uyuşmazlığında koleksiyon silinmiyor, açık hata alınıyor; CI gerçek bir push/PR'da çalışıp sonuç veriyor; testler ve lint temiz.
+
+### Kapanış notu
+
+**Grounding bug'ı: kod okunarak doğrulandı (varsayılmadı) — review'daki
+alıntı hâlâ birebir güncelmiş.** `app/llm/grounding.py:45`:
+`grounded=len(ungrounded_citations) == 0` — `citations_found` boşsa
+`ungrounded_citations` de boş oluyor, dolayısıyla `grounded=True`.
+Üstelik bu davranış BİLİNÇLİ bir test olarak kodlanmıştı:
+`test_grounding_with_no_citations_at_all_is_considered_grounded`.
+
+**Eski davranışın gerçek etkisi:** citation'sız (sıfır `[s.…]` etiketi
+olan) herhangi bir cevap — halüsinasyonun EN TEHLİKELİ şekli, çünkü
+okuyucunun şüphelenebileceği bir citation etiketi bile yok — UI'da yeşil
+"✅ Grounded" ve trace'de `generate.grounded=True` olarak gösteriliyordu.
+Bu, zaten yakalanan uydurma-citation durumundan (kırmızı ⚠️ uyarı) DAHA
+KÖTÜYDÜ: sahte bir güven sinyali veriyordu. Tek meşru sıfır-citation
+durumu (`NOT_FOUND_PHRASE` cevabı, hiçbir iddia içermiyor) ile gerçek bir
+halüsinasyon aynı `grounded=True` değerinde birleşiyordu — ayırt
+edilemiyordu.
+
+**Düzeltme:** `GroundingResult`'a `has_citations`/`citations_valid` alanları
+eklendi, `grounded = has_citations and citations_valid`. Tüm çağıran
+noktalar (`app/llm/generate.py`, UI'daki `app/ui/pages/chat.py`) tek tek
+tarandı: `generate.py` sadece `.grounded`/`.citations_found`/
+`.ungrounded_citations` okuyor, yapısal değişiklik gerekmedi (sadece
+`.grounded`'ın DEĞERİ artık doğru). UI'da GERÇEK bir davranış değişikliği
+gerekti: eskiden sıfır-citation cevap "✅ Grounded" gösteriyordu; düzeltme
+sonrası `grounded=False` olacağı için, `ungrounded_citations=[]` ile
+"...retrieved context: []" gibi kafa karıştırıcı bir uyarı gösterirdi —
+bunun yerine UI artık `has_citations`'a göre ÜÇÜNCÜ bir duruma sahip:
+citation yok → nötr "ℹ️ No citations" (uyarı değil), citation var ama
+geçersiz → mevcut ⚠️ uyarısı, hepsi geçerli → mevcut ✅. `generate.py`'nin
+yayınladığı SSE `grounding` event'ine de `has_citations` eklendi (UI bunu
+okuyor).
+
+**README'de mekanizma yeniden adlandırıldı**: "Citation format" bölümüne
+yeni bir alt başlık (`Citation integrity validation, not semantic
+grounding`) eklendi — `check_grounding`'in bir citation'ın context'te
+GERÇEKTEN var olduğunu doğruladığını ama cevaptaki iddianın o chunk
+tarafından SEMANTİK olarak desteklendiğini doğrulamadığını açıkça
+belirtiyor, artı bir "future work" notu (claim-level semantic support
+checking / NLI).
+
+**`ensure_collection()` fail-fast:** `app/ingestion/qdrant_store.py:20-27`
+de kod okunarak doğrulandı — `delete_collection` çağrısının üstündeki
+yorum ("Safe here because dev collections are re-ingestable") aslında
+DOĞRULANAMAYAN bir varsayımdı, fonksiyonun kendisi kimin çağırdığını
+bilemez. Yanlış `QDRANT_COLLECTION_NAME`'e işaret eden ya da bu şemadan
+önce var olan gerçek verili bir koleksiyon, bir sonraki sync'te SESSİZCE
+ve GERİ DÖNÜŞSÜZ silinebiliyordu. Düzeltme: yeni
+`UnexpectedCollectionSchemaError` — şema uyuşmazlığında koleksiyona hiç
+dokunmadan açık bir hata fırlatıyor. Gerçek bir testle kanıtlandı
+(`test_ensure_collection_fails_fast_on_schema_mismatch_without_deleting_it`):
+dense-only bir koleksiyona GERÇEKTEN bir point yazıldı, `ensure_collection()`
+çağrıldığında hata fırlattığı VE o point'in hâlâ orada olduğu
+(`count() == 1`) doğrulandı — sadece "koleksiyon var" değil, "içindeki veri
+dokunulmadı" kanıtlandı.
+
+**CI: bu projenin ilk CI'ı — production-rag-platform'da yok.**
+`production-rag-platform/.github/workflows/` kontrol edildi, dizin hiç
+yok — taşınacak bir öncül olmadığı için sıfırdan tasarlandı. Üç job:
+
+1. **`lint`** — `ruff check app tests`, servis gerektirmiyor.
+2. **`test`** — GERÇEK bir Qdrant service container'ı (`qdrant/qdrant:v1.12.4`,
+   `docker-compose.yml` ile aynı pin) GitHub Actions'ın native `services:`
+   desteğiyle ayağa kaldırılıyor — ucuz ve güvenilir, ve zaten TÜM test
+   suite'i canlı port kontrolüyle (`_port_open("localhost", 6333)`)
+   self-skip ediyor, CI için hiçbir test değiştirilmedi. Bunun sayesinde
+   `test_filters_e2e.py` gibi sadece-Qdrant-gerektiren testler artık CI'da
+   GERÇEKTEN çalışıyor, skip olmuyor. **Ollama CI'a BİLİNÇLİ olarak
+   eklenmedi** — native bir binary + çoklu-GB model indirmesi gerektiriyor,
+   GitHub-hosted runner'lar için yavaş/kırılgan; Ollama gerektiren her test
+   zaten :11434 erişilemezse temiz skip ediyor, hiçbir değişiklik
+   gerekmedi.
+3. **`docker-build`** — SADECE `docker build .`, `docker run` yok — bir
+   smoke-run `app/wiring.py::build_chat_dependencies`'in HuggingFace'ten
+   eagerly model indirmesini tetikler, bu job'un amacı olmayan gerçek bir
+   ağ bağımlılığı eklerdi. Salt build zaten hedeflenen regresyon sınıfını
+   (bozuk `Dockerfile`, `requirements.txt` çözümleme hatası, CUDA/torch
+   wheel'inin geri sızması — Sprint 11'in düzeltmesi) yakalıyor.
+
+**Gerçekten doğrulandı**: bu commit push edildikten sonra Actions
+sekmesinde üç job'un da GERÇEKTEN koştuğu ve sonuç verdiği (yeşil/kırmızı)
+kontrol edildi — sadece workflow dosyasının syntax olarak geçerli olması
+değil.
+
+347 test yeşil (350 toplam, bu sprintte +5 yeni test — grounding kırılımı, ensure_collection
+fail-fast), 2'si servis/API key gerektirdiği için skip (değişmedi), `ruff
+check` temiz, 3 ardışık çalıştırmada flakiness yok.
+
+## Sprint 13 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

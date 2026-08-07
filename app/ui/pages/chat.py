@@ -59,7 +59,12 @@ if question:
         placeholder.markdown(highlight_citations(full_answer))
 
         if grounding_event is not None:
-            if grounding_event["grounded"]:
+            if not grounding_event["has_citations"]:
+                # Not a warning — a "not found" reply legitimately has no
+                # citations to check. Distinct from "had citations, one
+                # was fabricated" below (see docs/sprint-12-plan.md).
+                st.caption("ℹ️ No citations in this answer.")
+            elif grounding_event["grounded"]:
                 st.caption(f"✅ Grounded — citations: {grounding_event['citations_found']}")
             else:
                 st.warning(

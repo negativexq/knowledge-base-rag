@@ -1,8 +1,15 @@
+import pytest
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
 from app.ingestion.models import Chunk
-from app.ingestion.qdrant_store import EMBEDDING_DIM, SPARSE_VECTOR_NAME, VECTOR_NAME, QdrantStore
+from app.ingestion.qdrant_store import (
+    EMBEDDING_DIM,
+    SPARSE_VECTOR_NAME,
+    VECTOR_NAME,
+    QdrantStore,
+    UnexpectedCollectionSchemaError,
+)
 from app.retrieval.sparse import SparseVector
 
 COLLECTION = "test_chunks"
@@ -71,7 +78,12 @@ def test_ensure_collection_is_idempotent():
     assert store.count() == 0
 
 
-def test_ensure_collection_recreates_a_dense_only_collection_missing_sparse_vector():
+def test_ensure_collection_fails_fast_on_schema_mismatch_without_deleting_it():
+    """A collection missing the sparse vector this app requires must NOT be
+    silently deleted and recreated — that's a real, irreversible data-loss
+    risk if the collection name is misconfigured or predates this schema
+    and holds real data. See docs/sprint-12-plan.md.
+    """
     client = QdrantClient(":memory:")
     client.create_collection(
         COLLECTION,
@@ -79,12 +91,19 @@ def test_ensure_collection_recreates_a_dense_only_collection_missing_sparse_vect
             VECTOR_NAME: qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.COSINE)
         },
     )
+    client.upsert(
+        COLLECTION,
+        points=[qmodels.PointStruct(id=1, vector={VECTOR_NAME: _dense_vector()}, payload={})],
+    )
 
     store = QdrantStore(client=client, collection_name=COLLECTION)
-    store.ensure_collection()
+
+    with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
+        store.ensure_collection()
 
     info = client.get_collection(COLLECTION)
-    assert SPARSE_VECTOR_NAME in info.config.params.sparse_vectors
+    assert not (info.config.params.sparse_vectors or {})  # still dense-only, untouched
+    assert client.count(COLLECTION, exact=True).count == 1  # the point wasn't wiped
 
 
 def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
