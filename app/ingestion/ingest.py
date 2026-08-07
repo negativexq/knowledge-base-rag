@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,9 +22,43 @@ SEARCH_DOCUMENT_PREFIX = "search_document: "
 
 EmbedFn = Callable[[str], Awaitable[list[float]]]
 
+# Chosen from a real benchmark against native Ollama (nomic-embed-text on
+# an M2), not guessed (scripts/benchmark_embedding_concurrency.py; see
+# docs/PLANNING.md Sprint 14 closing note and the README's throughput
+# section for the full table). The real result was a plateau, not
+# unbounded scaling: concurrency=1 -> ~30 chunks/sec, concurrency=2 ->
+# ~74 (the big real jump), concurrency=4 -> ~74-87 (still slightly
+# ahead, esp. at scale — 87.4 vs 80.9 chunks/sec at 1000 chunks),
+# concurrency=8 -> ~79-88, i.e. NO further real gain over 4 (within
+# measurement noise, sometimes lower at small chunk counts). 4 is the
+# last point with a genuine marginal improvement — 8 just holds more
+# connections open for zero measured benefit.
+DEFAULT_EMBEDDING_CONCURRENCY = 4
+
 
 class SparseEncoderProtocol(Protocol):
     def embed_document(self, text: str) -> SparseVector: ...
+
+
+async def embed_texts_concurrently(
+    texts: list[str], embed_fn: EmbedFn, concurrency: int
+) -> list[list[float]]:
+    """Embeds every text via embed_fn, at most `concurrency` calls in
+    flight at once (asyncio.Semaphore), all launched together via
+    asyncio.gather — which preserves input order in its results, so
+    result[i] always corresponds to texts[i] regardless of which call
+    actually finished first. A failing embed_fn call propagates (gather's
+    default, not return_exceptions=True) — same "let it raise" behavior
+    the previous sequential list comprehension had, which Sprint 13's
+    deferred-cleanup re-index relies on to leave the old version intact.
+    """
+    semaphore = asyncio.Semaphore(concurrency)
+
+    async def _bounded(text: str) -> list[float]:
+        async with semaphore:
+            return await embed_fn(text)
+
+    return list(await asyncio.gather(*(_bounded(text) for text in texts)))
 
 
 @dataclass
@@ -41,7 +76,8 @@ async def ingest_path(
     sparse_encoder: SparseEncoderProtocol,
     chunk_size_tokens: int = DEFAULT_CHUNK_SIZE_TOKENS,
     overlap_tokens: int = DEFAULT_OVERLAP_TOKENS,
-    batch_size: int = 64,
+    upsert_batch_size: int = 64,
+    embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
     tracer: trace.Tracer | None = None,
 ) -> IngestStats:
     tracer = tracer or get_tracer(__name__)
@@ -64,12 +100,15 @@ async def ingest_path(
                 )
                 span.set_attribute("parse.chunk_count", len(chunks))
 
-            for batch_start in range(0, len(chunks), batch_size):
-                batch = chunks[batch_start : batch_start + batch_size]
+            for batch_start in range(0, len(chunks), upsert_batch_size):
+                batch = chunks[batch_start : batch_start + upsert_batch_size]
 
                 with tracer.start_as_current_span("embed_batch") as span:
                     span.set_attribute("embed.chunk_count", len(batch))
-                    dense_vectors = [await embed_fn(chunk.text) for chunk in batch]
+                    span.set_attribute("embed.concurrency", embedding_concurrency)
+                    dense_vectors = await embed_texts_concurrently(
+                        [chunk.text for chunk in batch], embed_fn, embedding_concurrency
+                    )
                     sparse_vectors = [sparse_encoder.embed_document(chunk.text) for chunk in batch]
 
                 with tracer.start_as_current_span("upsert_batch") as span:
@@ -93,7 +132,8 @@ async def ingest_connector(
     sparse_encoder: SparseEncoderProtocol,
     chunk_size_tokens: int = DEFAULT_CHUNK_SIZE_TOKENS,
     overlap_tokens: int = DEFAULT_OVERLAP_TOKENS,
-    batch_size: int = 64,
+    upsert_batch_size: int = 64,
+    embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
     tracer: trace.Tracer | None = None,
 ) -> IngestStats:
     """Connector-driven, multi-format, INCREMENTAL ingestion — the Sprint 4
@@ -239,12 +279,15 @@ async def ingest_connector(
                 # docs/sprint-13-plan.md and the README's re-index
                 # section for the measured window and why it isn't
                 # eliminated here.
-                for batch_start in range(0, len(chunks), batch_size):
-                    batch = chunks[batch_start : batch_start + batch_size]
+                for batch_start in range(0, len(chunks), upsert_batch_size):
+                    batch = chunks[batch_start : batch_start + upsert_batch_size]
 
                     with tracer.start_as_current_span("embed_batch") as span:
                         span.set_attribute("embed.chunk_count", len(batch))
-                        dense_vectors = [await embed_fn(chunk.text) for chunk in batch]
+                        span.set_attribute("embed.concurrency", embedding_concurrency)
+                        dense_vectors = await embed_texts_concurrently(
+                            [chunk.text for chunk in batch], embed_fn, embedding_concurrency
+                        )
                         sparse_vectors = [
                             sparse_encoder.embed_document(chunk.text) for chunk in batch
                         ]

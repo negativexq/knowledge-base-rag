@@ -47,11 +47,16 @@ def _slow_embed_fn(delay: float):
     return embed
 
 
-def _make_manager(tmp_path, embed_fn, docs_dir) -> tuple[SyncManager, _CountingStore, SyncHistory]:
+def _make_manager(
+    tmp_path, embed_fn, docs_dir, embedding_concurrency=None
+) -> tuple[SyncManager, _CountingStore, SyncHistory]:
     connector = LocalFilesystemConnector(docs_dir)
     store = _CountingStore(client=QdrantClient(":memory:"), collection_name=COLLECTION)
     registry = DocumentRegistry(tmp_path / "registry.db")
     history = SyncHistory(tmp_path / "registry.db")
+    kwargs = {}
+    if embedding_concurrency is not None:
+        kwargs["embedding_concurrency"] = embedding_concurrency
     manager = SyncManager(
         connectors={"filesystem": connector},
         store=store,
@@ -59,6 +64,7 @@ def _make_manager(tmp_path, embed_fn, docs_dir) -> tuple[SyncManager, _CountingS
         history=history,
         embed_fn=embed_fn,
         sparse_encoder=_FakeSparseEncoder(),
+        **kwargs,
     )
     return manager, store, history
 
@@ -186,3 +192,37 @@ async def test_concurrent_sync_of_different_connectors_both_run(tmp_path):
     )
 
     assert {r.status for r in results} == {STATUS_SUCCESS}
+
+
+@pytest.mark.asyncio
+async def test_embedding_concurrency_is_threaded_through_to_ingest_connector(tmp_path):
+    """SyncManager's embedding_concurrency isn't just stored — it actually
+    bounds how many embed_fn calls ingest_connector runs at once.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    # Enough real content to split into several chunks (default chunk size
+    # is 500 tokens) — concurrency=3 can only be observed maxing out if
+    # there are at least 3 chunks to embed concurrently.
+    sentences = " ".join(f"Sentence {i} has several words in it." for i in range(200))
+    (docs_dir / "doc.md").write_text(f"# Doc\n\n{sentences}")
+
+    in_flight = 0
+    max_concurrent = 0
+    lock = asyncio.Lock()
+
+    async def tracking_embed(text: str) -> list[float]:
+        nonlocal in_flight, max_concurrent
+        async with lock:
+            in_flight += 1
+            max_concurrent = max(max_concurrent, in_flight)
+        await asyncio.sleep(0.02)
+        async with lock:
+            in_flight -= 1
+        return [0.01] * EMBEDDING_DIM
+
+    manager, _, _ = _make_manager(tmp_path, tracking_embed, docs_dir, embedding_concurrency=3)
+
+    await manager.trigger_sync("filesystem", TRIGGER_MANUAL)
+
+    assert max_concurrent == 3

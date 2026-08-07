@@ -56,3 +56,14 @@ def test_notion_sync_interval_defaults_to_thirty_minutes():
 
 def test_filesystem_root_path_has_a_default():
     assert Settings().filesystem_root_path == "data/documents"
+
+
+def test_embedding_concurrency_has_a_default(monkeypatch):
+    monkeypatch.delenv("EMBEDDING_CONCURRENCY", raising=False)
+    assert Settings().embedding_concurrency > 0
+
+
+def test_embedding_concurrency_overridable_via_env(monkeypatch):
+    monkeypatch.setenv("EMBEDDING_CONCURRENCY", "8")
+
+    assert Settings().embedding_concurrency == 8

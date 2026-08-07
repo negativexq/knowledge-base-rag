@@ -1,7 +1,12 @@
 from opentelemetry import trace
 
 from app.connectors.base import Connector
-from app.ingestion.ingest import EmbedFn, SparseEncoderProtocol, ingest_connector
+from app.ingestion.ingest import (
+    DEFAULT_EMBEDDING_CONCURRENCY,
+    EmbedFn,
+    SparseEncoderProtocol,
+    ingest_connector,
+)
 from app.ingestion.qdrant_store import QdrantStore
 from app.registry.store import DocumentRegistry
 from app.shared.tracing import get_tracer
@@ -43,6 +48,7 @@ class SyncManager:
         embed_fn: EmbedFn,
         sparse_encoder: SparseEncoderProtocol,
         tracer: trace.Tracer | None = None,
+        embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
     ):
         self._connectors = connectors
         self._store = store
@@ -51,6 +57,7 @@ class SyncManager:
         self._embed_fn = embed_fn
         self._sparse_encoder = sparse_encoder
         self._tracer = tracer or get_tracer(__name__)
+        self._embedding_concurrency = embedding_concurrency
         self._running: dict[str, bool] = dict.fromkeys(connectors, False)
 
     @property
@@ -95,6 +102,7 @@ class SyncManager:
                     self._registry,
                     self._embed_fn,
                     self._sparse_encoder,
+                    embedding_concurrency=self._embedding_concurrency,
                     tracer=self._tracer,
                 )
             except Exception as exc:

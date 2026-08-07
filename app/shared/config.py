@@ -57,5 +57,15 @@ class Settings(BaseSettings):
     # for generation than for judging, matching the reference project.
     eval_judge_model: str = "qwen2.5:7b-instruct"
 
+    # Bounded concurrency for embedding calls during ingestion
+    # (app/ingestion/ingest.py::embed_texts_concurrently) — kept as a
+    # plain, independently-defaulted field rather than importing
+    # ingest.py's own DEFAULT_EMBEDDING_CONCURRENCY constant, which would
+    # create a circular import (ingest.py -> shared.tracing ->
+    # shared.config). Chosen from a real benchmark against native Ollama,
+    # not guessed — see docs/sprint-14-plan.md and the README's
+    # throughput section for the measured chunks/sec at each level.
+    embedding_concurrency: int = 4
+
 
 settings = Settings()

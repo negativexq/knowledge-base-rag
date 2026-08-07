@@ -116,7 +116,7 @@ verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
 | Chunking | Whitespace token counter, 500/50 (size/overlap) | Provisional default, unchanged since Sprint 0 — never re-tuned against a larger corpus (see Known Limitations) |
 | Document registry | SQLite (stdlib `sqlite3`), no ORM | `(source_type, source_id)` primary key, content-hash diffing for incremental sync (Sprint 2) |
 | Connectors | `LocalFilesystemConnector` (PDF/Markdown); `NotionConnector` (Notion API, 429 retry/backoff) | Shared async `Connector` Protocol (Sprint 3, generalized to async in Sprint 6) |
-| Sync | Hand-rolled `asyncio` loop (`SyncScheduler`) + per-connector concurrency guard | APScheduler/Celery deliberately rejected — no cron expressions or job persistence needed (Sprint 7); re-index is zero-downtime with deferred cleanup, not atomic — see [Sync](#sync) (Sprint 13) |
+| Sync | Hand-rolled `asyncio` loop (`SyncScheduler`) + per-connector concurrency guard | APScheduler/Celery deliberately rejected — no cron expressions or job persistence needed (Sprint 7); re-index is zero-downtime with deferred cleanup, not atomic (Sprint 13); embedding calls run with bounded concurrency, default 4, picked from a real benchmark that found a throughput plateau past that point — see [Sync](#sync) (Sprint 14) |
 | Provider abstraction | `ChatProvider`/`EmbeddingProvider` Protocols — Ollama (native) + Claude (Anthropic API) | Claude has no embedding endpoint, so embedding always stays on Ollama regardless of chat provider (Sprint 1) |
 | Embedding | Ollama, `nomic-embed-text` | 768-dim, cosine distance; `search_document:`/`search_query:` task prefixes required for quality |
 | Generation | Ollama `qwen2.5:7b-instruct` (default) or Claude | Model is a config value, not hardcoded |
@@ -223,6 +223,46 @@ sequential Qdrant calls, not by embedding time (all embedding happens
 *before* the window opens). See the Sprint 13 closing note in
 [docs/PLANNING.md](docs/PLANNING.md) for the measurement and the
 before/after failure-scenario proof.
+
+### Embedding throughput: real benchmark, not assumed to scale
+
+Embedding calls during ingestion run with bounded concurrency
+(`EMBEDDING_CONCURRENCY`, `asyncio.Semaphore`) instead of one at a time.
+The real question — does a single native Ollama instance actually get
+faster with more concurrent requests, or does it queue/degrade past some
+point? — was benchmarked directly
+(`scripts/benchmark_embedding_concurrency.py`, `nomic-embed-text` on an
+M2), not assumed:
+
+| Chunks | concurrency=1 | concurrency=2 | concurrency=4 | concurrency=8 |
+|---:|---:|---:|---:|---:|
+| 10 | 11.4 chunks/sec | 63.9 | 62.3 | 67.1 |
+| 100 | 40.5 chunks/sec | 77.7 | 72.9 | 82.7 |
+| 1000 | 39.6 chunks/sec | 80.9 | 87.4 | 88.5 |
+
+The result is a **plateau, not unbounded scaling** — exactly the failure
+mode a single-model native Ollama instance could plausibly hit, so it was
+worth actually measuring rather than assuming "more concurrency = more
+throughput." Concurrency=2 already captures nearly all the real gain over
+sequential (1); concurrency=4 is marginally ahead at scale (87.4 vs 80.9
+chunks/sec at 1000 chunks); concurrency=8 shows **no further real
+benefit** over 4 (within measurement noise, sometimes lower at small
+chunk counts) while holding more connections open for nothing.
+**`EMBEDDING_CONCURRENCY` defaults to 4** — the last point on the curve
+with a genuine measured improvement.
+
+A real sync run's own time breakdown (7 chunks, `EMBEDDING_CONCURRENCY=4`,
+captured from the same OTel spans Jaeger uses — Sprint 8):
+
+| Stage | Duration |
+|---|---:|
+| Total sync | 939 ms |
+| Embedding (Ollama) | 812 ms (86%) |
+| Qdrant upsert | 29 ms (3%) |
+| Parse + chunk | 2 ms (<1%) |
+
+Embedding dominates, as expected — Qdrant's own write path is fast and
+not the bottleneck worth optimizing further.
 
 ## Citation format
 

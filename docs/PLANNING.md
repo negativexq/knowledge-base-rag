@@ -837,7 +837,107 @@ birim testleri + versioned re-index senaryo testleri), 355'i gerçek
 Qdrant+Ollama'ya karşı geçiyor (2'si servis/API key gerektirdiği için
 skip, değişmedi), `ruff check` temiz, flakiness yok.
 
-## Sprint 14 (stretch) — İkinci Connector (Confluence)
+## Sprint 14 — Ingestion Performance
+
+Amaç: `batch_size` isimlendirme uyuşmazlığını düzeltmek, gerçek embedding concurrency eklemek, benchmark yapıp default değeri kanıtlamak.
+
+Scope:
+
+* `batch_size` → `upsert_batch_size` (Qdrant'a ne büyüklükte upsert edildiğini kontrol ediyor, embedding'i değil)
+* Yeni config: `embedding_concurrency` — `asyncio.Semaphore` ile bounded concurrency, embed çağrıları `asyncio.gather` ile paralel
+* Gerçek Ollama'ya karşı benchmark: concurrency=1,2,4,8 × 10/100/1000 chunk, chunks/sec ölçümü — tek native Ollama instance'ında yüksek concurrency'nin throughput yerine kuyruklama yaratıp yaratmadığı gerçekten test edilir
+* Benchmark sonucuna göre default `embedding_concurrency` seçilir, gerekçesi yazılır
+* README'ye throughput tablosu
+
+DoD: embedding'ler gerçekten paralel çalışıyor (kanıtlanmış, varsayılmamış); benchmark tablosu gerçek ölçümlerle README'de; seçilen default gerekçeli; testler ve lint temiz.
+
+### Kapanış notu
+
+**İsimlendirme düzeltmesi mekanik ve risksizdi.** `batch_size`
+`app/ingestion/ingest.py`'de sadece `store.upsert_chunks(...)`'a kaç
+chunk'lık gruplar halinde yazıldığını kontrol ediyordu — embedding hiçbir
+zaman batch'lenmiyordu (`embed_fn` her chunk için ayrı ayrı çağrılıyordu).
+`grep` ile hiçbir çağıranın `batch_size=` diye keyword argüman
+geçmediği doğrulandı; `upsert_batch_size` olarak yeniden adlandırma
+davranış değişikliği olmadan yapıldı.
+
+**Gerçek concurrency, sadece "hızlı bitti" değil, GERÇEKTEN kanıtlandı.**
+`embed_texts_concurrently()` (`asyncio.Semaphore` + `asyncio.gather`)
+testleri, sahte bir `embed_fn`'in "şu anda kaç çağrı uçuşta" sayacını
+tutmasına dayanıyor: `concurrency=4` istendiğinde GERÇEKTEN aynı anda en
+fazla 4 çağrının uçuştuğu (`max_concurrent == 4`, ne fazla ne az)
+doğrulandı — sadece toplam sürenin kısaldığına bakılmadı, çünkü bu
+yanlışlıkla sınırsız bir `gather`'ı ya da no-op bir semaphore'u da
+gizleyebilirdi. Ayrı testler: `concurrency=1`'in gerçekten sıralı
+çalıştığı, girdi sayısından büyük concurrency'nin girdi sayısında
+tavanlandığı, sonuç sırasının (`asyncio.gather` garantisi) korunduğu, ve
+bir `embed_fn` hatasının hâlâ dışarı fırladığı (Sprint 13'ün deferred-
+cleanup re-index'inin buna dayandığı) — 6 test, hepsi yeşil.
+`app/sync/manager.py::SyncManager`'a da `embedding_concurrency` parametresi
+eklendi ve GERÇEK bir `SyncManager.trigger_sync()` çağrısı üzerinden
+(200 cümlelik gerçek bir markdown dokümanı, birden fazla chunk'a
+bölünecek şekilde) aynı izleme deseniyle doğrulandı — sadece
+`ingest_connector`'a değil, tüm zincire (config → SyncManager →
+ingest_connector) gerçekten ulaştığı kanıtlandı.
+
+**Benchmark GERÇEK native Ollama'ya karşı çalıştırıldı** (`scripts/benchmark_embedding_concurrency.py`,
+`nomic-embed-text`, M2), concurrency=1,2,4,8 × 10/100/1000 chunk:
+
+```
+ chunks concurrency  elapsed_s  chunks/sec
+     10           1       0.88       11.42
+     10           2       0.16       63.85
+     10           4       0.16       62.34
+     10           8       0.15       67.10
+    100           1       2.47       40.53
+    100           2       1.29       77.71
+    100           4       1.37       72.93
+    100           8       1.21       82.73
+   1000           1      25.24       39.62
+   1000           2      12.37       80.86
+   1000           4      11.44       87.43
+   1000           8      11.31       88.45
+```
+
+**Sonuç: review'ın uyardığı senaryo GERÇEKTEN çıktı — düzleşme (plateau),
+"concurrency arttıkça hep daha hızlı" DEĞİL.** `concurrency=1→2` gerçek ve
+büyük bir sıçrama (1000 chunk'ta 39.6 → 80.9 chunks/sec, ~2x).
+`concurrency=2→4` sadece marjinal bir iyileşme (80.9 → 87.4, ~%8, sadece
+en büyük/en güvenilir örneklemde — 1000 chunk). `concurrency=4→8` ÖLÇÜM
+GÜRÜLTÜSÜ içinde, hiçbir gerçek kazanç yok (87.4 → 88.5, ~%1, küçük
+chunk sayılarında hatta 4 bazen 8'den DÜŞÜK: 10 chunk'ta 62.3 vs 67.1).
+Tek native Ollama instance'ının tek bir embedding modelini muhtemelen iç
+mekanizmasında kısmen serileştirdiği (ya da GPU/CPU kaynak sınırına
+ulaştığı) sonucuna varılabilir — ama bu spekülasyon değil, gözlemlenen
+gerçek eğri.
+
+**Seçilen default: `EMBEDDING_CONCURRENCY=4`.** Gerekçe: eğrideki GERÇEK
+marjinal kazancın olduğu SON nokta — 2'den 4'e geçişte hâlâ ölçülebilir
+bir iyileşme var (özellikle ölçekte), 4'ten 8'e geçişte YOK. 8'i seçmek
+hiçbir ölçülen fayda karşılığında daha fazla bağlantı açık tutmak
+olurdu. `app/ingestion/ingest.py::DEFAULT_EMBEDDING_CONCURRENCY` ve
+`Settings.embedding_concurrency` ikisi de `4` — ikisi ayrı, bağımsız
+varsayılanlı alanlar (`config.py`'nin `ingest.py`'den bu sabiti import
+etmesi `ingest.py → shared.tracing → shared.config` döngüsel import'una
+yol açardı, bu yüzden bilinçli olarak ayrı tutuldu, yorumla belgelendi).
+
+**Gerçek bir sync koşumunun zaman dağılımı da ölçüldü** (7 chunk,
+`EMBEDDING_CONCURRENCY=4`, Sprint 8'in zaten var olan OTel span'leri
+üzerinden — `InMemorySpanExporter` ile gerçek nanosaniye zaman
+damgaları): toplam 939ms, embedding 812ms (%86 — beklenen, baskın
+maliyet), Qdrant upsert 29ms (%3), parse+chunk 2ms (<%1). Qdrant'ın
+kendi yazma yolu zaten hızlı — optimizasyona değecek darboğaz orada
+değil.
+
+**README'ye hem concurrency benchmark tablosu hem gerçek sync zaman
+dağılımı eklendi** (Sync bölümü altında yeni bir "Embedding throughput"
+alt başlığı), Technologies Used tablosundaki Sync satırı da güncellendi.
+
+364 test yeşil (bu sprintte +8 yeni test — concurrency birim testleri +
+SyncManager zincirleme testi + config testleri), 2'si servis/API key
+gerektirdiği için skip (değişmedi), `ruff check` temiz.
+
+## Sprint 15 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

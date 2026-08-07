@@ -105,6 +105,7 @@ def build_app(settings: Settings) -> FastAPI:
         history=history,
         embed_fn=embed_fn,
         sparse_encoder=sparse_encoder,
+        embedding_concurrency=settings.embedding_concurrency,
     )
     chat_deps = build_chat_dependencies(settings, qdrant_client, ollama, sparse_encoder)
     scheduler = SyncScheduler(manager, sync_intervals_from_settings(settings))
