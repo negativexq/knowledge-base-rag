@@ -74,6 +74,30 @@ graph TD
     Connectors --> DocsFolder
 ```
 
+## Technologies Used
+
+Layer by layer, what's actually running (not aspirational — each line was
+verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
+
+| Layer | Technology | Notes |
+|---|---|---|
+| Parsing | PyMuPDF (`fitz`) — PDF; hand-written heading-block parser — Markdown; `trafilatura` — web pages | Page/paragraph extraction ported from production-rag-platform (Sprint 0); Markdown's heading-path location scheme (Sprint 3) is reused by the web parser too (Sprint 6) |
+| Chunking | Whitespace token counter, 500/50 (size/overlap) | Provisional default, unchanged since Sprint 0 — never re-tuned against a larger corpus (see Known Limitations) |
+| Document registry | SQLite (stdlib `sqlite3`), no ORM | `(source_type, source_id)` primary key, content-hash diffing for incremental sync (Sprint 2) |
+| Connectors | `LocalFilesystemConnector` (PDF/Markdown); `NotionConnector` (Notion API, 429 retry/backoff) | Shared async `Connector` Protocol (Sprint 3, generalized to async in Sprint 6) |
+| Sync | Hand-rolled `asyncio` loop (`SyncScheduler`) + per-connector concurrency guard | APScheduler/Celery deliberately rejected — no cron expressions or job persistence needed (Sprint 7) |
+| Provider abstraction | `ChatProvider`/`EmbeddingProvider` Protocols — Ollama (native) + Claude (Anthropic API) | Claude has no embedding endpoint, so embedding always stays on Ollama regardless of chat provider (Sprint 1) |
+| Embedding | Ollama, `nomic-embed-text` | 768-dim, cosine distance; `search_document:`/`search_query:` task prefixes required for quality |
+| Generation | Ollama `qwen2.5:7b-instruct` (default) or Claude | Model is a config value, not hardcoded |
+| Vector DB | Qdrant | Dense + sparse (BM25 via FastEmbed `Qdrant/bm25`) hybrid search with native RRF fusion |
+| Reranking | `sentence-transformers` CrossEncoder, `ms-marco-MiniLM-L-6-v2` | Candidate k=20 → top n=5 (Sprint 5) |
+| Backend | FastAPI | SSE streaming for `/chat`; containerized since Sprint 11 |
+| Citations | `[s.source_type:source_id/location]` | `location` is `page/paragraph` for PDF or a heading path for Markdown/web/Notion — grounding checks the full triple so two sources can't spoof each other's citations (Sprint 0/3/5) |
+| Observability | OpenTelemetry + Jaeger | A full sync run and a full chat request are each a single trace end to end (Sprint 8) |
+| Evaluation | DeepEval + `qwen2.5:7b-instruct` (judge) | RAGAS was tried and rejected in production-rag-platform for a real dependency conflict — not re-attempted here (Sprint 9) |
+| UI | Streamlit, multi-page (`st.navigation`) | Separate venv (`.venv-ui`) — a real, confirmed `starlette` version conflict with FastAPI's pin (Sprint 10) |
+| Orchestration | Docker Compose | Qdrant + Jaeger + backend containerized; Ollama stays native — no Metal GPU passthrough on Docker Desktop macOS (Sprint 11) |
+
 ## Quick start (Docker Compose)
 
 Requires a native [Ollama](https://ollama.com) install — Docker Desktop on
@@ -197,6 +221,69 @@ make test
 
 Tests that require live Ollama/Qdrant skip automatically when those
 services aren't reachable.
+
+## Known Limitations
+
+Real, documented gaps — not a hedge. Each one is traceable to a sprint
+closing note in [docs/PLANNING.md](docs/PLANNING.md), or to a direct
+check of the code/tests where noted.
+
+- **The Notion connector has never been tested against a real workspace.**
+  No `NOTION_API_KEY` was available on the development machine (Sprint 6).
+  Its 16 tests simulate Notion's real documented JSON shapes (search
+  pagination, block-children pagination, 429+Retry-After, other errors)
+  via `httpx.MockTransport` — a real end-to-end run
+  (`tests/test_notion_e2e.py`) exists and will run automatically once a
+  key is set, but hasn't yet.
+- **The Claude API path has never been compared against Ollama on a real
+  question.** No `ANTHROPIC_API_KEY` was available (Sprint 1) —
+  `tests/test_provider_comparison_e2e.py` auto-skips. This is "the test
+  never ran," not "no difference was found" — the comparison stays an
+  open question.
+- **PDF retrieval recall is measurably weaker than Markdown's** in the
+  Sprint 9 golden-set run (0.429 vs. 1.0, 12 real questions) — the root
+  cause (page-level chunk granularity vs. Markdown's heading-scoped
+  blocks giving the retriever a harder or easier target?) was observed
+  but not investigated further.
+- **No `WebConnector` exists** — only the web page parser
+  (`app/parsing/web_parser.py`, `trafilatura`) and its chunker are built
+  and tested against a real HTML fixture (Sprint 6). There's no
+  ingest/discovery path from a URL list into the registry/sync pipeline;
+  that sprint's DoD was parsing only.
+- **No Confluence connector.** Sprint 12 (a second connector, proving the
+  `Connector` abstraction generalizes) was a stretch goal and was never
+  attempted.
+- **A cosmetic tracing gap**: every sync/ingestion span's
+  `otel.scope.name` shows `app.sync.manager` in Jaeger, regardless of
+  which module actually produced it (most are really
+  `app.ingestion.ingest`) — `SyncManager` passes its own tracer down
+  explicitly so tests can capture spans with an isolated
+  `TracerProvider`. Doesn't affect span hierarchy, names, or attributes,
+  just that one instrumentation-scope label (Sprint 8).
+- **No authentication, authorization, or multi-tenancy anywhere in the
+  API** — verified directly against the code, not just absent from a
+  sprint's scope: no auth middleware or per-tenant scoping exists in any
+  `app/api/*.py` route. Every endpoint (`/chat`, `/sync/*`, `/sources`,
+  `/health*`) is open to anyone who can reach the port.
+- **`POST /sync/{source_type}` is synchronous** — it blocks until the
+  whole sync finishes rather than returning a background-job id
+  immediately. A deliberate choice (Sprint 7): a real need for
+  fire-and-forget syncing over many/large documents hadn't shown up yet.
+- **Golden-set retrieval precision has a structural ceiling that can be
+  misread as a quality problem**: `search()` returns the top 5 chunks by
+  default (`RERANK_TOP_N`), and each Sprint 9 golden question has exactly
+  one expected location — so even perfect retrieval caps precision at
+  1/5 = 0.2. Markdown's questions actually hit that ceiling every time;
+  read the Sprint 9 closing note before comparing precision numbers
+  across different `top_n` configurations.
+- **Chunk size (500/50 tokens) and rerank k/n (20/5) are untuned
+  defaults**, carried over from Sprint 0 and never revalidated against a
+  larger or more diverse corpus than the golden set's two small fixture
+  documents.
+- **Single-session UI, no persisted conversation history** —
+  `st.session_state` holds Chat page history only for the current browser
+  session; a refresh clears it (consistent with the no-multi-tenancy
+  point above).
 
 ## License
 
