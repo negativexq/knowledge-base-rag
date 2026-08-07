@@ -11,6 +11,7 @@ import httpx
 import pandas as pd
 import streamlit as st
 
+from app.llm.prompt import NOT_FOUND_PHRASE
 from app.ui.citation_formatting import highlight_citations
 from app.ui.sse_client import parse_sse_lines
 from app.ui.trace_client import fetch_trace_spans
@@ -60,10 +61,19 @@ if question:
 
         if grounding_event is not None:
             if not grounding_event["has_citations"]:
-                # Not a warning — a "not found" reply legitimately has no
-                # citations to check. Distinct from "had citations, one
-                # was fabricated" below (see docs/sprint-12-plan.md).
-                st.caption("ℹ️ No citations in this answer.")
+                if full_answer.strip() == NOT_FOUND_PHRASE:
+                    # Neutral — the model honestly said it couldn't find
+                    # an answer, which legitimately has no citations to
+                    # check. Distinct from the case below (see
+                    # docs/sprint-12-plan.md, docs/sprint-16-plan.md).
+                    st.caption("ℹ️ No relevant source found")
+                else:
+                    # The model asserted something with ZERO citations
+                    # backing it — per GroundingResult's own docstring
+                    # this is the most dangerous hallucination shape (no
+                    # citation tag at all to even question), distinct
+                    # from "had citations, one was fabricated" below.
+                    st.warning("⚠️ Answer contains no verifiable citations")
             elif grounding_event["grounded"]:
                 st.caption(f"✅ Grounded — citations: {grounding_event['citations_found']}")
             else:

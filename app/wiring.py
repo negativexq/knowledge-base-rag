@@ -125,10 +125,17 @@ def build_app(settings: Settings) -> FastAPI:
     scheduler = SyncScheduler(manager, sync_intervals_from_settings(settings))
 
     # Long-lived HTTP clients (Ollama x2 — embedding and chat are separate
-    # instances — and Notion, when configured) all already implement
-    # aclose(); nothing previously called it on app shutdown, leaking
-    # connections on exit. See docs/sprint-15-plan.md.
-    on_shutdown = [ollama.aclose, chat_provider.aclose]
+    # instances — Notion, when configured — and Qdrant) all need closing
+    # on app shutdown to avoid leaking connections; nothing previously
+    # called any of them. See docs/sprint-15-plan.md,
+    # docs/sprint-16-plan.md (QdrantClient.close() is sync, wrapped here
+    # since on_shutdown hooks are async; each hook now runs in its own
+    # try/except in app/main.py's lifespan, so one client failing to
+    # close can't skip the rest).
+    async def close_qdrant_client() -> None:
+        qdrant_client.close()
+
+    on_shutdown = [ollama.aclose, chat_provider.aclose, close_qdrant_client]
     for connector in connectors.values():
         if hasattr(connector, "aclose"):
             on_shutdown.append(connector.aclose)

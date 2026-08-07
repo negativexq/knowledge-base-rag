@@ -259,30 +259,52 @@ async def ingest_connector(
                 # partway through embedding/upserting leaves the OLD
                 # version still searchable instead of the document
                 # going dark (Sprint 4's delete-first ordering could do
-                # that). The real, disclosed tradeoff: between the last
+                # that). The real, disclosed tradeoff: between the first
                 # upsert_batch below and delete_stale_chunks, BOTH
                 # versions are simultaneously searchable — see
                 # docs/sprint-13-plan.md and the README's re-index
                 # section for the measured window and why it isn't
                 # eliminated here.
-                for batch_start in range(0, len(chunks), upsert_batch_size):
-                    batch = chunks[batch_start : batch_start + upsert_batch_size]
+                #
+                # The try/except below (Sprint 16) closes a gap that
+                # guarantee didn't cover: with multiple batches, an
+                # earlier batch can already be upserted under the NEW
+                # version when a later batch's embed_fn raises. Without
+                # rollback that partial new version would sit in Qdrant
+                # forever (delete_stale_chunks never runs after a raise)
+                # — see docs/sprint-16-plan.md. On failure, every point
+                # upserted so far under this content_hash is deleted
+                # before the exception is re-raised, restoring the
+                # collection to "only the OLD version, nothing from the
+                # new one" for the whole document, not just its first
+                # batch.
+                try:
+                    for batch_start in range(0, len(chunks), upsert_batch_size):
+                        batch = chunks[batch_start : batch_start + upsert_batch_size]
 
-                    with tracer.start_as_current_span("embed_batch") as span:
-                        span.set_attribute("embed.chunk_count", len(batch))
-                        span.set_attribute("embed.concurrency", embedding_concurrency)
-                        dense_vectors = await embed_texts_concurrently(
-                            [chunk.text for chunk in batch], embed_fn, embedding_concurrency
+                        with tracer.start_as_current_span("embed_batch") as span:
+                            span.set_attribute("embed.chunk_count", len(batch))
+                            span.set_attribute("embed.concurrency", embedding_concurrency)
+                            dense_vectors = await embed_texts_concurrently(
+                                [chunk.text for chunk in batch], embed_fn, embedding_concurrency
+                            )
+                            sparse_vectors = [
+                                sparse_encoder.embed_document(chunk.text) for chunk in batch
+                            ]
+
+                        with tracer.start_as_current_span("upsert_batch") as span:
+                            span.set_attribute("upsert.chunk_count", len(batch))
+                            store.upsert_chunks(batch, dense_vectors, sparse_vectors)
+
+                        chunks_upserted += len(batch)
+                except Exception:
+                    with tracer.start_as_current_span("rollback_partial_version") as span:
+                        span.set_attribute("rollback.source_id", document.source_id)
+                        span.set_attribute("rollback.document_version", content_hash)
+                        store.delete_version(
+                            connector.source_type, document.source_id, content_hash
                         )
-                        sparse_vectors = [
-                            sparse_encoder.embed_document(chunk.text) for chunk in batch
-                        ]
-
-                    with tracer.start_as_current_span("upsert_batch") as span:
-                        span.set_attribute("upsert.chunk_count", len(batch))
-                        store.upsert_chunks(batch, dense_vectors, sparse_vectors)
-
-                    chunks_upserted += len(batch)
+                    raise
 
                 doc_span.set_attribute("ingest.chunk_count", len(chunks))
 

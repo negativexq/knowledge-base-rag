@@ -6,9 +6,11 @@ Builds on [production-rag-platform](https://github.com/negativexq/production-rag
 proven core pipeline (chunking, hybrid dense+sparse search, cross-encoder
 reranking, grounded generation with citations, OpenTelemetry tracing) rather
 than rewriting it from scratch. The new value-add here: ingesting multiple
-document types (PDF, Markdown, web pages, Notion, Confluence) through a
-shared `Connector` interface, and automatic incremental re-sync — only
-changed content gets re-indexed.
+document types (PDF, Markdown, Notion) through a shared `Connector`
+interface — plus a standalone web-page parser (`app/parsing/web_parser.py`)
+not yet wired into a connector, see [Known Limitations](#known-limitations)
+— and automatic incremental re-sync — only changed content gets
+re-indexed.
 
 Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
@@ -54,19 +56,22 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–11 complete** — the platform is fully working end to end:
+**Sprints 0–16 complete** — the platform is fully working end to end:
 
 - Core RAG pipeline (parsing, hybrid search, reranking, grounded
   citations) ported from production-rag-platform
 - Multi-source ingestion: filesystem (PDF/Markdown) + Notion connectors
   behind a shared `Connector` interface
 - Incremental sync (skip/update/delete by content hash) with a scheduler,
-  manual trigger, and full history
+  manual trigger, and full history — including a zero-downtime versioned
+  re-index with automatic rollback of a partially-written new version on
+  mid-batch failure (see [Sync](#sync))
 - Distributed tracing (OpenTelemetry + Jaeger) across both sync and chat
 - Golden-set evaluation (DeepEval + a local judge model)
 - A multi-page Streamlit UI (Chat, Sources, Sync Status)
 - One-command Docker Compose deployment, with sync data surviving a
   container restart
+- CI (lint + real-Qdrant test suite + Docker build) on every push
 
 See [docs/PLANNING.md](docs/PLANNING.md) for the sprint-by-sprint closing
 notes each of these is backed by, and **[Known Limitations](#known-limitations)**
@@ -202,26 +207,46 @@ transactional guarantees Qdrant doesn't offer, and calling it that would
 be a claim this system can't back up. What it actually does, and why:
 
 When a document's content changes, the new version is fully parsed,
-embedded, and upserted into Qdrant *first*, tagged with a
-`document_version` payload field (the new content hash). Only once every
-chunk of the new version is confirmed upserted does the old version's
-chunks get deleted. Before Sprint 13, this was reversed — old chunks were
-deleted *before* re-ingesting — so a failure partway through embedding
-(a network blip, an Ollama timeout) left the document with no searchable
-chunks at all until a later sync succeeded. Deferred cleanup closes that
-specific window: a failed re-index now leaves the *old* version fully
-intact and searchable, never a half-written document.
+embedded, and upserted into Qdrant *first* — in batches of
+`upsert_batch_size` — tagged with a `document_version` payload field
+(the new content hash). Only once every batch of the new version is
+confirmed upserted does the old version's chunks get deleted. Before
+Sprint 13, this was reversed — old chunks were deleted *before*
+re-ingesting — so a failure partway through embedding (a network blip,
+an Ollama timeout) left the document with no searchable chunks at all
+until a later sync succeeded. Deferred cleanup closes that specific
+window: a failed re-index now leaves the *old* version fully intact and
+searchable, never a half-written document.
+
+Sprint 13's fix had its own gap, closed in Sprint 16: the "new version
+either fully lands or none of it does" guarantee only held **within one
+batch**. With a multi-batch document, an earlier batch could already be
+committed under the new `document_version` when a later batch's embed
+call failed — the exception propagated out of `ingest_connector` before
+cleanup ever ran, leaving a *partial* new version sitting in Qdrant
+forever alongside the (correctly intact) old version. The fix: on any
+failure mid-loop, every point already upserted under that
+`document_version` is explicitly rolled back
+(`QdrantStore.delete_version()`) before the exception is re-raised,
+restoring "only the old version, nothing from the new one" for the
+whole document — proven with a real 3-batch failure scenario, not just
+the single-batch case (`tests/test_versioned_reindex.py::test_multi_batch_partial_failure_rolls_back_the_partial_new_version`).
 
 The honest tradeoff this doesn't eliminate: between the new version's
 upsert finishing and the old version's cleanup running, **both versions
 are simultaneously present and searchable** — a query in that window can
 return duplicate/stale-alongside-fresh chunks for the same document. This
 window is real, not hypothetical (proven with a test that inspects
-Qdrant's actual contents at that exact moment) and was measured at ~12
-microseconds for a local, in-memory run — bounded by the time between two
-sequential Qdrant calls, not by embedding time (all embedding happens
-*before* the window opens). See the Sprint 13 closing note in
-[docs/PLANNING.md](docs/PLANNING.md) for the measurement and the
+Qdrant's actual contents at that exact moment), and its duration scales
+with how many batches a re-index takes, not a fixed number: measured at
+~12–20 microseconds for a single-batch document (bounded by the time
+between two sequential Qdrant calls — all embedding happens *before* the
+window opens), but **~1.5–3 milliseconds across several runs for a real
+7-batch document** — because the window actually starts at the *first*
+batch's upsert, not the last, so a multi-batch re-index's new chunks are
+partially visible for the whole remaining ingestion time, not just a
+last-call gap. See the Sprint 13 and Sprint 16 closing notes in
+[docs/PLANNING.md](docs/PLANNING.md) for both measurements and the
 before/after failure-scenario proof.
 
 ### Embedding throughput: real benchmark, not assumed to scale
@@ -232,24 +257,34 @@ The real question — does a single native Ollama instance actually get
 faster with more concurrent requests, or does it queue/degrade past some
 point? — was benchmarked directly
 (`scripts/benchmark_embedding_concurrency.py`, `nomic-embed-text` on an
-M2), not assumed:
+M2), not assumed. Sprint 14's original run took one sample per
+(chunk_count, concurrency) pair; an external review correctly flagged
+that "plateau within measurement noise" wasn't backed by an actual
+variance number. Sprint 16 hardened the methodology — a warmup call per
+chunk count, 3 repeats per pair with concurrency order randomized each
+repeat, mean/median/stddev reported — and re-ran it for real:
 
-| Chunks | concurrency=1 | concurrency=2 | concurrency=4 | concurrency=8 |
+| Concurrency | mean chunks/sec | median | stddev | n |
 |---:|---:|---:|---:|---:|
-| 10 | 11.4 chunks/sec | 63.9 | 62.3 | 67.1 |
-| 100 | 40.5 chunks/sec | 77.7 | 72.9 | 82.7 |
-| 1000 | 39.6 chunks/sec | 80.9 | 87.4 | 88.5 |
+| 1 | 26.9 | 28.2 | 7.6 | 9 |
+| 2 | 48.9 | 58.0 | 19.8 | 9 |
+| 4 | 57.1 | 63.6 | 18.5 | 9 |
+| 8 | 55.6 | 62.2 | 23.8 | 9 |
+
+(n = 3 repeats × 3 chunk counts of 10/100/1000, each repeat's
+concurrency order shuffled independently.)
 
 The result is a **plateau, not unbounded scaling** — exactly the failure
 mode a single-model native Ollama instance could plausibly hit, so it was
 worth actually measuring rather than assuming "more concurrency = more
-throughput." Concurrency=2 already captures nearly all the real gain over
-sequential (1); concurrency=4 is marginally ahead at scale (87.4 vs 80.9
-chunks/sec at 1000 chunks); concurrency=8 shows **no further real
-benefit** over 4 (within measurement noise, sometimes lower at small
-chunk counts) while holding more connections open for nothing.
-**`EMBEDDING_CONCURRENCY` defaults to 4** — the last point on the curve
-with a genuine measured improvement.
+throughput," and this time the plateau claim is backed by real variance:
+1→2 is a genuine jump (48.9 vs 26.9, a gap far larger than either's
+stddev); 2→4 is a smaller further gain; 4→8 is **not distinguishable
+from noise** — 57.1 vs 55.6 mean, well inside both configurations'
+stddev (18.5 and 23.8) — while holding twice as many connections open
+for it. **`EMBEDDING_CONCURRENCY` defaults to 4** — same choice as
+Sprint 14, now confirmed by a statistically honest re-run rather than a
+single sample per point.
 
 A real sync run's own time breakdown (7 chunks, `EMBEDDING_CONCURRENCY=4`,
 captured from the same OTel spans Jaeger uses — Sprint 8):
@@ -387,7 +422,7 @@ check of the code/tests where noted.
   and tested against a real HTML fixture (Sprint 6). There's no
   ingest/discovery path from a URL list into the registry/sync pipeline;
   that sprint's DoD was parsing only.
-- **No Confluence connector.** Sprint 16 (a second connector, proving the
+- **No Confluence connector.** Sprint 17 (a second connector, proving the
   `Connector` abstraction generalizes) is a stretch goal and hasn't been
   attempted yet.
 - **The sync concurrency lock is process-local, not distributed** —

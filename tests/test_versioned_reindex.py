@@ -106,6 +106,86 @@ async def test_embed_failure_mid_reindex_leaves_old_version_searchable(tmp_path)
     assert registry.get_document("filesystem", "doc_md").content_hash == old_hash
 
 
+async def test_multi_batch_partial_failure_rolls_back_the_partial_new_version(tmp_path):
+    """The Sprint 16 fix: Sprint 13's guarantee ("a failure mid-embed
+    leaves the OLD version fully intact") was only true within a single
+    upsert batch. With upsert_batch_size small enough to force multiple
+    batches, a failure in batch 2+ used to leave batch 1's NEW-version
+    points sitting in Qdrant alongside the untouched OLD version —
+    delete_stale_chunks never ran, so nothing cleaned them up. This test
+    proves the rollback: after the failure, NO points anywhere carry the
+    new document_version, not just "the old ones survived".
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    sentences = [f"Original sentence number {i} about apples." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(sentences))
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store("test_versioned_reindex_rollback")
+    registry = _registry(tmp_path)
+
+    await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+    )
+    old_hash = registry.get_document("filesystem", "doc_md").content_hash
+    old_points_before = [
+        p for p in _all_points(store, "test_versioned_reindex_rollback")
+        if p.payload["source_id"] == "doc_md"
+    ]
+    assert len(old_points_before) >= 6  # sanity: enough chunks for 3+ batches of 2
+
+    new_sentences = [f"Completely rewritten sentence number {i} about oranges." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(new_sentences))
+
+    call_count = 0
+
+    async def flaky_embed(text: str) -> list[float]:
+        nonlocal call_count
+        call_count += 1
+        # Let batch 1 (2 chunks) succeed fully, then fail partway through
+        # batch 2 — proving the rollback covers a batch that already
+        # started, not just batches that never ran.
+        if call_count > 3:
+            raise SimulatedEmbedFailure("simulated network failure mid-batch-2")
+        return await _fake_embed(text)
+
+    try:
+        await ingest_connector(
+            connector, store, registry, flaky_embed, _FakeSparseEncoder(),
+            chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        )
+        raise AssertionError("expected the simulated embed failure to propagate")
+    except SimulatedEmbedFailure:
+        pass
+
+    points_after_failure = [
+        p for p in _all_points(store, "test_versioned_reindex_rollback")
+        if p.payload["source_id"] == "doc_md"
+    ]
+
+    # The OLD version is fully intact — same guarantee as the single-batch
+    # case above.
+    old_ids = {p.id for p in old_points_before}
+    surviving_old = [p for p in points_after_failure if p.id in old_ids]
+    assert len(surviving_old) == len(old_points_before)
+    assert any("apples" in p.payload["text"] for p in surviving_old)
+
+    # The NEW twist this test exists for: batch 1's NEW-version points
+    # (which DID get upserted before batch 2 failed) must have been
+    # rolled back too — zero points anywhere carry the new hash.
+    new_version_points = [
+        p for p in points_after_failure if p.payload["document_version"] != old_hash
+    ]
+    assert new_version_points == []
+    assert not any("oranges" in p.payload["text"] for p in points_after_failure)
+
+    # Registry still points at the OLD hash — a retry will correctly see
+    # this document as still "changed".
+    assert registry.get_document("filesystem", "doc_md").content_hash == old_hash
+
+
 async def test_successful_reindex_cleans_up_the_old_version(tmp_path):
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
@@ -208,3 +288,61 @@ async def test_duplicate_visibility_window_duration_is_measured_via_real_spans(t
     # a guaranteed bound; see the Sprint 13 closing note for the actual
     # measured value from this run.
     print(f"\nduplicate-visibility window: {window_ns / 1000:.1f} microseconds")
+
+
+async def test_multi_batch_duplicate_visibility_window_measured_from_first_upsert(tmp_path):
+    """Sprint 16: the single-batch measurement above understates the real
+    window for a multi-batch re-index. Once batch 1 is upserted, its
+    NEW-version chunks are already searchable side by side with the
+    (still fully intact) OLD version — and stay that way until
+    delete_stale_chunks finally runs after the LAST batch. The real
+    window is FIRST upsert_batch end -> delete_stale_chunks start, which
+    only collapses to the single-batch number when there's exactly one
+    batch. This measures it for a real multi-batch document instead.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    sentences = [f"Original sentence number {i} about apples." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(sentences))
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store("test_versioned_reindex_multi_batch_timing")
+    registry = _registry(tmp_path)
+
+    await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+    )
+
+    new_sentences = [f"Completely rewritten sentence number {i} about oranges." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(new_sentences))
+
+    exporter = InMemorySpanExporter()
+    provider = TracerProvider()
+    provider.add_span_processor(SimpleSpanProcessor(exporter))
+    tracer = provider.get_tracer("test")
+
+    await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2, tracer=tracer,
+    )
+
+    spans = exporter.get_finished_spans()
+    upsert_spans = [s for s in spans if s.name == "upsert_batch"]
+    delete_span = next(s for s in spans if s.name == "delete_stale_chunks")
+
+    assert len(upsert_spans) >= 3  # sanity: this really did run multiple batches
+
+    first_upsert_end = min(s.end_time for s in upsert_spans)
+    last_upsert_end = max(s.end_time for s in upsert_spans)
+    window_from_first_ns = delete_span.start_time - first_upsert_end
+    window_from_last_ns = delete_span.start_time - last_upsert_end
+
+    assert window_from_first_ns >= window_from_last_ns >= 0
+    print(
+        f"\nmulti-batch duplicate-visibility window "
+        f"(first upsert_batch -> cleanup): {window_from_first_ns / 1000:.1f} microseconds "
+        f"across {len(upsert_spans)} batches "
+        f"(last-batch-only measurement would have shown "
+        f"{window_from_last_ns / 1000:.1f} microseconds)"
+    )

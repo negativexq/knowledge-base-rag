@@ -1,4 +1,4 @@
-"""Sprint 14: real embedding-concurrency benchmark against native Ollama.
+"""Sprint 14/16: real embedding-concurrency benchmark against native Ollama.
 
 Not part of the automated test suite (CI has no Ollama, see the Sprint 12
 closing note in docs/PLANNING.md) — run manually:
@@ -12,9 +12,21 @@ a single native Ollama instance serving one model may serialize
 internally past some point, which would show up as a plateau or a
 regression in the numbers below, and this script reports whatever the
 real numbers are.
+
+Sprint 16 hardening, in response to an external review of Sprint 14's
+single-sample methodology: an untimed warmup call per chunk count (rules
+out first-request connection/model-load overhead skewing concurrency=1's
+numbers low), REPEATS timed samples per (chunk_count, concurrency) pair
+instead of one, and a randomized concurrency order per repeat (rules out
+any monotonic drift over the whole script's runtime — thermal throttling,
+Ollama's own warm-up — being misattributed to concurrency itself). Reports
+mean/median/stddev, not a single number, so "plateau within measurement
+noise" is a claim backed by an actual variance figure.
 """
 
 import asyncio
+import random
+import statistics
 import time
 
 from app.ingestion.ingest import SEARCH_DOCUMENT_PREFIX, embed_texts_concurrently
@@ -23,6 +35,7 @@ from app.shared.config import settings
 
 CHUNK_COUNTS = [10, 100, 1000]
 CONCURRENCY_LEVELS = [1, 2, 4, 8]
+REPEATS = 3
 
 # Representative of a real chunk: a few sentences, not a single word —
 # short enough to keep the benchmark's own runtime reasonable, long
@@ -47,27 +60,50 @@ async def main() -> None:
 
     texts = [_TEXT_TEMPLATE.format(i=i) for i in range(max(CHUNK_COUNTS))]
 
-    print(f"{'chunks':>7} {'concurrency':>11} {'elapsed_s':>10} {'chunks/sec':>11}")
+    print(f"{'chunks':>7} {'concurrency':>11} {'repeat':>7} {'elapsed_s':>10} {'chunks/sec':>11}")
     results = []
     try:
         for n in CHUNK_COUNTS:
             batch = texts[:n]
-            for concurrency in CONCURRENCY_LEVELS:
-                start = time.perf_counter()
-                await embed_texts_concurrently(batch, embed_fn, concurrency)
-                elapsed = time.perf_counter() - start
-                rate = n / elapsed
-                results.append(
-                    {"chunks": n, "concurrency": concurrency, "elapsed_s": elapsed, "rate": rate}
-                )
-                print(f"{n:7d} {concurrency:11d} {elapsed:10.2f} {rate:11.2f}")
+
+            # Untimed warmup — absorbs first-connection/model-load
+            # overhead once per chunk count, before any timed sample.
+            await embed_texts_concurrently(batch, embed_fn, concurrency=4)
+
+            for repeat in range(REPEATS):
+                order = list(CONCURRENCY_LEVELS)
+                random.shuffle(order)
+                for concurrency in order:
+                    start = time.perf_counter()
+                    await embed_texts_concurrently(batch, embed_fn, concurrency)
+                    elapsed = time.perf_counter() - start
+                    rate = n / elapsed
+                    results.append(
+                        {
+                            "chunks": n,
+                            "concurrency": concurrency,
+                            "repeat": repeat,
+                            "elapsed_s": elapsed,
+                            "rate": rate,
+                        }
+                    )
+                    print(f"{n:7d} {concurrency:11d} {repeat:7d} {elapsed:10.2f} {rate:11.2f}")
     finally:
         await ollama.aclose()
 
-    print("\nSummary (chunks/sec by concurrency, averaged across chunk counts):")
+    print(
+        f"\nSummary (chunks/sec by concurrency, mean/median/stddev across "
+        f"{REPEATS} repeats x {len(CHUNK_COUNTS)} chunk counts):"
+    )
     for concurrency in CONCURRENCY_LEVELS:
         rates = [r["rate"] for r in results if r["concurrency"] == concurrency]
-        print(f"  concurrency={concurrency}: avg {sum(rates) / len(rates):.2f} chunks/sec")
+        mean = statistics.mean(rates)
+        median = statistics.median(rates)
+        stddev = statistics.stdev(rates) if len(rates) > 1 else 0.0
+        print(
+            f"  concurrency={concurrency}: mean {mean:.2f}, median {median:.2f}, "
+            f"stddev {stddev:.2f} chunks/sec (n={len(rates)})"
+        )
 
 
 if __name__ == "__main__":

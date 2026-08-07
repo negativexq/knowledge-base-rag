@@ -108,6 +108,58 @@ def test_ensure_collection_fails_fast_on_schema_mismatch_without_deleting_it():
     assert client.count(COLLECTION, exact=True).count == 1  # the point wasn't wiped
 
 
+def test_ensure_collection_fails_fast_on_wrong_dense_vector_size():
+    """Sprint 16: a collection with the right sparse config but a stale or
+    wrong dense dimension (e.g. left over from a different embedding
+    model) used to pass ensure_collection() silently and only fail later,
+    confusingly, at the first upsert.
+    """
+    client = QdrantClient(":memory:")
+    client.create_collection(
+        COLLECTION,
+        vectors_config={
+            VECTOR_NAME: qmodels.VectorParams(size=384, distance=qmodels.Distance.COSINE)
+        },
+        sparse_vectors_config={SPARSE_VECTOR_NAME: qmodels.SparseVectorParams()},
+    )
+
+    store = QdrantStore(client=client, collection_name=COLLECTION)
+
+    with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
+        store.ensure_collection()
+
+
+def test_ensure_collection_fails_fast_on_wrong_distance_metric():
+    client = QdrantClient(":memory:")
+    client.create_collection(
+        COLLECTION,
+        vectors_config={
+            VECTOR_NAME: qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.EUCLID)
+        },
+        sparse_vectors_config={SPARSE_VECTOR_NAME: qmodels.SparseVectorParams()},
+    )
+
+    store = QdrantStore(client=client, collection_name=COLLECTION)
+
+    with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
+        store.ensure_collection()
+
+
+def test_ensure_collection_accepts_correct_dense_and_sparse_schema():
+    client = QdrantClient(":memory:")
+    client.create_collection(
+        COLLECTION,
+        vectors_config={
+            VECTOR_NAME: qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.COSINE)
+        },
+        sparse_vectors_config={SPARSE_VECTOR_NAME: qmodels.SparseVectorParams()},
+    )
+
+    store = QdrantStore(client=client, collection_name=COLLECTION)
+
+    store.ensure_collection()  # must not raise
+
+
 def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
     store = _store()
     chunk = _chunk()
@@ -307,6 +359,70 @@ def test_delete_stale_versions_does_not_touch_a_different_source_type_with_the_s
 def test_delete_stale_versions_on_a_document_with_no_points_is_a_no_op():
     store = _store()
     store.delete_stale_versions("pdf", "never-existed", keep_version="v1")  # must not raise
+    assert store.count() == 0
+
+
+def test_delete_version_removes_only_points_with_the_given_version():
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc1", char_range=(0, 10), text="old text")],
+        [_dense_vector()],
+        [_sparse_vector()],
+    )
+    store.upsert_chunks(
+        [_chunk(doc_id="v2", source_id="doc1", char_range=(0, 10), text="new text")],
+        [_dense_vector()],
+        [_sparse_vector()],
+    )
+    assert store.count() == 2  # sanity: both versions coexist before rollback
+
+    store.delete_version("pdf", "doc1", document_version="v2")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["document_version"] == "v1"
+    assert remaining[0].payload["text"] == "old text"
+
+
+def test_delete_version_does_not_touch_other_documents():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(doc_id="v1", source_id="doc1"),
+            _chunk(doc_id="v1", source_id="doc2"),
+        ],
+        [_dense_vector()] * 2,
+        [_sparse_vector()] * 2,
+    )
+
+    store.delete_version("pdf", "doc1", document_version="v1")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["source_id"] == "doc2"
+
+
+def test_delete_version_does_not_touch_a_different_source_type_with_the_same_source_id():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(doc_id="v1", source_type="pdf", source_id="readme"),
+            _chunk(doc_id="v1", source_type="markdown", source_id="readme"),
+        ],
+        [_dense_vector(), _dense_vector()],
+        [_sparse_vector(), _sparse_vector()],
+    )
+
+    store.delete_version("pdf", "readme", document_version="v1")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["source_type"] == "markdown"
+
+
+def test_delete_version_on_a_document_with_no_points_is_a_no_op():
+    store = _store()
+    store.delete_version("pdf", "never-existed", document_version="v1")  # must not raise
     assert store.count() == 0
 
 

@@ -1008,7 +1008,144 @@ davranış değişikliği olmadığı için mevcut testlerin hiçbiri
 değişmedi), 5'i servis/API key gerektirdiği için skip (değişmedi),
 `ruff check` temiz.
 
-## Sprint 16 (stretch) — İkinci Connector (Confluence)
+## Sprint 16 — Re-index Failure Semantics & Hardening
+
+Amaç: İkinci bir dış kod review'ından çıkan, özellikle Sprint 13'ün ölçüm metodolojisindeki gerçek bir açığı ve birkaç production-hijyen sorununu kapatmak.
+
+Scope:
+
+1. Multi-batch partial-new re-index bug'ı: `QdrantStore.delete_version()` eklenir, embed/upsert döngüsü try/except ile sarılır, hata olursa o document_version'a ait tüm point'ler rollback edilir; Sprint 13'ün duplicate-window ölçümü gerçek çok-batch'li bir dokümanla yeniden yapılır
+2. Config validation: `embedding_concurrency` ve sync interval'lerine Pydantic `Field` kısıtları
+3. UI: citation-free durumunda `NOT_FOUND_PHRASE` ile gerçek halüsinasyonu ayırt et
+4. `ensure_collection()` dense vector boyutu + distance metriğini de kontrol etsin
+5. Shutdown hook'ları failure-safe yapılır, `QdrantClient` de listeye eklenir
+6. README çelişkileri (Confluence/web connector iddiası, stale Status sayısı) düzeltilir
+7. Benchmark metodolojisi: warmup, tekrar, randomize, mean/median/stddev
+8. CI lint scope'u `scripts/`'i de kapsayacak şekilde genişletilir
+
+DoD: multi-batch kısmi başarısızlık senaryosunda rollback gerçekten çalışıyor (kanıtlanmış); duplicate window gerçek bir çok-batch dokümanla yeniden ölçülmüş; config validation çalışıyor; UI citation-free durumları ayırt ediyor; Qdrant schema validation tam; shutdown failure-safe; README tutarlı; benchmark istatistiksel olarak daha sağlam; testler ve lint temiz.
+
+### Kapanış notu
+
+**1. Multi-batch partial-new re-index bug'ı — GERÇEKTEN kanıtlandı, sadece
+düzeltilmedi.** Önce bug'ı reproduce eden bir test yazıldı (fix'ten ÖNCE
+çalıştırıldı, gerçekten fail etti — varsayılmadı): `upsert_batch_size=2`,
+7 batch'lik gerçek bir Markdown dokümanı, batch 1 başarılı, batch 2'nin
+embed çağrısı GERÇEKTEN hata fırlatıyor. Fix öncesi: batch 1'in
+NEW-version point'leri koleksiyonda kalıyordu, `delete_stale_chunks` hiç
+çalışmıyordu — Sprint 13'ün ADR'ının iddia ettiği "eski versiyon sağlam
+kalır" garantisi doğruydu ama eksikti, çünkü kısmi bir YENİ versiyon da
+sessizce koleksiyonda kalıyordu. Fix: `QdrantStore.delete_version()`
+eklendi (mevcut `delete_stale_versions`'ın aynası — o "keep_version
+DIŞINDAKİLERİ" siler, bu "document_version EŞLEŞENLERİ" siler),
+`ingest_connector`'ın embed/upsert döngüsü try/except'e alındı, hata
+olursa o `document_version`'a ait TÜM point'ler rollback edilip hata
+yeniden fırlatılıyor. Test artık geçiyor: eski versiyon %100 sağlam, YENİ
+versiyona ait SIFIR point var (sadece "eskiler hayatta kaldı" değil,
+"yenilerden hiçbiri kalmadı" doğrudan assert edildi), registry hâlâ eski
+hash'i gösteriyor.
+
+**2. Duplicate-visibility penceresi gerçek bir çok-batch dokümanla
+yeniden ölçüldü — Sprint 13'ün ~12µs'lik sayısı yanıltıcıydı, tek
+batch'lik bir dokümanla ölçülmüştü.** Yeni ölçüm: son `upsert_batch`
+yerine İLK `upsert_batch`'in bitişinden `delete_stale_chunks`'ın
+başlangıcına kadar olan gerçek OTel span farkı (7 batch'lik gerçek bir
+dokümanla). Birden fazla koşuda gözlemlenen gerçek sayılar:
+tek-batch'lik pencere ~12-22 mikrosaniye civarında kalırken, çok-batch'lik
+pencere **~1.5-3.2 milisaniye** — yani ~100 kat daha uzun, çünkü pencere
+artık ilk batch upsert edildiği andan itibaren açık kalıyor, sadece son
+iki Qdrant çağrısı arasındaki fark değil. README ve
+`app/ingestion/ingest.py`'nin kod yorumu bu gerçek sayıyla güncellendi.
+
+**3. Config validation eklendi, gerçek bir deadlock sınıfı önlendi.**
+`embedding_concurrency` artık `Field(ge=1, le=32)`,
+`filesystem_sync_interval_seconds`/`notion_sync_interval_seconds` artık
+`Field(gt=0)`. `EMBEDDING_CONCURRENCY=0` öncesi `Settings()`'i sessizce
+geçip ilk gerçek sync'te `asyncio.Semaphore(0)` ile sonsuza kadar
+deadlock oluyordu (kod okunarak doğrulandı: `Semaphore(0)` hiçbir
+`_bounded` coroutine'ini `async with`'ten geçirmez) — artık `Settings()`
+inşa anında (yani process başlangıcında) `ValidationError` fırlatıyor.
+4 yeni test (0, negatif embedding_concurrency; 0, negatif sync interval).
+
+**4. UI: citation-free durumu artık `NOT_FOUND_PHRASE`'e göre ayrılıyor.**
+`app/ui/pages/chat.py`: `full_answer.strip() == NOT_FOUND_PHRASE` ise
+nötr "ℹ️ No relevant source found", değilse "⚠️ Answer contains no
+verifiable citations" (`grounding.py`'nin kendi docstring'ine göre en
+tehlikeli halüsinasyon şekli — hiç citation tag'i yok, sorgulanacak bir
+şey bile yok). Streamlit sayfaları için mevcut bir test altyapısı yok
+(projenin geri kalanı da öyle) — bu, koddan okunarak ve gerçek diff
+üzerinden doğrulandı, tarayıcı testi bu sprint'in kapsamında değildi.
+
+**5. Qdrant schema validation tamamlandı.** `ensure_collection()` artık
+sparse vector varlığının yanında dense vector'ın boyutunu (`EMBEDDING_DIM`)
+ve distance metriğini (`COSINE`) de kontrol ediyor, uyuşmazlıkta
+`UnexpectedCollectionSchemaError` fırlatıyor (koleksiyonu silmeden —
+mevcut sparse-check'le aynı "dokunma, insana söyle" politikası). Fix
+öncesi 2 test yazıldı, GERÇEKTEN fail ettiği doğrulandı (yanlış boyut:
+384 yerine 768; yanlış metrik: EUCLID yerine COSINE), sonra fix'le
+birlikte geçti. Doğru şema hâlâ sorunsuz kabul ediliyor (ayrı bir test).
+
+**6. Shutdown hook'ları artık failure-safe, `QdrantClient` de listede.**
+`app/main.py`'nin `lifespan`'i her `on_shutdown` hook'unu kendi
+try/except'i içinde çalıştırıyor (`logger.exception`, raise değil) — bir
+client'ın `aclose()`'u patlarsa (örn. Notion yarı-açık bir bağlantıda
+hata verirse) artık listedeki geri kalan hook'ları (Ollama embed, chat
+provider gibi daha önemlileri) engellemiyor. Fix öncesi 2 test yazıldı,
+GERÇEKTEN fail ettiği doğrulandı, sonra geçti. `app/wiring.py::build_app()`
+artık `qdrant_client.close()`'u (sync, async bir wrapper'la sarılı)
+listeye ekliyor — artık 3 değil 4 gerçek client kapanıyor (Ollama embed,
+chat provider, Notion, Qdrant). Gerçek scratch script'le yeniden
+doğrulandı (Sprint 15'teki aynı script) — hepsi exception fırlatmadan
+kapandı.
+
+**7. README çelişkileri düzeltildi.** Giriş paragrafı artık "PDF,
+Markdown, Notion" + "ayrı bir web parser var ama connector'a
+bağlanmamış" diyor (Confluence hiç yok, web parser'ın sync desteği yok —
+ikisi de daha önce Known Limitations'da vardı ama giriş paragrafı hâlâ
+5 kaynağı da varmış gibi listeleyip çelişiyordu). `## Status`: "Sprints
+0–11" → "Sprints 0–16", CI bulleti eklendi, versioned re-index bulletine
+rollback notu eklendi. Confluence known-limitation bulletindeki stale
+"Sprint 16" referansı "Sprint 17" olarak düzeltildi (bu sprint'in kendi
+numarasını alması nedeniyle stretch-connector sprint'i
+`docs/PLANNING.md`'de Sprint 17'ye kaydırıldı).
+
+**8. Benchmark metodolojisi güçlendirildi VE gerçek Ollama'ya karşı
+yeniden koşuldu (skip edilmedi).** `scripts/benchmark_embedding_concurrency.py`:
+her chunk sayısı için 1 ısınma koşumu, her (chunk_count, concurrency)
+çifti için 3 tekrar, her tekrarda concurrency sırası `random.shuffle`
+ile karıştırılıyor, mean/median/stddev raporlanıyor. Gerçek koşum
+sonucu (native Ollama, `nomic-embed-text`, n=9 her concurrency için):
+concurrency=1 → mean 26.9 (stddev 7.6), concurrency=2 → mean 48.9
+(stddev 19.8), concurrency=4 → mean 57.1 (stddev 18.5), concurrency=8 →
+mean 55.6 (stddev 23.8). Sprint 14'ün "plateau" iddiası artık gerçek bir
+varyans sayısıyla destekleniyor: 1→2 sıçraması her iki stddev'den de
+büyük (gerçek), 4→8 farkı (57.1 vs 55.6) her iki stddev'in de İÇİNDE
+(gürültüden ayırt edilemiyor). `EMBEDDING_CONCURRENCY=4` varsayılanı
+değişmedi — Sprint 14'teki seçim artık istatistiksel olarak dürüst bir
+şekilde doğrulandı. README tablosu bu gerçek sayılarla güncellendi.
+
+**9. CI lint scope'u genişletildi.** `.github/workflows/ci.yml`:
+`ruff check app tests` → `ruff check app tests scripts`. Genişletmeden
+önce `scripts/` yerel olarak lint edildi, bir satır-uzunluğu hatası
+(bu sprintin kendi yeni test dosyasında, `ruff check app tests scripts`
+ile keşfedildi) düzeltildi, sonra CI workflow'u güncellendi.
+
+**Ortam notu (kod ile ilgisiz):** kapsamlı benchmark koşumu sırasında
+native Ollama'nın generation modeli (`qwen2.5:7b-instruct`) geçici
+olarak yanıt vermez hale geldi (muhtemelen ağır embedding yükü modeli
+bellekten attı, yeniden yükleme takıldı) — `test_generation_e2e.py`'nin
+3 testi bu yüzden `OllamaUnreachableError` ile fail etti. Ollama
+yeniden başlatıldıktan sonra (kullanıcı onayıyla) tüm suite tekrar
+koşuldu ve temiz geçti; bu sprint'in kod değişiklikleriyle ilgisi yoktu
+(generation kod yolu bu sprintte hiç değiştirilmedi).
+
+**380 test yeşil** (bu sprintte +15 yeni test:
+`tests/test_versioned_reindex.py` +2 — rollback testi + çok-batch pencere
+ölçüm testi; `tests/test_qdrant_store.py` +7 — 4 `delete_version` testi +
+3 dense-schema-validation testi; `tests/test_config.py` +4 — embedding
+concurrency/sync interval sınır testleri; `tests/test_app_lifespan.py` +2
+— shutdown failure-safety testleri), 5'i servis/API key gerektirdiği için
+skip (değişmedi), `ruff check app tests scripts` temiz.
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

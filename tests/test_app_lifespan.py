@@ -100,3 +100,36 @@ def test_app_without_on_shutdown_hooks_starts_and_stops_cleanly(tmp_path):
     with client:
         response = client.get("/health")
         assert response.status_code == 200
+
+
+def test_a_raising_shutdown_hook_does_not_block_the_rest(tmp_path):
+    """Sprint 16: one broken client's aclose() (e.g. Notion erroring on a
+    half-open connection) used to abort the whole for-loop, skipping
+    every hook after it — including closing the Ollama/chat-provider
+    clients that matter more.
+    """
+    calls = []
+
+    async def raising_hook():
+        calls.append("raising_hook_ran")
+        raise RuntimeError("simulated aclose() failure")
+
+    async def tracking_hook():
+        calls.append("tracking_hook_ran")
+
+    client = _client(tmp_path, on_shutdown=[raising_hook, tracking_hook])
+
+    with client:
+        pass
+
+    assert calls == ["raising_hook_ran", "tracking_hook_ran"]
+
+
+def test_all_shutdown_hooks_raising_does_not_crash_app_shutdown(tmp_path):
+    async def always_raises():
+        raise RuntimeError("simulated aclose() failure")
+
+    client = _client(tmp_path, on_shutdown=[always_raises, always_raises])
+
+    with client:
+        pass  # must not raise on exit

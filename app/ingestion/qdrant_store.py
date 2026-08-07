@@ -32,15 +32,39 @@ class QdrantStore:
     def ensure_collection(self) -> None:
         if self._client.collection_exists(self._collection_name):
             info = self._client.get_collection(self._collection_name)
-            if SPARSE_VECTOR_NAME in (info.config.params.sparse_vectors or {}):
-                return
-            raise UnexpectedCollectionSchemaError(
-                f"Collection {self._collection_name!r} already exists but is missing the "
-                f"{SPARSE_VECTOR_NAME!r} sparse vector this app requires. Qdrant can't add a "
-                "named vector to an existing collection, and this collection was left "
-                "untouched rather than deleted and recreated — delete it yourself if that's "
-                "genuinely safe, or point QDRANT_COLLECTION_NAME at a fresh collection name."
+
+            if SPARSE_VECTOR_NAME not in (info.config.params.sparse_vectors or {}):
+                raise UnexpectedCollectionSchemaError(
+                    f"Collection {self._collection_name!r} already exists but is missing the "
+                    f"{SPARSE_VECTOR_NAME!r} sparse vector this app requires. Qdrant can't add "
+                    "a named vector to an existing collection, and this collection was left "
+                    "untouched rather than deleted and recreated — delete it yourself if "
+                    "that's genuinely safe, or point QDRANT_COLLECTION_NAME at a fresh "
+                    "collection name."
+                )
+
+            # Sprint 16: a collection can have the right sparse config but
+            # a stale/wrong dense dimension or distance metric (e.g. left
+            # over from a different embedding model) — checking only
+            # sparse presence let that pass silently and fail later,
+            # confusingly, at the first upsert instead of here.
+            dense_params = info.config.params.vectors[VECTOR_NAME]
+            schema_mismatch = (
+                dense_params.size != EMBEDDING_DIM
+                or dense_params.distance != qmodels.Distance.COSINE
             )
+            if schema_mismatch:
+                raise UnexpectedCollectionSchemaError(
+                    f"Collection {self._collection_name!r} already exists but its "
+                    f"{VECTOR_NAME!r} dense vector is size={dense_params.size}, "
+                    f"distance={dense_params.distance.name} — this app requires "
+                    f"size={EMBEDDING_DIM}, distance={qmodels.Distance.COSINE.name}. Left "
+                    "untouched rather than deleted and recreated — delete it yourself if "
+                    "that's genuinely safe, or point QDRANT_COLLECTION_NAME at a fresh "
+                    "collection name."
+                )
+
+            return
 
         self._client.create_collection(
             collection_name=self._collection_name,
@@ -116,6 +140,38 @@ class QdrantStore:
                             key="document_version", match=qmodels.MatchValue(value=keep_version)
                         ),
                     ],
+                )
+            ),
+        )
+
+    def delete_version(self, source_type: str, source_id: str, document_version: str) -> None:
+        """Delete every point for (source_type, source_id) whose
+        document_version MATCHES the given one — the mirror image of
+        delete_stale_versions (which deletes everything EXCEPT one
+        version). Used to roll back a partially-upserted NEW version when
+        a multi-batch re-index fails partway through: earlier batches may
+        already be committed under this document_version, and a plain
+        re-raise without cleanup would leave those partial NEW-version
+        points sitting alongside the still-intact OLD version
+        indefinitely (see docs/sprint-16-plan.md). Safe to call when no
+        points carry this version yet — deletes zero, no error.
+        """
+        self._client.delete(
+            collection_name=self._collection_name,
+            points_selector=qmodels.FilterSelector(
+                filter=qmodels.Filter(
+                    must=[
+                        qmodels.FieldCondition(
+                            key="source_type", match=qmodels.MatchValue(value=source_type)
+                        ),
+                        qmodels.FieldCondition(
+                            key="source_id", match=qmodels.MatchValue(value=source_id)
+                        ),
+                        qmodels.FieldCondition(
+                            key="document_version",
+                            match=qmodels.MatchValue(value=document_version),
+                        ),
+                    ]
                 )
             ),
         )

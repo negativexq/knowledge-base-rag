@@ -1,5 +1,6 @@
 from typing import Literal
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -42,8 +43,11 @@ class Settings(BaseSettings):
     # Settings; app/sync/scheduler.py::SyncScheduler itself takes a generic
     # dict[str, float] built from these at app-wiring time, so the
     # scheduler stays connector-agnostic even though Settings isn't.
-    filesystem_sync_interval_seconds: float = 300.0
-    notion_sync_interval_seconds: float = 1800.0
+    # gt=0, not ge=0: a periodic SyncScheduler interval of exactly 0 has
+    # no sane meaning (busy-spin), same reasoning as
+    # embedding_concurrency below (Sprint 16).
+    filesystem_sync_interval_seconds: float = Field(default=300.0, gt=0)
+    notion_sync_interval_seconds: float = Field(default=1800.0, gt=0)
 
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
@@ -65,7 +69,13 @@ class Settings(BaseSettings):
     # shared.config). Chosen from a real benchmark against native Ollama,
     # not guessed — see docs/sprint-14-plan.md and the README's
     # throughput section for the measured chunks/sec at each level.
-    embedding_concurrency: int = 4
+    # ge=1: asyncio.Semaphore(0) never lets any embed call through, so a
+    # value of 0 would deadlock the first real sync instead of failing
+    # loudly at startup (Sprint 16). le=32 is a generous ceiling, not a
+    # tuned number — Sprint 14's benchmark already showed zero measured
+    # benefit past 4, this constraint just needs to catch a clearly
+    # unreasonable value, not pick the "right" one.
+    embedding_concurrency: int = Field(default=4, ge=1, le=32)
 
 
 settings = Settings()

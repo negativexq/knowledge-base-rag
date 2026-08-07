@@ -1,3 +1,4 @@
+import logging
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from typing import Protocol
@@ -13,6 +14,8 @@ from app.api.sync import router as sync_router
 from app.registry.store import DocumentRegistry
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
+
+logger = logging.getLogger(__name__)
 
 
 class SchedulerProtocol(Protocol):
@@ -57,9 +60,12 @@ def create_app(
     `on_shutdown` is a list of no-arg async callables run after
     `scheduler.stop()` during lifespan shutdown — real deployments
     (app/wiring.py::build_app()) use it to close long-lived HTTP clients
-    (Ollama, Notion) that would otherwise leak connections on exit. Same
-    optional-hook pattern as `scheduler`; defaults to None, so no
-    existing test needs to know about it.
+    (Ollama, Notion, Qdrant) that would otherwise leak connections on
+    exit. Same optional-hook pattern as `scheduler`; defaults to None, so
+    no existing test needs to know about it. Each hook runs inside its
+    own try/except (Sprint 16) — one client's aclose() raising (e.g.
+    Notion erroring on a half-open connection) must not skip closing the
+    rest.
     """
 
     @asynccontextmanager
@@ -70,7 +76,10 @@ def create_app(
         if scheduler is not None:
             await scheduler.stop()
         for hook in on_shutdown or []:
-            await hook()
+            try:
+                await hook()
+            except Exception:
+                logger.exception("on_shutdown hook %r failed", hook)
 
     app = FastAPI(title="Knowledge Base RAG", lifespan=lifespan)
     app.state.sync_manager = sync_manager

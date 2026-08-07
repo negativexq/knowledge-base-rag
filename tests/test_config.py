@@ -67,3 +67,43 @@ def test_embedding_concurrency_overridable_via_env(monkeypatch):
     monkeypatch.setenv("EMBEDDING_CONCURRENCY", "8")
 
     assert Settings().embedding_concurrency == 8
+
+
+def test_embedding_concurrency_of_zero_is_rejected_at_startup(monkeypatch):
+    """A real bug class this closes: asyncio.Semaphore(0) never lets any
+    embed call through, so EMBEDDING_CONCURRENCY=0 used to pass Settings()
+    silently and only deadlock later, the first time a real sync ran.
+    """
+    import pytest
+
+    monkeypatch.setenv("EMBEDDING_CONCURRENCY", "0")
+
+    with pytest.raises(Exception):
+        Settings()
+
+
+def test_embedding_concurrency_negative_is_rejected_at_startup(monkeypatch):
+    import pytest
+
+    monkeypatch.setenv("EMBEDDING_CONCURRENCY", "-1")
+
+    with pytest.raises(Exception):
+        Settings()
+
+
+def test_filesystem_sync_interval_of_zero_is_rejected_at_startup(monkeypatch):
+    import pytest
+
+    monkeypatch.setenv("FILESYSTEM_SYNC_INTERVAL_SECONDS", "0")
+
+    with pytest.raises(Exception):
+        Settings()
+
+
+def test_notion_sync_interval_negative_is_rejected_at_startup(monkeypatch):
+    import pytest
+
+    monkeypatch.setenv("NOTION_SYNC_INTERVAL_SECONDS", "-30")
+
+    with pytest.raises(Exception):
+        Settings()
