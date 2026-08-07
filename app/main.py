@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from typing import Protocol
 
@@ -32,15 +32,14 @@ def create_app(
     chat_deps: ChatDependencies | None = None,
     list_ollama_models: ListModelsFn | None = None,
     scheduler: SchedulerProtocol | None = None,
+    on_shutdown: list[Callable[[], Awaitable[None]]] | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
     import-time side effects a bare `app = FastAPI()` wired to real
-    services at module scope would have. Real service wiring for actual
-    deployment lives in app/wiring.py + app/server.py (Sprint 10 pulled
-    forward the minimal piece of what Sprint 07's plan deferred to "Sprint
-    11 (docker compose)" — this sprint's own DoD needs a real, running
-    backend to browser-verify against). See docs/sprint-10-plan.md.
+    services at module scope would have. Real service wiring lives in
+    app/wiring.py + app/server.py — see
+    docs/adr/0005-real-wiring-pulled-forward.md.
 
     `registry` is a separate parameter from `sync_manager` (which already
     owns its own registry internally) because GET /sources needs read
@@ -50,12 +49,17 @@ def create_app(
     `chat_deps` is optional: tests that only exercise /sync or /sources
     never need it, and POST /chat simply isn't reachable without it.
 
-    `scheduler` is optional too: when given, its start()/stop() are wired
-    into this app's own startup/shutdown via FastAPI's lifespan mechanism
-    (Sprint 7 built SyncScheduler but never started it anywhere — Sprint
-    10 deferred that wiring, Sprint 11 does it here). Every existing test
-    passes None, so none of them get a real background asyncio loop
-    running during a unit test.
+    `scheduler` is optional too, wired into this app's FastAPI `lifespan`
+    — see docs/adr/0006-scheduler-wired-via-fastapi-lifespan.md. Every
+    existing test passes None, so none of them get a real background
+    asyncio loop running during a unit test.
+
+    `on_shutdown` is a list of no-arg async callables run after
+    `scheduler.stop()` during lifespan shutdown — real deployments
+    (app/wiring.py::build_app()) use it to close long-lived HTTP clients
+    (Ollama, Notion) that would otherwise leak connections on exit. Same
+    optional-hook pattern as `scheduler`; defaults to None, so no
+    existing test needs to know about it.
     """
 
     @asynccontextmanager
@@ -65,6 +69,8 @@ def create_app(
         yield
         if scheduler is not None:
             await scheduler.stop()
+        for hook in on_shutdown or []:
+            await hook()
 
     app = FastAPI(title="Knowledge Base RAG", lifespan=lifespan)
     app.state.sync_manager = sync_manager

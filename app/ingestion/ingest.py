@@ -136,51 +136,37 @@ async def ingest_connector(
     embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
     tracer: trace.Tracer | None = None,
 ) -> IngestStats:
-    """Connector-driven, multi-format, INCREMENTAL ingestion — the Sprint 4
-    upgrade of Sprint 3's ingest_connector (ingest_path above is Sprint 0's
-    PDF-only, folder-glob, registry-less entry point; still unchanged).
+    """Connector-driven, multi-format, INCREMENTAL ingestion (ingest_path
+    above is the PDF-only, folder-glob, registry-less entry point).
 
-    Three-phase sync, using registry as the source of truth for "what did
-    we already know":
+    Three-phase sync, using the registry as the source of truth for "what
+    did we already know" — see
+    docs/adr/0002-incremental-sync-three-phase-registry-diff.md for why
+    this shape:
 
-    1. Deletions — a registry row for this connector's source_type whose
-       source_id the connector no longer lists means the document vanished
-       from its source. Its Qdrant points and registry row are removed.
+    1. Deletions — a registry row whose source_id the connector no longer
+       lists means the document vanished from its source. Its Qdrant
+       points and registry row are removed.
     2. Unchanged — registry.has_changed() says no: skipped entirely, zero
-       Qdrant calls (no re-parse, re-embed, or re-upsert), and the registry
-       row is left untouched too (no last_synced_at refresh — see
-       docs/sprint-04-plan.md for why that's an accepted simplification).
+       Qdrant calls, registry row left untouched (no last_synced_at
+       refresh).
     3. New/changed — re-embedded and re-upserted under a NEW
        document_version (the new content_hash) FIRST; only once every
        batch is confirmed upserted are the OLD version's points deleted,
        keyed on (source_type, source_id, document_version) — see
-       docs/sprint-13-plan.md for why this deferred-cleanup ordering
-       replaced Sprint 4's delete-then-reingest (a failure mid-embed used
-       to leave the document unsearchable; now the old version stays
-       searchable until the new one is confirmed written, at the cost of
-       a brief window where both versions are simultaneously visible).
-       Keying on (source_type, source_id) rather than the old content-hash
-       doc_id alone is still what guarantees no orphans even if the chunk
-       count shrank (Sprint 4). Safe to call on a brand new document too
-       (deletes zero points).
+       docs/adr/0003-deferred-cleanup-versioned-reindex.md. Keying on
+       (source_type, source_id) rather than doc_id alone is what
+       guarantees no orphans even if the chunk count shrank. Safe to call
+       on a brand new document too (deletes zero points).
 
-    Typed against the generic Connector Protocol — Sprint 3/4 kept this
-    typed to LocalFilesystemConnector specifically ("generalize once a
-    second connector proves what's needed"); Sprint 6's NotionConnector is
-    that second connector, and requires two real changes here: content
-    with no local path (content_type == "notion" fetches bytes over the
-    network via connector.fetch_content() instead of reading document.path),
-    and awaiting the connector's now-async methods (see
-    docs/sprint-06-plan.md for why the Protocol itself had to become async).
+    Typed against the generic, async Connector Protocol — see
+    docs/adr/0001-connector-interface-is-async.md. content_type ==
+    "notion" fetches bytes over the network via connector.fetch_content()
+    instead of reading document.path (no local path for that connector).
 
-    Sprint 8: the whole call is wrapped in one "ingest_connector" span so
-    every document's work (fetch/parse/embed/upsert/cleanup, and even
-    skipped documents) shares a single trace_id — before this, each
-    "ingest_document"/"delete_document" span had no parent and became its
-    own separate, unrelated trace. See docs/sprint-08-plan.md for the two
-    other blind spots fixed alongside it: connector I/O (list_documents,
-    get_content_hash, Notion's fetch_content) wasn't spanned at all, and
-    skipped documents produced zero trace evidence they were even checked.
+    The whole call is wrapped in one "ingest_connector" span so every
+    document's work shares a single trace_id — see
+    docs/adr/0004-single-trace-per-sync-run.md.
     """
     tracer = tracer or get_tracer(__name__)
 

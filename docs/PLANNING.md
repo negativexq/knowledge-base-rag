@@ -937,7 +937,78 @@ alt başlığı), Technologies Used tablosundaki Sync satırı da güncellendi.
 SyncManager zincirleme testi + config testleri), 2'si servis/API key
 gerektirdiği için skip (değişmedi), `ruff check` temiz.
 
-## Sprint 15 (stretch) — İkinci Connector (Confluence)
+## Sprint 15 — Documentation and Cleanup
+
+Amaç: Kod içi yorum şişkinliğini temizlemek, kalan known limitation'ları belgelemek.
+
+Scope:
+
+* Sprint geçmişini anlatan kod yorumlarını `docs/adr/` altına taşı (Context/Decision/Consequences formatında ADR'lar), kodda tek satırlık referansa indir
+* Stale yorumları bul ve düzelt (en az review'daki örnek: `ingest_connector`'ın artık skip ettiğini söylemeyen eski test yorumu)
+* Known Limitations'a eksikleri ekle: process-local sync lock, Notion'ın mock-tested/non-recursive olduğu netliği
+* FastAPI lifespan'de shutdown tarafını kontrol et — Ollama/Notion client'ları düzgün kapatılıyor mu
+
+DoD: kod dosyalarındaki sprint-geçmişi yorumları `docs/adr/`'a taşınmış; en az bir stale yorum düzeltilmiş; Known Limitations tam; shutdown handling kontrol edilmiş (gerekiyorsa düzeltilmiş); tüm mevcut testler değişmeden geçiyor, lint temiz.
+
+**6 ADR yazıldı** (`docs/adr/0001`–`0006`, + bir index `docs/adr/README.md`),
+her biri gerçek `docs/PLANNING.md` kapanış notlarından referans alınarak:
+connector interface'in async olması (Sprint 3→6), üç fazlı incremental
+sync (Sprint 4), deferred-cleanup versioned re-index (Sprint 4→12→13),
+sync başına tek trace (Sprint 8, + Sprint 12'nin partial-index retry
+düzeltmesi), real wiring'in Sprint 11'den Sprint 10'a çekilmesi, ve
+scheduler'ın FastAPI lifespan'e bağlanması (Sprint 7→10→11). Kod
+içindeki 4 dosyadaki (`app/connectors/base.py`, `app/ui/trace_client.py`,
+`app/main.py`, ve ilgili docstring'ler) çok satırlı sprint-geçmişi
+anlatıları, ADR'a link veren tek satırlık referanslara indirildi; geri
+kalan ~18 dosyadaki tek satırlık "(Sprint N)" pointer'ları zaten bloat
+değildi, dokunulmadı.
+
+**Stale yorum**: `tests/test_ingest_connector.py:151` düzeltildi —
+"this sprint doesn't skip" diyen eski yorum, artık gerçekte
+`ingest_connector`'ın unchanged dosyaları skip ettiğini (Sprint 4)
+söyleyecek şekilde güncellendi. Codebase'in geri kalanı ("doesn't yet",
+"not yet", "for now", "currently", "this sprint doesn't/does" gibi
+kalıplar için) tek tek grep'lenip kod karşısında doğrulandı — başka
+stale yorum bulunmadı.
+
+**Known Limitations'a 2 madde eklendi, 1 madde netleştirildi**:
+process-local sync lock (`SyncManager._running`, Sprint 7 — plain
+`dict`, distributed değil, şu an Dockerfile tek-process olduğu için
+latent); Notion connector bulleti "mock-tested + non-recursive/skipped
+block types" olarak netleştirildi (`app/connectors/notion.py`'nin
+kendi yorumundan doğrulandı — nested child block'lara girmiyor, sabit
+bir block-type listesi dışındakileri atlıyor); ayrıca Confluence
+bulletindeki stale "Sprint 12" referansı, `docs/PLANNING.md`'deki
+yeniden numaralandırmayla tutarlı olacak şekilde "Sprint 16" olarak
+düzeltildi.
+
+**Shutdown handling: gerçek bir eksik bulundu ve düzeltildi.** Üç
+client'ın (`OllamaClient` embedding, `ChatProvider` — chat için ayrı
+bir instance, `get_chat_provider` her zaman kendi instance'ını kurar —
+ve `NotionConnector`) üçü de zaten çalışan `aclose()` metodlarına
+sahipti, ama gerçek uygulama lifecycle'ında (`app/wiring.py::build_app()`)
+hiçbiri hiç çağrılmıyordu. `create_app()`'e `scheduler` ile aynı
+optional-hook pattern'ini izleyen bir `on_shutdown:
+list[Callable[[], Awaitable[None]]]` parametresi eklendi (lifespan'de
+`scheduler.stop()`'tan sonra çalıştırılıyor), test-first 3 yeni testle
+doğrulandı (`tests/test_app_lifespan.py`), sonra `build_app()` gerçek
+hook listesini (`ollama.aclose`, `chat_provider.aclose`, + her
+connector'ın `aclose`'u varsa, `hasattr` ile) toplayıp geçirecek şekilde
+güncellendi. Gerçek bir scratch script ile doğrulandı: `build_app()`'in
+kurduğu gerçek component'lerle (gerçek `OllamaClient`, sahte anahtarlı
+bir `NotionConnector`) `TestClient` context manager'ı içinden
+lifespan'in tamamı (startup + shutdown) çalıştırıldı, `GET /health`
+200 döndü ve shutdown hook'larının hiçbiri exception fırlatmadan
+tamamlandı — canlı bir Qdrant/Ollama/Notion servisi gerekmedi çünkü
+`aclose()` sadece altındaki `httpx.AsyncClient`'ı kapatıyor, network
+çağrısı yapmıyor.
+
+365 test yeşil (bu sprintte +3 yeni test — shutdown-hook testleri;
+davranış değişikliği olmadığı için mevcut testlerin hiçbiri
+değişmedi), 5'i servis/API key gerektirdiği için skip (değişmedi),
+`ruff check` temiz.
+
+## Sprint 16 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

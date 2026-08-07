@@ -148,8 +148,8 @@ async def test_ingest_connector_rerun_bumps_registry_version_only_when_content_c
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
     first_version = registry.get_document("filesystem", "readme_md").version
 
-    # unchanged re-run — this sprint doesn't skip, but the registry itself
-    # must still report "unchanged" correctly (Sprint 2's DoD, reused here)
+    # unchanged re-run — ingest_connector skips it entirely (Sprint 4), so
+    # this also proves the skip path doesn't touch the registry version
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
     second_version = registry.get_document("filesystem", "readme_md").version
 

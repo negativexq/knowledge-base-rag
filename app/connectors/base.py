@@ -34,12 +34,8 @@ class ConnectorDocument:
 
 @runtime_checkable
 class Connector(Protocol):
-    """async because a real remote connector (Notion, ...) fundamentally
-    needs network I/O here — a sync-only Protocol (Sprint 3's original
-    design) can't be satisfied by one. A local/fast connector can always
-    satisfy an async Protocol trivially (an async def with no internal
-    await is valid and free); the reverse isn't possible without blocking
-    the event loop, so async is the only direction that generalizes.
+    """async because a real remote connector (Notion, ...) needs network
+    I/O here. See docs/adr/0001-connector-interface-is-async.md for why.
     """
 
     source_type: str

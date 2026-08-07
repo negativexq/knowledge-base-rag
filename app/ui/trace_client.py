@@ -41,20 +41,18 @@ def fetch_trace_spans(
 ) -> list[SpanSummary]:
     """Fetch and parse span timings for a trace from Jaeger's HTTP API
     (`GET /api/traces/{traceID}`, response shape confirmed for real against
-    a live Jaeger instance — see docs/PLANNING.md Sprint 12 closing note).
+    a live Jaeger instance).
 
-    Jaeger's OTLP ingestion runs through a BatchSpanProcessor (Sprint 8) —
-    async and batched, not synchronous. That means a trace can show up
-    PARTIALLY indexed: child spans (embed_query, rerank, ...) flushed in an
-    earlier batch while the last-closing span hasn't been exported yet —
-    confirmed for real in Sprint 12's browser verification, where an early
-    version of this function returned a chart missing the "generate" step.
-    `chat_request` (the root span, Sprint 8) is guaranteed to close last —
-    its presence is used as the signal that the trace is fully indexed,
-    not just "some spans exist". Retries a bounded number of times with a
-    short delay rather than failing immediately or polling forever; returns
-    an empty list (not an exception) if the trace never appears, so the UI
-    can show a clear "not indexed yet" state instead of hanging.
+    A trace can appear PARTIALLY indexed (Jaeger's OTLP ingestion is async
+    and batched) — some child spans flushed while the last-closing span
+    hasn't been exported yet. `chat_request` (the root span) is
+    guaranteed to close last, so its presence, not just "some spans
+    exist", is the signal the trace is fully indexed. See
+    docs/adr/0004-single-trace-per-sync-run.md. Retries a bounded number
+    of times with a short delay rather than failing immediately or
+    polling forever; returns an empty list (not an exception) if the
+    trace never appears, so the UI can show a clear "not indexed yet"
+    state instead of hanging.
     """
     owns_client = client is None
     client = client or httpx.Client(base_url=jaeger_url, timeout=5.0)

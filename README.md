@@ -358,13 +358,20 @@ check of the code/tests where noted.
   worse problem (Sprint 4's original ordering could leave a document with
   *zero* searchable chunks if a re-index failed mid-embed) — see the
   [Sync](#sync) section above.
-- **The Notion connector has never been tested against a real workspace.**
-  No `NOTION_API_KEY` was available on the development machine (Sprint 6).
-  Its 16 tests simulate Notion's real documented JSON shapes (search
-  pagination, block-children pagination, 429+Retry-After, other errors)
-  via `httpx.MockTransport` — a real end-to-end run
-  (`tests/test_notion_e2e.py`) exists and will run automatically once a
-  key is set, but hasn't yet.
+- **The Notion connector is mock-tested only, and doesn't recurse into
+  nested blocks.** No `NOTION_API_KEY` was available on the development
+  machine (Sprint 6), so its 16 tests simulate Notion's real documented
+  JSON shapes (search pagination, block-children pagination,
+  429+Retry-After, other errors) via `httpx.MockTransport` — a real
+  end-to-end run (`tests/test_notion_e2e.py`) exists and will run
+  automatically once a key is set, but hasn't yet. Separately, and
+  regardless of that: block extraction (`app/connectors/notion.py`) only
+  reads text from a fixed set of top-level block types (paragraphs,
+  list items, quotes, to-dos, code, headings) and is deliberately
+  non-recursive into nested children — a page with content inside a
+  toggle, a nested list, or a synced block loses that content entirely,
+  the same restraint `LocalFilesystemConnector` applies to nested
+  folders.
 - **The Claude API path has never been compared against Ollama on a real
   question.** No `ANTHROPIC_API_KEY` was available (Sprint 1) —
   `tests/test_provider_comparison_e2e.py` auto-skips. This is "the test
@@ -380,9 +387,18 @@ check of the code/tests where noted.
   and tested against a real HTML fixture (Sprint 6). There's no
   ingest/discovery path from a URL list into the registry/sync pipeline;
   that sprint's DoD was parsing only.
-- **No Confluence connector.** Sprint 12 (a second connector, proving the
-  `Connector` abstraction generalizes) was a stretch goal and was never
-  attempted.
+- **No Confluence connector.** Sprint 16 (a second connector, proving the
+  `Connector` abstraction generalizes) is a stretch goal and hasn't been
+  attempted yet.
+- **The sync concurrency lock is process-local, not distributed** —
+  `SyncManager._running` (Sprint 7) is a plain `dict[str, bool]` on one
+  Python object, so it only prevents overlapping syncs for the *same
+  source* within a single process. Running multiple worker processes or
+  replicas against the same registry/Qdrant would let two of them sync
+  the same source concurrently with no cross-process coordination
+  (no distributed lock, e.g. via Postgres/Redis). Currently latent, not
+  manifesting: the Dockerfile's `CMD` runs a single `uvicorn` process
+  with no `--workers` flag.
 - **A cosmetic tracing gap**: every sync/ingestion span's
   `otel.scope.name` shows `app.sync.manager` in Jaeger, regardless of
   which module actually produced it (most are really
