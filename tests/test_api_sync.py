@@ -37,7 +37,7 @@ def _real_client(tmp_path, docs_dir) -> TestClient:
         embed_fn=_fake_embed,
         sparse_encoder=_FakeSparseEncoder(),
     )
-    return TestClient(create_app(manager, history))
+    return TestClient(create_app(manager, history, registry))
 
 
 def test_post_sync_triggers_a_real_ingest_and_returns_the_result(tmp_path):
@@ -78,7 +78,11 @@ def test_post_sync_when_already_running_returns_409():
         def list_runs(self, source_type=None, limit=50):
             return []
 
-    client = TestClient(create_app(_StubManager(), _StubHistory()))
+    class _StubRegistry:
+        def list_documents(self, source_type=None):
+            return []
+
+    client = TestClient(create_app(_StubManager(), _StubHistory(), _StubRegistry()))
     response = client.post("/sync/filesystem")
 
     assert response.status_code == 409

@@ -14,7 +14,7 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–9** are complete: foundation + core pipeline port, LLM provider
+**Sprints 0–10** are complete: foundation + core pipeline port, LLM provider
 abstraction (Ollama + Claude), a SQLite-backed document registry, a
 filesystem `Connector` that ingests mixed PDF/Markdown folders, hash-based
 incremental sync (skip unchanged, update changed, delete vanished — no
@@ -24,12 +24,15 @@ first remote connector (`NotionConnector`), a sync scheduler (periodic +
 manual "sync now" via a FastAPI endpoint, with sync history and
 overlap-safe concurrent-sync handling), full tracing across the sync
 pipeline — a real sync run is one Jaeger trace end to end, verified
-against a real local Jaeger — and a golden-set evaluation harness
-(DeepEval + a local `qwen2.5:7b-instruct` judge, `python -m
-app.evaluation.cli --golden-set <path>`) reporting retrieval and
-generation metrics broken down by content format (PDF vs. Markdown). See
-`docs/PLANNING.md`'s closing notes and the
-`docs/sprint-0{0..4,6,7,8,9}-plan.md` files for the design decisions
+against a real local Jaeger — a golden-set evaluation harness (DeepEval +
+a local `qwen2.5:7b-instruct` judge, `python -m app.evaluation.cli
+--golden-set <path>`) reporting retrieval and generation metrics broken
+down by content format (PDF vs. Markdown), and a multi-page Streamlit UI
+(Chat with streaming/citations/a live Jaeger pipeline-trace panel,
+Sources, Sync Status) backed by a real FastAPI backend
+(`app/server.py`/`app/wiring.py`), all verified against real services in
+a real browser. See `docs/PLANNING.md`'s closing notes and the
+`docs/sprint-0{0..4,6,7,8,9,10}-plan.md` files for the design decisions
 behind each (Sprint 5 was verification-only, no new plan doc — see its
 closing note). **Notion has not been tested against a real workspace** on
 this machine (no `NOTION_API_KEY`), and the evaluation golden set
@@ -86,6 +89,25 @@ today; `notion`/`confluence` later), not its file format — the same
 connector can ingest multiple formats. Grounding is checked against the
 full `(source_type, source_id, location)` triple, so two different sources
 can safely share the same location without one masquerading as the other.
+
+## UI
+
+A multi-page Streamlit UI (Chat, Sources, Sync Status) runs in its own
+venv (`.venv-ui`) — `streamlit==1.61.1` and this project's `fastapi==0.115.6`
+pin have a real, unresolvable `starlette` version conflict (confirmed via
+`pip install`, see the Sprint 10 closing note), so the UI can't share the
+backend's venv:
+
+```bash
+python3.12 -m venv .venv-ui
+.venv-ui/bin/pip install -r requirements-ui.txt
+make dev   # real backend: uvicorn app.server:app
+make ui    # streamlit, in a second terminal
+```
+
+The UI is a pure HTTP client — it never imports backend code directly, only
+`POST /chat`, `GET/POST /sync/...`, `GET /sources`, and Jaeger's own HTTP
+API.
 
 ## Getting started
 

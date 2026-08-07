@@ -52,3 +52,7 @@ def test_filesystem_sync_interval_defaults_to_five_minutes():
 
 def test_notion_sync_interval_defaults_to_thirty_minutes():
     assert Settings().notion_sync_interval_seconds == 1800.0
+
+
+def test_filesystem_root_path_has_a_default():
+    assert Settings().filesystem_root_path == "data/documents"

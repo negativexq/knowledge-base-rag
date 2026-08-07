@@ -429,6 +429,103 @@ Scope:
 
 DoD: üç sayfa da çalışıyor, bir kaynağı UI'dan manuel sync tetikleyip sonucu Sync Status sayfasında gerçekten görebiliyorsun.
 
+### Kapanış notu
+
+**venv kararı: `.venv-ui`, varsayılmadı, gerçekten test edildi.**
+production-rag-platform'un `streamlit`/`fastapi` çakışması bu projenin
+KENDİ sürüm pinleriyle tekrar doğrulandı (`pip install
+fastapi==0.115.6 streamlit==1.61.1`):
+
+```
+ERROR: Cannot install fastapi==0.115.6 and streamlit==1.61.1 because
+these package versions have conflicting dependencies.
+    fastapi 0.115.6 depends on starlette<0.42.0 and >=0.40.0
+    streamlit 1.61.1 depends on starlette<1.4.0 and >=0.46.0
+```
+
+Aynı çakışma, aynı sürümler. `.venv-ui` + `requirements-ui.txt` kararı
+korundu — ama bu projenin UI'ı referans projeninkinden DAHA AZ bağımlılık
+gerektiriyor: doğrudan Qdrant/ingestion erişimi yok (dosya yükleme bu
+sprintin kapsamında değildi — filesystem connector sabit bir klasörü
+tarıyor), UI sadece HTTP üzerinden backend'e ve Jaeger'ın kendi API'sine
+bağlanıyor. `requirements-ui.txt`: sadece `streamlit`, `httpx`, `pandas`.
+
+**Bu projede gerçek bir backend hiç çalıştırılmamıştı — bu sprint bunu
+kapattı.** `app/main.py::create_app()` Sprint 7'den beri sadece sahte
+bileşenlerle test ediliyordu; gerçek servis wiring'i "Sprint 11 (docker
+compose)"ye bırakılmıştı. Ama bu projenin Sprint 10'u (UI) Sprint 11'den
+(Docker Compose Polish) ÖNCE geliyor — production-rag-platform'un tersine
+(orada backend UI sprintinden önce zaten container'da çalışıyordu). Bu
+sprintin kendi DoD'si ("gerçek tarayıcıda doğrulanmış") gerçek bir backend
+olmadan karşılanamazdı, bu yüzden minimal bir parça öne çekildi:
+`app/wiring.py::build_connectors()`/`build_app()` (gerçek bileşenlerden
+`SyncManager`/`ChatDependencies` kurar) + `app/server.py` (`uvicorn
+app.server:app` için modül seviyesi `app`). Bu, Sprint 11'in tam docker-
+compose cilası DEĞİL — sadece bu sprintin kendi doğrulaması için yeterli,
+Sprint 11 bunun üzerine inşa edebilir. Yeni `filesystem_root_path` ayarı
+(`data/documents`, `.gitkeep` ile) `LocalFilesystemConnector`'ın gerçek
+tarama kökü oldu; `SyncScheduler` (periyodik sync) bilinçli olarak
+BAŞLATILMADI — bu sprint sadece manuel "sync now" gerektiriyor.
+
+**Yeni endpoint'ler:** `POST /chat` (`app/api/chat.py`, bu projede hiç yoktu)
+— production-rag-platform'dan taşındı ama bu projenin provider
+soyutlamasına (`get_chat_provider`/`get_embedding_provider`/
+`default_chat_model`/`default_embed_model`, Sprint 1) bağlandı, hardcoded
+`OllamaClient` yerine — `GENERATION_PROVIDER=claude` ile de çalışır. SSE
+formatlama/`chat_request` span mantığı, gerçek Qdrant/Ollama olmadan test
+edilebilsin diye `ChatDependencies` (search_fn/stream_fn closure'ları,
+`app/evaluation/cli.py`'nin search_fn/generate_fn deseniyle aynı) üzerinden
+enjekte ediliyor — gerçek bileşenler SADECE `app/wiring.py`'de kuruluyor.
+`GET /sources` (`app/api/sources.py`, yeni — referans projede karşılığı
+yok) connector + doküman sayısı + çalışıyor mu bilgisini döndürüyor;
+`create_app()` bunun için bir `registry` parametresi kazandı (mevcut
+testler güncellendi).
+
+**Chat sayfası — değişmeden taşınan parçalar.** `app/ui/sse_client.py`
+(`parse_sse_lines`) ve `app/ui/trace_client.py` (`fetch_trace_spans`,
+Sprint 12'nin kısmi-trace retry düzeltmesiyle birlikte) DEĞİŞTİRİLMEDEN
+taşındı — ikisi de protokol şekilli (SSE satır formatı, Jaeger'ın JSON
+yanıt şekli), kaynak tipine özel bir şey içermiyorlar.
+`app/ui/citation_formatting.py` zaten Sprint 0/7'de çoklu-kaynak citation
+regex'i için uyarlanmıştı, dokunulmadı.
+
+**Üç sayfa da gerçek tarayıcıda doğrulandı (curl değil, gerçek Chrome
+otomasyonu):** `docker compose up -d`, gerçek native Ollama, `make dev`
+(gerçek `uvicorn app.server:app`), `make ui` (gerçek Streamlit,
+`.venv-ui`'den). `data/documents/`'a gerçek bir Markdown dosyası
+(`nimbus_cli.md`, Kurulum/Sorun Giderme başlıklarıyla) kondu.
+
+1. **Sources**: `filesystem` connector'ı 0 dokümanla listelendi, "Sync
+   now" tıklandı — GERÇEK bir `POST /sync/filesystem` çağrısı yapıldı,
+   sayfa "Documents: 1"e güncellendi.
+2. **Sync Status**: aynı run GERÇEKTEN göründü — `status=success`,
+   `trigger=manual`, `files_processed=1`, `chunks_upserted=2`, çalışan bir
+   "Open in Jaeger" linkiyle.
+3. **Chat**: gerçek bir soru soruldu ("Nimbus CLI nasıl kurulur ve sorun
+   giderme için hangi komut kullanılır?") — token'lar tek tek akarken
+   yakalandı, final cevap doğru citation'larla geldi
+   (`[s.filesystem:nimbus_cli_md/Kurulum]`,
+   `[s.filesystem:nimbus_cli_md/Sorun Giderme]`), "✅ Grounded" göründü.
+   Pipeline trace paneli açıldı: `embed_query` (63.5ms), `retrieve_hybrid`
+   (14.2ms), `rerank` (302.7ms), `generate` (12078.8ms), "Total: 12459.6 ms".
+   Aynı trace_id ile GERÇEKTEN `curl http://localhost:16686/api/traces/{id}`
+   çekildi — `chat_request` kök span süresi **12459.6ms**, UI'daki
+   "Total" ile BİREBİR aynı; her span adı/süresi curl çıktısıyla bire bir
+   eşleşti (production-rag-platform'un Sprint 12'deki aynı çapraz kontrol
+   yöntemi).
+
+Doğrulama sonrası: Streamlit/uvicorn süreçleri durduruldu, test dokümanı
+(`nimbus_cli.md`) ve `data/registry.db` silindi, `docker compose down`.
+
+**Kapsam dışı bırakılanlar (bilinçli):** Dosya yükleme UI'ı (filesystem
+connector sabit klasör tarıyor, upload bu sprintin kapsamında değildi),
+`SyncScheduler`'ın gerçek process'te başlatılması (Sprint 11), tam
+docker-compose polish (Sprint 11).
+
+339 test yeşil (bu sprintte +22 yeni test), 2'si servis gerektirdiği için
+skip (değişmedi), `ruff check` temiz, 3 ardışık çalıştırmada flakiness
+yok.
+
 ## Sprint 11 — Docker Compose Polish
 
 Amaç: Tek komutla kurulum.

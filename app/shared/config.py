@@ -29,6 +29,12 @@ class Settings(BaseSettings):
 
     registry_db_path: str = "data/registry.db"
 
+    # Real folder LocalFilesystemConnector scans when wired for real
+    # (app/wiring.py, Sprint 10) — no such setting existed before this,
+    # since app/main.py::create_app() was only ever exercised with fake
+    # components in tests until now.
+    filesystem_root_path: str = "data/documents"
+
     notion_api_key: str | None = None
 
     # Per-connector sync intervals — a plain field per connector (same

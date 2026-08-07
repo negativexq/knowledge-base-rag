@@ -1,0 +1,16 @@
+# Streamlit UI — a deliberately separate, minimal dependency set, installed
+# into its own venv (.venv-ui), not requirements.txt's venv. Real reason,
+# not tidiness: streamlit==1.61.1 requires starlette>=0.46, but
+# fastapi==0.115.6 (the backend's pin) requires starlette<0.42 — a genuine,
+# unresolvable conflict if both land in the same environment (confirmed via
+# `pip install`, not assumed — see docs/sprint-10-plan.md).
+#
+# This UI is a pure HTTP client to the backend (POST /chat, GET/POST
+# /sync/..., GET /sources) and to Jaeger's own HTTP API — it never imports
+# app.main, app.wiring, or anything that touches Qdrant/Ollama/SQLite
+# directly, so it needs neither fastapi/uvicorn nor qdrant-client/
+# pymupdf/fastembed/sentence-transformers/deepeval.
+
+streamlit==1.61.1
+httpx==0.28.1
+pandas==2.2.3
