@@ -78,26 +78,26 @@ never been tested against a real workspace (no API key available).
 ```mermaid
 graph TD
     subgraph Host["Host machine"]
-        Ollama["Native Ollama<br/>(generation + embedding)"]
-        UI["Streamlit UI<br/>(.venv-ui, make ui)"]
-        DocsFolder["./data/documents<br/>(bind-mounted)"]
+        Ollama["Native Ollama<br/>generation + embedding"]
+        UI["Streamlit UI<br/>.venv-ui, make ui"]
+        DocsFolder["./data/documents<br/>bind-mounted"]
     end
 
     subgraph Compose["docker compose"]
         Backend["FastAPI backend<br/>app.server:app"]
-        Scheduler["SyncScheduler<br/>(periodic, per-connector interval)"]
+        Scheduler["SyncScheduler<br/>periodic, per-connector interval"]
         Manager["SyncManager"]
-        Connectors["Connectors<br/>(filesystem, notion)"]
+        Connectors["Connectors<br/>filesystem, notion"]
         Registry[("registry.db<br/>documents + sync_runs<br/>named volume")]
         Qdrant[("Qdrant<br/>hybrid dense+sparse index")]
-        Jaeger["Jaeger<br/>(OTLP traces)"]
+        Jaeger["Jaeger<br/>OTLP traces"]
     end
 
     UI -->|"POST /chat, /sync/*, GET /sources"| Backend
     Backend -->|"embed + generate"| Ollama
     Backend -->|"hybrid search"| Qdrant
     Backend -->|"OTLP spans"| Jaeger
-    Backend -. "starts on boot (lifespan)" .-> Scheduler
+    Backend -. "starts on boot - lifespan" .-> Scheduler
     Scheduler --> Manager
     Manager --> Connectors
     Manager --> Registry
