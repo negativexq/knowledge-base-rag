@@ -21,10 +21,12 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
   unchanged, update changed, delete vanished — no orphan chunks)
 - **Hybrid search** — dense + sparse (BM25) retrieval with native Qdrant
   RRF fusion, cross-encoder reranking
-- **Grounded, multi-source citations** — every citation is checked against
+- **Source-scoped citation validation** — every citation is checked against
   the exact `(source_type, source_id, location)` it was generated from, so
   two different documents can never spoof each other's citations (proven
-  with a dedicated cross-source-leak test, not just claimed)
+  with a dedicated cross-source-leak test, not just claimed) — this is
+  citation *integrity*, not semantic grounding; see
+  [Citation integrity validation, not semantic grounding](#citation-integrity-validation-not-semantic-grounding)
 - **Full distributed tracing** — a sync run or a chat request is one
   Jaeger trace end to end, cross-checked span-by-span against Jaeger's own
   API, not just visually inspected
@@ -385,14 +387,20 @@ closing note in [docs/PLANNING.md](docs/PLANNING.md), or to a direct
 check of the code/tests where noted.
 
 - **Re-indexing a changed document is zero-downtime with deferred
-  cleanup, not atomic** — during re-index there's a brief window (measured
-  at ~12 microseconds locally) where both the old and new version of a
-  document's chunks are simultaneously searchable, so a query in that
-  window can see duplicate/stale-alongside-fresh results. This is a
-  deliberate, measured tradeoff (Sprint 13) in exchange for closing a
-  worse problem (Sprint 4's original ordering could leave a document with
-  *zero* searchable chunks if a re-index failed mid-embed) — see the
-  [Sync](#sync) section above.
+  cleanup, not atomic** — during re-index there's a window (measured at
+  ~12–20 microseconds locally for a single-batch document, but ~1.5–3
+  milliseconds for a real multi-batch document, since the window opens
+  at the *first* upsert_batch, not the last — see [Sync](#sync)) where
+  both the old and new version of a document's chunks are simultaneously
+  searchable, so a query in that window can see
+  duplicate/stale-alongside-fresh results. This is a deliberate,
+  measured tradeoff (Sprint 13) in exchange for closing a worse problem
+  (Sprint 4's original ordering could leave a document with *zero*
+  searchable chunks if a re-index failed mid-embed) — see the
+  [Sync](#sync) section above. A related gap (Sprint 17): a re-index
+  cancelled mid-batch, or hitting a failure that spans more than one
+  batch, now correctly rolls back the partial new version regardless —
+  see the [Sync](#sync) section's rollback description.
 - **The Notion connector is mock-tested only, and doesn't recurse into
   nested blocks.** No `NOTION_API_KEY` was available on the development
   machine (Sprint 6), so its 16 tests simulate Notion's real documented
@@ -422,7 +430,7 @@ check of the code/tests where noted.
   and tested against a real HTML fixture (Sprint 6). There's no
   ingest/discovery path from a URL list into the registry/sync pipeline;
   that sprint's DoD was parsing only.
-- **No Confluence connector.** Sprint 17 (a second connector, proving the
+- **No Confluence connector.** Sprint 18 (a second connector, proving the
   `Connector` abstraction generalizes) is a stretch goal and hasn't been
   attempted yet.
 - **The sync concurrency lock is process-local, not distributed** —

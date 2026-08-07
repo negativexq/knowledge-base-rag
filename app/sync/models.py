@@ -7,6 +7,13 @@ STATUS_RUNNING = "running"
 STATUS_SUCCESS = "success"
 STATUS_ERROR = "error"
 STATUS_REJECTED = "rejected_already_running"
+# Sprint 17: distinct from STATUS_ERROR — a cancelled run (task.cancel(),
+# e.g. from scheduler/ASGI shutdown) isn't a failure the sync itself hit,
+# and without this a cancelled run's sync_runs row was left stuck at
+# STATUS_RUNNING forever (neither trigger_sync's except nor its else
+# branch runs on a CancelledError), indistinguishable in the Sync Status
+# UI from a process that silently crashed mid-sync.
+STATUS_CANCELLED = "cancelled"
 
 TRIGGER_SCHEDULED = "scheduled"
 TRIGGER_MANUAL = "manual"

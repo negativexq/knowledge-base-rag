@@ -1,3 +1,5 @@
+import asyncio
+
 from opentelemetry import trace
 
 from app.connectors.base import Connector
@@ -12,6 +14,7 @@ from app.registry.store import DocumentRegistry
 from app.shared.tracing import get_tracer
 from app.sync.history import SyncHistory
 from app.sync.models import (
+    STATUS_CANCELLED,
     STATUS_ERROR,
     STATUS_REJECTED,
     STATUS_SUCCESS,
@@ -105,6 +108,19 @@ class SyncManager:
                     embedding_concurrency=self._embedding_concurrency,
                     tracer=self._tracer,
                 )
+            except asyncio.CancelledError:
+                # Sprint 17: CancelledError is a BaseException, not an
+                # Exception, so the `except Exception as exc:` branch
+                # below never caught a real task.cancel() — the
+                # sync_runs row was left stuck at STATUS_RUNNING forever,
+                # indistinguishable from a process that crashed mid-sync.
+                # Record it as cancelled, then re-raise (never swallow a
+                # cancellation — the calling task must still stop).
+                span.set_attribute("sync.status", STATUS_CANCELLED)
+                self._history.finish_run(
+                    run_id, status=STATUS_CANCELLED, error_message="Sync was cancelled"
+                )
+                raise
             except Exception as exc:
                 span.set_attribute("sync.status", STATUS_ERROR)
                 self._history.finish_run(run_id, status=STATUS_ERROR, error_message=str(exc))

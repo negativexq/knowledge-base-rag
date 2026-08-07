@@ -1147,6 +1147,146 @@ concurrency/sync interval sınır testleri; `tests/test_app_lifespan.py` +2
 — shutdown failure-safety testleri), 5'i servis/API key gerektirdiği için
 skip (değişmedi), `ruff check app tests scripts` temiz.
 
+## Sprint 17 — Identity & Cancellation Safety
+
+Amaç: Üçüncü bir dış kod review'ından çıkan, en kritik olanı gerçek bir point ID çakışma bug'ı olan bulguları kapatmak.
+
+Scope:
+
+1. Point ID collision: `QdrantStore.point_id_for`'ın key'i `source_id` içermiyordu — aynı içerikli ama farklı kaynaklı iki doküman aynı point ID'ye çakışıp birbirini sessizce eziyordu. Fix + mevcut testi gizleyen `_chunk()` helper default'unu düzeltme + gerçek e2e test
+2. Cancellation rollback bypass: Sprint 16'nın rollback `except Exception` bloğu `asyncio.CancelledError`'ı yakalamıyordu (BaseException'dan türer). Ayrı except bloğu + `STATUS_CANCELLED` eklendi
+3. Duplicate source_id fail-fast guard: `ingest_connector()` başında connector'dan gelen source_id'lerin unique olduğu kontrol ediliyor
+4. Qdrant schema validation tamamlandı: VECTOR_NAME KeyError yerine düzgün hata, sparse modifier kontrolü
+5. `upsert_chunks()`'a length guard eklendi
+6. README: stale ~12µs rakamı ve "Grounded" başlığı düzeltildi
+
+DoD: aynı içerikli farklı kaynaklı iki doküman artık çakışmıyor (gerçek testle kanıtlanmış, silme öncesi point sayısı assert edilerek); cancellation sırasında rollback çalışıyor; duplicate source_id fail-fast; Qdrant schema validation tam; testler ve lint temiz.
+
+### Kapanış notu
+
+**1. Point ID collision — gerçek etkisi doğrulandı ve düzeltildi.**
+`QdrantStore.point_id_for`'ın UUID5 key'i `source_type:doc_id:page:
+paragraph:char_range` şeklindeydi, `source_id` yoktu. `doc_id` bir içerik
+hash'i olduğu için, aynı byte-içerikli ama farklı dosya/source_id'li iki
+doküman (örn. `contract-a.pdf` ve `contract-b.pdf`, birebir aynı metin)
+aynı `(doc_id, page, paragraph, char_range)` demetini üretiyor — dolayısıyla
+aynı point ID'yi. İkinci dokümanın `upsert_chunks` çağrısı birincinin
+point'lerini SESSİZCE eziyordu: hata yok, görünür bir duplicate yok,
+sadece veri kaybı. **Bug'ın kendisi kadar önemli bir bulgu**: mevcut
+`test_delete_by_source_does_not_touch_other_documents` testi bu bug'ı
+gizliyordu — `_chunk(source_id="doc1")` ve `_chunk(source_id="doc2")`
+çağrılarının ikisi de `_chunk()`'ın default `doc_id="doc1"`'ini
+override etmiyordu, yani iki chunk zaten testin kendi `delete_by_source`
+çağrısından ÖNCE çakışıyordu — `upsert_chunks` sadece TEK bir point
+yazıyordu, silme sonrası `count() == 1` assertion'ı yanlış nedenle
+geçiyordu (iki bağımsız dokümandan biri hayatta kaldığı için değil,
+zaten tek point olduğu için). Fix: key'e `source_id` eklendi. Testler:
+(a) fix'ten ÖNCE çalıştırılıp GERÇEKTEN fail ettiği doğrulanan yeni bir
+`point_id_for` testi; (b) `_chunk()` çağrılarına açık, farklı `doc_id`
+verilerek eski testin "gizleyen" doğası düzeltildi; (c) yeni bir
+senaryo testi — aynı doc_id/koordinatlı, farklı source_id'li iki chunk
+upsert edilip **silmeden önce `store.count() == 2` assert edildi**
+(review'ın istediği kritik assertion — orijinal bug'ın testinde hiç
+yoktu), sonra biri silinip diğerinin sağlam kaldığı doğrulandı; (d)
+gerçek bir e2e test — birebir aynı içerikli `a.md`/`b.md`,
+`LocalFilesystemConnector` üzerinden gerçek registry + gerçek
+(`:memory:`) Qdrant'a ingest edildi, ikisinin de bağımsız registry
+satırı VE bağımsız Qdrant point'leri olduğu (`count()` iki dokümanın
+toplam chunk sayısını yansıtıyor, biri diğerini ezmiyor) kanıtlandı.
+
+**2. Cancellation rollback bypass — gerçek bir `task.cancel()` ile
+simüle edildi, manuel raise değil.** Sprint 16'nın rollback bloğu
+`except Exception:` idi — `asyncio.CancelledError` Python 3.8'den beri
+`BaseException`'dan türediği için bu bloğa hiç girmiyordu. Test:
+gerçek bir `asyncio.Task` içinde `ingest_connector` çalıştırıldı,
+`embed_fn` batch 1'i (2 chunk) başarıyla bitirip batch 2'nin ilk
+çağrısında bir `asyncio.Event` set edip `asyncio.sleep(10)`'a giriyor;
+test bu event'i bekleyip TAM O ANDA `task.cancel()` çağırıyor — yani
+cancellation, asyncio'nun kendi mekanizmasıyla, coroutine'in askıda
+olduğu gerçek bir noktada teslim ediliyor (elle fırlatılan bir
+`CancelledError` ile taklit edilmiyor). Fix: `except
+asyncio.CancelledError:` ayrı bir blok olarak eklendi, aynı
+`delete_version` rollback'ini çağırıp `raise` ile cancellation'ı
+yutmadan yeniden fırlatıyor. Test fix'ten önce GERÇEKTEN fail etti
+(batch 1'in point'leri koleksiyonda kaldı), fix'ten sonra geçti.
+Ayrıca `SyncManager.trigger_sync`'in aynı `except Exception as exc:`
+açığı vardı — cancellation'da `sync_runs` satırı sonsuza kadar
+`"running"` durumunda kalıyordu (ne except ne else branch'i
+çalışıyordu). `STATUS_CANCELLED = "cancelled"` eklendi,
+`trigger_sync`'e ayrı bir `except asyncio.CancelledError:` branch'i
+eklendi (`finish_run(status=STATUS_CANCELLED, ...)` sonra `raise`).
+Bu da gerçek bir `asyncio.Task` + `task.cancel()` ile test edildi:
+`manager.is_running()` `finally`'nin her zaman çalıştığını doğruluyor
+(False'a döner), ama asıl kanıt `history.latest_run(...).status ==
+STATUS_CANCELLED` — fix öncesi bu assertion GERÇEKTEN `'running' ==
+'cancelled'` diye fail etti.
+
+**3. Duplicate source_id fail-fast guard eklendi.** `ingest_connector`
+artık `list_documents()`'tan dönen doküman listesindeki source_id'lerin
+unique olduğunu kontrol ediyor (`Counter` ile), değilse
+`DuplicateSourceIdError` fırlatıp registry/Qdrant'a hiç dokunmadan
+duruyor. Bilinçli olarak `slugify()`'ı değil, `ingest_connector`'ın
+sınırını kontrol ediyor — slugify çakışması ("foo bar.md" vs
+"foo_bar.md") bir neden ama tek neden değil, connector kendi
+sebepleriyle de duplicate dönebilir. Test: sahte bir connector iki aynı
+source_id'li doküman döndürüyor, hatanın registry/Qdrant'a HİÇ
+dokunmadan (fetch_content/get_content_hash çağrılmadan bile) fırladığı
+doğrulandı.
+
+**4. Qdrant schema validation tamamlandı.** İki gerçek eksik kapatıldı:
+(a) `info.config.params.vectors[VECTOR_NAME]`'e erişmeden önce artık
+`VECTOR_NAME in dense_vectors` kontrolü var — önceden bir koleksiyonun
+"dense" adında hiç vector'ı yoksa (ama başka bir sparse config'i varsa)
+ham bir `KeyError` fırlıyordu, `UnexpectedCollectionSchemaError` değil;
+fix'ten önce test GERÇEKTEN `KeyError` ile fail etti. (b) sparse
+vector'ın `modifier`'ının gerçekten `IDF` olduğu artık kontrol ediliyor
+— önceden sadece key'in var olup olmadığına bakılıyordu,
+`create_collection()`'ın kendisi her zaman IDF set etmesine rağmen
+validate tarafı bunu hiç doğrulamıyordu (iki kod yolu "doğru şema"
+konusunda anlaşmıyordu). Bu fix, mevcut
+`test_ensure_collection_accepts_correct_dense_and_sparse_schema`
+testinin de GERÇEKTEN yanlış olduğunu ortaya çıkardı — `SparseVectorParams()`
+modifier'sız (varsayılan `None`) çağrılıyordu, düzeltilip `modifier=IDF`
+eklendi.
+
+**5. `upsert_chunks()`'a length guard eklendi.** `chunks`/`dense_vectors`/
+`sparse_vectors` uzunlukları eşit değilse artık `ValueError` fırlıyor —
+önceden `zip()` sessizce en kısa listeye kısaltıyordu, bir çağıran
+bug'ı (gelecekteki bir batching değişikliğinde off-by-one, kısmi bir
+embed sonucu) hiçbir hata vermeden chunk sayısından daha az point
+yazabilirdi. Test fix'ten önce GERÇEKTEN "DID NOT RAISE" ile fail etti.
+
+**6. README düzeltmeleri.** Known Limitations'daki stale "~12
+microseconds" rakamı, Sprint 16'nın gerçek çok-batch ölçümüyle (~1.5–3ms,
+ilk upsert'ten itibaren) tutarlı hale getirildi, artı Sprint 17'nin
+cancellation/multi-batch rollback düzeltmesine bir not eklendi.
+Highlights'taki "Grounded, multi-source citations" başlığı
+"Source-scoped citation validation" olarak değiştirildi ve "Citation
+integrity validation, not semantic grounding" bölümüne link eklendi —
+eski başlık, `grounding.py`'nin kendi docstring'inin açıkça reddettiği
+bir semantik grounding izlenimi veriyordu.
+
+**Ortam notu (kod ile ilgisiz):** bu sprint sırasında native Ollama ve
+Qdrant bazı aralıklarla erişilemez durumdaydı (önceki sprint'in ağır
+benchmark koşumunun kalıntısı) — bu, sadece gerçek servis gerektiren
+e2e testlerin (normalden 3 fazla, toplam 8) doğru şekilde skip
+edilmesine yol açtı, hiçbir zaman bir test'i yanlış geçirmedi ya da
+gizli bir regresyon yaratmadı; bu sprint'in kod değişiklikleri
+generation/embedding servislerine dokunmuyor.
+
+**386 test yeşil** (bu sprintte +9 yeni test:
+`tests/test_qdrant_store.py` +5 — point-ID collision testi, 2 schema
+validation testi (VECTOR_NAME KeyError, sparse modifier), length-guard
+testi, + `test_delete_by_source_does_not_touch_other_documents`'ın
+düzeltilmesi (net test sayısını değiştirmedi); `tests/test_versioned_reindex.py`
++1 — gerçek cancellation rollback testi; `tests/test_ingest_connector.py`
++2 — identical-content e2e testi + duplicate-source-id fail-fast testi;
+`tests/test_sync_manager.py` +1 — SyncManager seviyesinde gerçek
+cancellation testi), 8'i servis/API key gerektirdiği için skip,
+`ruff check app tests scripts` temiz.
+
+## Sprint 18 (stretch) — İkinci Connector (Confluence)
+
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 
 Scope:

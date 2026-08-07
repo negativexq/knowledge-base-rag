@@ -33,7 +33,8 @@ class QdrantStore:
         if self._client.collection_exists(self._collection_name):
             info = self._client.get_collection(self._collection_name)
 
-            if SPARSE_VECTOR_NAME not in (info.config.params.sparse_vectors or {}):
+            sparse_vectors = info.config.params.sparse_vectors or {}
+            if SPARSE_VECTOR_NAME not in sparse_vectors:
                 raise UnexpectedCollectionSchemaError(
                     f"Collection {self._collection_name!r} already exists but is missing the "
                     f"{SPARSE_VECTOR_NAME!r} sparse vector this app requires. Qdrant can't add "
@@ -43,12 +44,46 @@ class QdrantStore:
                     "collection name."
                 )
 
+            # Sprint 17: create_collection() below always sets modifier=IDF
+            # explicitly, but this check previously only verified the KEY
+            # existed — a collection with a sparse vector using no
+            # modifier (Qdrant's own default) or a different one passed
+            # silently, even though create vs. validate disagreed on what
+            # "correct schema" meant.
+            sparse_modifier = sparse_vectors[SPARSE_VECTOR_NAME].modifier
+            if sparse_modifier != qmodels.Modifier.IDF:
+                raise UnexpectedCollectionSchemaError(
+                    f"Collection {self._collection_name!r} already exists but its "
+                    f"{SPARSE_VECTOR_NAME!r} sparse vector has modifier="
+                    f"{sparse_modifier!r} — this app requires modifier="
+                    f"{qmodels.Modifier.IDF.name}. Left untouched rather than deleted and "
+                    "recreated — delete it yourself if that's genuinely safe, or point "
+                    "QDRANT_COLLECTION_NAME at a fresh collection name."
+                )
+
+            # Sprint 17: an explicit membership check before subscripting
+            # — a collection with SOME sparse config but no "dense" named
+            # vector at all (a real, not hypothetical, misconfiguration:
+            # Qdrant collections can be sparse-only or use a different
+            # dense vector name) used to raise a raw KeyError here instead
+            # of UnexpectedCollectionSchemaError, breaking the "fail
+            # clearly, tell the human what's wrong" contract this
+            # function exists for.
+            dense_vectors = info.config.params.vectors or {}
+            if VECTOR_NAME not in dense_vectors:
+                raise UnexpectedCollectionSchemaError(
+                    f"Collection {self._collection_name!r} already exists but is missing the "
+                    f"{VECTOR_NAME!r} dense vector this app requires. Left untouched rather "
+                    "than deleted and recreated — delete it yourself if that's genuinely "
+                    "safe, or point QDRANT_COLLECTION_NAME at a fresh collection name."
+                )
+
             # Sprint 16: a collection can have the right sparse config but
             # a stale/wrong dense dimension or distance metric (e.g. left
             # over from a different embedding model) — checking only
             # sparse presence let that pass silently and fail later,
             # confusingly, at the first upsert instead of here.
-            dense_params = info.config.params.vectors[VECTOR_NAME]
+            dense_params = dense_vectors[VECTOR_NAME]
             schema_mismatch = (
                 dense_params.size != EMBEDDING_DIM
                 or dense_params.distance != qmodels.Distance.COSINE
@@ -182,6 +217,14 @@ class QdrantStore:
         dense_vectors: list[list[float]],
         sparse_vectors: list[SparseVector],
     ) -> None:
+        # Sprint 17: zip() silently truncates to the shortest input — a
+        # caller bug producing mismatched-length lists would otherwise
+        # upsert fewer points than chunks exist with no error at all.
+        if not len(chunks) == len(dense_vectors) == len(sparse_vectors):
+            raise ValueError(
+                f"chunks, dense_vectors, and sparse_vectors must be the same length, got "
+                f"{len(chunks)}, {len(dense_vectors)}, {len(sparse_vectors)}"
+            )
         points = [
             self._to_point(chunk, dense_vector, sparse_vector)
             for chunk, dense_vector, sparse_vector in zip(chunks, dense_vectors, sparse_vectors)
@@ -190,9 +233,17 @@ class QdrantStore:
 
     @staticmethod
     def point_id_for(chunk: Chunk) -> str:
+        # source_id (Sprint 17) is required in this key: doc_id is only a
+        # content hash, so two DIFFERENT documents with byte-identical
+        # content (e.g. contract-a.pdf and contract-b.pdf, duplicated
+        # text) would otherwise produce the same
+        # (doc_id, page, paragraph, char_range) tuple for their
+        # corresponding chunks and silently collide on point ID, with the
+        # second upsert overwriting the first — no error, no visible
+        # duplicate, just data loss. See docs/sprint-17-plan.md.
         key = (
-            f"{chunk.source_type}:{chunk.doc_id}:{chunk.page_number}:{chunk.paragraph_index}:"
-            f"{chunk.char_range[0]}:{chunk.char_range[1]}"
+            f"{chunk.source_type}:{chunk.source_id}:{chunk.doc_id}:{chunk.page_number}:"
+            f"{chunk.paragraph_index}:{chunk.char_range[0]}:{chunk.char_range[1]}"
         )
         return str(uuid.uuid5(_POINT_ID_NAMESPACE, key))
 

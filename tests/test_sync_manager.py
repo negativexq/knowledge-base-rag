@@ -10,7 +10,14 @@ from app.registry.store import DocumentRegistry
 from app.retrieval.sparse import SparseVector
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager, UnknownConnectorError
-from app.sync.models import STATUS_ERROR, STATUS_REJECTED, STATUS_SUCCESS, TRIGGER_MANUAL
+from app.sync.models import (
+    STATUS_CANCELLED,
+    STATUS_ERROR,
+    STATUS_REJECTED,
+    STATUS_RUNNING,
+    STATUS_SUCCESS,
+    TRIGGER_MANUAL,
+)
 
 COLLECTION = "test_sync_manager"
 
@@ -111,6 +118,37 @@ async def test_trigger_sync_error_records_history_with_message(tmp_path):
     run = history.get_run(result.run_id)
     assert run.status == STATUS_ERROR
     assert run.error_message is not None
+
+
+@pytest.mark.asyncio
+async def test_a_real_cancellation_records_cancelled_status_not_stuck_running(tmp_path):
+    """Sprint 17: before this, trigger_sync's `except Exception as exc:`
+    never caught asyncio.CancelledError (BaseException, not Exception),
+    so a cancelled run's sync_runs row was left forever at STATUS_RUNNING
+    — indistinguishable from a process that silently crashed mid-sync.
+    Cancels a REAL asyncio Task wrapping trigger_sync (task.cancel() from
+    outside, not a manually-raised CancelledError) while it's genuinely
+    in-flight.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "readme.md").write_text("# A\n\nSome content.")
+    manager, _, history = _make_manager(tmp_path, _slow_embed_fn(1.0), docs_dir)
+
+    task = asyncio.create_task(manager.trigger_sync("filesystem", TRIGGER_MANUAL))
+    await asyncio.sleep(0.02)  # let it start and pass the first await point
+    assert manager.is_running("filesystem") is True
+
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    assert manager.is_running("filesystem") is False  # finally: always runs
+
+    run = history.latest_run("filesystem")
+    assert run is not None
+    assert run.status == STATUS_CANCELLED
+    assert run.status != STATUS_RUNNING
 
 
 @pytest.mark.asyncio

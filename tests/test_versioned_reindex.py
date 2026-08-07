@@ -6,6 +6,9 @@ re-index has a real, measured window where both versions are visible
 (the disclosed tradeoff). Only Ollama embedding is faked.
 """
 
+import asyncio
+
+import pytest
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
@@ -346,3 +349,86 @@ async def test_multi_batch_duplicate_visibility_window_measured_from_first_upser
         f"(last-batch-only measurement would have shown "
         f"{window_from_last_ns / 1000:.1f} microseconds)"
     )
+
+
+async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(tmp_path):
+    """Sprint 17: the Sprint 16 rollback block was `except Exception`,
+    which does NOT catch asyncio.CancelledError (it inherits from
+    BaseException, not Exception, since Python 3.8). A real cancellation
+    delivered mid-embed — exactly what a scheduler shutdown or an ASGI
+    server's graceful shutdown can do via task.cancel() — used to bypass
+    the rollback entirely, leaving a partial new version stuck.
+
+    This delivers a REAL asyncio cancellation (task.cancel() from outside
+    the running coroutine, not a manually-raised CancelledError standing
+    in for one) at a controlled point: batch 1 (2 chunks) completes
+    normally, batch 2's embed call signals it has started and then
+    sleeps — the test cancels the task while it's suspended there.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    sentences = [f"Original sentence number {i} about apples." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(sentences))
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store("test_versioned_reindex_cancellation")
+    registry = _registry(tmp_path)
+
+    await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+    )
+    old_hash = registry.get_document("filesystem", "doc_md").content_hash
+    old_points_before = [
+        p for p in _all_points(store, "test_versioned_reindex_cancellation")
+        if p.payload["source_id"] == "doc_md"
+    ]
+    assert len(old_points_before) >= 6  # sanity: enough chunks for 3+ batches of 2
+
+    new_sentences = [f"Completely rewritten sentence number {i} about oranges." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(new_sentences))
+
+    batch_2_started = asyncio.Event()
+    call_count = 0
+
+    async def embed_fn_that_hangs_in_batch_2(text: str) -> list[float]:
+        nonlocal call_count
+        call_count += 1
+        if call_count <= 2:  # batch 1 (upsert_batch_size=2) succeeds fully
+            return await _fake_embed(text)
+        batch_2_started.set()
+        await asyncio.sleep(10)  # cancelled here, mid-batch-2
+        return await _fake_embed(text)
+
+    task = asyncio.ensure_future(
+        ingest_connector(
+            connector, store, registry, embed_fn_that_hangs_in_batch_2, _FakeSparseEncoder(),
+            chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        )
+    )
+    await batch_2_started.wait()
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    points_after_cancel = [
+        p for p in _all_points(store, "test_versioned_reindex_cancellation")
+        if p.payload["source_id"] == "doc_md"
+    ]
+
+    # OLD version fully intact.
+    old_ids = {p.id for p in old_points_before}
+    surviving_old = [p for p in points_after_cancel if p.id in old_ids]
+    assert len(surviving_old) == len(old_points_before)
+    assert any("apples" in p.payload["text"] for p in surviving_old)
+
+    # Batch 1's NEW-version points (upserted before cancellation) must
+    # have been rolled back too — the exact same guarantee Sprint 16 gave
+    # for a raised exception, now proven for a real cancellation too.
+    new_version_points = [
+        p for p in points_after_cancel if p.payload["document_version"] != old_hash
+    ]
+    assert new_version_points == []
+
+    assert registry.get_document("filesystem", "doc_md").content_hash == old_hash

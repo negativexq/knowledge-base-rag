@@ -152,12 +152,81 @@ def test_ensure_collection_accepts_correct_dense_and_sparse_schema():
         vectors_config={
             VECTOR_NAME: qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.COSINE)
         },
-        sparse_vectors_config={SPARSE_VECTOR_NAME: qmodels.SparseVectorParams()},
+        sparse_vectors_config={
+            SPARSE_VECTOR_NAME: qmodels.SparseVectorParams(modifier=qmodels.Modifier.IDF)
+        },
     )
 
     store = QdrantStore(client=client, collection_name=COLLECTION)
 
     store.ensure_collection()  # must not raise
+
+
+def test_ensure_collection_fails_fast_when_vector_name_missing_entirely():
+    """Sprint 17: before this, accessing
+    info.config.params.vectors[VECTOR_NAME] with no membership check
+    raised a raw KeyError instead of UnexpectedCollectionSchemaError when
+    a collection had SOME sparse config but no "dense" named vector at
+    all — breaking the "fail clearly, tell the human what's wrong"
+    contract this function exists for.
+    """
+    client = QdrantClient(":memory:")
+    client.create_collection(
+        COLLECTION,
+        vectors_config={
+            "not_dense": qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.COSINE)
+        },
+        sparse_vectors_config={
+            SPARSE_VECTOR_NAME: qmodels.SparseVectorParams(modifier=qmodels.Modifier.IDF)
+        },
+    )
+
+    store = QdrantStore(client=client, collection_name=COLLECTION)
+
+    with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
+        store.ensure_collection()
+
+
+def test_ensure_collection_fails_fast_when_sparse_modifier_is_not_idf():
+    """Sprint 17: the sparse check previously only verified the KEY
+    existed, never that its modifier was actually IDF — even though
+    create_collection() always sets IDF explicitly, so the two code
+    paths (create vs. validate) didn't agree on what "correct schema"
+    meant. A collection with a sparse vector using no modifier (Qdrant's
+    own default) or a different one now fails fast instead of passing
+    silently.
+    """
+    client = QdrantClient(":memory:")
+    client.create_collection(
+        COLLECTION,
+        vectors_config={
+            VECTOR_NAME: qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.COSINE)
+        },
+        sparse_vectors_config={SPARSE_VECTOR_NAME: qmodels.SparseVectorParams()},  # no modifier
+    )
+
+    store = QdrantStore(client=client, collection_name=COLLECTION)
+
+    with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
+        store.ensure_collection()
+
+
+def test_upsert_chunks_rejects_mismatched_length_inputs():
+    """Sprint 17: upsert_chunks zipped chunks/dense_vectors/sparse_vectors
+    with no length check — zip() silently truncates to the shortest
+    input, so a caller bug (an off-by-one in a future batching change, a
+    partial embed result) would silently upsert fewer points than chunks
+    exist, with no error anywhere to catch it before it reached
+    production data.
+    """
+    store = _store()
+    chunk_a = _chunk(char_range=(0, 10))
+    chunk_b = _chunk(char_range=(10, 20))
+
+    with pytest.raises(ValueError, match="2.*1|1.*2"):
+        store.upsert_chunks([chunk_a, chunk_b], [_dense_vector()], [_sparse_vector()])
+
+    assert store.count() == 0  # nothing partially written
 
 
 def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
@@ -248,6 +317,19 @@ def test_chunks_from_different_source_types_produce_different_point_ids():
     assert QdrantStore.point_id_for(chunk_a) != QdrantStore.point_id_for(chunk_b)
 
 
+def test_chunks_from_different_source_ids_produce_different_point_ids_even_with_same_doc_id():
+    """Sprint 17: two different documents (e.g. contract-a.pdf and
+    contract-b.pdf) that happen to have byte-identical content produce
+    the same doc_id (content hash) — before this fix, point_id_for's key
+    didn't include source_id, so their corresponding chunks collided on
+    point ID and the second upsert silently overwrote the first.
+    """
+    chunk_a = _chunk(doc_id="same-hash", source_id="contract-a")
+    chunk_b = _chunk(doc_id="same-hash", source_id="contract-b")
+
+    assert QdrantStore.point_id_for(chunk_a) != QdrantStore.point_id_for(chunk_b)
+
+
 def test_delete_by_source_removes_all_points_for_that_document():
     store = _store()
     store.upsert_chunks(
@@ -265,18 +347,58 @@ def test_delete_by_source_removes_all_points_for_that_document():
 
 
 def test_delete_by_source_does_not_touch_other_documents():
+    """Sprint 17: this test used to rely on _chunk()'s default doc_id
+    ("doc1") for BOTH calls, so the two chunks collided on point ID
+    before point_id_for included source_id — upsert_chunks silently wrote
+    only ONE point, and the post-deletion `count() == 1` assertion
+    passed for the wrong reason (there was only ever one point, not two
+    independent documents where one survived). Explicit distinct doc_ids
+    here make the "2 documents, 1 deleted, 1 survives" story actually
+    true.
+    """
     store = _store()
     store.upsert_chunks(
-        [_chunk(source_id="doc1"), _chunk(source_id="doc2")],
+        [
+            _chunk(doc_id="doc1-hash", source_id="doc1"),
+            _chunk(doc_id="doc2-hash", source_id="doc2"),
+        ],
         [_dense_vector(), _dense_vector()],
         [_sparse_vector(), _sparse_vector()],
     )
+    assert store.count() == 2  # sanity: both documents really did land as separate points
 
     store.delete_by_source("pdf", "doc1")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
     assert remaining[0].payload["source_id"] == "doc2"
+
+
+def test_two_documents_with_the_same_doc_id_and_coordinates_but_different_source_id_both_upsert():
+    """The Sprint 17 fix, proven end to end at the upsert_chunks level:
+    two chunks that share doc_id AND page/paragraph/char_range (the
+    byte-identical-content scenario) but have different source_id must
+    both actually land in Qdrant — not one silently overwriting the
+    other. count() == 2 is asserted BEFORE any deletion happens, which
+    is the exact assertion that was missing before and let the original
+    collision bug hide undetected.
+    """
+    store = _store()
+    chunk_a = _chunk(doc_id="same-hash", source_id="contract-a", text="text from contract a")
+    chunk_b = _chunk(doc_id="same-hash", source_id="contract-b", text="text from contract b")
+
+    store.upsert_chunks(
+        [chunk_a, chunk_b], [_dense_vector(), _dense_vector()], [_sparse_vector(), _sparse_vector()]
+    )
+
+    assert store.count() == 2  # the critical assertion the original bug's test never made
+
+    store.delete_by_source("pdf", "contract-a")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["source_id"] == "contract-b"
+    assert remaining[0].payload["text"] == "text from contract b"
 
 
 def test_delete_by_source_does_not_touch_a_different_source_type_with_the_same_source_id():

@@ -7,13 +7,36 @@ from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from qdrant_client import QdrantClient
 
+from app.connectors.base import ConnectorDocument
 from app.connectors.filesystem import LocalFilesystemConnector
-from app.ingestion.ingest import ingest_connector
+from app.ingestion.ingest import DuplicateSourceIdError, ingest_connector
 from app.ingestion.qdrant_store import EMBEDDING_DIM, QdrantStore
 from app.registry.store import DocumentRegistry
 from app.retrieval.sparse import SparseVector
 
 COLLECTION = "test_ingest_connector"
+
+
+class _FakeConnectorWithDuplicateSourceIds:
+    """A minimal Connector whose list_documents() returns two documents
+    sharing the same source_id — the scenario slugify() collisions
+    (e.g. "foo bar.md" and "foo_bar.md" -> the same slug) or a
+    misbehaving connector could produce for real.
+    """
+
+    source_type = "fake"
+
+    async def list_documents(self) -> list[ConnectorDocument]:
+        return [
+            ConnectorDocument(source_id="dup", content_type="markdown"),
+            ConnectorDocument(source_id="dup", content_type="markdown"),
+        ]
+
+    async def fetch_content(self, document: ConnectorDocument) -> bytes:
+        raise AssertionError("must not be called — duplicate check happens before fetch")
+
+    async def get_content_hash(self, document: ConnectorDocument) -> str:
+        raise AssertionError("must not be called — duplicate check happens before hashing")
 
 
 def _local_tracer_with_exporter():
@@ -178,3 +201,71 @@ async def test_ingest_connector_creates_spans_with_content_type_attribute(sample
     content_types = {s.attributes["ingest.content_type"] for s in doc_spans}
     assert content_types == {"pdf", "markdown"}
     assert all(s.attributes["ingest.source_type"] == "filesystem" for s in doc_spans)
+
+
+@pytest.mark.asyncio
+async def test_two_files_with_identical_content_keep_independent_identity(tmp_path):
+    """Sprint 17, the real e2e proof for the point-ID collision fix: two
+    files with BYTE-IDENTICAL content (so the same content-hash doc_id)
+    but different filenames/source_ids. Before the fix, their chunks
+    collided on Qdrant point ID and the second file's upsert silently
+    overwrote the first's — this proves both survive independently
+    through the full real pipeline (registry AND Qdrant), not just at
+    the point_id_for unit level.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    identical_content = "# Same Doc\n\nIdentical content in both files."
+    (docs_dir / "a.md").write_text(identical_content)
+    (docs_dir / "b.md").write_text(identical_content)
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    stats = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    assert stats.files_processed == 2
+    # The critical assertion: both documents' chunks actually landed,
+    # nothing silently overwritten.
+    assert store.count() == stats.chunks_upserted
+
+    doc_a = registry.get_document("filesystem", "a_md")
+    doc_b = registry.get_document("filesystem", "b_md")
+    assert doc_a is not None
+    assert doc_b is not None
+    assert doc_a.content_hash == doc_b.content_hash  # same content -> same hash, by design
+
+    scroll_result, _ = store._client.scroll(COLLECTION, limit=100)
+    source_ids_present = {point.payload["source_id"] for point in scroll_result}
+    assert source_ids_present == {"a_md", "b_md"}
+
+    # Deleting one document's points must not touch the other's, even
+    # though they share a doc_id — proves citation identity (source_id)
+    # stayed independent all the way through Qdrant, not just registry.
+    store.delete_by_source("filesystem", "a_md")
+    remaining, _ = store._client.scroll(COLLECTION, limit=100)
+    assert remaining
+    assert all(point.payload["source_id"] == "b_md" for point in remaining)
+
+
+@pytest.mark.asyncio
+async def test_duplicate_source_ids_from_a_connector_fail_fast(tmp_path):
+    """Sprint 17: slugify() collisions (e.g. "foo bar.md" and
+    "foo_bar.md" both slugging to "foo_bar") — or any connector that for
+    its own reasons returns duplicate source_ids — must not be allowed
+    to silently interleave their registry rows and Qdrant points. Checked
+    at ingest_connector's boundary (not inside slugify() itself) so it
+    catches every possible cause uniformly, and fails BEFORE any
+    registry/Qdrant work happens for the run.
+    """
+    connector = _FakeConnectorWithDuplicateSourceIds()
+    store = _store()
+    registry = _registry(tmp_path)
+
+    with pytest.raises(DuplicateSourceIdError, match="dup"):
+        await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    # Fail-fast means fail-fast: nothing touched.
+    assert store.count() == 0
+    assert registry.list_documents(source_type="fake") == []

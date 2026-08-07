@@ -1,4 +1,5 @@
 import asyncio
+from collections import Counter
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -59,6 +60,18 @@ async def embed_texts_concurrently(
             return await embed_fn(text)
 
     return list(await asyncio.gather(*(_bounded(text) for text in texts)))
+
+
+class DuplicateSourceIdError(Exception):
+    """Raised when a connector's list_documents() returns two or more
+    documents sharing the same source_id — checked at ingest_connector's
+    boundary, fail-fast before any registry/Qdrant work happens for the
+    run. slugify() collisions (e.g. "foo bar.md" and "foo_bar.md" both
+    slugging to "foo_bar") are one real cause but not the only possible
+    one — a connector could return duplicates for its own reasons — so
+    this is a general connector-output check, not a slugify() fix. See
+    docs/sprint-17-plan.md.
+    """
 
 
 @dataclass
@@ -184,6 +197,15 @@ async def ingest_connector(
             span.set_attribute("fetch.document_count", len(current_documents))
         seen_source_ids = {document.source_id for document in current_documents}
 
+        if len(seen_source_ids) != len(current_documents):
+            counts = Counter(document.source_id for document in current_documents)
+            duplicates = sorted(source_id for source_id, count in counts.items() if count > 1)
+            raise DuplicateSourceIdError(
+                f"connector {connector.source_type!r} returned duplicate source_id(s): "
+                f"{duplicates} — refusing to ingest, would silently interleave registry/Qdrant "
+                "identity between the colliding documents"
+            )
+
         for record in registry.list_documents(source_type=connector.source_type):
             if record.source_id in seen_source_ids:
                 continue
@@ -297,10 +319,33 @@ async def ingest_connector(
                             store.upsert_chunks(batch, dense_vectors, sparse_vectors)
 
                         chunks_upserted += len(batch)
+                except asyncio.CancelledError:
+                    # Sprint 17: CancelledError inherits from
+                    # BaseException, not Exception (since Python 3.8), so
+                    # the `except Exception` block below never caught a
+                    # real task.cancel() delivered mid-loop — a real path,
+                    # not theoretical: SyncScheduler shutdown or an ASGI
+                    # server's graceful shutdown can cancel an in-flight
+                    # sync coroutine. Without this block, a cancellation
+                    # left the same stranded-partial-version state Sprint
+                    # 16 fixed for raised exceptions. Same rollback,
+                    # separate branch — never swallow a cancellation, so
+                    # `raise` here (not `raise` after catching as `exc`)
+                    # re-raises CancelledError itself, preserving the
+                    # calling task's ability to actually stop.
+                    with tracer.start_as_current_span("rollback_partial_version") as span:
+                        span.set_attribute("rollback.source_id", document.source_id)
+                        span.set_attribute("rollback.document_version", content_hash)
+                        span.set_attribute("rollback.reason", "cancelled")
+                        store.delete_version(
+                            connector.source_type, document.source_id, content_hash
+                        )
+                    raise
                 except Exception:
                     with tracer.start_as_current_span("rollback_partial_version") as span:
                         span.set_attribute("rollback.source_id", document.source_id)
                         span.set_attribute("rollback.document_version", content_hash)
+                        span.set_attribute("rollback.reason", "error")
                         store.delete_version(
                             connector.source_type, document.source_id, content_hash
                         )
