@@ -743,7 +743,101 @@ değil.
 fail-fast), 2'si servis/API key gerektirdiği için skip (değişmedi), `ruff
 check` temiz, 3 ardışık çalıştırmada flakiness yok.
 
-## Sprint 13 (stretch) — İkinci Connector (Confluence)
+## Sprint 13 — Safe Versioned Re-index
+
+Amaç: Re-index sırasında veri kaybı penceresini kapatmak.
+
+Scope:
+
+* Sprint 4'ten beri: değişen bir doküman için eski chunk'lar ÖNCE silinir, sonra yeniden parse+embed+upsert edilir — embed/upsert ortasında hata olursa doküman geçici/kalıcı olarak aranamaz hale gelir
+* "Deferred cleanup" deseni: yeni versiyon önce tam olarak upsert edilir (yeni bir `document_version` payload alanıyla), SADECE upsert başarıyla bitince eski versiyonun chunk'ları silinir
+* Bilinçli, belgelenen sınırlama: strict atomic değil — kısa bir "duplicate görünürlük" penceresi var (arama sırasında hem eski hem yeni chunk'lar dönebilir)
+
+DoD: embed/upsert ortasında hata olduğunda eski chunk'lar hâlâ aranabilir durumda (data-loss penceresi kapatılmış); başarılı re-index'te eski chunk'lar temizleniyor; testler ve lint temiz.
+
+### Kapanış notu
+
+**Eski davranış kod okunarak doğrulandı (varsayılmadı).**
+`app/ingestion/ingest.py::ingest_connector`'da `delete_stale_chunks` span'i
+embed/upsert döngüsünden ÖNCE, `store.delete_by_source(...)`'u koşulsuz
+çağırıyordu — `embed_fn` herhangi bir batch'te hata fırlatırsa (ağ hatası,
+Ollama timeout), eski chunk'lar ZATEN silinmiş, yeni chunk'lar ise sadece
+kısmen yazılmış oluyordu. Sonraki başarılı bir sync bunu düzeltene kadar
+(ya da hiç düzeltmezse kalıcı olarak) doküman aranamaz hale geliyordu.
+
+**Düzeltme: "deferred cleanup" — strict atomic DEĞİL, README'de de böyle
+adlandırıldı.** Yeni versiyon (`document_version` payload alanı, yeni
+content_hash) ÖNCE tam olarak embed+upsert ediliyor; SADECE bu başarıyla
+bitince `QdrantStore.delete_stale_versions(source_type, source_id,
+keep_version=content_hash)` eski versiyonun chunk'larını siliyor (yeni
+`document_version` alanına göre filtreli — `delete_by_source` gibi tam
+silme değil). `document_version`, `doc_id`'nin (zaten content_hash) AYNI
+değerini taşıyan ama BİLİNÇLİ olarak ayrı bir alan — `doc_id`'nin görevi
+"point ID'nin bir bileşeni", `document_version`'ın görevi "deferred
+cleanup'ın filtre anahtarı"; ileride `doc_id`'nin hash şeması değişse bile
+re-index temizliği sessizce bozulmasın diye ayrıldı.
+
+**DoD'nin iki yarısı da GERÇEK senaryolarla kanıtlandı, varsayılmadı**
+(`tests/test_versioned_reindex.py`):
+
+1. **Veri kaybı penceresi kapatıldı**: çok chunk'lı gerçek bir Markdown
+   dokümanı ingest edildi, içeriği değiştirildi, ikinci sync'te `embed_fn`
+   2 çağrıdan sonra GERÇEKTEN hata fırlatacak şekilde ayarlandı (ağ
+   hatası simülasyonu). Hata `ingest_connector`'dan dışarı fırladı
+   (yutulmadı — mevcut davranış, bu sprintte değişmedi), AMA eski
+   versiyonun TÜM chunk'ları (aynı point ID'lerle, aynı metinle) hâlâ
+   koleksiyondaydı — Sprint 4'ün eski "önce sil" sırası bunları çoktan
+   silmiş olurdu. Registry de hâlâ ESKİ hash'i gösteriyordu — bir sonraki
+   sync bu dokümanı doğru şekilde "değişti" olarak görüp tekrar
+   deneyecek.
+2. **Başarılı re-index'te eski chunk'lar gerçekten temizleniyor**: ayrı
+   bir testle, başarılı bir re-index sonrası eski versiyonun chunk'ı
+   koleksiyonda kalmıyor, sadece yeni metin var.
+
+**Duplicate görünürlük penceresi: GERÇEKTEN var olduğu kanıtlandı, sadece
+yorumda yazılı durmadı.** `QdrantStore`'u saran bir `_SnapshotStore`,
+`delete_stale_versions` çağrılmadan HEMEN ÖNCE koleksiyonun gerçek
+içeriğini (`scroll`) okuyor — sonuç: o anda İKİ `document_version` değeri
+VE her iki versiyonun metni ("apples" eski, "oranges" yeni) AYNI ANDA
+koleksiyonda, gerçekten arama sonucuna dönebilecek durumda. Bu, sadece
+"teorik olarak mümkün" değil, gerçek bir ara durum olarak doğrudan
+gözlemlendi.
+
+**Pencere süresi ÖLÇÜLDÜ, tahmin edilmedi.** Sprint 8'in zaten var olan
+`upsert_batch`/`delete_stale_chunks` span'leri gerçek OTel zaman
+damgalarıyla (nanosaniye hassasiyetinde, `InMemorySpanExporter` ile
+yakalandı) kullanılarak, son `upsert_batch` span'inin bitişi ile
+`delete_stale_chunks` span'inin başlangıcı arasındaki GERÇEK fark
+ölçüldü: **~12 mikrosaniye** (yerel, in-memory bir koşumda). Bu süre
+embed süresinden BAĞIMSIZ — tüm embedding pencere AÇILMADAN ÖNCE bitmiş
+oluyor; pencere sadece iki ardışık Qdrant çağrısı arasındaki gerçek
+Python/ağ gecikmesi kadar. README'ye ve kod yorumlarına bu ölçülmüş
+değer yazıldı, "kısa bir pencere var" gibi belirsiz bir ifadeyle
+bırakılmadı.
+
+**Sprint 4/5/6/8'in mevcut testleri değişmeden geçti** — varsayılmadı,
+gerçekten çalıştırıldı: `test_sync_scenarios.py` (orphan chunk yok,
+no-op sıfır yazma, shrink senaryosu), `test_citation_cross_source_leak_e2e.py`
+(çapraz kaynak sızıntısı yok), `test_ingest_connector_tracing.py`
+(span kümesi/hiyerarşisi), `test_notion_pipeline_e2e_hermetic.py`
+(Notion skip/update/delete) — 20 test, hepsi yeşil. Hiçbiri eski
+"önce sil" sırasına spesifik bir varsayıma dayanmıyormuş (hepsi son
+duruma bakıyor: yetim yok, doğru içerik, sızıntı yok) — bu gerçekten
+doğrulandı, sadece varsayılmadı.
+
+**README'ye "zero-downtime versioned re-index with deferred cleanup"
+olarak, "atomic" DENMEDEN belgelendi** — Sync bölümüne yeni bir alt
+başlık (`Re-indexing a changed document: zero-downtime with deferred
+cleanup`) ve Known Limitations'a ölçülen pencere süresiyle birlikte bir
+madde eklendi; Technologies Used tablosundaki Sync satırı da
+güncellendi.
+
+358 test toplam (bu sprintte +8 yeni test — `delete_stale_versions`
+birim testleri + versioned re-index senaryo testleri), 355'i gerçek
+Qdrant+Ollama'ya karşı geçiyor (2'si servis/API key gerektirdiği için
+skip, değişmedi), `ruff check` temiz, flakiness yok.
+
+## Sprint 14 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

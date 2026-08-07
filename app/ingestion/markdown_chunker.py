@@ -66,6 +66,7 @@ def chunk_markdown_text(
                     char_range=span.char_range,
                     text=span.text,
                     heading_path=heading_path,
+                    document_version=doc_id,
                 )
             )
 

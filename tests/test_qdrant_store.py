@@ -30,6 +30,7 @@ def _chunk(
     paragraph=0,
     char_range=(0, 10),
     text="hello world",
+    document_version=None,
 ):
     return Chunk(
         doc_id=doc_id,
@@ -39,6 +40,7 @@ def _chunk(
         paragraph_index=paragraph,
         char_range=char_range,
         text=text,
+        document_version=document_version if document_version is not None else doc_id,
     )
 
 
@@ -123,6 +125,7 @@ def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
         "char_range": list(chunk.char_range),
         "text": chunk.text,
         "heading_path": list(chunk.heading_path),
+        "document_version": chunk.document_version,
     }
 
 
@@ -240,6 +243,71 @@ def test_delete_by_source_does_not_touch_a_different_source_type_with_the_same_s
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
     assert remaining[0].payload["source_type"] == "markdown"
+
+
+def test_delete_stale_versions_removes_only_the_old_version():
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc1", char_range=(0, 10), text="old text")],
+        [_dense_vector()],
+        [_sparse_vector()],
+    )
+    store.upsert_chunks(
+        [_chunk(doc_id="v2", source_id="doc1", char_range=(0, 10), text="new text")],
+        [_dense_vector()],
+        [_sparse_vector()],
+    )
+    assert store.count() == 2  # sanity: both versions coexist before cleanup
+
+    store.delete_stale_versions("pdf", "doc1", keep_version="v2")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["document_version"] == "v2"
+    assert remaining[0].payload["text"] == "new text"
+
+
+def test_delete_stale_versions_does_not_touch_other_documents():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(doc_id="v1", source_id="doc1"),
+            _chunk(doc_id="v2", source_id="doc1"),
+            _chunk(doc_id="unrelated", source_id="doc2"),
+        ],
+        [_dense_vector()] * 3,
+        [_sparse_vector()] * 3,
+    )
+
+    store.delete_stale_versions("pdf", "doc1", keep_version="v2")
+
+    assert store.count() == 2
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert {p.payload["source_id"] for p in remaining} == {"doc1", "doc2"}
+
+
+def test_delete_stale_versions_does_not_touch_a_different_source_type_with_the_same_source_id():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(doc_id="v1", source_type="pdf", source_id="readme"),
+            _chunk(doc_id="v2", source_type="markdown", source_id="readme"),
+        ],
+        [_dense_vector(), _dense_vector()],
+        [_sparse_vector(), _sparse_vector()],
+    )
+
+    store.delete_stale_versions("pdf", "readme", keep_version="some-other-version")
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].payload["source_type"] == "markdown"
+
+
+def test_delete_stale_versions_on_a_document_with_no_points_is_a_no_op():
+    store = _store()
+    store.delete_stale_versions("pdf", "never-existed", keep_version="v1")  # must not raise
+    assert store.count() == 0
 
 
 def test_delete_by_source_on_a_document_with_no_points_is_a_no_op():

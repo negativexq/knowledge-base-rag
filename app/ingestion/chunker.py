@@ -144,6 +144,7 @@ def chunk_document(
             paragraph_index=span.paragraph_index,
             char_range=span.char_range,
             text=span.text,
+            document_version=doc_id,
         )
         for span in spans
     ]

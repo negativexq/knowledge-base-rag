@@ -116,7 +116,7 @@ verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
 | Chunking | Whitespace token counter, 500/50 (size/overlap) | Provisional default, unchanged since Sprint 0 — never re-tuned against a larger corpus (see Known Limitations) |
 | Document registry | SQLite (stdlib `sqlite3`), no ORM | `(source_type, source_id)` primary key, content-hash diffing for incremental sync (Sprint 2) |
 | Connectors | `LocalFilesystemConnector` (PDF/Markdown); `NotionConnector` (Notion API, 429 retry/backoff) | Shared async `Connector` Protocol (Sprint 3, generalized to async in Sprint 6) |
-| Sync | Hand-rolled `asyncio` loop (`SyncScheduler`) + per-connector concurrency guard | APScheduler/Celery deliberately rejected — no cron expressions or job persistence needed (Sprint 7) |
+| Sync | Hand-rolled `asyncio` loop (`SyncScheduler`) + per-connector concurrency guard | APScheduler/Celery deliberately rejected — no cron expressions or job persistence needed (Sprint 7); re-index is zero-downtime with deferred cleanup, not atomic — see [Sync](#sync) (Sprint 13) |
 | Provider abstraction | `ChatProvider`/`EmbeddingProvider` Protocols — Ollama (native) + Claude (Anthropic API) | Claude has no embedding endpoint, so embedding always stays on Ollama regardless of chat provider (Sprint 1) |
 | Embedding | Ollama, `nomic-embed-text` | 768-dim, cosine distance; `search_document:`/`search_query:` task prefixes required for quality |
 | Generation | Ollama `qwen2.5:7b-instruct` (default) or Claude | Model is a config value, not hardcoded |
@@ -194,6 +194,35 @@ Two syncs of the *same* connector never run concurrently — a second
 attempt while one is in progress is rejected immediately (`409`), not
 queued. Every run (scheduled or manual) is recorded with its outcome,
 duration, and how many documents changed/were skipped/deleted.
+
+### Re-indexing a changed document: zero-downtime with deferred cleanup
+
+Deliberately **not** called "atomic" — a true atomic swap would need
+transactional guarantees Qdrant doesn't offer, and calling it that would
+be a claim this system can't back up. What it actually does, and why:
+
+When a document's content changes, the new version is fully parsed,
+embedded, and upserted into Qdrant *first*, tagged with a
+`document_version` payload field (the new content hash). Only once every
+chunk of the new version is confirmed upserted does the old version's
+chunks get deleted. Before Sprint 13, this was reversed — old chunks were
+deleted *before* re-ingesting — so a failure partway through embedding
+(a network blip, an Ollama timeout) left the document with no searchable
+chunks at all until a later sync succeeded. Deferred cleanup closes that
+specific window: a failed re-index now leaves the *old* version fully
+intact and searchable, never a half-written document.
+
+The honest tradeoff this doesn't eliminate: between the new version's
+upsert finishing and the old version's cleanup running, **both versions
+are simultaneously present and searchable** — a query in that window can
+return duplicate/stale-alongside-fresh chunks for the same document. This
+window is real, not hypothetical (proven with a test that inspects
+Qdrant's actual contents at that exact moment) and was measured at ~12
+microseconds for a local, in-memory run — bounded by the time between two
+sequential Qdrant calls, not by embedding time (all embedding happens
+*before* the window opens). See the Sprint 13 closing note in
+[docs/PLANNING.md](docs/PLANNING.md) for the measurement and the
+before/after failure-scenario proof.
 
 ## Citation format
 
@@ -280,6 +309,15 @@ Real, documented gaps — not a hedge. Each one is traceable to a sprint
 closing note in [docs/PLANNING.md](docs/PLANNING.md), or to a direct
 check of the code/tests where noted.
 
+- **Re-indexing a changed document is zero-downtime with deferred
+  cleanup, not atomic** — during re-index there's a brief window (measured
+  at ~12 microseconds locally) where both the old and new version of a
+  document's chunks are simultaneously searchable, so a query in that
+  window can see duplicate/stale-alongside-fresh results. This is a
+  deliberate, measured tradeoff (Sprint 13) in exchange for closing a
+  worse problem (Sprint 4's original ordering could leave a document with
+  *zero* searchable chunks if a re-index failed mid-embed) — see the
+  [Sync](#sync) section above.
 - **The Notion connector has never been tested against a real workspace.**
   No `NOTION_API_KEY` was available on the development machine (Sprint 6).
   Its 16 tests simulate Notion's real documented JSON shapes (search

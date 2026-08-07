@@ -110,11 +110,18 @@ async def ingest_connector(
        Qdrant calls (no re-parse, re-embed, or re-upsert), and the registry
        row is left untouched too (no last_synced_at refresh — see
        docs/sprint-04-plan.md for why that's an accepted simplification).
-    3. New/changed — every existing point for (source_type, source_id) is
-       deleted BEFORE re-ingesting, keyed on that stable identity rather
-       than the old content-hash doc_id (see docs/sprint-04-plan.md for why
-       this is the more robust choice — it can't leave orphans behind even
-       if the chunk count shrank). Safe to call on a brand new document too
+    3. New/changed — re-embedded and re-upserted under a NEW
+       document_version (the new content_hash) FIRST; only once every
+       batch is confirmed upserted are the OLD version's points deleted,
+       keyed on (source_type, source_id, document_version) — see
+       docs/sprint-13-plan.md for why this deferred-cleanup ordering
+       replaced Sprint 4's delete-then-reingest (a failure mid-embed used
+       to leave the document unsearchable; now the old version stays
+       searchable until the new one is confirmed written, at the cost of
+       a brief window where both versions are simultaneously visible).
+       Keying on (source_type, source_id) rather than the old content-hash
+       doc_id alone is still what guarantees no orphans even if the chunk
+       count shrank (Sprint 4). Safe to call on a brand new document too
        (deletes zero points).
 
     Typed against the generic Connector Protocol — Sprint 3/4 kept this
@@ -218,10 +225,20 @@ async def ingest_connector(
                         raise ValueError(f"Unsupported content_type: {document.content_type!r}")
                     span.set_attribute("parse.chunk_count", len(chunks))
 
-                with tracer.start_as_current_span("delete_stale_chunks") as span:
-                    span.set_attribute("delete_stale_chunks.source_id", document.source_id)
-                    store.delete_by_source(connector.source_type, document.source_id)
-
+                # Zero-downtime versioned re-index with DEFERRED cleanup
+                # (Sprint 13) — NOT strict atomic. The new version's
+                # chunks (tagged document_version=content_hash) are fully
+                # embedded and upserted FIRST; the old version's chunks
+                # are only deleted once that succeeds, so a failure
+                # partway through embedding/upserting leaves the OLD
+                # version still searchable instead of the document
+                # going dark (Sprint 4's delete-first ordering could do
+                # that). The real, disclosed tradeoff: between the last
+                # upsert_batch below and delete_stale_chunks, BOTH
+                # versions are simultaneously searchable — see
+                # docs/sprint-13-plan.md and the README's re-index
+                # section for the measured window and why it isn't
+                # eliminated here.
                 for batch_start in range(0, len(chunks), batch_size):
                     batch = chunks[batch_start : batch_start + batch_size]
 
@@ -239,6 +256,13 @@ async def ingest_connector(
                     chunks_upserted += len(batch)
 
                 doc_span.set_attribute("ingest.chunk_count", len(chunks))
+
+                with tracer.start_as_current_span("delete_stale_chunks") as span:
+                    span.set_attribute("delete_stale_chunks.source_id", document.source_id)
+                    span.set_attribute("delete_stale_chunks.keep_version", content_hash)
+                    store.delete_stale_versions(
+                        connector.source_type, document.source_id, keep_version=content_hash
+                    )
 
             # Registered only after a successful chunk+upsert, so a failure
             # partway through doesn't leave the registry claiming a document

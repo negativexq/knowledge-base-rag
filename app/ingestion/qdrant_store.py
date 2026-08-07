@@ -60,14 +60,14 @@ class QdrantStore:
         return self._client.count(self._collection_name, exact=True).count
 
     def delete_by_source(self, source_type: str, source_id: str) -> None:
-        """Delete every point belonging to one document, identified by its
+        """Delete EVERY point belonging to one document, identified by its
         life-of-the-document-stable (source_type, source_id) pair — not by
         doc_id, which is a content hash and changes on every edit. Used by
-        sync (Sprint 4) before re-ingesting a changed document (so a chunk
-        count decrease can't leave orphaned points behind) and before
-        forgetting a document that's vanished from its source entirely.
-        Safe to call when the document has no points yet (e.g. brand new) —
-        deletes zero, no error.
+        sync when a document has vanished from its connector entirely (a
+        real, full deletion — see docs/sprint-13-plan.md for why a
+        changed-but-still-present document uses delete_stale_versions()
+        instead, since Sprint 13). Safe to call when the document has no
+        points yet (e.g. brand new) — deletes zero, no error.
         """
         self._client.delete(
             collection_name=self._collection_name,
@@ -81,6 +81,41 @@ class QdrantStore:
                             key="source_id", match=qmodels.MatchValue(value=source_id)
                         ),
                     ]
+                )
+            ),
+        )
+
+    def delete_stale_versions(self, source_type: str, source_id: str, keep_version: str) -> None:
+        """Delete every point for (source_type, source_id) whose
+        document_version is NOT keep_version — the cleanup half of a
+        zero-downtime versioned re-index with deferred cleanup (Sprint
+        13): call ONLY after the new version's chunks have been fully
+        embedded and upserted, so the old version's chunks stay
+        searchable until the new ones are confirmed written. Between that
+        upsert and this call, both versions are simultaneously present
+        and searchable — a real, disclosed tradeoff (not eliminated here;
+        see docs/sprint-13-plan.md and the README's re-index section) in
+        exchange for closing the data-loss window Sprint 4's delete-first
+        ordering had. Safe to call when the document has no points yet —
+        deletes zero, no error.
+        """
+        self._client.delete(
+            collection_name=self._collection_name,
+            points_selector=qmodels.FilterSelector(
+                filter=qmodels.Filter(
+                    must=[
+                        qmodels.FieldCondition(
+                            key="source_type", match=qmodels.MatchValue(value=source_type)
+                        ),
+                        qmodels.FieldCondition(
+                            key="source_id", match=qmodels.MatchValue(value=source_id)
+                        ),
+                    ],
+                    must_not=[
+                        qmodels.FieldCondition(
+                            key="document_version", match=qmodels.MatchValue(value=keep_version)
+                        ),
+                    ],
                 )
             ),
         )
@@ -128,5 +163,6 @@ class QdrantStore:
                 "char_range": list(chunk.char_range),
                 "text": chunk.text,
                 "heading_path": list(chunk.heading_path),
+                "document_version": chunk.document_version,
             },
         )
