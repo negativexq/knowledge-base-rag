@@ -24,17 +24,57 @@ def _migrate_add_chunk_count_column(conn: sqlite3.Connection) -> None:
     # Sprint 17.3: nullable, no default — an ADD COLUMN with no default
     # leaves every existing row NULL, which is exactly the correct
     # "never tracked" state for anything that predates this column
-    # (distinct from a real, tracked 0). Known, disclosed limitation: a
-    # registry that already ran under Sprint 17.2's schema (NOT NULL
-    # DEFAULT 0) keeps whatever literal 0s it already stored — this
-    # migration can't retroactively tell those apart from a genuine
-    # empty-document 0 after the fact, and doesn't attempt to (no real
-    # deployed data to preserve; the next real sync for any such
-    # document re-establishes an accurate count regardless). See
-    # docs/sprint-17-3-plan.md.
-    columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
+    # (distinct from a real, tracked 0).
+    #
+    # Sprint 17.4: a REAL Sprint 17.2 database already has this column
+    # (as NOT NULL DEFAULT 0) — the membership check below is False for
+    # that shape, so Sprint 17.3's migration was a complete no-op for
+    # it: the NOT NULL constraint survived, and DocumentRegistry's own
+    # public chunk_count=None default could raise sqlite3.IntegrityError
+    # against it. SQLite has no ALTER COLUMN to relax NOT NULL, so a
+    # genuinely NOT NULL chunk_count column is fixed by rebuilding the
+    # table: rename it aside, create the (now nullable) real schema,
+    # copy every row across — converting the ambiguous legacy 0 to NULL
+    # specifically (not every value: a real non-zero count Sprint
+    # 17.2's ingest_connector wrote is already unambiguous and is kept
+    # as-is; only 0 was ever ambiguous between "genuinely empty" and
+    # "the column's own untouched default") — then drop the renamed
+    # original. See docs/sprint-17-4-plan.md.
+    columns = {row[1]: row for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
     if "chunk_count" not in columns:
         conn.execute("ALTER TABLE documents ADD COLUMN chunk_count INTEGER")
+        return
+
+    # PRAGMA table_info row shape: (cid, name, type, notnull, dflt_value, pk)
+    still_not_null = columns["chunk_count"][3] == 1
+    if still_not_null:
+        conn.execute("ALTER TABLE documents RENAME TO documents_pre_17_4")
+        conn.execute(
+            """
+            CREATE TABLE documents (
+                source_type    TEXT    NOT NULL,
+                source_id      TEXT    NOT NULL,
+                content_hash   TEXT    NOT NULL,
+                last_synced_at TEXT    NOT NULL,
+                version        INTEGER NOT NULL,
+                status         TEXT    NOT NULL,
+                chunk_count    INTEGER,
+                PRIMARY KEY (source_type, source_id)
+            );
+            """
+        )
+        conn.execute(
+            """
+            INSERT INTO documents
+                (source_type, source_id, content_hash, last_synced_at, version, status,
+                 chunk_count)
+            SELECT
+                source_type, source_id, content_hash, last_synced_at, version, status,
+                CASE WHEN chunk_count = 0 THEN NULL ELSE chunk_count END
+            FROM documents_pre_17_4;
+            """
+        )
+        conn.execute("DROP TABLE documents_pre_17_4")
 
 
 _METADATA_SCHEMA = """

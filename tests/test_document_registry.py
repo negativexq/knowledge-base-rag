@@ -261,6 +261,126 @@ def test_a_pre_sprint_17_2_registry_file_gets_the_chunk_count_column_migrated(tm
     assert record.chunk_count is None  # pre-existing row, never tracked — NULL, doesn't crash
 
 
+def _create_real_sprint_17_2_schema(db_path) -> None:
+    """Builds the ACTUAL Sprint 17.2 schema via raw SQL — chunk_count
+    INTEGER NOT NULL DEFAULT 0, exactly as that sprint's own _SCHEMA
+    defined it. Distinct from the pre-17.2 fixture above (which omits
+    the column entirely) — this is the real upgrade scenario Sprint
+    17.3's migration test never actually exercised.
+    """
+    raw_conn = sqlite3.connect(str(db_path))
+    raw_conn.execute(
+        """
+        CREATE TABLE documents (
+            source_type    TEXT    NOT NULL,
+            source_id      TEXT    NOT NULL,
+            content_hash   TEXT    NOT NULL,
+            last_synced_at TEXT    NOT NULL,
+            version        INTEGER NOT NULL,
+            status         TEXT    NOT NULL,
+            chunk_count    INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (source_type, source_id)
+        );
+        """
+    )
+    raw_conn.commit()
+    raw_conn.close()
+
+
+def test_a_real_sprint_17_2_schema_ends_up_with_a_genuinely_nullable_column(tmp_path):
+    """Sprint 17.4: the existing pre-17.2 migration test only proves the
+    "column missing entirely" case — a REAL Sprint 17.2 database already
+    has the column, as NOT NULL DEFAULT 0. The membership-only check
+    ("chunk_count" not in columns) is False for this real shape, so the
+    old migration was a complete no-op and the physical NOT NULL
+    constraint survived untouched. Checked directly via PRAGMA
+    table_info, not just behavior — proves the constraint is genuinely
+    gone, not just that nothing crashed by luck.
+    """
+    db_path = tmp_path / "real_17_2_registry.db"
+    _create_real_sprint_17_2_schema(db_path)
+    raw_conn = sqlite3.connect(str(db_path))
+    raw_conn.execute(
+        "INSERT INTO documents (source_type, source_id, content_hash, last_synced_at, "
+        "version, status, chunk_count) VALUES "
+        "('filesystem', 'legacy-doc', 'hash-legacy', '2020-01-01T00:00:00+00:00', 1, "
+        "'active', 0)"
+    )
+    raw_conn.commit()
+    raw_conn.close()
+
+    DocumentRegistry(db_path)  # must migrate on open
+
+    check_conn = sqlite3.connect(str(db_path))
+    columns = {row[1]: row for row in check_conn.execute("PRAGMA table_info(documents)")}
+    check_conn.close()
+    assert columns["chunk_count"][3] == 0  # notnull flag: 0 == nullable now
+
+
+def test_upsert_document_with_chunk_count_none_no_longer_raises_against_a_real_17_2_db(tmp_path):
+    """Sprint 17.4: reproduces the real crash risk directly. Before the
+    fix, a genuine Sprint 17.2 database's chunk_count column stays NOT
+    NULL after "migration" (a no-op for this real shape), so writing
+    None through DocumentRegistry's own public API raises
+    sqlite3.IntegrityError.
+    """
+    db_path = tmp_path / "real_17_2_registry_integrity.db"
+    _create_real_sprint_17_2_schema(db_path)
+
+    registry = DocumentRegistry(db_path)  # must migrate the NOT NULL away
+
+    record = registry.upsert_document(
+        "filesystem", "new-doc", "hash-new", chunk_count=None
+    )  # must not raise sqlite3.IntegrityError
+
+    assert record.chunk_count is None
+
+
+def test_a_real_sprint_17_2_row_with_ambiguous_zero_becomes_null_after_migration(tmp_path):
+    db_path = tmp_path / "real_17_2_registry_2.db"
+    _create_real_sprint_17_2_schema(db_path)
+    raw_conn = sqlite3.connect(str(db_path))
+    raw_conn.execute(
+        "INSERT INTO documents (source_type, source_id, content_hash, last_synced_at, "
+        "version, status, chunk_count) VALUES "
+        "('filesystem', 'legacy-doc', 'hash-legacy', '2020-01-01T00:00:00+00:00', 1, "
+        "'active', 0)"
+    )
+    raw_conn.commit()
+    raw_conn.close()
+
+    registry = DocumentRegistry(db_path)
+
+    record = registry.get_document("filesystem", "legacy-doc")
+    assert record is not None
+    assert record.chunk_count is None  # the ambiguous legacy 0 -> NULL, not preserved as 0
+
+
+def test_a_real_sprint_17_2_row_with_a_real_nonzero_count_is_preserved(tmp_path):
+    """A genuine, trustworthy non-zero count written under Sprint 17.2's
+    schema is NOT ambiguous — only 0 was ever ambiguous between "really
+    empty" and "the column's own untouched default." Migration must
+    preserve real non-zero values, not blanket-wipe everything.
+    """
+    db_path = tmp_path / "real_17_2_registry_3.db"
+    _create_real_sprint_17_2_schema(db_path)
+    raw_conn = sqlite3.connect(str(db_path))
+    raw_conn.execute(
+        "INSERT INTO documents (source_type, source_id, content_hash, last_synced_at, "
+        "version, status, chunk_count) VALUES "
+        "('filesystem', 'real-doc', 'hash-real', '2020-01-01T00:00:00+00:00', 1, "
+        "'active', 5)"
+    )
+    raw_conn.commit()
+    raw_conn.close()
+
+    registry = DocumentRegistry(db_path)
+
+    record = registry.get_document("filesystem", "real-doc")
+    assert record is not None
+    assert record.chunk_count == 5
+
+
 def test_last_synced_at_is_a_real_datetime_with_timezone(tmp_path):
     registry = _registry(tmp_path)
     before = datetime.now(UTC) - timedelta(seconds=1)

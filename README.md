@@ -473,6 +473,21 @@ check of the code/tests where noted.
   `st.session_state` holds Chat page history only for the current browser
   session; a refresh clears it (consistent with the no-multi-tenancy
   point above).
+- **`list_source_ids()`'s per-sync cost is O(total chunks), not O(document
+  count)** — the Qdrant-only orphan cleanup added in Sprint 17.3 scans
+  every point's payload for a given `source_type` (a paginated
+  `scroll`), so a source with many documents and many chunks per
+  document pays for a scan proportional to its total point count on
+  every sync, not just its document count. Disclosed, not measured
+  against real Qdrant at scale this project has never reached.
+- **Payload indexes (Sprint 17.3) aren't applied retroactively** —
+  `ensure_collection()` only creates the `source_type`/`source_id`/
+  `document_version` keyword indexes for a brand-new collection; an
+  existing collection created before Sprint 17.3 shipped (or before an
+  upgrade) keeps running without them, since an existing collection
+  that already passes schema validation is never mutated — consistent
+  with `UnexpectedCollectionSchemaError`'s "don't touch an existing
+  collection" policy elsewhere in this file.
 
 ## License
 

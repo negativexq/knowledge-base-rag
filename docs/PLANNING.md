@@ -1602,6 +1602,105 @@ Daha fazla hardening sprint'i planlanmıyor — Sprint 18 (Confluence
 connector) hâlâ "stretch" olarak listelenen tek açık öğe, ama zorunlu
 değil.
 
+## Sprint 17.4 — Migration Fix (Sprint 17.2→17.3 upgrade path) — FINAL sprint
+
+Amaç: Sprint 17.3'ün chunk_count nullable değişikliğinin, gerçek bir Sprint 17.2 şemasından yükseltme yaparken bozuk kaldığı iki bug'ı kapatmak.
+
+Scope:
+
+1. Migration gerçekte nullable yapmıyor: mevcut kontrol sadece "kolon var mı" diye bakıyor, gerçek bir 17.2 DB'sinde kolon zaten `NOT NULL DEFAULT 0` olarak var. Fix: `PRAGMA table_info`'nun `notnull` flag'iyle tespit edip tablo yeniden inşa edilir (rename + create + copy + drop), eski `chunk_count=0` değerleri (ayırt edilemez oldukları için) NULL'a çevrilir, gerçek non-zero değerler korunur
+2. Legacy `chunk_count=None` hiç "tracked" duruma terfi etmiyordu (None + en az 1 point varsa "tamam" sayılıp skip ediliyordu, upsert_document hiç çağrılmıyordu). Fix: None her zaman "incomplete" sayılır, bir kez zorla re-index tetikler, registry gerçek sayıyla güncellenir
+3. İki bug'ın birleşimi test edildi: gerçek 17.2 şemasından migrate edilmiş, chunk_count=0→NULL olmuş, ama Qdrant'ta gerçek point'leri olan bir doküman senaryosu
+4. Dokümantasyon: `list_source_ids()`'in O(toplam chunk) maliyeti ve payload index'lerin mevcut koleksiyonlara retroaktif uygulanmadığı README'ye eklendi
+
+DoD: gerçek bir Sprint 17.2 şemasından geçiş yapan bir DB artık gerçekten nullable chunk_count'a sahip (kanıtlanmış); legacy None dokümanlar bir kez zorla re-index edilip tracked duruma geçiyor (kanıtlanmış); iki bug'ın birleşim senaryosu test edilmiş; testler ve lint temiz.
+
+**Bu, projenin planlanan SON sprint'i.**
+
+### Kapanış notu
+
+**1. Migration'ın gerçekten nullable ürettiğinin kanıtı — davranışla
+değil, doğrudan `PRAGMA table_info` ile.** Sprint 17.3'ün migration
+testi ("kolon hiç yok mu" kontrolü) yanlışlıkla kolayı test ediyordu —
+gerçek bir Sprint 17.2 veritabanında kolon ZATEN vardı
+(`NOT NULL DEFAULT 0`), bu yüzden `"chunk_count" not in columns`
+kontrolü `False` dönüyor, migration hiçbir şey yapmıyordu. Bu GERÇEKTEN
+doğrulandı: `chunk_count INTEGER NOT NULL DEFAULT 0` ile gerçek 17.2
+şemasını birebir kuran bir fixture yazıldı, fix'ten ÖNCE
+`PRAGMA table_info(documents)`'ın `notnull` flag'inin hâlâ `1`
+döndürdüğü VE `registry.upsert_document(..., chunk_count=None)`'ın
+GERÇEKTEN `sqlite3.IntegrityError` fırlattığı doğrulandı (sadece
+teorik risk değil, doğrudan reprodüksiyon). Fix: `PRAGMA table_info`'nun
+`notnull` flag'i kontrol edilip, hâlâ `NOT NULL` ise tablo yeniden
+inşa ediliyor (`RENAME` + yeni nullable `CREATE TABLE` + `INSERT ...
+SELECT` ile kopyalama + eski tabloyu `DROP`) — kopyalama sırasında
+SADECE ambiguous eski `chunk_count=0` değerleri `NULL`'a çevriliyor,
+gerçek non-zero değerler (zaten belirsiz değildi) olduğu gibi
+korunuyor. Fix sonrası aynı testler: `notnull` flag'i artık `0`,
+`upsert_document(chunk_count=None)` artık patlamıyor, ayrı bir test
+gerçek non-zero bir değerin (5) migration'dan sonra hâlâ 5 olduğunu
+doğruluyor.
+
+**2. Legacy `None`'ın terfi ettiğinin kanıtı.** Fix öncesi `expected_chunk_count
+is None` durumunda `actual_chunk_count > 0` kontrolü kullanılıyordu —
+gerçek, sağlam Qdrant point'leri olan ama registry'de hiç izlenmemiş
+(`None`) bir doküman bu kontrolü geçip SKIP ediliyordu, yani
+`registry.upsert_document(...)` (chunk_count'u gerçek bir sayıyla
+yazacak TEK yer) hiç çağrılmıyordu — `None` sonsuza kadar `None`
+kalabiliyordu. Fix ÖNCESİ test GERÇEKTEN bunu doğruladı (`files_skipped
+== 1`, doküman hiç yeniden işlenmedi). Fix: `expected_chunk_count is
+None` artık KOŞULSUZ "incomplete" sayılıyor — bir kez zorla re-index
+tetikliyor, registry gerçek sayıyla güncelleniyor, o andan itibaren
+normal exact-match reconciliation devreye giriyor. Fix sonrası: ilk
+sync zorla re-index ediyor (`files_processed == 1`) ve registry'yi
+gerçek bir sayıyla güncelliyor, ikinci sync artık gerçekten skip
+ediyor (`files_skipped == 1`).
+
+**3. İki bug'ın birleşim senaryosu uçtan uca test edildi.** Gerçek bir
+doküman normal şekilde ingest edildi (gerçek content_hash, gerçek
+Qdrant point'leri). Sonra o AYNI content_hash'i taşıyan ama
+`chunk_count=0` olan bir satır, gerçek Sprint 17.2 şemasıyla (raw SQL
+ile) kurulmuş TAMAMEN AYRI bir db dosyasına yazıldı — "bu satır Sprint
+17.2 canlıyken yazılmış olabilir" senaryosunu simüle ediyor. O dosyaya
+karşı taze bir `DocumentRegistry` açıldığında: (a) kolon gerçekten
+nullable oluyor, (b) o satırın `0`'ı `NULL`'a çevriliyor. Sonra AYNI
+Qdrant store'a karşı (gerçek point'ler hâlâ dokunulmamış durumda) sync
+koşulduğunda: ilk sync zorla re-index ediyor (content aynı ama
+chunk_count izlenmiyor), registry gerçek sayıyla güncelleniyor, ikinci
+sync artık genuine bir no-op. Bu, iki fix'in İZOLE değil BİRLİKTE
+gerçek upgrade yolunu kapattığını kanıtlıyor.
+
+**4. Dokümantasyon notları (kod değişikliği gerektirmiyor).** README'nin
+Known Limitations bölümüne iki madde eklendi: `list_source_ids()`'in
+maliyeti O(toplam chunk sayısı), O(doküman sayısı) değil (her sync'te
+bir kere çalışıyor); payload index'ler (Sprint 17.3) sadece YENİ
+oluşturulan koleksiyonlara ekleniyor, mevcut bir koleksiyona upgrade
+sonrası geriye dönük uygulanmıyor.
+
+**426 test yeşil** (bu sprintte +6 yeni test:
+`tests/test_document_registry.py` +4 — gerçek 17.2 şeması fixture'ı,
+notnull-flag doğrulaması, IntegrityError reprodüksiyonu, ambiguous-
+zero-to-NULL testi, non-zero-preserved testi; `tests/test_sync_scenarios.py`
++2 — legacy-None-terfi senaryosu, birleşim senaryosu), 8'i servis/API
+key gerektirdiği için skip, `ruff check app tests scripts` temiz.
+
+**PROJE GERÇEKTEN VE KESİN OLARAK DONDURULDU.** Sprint 15'ten
+17.4'e kadar yedi dış review turu sırasıyla: sprint-geçmişi yorum
+temizliği ve shutdown handling; multi-batch re-index rollback ve
+config/schema hardening; point-ID collision ve cancellation safety;
+index schema migration guard'ı ve test false-positive temizliği;
+registry/Qdrant reconciliation; reconciliation'ın kendi yarattığı iki
+regresyonun kapatılması; ve son olarak o kapatmanın kendi migration
+yolundaki iki bug'ın kapatılması. Bu son iterasyon zinciri (Sprint
+17→17.1→17.2→17.3→17.4), her düzeltmenin kendi review turunu
+tetikleyebileceğini gösterdi — ama artık gerçek, kanıtlanmış bir taban
+çizgisine ulaşıldı: point identity doğru, cancellation güvenli, index
+schema migration'ı hem eski hem yeni gerçek veritabanı şekillerinde
+çalışıyor, reconciliation sonsuz döngüye girmiyor. Daha fazla
+hardening sprint'i PLANLANMIYOR. Sprint 18 (Confluence connector) hâlâ
+"stretch" olarak listeleniyor ama zorunlu değil ve bu proje bağlamında
+aktif olarak beklenmiyor.
+
 ## Sprint 18 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

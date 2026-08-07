@@ -4,6 +4,8 @@ file — no mocking of the sync logic itself. Only Ollama embedding is faked
 (deterministic, no network/model download).
 """
 
+import sqlite3
+
 import pytest
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
@@ -462,4 +464,126 @@ async def test_a_genuinely_empty_document_does_not_loop_forever(tmp_path):
     second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
 
     assert second.files_processed == 0  # NOT reprocessed — the loop must not happen
+    assert second.files_skipped == 1
+
+
+@pytest.mark.asyncio
+async def test_untracked_chunk_count_is_promoted_after_one_forced_reindex(tmp_path):
+    """Sprint 17.4: before this fix, `expected_chunk_count is None` fell
+    back to `actual_chunk_count > 0` — a document with an untracked
+    chunk_count that happened to have real, intact Qdrant points was
+    treated as "complete" and SKIPPED, which means
+    registry.upsert_document(...) (the only call site that ever writes
+    a real chunk_count) was never reached. chunk_count could therefore
+    stay None forever, and partial loss could never be caught for that
+    document via the count-comparison logic. The fix forces exactly ONE
+    re-ingest for an untracked document, which writes a real count —
+    after that, normal reconciliation applies.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "doc.md").write_text("# Doc\n\nContent that never changes.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    record = registry.get_document("filesystem", "doc_md")
+    assert record.chunk_count is not None and record.chunk_count > 0  # sanity
+
+    # Simulate an untracked row (e.g. migrated from a pre-chunk_count
+    # registry) — real Qdrant points still fully intact, only the
+    # registry's own tracking is missing.
+    with registry._conn:
+        registry._conn.execute(
+            "UPDATE documents SET chunk_count = NULL WHERE source_type = 'filesystem' "
+            "AND source_id = 'doc_md'"
+        )
+    assert registry.get_document("filesystem", "doc_md").chunk_count is None  # sanity
+
+    second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    assert second.files_processed == 1  # forced re-ingest, not skipped
+    assert second.files_skipped == 0
+    promoted = registry.get_document("filesystem", "doc_md")
+    assert promoted.chunk_count is not None and promoted.chunk_count > 0  # now tracked
+
+    third = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    assert third.files_processed == 0  # now genuinely skipped, tracking took hold
+    assert third.files_skipped == 1
+
+
+@pytest.mark.asyncio
+async def test_real_sprint_17_2_upgrade_with_existing_qdrant_data_ends_up_tracked(tmp_path):
+    """Sprint 17.4, the combined end-to-end scenario: a document was
+    ingested for real under an ordinary registry (real content_hash,
+    real Qdrant points). Its registry row is then rewritten via raw SQL
+    against a table built with the ACTUAL Sprint 17.2 schema (chunk_count
+    INTEGER NOT NULL DEFAULT 0) to carry the SAME content_hash but
+    chunk_count=0 — simulating "this row was written back when Sprint
+    17.2 was live," where 0 is ambiguous (Sprint 17.4 item 1 converts it
+    to NULL on migration). A fresh DocumentRegistry opened against that
+    file must (a) migrate the column to genuinely nullable, (b) turn
+    that ambiguous 0 into NULL, and then, combined with item 2's fix,
+    (c) force exactly one re-ingest (content unchanged, but chunk_count
+    untracked) before settling into normal skip behavior — proving both
+    fixes resolve the real upgrade path together, not just in isolation.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "doc.md").write_text("# Doc\n\nContent that never changes.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    original_registry = _registry(tmp_path)
+
+    await ingest_connector(connector, store, original_registry, _fake_embed, _FakeSparseEncoder())
+    original_record = original_registry.get_document("filesystem", "doc_md")
+    real_content_hash = original_record.content_hash
+    points_before = [p for p in _all_points(store) if p.payload["source_id"] == "doc_md"]
+    assert len(points_before) > 0  # sanity: real points genuinely exist
+
+    # Rebuild the registry file from scratch using the REAL Sprint 17.2
+    # schema, carrying the SAME content_hash but the ambiguous legacy
+    # chunk_count=0.
+    migrated_db_path = tmp_path / "migrated_from_17_2.db"
+    raw_conn = sqlite3.connect(str(migrated_db_path))
+    raw_conn.execute(
+        """
+        CREATE TABLE documents (
+            source_type    TEXT    NOT NULL,
+            source_id      TEXT    NOT NULL,
+            content_hash   TEXT    NOT NULL,
+            last_synced_at TEXT    NOT NULL,
+            version        INTEGER NOT NULL,
+            status         TEXT    NOT NULL,
+            chunk_count    INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (source_type, source_id)
+        );
+        """
+    )
+    raw_conn.execute(
+        "INSERT INTO documents (source_type, source_id, content_hash, last_synced_at, "
+        "version, status, chunk_count) VALUES "
+        "('filesystem', 'doc_md', ?, '2020-01-01T00:00:00+00:00', 1, 'active', 0)",
+        (real_content_hash,),
+    )
+    raw_conn.commit()
+    raw_conn.close()
+
+    migrated_registry = DocumentRegistry(migrated_db_path)  # must migrate on open
+    assert migrated_registry.get_document("filesystem", "doc_md").chunk_count is None
+
+    first = await ingest_connector(
+        connector, store, migrated_registry, _fake_embed, _FakeSparseEncoder()
+    )
+    assert first.files_processed == 1  # forced re-ingest — chunk_count was untracked
+    assert first.files_skipped == 0
+    after_first = migrated_registry.get_document("filesystem", "doc_md")
+    assert after_first.chunk_count is not None and after_first.chunk_count > 0
+
+    second = await ingest_connector(
+        connector, store, migrated_registry, _fake_embed, _FakeSparseEncoder()
+    )
+    assert second.files_processed == 0  # genuine no-op now
     assert second.files_skipped == 1

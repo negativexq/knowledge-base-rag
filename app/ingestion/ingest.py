@@ -269,24 +269,31 @@ async def ingest_connector(
                 # (count_for_document_version) instead of two — an exact
                 # count of 0 already means "not present," so a separate
                 # has_document_version presence check is redundant
-                # whenever a count is going to be fetched anyway. Also
-                # fixes an ambiguity that used to cause an infinite
-                # re-ingest loop for a genuinely empty document:
-                # chunk_count is now None ("never tracked") vs. an
-                # explicit 0 ("really zero chunks") — an untracked
-                # document falls back to presence-only (actual_count >
-                # 0), while a tracked 0 correctly matches an actual
-                # count of 0 and is recognized as complete.
+                # whenever a count is going to be fetched anyway.
+                #
+                # Sprint 17.4: an untracked (None) chunk_count is now
+                # ALWAYS treated as incomplete, forcing exactly one
+                # re-ingest — Sprint 17.3's `actual_chunk_count > 0`
+                # fallback let a document with real, intact points but
+                # an untracked count be skipped forever, which meant
+                # registry.upsert_document(...) (the only call site that
+                # ever writes a real chunk_count) was never reached and
+                # chunk_count could never leave None — partial loss
+                # could then never be caught for that document. Forcing
+                # one real re-ingest writes a trustworthy count, after
+                # which ordinary exact-match reconciliation applies. No
+                # Qdrant call is needed on this branch — there's nothing
+                # to compare a count against yet.
                 index_present_and_complete = True
                 if not changed:
                     record = registry.get_document(connector.source_type, document.source_id)
                     expected_chunk_count = record.chunk_count if record else None
-                    actual_chunk_count = store.count_for_document_version(
-                        connector.source_type, document.source_id, content_hash
-                    )
                     if expected_chunk_count is None:
-                        index_present_and_complete = actual_chunk_count > 0
+                        index_present_and_complete = False
                     else:
+                        actual_chunk_count = store.count_for_document_version(
+                            connector.source_type, document.source_id, content_hash
+                        )
                         index_present_and_complete = actual_chunk_count == expected_chunk_count
                     check_span.set_attribute(
                         "check.index_present_and_complete", index_present_and_complete
