@@ -652,3 +652,145 @@ def test_has_document_version_is_false_for_a_different_source_id_with_the_same_v
     )
 
     assert store.has_document_version("pdf", "doc2", document_version="v1") is False
+
+
+def test_list_point_ids_for_version_returns_all_matching_ids():
+    store = _store()
+    chunk_a = _chunk(doc_id="v1", source_id="doc1", char_range=(0, 10))
+    chunk_b = _chunk(doc_id="v1", source_id="doc1", char_range=(10, 20))
+    store.upsert_chunks(
+        [chunk_a, chunk_b], [_dense_vector(), _dense_vector()], [_sparse_vector(), _sparse_vector()]
+    )
+
+    ids = store.list_point_ids_for_version("pdf", "doc1", document_version="v1")
+
+    assert ids == {QdrantStore.point_id_for(chunk_a), QdrantStore.point_id_for(chunk_b)}
+
+
+def test_list_point_ids_for_version_excludes_other_versions_and_documents():
+    store = _store()
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
+    )
+    store.upsert_chunks(
+        [_chunk(doc_id="v2", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
+    )
+    store.upsert_chunks(
+        [_chunk(doc_id="v1", source_id="doc2")], [_dense_vector()], [_sparse_vector()]
+    )
+
+    ids = store.list_point_ids_for_version("pdf", "doc1", document_version="v1")
+
+    expected = {QdrantStore.point_id_for(_chunk(doc_id="v1", source_id="doc1"))}
+    assert ids == expected
+
+
+def test_list_point_ids_for_version_on_a_document_with_no_points_returns_empty_set():
+    store = _store()
+
+    assert store.list_point_ids_for_version("pdf", "never-existed", document_version="v1") == set()
+
+
+def test_delete_points_removes_only_the_given_ids():
+    store = _store()
+    chunk_a = _chunk(doc_id="v1", source_id="doc1", char_range=(0, 10))
+    chunk_b = _chunk(doc_id="v1", source_id="doc1", char_range=(10, 20))
+    store.upsert_chunks(
+        [chunk_a, chunk_b], [_dense_vector(), _dense_vector()], [_sparse_vector(), _sparse_vector()]
+    )
+    assert store.count() == 2
+
+    store.delete_points([QdrantStore.point_id_for(chunk_a)])
+
+    assert store.count() == 1
+    remaining, _ = store._client.scroll(COLLECTION, limit=10)
+    assert remaining[0].id == QdrantStore.point_id_for(chunk_b)
+
+
+def test_delete_points_with_empty_list_is_a_no_op():
+    store = _store()
+    store.upsert_chunks([_chunk()], [_dense_vector()], [_sparse_vector()])
+
+    store.delete_points([])  # must not raise, must not delete anything
+
+    assert store.count() == 1
+
+
+def test_list_source_ids_returns_distinct_source_ids_for_the_source_type():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(source_type="pdf", source_id="doc1", char_range=(0, 10)),
+            _chunk(source_type="pdf", source_id="doc1", char_range=(10, 20)),
+            _chunk(source_type="pdf", source_id="doc2"),
+        ],
+        [_dense_vector()] * 3,
+        [_sparse_vector()] * 3,
+    )
+
+    assert store.list_source_ids("pdf") == {"doc1", "doc2"}
+
+
+def test_list_source_ids_excludes_other_source_types():
+    store = _store()
+    store.upsert_chunks(
+        [
+            _chunk(source_type="pdf", source_id="doc1"),
+            _chunk(source_type="markdown", source_id="doc2"),
+        ],
+        [_dense_vector(), _dense_vector()],
+        [_sparse_vector(), _sparse_vector()],
+    )
+
+    assert store.list_source_ids("pdf") == {"doc1"}
+
+
+def test_list_source_ids_on_an_empty_collection_returns_empty_set():
+    store = _store()
+
+    assert store.list_source_ids("pdf") == set()
+
+
+def test_ensure_collection_creates_payload_indexes_on_a_fresh_collection():
+    """Sprint 17.3: reconciliation's per-sync Qdrant query volume grew
+    (Sprint 17.2), and every one of those filtered queries touches
+    source_type/source_id/document_version — a fresh collection should
+    get keyword payload indexes on all three so real Qdrant deployments
+    benefit, even though :memory: mode logs them as a no-op.
+    """
+    client = QdrantClient(":memory:")
+    indexed_fields = []
+    original_create_payload_index = client.create_payload_index
+
+    def _spy_create_payload_index(*args, **kwargs):
+        indexed_fields.append(kwargs.get("field_name") or args[1])
+        return original_create_payload_index(*args, **kwargs)
+
+    client.create_payload_index = _spy_create_payload_index
+
+    store = QdrantStore(client=client, collection_name=COLLECTION)
+    store.ensure_collection()
+
+    assert set(indexed_fields) == {"source_type", "source_id", "document_version"}
+
+
+def test_ensure_collection_does_not_reindex_an_existing_valid_collection():
+    """Payload indexes are only created for a BRAND NEW collection — an
+    existing, already-valid collection isn't retroactively touched
+    (consistent with ensure_collection()'s "don't mutate an existing
+    collection" policy elsewhere).
+    """
+    store = _store()  # already created once by the _store() helper
+
+    indexed_fields = []
+    original_create_payload_index = store._client.create_payload_index
+
+    def _spy_create_payload_index(*args, **kwargs):
+        indexed_fields.append(kwargs.get("field_name") or args[1])
+        return original_create_payload_index(*args, **kwargs)
+
+    store._client.create_payload_index = _spy_create_payload_index
+
+    store.ensure_collection()  # second call, collection already exists
+
+    assert indexed_fields == []

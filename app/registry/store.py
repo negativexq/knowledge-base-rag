@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS documents (
     last_synced_at TEXT    NOT NULL,
     version        INTEGER NOT NULL,
     status         TEXT    NOT NULL,
-    chunk_count    INTEGER NOT NULL DEFAULT 0,
+    chunk_count    INTEGER,
     PRIMARY KEY (source_type, source_id)
 );
 """
@@ -21,9 +21,20 @@ def _migrate_add_chunk_count_column(conn: sqlite3.Connection) -> None:
     # Sprint 17.2: CREATE TABLE IF NOT EXISTS alone doesn't add a new
     # column to a table that already exists from before this column was
     # introduced — a real ALTER TABLE migration is needed for those.
+    # Sprint 17.3: nullable, no default — an ADD COLUMN with no default
+    # leaves every existing row NULL, which is exactly the correct
+    # "never tracked" state for anything that predates this column
+    # (distinct from a real, tracked 0). Known, disclosed limitation: a
+    # registry that already ran under Sprint 17.2's schema (NOT NULL
+    # DEFAULT 0) keeps whatever literal 0s it already stored — this
+    # migration can't retroactively tell those apart from a genuine
+    # empty-document 0 after the fact, and doesn't attempt to (no real
+    # deployed data to preserve; the next real sync for any such
+    # document re-establishes an accurate count regardless). See
+    # docs/sprint-17-3-plan.md.
     columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
     if "chunk_count" not in columns:
-        conn.execute("ALTER TABLE documents ADD COLUMN chunk_count INTEGER NOT NULL DEFAULT 0")
+        conn.execute("ALTER TABLE documents ADD COLUMN chunk_count INTEGER")
 
 
 _METADATA_SCHEMA = """
@@ -146,7 +157,7 @@ class DocumentRegistry:
         source_id: str,
         content_hash: str,
         status: str = DEFAULT_STATUS,
-        chunk_count: int = 0,
+        chunk_count: int | None = None,
     ) -> DocumentRecord:
         # Timestamp is written as an ISO 8601 string, not a datetime object —
         # sqlite3's implicit datetime adapters were deprecated in Python

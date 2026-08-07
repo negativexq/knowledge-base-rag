@@ -167,9 +167,16 @@ async def ingest_connector(
     1. Deletions — a registry row whose source_id the connector no longer
        lists means the document vanished from its source. Its Qdrant
        points and registry row are removed.
-    2. Unchanged — registry.has_changed() says no: skipped entirely, zero
-       Qdrant calls, registry row left untouched (no last_synced_at
-       refresh).
+    2. Unchanged — registry.has_changed() says no: skipped, but NOT with
+       zero Qdrant calls since Sprint 17.2 — a single
+       count_for_document_version() reconciliation query confirms the
+       document's points are actually still in Qdrant (and, if a
+       chunk_count was tracked, that none are missing) before trusting
+       the registry's hash alone; a mismatch is treated the same as
+       "changed" and forces a real re-ingest (Sprint 17.3 closes the
+       gap where a leftover duplicate point could make this loop
+       forever — see docs/sprint-17-3-plan.md). Registry row left
+       untouched when genuinely skipped (no last_synced_at refresh).
     3. New/changed — re-embedded and re-upserted under a NEW
        document_version (the new content_hash) FIRST; only once every
        batch is confirmed upserted are the OLD version's points deleted,
@@ -213,15 +220,29 @@ async def ingest_connector(
                 "identity between the colliding documents"
             )
 
-        for record in registry.list_documents(source_type=connector.source_type):
-            if record.source_id in seen_source_ids:
-                continue
+        # Sprint 17.3: union the registry's known source_ids with what's
+        # ACTUALLY in Qdrant for this source_type — a registry-only scan
+        # misses a document whose Qdrant points still exist but whose
+        # registry row is gone entirely (a reset/lost/replaced registry
+        # that never touched Qdrant; see docs/sprint-17-2-plan.md's
+        # "registry fresh, Qdrant stale" analysis and
+        # docs/sprint-17-3-plan.md). registry.delete_document() on a
+        # source_id it never had is a safe no-op.
+        registry_source_ids = {
+            record.source_id
+            for record in registry.list_documents(source_type=connector.source_type)
+        }
+        with tracer.start_as_current_span("fetch_qdrant_source_ids") as span:
+            qdrant_source_ids = store.list_source_ids(connector.source_type)
+            span.set_attribute("fetch.qdrant_source_id_count", len(qdrant_source_ids))
+        known_source_ids = registry_source_ids | qdrant_source_ids
 
+        for source_id in sorted(known_source_ids - seen_source_ids):
             with tracer.start_as_current_span("delete_document") as span:
                 span.set_attribute("delete.source_type", connector.source_type)
-                span.set_attribute("delete.source_id", record.source_id)
-                store.delete_by_source(connector.source_type, record.source_id)
-                registry.delete_document(connector.source_type, record.source_id)
+                span.set_attribute("delete.source_id", source_id)
+                store.delete_by_source(connector.source_type, source_id)
+                registry.delete_document(connector.source_type, source_id)
             files_deleted += 1
 
         for document in current_documents:
@@ -243,36 +264,35 @@ async def ingest_connector(
                 # document already pays for a full re-embed+upsert
                 # regardless, so this adds no extra Qdrant call there.
                 # See docs/sprint-17-2-plan.md.
-                index_present = True
-                index_complete = True
+                #
+                # Sprint 17.3: consolidated into a SINGLE Qdrant call
+                # (count_for_document_version) instead of two — an exact
+                # count of 0 already means "not present," so a separate
+                # has_document_version presence check is redundant
+                # whenever a count is going to be fetched anyway. Also
+                # fixes an ambiguity that used to cause an infinite
+                # re-ingest loop for a genuinely empty document:
+                # chunk_count is now None ("never tracked") vs. an
+                # explicit 0 ("really zero chunks") — an untracked
+                # document falls back to presence-only (actual_count >
+                # 0), while a tracked 0 correctly matches an actual
+                # count of 0 and is recognized as complete.
+                index_present_and_complete = True
                 if not changed:
-                    index_present = store.has_document_version(
+                    record = registry.get_document(connector.source_type, document.source_id)
+                    expected_chunk_count = record.chunk_count if record else None
+                    actual_chunk_count = store.count_for_document_version(
                         connector.source_type, document.source_id, content_hash
                     )
-                    check_span.set_attribute("check.index_present", index_present)
+                    if expected_chunk_count is None:
+                        index_present_and_complete = actual_chunk_count > 0
+                    else:
+                        index_present_and_complete = actual_chunk_count == expected_chunk_count
+                    check_span.set_attribute(
+                        "check.index_present_and_complete", index_present_and_complete
+                    )
 
-                    # Bonus: PARTIAL loss (some but not all points
-                    # missing) can't be told apart from a fully-intact
-                    # index by presence alone — only checked when
-                    # presence already succeeded, and only when the
-                    # registry has a real tracked count to compare
-                    # against (chunk_count == 0 means "never tracked,"
-                    # e.g. a pre-Sprint-17.2 row — treated as
-                    # "no expectation," not "expected zero chunks," so
-                    # it doesn't trigger a spurious re-index).
-                    if index_present:
-                        record = registry.get_document(
-                            connector.source_type, document.source_id
-                        )
-                        expected_chunk_count = record.chunk_count if record else 0
-                        if expected_chunk_count > 0:
-                            actual_chunk_count = store.count_for_document_version(
-                                connector.source_type, document.source_id, content_hash
-                            )
-                            index_complete = actual_chunk_count == expected_chunk_count
-                            check_span.set_attribute("check.index_complete", index_complete)
-
-            if not changed and index_present and index_complete:
+            if not changed and index_present_and_complete:
                 files_skipped += 1
                 continue
 
@@ -414,6 +434,28 @@ async def ingest_connector(
                     raise
 
                 doc_span.set_attribute("ingest.chunk_count", len(chunks))
+
+                # Sprint 17.3: delete_stale_versions only removes points
+                # whose document_version DIFFERS from the one just
+                # written — an unexpected point that already shares the
+                # CURRENT version (a stale point-ID-scheme leftover, or
+                # any other source of same-version duplicates) is
+                # invisible to it. Left uncleaned, Sprint 17.2's own
+                # chunk_count reconciliation would see the mismatch
+                # forever and re-ingest this document on every single
+                # sync without the extra point ever going away — a real
+                # infinite loop, not just a cosmetic duplicate. Compare
+                # what's actually in Qdrant against what THIS upsert
+                # just wrote and delete anything extra.
+                with tracer.start_as_current_span("cleanup_duplicate_points") as span:
+                    expected_ids = {QdrantStore.point_id_for(chunk) for chunk in chunks}
+                    actual_ids = store.list_point_ids_for_version(
+                        connector.source_type, document.source_id, document_version=content_hash
+                    )
+                    extra_ids = actual_ids - expected_ids
+                    span.set_attribute("cleanup.extra_point_count", len(extra_ids))
+                    if extra_ids:
+                        store.delete_points(list(extra_ids))
 
                 with tracer.start_as_current_span("delete_stale_chunks") as span:
                     span.set_attribute("delete_stale_chunks.source_id", document.source_id)

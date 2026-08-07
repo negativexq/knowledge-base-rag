@@ -1491,6 +1491,117 @@ skip, `ruff check app tests scripts` temiz.
 **Proje burada donduruluyor — dördüncü ve beşinci review turlarının
 kapanışı bu oldu.**
 
+## Sprint 17.3 — Final Correctness Patch (reconciliation symmetry + duplicate cleanup)
+
+Amaç: Sprint 17.2'nin kendi reconciliation mekanizmasının yarattığı iki regresyonu kapatmak.
+
+Scope:
+
+1. Aynı version'da fazla point → sonsuz re-index loop'u: `delete_stale_versions` sadece FARKLI version'ları temizliyor, aynı version'daki fazlalıkları değil. Fix: upsert sonrası beklenen point ID set'i ile Qdrant'taki gerçek ID'ler karşılaştırılıp fazlalıklar silinir
+2. Qdrant-only orphan doküman temizliği: registry hiç bilmese bile Qdrant'ta duran ama connector'da artık olmayan dokümanlar temizlenir (`QdrantStore.list_source_ids`)
+3. `has_document_version` + `count_for_document_version` tek bir count-bazlı kontrole indirildi
+4. Qdrant payload index'leri eklendi (`source_type`, `source_id`, `document_version`)
+5. `chunk_count`'ın 0/bilinmiyor belirsizliği çözüldü: `None` = bilinmiyor/legacy, `0` = gerçekten sıfır chunk
+6. Gerçekten boş bir doküman artık sonsuz döngüye girmiyor
+7. `ingest_connector`'ın "unchanged = zero Qdrant calls" docstring'i güncellendi
+
+DoD: fazla point'li bir senaryoda re-index loop'u gerçekten duruyor (kanıtlanmış); Qdrant-only orphan'lar temizleniyor (kanıtlanmış); boş doküman sonsuz döngüye girmiyor; testler ve lint temiz.
+
+Bu, planlanan son sprint — altıncı review turunun kapanışı.
+
+### Kapanış notu
+
+**1. Sonsuz re-index loop'unun gerçek etkisi — kanıtlandı, sadece
+teorik değil.** Sprint 17.2'nin disclosed "harmless duplicate" edge
+case'i (aynı `document_version`'a ait fazladan bir point), Sprint
+17.2'nin KENDİ `chunk_count` reconciliation mantığıyla birleşince
+gerçek bir sonsuz döngüye dönüşüyordu: her sync'te
+`actual_count != expected_chunk_count` mismatch'i "changed" sayılıp
+tam re-ingest tetikliyordu, ama `delete_stale_versions` aynı version'daki
+fazlalığı hiç görmediği için (sadece FARKLI version'ları temizliyor)
+fazla point hiç silinmiyordu — sync sonsuza kadar tekrar ediyordu.
+Fix ÖNCESİ test GERÇEKTEN bu döngüyü doğruladı (fazladan point
+temizlenmeden kalıyordu), fix SONRASI hem temizlendiği hem de İKİNCİ
+sync'in gerçek bir no-op olduğu (`files_skipped == 1`) kanıtlandı —
+sadece bir temizlik geçişi değil, döngünün gerçekten durduğu.
+`QdrantStore.list_point_ids_for_version` + `delete_points` eklendi;
+upsert sonrası beklenen point ID set'i (`point_id_for` ile hesaplanan)
+Qdrant'taki gerçek ID'lerle karşılaştırılıp fazlalıklar siliniyor —
+`delete_stale_versions`'ın simetriği, ama AYNI version içinde.
+
+**2. Qdrant-only orphan cleanup nasıl çalışıyor.** `ingest_connector`'ın
+silme fazı artık sadece registry'nin bildiği kayıtları değil,
+`QdrantStore.list_source_ids(source_type)` ile Qdrant'ta GERÇEKTEN var
+olan source_id'leri de tarıyor — ikisinin birleşimi connector'ın güncel
+listesiyle karşılaştırılıp fark alınıyor.
+`registry.delete_document(...)` registry'nin hiç bilmediği bir
+source_id için zaten güvenli bir no-op. Review'ın verdiği tam senaryo
+gerçekten simüle edildi: iki doküman ingest edildi, sonra AYNI registry
+değil, TAMAMEN FARKLI bir db dosyasına bağlı, gerçekten "hiçbir şey
+bilmeyen" taze bir `DocumentRegistry` instance'ı kullanıldı; connector'dan
+bir dosya kaldırılıp sync koşuldu — kaldırılan dokümanın Qdrant
+point'lerinin, taze registry ikisini de hiç bilmemesine rağmen
+temizlendiği doğrulandı. Fix öncesi test GERÇEKTEN fail etti (silinmemiş
+point'ler kaldı).
+
+**3-4. Performans notu (gerekçeli, ölçülmedi).** İki reconciliation
+sorgusu (`has_document_version` + `count_for_document_version`) tek bir
+`count_for_document_version` çağrısına indirildi — `actual_count == 0`
+zaten "yok" demek olduğu için presence check'e gerek kalmadı; her
+unchanged/chunk_count-tracked doküman için Qdrant round-trip sayısı
+ikiden bire indi. `ensure_collection()` artık YENİ oluşturulan
+koleksiyonlarda `source_type`/`source_id`/`document_version` için
+keyword payload index'i oluşturuyor (mevcut, zaten valide edilmiş bir
+koleksiyona dokunmuyor — "mevcut koleksiyona dokunma" politikasıyla
+tutarlı). Gerçek Qdrant'a karşı bir query-latency benchmark'ı bu
+sprintte KOŞULMADI — Sprint 17.2 sync başına Qdrant sorgu hacmini
+artırdı ve bu üç alan her filtreli sorguda kullanılıyor diye eklendi,
+ölçülmüş bir yavaşlama gözlemlendiği için değil; bu açıkça
+belirtiliyor, sessizce varsayılmıyor.
+
+**5-6. `chunk_count`'ın None/0 belirsizliği çözüldü — ikinci, bağımsız
+bir sonsuz döngü kaynağıydı.** Gerçek bir boş (whitespace-only) Markdown
+dosyasının `chunk_markdown_text` ile GERÇEKTEN 0 chunk ürettiği
+doğrulandı. Sprint 17.2'nin `chunk_count: int = 0` (NOT NULL DEFAULT 0)
+şeması "hiç izlenmedi" ile "gerçekten sıfır" durumlarını ayıramıyordu —
+reconciliation mantığı `if expected_chunk_count > 0:` kapısıyla gerçek
+bir 0'ı da "bilinmiyor" sayıp presence-only kontrole düşüyordu, ki bu
+sıfır gerçek point'li bir dokümanı ASLA "tam" olarak tanıyamıyordu —
+her sync yeniden ingest ediyordu, sonsuza kadar. Fix: `chunk_count: int
+| None = None`, SQLite kolonu `NOT NULL DEFAULT 0`'dan nullable
+`INTEGER`'a (default'suz `ALTER TABLE ADD COLUMN` — mevcut satırlar
+otomatik NULL olur, ki bu da "hiç izlenmedi" için doğru durum).
+Bilinen, disclosed sınır: Sprint 17.2 şemasıyla zaten çalışmış bir
+registry'nin önceden yazdığı literal 0'lar geriye dönük ayırt edilemiyor
+— gerçek deploy edilmiş veri olmadığı için bu bir data-migration
+heuristic'iyle çözülmedi, bir sonraki gerçek sync zaten doğru sayıyı
+yeniden kuruyor. Test: gerçek boş doküman iki kez ingest edildi, ikinci
+sync'in `files_skipped == 1` olduğu (yeniden işlenmediği) kanıtlandı —
+fix öncesi bu test GERÇEKTEN `files_processed == 1` ile fail etti.
+
+**7. `ingest_connector`'ın "unchanged = zero Qdrant calls" docstring'i
+düzeltildi** — Sprint 17.2'den beri artık doğru değil, unchanged dal
+artık en az bir reconciliation sorgusu ödüyor.
+
+**420 test yeşil** (bu sprintte +14 yeni test:
+`tests/test_qdrant_store.py` +10 — `list_point_ids_for_version`,
+`delete_points`, `list_source_ids`, payload-index testleri;
+`tests/test_document_registry.py` +1 — `chunk_count=0` ile `None`
+ayrımı testi; `tests/test_sync_scenarios.py` +3 — sonsuz-loop-duruyor
+senaryosu, Qdrant-only orphan senaryosu, boş-doküman-sonsuz-döngüye-
+girmiyor senaryosu), 8'i servis/API key gerektirdiği için skip, `ruff
+check app tests scripts` temiz.
+
+**PROJE GERÇEKTEN DONDURULDU.** Altı dış review turu (Sprint 15'ten
+17.3'e) sırasıyla: sprint-geçmişi yorum temizliği ve shutdown handling;
+multi-batch re-index rollback ve config/schema hardening; point-ID
+collision ve cancellation safety; index schema migration guard'ı ve
+test false-positive temizliği; registry/Qdrant reconciliation; ve son
+olarak reconciliation'ın kendi yarattığı iki regresyonun kapatılması.
+Daha fazla hardening sprint'i planlanmıyor — Sprint 18 (Confluence
+connector) hâlâ "stretch" olarak listelenen tek açık öğe, ama zorunlu
+değil.
+
 ## Sprint 18 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

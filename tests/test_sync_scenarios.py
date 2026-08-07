@@ -12,6 +12,7 @@ from qdrant_client import QdrantClient
 
 from app.connectors.filesystem import LocalFilesystemConnector
 from app.ingestion.ingest import ingest_connector
+from app.ingestion.models import Chunk
 from app.ingestion.qdrant_store import EMBEDDING_DIM, QdrantStore
 from app.registry.store import DocumentRegistry
 from app.retrieval.sparse import SparseVector
@@ -325,3 +326,140 @@ async def test_partial_qdrant_point_loss_is_detected_and_triggers_reindex(tmp_pa
         p for p in _all_points(store) if p.payload["source_id"] == "doc_md"
     ]
     assert len(restored) == original_chunk_count  # full chunk count restored
+
+
+@pytest.mark.asyncio
+async def test_extra_same_version_point_is_cleaned_up_and_the_loop_actually_stops(tmp_path):
+    """Sprint 17.3, the critical fix: delete_stale_versions only removes
+    points with a DIFFERENT document_version — an unexpected extra point
+    sharing the CURRENT version (the exact "harmless duplicate" Sprint
+    17.2 disclosed) is invisible to it. Left uncleaned, Sprint 17.2's
+    own chunk_count reconciliation would see the count mismatch forever
+    and re-ingest this document on every sync without the extra point
+    ever going away — a real infinite loop. This proves BOTH halves:
+    the extra point is cleaned up on the first sync after it appears,
+    AND a second sync afterward is a genuine no-op (files_skipped==1),
+    proving the loop actually terminates rather than just running one
+    cleanup pass.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "doc.md").write_text("# Doc\n\nContent that never changes.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    content_hash = registry.get_document("filesystem", "doc_md").content_hash
+
+    # Simulate exactly the Sprint 17.2-disclosed edge case: a duplicate
+    # point sharing the SAME document_version but a different point ID
+    # (a different char_range makes point_id_for produce a distinct ID).
+    duplicate_chunk = Chunk(
+        doc_id=content_hash,
+        source_type="filesystem",
+        source_id="doc_md",
+        page_number=0,
+        paragraph_index=0,
+        char_range=(99999, 99999),
+        text="stale leftover text",
+        document_version=content_hash,
+    )
+    store.upsert_chunks(
+        [duplicate_chunk], [[0.01] * EMBEDDING_DIM], [SparseVector(indices=[], values=[])]
+    )
+
+    ids_with_duplicate = store.list_point_ids_for_version("filesystem", "doc_md", content_hash)
+    assert QdrantStore.point_id_for(duplicate_chunk) in ids_with_duplicate  # sanity: really added
+
+    # First sync after the duplicate appears: cleaned up.
+    second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    assert second.files_processed == 1
+
+    ids_after_cleanup = store.list_point_ids_for_version("filesystem", "doc_md", content_hash)
+    assert QdrantStore.point_id_for(duplicate_chunk) not in ids_after_cleanup
+
+    # Second sync: the loop must actually terminate here, not repeat.
+    third = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    assert third.files_processed == 0
+    assert third.files_skipped == 1
+
+
+@pytest.mark.asyncio
+async def test_qdrant_only_orphan_is_cleaned_up_even_when_the_registry_never_knew_about_it(
+    tmp_path,
+):
+    """Sprint 17.3, the review's exact scenario: two documents ingested
+    for real. Then a GENUINELY FRESH, disconnected registry instance is
+    used for the next sync — not a DELETE FROM documents on the same
+    registry, a separate DocumentRegistry pointed at a different db
+    file entirely, simulating "the registry was reset/replaced, Qdrant
+    was not touched." One of the two files is removed from the
+    connector's folder before that sync runs. The removed document's
+    Qdrant points must be cleaned up even though this fresh registry
+    never had a row for EITHER document to begin with.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "a.md").write_text("# A\n\nContent for document A.")
+    (docs_dir / "b.md").write_text("# B\n\nContent for document B.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    original_registry = _registry(tmp_path)
+
+    await ingest_connector(connector, store, original_registry, _fake_embed, _FakeSparseEncoder())
+    assert store.count() == 2  # sanity: both documents really landed
+
+    # Remove one file from the connector's view, and use a FRESH registry
+    # that has never seen either document — not the same registry with
+    # its rows deleted.
+    (docs_dir / "a.md").unlink()
+    fresh_registry = DocumentRegistry(tmp_path / "a_completely_different_registry.db")
+    assert fresh_registry.get_document("filesystem", "a_md") is None  # sanity: genuinely unknown
+    assert fresh_registry.get_document("filesystem", "b_md") is None
+
+    result = await ingest_connector(
+        connector, store, fresh_registry, _fake_embed, _FakeSparseEncoder()
+    )
+
+    # "a" is gone from Qdrant even though the fresh registry never had a
+    # row for it to trigger the registry-known deletion path.
+    remaining = _all_points(store)
+    remaining_source_ids = {p.payload["source_id"] for p in remaining}
+    assert "a_md" not in remaining_source_ids
+    assert "b_md" in remaining_source_ids  # "b" is still there — re-ingested as "new"
+    assert result.files_deleted >= 1
+
+
+@pytest.mark.asyncio
+async def test_a_genuinely_empty_document_does_not_loop_forever(tmp_path):
+    """Sprint 17.3, item 5/6: a genuinely empty (whitespace-only)
+    Markdown file produces exactly 0 chunks. Before this fix,
+    chunk_count=0 was ambiguous — it could mean "never tracked" or
+    "genuinely zero" — and the reconciliation logic's `if
+    expected_chunk_count > 0:` gate treated a real 0 the same as
+    "unknown," falling back to presence-only checking
+    (has_document_version), which can NEVER return True for a document
+    with zero real points. A genuinely empty document could therefore
+    never be recognized as correctly, completely indexed — every sync
+    would treat it as needing re-ingest, forever.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "empty.md").write_text("   \n\n  ")  # whitespace-only -> 0 chunks
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    first = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+    assert first.files_processed == 1
+    record = registry.get_document("filesystem", "empty_md")
+    assert record.chunk_count == 0  # genuinely zero, now distinguishable from "unknown"
+
+    second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    assert second.files_processed == 0  # NOT reprocessed — the loop must not happen
+    assert second.files_skipped == 1

@@ -32,7 +32,7 @@ def test_upsert_document_creates_a_new_record_at_version_1(tmp_path):
     assert record.content_hash == "hash-a"
     assert record.version == 1
     assert record.status == "active"
-    assert record.chunk_count == 0  # not passed, defaults to "never tracked"
+    assert record.chunk_count is None  # not passed, "never tracked" (Sprint 17.3)
 
 
 def test_upsert_document_records_the_given_chunk_count(tmp_path):
@@ -41,6 +41,19 @@ def test_upsert_document_records_the_given_chunk_count(tmp_path):
     record = registry.upsert_document("pdf", "handbook", "hash-a", chunk_count=7)
 
     assert record.chunk_count == 7
+
+
+def test_upsert_document_with_chunk_count_zero_is_distinguishable_from_never_tracked(tmp_path):
+    """Sprint 17.3: a genuine 0 (an empty document) must be stored and
+    read back as 0, not silently coerced to None — that's exactly the
+    ambiguity this sprint closes.
+    """
+    registry = _registry(tmp_path)
+
+    record = registry.upsert_document("filesystem", "empty_md", "hash-empty", chunk_count=0)
+
+    assert record.chunk_count == 0
+    assert record.chunk_count is not None
 
 
 def test_upsert_document_chunk_count_updates_on_re_ingest(tmp_path):
@@ -245,7 +258,7 @@ def test_a_pre_sprint_17_2_registry_file_gets_the_chunk_count_column_migrated(tm
 
     record = registry.get_document("pdf", "old-doc")
     assert record is not None
-    assert record.chunk_count == 0  # pre-existing row, never tracked — defaults, doesn't crash
+    assert record.chunk_count is None  # pre-existing row, never tracked — NULL, doesn't crash
 
 
 def test_last_synced_at_is_a_real_datetime_with_timezone(tmp_path):

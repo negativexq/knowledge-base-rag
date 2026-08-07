@@ -140,6 +140,26 @@ class QdrantStore:
             },
         )
 
+        # Sprint 17.3: every filtered query this app makes
+        # (delete_by_source, delete_stale_versions, delete_version,
+        # has_document_version, count_for_document_version,
+        # list_point_ids_for_version, list_source_ids) filters on some
+        # combination of exactly these three payload fields, and
+        # Sprint 17.2's reconciliation logic measurably increased how
+        # often those queries run (once per unchanged document, every
+        # sync). Only applied to a BRAND NEW collection — an existing
+        # collection that already passed schema validation above is
+        # never mutated here, consistent with this function's "don't
+        # touch an existing collection" policy elsewhere. No query-
+        # latency benchmark was run against real Qdrant this sprint;
+        # see docs/sprint-17-3-plan.md for the reasoning.
+        for field_name in ("source_type", "source_id", "document_version"):
+            self._client.create_payload_index(
+                collection_name=self._collection_name,
+                field_name=field_name,
+                field_schema=qmodels.PayloadSchemaType.KEYWORD,
+            )
+
     def count(self) -> int:
         return self._client.count(self._collection_name, exact=True).count
 
@@ -201,6 +221,97 @@ class QdrantStore:
             ),
             exact=True,
         ).count
+
+    def list_point_ids_for_version(
+        self, source_type: str, source_id: str, document_version: str
+    ) -> set[str]:
+        """Every point ID currently present for this (source_type,
+        source_id, document_version) — the primitive Sprint 17.3's
+        duplicate-point cleanup is built on: delete_stale_versions only
+        removes points whose document_version DIFFERS from a kept
+        version, so points that already share the CURRENT version (a
+        stale point-ID-scheme leftover, or any other source of
+        same-version duplicates — see docs/sprint-17-3-plan.md) are
+        invisible to it. Comparing this set against the point IDs a
+        fresh chunk+embed pass actually expects (point_id_for) is what
+        surfaces those duplicates so they can be deleted explicitly.
+        Paginated (a real collection can hold many points per document).
+        """
+        ids: set[str] = set()
+        offset = None
+        scroll_filter = qmodels.Filter(
+            must=[
+                qmodels.FieldCondition(
+                    key="source_type", match=qmodels.MatchValue(value=source_type)
+                ),
+                qmodels.FieldCondition(
+                    key="source_id", match=qmodels.MatchValue(value=source_id)
+                ),
+                qmodels.FieldCondition(
+                    key="document_version",
+                    match=qmodels.MatchValue(value=document_version),
+                ),
+            ]
+        )
+        while True:
+            points, offset = self._client.scroll(
+                collection_name=self._collection_name,
+                scroll_filter=scroll_filter,
+                limit=1000,
+                offset=offset,
+                with_payload=False,
+                with_vectors=False,
+            )
+            ids.update(str(p.id) for p in points)
+            if offset is None:
+                break
+        return ids
+
+    def delete_points(self, point_ids: list[str]) -> None:
+        """Delete specific points by ID — used (Sprint 17.3) to remove
+        unexpected same-version duplicates that delete_stale_versions
+        can't reach. A no-op for an empty list (Qdrant's delete API
+        accepts an empty PointIdsList without error, but this avoids
+        even making the call).
+        """
+        if not point_ids:
+            return
+        self._client.delete(
+            collection_name=self._collection_name,
+            points_selector=qmodels.PointIdsList(points=list(point_ids)),
+        )
+
+    def list_source_ids(self, source_type: str) -> set[str]:
+        """Every distinct source_id currently present in Qdrant for this
+        source_type — used (Sprint 17.3) to find documents whose points
+        exist in Qdrant but whose registry row is gone entirely (a
+        reset/lost registry, a partial restore), which the registry-only
+        deletion loop in ingest_connector can't see on its own. Paginated
+        (a real collection can hold many points per document, and many
+        documents per source_type).
+        """
+        ids: set[str] = set()
+        offset = None
+        scroll_filter = qmodels.Filter(
+            must=[
+                qmodels.FieldCondition(
+                    key="source_type", match=qmodels.MatchValue(value=source_type)
+                ),
+            ]
+        )
+        while True:
+            points, offset = self._client.scroll(
+                collection_name=self._collection_name,
+                scroll_filter=scroll_filter,
+                limit=1000,
+                offset=offset,
+                with_payload=["source_id"],
+                with_vectors=False,
+            )
+            ids.update(p.payload["source_id"] for p in points)
+            if offset is None:
+                break
+        return ids
 
     def delete_by_source(self, source_type: str, source_id: str) -> None:
         """Delete EVERY point belonging to one document, identified by its
