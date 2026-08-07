@@ -432,3 +432,65 @@ async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(
     assert new_version_points == []
 
     assert registry.get_document("filesystem", "doc_md").content_hash == old_hash
+
+
+async def test_cancellation_rollback_failure_does_not_mask_the_original_cancelledError(tmp_path):
+    """Sprint 17.1: the CancelledError rollback block's own
+    store.delete_version(...) call had no error handling — if IT raised
+    (e.g. Qdrant unreachable mid-shutdown, a real possibility since the
+    same shutdown sequence that triggered the cancellation may have
+    already started tearing down connections), the new exception would
+    propagate instead of the original CancelledError, and a caller
+    checking isinstance(exc, asyncio.CancelledError) to confirm the task
+    actually honored cancellation would see the wrong exception type.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    sentences = [f"Original sentence number {i} about apples." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(sentences))
+
+    connector = LocalFilesystemConnector(docs_dir)
+    real_store = _store("test_versioned_reindex_cancel_rollback_failure")
+    registry = _registry(tmp_path)
+
+    await ingest_connector(
+        connector, real_store, registry, _fake_embed, _FakeSparseEncoder(),
+        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+    )
+
+    new_sentences = [f"Completely rewritten sentence number {i} about oranges." for i in range(20)]
+    (docs_dir / "doc.md").write_text("# Doc\n\n" + " ".join(new_sentences))
+
+    class _RollbackFailsStore(QdrantStore):
+        def delete_version(self, source_type, source_id, document_version):
+            raise RuntimeError("simulated Qdrant failure during rollback itself")
+
+    failing_store = _RollbackFailsStore(
+        client=real_store._client, collection_name="test_versioned_reindex_cancel_rollback_failure"
+    )
+
+    batch_2_started = asyncio.Event()
+    call_count = 0
+
+    async def embed_fn_that_hangs_in_batch_2(text: str) -> list[float]:
+        nonlocal call_count
+        call_count += 1
+        if call_count <= 2:
+            return await _fake_embed(text)
+        batch_2_started.set()
+        await asyncio.sleep(10)
+        return await _fake_embed(text)
+
+    task = asyncio.ensure_future(
+        ingest_connector(
+            connector, failing_store, registry, embed_fn_that_hangs_in_batch_2,
+            _FakeSparseEncoder(), chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        )
+    )
+    await batch_2_started.wait()
+    task.cancel()
+
+    # The caller must still see CancelledError — not the rollback's own
+    # RuntimeError — even though the rollback itself failed internally.
+    with pytest.raises(asyncio.CancelledError):
+        await task

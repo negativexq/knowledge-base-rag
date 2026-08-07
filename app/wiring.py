@@ -101,6 +101,11 @@ def build_app(settings: Settings) -> FastAPI:
     qdrant_client = QdrantClient(url=settings.qdrant_url)
     store = QdrantStore(client=qdrant_client, collection_name=settings.qdrant_collection_name)
     registry = DocumentRegistry(settings.registry_db_path)
+    # Fail fast if this registry's index predates the current point-ID
+    # schema (Sprint 17.1) — refuse to start on a possibly-corrupt index
+    # rather than serve traffic against it. See
+    # app/registry/store.py::IndexSchemaMismatchError.
+    registry.ensure_index_schema_version()
     history = SyncHistory(settings.registry_db_path)
     sparse_encoder = SparseEncoder()
     connectors = build_connectors(settings)

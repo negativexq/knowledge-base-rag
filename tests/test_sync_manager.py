@@ -152,6 +152,48 @@ async def test_a_real_cancellation_records_cancelled_status_not_stuck_running(tm
 
 
 @pytest.mark.asyncio
+async def test_cancellation_recording_failure_does_not_mask_the_original_cancelledError(tmp_path):
+    """Sprint 17.1: the CancelledError branch's own
+    self._history.finish_run(...) call had no error handling — if IT
+    raised (e.g. the sqlite connection is already being torn down by the
+    same shutdown sequence that triggered the cancellation), the new
+    exception would propagate to the caller instead of the original
+    CancelledError.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "readme.md").write_text("# A\n\nSome content.")
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _CountingStore(client=QdrantClient(":memory:"), collection_name=COLLECTION)
+    registry = DocumentRegistry(tmp_path / "registry.db")
+
+    class _FinishRunFailsHistory(SyncHistory):
+        def finish_run(self, run_id, status, **kwargs):
+            if status == STATUS_CANCELLED:
+                raise RuntimeError("simulated sqlite failure during cancellation recording")
+            return super().finish_run(run_id, status, **kwargs)
+
+    history = _FinishRunFailsHistory(tmp_path / "registry.db")
+    manager = SyncManager(
+        connectors={"filesystem": connector},
+        store=store,
+        registry=registry,
+        history=history,
+        embed_fn=_slow_embed_fn(1.0),
+        sparse_encoder=_FakeSparseEncoder(),
+    )
+
+    task = asyncio.create_task(manager.trigger_sync("filesystem", TRIGGER_MANUAL))
+    await asyncio.sleep(0.02)
+    task.cancel()
+
+    # The caller must still see CancelledError — not the history
+    # recording's own RuntimeError.
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+
+@pytest.mark.asyncio
 async def test_is_running_reflects_current_state(tmp_path):
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()

@@ -9,7 +9,13 @@ demonstrate.
 import sqlite3
 from datetime import UTC, datetime, timedelta
 
-from app.registry.store import DocumentRegistry
+import pytest
+
+from app.registry.store import (
+    CURRENT_INDEX_SCHEMA_VERSION,
+    DocumentRegistry,
+    IndexSchemaMismatchError,
+)
 
 
 def _registry(tmp_path) -> DocumentRegistry:
@@ -195,3 +201,48 @@ def test_last_synced_at_is_a_real_datetime_with_timezone(tmp_path):
     assert isinstance(record.last_synced_at, datetime)
     assert record.last_synced_at.tzinfo is not None
     assert record.last_synced_at >= before
+
+
+def test_a_fresh_empty_registry_self_stamps_the_current_schema_version(tmp_path):
+    """Sprint 17.1: a genuinely fresh install (no documents yet) has
+    nothing to migrate — ensure_index_schema_version() adopts the
+    current version automatically, no operator action needed beyond
+    whatever brought up a fresh registry.db in the first place.
+    """
+    registry = _registry(tmp_path)
+
+    registry.ensure_index_schema_version()  # must not raise
+
+    assert registry.get_index_schema_version() == CURRENT_INDEX_SCHEMA_VERSION
+
+
+def test_a_registry_with_documents_but_no_version_row_is_detected_as_stale(tmp_path):
+    """Sprint 17.1: the real scenario this migration guard exists for — a
+    registry built before Sprint 17.1's version-tracking mechanism
+    existed at all (so it has document rows, but never had a version
+    row written) predates the Sprint 17 point-ID formula fix too, and
+    must be treated as needing migration, not silently trusted.
+    """
+    registry = _registry(tmp_path)
+    registry.upsert_document("filesystem", "handbook", "hash-a")
+
+    with pytest.raises(IndexSchemaMismatchError):
+        registry.ensure_index_schema_version()
+
+
+def test_a_registry_with_an_explicit_stale_version_row_is_detected(tmp_path):
+    registry = _registry(tmp_path)
+    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry._set_index_schema_version(CURRENT_INDEX_SCHEMA_VERSION - 1)
+
+    with pytest.raises(IndexSchemaMismatchError):
+        registry.ensure_index_schema_version()
+
+
+def test_ensure_index_schema_version_is_idempotent_once_current(tmp_path):
+    registry = _registry(tmp_path)
+    registry.ensure_index_schema_version()
+
+    registry.ensure_index_schema_version()  # must not raise the second time either
+
+    assert registry.get_index_schema_version() == CURRENT_INDEX_SCHEMA_VERSION

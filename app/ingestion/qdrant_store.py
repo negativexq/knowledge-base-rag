@@ -61,6 +61,32 @@ class QdrantStore:
                     "QDRANT_COLLECTION_NAME at a fresh collection name."
                 )
 
+            # Sprint 17.1: Qdrant supports a collection with a single
+            # UNNAMED vector (vectors_config=VectorParams(...) passed
+            # directly, not wrapped in a {name: ...} dict) — in that case
+            # info.config.params.vectors is a VectorParams OBJECT, not a
+            # dict. `VECTOR_NAME not in dense_vectors` below wouldn't
+            # crash on that today, but only by accident: Pydantic
+            # BaseModel supports __iter__ (yielding (field, value)
+            # pairs), so Python's `in` falls back to that and always
+            # returns False — coincidentally landing on the right
+            # exception type, but for the wrong reason, relying on
+            # undocumented behavior a future Pydantic/qdrant-client
+            # version is free to change. This app always requires a
+            # NAMED dense vector (so it can coexist with the named
+            # sparse vector in the same collection) — state that
+            # explicitly instead.
+            dense_vectors = info.config.params.vectors or {}
+            if not isinstance(dense_vectors, dict):
+                raise UnexpectedCollectionSchemaError(
+                    f"Collection {self._collection_name!r} already exists with an unnamed "
+                    f"(single) dense vector configuration — this app requires a NAMED dense "
+                    f"vector called {VECTOR_NAME!r} so it can coexist with the named sparse "
+                    "vector in the same collection. Left untouched rather than deleted and "
+                    "recreated — delete it yourself if that's genuinely safe, or point "
+                    "QDRANT_COLLECTION_NAME at a fresh collection name."
+                )
+
             # Sprint 17: an explicit membership check before subscripting
             # — a collection with SOME sparse config but no "dense" named
             # vector at all (a real, not hypothetical, misconfiguration:
@@ -69,7 +95,6 @@ class QdrantStore:
             # of UnexpectedCollectionSchemaError, breaking the "fail
             # clearly, tell the human what's wrong" contract this
             # function exists for.
-            dense_vectors = info.config.params.vectors or {}
             if VECTOR_NAME not in dense_vectors:
                 raise UnexpectedCollectionSchemaError(
                     f"Collection {self._collection_name!r} already exists but is missing the "

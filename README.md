@@ -58,10 +58,10 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–16 complete** — the platform is fully working end to end:
+**Sprints 0–17 complete** — the platform is fully working end to end:
 
-- Core RAG pipeline (parsing, hybrid search, reranking, grounded
-  citations) ported from production-rag-platform
+- Core RAG pipeline (parsing, hybrid search, reranking, citation-aware
+  generation) ported from production-rag-platform
 - Multi-source ingestion: filesystem (PDF/Markdown) + Notion connectors
   behind a shared `Connector` interface
 - Incremental sync (skip/update/delete by content hash) with a scheduler,

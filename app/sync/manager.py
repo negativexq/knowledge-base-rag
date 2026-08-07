@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from opentelemetry import trace
 
@@ -20,6 +21,8 @@ from app.sync.models import (
     STATUS_SUCCESS,
     SyncRunResult,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class UnknownConnectorError(Exception):
@@ -117,9 +120,21 @@ class SyncManager:
                 # Record it as cancelled, then re-raise (never swallow a
                 # cancellation — the calling task must still stop).
                 span.set_attribute("sync.status", STATUS_CANCELLED)
-                self._history.finish_run(
-                    run_id, status=STATUS_CANCELLED, error_message="Sync was cancelled"
-                )
+                # Sprint 17.1: finish_run itself can fail (a real
+                # possibility — the same shutdown sequence that
+                # triggered this cancellation may already be tearing
+                # down the sqlite connection). Log it, but never let it
+                # replace the CancelledError the caller needs to see.
+                try:
+                    self._history.finish_run(
+                        run_id, status=STATUS_CANCELLED, error_message="Sync was cancelled"
+                    )
+                except Exception:
+                    logger.exception(
+                        "finish_run(status=cancelled) failed for run_id=%s — original "
+                        "CancelledError still propagates",
+                        run_id,
+                    )
                 raise
             except Exception as exc:
                 span.set_attribute("sync.status", STATUS_ERROR)

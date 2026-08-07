@@ -256,8 +256,11 @@ async def test_duplicate_source_ids_from_a_connector_fail_fast(tmp_path):
     its own reasons returns duplicate source_ids — must not be allowed
     to silently interleave their registry rows and Qdrant points. Checked
     at ingest_connector's boundary (not inside slugify() itself) so it
-    catches every possible cause uniformly, and fails BEFORE any
-    registry/Qdrant work happens for the run.
+    catches every possible cause uniformly, and fails before any
+    document points or registry rows are written for the run
+    (store.ensure_collection() may still create an empty collection
+    schema first on a fresh Qdrant instance — see
+    DuplicateSourceIdError's own docstring).
     """
     connector = _FakeConnectorWithDuplicateSourceIds()
     store = _store()
@@ -266,6 +269,8 @@ async def test_duplicate_source_ids_from_a_connector_fail_fast(tmp_path):
     with pytest.raises(DuplicateSourceIdError, match="dup"):
         await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
 
-    # Fail-fast means fail-fast: nothing touched.
+    # Fail-fast means fail-fast: no document data written (the
+    # collection SCHEMA may exist from ensure_collection(), but zero
+    # points and zero registry rows for this connector).
     assert store.count() == 0
     assert registry.list_documents(source_type="fake") == []

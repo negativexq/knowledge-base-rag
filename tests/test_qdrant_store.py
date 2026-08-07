@@ -113,6 +113,17 @@ def test_ensure_collection_fails_fast_on_wrong_dense_vector_size():
     wrong dense dimension (e.g. left over from a different embedding
     model) used to pass ensure_collection() silently and only fail later,
     confusingly, at the first upsert.
+
+    Sprint 17.1: the sparse fixture must set modifier=IDF explicitly —
+    without it, Sprint 17's sparse-modifier check (which runs BEFORE the
+    dense checks) fires first with modifier=None, and this test passes
+    for the WRONG reason (never actually exercising the dense-size
+    check it claims to test). Confirmed by direct reproduction before
+    this fix: the raised message was "...sparse vector has
+    modifier=None...", never mentioning size at all. match= is now
+    pinned to the dense-specific text so a future validation-order
+    regression like this gets caught immediately instead of silently
+    passing.
     """
     client = QdrantClient(":memory:")
     client.create_collection(
@@ -120,28 +131,36 @@ def test_ensure_collection_fails_fast_on_wrong_dense_vector_size():
         vectors_config={
             VECTOR_NAME: qmodels.VectorParams(size=384, distance=qmodels.Distance.COSINE)
         },
-        sparse_vectors_config={SPARSE_VECTOR_NAME: qmodels.SparseVectorParams()},
+        sparse_vectors_config={
+            SPARSE_VECTOR_NAME: qmodels.SparseVectorParams(modifier=qmodels.Modifier.IDF)
+        },
     )
 
     store = QdrantStore(client=client, collection_name=COLLECTION)
 
-    with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
+    with pytest.raises(UnexpectedCollectionSchemaError, match="size=384"):
         store.ensure_collection()
 
 
 def test_ensure_collection_fails_fast_on_wrong_distance_metric():
+    """Sprint 17.1: same false-positive fix as the size test above — the
+    sparse fixture needs modifier=IDF or the sparse-modifier check masks
+    this one too.
+    """
     client = QdrantClient(":memory:")
     client.create_collection(
         COLLECTION,
         vectors_config={
             VECTOR_NAME: qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.EUCLID)
         },
-        sparse_vectors_config={SPARSE_VECTOR_NAME: qmodels.SparseVectorParams()},
+        sparse_vectors_config={
+            SPARSE_VECTOR_NAME: qmodels.SparseVectorParams(modifier=qmodels.Modifier.IDF)
+        },
     )
 
     store = QdrantStore(client=client, collection_name=COLLECTION)
 
-    with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
+    with pytest.raises(UnexpectedCollectionSchemaError, match="EUCLID"):
         store.ensure_collection()
 
 
@@ -209,6 +228,35 @@ def test_ensure_collection_fails_fast_when_sparse_modifier_is_not_idf():
 
     with pytest.raises(UnexpectedCollectionSchemaError, match=COLLECTION):
         store.ensure_collection()
+
+
+def test_ensure_collection_fails_fast_on_unnamed_dense_vector_schema():
+    """Sprint 17.1: Qdrant supports creating a collection with a single
+    UNNAMED vector (vectors_config=VectorParams(...) passed directly,
+    not wrapped in a {name: ...} dict) — info.config.params.vectors is
+    then a VectorParams OBJECT, not a dict. `VECTOR_NAME not in
+    dense_vectors` didn't crash with a TypeError only by accident:
+    Pydantic BaseModel supports __iter__ (yielding (field, value) pairs),
+    so Python's `in` falls back to that and always returns False. An
+    explicit isinstance(dense_vectors, dict) check replaces that
+    reliance on undocumented behavior with a real check, and the error
+    message now actually names the "unnamed vector" problem instead of
+    the old accidental "missing 'dense' dense vector" text.
+    """
+    client = QdrantClient(":memory:")
+    client.create_collection(
+        COLLECTION,
+        vectors_config=qmodels.VectorParams(size=EMBEDDING_DIM, distance=qmodels.Distance.COSINE),
+        sparse_vectors_config={
+            SPARSE_VECTOR_NAME: qmodels.SparseVectorParams(modifier=qmodels.Modifier.IDF)
+        },
+    )
+
+    store = QdrantStore(client=client, collection_name=COLLECTION)
+
+    with pytest.raises(UnexpectedCollectionSchemaError, match="unnamed") as exc_info:
+        store.ensure_collection()
+    assert "missing 'dense'" not in str(exc_info.value)
 
 
 def test_upsert_chunks_rejects_mismatched_length_inputs():

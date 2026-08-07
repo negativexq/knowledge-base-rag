@@ -1285,6 +1285,116 @@ düzeltilmesi (net test sayısını değiştirmedi); `tests/test_versioned_reind
 cancellation testi), 8'i servis/API key gerektirdiği için skip,
 `ruff check app tests scripts` temiz.
 
+## Sprint 17.1 — Migration Safety & Test False-Positive Cleanup
+
+Amaç: Dördüncü bir dış kod review'ından çıkan, en önemlisi point-ID şema değişikliğinin mevcut (persist edilmiş) index'i onarmaması olan bulguları kapatmak.
+
+Scope:
+
+1. Point-ID şema migration'ı: `registry_metadata` tablosu + `index_schema_version` mekanizması, `DocumentRegistry.ensure_index_schema_version()`. Uyuşmazlıkta fail-fast (`IndexSchemaMismatchError`), otomatik re-index değil — gerekçe: `ensure_collection()`'ın zaten uyguladığı "sessizce silip yeniden oluşturma, insana söyle" politikasıyla tutarlı, `docker compose down -v` + `up` zaten bilinen/test edilmiş bir yol
+2. Qdrant schema testlerindeki false-positive düzeltildi: sparse modifier kontrolü dense testlerini maskeliyordu, fixture'lara `modifier=IDF` eklendi, assertion'lar spesifik hataya (`match="size=384"` vb.) bağlandı
+3. Unnamed Qdrant vector şeması: `isinstance(dense_vectors, dict)` kontrolü eklendi — önceden Pydantic'in `__iter__` davranışına kazara dayanıyordu
+4. Cancellation rollback'in kendi hatası artık orijinal `CancelledError`'ı maskelemiyor (`ingest.py` + `SyncManager`)
+5. README: sprint sayısı, "grounded citations" ifadesi, duplicate-source guard dokümantasyonu düzeltildi
+
+DoD: eski şema versiyonlu bir index tespit edilip doğru tepki veriyor (kanıtlanmış); dense schema testleri gerçekten dense'i test ediyor (sparse modifier maskelemesi yok); unnamed vector şeması düzgün hata veriyor; cancellation rollback'i kendi hatasını yutmuyor; README tutarlı; testler ve lint temiz.
+
+Bu sprint'ten sonra proje dondurulacak — yeni feature eklenmeyecek.
+
+### Kapanış notu
+
+**1. Point-ID şema migration'ı: fail-fast seçildi, otomatik re-index
+DEĞİL.** Gerekçe: otomatik bir tam re-index, app `/health`'i serve
+etmeye başlamadan önce her connector için gerçek (yavaş olabilecek,
+başarısız olabilecek) network çağrıları gerektirirdi — sıradan bir
+boot sequence'ın içine gizlenmiş, correctness-kritik bir işlem.
+`QdrantStore.ensure_collection()`'ın şema uyuşmazlıklarında zaten
+uyguladığı "sessizce silip yeniden oluşturma, insana söyle" politikasıyla
+tutarlı olması için migration da aynı muameleyi görüyor. Ayrıca
+`docker compose down -v` + `up` deseni zaten var ve zaten test edilmiş
+(Sprint 11'in fresh-install doğrulaması) — yeni bir kavram öğretmiyor.
+Mekanizma: `app/registry/store.py`'a yeni bir `registry_metadata`
+tablosu (`key/value`) + `CURRENT_INDEX_SCHEMA_VERSION = 2` sabiti
+(versiyon 2 = Sprint 17'nin `source_id`'yi de içeren point-ID formülü;
+versiyon 1 örtük — hiç versiyon satırı olmayan her registry).
+`DocumentRegistry.ensure_index_schema_version()`: versiyon zaten
+güncelse no-op; hiç versiyon yoksa VE registry boşsa (gerçek bir fresh
+install) mevcut versiyonu kendi kendine damgalayıp geçer (self-healing
+— `docker compose down -v` sonrası bir sonraki boot'ta otomatik
+çözülür); aksi halde (versiyon yok ama doküman VAR, ya da açıkça eski
+bir versiyon kayıtlı) `IndexSchemaMismatchError` fırlatır.
+`app/wiring.py::build_app()`'a registry construction'ından hemen sonra
+eklendi — app trafiğe başlamadan önce durur. **Gerçek bir uçtan uca
+doğrulama yapıldı, sadece koddan okunmadı**: bir scratch script ile
+önce boş bir registry ile `build_app()` çağrıldı — gerçekten kendi
+kendine versiyon 2'yi damgaladığı `sqlite3` ile doğrulandı; sonra
+`registry.db` silinip elle bir doküman satırı eklenmiş (versiyon
+satırı olmayan) bir registry ile tekrar `build_app()` çağrıldı —
+gerçekten `IndexSchemaMismatchError` fırlattığı, mesajın `docker
+compose down -v && docker compose up` komutunu içerdiği doğrulandı.
+
+**2. Qdrant schema testlerindeki false-positive — GERÇEKTEN doğrulanıp
+düzeltildi, sadece varsayılmadı.** Review'ın şüphesi doğrudan
+reprodüksiyonla doğrulandı: `test_ensure_collection_fails_fast_on_wrong_dense_vector_size`
+ve `..._wrong_distance_metric` testlerinin sparse fixture'ı
+`SparseVectorParams()` (modifier'sız, Qdrant'ın kendi varsayılanı
+`None`) kullanıyordu — Sprint 17'nin sparse-modifier kontrolü dense
+kontrollerinden ÖNCE çalıştığı için, gerçek fırlatılan mesaj
+`"...sparse vector has modifier=None..."` idi, boyuttan hiç
+bahsetmiyordu. `match=COLLECTION` assertion'ı (her hatada geçen
+collection adını kontrol ediyor) bunu hiç yakalamıyordu. Fix: her iki
+fixture'a `modifier=IDF` eklendi, `match` ifadeleri spesifik hataya
+(`"size=384"`, `"EUCLID"`) bağlandı.
+
+**3. Unnamed Qdrant vector şeması: `isinstance(dict)` kontrolü
+eklendi.** Gerçek reprodüksiyon: Qdrant, tek bir unnamed vector'lı
+koleksiyonu destekliyor (`vectors_config=VectorParams(...)` doğrudan,
+`{name: ...}` dict'e sarılmadan) — bu durumda
+`info.config.params.vectors` bir `VectorParams` NESNESİ, dict değil.
+`VECTOR_NAME not in dense_vectors` bugüne kadar `TypeError` fırlatmıyordu
+ama sadece kazara: Pydantic `BaseModel` `__iter__` destekliyor
+((field, value) çiftleri döndürerek), Python'ın `in` operatörü buna
+fallback yapıp her zaman `False` dönüyordu — doğru exception tipine
+(`UnexpectedCollectionSchemaError`) rastgele ulaşıyordu ama YANLIŞ
+mesajla ("missing 'dense' dense vector"). Test önce bu eski mesajla
+fail ettiği (yani "unnamed" kelimesini içermediği) doğrulandı, sonra
+explicit `isinstance(dense_vectors, dict)` kontrolü eklenip mesaj
+gerçek nedeni ("unnamed vector configuration") söyler hale getirildi.
+
+**4. Cancellation rollback'in kendi hatası artık orijinal
+`CancelledError`'ı maskelemiyor.** Hem `ingest.py`'nin
+`except asyncio.CancelledError:` bloğundaki `store.delete_version(...)`
+çağrısı, hem `SyncManager`'ın eşdeğer bloğundaki
+`self._history.finish_run(...)` çağrısı artık kendi iç try/except'i
+içinde — patlarsa `logger.exception(...)` ile loglanıyor ama
+yutulmuyor, dış `raise` hâlâ ORİJİNAL `CancelledError`'ı fırlatıyor.
+İki test de fix'ten önce GERÇEKTEN yanlış exception tipini (rollback'in
+kendi `RuntimeError`'ı) gördüğü doğrulandı (gerçek `task.cancel()` +
+monkeypatch edilmiş bir rollback ile), sonra fix'le `CancelledError`'ın
+doğru şekilde göründüğü kanıtlandı.
+
+**5. README düzeltmeleri.** "Sprints 0–16" → "Sprints 0–17" (tek yer).
+Status bölümündeki "reranking, grounded citations)" → "reranking,
+citation-aware generation)" — Highlights'taki "Source-scoped citation
+validation" ile tutarlı. `DuplicateSourceIdError`'ın docstring'i ve
+testinin docstring'i, "registry/Qdrant'a hiç dokunmuyor" gibi aşırı
+iddialı ifadeden, gerçek garantiyi netleştiren bir ifadeye çevrildi:
+`ensure_collection()` duplicate kontrolünden ÖNCE çalıştığı için taze
+bir Qdrant'ta boş bir koleksiyon şeması oluşturulmuş olabilir — garanti
+edilen şey sıfır DOKÜMAN VERİSİ yazılması, koleksiyon nesnesine hiç
+dokunulmaması değil (testin kendi assertion'ları zaten doğruydu:
+`store.count() == 0` ve `registry.list_documents(...) == []`, ikisi de
+doğru şekilde "sıfır doküman verisi" kontrol ediyor).
+
+**393 test yeşil** (bu sprintte +7 yeni test: `tests/test_document_registry.py`
++4 — migration guard testleri; `tests/test_qdrant_store.py` +1 —
+unnamed-vector testi (dense-schema false-positive fix'i net test
+sayısını değiştirmedi, sadece mevcut 2 testi düzeltti);
+`tests/test_versioned_reindex.py` +1 — cancellation-rollback-kendi-hatası
+testi; `tests/test_sync_manager.py` +1 — SyncManager seviyesinde aynı
+test), 8'i servis/API key gerektirdiği için skip, `ruff check app tests
+scripts` temiz.
+
 ## Sprint 18 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

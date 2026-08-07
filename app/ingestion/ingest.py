@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from collections import Counter
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -20,6 +21,8 @@ from app.shared.tracing import get_tracer
 # "search_document: " is the indexing-side prefix (query side uses
 # "search_query: ", applied at retrieval time in app/retrieval).
 SEARCH_DOCUMENT_PREFIX = "search_document: "
+
+logger = logging.getLogger(__name__)
 
 EmbedFn = Callable[[str], Awaitable[list[float]]]
 
@@ -65,8 +68,12 @@ async def embed_texts_concurrently(
 class DuplicateSourceIdError(Exception):
     """Raised when a connector's list_documents() returns two or more
     documents sharing the same source_id — checked at ingest_connector's
-    boundary, fail-fast before any registry/Qdrant work happens for the
-    run. slugify() collisions (e.g. "foo bar.md" and "foo_bar.md" both
+    boundary, fail-fast before any document points or registry rows are
+    written for the run (store.ensure_collection() may still have
+    created an empty collection schema on a fresh Qdrant instance before
+    this check runs — the guarantee is zero document DATA written, not
+    that the collection object itself was never touched).
+    slugify() collisions (e.g. "foo bar.md" and "foo_bar.md" both
     slugging to "foo_bar") are one real cause but not the only possible
     one — a connector could return duplicates for its own reasons — so
     this is a general connector-output check, not a slugify() fix. See
@@ -337,9 +344,26 @@ async def ingest_connector(
                         span.set_attribute("rollback.source_id", document.source_id)
                         span.set_attribute("rollback.document_version", content_hash)
                         span.set_attribute("rollback.reason", "cancelled")
-                        store.delete_version(
-                            connector.source_type, document.source_id, content_hash
-                        )
+                        # Sprint 17.1: delete_version itself can fail (a
+                        # real possibility — the same shutdown sequence
+                        # that triggered this cancellation may have
+                        # already started tearing down the Qdrant
+                        # connection). Log it, but never let it replace
+                        # the CancelledError the caller needs to see —
+                        # this bare `raise` below must always re-raise
+                        # the ORIGINAL cancellation, not a rollback
+                        # failure.
+                        try:
+                            store.delete_version(
+                                connector.source_type, document.source_id, content_hash
+                            )
+                        except Exception:
+                            logger.exception(
+                                "rollback delete_version failed during cancellation for "
+                                "%s:%s — original CancelledError still propagates",
+                                connector.source_type,
+                                document.source_id,
+                            )
                     raise
                 except Exception:
                     with tracer.start_as_current_span("rollback_partial_version") as span:
