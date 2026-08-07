@@ -1,5 +1,6 @@
 from app.ingestion.chunker import compute_doc_id
 from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
+from app.llm.citation_location import location_for
 
 
 def _write_md(tmp_path, text: str, name: str = "doc.md") -> str:
@@ -152,3 +153,39 @@ def test_repeated_heading_path_produces_chunks_with_distinct_occurrence_and_no_t
     # Different surrogate "page" -> different page_number -> different
     # point_id_for(...) identity even though heading_path is identical.
     assert first.page_number != second.page_number
+
+
+def test_real_overview_hash_2_and_repeated_plain_overview_get_distinct_locations():
+    """Sprint 17.6: end-to-end proof that the collision-safe encoding
+    (app/llm/citation_location.py) survives the full chunking pipeline,
+    not just synthetic payloads. A document with three real sections
+    sharing overlapping names — a first "# Overview", an UNRELATED
+    heading ACTUALLY named "# Overview#2", and a second "# Overview" —
+    must produce three distinct citation locations, not two colliding
+    with the third.
+    """
+    text = (
+        "# Overview\n\nFirst overview text about apples.\n\n"
+        "# Overview#2\n\nA heading that is genuinely named this, about pears.\n\n"
+        "# Overview\n\nSecond overview text about oranges."
+    )
+
+    chunks = chunk_markdown_text(text, source_id="doc", source_type="markdown", doc_id="h")
+
+    def _location(chunk):
+        return location_for(
+            {
+                "heading_path": list(chunk.heading_path),
+                "heading_occurrence": chunk.heading_occurrence,
+            }
+        )
+
+    apples_chunk = next(c for c in chunks if "apples" in c.text)
+    pears_chunk = next(c for c in chunks if "pears" in c.text)
+    oranges_chunk = next(c for c in chunks if "oranges" in c.text)
+
+    locations = {_location(apples_chunk), _location(pears_chunk), _location(oranges_chunk)}
+    assert len(locations) == 3
+    assert _location(apples_chunk) == "Overview"
+    assert _location(pears_chunk) == "Overview\\#2"
+    assert _location(oranges_chunk) == "Overview#2"

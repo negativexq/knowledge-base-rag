@@ -100,7 +100,7 @@ class SyncManager:
                 )
 
             self._running[source_type] = True
-            run_id: str | None = None
+            run_id: int | None = None
             try:
                 # Sprint 17.5: start_run (a SQLite INSERT) used to run
                 # OUTSIDE this try block, with `self._running[source_type]

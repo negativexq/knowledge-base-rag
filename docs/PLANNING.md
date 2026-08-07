@@ -1880,6 +1880,111 @@ gerçek ölçüm) kapatıldı. Daha fazla hardening sprint'i planlanmıyor.
 Sprint 18 (Confluence connector) hâlâ "stretch" olarak listeleniyor
 ama zorunlu değil.
 
+## Sprint 17.6 — Citation Schema Closure — GERÇEKTEN SON sprint
+
+Amaç: Dokuzuncu bir dış review'ın bulduğu, Sprint 17.5'in kendi
+düzeltmesinin (heading_occurrence) mevcut, değişmemiş dokümanlara
+uygulanmadığı bulgusunu kapatmak. Bkz. docs/sprint-17-6-plan.md.
+
+Scope:
+
+1. Index schema version bump (2 → 3) — mevcut migration guard mekanizması yeniden kullanıldı
+2. Collision-safe location encoding (gerçek "#N" başlık + "/" içeren heading senaryoları)
+3. `run_id` tip düzeltmesi (`str | None` → `int | None`)
+4. Regression testi (madde 1 ile aynı testte kanıtlandı)
+
+DoD: version 3'e geçiş gerçek bir eski state ile test edilmiş; yeni
+encoding şeması collision-safe (kanıtlanmış); run_id tipi doğru;
+testler ve lint temiz.
+
+### Kapanış notu
+
+**1. Version 2 → 3 bump, mevcut mekanizma yeniden kullanılarak, gerçek
+bir eski state'e karşı test edildi.** Sprint 17.5'in `heading_occurrence`
+alanı, mevcut değişmemiş bir dokümanın content_hash'i aynı kaldığı için
+asla yeniden ingest tetiklemiyor — yani Sprint 17.5 deploy edildikten
+SONRA bile, gerçekte tekrarlanan heading'i olan eski bir doküman, eski
+(çakışan) point ID'leri ve location'larıyla sonsuza dek Qdrant'ta
+kalabilirdi. Yeni bir mekanizma icat etmek yerine Sprint 17.1'in zaten
+var olan `CURRENT_INDEX_SCHEMA_VERSION` + `ensure_index_schema_version()`
+fail-fast guard'ı yeniden kullanıldı — sadece sabiti 2'den 3'e çıkarmak
+yeterliydi. Test GERÇEKTEN kanıtladı: `registry._set_index_schema_version(2)`
+ile açıkça version 2'ye damgalanmış bir registry (bir önceki GERÇEK
+`CURRENT_INDEX_SCHEMA_VERSION` değeri — `CURRENT - 1` gibi göreceli bir
+değer değil, literal eski değer) `ensure_index_schema_version()`
+çağrıldığında `IndexSchemaMismatchError` fırlatıyor. Fix öncesi (sabit
+geçici olarak 2'ye geri alınıp doğrulandı) bu test GERÇEKTEN
+`DID NOT RAISE` ile fail etti — bump olmadan version 2 zaten "current"
+kabul ediliyordu. Mevcut Sprint 17.1/17.2 testleri (`CURRENT - 1`,
+`CURRENT + 1` gibi göreceli değerler kullanan) elle güncelleme
+gerektirmeden otomatik olarak doğru davranmaya devam etti — doğrulandı.
+
+**2. Collision-safe location encoding, iki ayrı gerçek çakışma
+senaryosuyla kanıtlandı.** Sprint 17.5'in `f"{location}#{occurrence + 1}"`
+şeması iki gerçek çakışma riski taşıyordu: (a) dokümanın GERÇEKTEN
+"Overview#2" diye bir başlığa sahip olması, ikinci "Overview"
+occurrence'ının sentetik suffix'iyle ("Overview#2") birebir çakışıyordu;
+(b) `["A/B"]` (tek, "/" içeren component) ile `["A","B"]` (nested)
+aynı "A/B" string'ini üretiyordu. Fix: her heading component'i
+birleştirilmeden önce escape ediliyor (`\`→`\\`, `/`→`\/`, `#`→`\#`);
+escape edilmiş component'ler unescaped `/` ile birleştiriliyor;
+occurrence suffix'i hâlâ unescaped `#` kullanıyor ama artık bu güvenli
+— gerçek bir heading'in içindeki her `#` escape edildiği için, sonuçtaki
+string'de unescaped `#` SADECE occurrence delimiter'ı olabilir. Üç test
+GERÇEKTEN kanıtladı (fix öncesi, geçici geri alma ile): (1) senkron
+`location_for()` payload testi — gerçek "Overview#2" başlığı artık
+`"Overview\#2"`, sentetik ikinci occurrence hâlâ `"Overview#2"`, ikisi
+ARTIK FARKLI (fix öncesi ikisi de `"Overview#2"` idi); (2) `["A/B"]` artık
+`"A\/B"`, `["A","B"]` hâlâ `"A/B"`, ARTIK FARKLI; (3) uçtan uca chunker
+testi — gerçek bir Markdown dokümanı (bir "# Overview", GERÇEKTEN
+"# Overview#2" adında bağımsız bir başlık, ikinci bir "# Overview")
+chunk_markdown_text ile işlenip location_for'a verildiğinde üç AYRI
+location üretiyor (fix öncesi sadece 2 benzersiz location vardı —
+`{'Overview', 'Overview#2'}`, üçüncü chunk ikinciyle çakışıyordu).
+Sıradan (yaygın, "/" veya "#" içermeyen) heading path'ler için escape
+işlemi no-op — location string'i hiç değişmedi, ek bir testle
+doğrulandı. `grounding.py`'nin `_CITATION_RE`'si location'ı opak
+`[^\]]+` olarak yakaladığı için (iç yapısını hiç parse etmiyor) bu
+değişiklik onu etkilemedi — tüm `location_for` tüketicileri grep ile
+tarandı, doğrulandı.
+
+**3. `run_id` tip düzeltmesi.** `app/sync/manager.py::trigger_sync`'teki
+yerel değişken `run_id: str | None = None` olarak yanlış anotasyonlanmıştı
+— `SyncHistory.start_run()` gerçekte SQLite'ın `lastrowid`'inden bir
+`int` döndürüyor, `SyncRunResult.run_id` alanı (app/sync/models.py) da
+zaten doğru şekilde `int | None`. Davranışı etkilemeyen (Python
+runtime'da tip anotasyonları zorlanmıyor), saf bir okunabilirlik/statik-
+analiz düzeltmesi: `run_id: int | None = None`.
+
+**4. Regression testi madde 1 ile birleştirildi** — plan dokümanının
+öngördüğü gibi, ayrı bir test yazmaya gerek kalmadı, tek test hem
+version bump'ı hem eski-state tespitini kanıtlıyor.
+
+**5. README'deki "araştırılmamış hipotez" ifşası zaten Sprint 17.5'te
+netti** — "a plausible cause, not confirmed by further investigation"
+ifadesi kontrol edildi, madde ekleme gerekmedi.
+
+**448 test toplandı** (bu sprintte +5 yeni test:
+`tests/test_document_registry.py` +1 — version-2-stale regression;
+`tests/test_citation_location.py` +3 — gerçek "#N" başlık çakışması,
+"/" içeren heading çakışması, sıradan heading'lerin etkilenmediği;
+`tests/test_markdown_chunker.py` +1 — uçtan uca üç-location kanıtı),
+`ruff check app tests scripts` temiz.
+
+**PROJE GERÇEKTEN, KESİN OLARAK VE DOKUZUNCU KEZ DONDURULDU.** Sprint
+15'ten 17.6'ya kadar dokuz dış review turu, her biri bir öncekinin
+varsaymadığı gerçek bir etkileşimi buldu — en sonuncusu: bir fix'in
+(heading_occurrence) kendisinin mevcut veriye asla ulaşamayacağı
+(content_hash'in bunu tetikleyemeyeceği) ve fix'in kendi encoding
+şemasının kendi içinde iki ayrı çakışma taşıdığı. Bu son ikisi de
+"bir düzeltmenin kendi varsayımlarını sorgulamak" kategorisinde —
+projenin dokuz turdur öğrendiği asıl ders, kod tabanına özgü bir kural
+değil bu: her fix, kendi kapsamı DIŞINDA bıraktığı veri/durumu ve kendi
+ürettiği YENİ encoding/format'ın kendi içindeki tutarlılığını ayrıca
+sorgulamayı gerektiriyor. Daha fazla hardening sprint'i planlanmıyor.
+Sprint 18 (Confluence connector) hâlâ "stretch" olarak listeleniyor ama
+zorunlu değil.
+
 ## Sprint 18 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

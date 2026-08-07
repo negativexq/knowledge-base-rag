@@ -465,6 +465,25 @@ def test_corrupted_non_numeric_schema_version_metadata_raises_index_schema_misma
         registry.ensure_index_schema_version()
 
 
+def test_a_registry_stamped_at_the_previous_real_version_is_detected_as_stale(tmp_path):
+    """Sprint 17.6: not a hypothetical old version — version 2 was the
+    REAL CURRENT_INDEX_SCHEMA_VERSION before this sprint bumped it to 3
+    for the heading_occurrence fix (Sprint 17.5). An unchanged document's
+    content_hash can never detect that its heading_occurrence-less point
+    IDs/locations are stale, so this registry-level guard is the only
+    thing that catches it — proven here against the literal old value
+    (2), not just CURRENT - 1, so a future version bump that also
+    changes what "previous" means doesn't silently stop testing the real
+    upgrade path this sprint exists for.
+    """
+    registry = _registry(tmp_path)
+    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry._set_index_schema_version(2)
+
+    with pytest.raises(IndexSchemaMismatchError):
+        registry.ensure_index_schema_version()
+
+
 def test_ensure_index_schema_version_is_idempotent_once_current(tmp_path):
     registry = _registry(tmp_path)
     registry.ensure_index_schema_version()

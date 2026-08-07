@@ -92,8 +92,13 @@ _INDEX_SCHEMA_VERSION_KEY = "index_schema_version"
 # can't detect this, since it's unrelated to the point-ID formula.
 # Version 2 = Sprint 17's point_id_for fix (now includes source_id, so
 # two documents with identical content no longer collide on point ID).
+# Version 3 = Sprint 17.5's heading_occurrence fix (repeated identical
+# Markdown heading paths now get distinct point IDs and citation
+# locations) — an unchanged document's content_hash can never detect
+# this on its own, same reasoning as version 2's bump. See
+# docs/sprint-17-6-plan.md.
 # Version 1 is implicit: any registry with no stored version at all.
-CURRENT_INDEX_SCHEMA_VERSION = 2
+CURRENT_INDEX_SCHEMA_VERSION = 3
 
 
 class IndexSchemaMismatchError(Exception):

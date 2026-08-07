@@ -1,3 +1,13 @@
+def _escape_heading_component(component: str) -> str:
+    """Escapes the two characters this module gives reserved meaning to
+    when assembling a location string: "/" (the component separator) and
+    "#" (the occurrence-suffix delimiter, Sprint 17.5). "\\" is escaped
+    first so its own escape doesn't get re-escaped by the other two
+    replacements.
+    """
+    return component.replace("\\", "\\\\").replace("/", "\\/").replace("#", "\\#")
+
+
 def location_for(payload: dict) -> str:
     """The LOCATION segment of a citation tag ([s.source_type:source_id/
     LOCATION]), derived the same way whether building a tag (prompt.py) or
@@ -19,10 +29,26 @@ def location_for(payload: dict) -> str:
     change for the common case. This only affects the internal citation
     LOCATION, not the human-facing label (app/llm/prompt.py::_human_label
     still shows the plain heading path).
+
+    Sprint 17.6: the Sprint 17.5 scheme above had two real collisions.
+    (a) A document with a heading that's ACTUALLY named e.g. "Overview#2"
+    produces the identical location string as the SECOND occurrence of a
+    plain "Overview" heading. (b) A heading component containing "/"
+    (e.g. "## A/B") produces the identical joined string as two separate
+    nested components ["A", "B"]. Fixed by escaping "\\", "/", and "#"
+    within each heading component before joining — after escaping, an
+    unescaped "#" in the final string can only ever be the occurrence
+    delimiter this function appends itself, never part of a real heading,
+    so the two can't collide. This only changes locations for headings
+    that actually contain "/" or "#" (rare) or that repeat (Sprint 17.5's
+    case) — an ordinary, non-repeating, slash/hash-free heading path
+    (the common case) still round-trips to the exact string it always
+    produced, since escaping a component with none of those characters
+    is a no-op.
     """
     heading_path = payload.get("heading_path") or []
     if heading_path:
-        location = "/".join(heading_path)
+        location = "/".join(_escape_heading_component(c) for c in heading_path)
         occurrence = payload.get("heading_occurrence") or 0
         if occurrence:
             location = f"{location}#{occurrence + 1}"
