@@ -14,33 +14,24 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 
 ## Status
 
-**Sprints 0–11** are complete: foundation + core pipeline port, LLM provider
-abstraction (Ollama + Claude), a SQLite-backed document registry, a
-filesystem `Connector` that ingests mixed PDF/Markdown folders, hash-based
-incremental sync (skip unchanged, update changed, delete vanished — no
-orphan chunks), end-to-end proof that citations can't leak across
-documents that collide on location, a web page parser (trafilatura), the
-first remote connector (`NotionConnector`), a sync scheduler (periodic +
-manual "sync now" via a FastAPI endpoint, with sync history and
-overlap-safe concurrent-sync handling), full tracing across the sync
-pipeline — a real sync run is one Jaeger trace end to end, verified
-against a real local Jaeger — a golden-set evaluation harness (DeepEval +
-a local `qwen2.5:7b-instruct` judge, `python -m app.evaluation.cli
---golden-set <path>`) reporting retrieval and generation metrics broken
-down by content format (PDF vs. Markdown), a multi-page Streamlit UI
-(Chat with streaming/citations/a live Jaeger pipeline-trace panel,
-Sources, Sync Status), and a one-command Docker Compose setup — Qdrant +
-Jaeger + the backend all run in containers (Ollama stays native), the
-document registry and sync history survive a container restart (a real
-named volume, not assumed), and the periodic sync scheduler actually
-starts on container boot (wired into FastAPI's lifespan, verified with a
-real short-interval run, not just code review). See `docs/PLANNING.md`'s
-closing notes and the `docs/sprint-0{0..4,6,7,8,9,10,11}-plan.md` files
-for the design decisions behind each (Sprint 5 was verification-only, no
-new plan doc — see its closing note). **Notion has not been tested
-against a real workspace** on this machine (no `NOTION_API_KEY`), and the
-evaluation golden set correspondingly has no Notion questions — see the
-Sprint 6 and Sprint 9 closing notes.
+**Sprints 0–11 complete** — the platform is fully working end to end:
+
+- Core RAG pipeline (parsing, hybrid search, reranking, grounded
+  citations) ported from production-rag-platform
+- Multi-source ingestion: filesystem (PDF/Markdown) + Notion connectors
+  behind a shared `Connector` interface
+- Incremental sync (skip/update/delete by content hash) with a scheduler,
+  manual trigger, and full history
+- Distributed tracing (OpenTelemetry + Jaeger) across both sync and chat
+- Golden-set evaluation (DeepEval + a local judge model)
+- A multi-page Streamlit UI (Chat, Sources, Sync Status)
+- One-command Docker Compose deployment, with sync data surviving a
+  container restart
+
+See [docs/PLANNING.md](docs/PLANNING.md) for the sprint-by-sprint closing
+notes each of these is backed by, and **[Known Limitations](#known-limitations)**
+below for what's *not* covered — most notably, the Notion connector has
+never been tested against a real workspace (no API key available).
 
 ## Architecture
 
