@@ -1,0 +1,86 @@
+[
+  {
+    "id": "pdf-free-storage",
+    "question": "How many GB of storage does a free Nimbus account include?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "1/0"]],
+    "reference_answer": "15GB"
+  },
+  {
+    "id": "pdf-2fa-sms",
+    "question": "Is SMS-based two-factor authentication supported on Nimbus?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "1/0"]],
+    "reference_answer": "No, SMS-based 2FA is not supported."
+  },
+  {
+    "id": "pdf-plus-tier-price",
+    "question": "What is the price of Nimbus's Plus tier and how much storage does it offer?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "2/0"]],
+    "reference_answer": "$7.99/month for 1TB"
+  },
+  {
+    "id": "pdf-shared-link-expiry",
+    "question": "What is the default expiration period for shared links?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "3/0"]],
+    "reference_answer": "30 days"
+  },
+  {
+    "id": "pdf-sync-paused-cause",
+    "question": "What is the most common cause of the 'Sync Paused' status in the desktop sync client?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "4/0"]],
+    "reference_answer": "Local disk running below 5GB of free space."
+  },
+  {
+    "id": "pdf-annual-refund-window",
+    "question": "Within how many days can annual plans be refunded in full?",
+    "content_type": "pdf",
+    "expected_locations": [["filesystem", "nimbus_handbook_pdf", "5/0"]],
+    "reference_answer": "14 days"
+  },
+  {
+    "id": "md-install-command",
+    "question": "How do you install the Nimbus CLI and which Python version is required?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Kurulum"]],
+    "reference_answer": "pip install nimbus-cli, Python 3.9 or higher"
+  },
+  {
+    "id": "md-windows-shell-support",
+    "question": "Which shell is officially supported for the Nimbus CLI on Windows?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Kurulum/Sistem Gereksinimleri"]],
+    "reference_answer": "PowerShell"
+  },
+  {
+    "id": "md-token-lifetime",
+    "question": "How many days are Nimbus CLI access tokens valid for?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Kimlik Doğrulama/Token Süresi"]],
+    "reference_answer": "90 days"
+  },
+  {
+    "id": "md-sync-conflict-flags",
+    "question": "Which flag is used to force-push the local version in a sync conflict?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Senkronizasyon Komutları/Çakışma Çözümü"]],
+    "reference_answer": "--force-local"
+  },
+  {
+    "id": "md-proxy-env-var",
+    "question": "Which environment variable is used to specify a proxy server for the Nimbus CLI?",
+    "content_type": "markdown",
+    "expected_locations": [["filesystem", "nimbus_cli_md", "Sorun Giderme/Bağlantı Hataları"]],
+    "reference_answer": "NIMBUS_PROXY"
+  },
+  {
+    "id": "not-found-unrelated",
+    "question": "Which city is Nimbus's headquarters located in?",
+    "content_type": "pdf",
+    "expected_locations": [],
+    "expect_not_found": true
+  }
+]

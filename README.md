@@ -501,26 +501,58 @@ check of the code/tests where noted.
   `tests/test_provider_comparison_e2e.py` auto-skips. This is "the test
   never ran," not "no difference was found" — the comparison stays an
   open question.
-- **PDF retrieval recall is measurably weaker than Markdown's, and the
-  reranker makes it WORSE, not better.** The eval CLI (`app.evaluation.cli`)
-  used to measure hybrid retrieval BEFORE reranking — a different
-  pipeline than what a real chat query actually goes through
-  (`app/wiring.py` always passes a `CrossEncoderReranker` to `search()`).
-  Sprint 17.5 wired the same reranker into the CLI (default ON, matching
+- **Cross-lingual query/content retrieval is measurably weaker, and the
+  reranker makes it WORSE — confirmed with an isolated experiment, not
+  just a hypothesis.** Sprint 17.5 first noticed the eval CLI
+  (`app.evaluation.cli`) used to measure hybrid retrieval BEFORE
+  reranking — a different pipeline than a real chat query goes through
+  (`app/wiring.py` always passes a `CrossEncoderReranker` to `search()`)
+  — wired the same reranker into the CLI (default ON, matching
   production; `--no-reranker` opt-out for the old pre-rerank
-  measurement) and re-ran the 12-question golden set against real
-  Ollama+Qdrant. Pre-rerank numbers reproduced the original Sprint 9
-  result almost exactly (PDF recall 0.429, Markdown 1.0 — the
-  methodology is stable). With the reranker on — the number that
-  actually reflects what a user sees — PDF recall dropped further, to
-  0.143 (Markdown stayed at 1.0). `cross-encoder/ms-marco-MiniLM-L-6-v2`
-  is an English-trained model scoring Turkish-language query/chunk pairs
-  (the golden set is Turkish); a plausible cause, not confirmed by
-  further investigation, same disclosure standard as the still-open root
-  cause below.
-- **The root cause of PDF's weaker retrieval** (page-level chunk
-  granularity vs. Markdown's heading-scoped blocks giving the retriever
-  a harder or easier target?) was observed in Sprint 9 but not
+  measurement), and observed PDF recall drop from 0.429 to 0.143 with
+  reranking on, floating "Turkish golden set + English-trained
+  reranker" as an unconfirmed guess at the cause. Sprint 17.7 checked
+  that guess directly against the fixtures rather than assuming it: the
+  golden set isn't uniformly Turkish — all 12 questions are Turkish,
+  but the PDF source document is entirely English and the Markdown
+  source document is entirely Turkish, so the PDF half was already
+  cross-lingual (Turkish question, English content) while the Markdown
+  half was mono-lingual (Turkish question, Turkish content) — and only
+  the cross-lingual half had regressed. That reframed the guess into a
+  falsifiable prediction (mismatch drives the regression, not Turkish
+  specifically) and Sprint 17.7 tested it directly: a parallel English
+  question set (`tests/fixtures/golden_set_en.json`, direct translations,
+  identical `expected_locations` — content unchanged) turns the PDF
+  half mono-lingual and the Markdown half cross-lingual, giving a full
+  2×2 (content × question language) × reranker-on/off design, 8 real
+  cells against native Ollama + Qdrant:
+
+  | | no rerank | reranked | pairing |
+  |---|---|---|---|
+  | PDF + Turkish question | recall 0.429 | recall 0.143 | cross-lingual |
+  | PDF + English question | recall 0.857 | recall 0.857 | mono-lingual |
+  | Markdown + Turkish question | recall 1.000 | recall 1.000 | mono-lingual |
+  | Markdown + English question | recall 1.000 | recall 0.800 | cross-lingual |
+
+  Both cross-lingual cells dropped under reranking; both mono-lingual
+  cells were completely unchanged (precision too, to the decimal) — a
+  clean, repeated pattern across all four cells, not a coincidence in
+  one. A second, independent signal: PDF's mono-lingual pre-rerank
+  recall (0.857) is already dramatically higher than its cross-lingual
+  pre-rerank recall (0.429) — `nomic-embed-text` itself retrieves worse
+  across languages before the reranker (`cross-encoder/ms-marco-MiniLM-
+  L-6-v2`, English-trained) ever runs, so reranking sharpens an existing
+  weakness rather than creating a new one. Caveat, stated as plainly as
+  the finding itself: this is one golden set (12 questions, 2 documents,
+  one fictional domain), one run, no statistical significance testing —
+  a real, reproduced finding for this specific reranker/embedding-model/
+  golden-set combination, not a general claim about cross-lingual rerank
+  performance everywhere. See the Sprint 17.7 closing note in
+  `docs/PLANNING.md` for the full 8-cell breakdown.
+- **The root cause of PDF's weaker retrieval within mono-lingual pairs**
+  (PDF+English recall 0.857 vs. Markdown+Turkish recall 1.000 — page-level
+  chunk granularity vs. Markdown's heading-scoped blocks giving the
+  retriever a harder or easier target?) was observed in Sprint 9 but not
   investigated further.
 - **No `WebConnector` exists** — only the web page parser
   (`app/parsing/web_parser.py`, `trafilatura`) and its chunker are built

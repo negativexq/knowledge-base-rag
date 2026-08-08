@@ -1985,6 +1985,92 @@ sorgulamayı gerektiriyor. Daha fazla hardening sprint'i planlanmıyor.
 Sprint 18 (Confluence connector) hâlâ "stretch" olarak listeleniyor ama
 zorunlu değil.
 
+## Sprint 17.7 — Reranker Cross-Lingual Mismatch Investigation (araştırma)
+
+Amaç: Sprint 17.5'in "CrossEncoder rerank PDF recall'ını düşürüyor"
+gözleminin gerçekten çapraz-dilli (soru dili ≠ içerik dili) retrieval'a
+özgü olup olmadığını, kod değiştirmeden, izole bir 2x2 deneyle test
+etmek. Bkz. docs/sprint-17-7-plan.md. Bu bir hardening/bugfix sprint'i
+DEĞİL — proje "donmuş" durumunu koruyor.
+
+Ön-doğrulama (bu sprint başlamadan önce, kod değiştirmeden yapıldı):
+mevcut golden set homojen Türkçe değil. Sorular (12/12) Türkçe, ama
+PDF kaynak dokümanı (`golden_source.py`) tamamen İngilizce, Markdown
+kaynak dokümanı (`golden_markdown_source.py`) tamamen Türkçe. Yani
+mevcut tasarım zaten karışık: PDF tarafı çapraz-dilli, Markdown tarafı
+tek-dilli — ve sadece çapraz-dilli PDF tarafı Sprint 17.5'te regresyona
+uğramıştı.
+
+### Kapanış notu
+
+**Deney tasarımı: tek yeni fixture, mevcut `by_content_type` kırılımı
+yeniden kullanıldı.** `tests/fixtures/golden_set_en.json` yazıldı —
+mevcut `golden_set.json`'daki 12 sorunun DOĞRUDAN İngilizce çevirisi,
+AYNI `expected_locations`/`content_type` (içerik değişmediği için
+ground truth değişmiyor). Koşum öncesi gerçek Qdrant'a karşı
+doğrulandı: her iki dosyanın da `expected_locations`'ı, gerçekten
+ingest edilmiş `nimbus_handbook_pdf` (6 sayfa, İngilizce) ve
+`nimbus_cli_md` (8 heading, Türkçe) noktalarıyla birebir eşleşiyor.
+`app/evaluation/generation_metrics.py`'nin `reference_answer`'ı hiç
+tüketmediği doğrulandı (harness sadece saklıyor) — çeviri kalitesinin
+metrikleri etkilemediği bu şekilde güvence altına alındı. 2 golden set
+(TR, EN) × 2 reranker modu (`--no-reranker`, varsayılan) = 4 GERÇEK CLI
+koşumu (native Ollama + docker-compose Qdrant + `qwen2.5:3b-instruct`
+generation + `qwen2.5:7b-instruct` judge), her biri `by_content_type`
+ile PDF ve Markdown hücrelerini ayrı ayrı üretti = 8 hücre.
+
+**Sonuçlar (gerçek koşum, tam tablo):**
+
+```
+                              recall   precision   dil eşleşmesi
+PDF   + TR soru + no-rerank   0.429     0.086      çapraz-dilli
+PDF   + TR soru + rerank      0.143     0.029      çapraz-dilli
+PDF   + EN soru + no-rerank   0.857     0.171      tek-dilli
+PDF   + EN soru + rerank      0.857     0.171      tek-dilli
+
+MD    + TR soru + no-rerank   1.000     0.200      tek-dilli
+MD    + TR soru + rerank      1.000     0.200      tek-dilli
+MD    + EN soru + no-rerank   1.000     0.200      çapraz-dilli
+MD    + EN soru + rerank      0.800     0.160      çapraz-dilli
+```
+
+**Hipotez NET ŞEKİLDE DOĞRULANDI — dört hücrenin dördü de tahmin
+edilen yönde.** Rerank'in etkisi:
+- **PDF + TR (çapraz-dilli):** recall 0.429 → 0.143, DÜŞTÜ (-0.286).
+- **PDF + EN (tek-dilli):** recall 0.857 → 0.857, DEĞİŞMEDİ.
+- **Markdown + TR (tek-dilli):** recall 1.000 → 1.000, DEĞİŞMEDİ.
+- **Markdown + EN (çapraz-dilli):** recall 1.000 → 0.800, DÜŞTÜ (-0.200).
+
+İKİ çapraz-dilli hücrenin İKİSİ de rerank altında kötüleşti; İKİ
+tek-dilli hücrenin İKİSİ de tamamen değişmedi (precision dahil, ondalık
+basamağa kadar aynı) — bu, "hipotez desteklendi ama belirsiz" değil,
+temiz, dört-hücreli bir tekrarlanan desen. Sprint 17.5'in
+"araştırılmamış hipotez" ifşası artık araştırıldı ve doğrulandı: CrossEncoder
+rerank'in PDF recall'ını düşürmesi Türkçe dile özgü bir sorun değil,
+SORU/İÇERİK dil UYUŞMAZLIĞINA özgü bir sorun.
+
+**Bonus bulgu — dil uyuşmazlığı rerank'ten ÖNCE de (hybrid retrieval
+aşamasında) ölçülebilir bir etki.** PDF'in tek-dilli (EN/EN) pre-rerank
+recall'ı (0.857) çapraz-dilli (TR/EN) pre-rerank recall'ından (0.429)
+DRAMATİK ÖLÇÜDE yüksek — yani `nomic-embed-text` embedding modeli bile
+(reranker devreye girmeden) çapraz-dilli sorgu/içerik çiftlerinde daha
+zayıf. Bu, rerank'in sorunu YARATMADIĞINI, MEVCUT bir zayıflığı DAHA DA
+KÖTÜLEŞTİRDİĞİNİ gösteriyor — iki ayrı ama aynı yöndeki etki.
+
+**Sınırlamalar, dürüstçe belirtilmeli:** Bu tek bir golden set (12 soru,
+2 doküman, tek domain — "Nimbus" kurgu ürünü) üzerinde tek bir koşum;
+istatistiksel anlamlılık testi yapılmadı (n çok küçük, LLM judge
+stokastik). Sonuç GERÇEK ve tekrarlanabilir bir gözlem, ama genellenebilir
+bir "her çapraz-dilli senaryoda rerank her zaman kötüleşir" iddiası
+DEĞİL — bu spesifik reranker modeli (`cross-encoder/ms-marco-MiniLM-L-6-v2`,
+İngilizce eğitilmiş), bu embedding modeli (`nomic-embed-text`) ve bu
+golden set için doğrulanmış bir bulgu.
+
+**Kod davranışı DEĞİŞMEDİ** — bu bir araştırma sprint'i, `app/`
+altında hiçbir dosya değiştirilmedi. Sadece yeni bir fixture
+(`tests/fixtures/golden_set_en.json`) eklendi, README ve PLANNING.md
+güncellendi.
+
 ## Sprint 18 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
