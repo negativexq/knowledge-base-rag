@@ -5,8 +5,9 @@ from app.api.chat import ChatDependencies
 from app.connectors.base import Connector
 from app.connectors.filesystem import LocalFilesystemConnector
 from app.connectors.notion import NotionConnector
-from app.ingestion.ingest import SEARCH_DOCUMENT_PREFIX
+from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.ingestion.qdrant_store import QdrantStore
+from app.llm.embedding_models import active_embedding_config
 from app.llm.generate import stream_answer
 from app.llm.ollama_client import OllamaClient
 from app.llm.provider import (
@@ -16,6 +17,9 @@ from app.llm.provider import (
     get_chat_provider,
 )
 from app.main import create_app
+from app.migration.aliasing import resolve_active_collection_name
+from app.migration.readiness import check_readiness
+from app.migration.startup_guard import ensure_embedding_schema_match
 from app.registry.store import DocumentRegistry
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.hybrid_search import SearchResult
@@ -49,6 +53,7 @@ def build_chat_dependencies(
     qdrant_client: QdrantClient,
     ollama: OllamaClient,
     sparse_encoder: SparseEncoder,
+    collection_name: str,
 ) -> tuple[ChatDependencies, ChatProvider]:
     """Curries real search()/stream_answer() calls into the two plain
     async callables ChatDependencies expects — the same shape
@@ -64,6 +69,7 @@ def build_chat_dependencies(
     """
     reranker = CrossEncoderReranker()
     chat_provider = get_chat_provider(settings)
+    embed_config = active_embedding_config(settings)
 
     async def search_fn(question: str) -> list[SearchResult]:
         return await search(
@@ -71,9 +77,11 @@ def build_chat_dependencies(
             ollama,
             sparse_encoder,
             qdrant_client,
-            settings.qdrant_collection_name,
+            collection_name,
             default_embed_model(settings),
             reranker=reranker,
+            query_prefix=embed_config.query_prefix(),
+            dimensions=embed_config.output_dimension,
         )
 
     def stream_fn(question: str, chunks: list[SearchResult]):
@@ -99,7 +107,27 @@ def build_app(settings: Settings) -> FastAPI:
 
     ollama = OllamaClient(base_url=settings.ollama_base_url)
     qdrant_client = QdrantClient(url=settings.qdrant_url)
-    store = QdrantStore(client=qdrant_client, collection_name=settings.qdrant_collection_name)
+
+    # Sprint 22: fail fast if the configured embedding dimension doesn't
+    # match whatever's actually in the active collection/alias — a stale
+    # .env after a partial/aborted migration must never silently serve
+    # dimension-mismatched traffic. See app/migration/startup_guard.py.
+    ensure_embedding_schema_match(qdrant_client, settings)
+
+    # Resolves to settings.qdrant_active_alias ("kb_active") once a
+    # migration has activated at least once, or falls back to the
+    # literal settings.qdrant_collection_name otherwise — see
+    # app/migration/aliasing.py::resolve_active_collection_name. Every
+    # call site below (store, embed_fn, chat search_fn) uses this SAME
+    # resolved name, so serving is consistently pointed at one physical
+    # collection for this process's lifetime.
+    collection_name = resolve_active_collection_name(qdrant_client, settings)
+    embed_config = active_embedding_config(settings)
+    store = QdrantStore(
+        client=qdrant_client,
+        collection_name=collection_name,
+        dense_dimension=embed_config.dimension,
+    )
     registry = DocumentRegistry(settings.registry_db_path)
     # Fail fast if this registry's index predates the current point-ID
     # schema (Sprint 17.1) — refuse to start on a possibly-corrupt index
@@ -112,7 +140,10 @@ def build_app(settings: Settings) -> FastAPI:
 
     async def embed_fn(text: str) -> list[float]:
         return await ollama.embed(
-            text, model=settings.ollama_embed_model, prefix=SEARCH_DOCUMENT_PREFIX
+            text,
+            model=embed_config.ollama_model,
+            prefix=embed_config.document_prefix(),
+            dimensions=embed_config.output_dimension,
         )
 
     manager = SyncManager(
@@ -123,11 +154,15 @@ def build_app(settings: Settings) -> FastAPI:
         embed_fn=embed_fn,
         sparse_encoder=sparse_encoder,
         embedding_concurrency=settings.embedding_concurrency,
+        pipeline_fingerprint=build_pipeline_fingerprint(embed_config),
     )
     chat_deps, chat_provider = build_chat_dependencies(
-        settings, qdrant_client, ollama, sparse_encoder
+        settings, qdrant_client, ollama, sparse_encoder, collection_name
     )
     scheduler = SyncScheduler(manager, sync_intervals_from_settings(settings))
+
+    async def readiness_check() -> dict:
+        return await check_readiness(qdrant_client, ollama, settings)
 
     # Long-lived HTTP clients (Ollama x2 — embedding and chat are separate
     # instances — Notion, when configured — and Qdrant) all need closing
@@ -153,4 +188,5 @@ def build_app(settings: Settings) -> FastAPI:
         list_ollama_models=ollama.list_models,
         scheduler=scheduler,
         on_shutdown=on_shutdown,
+        readiness_check=readiness_check,
     )

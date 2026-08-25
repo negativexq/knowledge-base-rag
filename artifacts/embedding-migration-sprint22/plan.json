@@ -1,0 +1,17 @@
+{
+  "no_migration_required": false,
+  "source": {
+    "model": "nomic-embed-text",
+    "dimension": 768,
+    "fingerprint": "0ddc5346c789ca02",
+    "collection": "kb_chunks"
+  },
+  "target": {
+    "model": "qwen3-embedding:4b",
+    "dimension": 1024,
+    "fingerprint": "8ea8f97e028fc4e1",
+    "collection": "kb_qwen3_4b_1024_8ea8f97e"
+  },
+  "expected_document_count": 4,
+  "expected_chunk_count": 51
+}

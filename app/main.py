@@ -36,6 +36,7 @@ def create_app(
     list_ollama_models: ListModelsFn | None = None,
     scheduler: SchedulerProtocol | None = None,
     on_shutdown: list[Callable[[], Awaitable[None]]] | None = None,
+    readiness_check: Callable[[], Awaitable[dict]] | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -87,6 +88,7 @@ def create_app(
     app.state.registry = registry
     app.state.chat_deps = chat_deps
     app.state.list_ollama_models = list_ollama_models
+    app.state.readiness_check = readiness_check
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)

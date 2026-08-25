@@ -43,8 +43,19 @@ def test_default_chat_model_is_claude_model_for_claude_provider():
     assert default_chat_model(settings) == "claude-haiku-4-5-20251001"
 
 
-def test_default_embed_model_is_always_ollama_embed_model():
-    settings = Settings(generation_provider="claude", ollama_embed_model="nomic-embed-text")
+def test_default_embed_model_follows_the_active_embedding_model_key():
+    # Sprint 22: default_embed_model no longer reads ollama_embed_model
+    # directly — it resolves through active_embedding_config(), whose
+    # single source of truth is embedding_model_key/
+    # embedding_output_dimension. Production default is now qwen3-4b
+    # (docs/PLANNING.md Sprint 21/22 closing notes).
+    settings = Settings(generation_provider="claude")
+
+    assert default_embed_model(settings) == settings.qwen3_embed_model
+
+
+def test_default_embed_model_switches_when_embedding_model_key_is_nomic():
+    settings = Settings(embedding_model_key="nomic", ollama_embed_model="nomic-embed-text")
 
     assert default_embed_model(settings) == "nomic-embed-text"
 

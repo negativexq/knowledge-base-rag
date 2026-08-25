@@ -107,3 +107,44 @@ def test_notion_sync_interval_negative_is_rejected_at_startup(monkeypatch):
 
     with pytest.raises(Exception):
         Settings()
+
+
+# --------------------------------- Sprint 22: production embedding default
+
+
+def test_embedding_model_key_defaults_to_qwen3_4b():
+    """Sprint 22: the migration this default represents is executed via
+    app/migration — a matching real Qdrant collection must exist and be
+    activated for this to actually serve traffic; see
+    app/migration/startup_guard.py's fail-fast guard.
+    """
+    assert Settings().embedding_model_key == "qwen3-4b"
+
+
+def test_embedding_output_dimension_defaults_to_1024():
+    assert Settings().embedding_output_dimension == 1024
+
+
+def test_embedding_model_key_overridable_via_env(monkeypatch):
+    monkeypatch.setenv("EMBEDDING_MODEL_KEY", "nomic")
+
+    assert Settings().embedding_model_key == "nomic"
+
+
+def test_embedding_model_key_rejects_unknown_value(monkeypatch):
+    import pytest
+
+    monkeypatch.setenv("EMBEDDING_MODEL_KEY", "made-up-model")
+
+    with pytest.raises(Exception):
+        Settings()
+
+
+def test_qdrant_active_alias_defaults_to_kb_active():
+    assert Settings().qdrant_active_alias == "kb_active"
+
+
+def test_qdrant_active_alias_overridable_via_env(monkeypatch):
+    monkeypatch.setenv("QDRANT_ACTIVE_ALIAS", "kb_prod")
+
+    assert Settings().qdrant_active_alias == "kb_prod"

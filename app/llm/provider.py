@@ -37,7 +37,9 @@ def default_chat_model(settings: Settings) -> str:
 
 
 def default_embed_model(settings: Settings) -> str:
-    return settings.ollama_embed_model
+    from app.llm.embedding_models import active_embedding_config
+
+    return active_embedding_config(settings).ollama_model
 
 
 def get_chat_provider(settings: Settings) -> ChatProvider:

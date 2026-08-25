@@ -26,6 +26,12 @@ class PipelineFingerprint:
     query_instruction: str
     document_instruction: str
     index_schema_version: int
+    # Sprint 22: defaulted (not required) so every existing direct
+    # PipelineFingerprint(...) construction in tests/benchmark scripts
+    # keeps working unchanged. A future non-Ollama backend would produce
+    # a genuinely different vector space even with an identical model
+    # name, so this is a real fingerprint dimension, not decoration.
+    embedding_backend: str = "ollama"
 
     def canonical(self) -> str:
         # sort_keys=True is what makes this deterministic across
@@ -46,4 +52,5 @@ def build_pipeline_fingerprint(embedding_config: EmbeddingModelConfig) -> Pipeli
         query_instruction=embedding_config.query_prefix(),
         document_instruction=embedding_config.document_prefix(),
         index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
+        embedding_backend=embedding_config.backend,
     )

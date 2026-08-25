@@ -1,0 +1,45 @@
+{
+  "migration_id": "mig-6963176864ba",
+  "started_at": "2026-08-25T21:49:30.510764+00:00",
+  "source_collection": "kb_chunks",
+  "source_fingerprint": "0ddc5346c789ca02",
+  "target_collection": "kb_qwen3_4b_1024_8ea8f97e",
+  "target_fingerprint": "8ea8f97e028fc4e1",
+  "target_model": "qwen3-embedding:4b",
+  "target_dimension": 1024,
+  "expected_document_count": 4,
+  "expected_chunk_count": 51,
+  "status": "ACTIVE",
+  "documents_completed": 4,
+  "chunks_completed": 51,
+  "updated_at": "2026-08-25T21:53:07.284647+00:00",
+  "finished_at": null,
+  "error": null,
+  "validation": {
+    "structural": {
+      "passed": true,
+      "findings": [],
+      "document_count": 4,
+      "chunk_count": 51,
+      "dense_dimension": 1024,
+      "duplicate_points": 0
+    },
+    "quality_gate": {
+      "passed": true,
+      "cross_recall_at_5": 0.962962962962963,
+      "cross_mrr": 0.736679012345679,
+      "mono_recall_at_5": 1.0,
+      "ndcg_at_5": 0.8380146846566922,
+      "baseline_cross_recall_at_5": 0.962962962962963,
+      "baseline_cross_mrr": 0.7335925925925926,
+      "baseline_mono_recall_at_5": null,
+      "tolerance": 0.03,
+      "question_count": 220,
+      "dataset_fingerprint": "55e857db9c7b9ad1ccb4ca2ee3286498abc818f100cebd24bb94d38e39942691",
+      "failure_reasons": []
+    }
+  },
+  "activated_at": "2026-08-25T21:53:07.284619+00:00",
+  "rolled_back_at": null,
+  "notes": []
+}

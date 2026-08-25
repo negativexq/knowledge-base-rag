@@ -1,0 +1,7 @@
+{
+  "query_embed_p50_ms": 258.12812498770654,
+  "query_embed_p95_ms": 265.1311660883948,
+  "retrieval_p50_ms": 133.72991606593132,
+  "retrieval_p95_ms": 138.60087504144758,
+  "sample_count": 20
+}

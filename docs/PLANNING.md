@@ -2665,7 +2665,138 @@ TÜM Sprint 18-20 testleri hâlâ yeşil.
 `nomic-embed-text`. `ADOPT_QWEN3_4B_1024` bir ÖNERİ, uygulanmış bir
 değişiklik değil — gerçek migration ayrı bir Sprint 22/PR kararı.
 
-## Sprint 22 (stretch) — İkinci Connector (Confluence)
+## Sprint 22 — Qwen3-4B@1024 Production Embedding Migration
+
+Sprint 21 kapandığında `PRODUCTION DECISION = ADOPT_QWEN3_4B_1024` bir
+ÖNERİYDİ, uygulanmış bir değişiklik değildi. Bu sprintin amacı model
+benchmark etmek değil — bu kararı downtime ve silent index corruption
+riski yaratmadan, doğrulanabilir ve rollback edilebilir bir gerçek Qdrant
+index lifecycle operasyonuna dönüştürmek.
+
+**Mimari — blue/green via Qdrant alias:**
+
+```
+                    +-- kb_chunks (nomic@768, mevcut)
+kb_active (alias) --|
+                    +-- kb_qwen3_4b_1024_<fingerprint> (yeni)
+```
+
+Qdrant, bir alias'ı arama/upsert/delete için gerçek bir collection ismi
+gibi ele alır — `app/ingestion`/`app/retrieval` içinde HİÇBİR kod
+değişikliği gerekmedi. `app/migration/aliasing.py::resolve_active_collection_name`
+alias yoksa (migration hiç çalışmamışsa) `settings.qdrant_collection_name`'e
+fallback eder — migrate edilmemiş bir deployment tamamen etkilenmez.
+
+**Yeni modül: `app/migration/`** — `naming.py` (deterministic collection
+isimlendirme: `kb_<model>_<dimension>_<fingerprint-prefix>`),
+`aliasing.py` (atomic alias switch, tek `update_collection_aliases`
+çağrısında delete+create), `models.py` (`MigrationManifest`,
+8 durumlu `MigrationStatus` state machine — basit typed enum, framework
+yok), `embedding_migration.py` (plan/index/validate/activate/rollback/
+status/cleanup-old motoru), `quality_gate.py` (Sprint 21'in frozen
+220-soruluk golden set'ini reuse eden retrieval quality gate + hızlı
+smoke check), `readiness.py`, `startup_guard.py`.
+
+**Kritik tasarım kararı — izole registry:** İndeksleme, DEĞİŞTİRİLMEMİŞ
+`ingest_connector`'ı kullanıyor ama production registry.db yerine
+migration_id başına izole bir SQLite dosyasına yazıyor. Sebep: production
+registry'yi kullansaydı, henüz doğrulanmamış/aktive edilmemiş target
+collection için yapılan indeksleme, production'ın registry satırlarındaki
+`pipeline_fingerprint`'i erkenden değiştirirdi — production hâlâ ESKİ
+collection'ı serve ederken registry YENİ fingerprint'i "sağlıklı" sanardı.
+İzole registry, aynı zamanda ingest_connector'ın var olan incremental-sync
+semantics'inden BEDAVA idempotency/resume sağlıyor: yarıda kesilen bir
+migration'ı tekrar çalıştırmak sadece eksik kalan dokümanları tamamlıyor.
+
+**Yeni CLI: `python -m scripts.migrate_embedding_index {plan,migrate,validate,activate,rollback,status,cleanup-old}`**
+— tam operatör kılavuzu `docs/embedding-migration.md`.
+
+**Gerçek local migration çalıştırıldı** (Docker Qdrant + native Ollama,
+Sprint 18-21'in nimbus fixture corpus'u "mevcut production" olarak
+seed edilerek):
+
+- Re-index: 4 doküman, 51 chunk, ~23.5s (gerçek qwen3-embedding:4b)
+- Structural validation: `passed=true`, `duplicate_points=0`
+- Quality gate (frozen 220 soru): Cross Recall@5=0.9630 (Sprint 21
+  baseline: 0.9630), Cross MRR=0.7367 (baseline: 0.7336) — tolerance
+  0.03 içinde, `passed=true`
+- Activation: `kb_active` atomic olarak `kb_chunks` → `kb_qwen3_4b_1024_8ea8f97e`
+  yönlendirildi, post-switch smoke (16 soru) geçti
+- Incremental sync doğrulaması: migration sonrası eklenen yeni doküman,
+  `kb_active` alias'ı üzerinden gerçek 1024-boyutlu qwen3-4b vektörleriyle
+  indekslendi; eski `kb_chunks` 51 point'te değişmeden kaldı
+- **Rollback drill gerçek yapıldı:** qwen aktifken `rollback` → nomic
+  aktif oldu, `kb_active` üzerinden gerçek bir arama ("How do I install
+  the CLI?") doğru sonuçlar döndürdü → `rollback` tekrar çalıştırıldı
+  (simetrik swap) → qwen3-4b tekrar aktif. Her iki collection da
+  process boyunca hiç silinmedi.
+
+**Gerçek bir bug bulundu ve düzeltildi (smoke sırasında):** CLI'nin
+`WORK_DIR` (izole registry dosyalarının tutulduğu dizin) ilk çalıştırmada
+henüz yoktu — `migrate` komutu `sqlite3.OperationalError: unable to open
+database file` ile patladı. Fix: `cmd_migrate` artık indekslemeden önce
+`WORK_DIR.mkdir(parents=True, exist_ok=True)` çağırıyor.
+
+**Config artık tek doğruluk kaynağı:** `EMBEDDING_MODEL_KEY` +
+`EMBEDDING_OUTPUT_DIMENSION` (yeni) — `app/llm/embedding_models.py::active_embedding_config`
+her yerde bunları kullanıyor (`app/wiring.py`'nin embed_fn/search_fn'i,
+`default_embed_model`). Production default artık `qwen3-4b`/1024.
+`app/migration/startup_guard.py` configured dimension ile active
+collection'ın gerçek dimension'ı uyuşmazsa uygulamayı fail-fast durduruyor
+— silent 768-vs-1024 schema mismatch imkansız.
+
+**Sprint 22 son düzeltme — SyncManager production sync fingerprint
+enforcement:** Rapor ilk yazıldığında bilinen bir limitasyon olarak not
+düşülmüştü: `SyncManager` production `ingest_connector()` çağrılarına
+`pipeline_fingerprint` geçirmiyordu (Sprint 18'den beri aynı) — yani
+content_hash'i değişmemiş ama registry satırı ESKİ (migration öncesi)
+fingerprint'i taşıyan bir doküman, sonsuza kadar "sağlıklı" sanılabilirdi.
+Bu, aynı sprint kapanmadan düzeltildi: `app/wiring.py::build_app()` artık
+migration'ın kendisinin kullandığı AYNI tek doğruluk kaynağından
+(`active_embedding_config(settings)`) bir `PipelineFingerprint` inşa edip
+`SyncManager`'a geçiriyor; `SyncManager` da bunu her
+`ingest_connector()` çağrısına iletiyor (`app/sync/manager.py`).
+
+Gerçek doğrulama, doğrudan `ingest_connector` çağırarak DEĞİL, gerçek
+`/sync/filesystem` endpoint'i üzerinden yapıldı: migration sonrası ilk
+sync `files_processed=6, chunks_upserted=53` — registry'de hâlâ eski
+(nomic) fingerprint taşıyan her doküman aktif qwen3-4b@1024 pipeline'ı
+altında yeniden embed edildi. Hemen ardından ikinci sync
+`files_processed=0, files_skipped=6` — steady state doğrulandı, sonsuz
+re-embed döngüsü yok. Her registry satırının `pipeline_fingerprint`'i
+artık aktif fingerprint digest'ine (`8ea8f97e028fc4e1`) eşit; `kb_active`
+içindeki her point 1024 boyutlu; eski `kb_chunks` (nomic) point count'u
+(51) boyunca değişmedi. 5 yeni test
+(`tests/test_sync_manager_pipeline_fingerprint.py`) — tamamı
+`SyncManager.trigger_sync()` üzerinden (doğrudan `ingest_connector`
+çağırmadan): yeni doküman, değişen doküman, unchanged+matching
+fingerprint (skip), unchanged+stale fingerprint (re-index), ve
+mixed-dimension-vector imkansızlığı.
+
+**Kalan bilinen limitasyonlar** (`docs/embedding-migration.md`'de
+detaylı): Sprint 21'in `stability.json`'ı mono-lingual Recall@5'i mutlak
+değer olarak config başına tutmuyor (sadece iki config arası delta) —
+quality gate bu karşılaştırmayı uydurmak yerine atlıyor.
+Failure-injection senaryoları (gerçek Ollama/Qdrant kesintisi) hermetic
+testlerle kapatıldı, gerçek ortamda tekrarlanmadı.
+
+**Testler:** ~115 yeni test (`tests/test_migration_*.py`,
+`tests/test_embedding_migration.py`, `tests/test_quality_gate.py`,
+`tests/test_readiness.py`, `tests/test_startup_guard.py`,
+`tests/test_sync_manager_pipeline_fingerprint.py`, + config/
+fingerprint/provider/health testlerine ekler) — tamamı `:memory:` Qdrant
+ve fake Ollama ile hermetic. `ruff check app tests scripts` temiz, tüm
+mevcut suite yeşil.
+
+**Production default DEĞİŞTİ:** `qwen3-4b@1024` artık gerçek production
+default'u — ama bu bir kod-satırı değişikliği değil, doğrulanmış bir
+migration sonucu. Rollback her zaman mümkün (`kb_chunks` silinmedi).
+
+**Sıradaki mantıklı iş:** `cleanup-old` ile eski `kb_chunks` collection'ının
+temizlenmesi (ayrı, insan onaylı bir işlem) ve Sprint 22 (stretch)'te
+ertelenen Confluence connector'ı.
+
+## Sprint 23 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

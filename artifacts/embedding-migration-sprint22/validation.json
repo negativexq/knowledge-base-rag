@@ -1,0 +1,24 @@
+{
+  "structural": {
+    "passed": true,
+    "findings": [],
+    "document_count": 4,
+    "chunk_count": 51,
+    "dense_dimension": 1024,
+    "duplicate_points": 0
+  },
+  "quality_gate": {
+    "passed": true,
+    "cross_recall_at_5": 0.962962962962963,
+    "cross_mrr": 0.736679012345679,
+    "mono_recall_at_5": 1.0,
+    "ndcg_at_5": 0.8380146846566922,
+    "baseline_cross_recall_at_5": 0.962962962962963,
+    "baseline_cross_mrr": 0.7335925925925926,
+    "baseline_mono_recall_at_5": null,
+    "tolerance": 0.03,
+    "question_count": 220,
+    "dataset_fingerprint": "55e857db9c7b9ad1ccb4ca2ee3286498abc818f100cebd24bb94d38e39942691",
+    "failure_reasons": []
+  }
+}

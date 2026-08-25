@@ -108,6 +108,22 @@ def test_same_model_different_output_dimension_produces_different_fingerprint():
     assert native_fp.digest() != truncated_fp.digest()
 
 
+def test_embedding_backend_defaults_to_ollama():
+    fingerprint = _fp()
+
+    assert fingerprint.embedding_backend == "ollama"
+
+
+def test_different_embedding_backend_changes_the_digest():
+    assert _fp(embedding_backend="ollama").digest() != _fp(embedding_backend="vllm").digest()
+
+
+def test_build_pipeline_fingerprint_reads_backend_from_the_embedding_config():
+    fingerprint = build_pipeline_fingerprint(nomic_config(Settings()))
+
+    assert fingerprint.embedding_backend == "ollama"
+
+
 def test_qwen3_0_6b_and_qwen3_4b_at_the_same_dimension_still_differ():
     """Two DIFFERENT models that happen to be configured at the same
     output dimension are not the same pipeline — embedding_model itself

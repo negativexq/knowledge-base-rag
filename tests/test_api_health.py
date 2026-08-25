@@ -12,11 +12,14 @@ class _StubManager:
         return False
 
 
-def _client(tmp_path, list_ollama_models=None) -> TestClient:
+def _client(tmp_path, list_ollama_models=None, readiness_check=None) -> TestClient:
     registry = DocumentRegistry(tmp_path / "registry.db")
     history = SyncHistory(tmp_path / "registry.db")
     return TestClient(
-        create_app(_StubManager(), history, registry, list_ollama_models=list_ollama_models)
+        create_app(
+            _StubManager(), history, registry, list_ollama_models=list_ollama_models,
+            readiness_check=readiness_check,
+        )
     )
 
 
@@ -59,5 +62,36 @@ def test_health_ollama_returns_503_when_not_configured(tmp_path):
     client = _client(tmp_path)
 
     response = client.get("/health/ollama")
+
+    assert response.status_code == 503
+
+
+def test_health_ready_returns_200_when_ready(tmp_path):
+    async def ready():
+        return {"ready": True, "checks": {}}
+
+    client = _client(tmp_path, readiness_check=ready)
+
+    response = client.get("/health/ready")
+
+    assert response.status_code == 200
+    assert response.json()["ready"] is True
+
+
+def test_health_ready_returns_503_when_not_ready(tmp_path):
+    async def not_ready():
+        return {"ready": False, "checks": {"active_collection_exists": False}}
+
+    client = _client(tmp_path, readiness_check=not_ready)
+
+    response = client.get("/health/ready")
+
+    assert response.status_code == 503
+
+
+def test_health_ready_returns_503_when_not_configured(tmp_path):
+    client = _client(tmp_path)
+
+    response = client.get("/health/ready")
 
     assert response.status_code == 503

@@ -152,6 +152,20 @@ def get_embedding_model_config(
     return replace(config, dimension=output_dimension, output_dimension=output_dimension)
 
 
+def active_embedding_config(settings: Settings) -> EmbeddingModelConfig:
+    """The ONE config that actually serves production traffic —
+    settings.embedding_model_key/embedding_output_dimension (Sprint 22)
+    are the single source of truth this resolves against, so every real
+    call site (app/wiring.py's embed_fn/search_fn, app/migration's target
+    config, the startup schema-mismatch guard) reads the same value
+    instead of each hardcoding "nomic" or duplicating model/instruction
+    strings of its own.
+    """
+    return get_embedding_model_config(
+        settings.embedding_model_key, settings, output_dimension=settings.embedding_output_dimension
+    )
+
+
 def parse_config_token(token: str, settings: Settings) -> EmbeddingModelConfig:
     """Parses a "model@dimension" CLI token (e.g. "qwen3-4b@1024",
     "qwen3-0.6b@native", "nomic@native") into a resolved

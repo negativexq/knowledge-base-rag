@@ -50,6 +50,40 @@ class Settings(BaseSettings):
     generation_provider: Literal["ollama", "claude"] = "ollama"
     embedding_provider: Literal["ollama"] = "ollama"
 
+    # Sprint 22: the SINGLE source of truth for which embedding model
+    # actually serves production traffic — every other embedding
+    # attribute (Ollama model name, revision, instruction strings,
+    # backend) is looked up FROM this key via
+    # app/llm/embedding_models.py's existing per-model registry
+    # (nomic_config/qwen3_4b_config/qwen3_0_6b_config), not duplicated
+    # here as parallel raw strings that could drift out of sync with it.
+    # embedding_output_dimension=None means "native" for the selected
+    # model; an int (Sprint 19's Matryoshka truncation) requests that
+    # output size instead — see
+    # app/llm/embedding_models.py::get_embedding_model_config.
+    #
+    # Sprint 18-21 benchmarked nomic-embed-text@768 (the original
+    # production default) against Qwen3-Embedding at several sizes/
+    # dimensions and reached a pre-committed, statistically-supported
+    # ADOPT_QWEN3_4B_1024 decision (docs/PLANNING.md Sprint 21 closing
+    # note). Sprint 22 executes that decision as a real, validated,
+    # rollback-tested Qdrant index migration
+    # (app/migration/embedding_migration.py, docs/embedding-migration.md)
+    # before flipping this default — so changing this value alone is
+    # NEVER sufficient to move production traffic; the physical target
+    # collection must exist, be validated, and be activated first (see
+    # app/main.py's startup schema-mismatch guard).
+    embedding_model_key: Literal["nomic", "qwen3-4b", "qwen3-0.6b"] = "qwen3-4b"
+    embedding_output_dimension: int | None = 1024
+
+    # Sprint 22: the logical Qdrant alias real traffic is served through
+    # once a migration has activated it — see app/migration/aliasing.py.
+    # Before any migration has ever run, this alias doesn't exist yet and
+    # every call site transparently falls back to the literal
+    # qdrant_collection_name below (today's exact pre-Sprint-22
+    # behavior), so a fresh/unmigrated deployment is entirely unaffected.
+    qdrant_active_alias: str = "kb_active"
+
     claude_api_key: str | None = None
     claude_model: str = "claude-haiku-4-5-20251001"
     claude_max_tokens: int = 2048

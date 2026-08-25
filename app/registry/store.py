@@ -330,5 +330,33 @@ class DocumentRegistry:
             "IndexSchemaMismatchError's docstring for why this doesn't happen automatically."
         )
 
+    def get_metadata(self, key: str) -> str | None:
+        """Generic key-value read on the same registry_metadata table
+        get_index_schema_version already uses — Sprint 22 reuses this
+        table (rather than adding a new one) to record which physical
+        Qdrant collection/alias is active, the previous one (rollback
+        target), and the current migration_id, so a process restart can
+        answer "what's active, what's the rollback target, what
+        migration state are we in" without depending on the migration
+        artifact JSON file still being present. See
+        app/migration/embedding_migration.py.
+        """
+        row = self._conn.execute(
+            "SELECT value FROM registry_metadata WHERE key = ?", (key,)
+        ).fetchone()
+        return row[0] if row else None
+
+    def set_metadata(self, key: str, value: str) -> None:
+        with self._conn:
+            self._conn.execute(
+                "INSERT INTO registry_metadata (key, value) VALUES (?, ?) "
+                "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                (key, value),
+            )
+
+    def delete_metadata(self, key: str) -> None:
+        with self._conn:
+            self._conn.execute("DELETE FROM registry_metadata WHERE key = ?", (key,))
+
     def close(self) -> None:
         self._conn.close()

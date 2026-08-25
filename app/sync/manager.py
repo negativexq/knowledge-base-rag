@@ -4,6 +4,7 @@ import logging
 from opentelemetry import trace
 
 from app.connectors.base import Connector
+from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.ingest import (
     DEFAULT_EMBEDDING_CONCURRENCY,
     EmbedFn,
@@ -55,7 +56,26 @@ class SyncManager:
         sparse_encoder: SparseEncoderProtocol,
         tracer: trace.Tracer | None = None,
         embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
+        pipeline_fingerprint: PipelineFingerprint | None = None,
     ):
+        # Sprint 22 patch: pipeline_fingerprint identifies the embedding
+        # model/revision/backend/dimension/instruction/index-schema
+        # combination `embed_fn` and `store` were actually built from —
+        # app/wiring.py builds it via
+        # app/ingestion/fingerprint.py::build_pipeline_fingerprint(
+        # app/llm/embedding_models.py::active_embedding_config(settings)),
+        # the SAME single source of truth the Sprint 22 migration itself
+        # reads. Passed straight through to every ingest_connector() call
+        # below so production sync gets the same content_hash-can't-see-
+        # a-model-swap protection Sprint 18 already gave the benchmark/
+        # migration paths — previously (Sprint 18-21) this was optional
+        # and SyncManager never supplied one, so a content-hash-unchanged
+        # document indexed under an OLD embedding model (e.g. before a
+        # migration activated) could be skipped forever even though its
+        # vectors are stale relative to the NOW-active pipeline. Optional
+        # (defaults to None) purely so existing tests that construct a
+        # SyncManager without one don't need updating — real wiring
+        # always supplies one.
         self._connectors = connectors
         self._store = store
         self._registry = registry
@@ -64,6 +84,7 @@ class SyncManager:
         self._sparse_encoder = sparse_encoder
         self._tracer = tracer or get_tracer(__name__)
         self._embedding_concurrency = embedding_concurrency
+        self._pipeline_fingerprint = pipeline_fingerprint
         self._running: dict[str, bool] = dict.fromkeys(connectors, False)
 
     @property
@@ -122,6 +143,7 @@ class SyncManager:
                     self._sparse_encoder,
                     embedding_concurrency=self._embedding_concurrency,
                     tracer=self._tracer,
+                    pipeline_fingerprint=self._pipeline_fingerprint,
                 )
             except asyncio.CancelledError:
                 # Sprint 17: CancelledError is a BaseException, not an

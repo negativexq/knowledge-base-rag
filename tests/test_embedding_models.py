@@ -1,6 +1,7 @@
 import pytest
 
 from app.llm.embedding_models import (
+    active_embedding_config,
     get_embedding_model_config,
     nomic_config,
     parse_config_token,
@@ -150,3 +151,37 @@ def test_parse_config_token_with_dimension():
 def test_parse_config_token_rejects_unknown_model():
     with pytest.raises(ValueError, match="Unknown embedding model key"):
         parse_config_token("not-a-real-model@1024", Settings())
+
+
+# ------------------------------------------------- Sprint 22: active config
+
+
+def test_active_embedding_config_follows_embedding_model_key():
+    settings = Settings(embedding_model_key="qwen3-4b", embedding_output_dimension=1024)
+
+    config = active_embedding_config(settings)
+
+    assert config.key == "qwen3-4b"
+    assert config.dimension == 1024
+
+
+def test_active_embedding_config_switches_to_nomic(monkeypatch):
+    settings = Settings(embedding_model_key="nomic", embedding_output_dimension=None)
+
+    config = active_embedding_config(settings)
+
+    assert config.key == "nomic"
+    assert config.label() == "nomic@native"
+
+
+def test_active_embedding_config_is_a_single_source_of_truth_not_duplicated_strings():
+    """The whole point of embedding_model_key/embedding_output_dimension:
+    changing them alone changes every derived attribute (model name,
+    instruction, dimension) with no other setting to keep in sync.
+    """
+    settings = Settings(embedding_model_key="qwen3-0.6b", embedding_output_dimension=768)
+
+    config = active_embedding_config(settings)
+
+    assert config.ollama_model == settings.qwen3_0_6b_embed_model
+    assert config.dimension == 768

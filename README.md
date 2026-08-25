@@ -206,7 +206,7 @@ verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
 | Connectors | `LocalFilesystemConnector` (PDF/Markdown); `NotionConnector` (Notion API, 429 retry/backoff) | Shared async `Connector` Protocol (Sprint 3, generalized to async in Sprint 6) |
 | Sync | Hand-rolled `asyncio` loop (`SyncScheduler`) + per-connector concurrency guard | APScheduler/Celery deliberately rejected — no cron expressions or job persistence needed (Sprint 7); re-index is zero-downtime with deferred cleanup, not atomic (Sprint 13); embedding calls run with bounded concurrency, default 4, picked from a real benchmark that found a throughput plateau past that point — see [Sync](#sync) (Sprint 14) |
 | Provider abstraction | `ChatProvider`/`EmbeddingProvider` Protocols — Ollama (native) + Claude (Anthropic API) | Claude has no embedding endpoint, so embedding always stays on Ollama regardless of chat provider (Sprint 1) |
-| Embedding | Ollama, `nomic-embed-text` | 768-dim, cosine distance; `search_document:`/`search_query:` task prefixes required for quality |
+| Embedding | Ollama, `Qwen3-Embedding-4B` truncated to 1024 dims (Sprint 22, migrated from `nomic-embed-text`@768) | Matryoshka-truncated dense output, cosine distance, + BM25 sparse + native RRF fusion; selected via a full benchmark provenance chain — nomic baseline → multilingual benchmark → size/dimension benchmark → stability/non-inferiority evaluation → real, rollback-tested Qdrant index migration (Sprints 18-22, see below); config is a single source of truth (`EMBEDDING_MODEL_KEY`/`EMBEDDING_OUTPUT_DIMENSION`), not scattered hardcoded strings |
 | Generation | Ollama `qwen2.5:7b-instruct` (default) or Claude | Model is a config value, not hardcoded |
 | Vector DB | Qdrant | Dense + sparse (BM25 via FastEmbed `Qdrant/bm25`) hybrid search with native RRF fusion |
 | Reranking | `sentence-transformers` CrossEncoder, `ms-marco-MiniLM-L-6-v2` | Candidate k=20 → top n=5 (Sprint 5) |
@@ -226,7 +226,7 @@ container.
 
 ```bash
 ollama pull qwen2.5:7b-instruct
-ollama pull nomic-embed-text
+ollama pull qwen3-embedding:4b   # production embedding default since Sprint 22
 docker compose up -d --build   # Qdrant + Jaeger + backend
 ```
 
@@ -448,7 +448,7 @@ python3.12 -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt
 docker compose up -d qdrant jaeger   # just the two stateless services
 ollama pull qwen2.5:7b-instruct
-ollama pull nomic-embed-text
+ollama pull qwen3-embedding:4b   # production embedding default since Sprint 22
 make dev   # real backend on the host: uvicorn app.server:app --reload
 ```
 
@@ -642,6 +642,23 @@ check of the code/tests where noted.
   decision, not a migration; see
   `artifacts/embedding-benchmark-sprint21/{report.md,non_inferiority.json,stability.json}`
   and `docs/PLANNING.md`'s Sprint 21 closing note for the full numbers.
+- **Sprint 22 executed the Sprint 21 decision as a real, validated,
+  rollback-tested Qdrant index migration** — a config-only edit was
+  explicitly rejected as insufficient (`app/migration/startup_guard.py`
+  fail-fast checks for exactly that scenario). Architecture is blue/green
+  via a Qdrant alias (`kb_active`): the old `nomic-embed-text` collection
+  kept serving throughout indexing of an isolated new
+  `qwen3-embedding:4b`@1024 collection, a full 220-question quality gate
+  ran against the new collection before activation, the alias switch
+  itself is one atomic `update_collection_aliases` call with a
+  post-switch smoke check, and a real rollback drill (qwen active →
+  rollback → nomic active, verified with a real search → rollback again
+  → qwen active) was run against Docker Qdrant + native Ollama, not just
+  designed. Neither collection was ever deleted. New CLI:
+  `python -m scripts.migrate_embedding_index {plan,migrate,validate,activate,rollback,status,cleanup-old}`
+  — see `docs/embedding-migration.md` for the full operator guide and
+  `docs/PLANNING.md`'s Sprint 22 closing note for the real run's numbers.
+  `Qwen3-Embedding-4B`@1024 is now the actual production default.
 - **The root cause of PDF's weaker retrieval within mono-lingual pairs**
   (PDF+English recall 0.857 vs. Markdown+Turkish recall 1.000 — page-level
   chunk granularity vs. Markdown's heading-scoped blocks giving the
