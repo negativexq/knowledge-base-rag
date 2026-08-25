@@ -2523,7 +2523,149 @@ regresyon testleri hâlâ yeşil), `ruff check app tests scripts` temiz.
 **Production default DEĞİŞMEDİ** — `settings.ollama_embed_model` hâlâ
 `nomic-embed-text`. Migration ayrı bir sprint/PR kararı.
 
-## Sprint 21 (stretch) — İkinci Connector (Confluence)
+## Sprint 21 — Embedding Non-Inferiority & Stability Decision
+
+Amaç: Sprint 20 `NEED_MORE_DATA` ile bitmişti. Bu sprint YENİ bir model
+eklemeden, dataset'i körlemesine büyütmeden — ölçüm gürültüsünü
+(embedding backend'in kendi nondeterminizmi) gerçek retrieval
+instability'den ayırıp, `qwen3-0.6b@768` için pre-committed bir
+non-inferiority kararı verdi. Bkz. docs/sprint-21-plan.md.
+
+Scope:
+
+1. Sadece 2 configuration: `qwen3-0.6b@768`, `qwen3-4b@1024` (nomic
+   sadece Sprint 20'den tarihsel referans)
+2. Mevcut 220 soruluk golden set donduruldu, dataset/corpus fingerprint
+   üretildi
+3. 10 bağımsız live quality run per configuration (query-only, corpus
+   bir kez indexlendi)
+4. Embedding nondeterminism ölçümü (50 soru x 10 tekrar) — bit-level
+   fark ile ranking etkisi AYRI raporlandı
+5. Frozen embedding cache + retrieval determinism check — GERÇEK bir
+   RRF tie-breaking bug'ı bulundu ve düzeltildi
+6. Pre-committed non-inferiority testi (paired bootstrap, ≥10.000
+   iterasyon, doğru yönlü CI yorumu)
+7. Power analysis (approximate, açıkça belirtilmiş)
+8. Üç verdict: QUALITY WINNER, EFFICIENCY WINNER, PRODUCTION WINNER
+
+DoD: 220 soru, 2 configuration, 10 bağımsız run, gerçek non-inferiority
+kararı; production default değişmedi.
+
+### Kapanış notu
+
+**1. Dataset/corpus fingerprint gerçekten üretildi ve her artifact'e
+yazıldı.** `app/evaluation/dataset_fingerprint.py` — golden set'in
+(id/query/dil/expected_location/difficulty, id'ye göre sıralı,
+`sort_keys=True` ile JSON-serialize edilmiş) ve 4 fixture dokümanın
+(PDF için gerçek kaynak metni, PAGES) SHA-256 hash'i. Bu sprint
+koşumu: dataset fingerprint `55e857db9c7b9ad1...`, corpus fingerprint
+`42b21bb06bb3688...` — Sprint 20'nin AYNI 220 soruluk dosyasından
+(dosya değiştirilmedi, testle kanıtlandı: `test_golden_v2_has_at_least_
+200_questions` ve golden_set_v2_integrity testleri hâlâ yeşil).
+
+**2. GERÇEK bir RRF tie-breaking bug'ı bulundu ve düzeltildi —
+"gerçek tie varsa düzelt" kuralının somut uygulanışı.** İlk gerçek
+koşumda (küçük ölçekli smoke test) retrieval determinism check 208
+sorunun 26'sında "unstable" çıktı — GERÇEKTEN araştırıldı: aynı frozen
+(cache'lenmiş, hiç embedding çağrısı yapılmayan) vektörle art arda 6
+`hybrid_search` çağrısı yapıldı, SKORLAR birebir aynıydı (0.833333,
+0.5, 0.5, 0.5, 0.2625) ama üç sonuç TAM OLARAK aynı skorda (0.5)
+tie oluyordu ve bu üçünün SIRASI çağrıdan çağrıya DEĞİŞİYORDU — Qdrant'ın
+RRF fusion'ı eşit skorlu sonuçlar arasında stabil bir sıra
+GARANTİLEMİYOR. Kök neden GERÇEKTEN doğrulandı (varsayılmadı). Fix:
+`app/retrieval/hybrid_search.py::stable_order()` — Qdrant'tan dönen
+sonuçlar `(-score, point_id)` ile yeniden sıralanıyor; `point_id`
+zaten deterministic (chunk içeriğinden uuid5), bu yüzden tie-break
+DETERMİNİSTİK ama anlamsız değil (gerçek skor sıralamasını asla
+değiştirmiyor, sadece gerçek eşitlikleri çözüyor).
+`SearchResult`'a geriye dönük uyumlu (varsayılan `""`) bir `id` alanı
+eklendi. Fix ÖNCESİ/SONRASI karşılaştırması: 26/208 unstable → **0/208
+unstable, her iki configuration için de `is_fully_deterministic=True`**
+— gerçek koşumda doğrulandı. Testler: `test_stable_order_breaks_a_
+genuine_score_tie_deterministically`, `test_stable_order_preserves_
+score_ordering_for_genuinely_different_scores` (gerçek skor farkını
+DEĞİŞTİRMEDİĞİNİ kanıtlıyor).
+
+**3. Embedding nondeterminism ile ranking instability GERÇEKTEN
+AYRIŞTIRILDI — ikisi aynı şey değil, sayılarla kanıtlandı.** 50 stratified
+soru x 10 tekrar, gerçek: bit-level fark var (`qwen3-4b@1024` max abs
+delta 8.45e-04, mean cosine similarity 0.999988 — mükemmel değil ama
+neredeyse) AMA bunun ranking'e etkisi neredeyse SIFIR: top1 flip rate
+0.000, recall@5-impacting flip rate 0.000 (her iki configuration için),
+tek gerçek etki `qwen3-4b@1024`'ün top5 SET change rate'i 0.020 (50
+sorudan sadece 1'i). `qwen3-0.6b@768` için TÜM ranking-impact oranları
+0.000. **10 bağımsız live run'ın run-to-run stddev'i de 0.0000** —
+cross-lingual Recall@5/MRR/nDCG@5 agregeleri 10 run boyunca HİÇ
+değişmedi, her iki configuration için de. Bu, dokümantasyonda
+istenen ayrımın somut kanıtı: "floating-point nondeterminism ile
+retrieval-level instability aynı şey değildir" — burada gerçek
+embedding nondeterminizmi VAR ama 220 sorunun AGREGE kalite metriklerine
+ölçülebilir bir etkisi YOK.
+
+**4. Gerçek 10-run, 2-configuration koşumu
+(`artifacts/embedding-benchmark-sprint21/report.md`):**
+
+```
+Config            Cross R@5  Cross MRR  nDCG@5   Query p95(ms)  Index chunks/s
+qwen3-0.6b@768      0.9064     0.6940    0.8001      136.4          12.85
+qwen3-4b@1024       0.9630     0.7336    0.8362      326.5           2.53
+```
+
+**5. Pre-committed non-inferiority sonucu: 0.6B non-inferior DEĞİL.**
+delta konvansiyonu = `4B - 0.6B` (pozitif = 4B daha iyi), non-inferiority
+= CI'nın ÜST sınırı margin'in altında kalıyorsa (en kötümser senaryoda
+bile fark margin'i aşmıyorsa). Paired bootstrap (seed=20210101,
+10.000 iterasyon, %95 CI), per-question metrikler 10 live run'ın
+ORTALAMASI (canonical_per_question_metrics — embedding nondeterminizm
+gürültüsünü per-question sinyalde azaltmak için, hâlâ per-question
+PAIRED):
+
+```
+Metrik              Margin  Gözlenen delta  CI alt   CI üst   Non-inferior?
+cross Recall@5        0.04      0.0577      0.0128   0.1026      HAYIR
+cross MRR              0.04      0.0409      0.0111   0.0726      HAYIR
+mono Recall@5          0.02      0.0192      0.0000   0.0577      HAYIR
+```
+
+Üçünün de CI üst sınırı margin'i AŞIYOR — yani en iyimser senaryoda
+bile 0.6B'nin kaybı tolere edilebilir sınırın üstünde kalabiliyor.
+
+**6. PRODUCTION KARARI: `ADOPT_QWEN3_4B_1024`.** Karar mantığı
+(`app/evaluation/non_inferiority.py::production_decision`, sonuçtan
+ÖNCE kodlandı, testle kanıtlandı): 0.6B non-inferior DEĞİL VE 4B'nin
+avantajı hem istatistiksel olarak güvenilir (CI ALT sınırı 0.0128 > 0,
+yani interval sıfırı hiç içermiyor) HEM DE pratik olarak anlamlı
+(gözlenen fark 0.0577 > 0.04 margin) — bu Sprint 20'nin
+`NEED_MORE_DATA`sından FARKLI, kesin bir sonuç. Sprint 20'nin
+belirsizliği gerçekten çözüldü: daha büyük dataset (220), tekrarlanan
+run'lar (10x) ve gürültü ayrıştırması bir araya gelince net bir
+kazanan ortaya çıktı.
+
+**7. Power analysis (yaklaşık, açıkça belirtilmiş).** Mevcut
+cross-lingual n=156 (canonical, paired). Gözlenen paired stddev=0.2838.
+80% power için tahmini gereken n≈312, 90% için≈432 — ama bu sprintte
+zaten KARARLI bir sonuç elde edildiği için (madde 6) ek veri toplamaya
+gerek YOK; power analysis bilgi amaçlı raporlandı, "daha çok veri her
+zaman iyidir" yaklaşımıyla dataset büyütülmedi.
+
+**8. Sınırlamalar:** Normal-approximation power formülü per-question
+Recall@5'in ikili (binary-ish) doğasını tam yakalamıyor — dürüstçe
+belirtildi. RAM/VRAM yine ölçülmedi. Tek bir fictional domain (Nimbus).
+
+**~110 yeni test** (`app/evaluation/dataset_fingerprint.py` +7,
+`app/evaluation/embedding_cache.py` +11, `app/evaluation/
+non_inferiority.py` +20, `tests/test_hybrid_search.py` +4 (stable_order
+tie-break), `tests/test_benchmark_stability.py` +25 — vector delta
+matematiği, ranking flip mantığı, stratified sampling, canonical
+per-question agregasyon, live/frozen mode dispatch, Sprint 20 dataset
+fingerprint stabilitesi), `ruff check app tests scripts` temiz, mevcut
+TÜM Sprint 18-20 testleri hâlâ yeşil.
+
+**Production default DEĞİŞMEDİ** — `settings.ollama_embed_model` hâlâ
+`nomic-embed-text`. `ADOPT_QWEN3_4B_1024` bir ÖNERİ, uygulanmış bir
+değişiklik değil — gerçek migration ayrı bir Sprint 22/PR kararı.
+
+## Sprint 22 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

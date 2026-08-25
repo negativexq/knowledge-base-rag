@@ -614,6 +614,34 @@ check of the code/tests where noted.
   tracked down rather than hid: the embedding backend itself returns
   slightly different floating-point output (~2.7e-05 max difference)
   for the identical input on repeated calls.
+- **Sprint 21 resolved Sprint 20's NEED_MORE_DATA by separating
+  measurement noise from real quality signal, and it produced a
+  confident, material result: ADOPT_QWEN3_4B_1024.** Same two finalist
+  configs, same frozen 220-question set, but each config's query pass
+  ran 10 independent times (embedding-nondeterminism is real — see
+  above — so 10 replicated aggregate results, not one, is what actually
+  shows whether it matters at the metric level). It didn't: cross-
+  lingual Recall@5/MRR/nDCG@5 had a **run-to-run stddev of 0.0000**
+  across all 10 runs for both configs — genuine bit-level embedding
+  noise (confirmed again, ~1e-4 to 8e-4 max vector delta on 50 sampled
+  queries × 10 repeats) essentially never flipped a ranking outcome
+  that mattered (recall@5-impacting flip rate 0.000 for both configs;
+  top1 flip rate 0.000 for both). A pre-committed paired bootstrap
+  (10,000 iterations, fixed seed) on `qwen3-4b@1024`'s advantage found
+  it both statistically confident (95% CI lower bound 0.013, doesn't
+  touch zero) and practically material (observed cross-lingual
+  Recall@5 gap 0.058, exceeding the 0.04 pre-committed margin) —
+  `qwen3-0.6b@768` is NOT non-inferior. Running the real benchmark also
+  caught and fixed a second real bug: Qdrant's RRF fusion doesn't
+  guarantee a stable order among results tied at the exact same fused
+  score — reproduced directly (identical frozen input, repeated calls,
+  byte-identical scores but shuffled order among 3 tied results) — fixed
+  with a deterministic `(-score, point_id)` secondary sort in
+  `app/retrieval/hybrid_search.py`, with its own regression tests.
+  `nomic-embed-text` remains the actual production default — this is a
+  decision, not a migration; see
+  `artifacts/embedding-benchmark-sprint21/{report.md,non_inferiority.json,stability.json}`
+  and `docs/PLANNING.md`'s Sprint 21 closing note for the full numbers.
 - **The root cause of PDF's weaker retrieval within mono-lingual pairs**
   (PDF+English recall 0.857 vs. Markdown+Turkish recall 1.000 — page-level
   chunk granularity vs. Markdown's heading-scoped blocks giving the

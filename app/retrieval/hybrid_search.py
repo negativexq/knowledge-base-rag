@@ -14,6 +14,26 @@ DEFAULT_PREFETCH_LIMIT = 20
 class SearchResult:
     score: float
     payload: dict
+    # Sprint 21: defaulted for backward compatibility — every existing
+    # SearchResult(score=..., payload=...) call site (production and
+    # tests) keeps working unchanged. Only hybrid_search() populates and
+    # relies on this, as a deterministic tie-break key — see its
+    # docstring below for why this exists.
+    id: str = ""
+
+
+def stable_order(points: list) -> list:
+    """Sorts Qdrant response points by (-score, id) — extracted as a
+    pure function so the tie-break itself is directly unit-testable
+    without needing a real Qdrant server to reproduce a genuine RRF
+    score tie (attempted with :memory: mode; RRF's own rank-based
+    fusion made even identically-scored dense/sparse candidates land on
+    DIFFERENT fused scores there, since a tie requires identical rank
+    in BOTH prefetches simultaneously — awkward to force reliably in a
+    fast local test). `points` just needs `.score` and `.id` attributes
+    — real Qdrant response points satisfy this already.
+    """
+    return sorted(points, key=lambda p: (-p.score, str(p.id)))
 
 
 def dense_only_search(
@@ -65,4 +85,18 @@ def hybrid_search(
         query_filter=filters,
         with_payload=True,
     )
-    return [SearchResult(score=p.score, payload=p.payload) for p in response.points]
+    # Sprint 21: Qdrant's RRF fusion genuinely does NOT guarantee a
+    # stable order among points that land on the EXACT SAME fused
+    # score — reproduced directly against a real server: repeating the
+    # identical query (same frozen dense+sparse vectors) against an
+    # unchanged collection returned scores that were byte-identical
+    # every time, but the ORDER of results tied at the same score
+    # shuffled between calls. Scores themselves are not the problem;
+    # missing tie-breaking is. Point IDs are deterministic (uuid5 of
+    # chunk identity — see QdrantStore.point_id_for), so sorting by
+    # (-score, id) as a secondary key makes the final order fully
+    # deterministic without changing which points are top_k or their
+    # relative order for any GENUINELY different score — this only
+    # resolves real ties, it never reorders non-tied results.
+    points = stable_order(response.points)
+    return [SearchResult(score=p.score, payload=p.payload, id=str(p.id)) for p in points]

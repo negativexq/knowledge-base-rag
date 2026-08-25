@@ -1,0 +1,52 @@
+{
+  "delta_convention": "large (qwen3-4b@1024) - small (qwen3-0.6b@768)",
+  "small_label": "qwen3-0.6b@768",
+  "large_label": "qwen3-4b@1024",
+  "margins": {
+    "cross_recall_at_5": 0.04,
+    "cross_mrr": 0.04,
+    "mono_recall_at_5": 0.02
+  },
+  "results": [
+    {
+      "metric": "recall_at_5",
+      "subset": "cross_lingual",
+      "margin": 0.04,
+      "observed_delta": 0.057692307692307696,
+      "ci_lower": 0.01282051282051282,
+      "ci_upper": 0.10256410256410256,
+      "is_non_inferior": false,
+      "seed": 20210101,
+      "iterations": 10000,
+      "sample_size": 156
+    },
+    {
+      "metric": "mrr",
+      "subset": "cross_lingual",
+      "margin": 0.04,
+      "observed_delta": 0.04091880341880342,
+      "ci_lower": 0.011111111111111112,
+      "ci_upper": 0.07264957264957266,
+      "is_non_inferior": false,
+      "seed": 20210101,
+      "iterations": 10000,
+      "sample_size": 156
+    },
+    {
+      "metric": "recall_at_5",
+      "subset": "mono_lingual",
+      "margin": 0.02,
+      "observed_delta": 0.019230769230769232,
+      "ci_lower": 0.0,
+      "ci_upper": 0.057692307692307696,
+      "is_non_inferior": false,
+      "seed": 20210101,
+      "iterations": 10000,
+      "sample_size": 52
+    }
+  ],
+  "production_decision": {
+    "verdict": "ADOPT_QWEN3_4B_1024",
+    "reason": "qwen3-4b@1024's advantage over qwen3-0.6b@768 on recall_at_5 is both statistically confident (CI lower bound 0.0128 > 0) and practically material (observed delta 0.0577 > 0.04)."
+  }
+}

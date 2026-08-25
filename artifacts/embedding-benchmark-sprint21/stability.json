@@ -1,0 +1,740 @@
+{
+  "embedding_nondeterminism": {
+    "qwen3-0.6b@768": {
+      "config": "qwen3-0.6b@768",
+      "sample_size": 50,
+      "repeats_per_query": 10,
+      "vector_stats": {
+        "max_abs_delta": 0.00016642000000000046,
+        "mean_abs_delta": 1.6937936995618485e-05,
+        "mean_cosine_similarity": 0.9999998212783836
+      },
+      "ranking_impact": {
+        "top1_flip_rate": 0.0,
+        "top3_set_change_rate": 0.0,
+        "top5_set_change_rate": 0.0,
+        "mrr_impacting_flip_rate": 0.0,
+        "recall_at_5_impacting_flip_rate": 0.0
+      },
+      "per_query_vector_stats": [
+        {
+          "id": "api-auth-en-native",
+          "max_abs_delta": 0.00013868000000000213,
+          "mean_abs_delta": 1.64865707447916e-05,
+          "mean_cosine_similarity": 0.9999998207342772
+        },
+        {
+          "id": "api-auth-scopes-en-native",
+          "max_abs_delta": 8.115000000000205e-05,
+          "mean_abs_delta": 1.5424220917968716e-05,
+          "mean_cosine_similarity": 0.9999998506361122
+        },
+        {
+          "id": "api-auth-scopes-tr-acronym_abbreviation",
+          "max_abs_delta": 0.00010052099999999925,
+          "mean_abs_delta": 1.577936606249996e-05,
+          "mean_cosine_similarity": 0.9999998433146265
+        },
+        {
+          "id": "api-auth-scopes-tr-exact_lexical",
+          "max_abs_delta": 0.00011021999999999421,
+          "mean_abs_delta": 1.4989738567708268e-05,
+          "mean_cosine_similarity": 0.9999998586331859
+        },
+        {
+          "id": "api-auth-scopes-tr-terminology_mismatch",
+          "max_abs_delta": 7.260800000000178e-05,
+          "mean_abs_delta": 1.4619621968749778e-05,
+          "mean_cosine_similarity": 0.9999998684197882
+        },
+        {
+          "id": "api-auth-tr-exact_lexical",
+          "max_abs_delta": 8.683300000000144e-05,
+          "mean_abs_delta": 1.6179829579426938e-05,
+          "mean_cosine_similarity": 0.9999998403678146
+        },
+        {
+          "id": "api-auth-tr-semantic_paraphrase",
+          "max_abs_delta": 8.823879999999987e-05,
+          "mean_abs_delta": 1.747924919205727e-05,
+          "mean_cosine_similarity": 0.9999998119291101
+        },
+        {
+          "id": "api-auth-tr-terminology_mismatch",
+          "max_abs_delta": 9.38299999999892e-05,
+          "mean_abs_delta": 1.8234078152343733e-05,
+          "mean_cosine_similarity": 0.9999997948942796
+        },
+        {
+          "id": "api-bulk-ops-en-native",
+          "max_abs_delta": 7.148499999999613e-05,
+          "mean_abs_delta": 1.626783580729176e-05,
+          "mean_cosine_similarity": 0.9999998393854271
+        },
+        {
+          "id": "api-bulk-ops-tr-exact_lexical",
+          "max_abs_delta": 9.20000000000018e-05,
+          "mean_abs_delta": 1.7367946650651238e-05,
+          "mean_cosine_similarity": 0.9999998142608564
+        },
+        {
+          "id": "api-bulk-ops-tr-number_date_lookup",
+          "max_abs_delta": 7.567499999999727e-05,
+          "mean_abs_delta": 1.4740918254947797e-05,
+          "mean_cosine_similarity": 0.9999998646297983
+        },
+        {
+          "id": "api-bulk-ops-tr-semantic_paraphrase",
+          "max_abs_delta": 7.53279999999995e-05,
+          "mean_abs_delta": 1.8572045169270753e-05,
+          "mean_cosine_similarity": 0.9999997908576977
+        },
+        {
+          "id": "api-content-type-en-native",
+          "max_abs_delta": 8.578499999999101e-05,
+          "mean_abs_delta": 1.6628893802734358e-05,
+          "mean_cosine_similarity": 0.9999998311716757
+        },
+        {
+          "id": "api-content-type-tr-exact_lexical",
+          "max_abs_delta": 6.389199999999942e-05,
+          "mean_abs_delta": 1.5230502447526166e-05,
+          "mean_cosine_similarity": 0.9999998596556028
+        },
+        {
+          "id": "api-content-type-tr-hard_negative",
+          "max_abs_delta": 0.0001357346000000004,
+          "mean_abs_delta": 1.7520422209635334e-05,
+          "mean_cosine_similarity": 0.9999998065201705
+        },
+        {
+          "id": "api-content-type-tr-semantic_paraphrase",
+          "max_abs_delta": 0.00010782500000000236,
+          "mean_abs_delta": 1.6421382104557326e-05,
+          "mean_cosine_similarity": 0.9999998293334331
+        },
+        {
+          "id": "api-deprecation-en-native",
+          "max_abs_delta": 7.602599999999987e-05,
+          "mean_abs_delta": 1.5456726731770806e-05,
+          "mean_cosine_similarity": 0.999999849902173
+        },
+        {
+          "id": "api-deprecation-tr-exact_lexical",
+          "max_abs_delta": 7.37950000000015e-05,
+          "mean_abs_delta": 1.676304481601567e-05,
+          "mean_cosine_similarity": 0.9999998300177775
+        },
+        {
+          "id": "api-deprecation-tr-heading_dependent",
+          "max_abs_delta": 8.698000000000039e-05,
+          "mean_abs_delta": 1.7490019163151196e-05,
+          "mean_cosine_similarity": 0.999999814769359
+        },
+        {
+          "id": "api-deprecation-tr-semantic_paraphrase",
+          "max_abs_delta": 0.000101901999999994,
+          "mean_abs_delta": 1.6125500362239678e-05,
+          "mean_cosine_similarity": 0.9999998392175963
+        },
+        {
+          "id": "api-error-codes-en-native",
+          "max_abs_delta": 7.165899999999822e-05,
+          "mean_abs_delta": 1.4619965307291576e-05,
+          "mean_cosine_similarity": 0.9999998687039502
+        },
+        {
+          "id": "api-error-codes-tr-ambiguous_wording",
+          "max_abs_delta": 0.00010328000000000073,
+          "mean_abs_delta": 1.6577230989583313e-05,
+          "mean_cosine_similarity": 0.999999827468947
+        },
+        {
+          "id": "api-error-codes-tr-exact_lexical",
+          "max_abs_delta": 6.99530999999998e-05,
+          "mean_abs_delta": 1.4941658785156267e-05,
+          "mean_cosine_similarity": 0.9999998609192942
+        },
+        {
+          "id": "api-error-codes-tr-terminology_mismatch",
+          "max_abs_delta": 9.224960000000018e-05,
+          "mean_abs_delta": 1.7604459036458336e-05,
+          "mean_cosine_similarity": 0.99999981441858
+        },
+        {
+          "id": "api-health-check-tr-ambiguous_wording",
+          "max_abs_delta": 8.165829999999975e-05,
+          "mean_abs_delta": 1.7906419627604177e-05,
+          "mean_cosine_similarity": 0.9999997996362038
+        },
+        {
+          "id": "api-health-check-tr-exact_lexical",
+          "max_abs_delta": 9.322199999999871e-05,
+          "mean_abs_delta": 1.7181053720052153e-05,
+          "mean_cosine_similarity": 0.9999998224779156
+        },
+        {
+          "id": "audit-log-en-exact_lexical",
+          "max_abs_delta": 0.00011135099999999912,
+          "mean_abs_delta": 1.7020744101562403e-05,
+          "mean_cosine_similarity": 0.9999998189045739
+        },
+        {
+          "id": "audit-log-en-hard_negative",
+          "max_abs_delta": 8.322300000000032e-05,
+          "mean_abs_delta": 1.89353331640625e-05,
+          "mean_cosine_similarity": 0.9999997858374672
+        },
+        {
+          "id": "audit-log-en-semantic_paraphrase",
+          "max_abs_delta": 7.19350000000004e-05,
+          "mean_abs_delta": 1.625830701562503e-05,
+          "mean_cosine_similarity": 0.9999998431190623
+        },
+        {
+          "id": "audit-log-tr-native",
+          "max_abs_delta": 0.00015258899999999812,
+          "mean_abs_delta": 2.0098499543489564e-05,
+          "mean_cosine_similarity": 0.9999997492359944
+        },
+        {
+          "id": "backup-en-exact_lexical",
+          "max_abs_delta": 0.00014166999999999652,
+          "mean_abs_delta": 1.6502489531250127e-05,
+          "mean_cosine_similarity": 0.9999998317676331
+        },
+        {
+          "id": "backup-en-multi_sentence_evidence",
+          "max_abs_delta": 8.971700000000304e-05,
+          "mean_abs_delta": 1.7919691133724082e-05,
+          "mean_cosine_similarity": 0.9999997983113086
+        },
+        {
+          "id": "backup-en-semantic_paraphrase",
+          "max_abs_delta": 0.00016642000000000046,
+          "mean_abs_delta": 1.823655183593744e-05,
+          "mean_cosine_similarity": 0.9999997865528489
+        },
+        {
+          "id": "backup-tr-native",
+          "max_abs_delta": 9.402000000000021e-05,
+          "mean_abs_delta": 1.909782787239601e-05,
+          "mean_cosine_similarity": 0.9999997810358067
+        },
+        {
+          "id": "billing-cycle-en-exact_lexical",
+          "max_abs_delta": 8.350819999999957e-05,
+          "mean_abs_delta": 1.684031754166659e-05,
+          "mean_cosine_similarity": 0.9999998223941979
+        },
+        {
+          "id": "billing-cycle-en-number_date_lookup",
+          "max_abs_delta": 0.00012956999999999552,
+          "mean_abs_delta": 1.6788277505208218e-05,
+          "mean_cosine_similarity": 0.9999998256605644
+        },
+        {
+          "id": "billing-cycle-en-semantic_paraphrase",
+          "max_abs_delta": 7.170899999999966e-05,
+          "mean_abs_delta": 1.787680677083313e-05,
+          "mean_cosine_similarity": 0.999999810157605
+        },
+        {
+          "id": "billing-cycle-tr-native",
+          "max_abs_delta": 9.786400000000132e-05,
+          "mean_abs_delta": 1.9135876966145775e-05,
+          "mean_cosine_similarity": 0.9999997667618482
+        },
+        {
+          "id": "cli-doctor-en-exact_lexical",
+          "max_abs_delta": 7.484700000000288e-05,
+          "mean_abs_delta": 1.7791402167968754e-05,
+          "mean_cosine_similarity": 0.9999998067948562
+        },
+        {
+          "id": "cli-doctor-en-hard_negative",
+          "max_abs_delta": 8.112469999999993e-05,
+          "mean_abs_delta": 1.8516784544270993e-05,
+          "mean_cosine_similarity": 0.9999997916891827
+        },
+        {
+          "id": "cli-doctor-en-semantic_paraphrase",
+          "max_abs_delta": 7.480599999999671e-05,
+          "mean_abs_delta": 1.6421011966145916e-05,
+          "mean_cosine_similarity": 0.9999998300707458
+        },
+        {
+          "id": "cli-doctor-tr-native",
+          "max_abs_delta": 7.642799999999644e-05,
+          "mean_abs_delta": 1.6119945863281124e-05,
+          "mean_cosine_similarity": 0.9999998399251252
+        },
+        {
+          "id": "cli-install-en-exact_lexical",
+          "max_abs_delta": 0.00013407800000000275,
+          "mean_abs_delta": 1.74823084440104e-05,
+          "mean_cosine_similarity": 0.9999998042376839
+        },
+        {
+          "id": "cli-install-en-semantic_paraphrase",
+          "max_abs_delta": 9.617199999999854e-05,
+          "mean_abs_delta": 1.7845379114583337e-05,
+          "mean_cosine_similarity": 0.9999998022634452
+        },
+        {
+          "id": "cli-install-en-terminology_mismatch",
+          "max_abs_delta": 9.737899999999466e-05,
+          "mean_abs_delta": 1.7262452031249957e-05,
+          "mean_cosine_similarity": 0.9999998105728578
+        },
+        {
+          "id": "cli-install-tr-native",
+          "max_abs_delta": 0.00015126899999999902,
+          "mean_abs_delta": 1.669857389322906e-05,
+          "mean_cosine_similarity": 0.9999998193992631
+        },
+        {
+          "id": "cli-login-en-exact_lexical",
+          "max_abs_delta": 6.505140000000013e-05,
+          "mean_abs_delta": 1.5773595822851577e-05,
+          "mean_cosine_similarity": 0.999999850601259
+        },
+        {
+          "id": "cli-login-en-semantic_paraphrase",
+          "max_abs_delta": 0.00014826499999999812,
+          "mean_abs_delta": 1.693283021744806e-05,
+          "mean_cosine_similarity": 0.9999998146807444
+        },
+        {
+          "id": "cli-login-en-terminology_mismatch",
+          "max_abs_delta": 0.0001143000000000012,
+          "mean_abs_delta": 1.7042946093749994e-05,
+          "mean_cosine_similarity": 0.999999813267903
+        },
+        {
+          "id": "cli-login-tr-native",
+          "max_abs_delta": 9.661600000000076e-05,
+          "mean_abs_delta": 1.7690196468750115e-05,
+          "mean_cosine_similarity": 0.9999998084015503
+        }
+      ]
+    },
+    "qwen3-4b@1024": {
+      "config": "qwen3-4b@1024",
+      "sample_size": 50,
+      "repeats_per_query": 10,
+      "vector_stats": {
+        "max_abs_delta": 0.0008452064999999991,
+        "mean_abs_delta": 0.00011859719641980958,
+        "mean_cosine_similarity": 0.9999883369110906
+      },
+      "ranking_impact": {
+        "top1_flip_rate": 0.0,
+        "top3_set_change_rate": 0.0,
+        "top5_set_change_rate": 0.02,
+        "mrr_impacting_flip_rate": 0.0,
+        "recall_at_5_impacting_flip_rate": 0.0
+      },
+      "per_query_vector_stats": [
+        {
+          "id": "api-auth-en-native",
+          "max_abs_delta": 0.0006281959999999975,
+          "mean_abs_delta": 0.00011678855008203128,
+          "mean_cosine_similarity": 0.9999884876573089
+        },
+        {
+          "id": "api-auth-scopes-en-native",
+          "max_abs_delta": 0.00044090400000000064,
+          "mean_abs_delta": 0.0001051827864316406,
+          "mean_cosine_similarity": 0.9999910254668952
+        },
+        {
+          "id": "api-auth-scopes-tr-acronym_abbreviation",
+          "max_abs_delta": 0.0008452064999999991,
+          "mean_abs_delta": 0.00012937592606386718,
+          "mean_cosine_similarity": 0.999986479732811
+        },
+        {
+          "id": "api-auth-scopes-tr-exact_lexical",
+          "max_abs_delta": 0.0004880170000000003,
+          "mean_abs_delta": 0.00010220144965781252,
+          "mean_cosine_similarity": 0.999991544349537
+        },
+        {
+          "id": "api-auth-scopes-tr-terminology_mismatch",
+          "max_abs_delta": 0.0005240946000000003,
+          "mean_abs_delta": 0.0001140651359874024,
+          "mean_cosine_similarity": 0.9999893364782976
+        },
+        {
+          "id": "api-auth-tr-exact_lexical",
+          "max_abs_delta": 0.0005316169999999999,
+          "mean_abs_delta": 0.00012061896217014651,
+          "mean_cosine_similarity": 0.9999878469788857
+        },
+        {
+          "id": "api-auth-tr-semantic_paraphrase",
+          "max_abs_delta": 0.0006489000000000078,
+          "mean_abs_delta": 0.00011887945824707035,
+          "mean_cosine_similarity": 0.9999880255933
+        },
+        {
+          "id": "api-auth-tr-terminology_mismatch",
+          "max_abs_delta": 0.000705252999999996,
+          "mean_abs_delta": 0.00011359567000000005,
+          "mean_cosine_similarity": 0.9999893574929042
+        },
+        {
+          "id": "api-bulk-ops-en-native",
+          "max_abs_delta": 0.000528634,
+          "mean_abs_delta": 0.0001216242404560547,
+          "mean_cosine_similarity": 0.9999879080415717
+        },
+        {
+          "id": "api-bulk-ops-tr-exact_lexical",
+          "max_abs_delta": 0.0006607208000000003,
+          "mean_abs_delta": 0.00011527564759960945,
+          "mean_cosine_similarity": 0.999989077189
+        },
+        {
+          "id": "api-bulk-ops-tr-number_date_lookup",
+          "max_abs_delta": 0.00065734655,
+          "mean_abs_delta": 0.00012509022282812502,
+          "mean_cosine_similarity": 0.9999871871342315
+        },
+        {
+          "id": "api-bulk-ops-tr-semantic_paraphrase",
+          "max_abs_delta": 0.0004471159999999974,
+          "mean_abs_delta": 0.00010591356204621092,
+          "mean_cosine_similarity": 0.9999907042444208
+        },
+        {
+          "id": "api-content-type-en-native",
+          "max_abs_delta": 0.000513552,
+          "mean_abs_delta": 0.00011991705005859381,
+          "mean_cosine_similarity": 0.9999883239243067
+        },
+        {
+          "id": "api-content-type-tr-exact_lexical",
+          "max_abs_delta": 0.00043924399999999836,
+          "mean_abs_delta": 0.00011046794065234378,
+          "mean_cosine_similarity": 0.9999899651603693
+        },
+        {
+          "id": "api-content-type-tr-hard_negative",
+          "max_abs_delta": 0.0005139619999999998,
+          "mean_abs_delta": 0.00011440579883886714,
+          "mean_cosine_similarity": 0.9999891807564718
+        },
+        {
+          "id": "api-content-type-tr-semantic_paraphrase",
+          "max_abs_delta": 0.0005692820000000008,
+          "mean_abs_delta": 0.00011804516887988276,
+          "mean_cosine_similarity": 0.9999880986684297
+        },
+        {
+          "id": "api-deprecation-en-native",
+          "max_abs_delta": 0.00044124799999999825,
+          "mean_abs_delta": 0.00010844355918750005,
+          "mean_cosine_similarity": 0.9999903556130584
+        },
+        {
+          "id": "api-deprecation-tr-exact_lexical",
+          "max_abs_delta": 0.0004236154999999993,
+          "mean_abs_delta": 0.00010679045240234382,
+          "mean_cosine_similarity": 0.9999906219533804
+        },
+        {
+          "id": "api-deprecation-tr-heading_dependent",
+          "max_abs_delta": 0.0005917060000000009,
+          "mean_abs_delta": 0.00012286592281640635,
+          "mean_cosine_similarity": 0.9999876441382745
+        },
+        {
+          "id": "api-deprecation-tr-semantic_paraphrase",
+          "max_abs_delta": 0.0007396439999999976,
+          "mean_abs_delta": 0.00011421608484472659,
+          "mean_cosine_similarity": 0.999989166170653
+        },
+        {
+          "id": "api-error-codes-en-native",
+          "max_abs_delta": 0.0004920729999999957,
+          "mean_abs_delta": 0.00010799409055175789,
+          "mean_cosine_similarity": 0.999990395816449
+        },
+        {
+          "id": "api-error-codes-tr-ambiguous_wording",
+          "max_abs_delta": 0.0005233580000000015,
+          "mean_abs_delta": 0.00012086328668066399,
+          "mean_cosine_similarity": 0.9999880131314883
+        },
+        {
+          "id": "api-error-codes-tr-exact_lexical",
+          "max_abs_delta": 0.0005933499999999925,
+          "mean_abs_delta": 0.00010232979815429686,
+          "mean_cosine_similarity": 0.9999914324264526
+        },
+        {
+          "id": "api-error-codes-tr-terminology_mismatch",
+          "max_abs_delta": 0.0006202700000000026,
+          "mean_abs_delta": 0.0001167535095277344,
+          "mean_cosine_similarity": 0.9999889044250422
+        },
+        {
+          "id": "api-health-check-tr-ambiguous_wording",
+          "max_abs_delta": 0.0005965239999999993,
+          "mean_abs_delta": 0.00011649125167773427,
+          "mean_cosine_similarity": 0.9999889321017795
+        },
+        {
+          "id": "api-health-check-tr-exact_lexical",
+          "max_abs_delta": 0.0005996660000000004,
+          "mean_abs_delta": 0.00011485868716796884,
+          "mean_cosine_similarity": 0.9999892204940166
+        },
+        {
+          "id": "audit-log-en-exact_lexical",
+          "max_abs_delta": 0.000550980999999999,
+          "mean_abs_delta": 0.00012605178703906252,
+          "mean_cosine_similarity": 0.9999868894320394
+        },
+        {
+          "id": "audit-log-en-hard_negative",
+          "max_abs_delta": 0.0005802869999999988,
+          "mean_abs_delta": 0.0001237122940304687,
+          "mean_cosine_similarity": 0.9999871034276274
+        },
+        {
+          "id": "audit-log-en-semantic_paraphrase",
+          "max_abs_delta": 0.0006011377999999999,
+          "mean_abs_delta": 0.0001225493468955078,
+          "mean_cosine_similarity": 0.9999876754843299
+        },
+        {
+          "id": "audit-log-tr-native",
+          "max_abs_delta": 0.0005113199999999957,
+          "mean_abs_delta": 0.0001270531745722655,
+          "mean_cosine_similarity": 0.999986895549535
+        },
+        {
+          "id": "backup-en-exact_lexical",
+          "max_abs_delta": 0.0004930310000000049,
+          "mean_abs_delta": 0.00011318878022851563,
+          "mean_cosine_similarity": 0.9999894001626467
+        },
+        {
+          "id": "backup-en-multi_sentence_evidence",
+          "max_abs_delta": 0.00047687000000000423,
+          "mean_abs_delta": 0.00010176966856347666,
+          "mean_cosine_similarity": 0.9999915346176347
+        },
+        {
+          "id": "backup-en-semantic_paraphrase",
+          "max_abs_delta": 0.0004638689999999987,
+          "mean_abs_delta": 0.00010182011398291024,
+          "mean_cosine_similarity": 0.9999914216435631
+        },
+        {
+          "id": "backup-tr-native",
+          "max_abs_delta": 0.0005705840000000059,
+          "mean_abs_delta": 0.00011561818059277346,
+          "mean_cosine_similarity": 0.9999886234358486
+        },
+        {
+          "id": "billing-cycle-en-exact_lexical",
+          "max_abs_delta": 0.0005360739999999975,
+          "mean_abs_delta": 0.00012107399740722637,
+          "mean_cosine_similarity": 0.9999877504762024
+        },
+        {
+          "id": "billing-cycle-en-number_date_lookup",
+          "max_abs_delta": 0.0005000399999999933,
+          "mean_abs_delta": 0.00010572575825019528,
+          "mean_cosine_similarity": 0.9999906185150214
+        },
+        {
+          "id": "billing-cycle-en-semantic_paraphrase",
+          "max_abs_delta": 0.0007493700000000061,
+          "mean_abs_delta": 0.00012859975743945308,
+          "mean_cosine_similarity": 0.9999861859855551
+        },
+        {
+          "id": "billing-cycle-tr-native",
+          "max_abs_delta": 0.0007892490000000023,
+          "mean_abs_delta": 0.00011953285007334,
+          "mean_cosine_similarity": 0.9999881132207062
+        },
+        {
+          "id": "cli-doctor-en-exact_lexical",
+          "max_abs_delta": 0.0005276059999999999,
+          "mean_abs_delta": 0.00013678958655195307,
+          "mean_cosine_similarity": 0.9999851489747152
+        },
+        {
+          "id": "cli-doctor-en-hard_negative",
+          "max_abs_delta": 0.000524361000000001,
+          "mean_abs_delta": 0.00012171628118847657,
+          "mean_cosine_similarity": 0.9999877995453347
+        },
+        {
+          "id": "cli-doctor-en-semantic_paraphrase",
+          "max_abs_delta": 0.0005694399999999974,
+          "mean_abs_delta": 0.0001308121878762695,
+          "mean_cosine_similarity": 0.9999860388212155
+        },
+        {
+          "id": "cli-doctor-tr-native",
+          "max_abs_delta": 0.0006277060000000004,
+          "mean_abs_delta": 0.0001385112243779296,
+          "mean_cosine_similarity": 0.9999846377647957
+        },
+        {
+          "id": "cli-install-en-exact_lexical",
+          "max_abs_delta": 0.0005258555000000002,
+          "mean_abs_delta": 0.00012245891933593774,
+          "mean_cosine_similarity": 0.999987606911149
+        },
+        {
+          "id": "cli-install-en-semantic_paraphrase",
+          "max_abs_delta": 0.0005982570000000013,
+          "mean_abs_delta": 0.00012927905775390625,
+          "mean_cosine_similarity": 0.999986091166234
+        },
+        {
+          "id": "cli-install-en-terminology_mismatch",
+          "max_abs_delta": 0.0005272040000000016,
+          "mean_abs_delta": 0.0001221082667373047,
+          "mean_cosine_similarity": 0.999987366662109
+        },
+        {
+          "id": "cli-install-tr-native",
+          "max_abs_delta": 0.0005697740000000021,
+          "mean_abs_delta": 0.0001294921944589843,
+          "mean_cosine_similarity": 0.9999861093703929
+        },
+        {
+          "id": "cli-login-en-exact_lexical",
+          "max_abs_delta": 0.0006818180000000007,
+          "mean_abs_delta": 0.0001297936774918945,
+          "mean_cosine_similarity": 0.9999860140204705
+        },
+        {
+          "id": "cli-login-en-semantic_paraphrase",
+          "max_abs_delta": 0.0005863429999999961,
+          "mean_abs_delta": 0.0001235806882246092,
+          "mean_cosine_similarity": 0.9999874583120278
+        },
+        {
+          "id": "cli-login-en-terminology_mismatch",
+          "max_abs_delta": 0.0006358500000000003,
+          "mean_abs_delta": 0.00012767520280468749,
+          "mean_cosine_similarity": 0.9999867309534197
+        },
+        {
+          "id": "cli-login-tr-native",
+          "max_abs_delta": 0.0005873384999999995,
+          "mean_abs_delta": 0.00012789261210253907,
+          "mean_cosine_similarity": 0.999986395962619
+        }
+      ]
+    }
+  },
+  "retrieval_determinism": {
+    "qwen3-0.6b@768": {
+      "config": "qwen3-0.6b@768",
+      "questions_checked": 208,
+      "repeats_per_query": 5,
+      "unstable_question_count": 0,
+      "unstable_question_ids": [],
+      "is_fully_deterministic": true
+    },
+    "qwen3-4b@1024": {
+      "config": "qwen3-4b@1024",
+      "questions_checked": 208,
+      "repeats_per_query": 5,
+      "unstable_question_count": 0,
+      "unstable_question_ids": [],
+      "is_fully_deterministic": true
+    }
+  },
+  "run_to_run_distributions": {
+    "qwen3-0.6b@768": {
+      "cross_lingual_recall_at_5": {
+        "mean": 0.9064197530864198,
+        "median": 0.9064197530864198,
+        "stddev": 0.0,
+        "min": 0.9064197530864198,
+        "max": 0.9064197530864198,
+        "p5": 0.9064197530864198,
+        "p95": 0.9064197530864198,
+        "n_runs": 10
+      },
+      "cross_lingual_mrr": {
+        "mean": 0.6939670781893004,
+        "median": 0.6939670781893004,
+        "stddev": 0.0,
+        "min": 0.6939670781893004,
+        "max": 0.6939670781893004,
+        "p5": 0.6939670781893004,
+        "p95": 0.6939670781893004,
+        "n_runs": 10
+      },
+      "ndcg_at_5": {
+        "mean": 0.8000995975993703,
+        "median": 0.8000995975993703,
+        "stddev": 0.0,
+        "min": 0.8000995975993703,
+        "max": 0.8000995975993703,
+        "p5": 0.8000995975993703,
+        "p95": 0.8000995975993703,
+        "n_runs": 10
+      }
+    },
+    "qwen3-4b@1024": {
+      "cross_lingual_recall_at_5": {
+        "mean": 0.962962962962963,
+        "median": 0.962962962962963,
+        "stddev": 0.0,
+        "min": 0.962962962962963,
+        "max": 0.962962962962963,
+        "p5": 0.962962962962963,
+        "p95": 0.962962962962963,
+        "n_runs": 10
+      },
+      "cross_lingual_mrr": {
+        "mean": 0.7335925925925926,
+        "median": 0.7335925925925926,
+        "stddev": 0.0,
+        "min": 0.7335925925925926,
+        "max": 0.7335925925925926,
+        "p5": 0.7335925925925926,
+        "p95": 0.7335925925925926,
+        "n_runs": 10
+      },
+      "ndcg_at_5": {
+        "mean": 0.8362403084719396,
+        "median": 0.8362403084719396,
+        "stddev": 0.0,
+        "min": 0.8362403084719396,
+        "max": 0.8362403084719396,
+        "p5": 0.8362403084719396,
+        "p95": 0.8362403084719396,
+        "n_runs": 10
+      }
+    }
+  },
+  "delta_distribution_large_minus_small": {
+    "cross_lingual_recall_at_5": [
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266,
+      0.056543209876543266
+    ]
+  }
+}

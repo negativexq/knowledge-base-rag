@@ -1,0 +1,13 @@
+{
+  "primary_metric": "recall_at_5",
+  "primary_subset": "cross_lingual",
+  "current_n": 156,
+  "margin": 0.04,
+  "observed_paired_stddev": 0.2837623861814923,
+  "power_80_required_n": 312,
+  "power_90_required_n": 432,
+  "method": "Normal approximation for a one-sided non-inferiority test: n = ((z_alpha + z_power) * sigma / margin)^2, using the OBSERVED paired per-question delta standard deviation as sigma.",
+  "limitations": "Per-question Recall@5 is a near-binary paired outcome, not continuous — this is a standard but approximate normal-approximation formula, not an exact binomial/McNemar power calculation. The observed stddev is itself a single-sample estimate (its own uncertainty is not propagated). Treat the required-n figures as an order-of-magnitude guide, not a precise target.",
+  "sufficient_at_80_power": false,
+  "sufficient_at_90_power": false
+}

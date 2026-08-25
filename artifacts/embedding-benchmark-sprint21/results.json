@@ -1,0 +1,73 @@
+{
+  "fingerprints": {
+    "dataset_fingerprint": "55e857db9c7b9ad1ccb4ca2ee3286498abc818f100cebd24bb94d38e39942691",
+    "corpus_fingerprint": "42b21bb06bb36881b45b507aeb397d5148157e8e16873e7ef10c7e80367e3850"
+  },
+  "configs": {
+    "qwen3-0.6b@768": {
+      "dimension": 768
+    },
+    "qwen3-4b@1024": {
+      "dimension": 1024
+    }
+  },
+  "index_info": {
+    "qwen3-0.6b@768": {
+      "collection_name": "kb_benchmark_qwen3_06b_768",
+      "fingerprint_digest": "da5276efd87f34e8",
+      "chunks_indexed": 51,
+      "indexing_seconds": 3.967764458968304,
+      "chunks_per_second": 12.853585571271786,
+      "storage_bytes": 2551808,
+      "storage_measurement": "real"
+    },
+    "qwen3-4b@1024": {
+      "collection_name": "kb_benchmark_qwen3_4b_1024",
+      "fingerprint_digest": "80ba45288bd4aae3",
+      "chunks_indexed": 51,
+      "indexing_seconds": 20.17511637508869,
+      "chunks_per_second": 2.5278664594456792,
+      "storage_bytes": 2793472,
+      "storage_measurement": "real"
+    }
+  },
+  "operational": {
+    "qwen3-0.6b@768": {
+      "query_embed_p50_ms": 125.75600005220622,
+      "query_embed_p95_ms": 136.43145898822695,
+      "retrieval_p50_ms": 7.623292040079832,
+      "retrieval_p95_ms": 8.85883392766118,
+      "sample_count": 2200,
+      "dimension": 768,
+      "indexing_seconds": 3.967764458968304,
+      "chunks_per_second": 12.853585571271786,
+      "storage_bytes": 2551808,
+      "storage_measurement": "real"
+    },
+    "qwen3-4b@1024": {
+      "query_embed_p50_ms": 295.804874971509,
+      "query_embed_p95_ms": 326.4770000241697,
+      "retrieval_p50_ms": 9.067374980077147,
+      "retrieval_p95_ms": 11.859208927489817,
+      "sample_count": 2200,
+      "dimension": 1024,
+      "indexing_seconds": 20.17511637508869,
+      "chunks_per_second": 2.5278664594456792,
+      "storage_bytes": 2793472,
+      "storage_measurement": "real"
+    }
+  },
+  "num_live_runs": 10,
+  "golden_set_path": "tests/fixtures/embedding_benchmark_golden_v2.json",
+  "question_count": 220,
+  "historical_nomic_reference": {
+    "note": "nomic@768 was NOT benchmarked this sprint (out of scope) — figures below are carried over from Sprint 20's real measurement for context only.",
+    "label": "nomic@768",
+    "cross_recall_at_5": 0.569,
+    "cross_mrr": 0.416,
+    "mono_recall_at_5": 0.92,
+    "query_embed_p95_ms": 43.3,
+    "dimension": 768,
+    "source": "artifacts/embedding-benchmark-sprint20/report.md"
+  }
+}
