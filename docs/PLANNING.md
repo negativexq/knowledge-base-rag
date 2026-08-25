@@ -2376,7 +2376,154 @@ regression testleri, collection isolation, golden set bütünlüğü).
 `ruff check app tests scripts` temiz, tüm mevcut testler (Sprint 18
 dahil) hâlâ yeşil.
 
-## Sprint 20 (stretch) — İkinci Connector (Confluence)
+## Sprint 20 — Embedding Benchmark Stability & Production Decision
+
+Amaç: Sprint 19'un bulduğu `qwen3-0.6b@768` vs `qwen3-4b@1024` küçük
+kalite farkını, çok daha büyük (220 soru) ve paired bootstrap CI ile
+desteklenen bir değerlendirmeyle gerçek bir production kararına
+dönüştürmek. Bkz. docs/sprint-20-plan.md.
+
+Scope:
+
+1. Sadece 3 configuration: nomic@768, qwen3-0.6b@768, qwen3-4b@1024
+2. Golden set 68→220 soruya genişletildi (aynı 4 fixture doküman,
+   genişletilerek — yeni doküman eklenmedi), 10 zorluk kategorisi
+3. Programmatik dataset doğrulama (duplicate/dangling-location/
+   distribution/not-found-ratio)
+4. Paired bootstrap confidence interval (`app/evaluation/bootstrap.py`)
+5. Determinism araştırması — gerçek nondeterminism kaynağı bulunup
+   raporlandı, gizlenmedi
+6. Üç ayrı verdict: QUALITY WINNER, EFFICIENCY WINNER, PRODUCTION WINNER
+
+DoD: 220 soru, 3 configuration, gerçek paired bootstrap CI'lar, açık ve
+deterministic bir production karar mantığı; production default
+değişmedi.
+
+### Kapanış notu
+
+**1. Golden set 68'den 220 soruya genişletildi — sadece çeviri değil,
+gerçek zorluk çeşitliliğiyle.** İki mevcut fixture doküman (Sprint
+18'de eklenen `nimbus_api_reference.md` ve `nimbus_kurumsal_sss.md`)
+genişletildi (10→20, 8→17 bölüm) — yeni doküman eklemek yerine mevcut
+korpus derinleştirildi. 27 EN-content + 25 TR-content = 52 gerçek
+"fact," her biri 1 native-dil sorusu + 3 çapraz-dil sorusuyla (10
+zorluk kategorisinden: exact_lexical, semantic_paraphrase,
+terminology_mismatch, acronym_abbreviation, number_date_lookup,
+multi_sentence_evidence, heading_dependent, ambiguous_wording,
+hard_negative — hepsi en az 2 kez temsil edildi, testle kanıtlandı) +
+12 not-found kontrol sorusu = 220 soru. Dağılım hedefin üzerinde:
+TR→EN=81 (≥75), EN→TR=75 (≥75), TR→TR=25 (≥25), EN→EN=27 (≥25).
+
+**2. Dataset kalitesi programmatik olarak doğrulandı, elle
+kontrol edilmedi.** Yeni `app/evaluation/golden_set_validation.py` —
+exact/normalized duplicate tespiti (normalize: küçük harf + noktalama
+temizliği + boşluk sıkıştırma, Türkçe karakterler korunuyor), dangling
+expected-location tespiti, language-pair dağılım kontrolü, not-found
+oranı kontrolü. `tests/test_golden_set_v2_integrity.py`, GERÇEK
+`embedding_benchmark_golden_v2.json`'ı GERÇEK chunker'ların (Qdrant/
+Ollama olmadan, `chunk_document`/`chunk_markdown_document` doğrudan
+çağrılarak, tam deterministic) ürettiği konumlara karşı doğruluyor —
+**0 dangling location, 0 duplicate, 220/220 soru gerçek içerikten**.
+
+**3. Determinism kaynağı GERÇEKTEN araştırıldı, gizlenmedi.** Aynı
+metni (`qwen3-embedding:0.6b`) iki kez embed etmek GERÇEKTEN farklı
+float değerleri üretiyor — doğrudan test edildi:
+`max(abs(a[i]-b[i]))` ≈ **2.7e-05**, aynı model aynı girdiyle. Bu,
+Sprint 19'un run-to-run gürültüsünün gerçek kaynağı — Ollama/backend'in
+kendi sayısal-olarak-deterministik-olmayan inference'ı (muhtemelen
+Metal/GPU accumulation sırası), bu projenin kontrol edebileceği bir
+şey DEĞİL. Kontrol edilebilenler düzeltildi: sorgu sırası artık
+id'ye göre sıralı deterministic (`sorted(golden_questions, key=...)`),
+metrik agregasyonu zaten saf Python, bootstrap seed sabit
+(20200601). Ama embedding çıktısının kendisi bit-exact tekrarlanabilir
+DEĞİL — bu gerçek sınır raporda ve bu notta açıkça yazılı.
+
+**4. Paired bootstrap CI, gerçek per-question verilerden, id ile
+eşleştirilerek.** `app/evaluation/bootstrap.py::paired_bootstrap_ci` —
+"paired" çünkü her soru HER İKİ configuration tarafından da
+skorlanıyor, bootstrap resampling aynı soru indekslerini HER İKİ taraf
+için de çekiyor (bağımsız resampling yerine). Deterministic:
+`random.Random(seed)`, global random state'e dokunmuyor — testle
+kanıtlandı (aynı seed → bit-bit aynı sonuç). Sentetik örneklerle
+kanıtlandı: sabit +0.5 fark → CI kesinlikle sıfırı içermiyor; sıfır
+gerçek fark → CI sıfırı içeriyor. `scripts/benchmark_embeddings.py::
+compute_bootstrap_report`, per-question metrikleri SORU ID'siyle
+eşleştiriyor (liste pozisyonuyla değil) — iki config'in sonuçları
+farklı sırada saklansa bile doğru eşleşme garantili, testle kanıtlandı.
+
+**5. Gerçek 220-soru, 3-configuration koşumu
+(`artifacts/embedding-benchmark-sprint20/report.md`):**
+
+```
+Config            Cross R@5  Cross MRR  Mono R@5  nDCG@5   Dim   Query p95(ms)
+nomic@768           0.569      0.416     0.920     0.555    768      43.3
+qwen3-0.6b@768      0.906      0.699     0.980     0.803    768     140.6
+qwen3-4b@1024       0.963      0.744     1.000     0.842   1024     258.7
+```
+
+`qwen3-4b@1024 - qwen3-0.6b@768` farkı: cross Recall@5 kaybı 0.057
+(eşik 0.03'ün ÜSTÜNDE), cross MRR kaybı 0.045 (eşik 0.04'ün ÜSTÜNDE),
+mono-lingual Recall@5 kaybı 0.02 (eşik 0.01'in ÜSTÜNDE) — nokta
+tahmini, Sprint 20'nin kendi (Sprint 19'dan daha sıkı) eşiklerinin
+ÜÇÜNÜ de aşıyor.
+
+**Paired bootstrap CI (cross-lingual subset, n=156, seed=20200601,
+5000 iterasyon):** Recall@5 delta = -0.058 [-0.103, -0.013], MRR delta
+= -0.047 [-0.081, -0.015] — CI'lar sıfırı İÇERMİYOR (fark yönü gerçek),
+ama CI'nın en iyimser ucu (üst sınır, -0.013 ve -0.015) eşiklerin
+(-0.03, -0.04) ÜSTÜNDE kalıyor — yani "kayıp gerçek ama eşiği aşacak
+kadar büyük olduğu CI ile TEYİT EDİLEMİYOR."
+
+**6. GERÇEK bir kod hatası koşum sırasında yakalandı ve düzeltildi —
+"varsayma, çalıştır" disiplininin somut kanıtı.** İlk gerçek koşumda
+EFFICIENCY WINNER olarak `nomic@768` çıktı — açıkça yanlış, çünkü
+nomic'in cross-lingual kalitesi (0.569-0.576) her iki Qwen adayından da
+~0.33-0.39 daha düşük. Kök neden: efficiency_candidates filtresi
+MUTLAK bir "crisis floor" (0.5) kullanıyordu — nomic bunun üstünde
+kaldığı için (gerçek zayıflığına rağmen) aday sayılıp sadece en düşük
+latency'si olduğu için kazanıyordu. Fix: filtre artık EN İYİ
+configuration'a GÖRECELİ (`best_cross_recall - 0.15` marjı) —
+`tests/test_benchmark_embeddings_sprint20.py`'de bu tam senaryoyu
+reprodükleyen bir regresyon testi eklendi. Ayrıca rapor başlığı/
+"Statistical caution" metni Sprint 19'dan hardcoded kalmıştı ("68
+question," "no bootstrap CIs were computed") — `render_markdown_report`
+parametreleştirildi (varsayılan: Sprint 19'un orijinal metni, GERİYE
+DÖNÜK UYUMLU), Sprint 20 kendi doğru metnini geçiyor.
+
+**7. Üç ayrı verdict:**
+
+- **QUALITY WINNER: `qwen3-4b@1024`** — ağırlıklı skorda en yüksek
+  (Sprint 19 ile aynı formül: 0.4×cross_recall5+0.3×cross_mrr+0.3×ndcg5).
+- **EFFICIENCY WINNER: `qwen3-0.6b@768`** — en düşük dimension/p95,
+  EN İYİ configuration'ın kalitesine göreceli marj içinde kalan
+  configuration'lar arasında (nomic artık bu marjın dışında, madde 6
+  ile düzeltildi).
+- **PRODUCTION WINNER: `NEED_MORE_DATA`** — nokta tahmini eşikleri
+  aşıyor (within_tolerance=False) AMA bootstrap CI bu aşımı GÜVENLE
+  TEYİT ETMİYOR (ci_confirms_material_gap=False, CI'nın en iyimser ucu
+  eşiğin altında kalmıyor) — bu, kararın kasıtlı olarak tasarlandığı
+  "nokta tahmini ve CI anlaşmazsa NEED_MORE_DATA" dalı, GERÇEKTEN
+  tetiklendi. 220 soru bile bu ~0.02-0.06'lık küçük farkı kesin olarak
+  çözmeye yetmiyor — dürüstçe raporlandı, zorla bir yöne karar
+  verilmedi.
+
+**8. Sınırlamalar:** 220 soru tek bir fictional domain'den (Nimbus),
+tek koşum (embedding backend'in kendi nondeterminizmi nedeniyle farklı
+bir koşum küçük farklı sayılar verebilir — madde 3). Bootstrap CI'lar
+gerçek ve deterministic ama YİNE DE tek bir golden set'in
+istatistikleri, harici bir gerçek-dünya trafiği örneklemi değil.
+RAM/VRAM ölçülmedi.
+
+**~65 yeni test** (`app/evaluation/golden_set_validation.py` testleri
++18, `app/evaluation/bootstrap.py` testleri +9,
+`tests/test_golden_set_v2_integrity.py` +7,
+`tests/test_benchmark_embeddings_sprint20.py` +19, mevcut Sprint 18/19
+regresyon testleri hâlâ yeşil), `ruff check app tests scripts` temiz.
+
+**Production default DEĞİŞMEDİ** — `settings.ollama_embed_model` hâlâ
+`nomic-embed-text`. Migration ayrı bir sprint/PR kararı.
+
+## Sprint 21 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

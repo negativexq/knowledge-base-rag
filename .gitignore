@@ -15,3 +15,4 @@ data/documents/*
 *.db
 artifacts/embedding-benchmark/work/
 artifacts/embedding-benchmark-sprint19/work/
+artifacts/embedding-benchmark-sprint20/work/

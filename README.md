@@ -586,6 +586,34 @@ check of the code/tests where noted.
   `artifacts/embedding-benchmark-sprint19/report.md` and
   `docs/PLANNING.md`'s Sprint 19 closing note for the full Pareto
   frontier and decision rule.
+- **Sprint 20 tried to resolve that Sprint 19 threshold flip with a
+  much larger, statistically-supported evaluation — and the honest
+  answer came back "still not enough data."** Same 3 configurations
+  (`nomic@768`, `qwen3-0.6b@768`, `qwen3-4b@1024`), but the golden set
+  grew from 68 to 220 questions (10 real difficulty categories —
+  exact lexical, paraphrase, terminology mismatch, acronyms, hard
+  negatives, and more — not just naive translations), every expected
+  location re-verified against the real chunker output, and a paired
+  bootstrap confidence interval (5000 iterations, fixed seed, 95% CI)
+  computed on `qwen3-4b@1024`'s quality advantage over
+  `qwen3-0.6b@768`. The point estimate (cross-lingual Recall@5 loss
+  0.057, MRR loss 0.045) exceeded Sprint 20's own pre-committed
+  tolerance (0.03/0.04) — but the bootstrap CI's most favorable bound
+  for the smaller model didn't confirm the gap exceeds that tolerance
+  with confidence, so the sprint's decision logic correctly landed on
+  **NEED_MORE_DATA** rather than forcing a pick either direction.
+  Running the real benchmark also caught a real bug: an early version
+  of the efficiency-winner logic used an absolute quality floor and
+  picked `nomic@768` as "most efficient" despite its cross-lingual
+  quality being ~0.35 below both Qwen candidates — fixed to be relative
+  to the best config, with a regression test. `nomic-embed-text`
+  remains the actual production default. See
+  `artifacts/embedding-benchmark-sprint20/{report.md,bootstrap.json}`
+  and `docs/PLANNING.md`'s Sprint 20 closing note for the full numbers,
+  including a real, measured source of run-to-run noise this sprint
+  tracked down rather than hid: the embedding backend itself returns
+  slightly different floating-point output (~2.7e-05 max difference)
+  for the identical input on repeated calls.
 - **The root cause of PDF's weaker retrieval within mono-lingual pairs**
   (PDF+English recall 0.857 vs. Markdown+Turkish recall 1.000 — page-level
   chunk granularity vs. Markdown's heading-scoped blocks giving the

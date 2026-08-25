@@ -74,6 +74,77 @@ rate limits.
 A deprecated endpoint remains available for at least 12 months after
 its replacement ships, and every response from a deprecated endpoint
 includes a `Sunset` header with the exact removal date.
+
+# Authentication Scopes
+
+OAuth tokens carry one or more scopes: `files:read`, `files:write`,
+`admin:users`, and `admin:billing`. A token missing the required scope
+for an endpoint receives a 403 Forbidden, distinct from a 401
+Unauthorized (which means the token itself is invalid or expired).
+
+# Bulk Operations
+
+The `/files/bulk-delete` endpoint accepts up to 1000 file IDs in a
+single request. Requests with more than 1000 IDs are rejected with a
+400 Bad Request before any deletion happens — bulk operations are
+all-or-nothing at the validation stage, though individual deletions
+within a valid batch can still fail independently.
+
+# Search Endpoint
+
+The `/search` endpoint supports full-text query via the `q` parameter
+and accepts an optional `filetype` filter (e.g. `pdf`, `docx`, `png`).
+Search results are capped at 100 matches per request regardless of the
+`limit` parameter; retrieving more requires narrowing the query.
+
+# Metadata Fields
+
+Every file object includes `created_at`, `modified_at`, and
+`content_hash` (a SHA-256 hex digest of the file's raw bytes, used by
+clients to detect whether a local copy is stale without downloading
+the full file).
+
+# Retry Policy
+
+Client libraries should retry on 502, 503, and 504 responses using
+exponential backoff starting at 1 second, capped at 30 seconds, for up
+to 5 attempts. A 500 Internal Server Error should NOT be retried
+automatically — it usually indicates a bug that a retry won't resolve.
+
+# Webhook Event Types
+
+Webhook events include `file.created`, `file.deleted`,
+`file.shared`, and `quota.exceeded`. The `quota.exceeded` event fires
+once per billing period the first time an account crosses 90% of its
+storage limit, not on every subsequent write past that threshold.
+
+# Content-Type Requirements
+
+The `/files/upload` endpoint requires `Content-Type:
+multipart/form-data` — a JSON body for this endpoint is rejected with
+a 415 Unsupported Media Type. All other write endpoints require
+`Content-Type: application/json`.
+
+# Timezone Handling
+
+All timestamps returned by the API are in UTC, formatted as ISO 8601
+with a trailing `Z` (e.g. `2024-03-01T12:00:00Z`). The API never
+returns timestamps in a client's local timezone; conversion is the
+client's responsibility.
+
+# API Key Rotation
+
+An account can have up to 2 active API keys simultaneously,
+specifically to support zero-downtime rotation: generate a new key,
+update the client, then revoke the old key. A third key cannot be
+created until one of the existing two is revoked.
+
+# Health Check Endpoint
+
+`/health` requires no authentication and returns a 200 status with
+`{"status": "ok"}` when the API is reachable. It does not verify
+downstream storage or database connectivity — a 200 from `/health`
+does not guarantee that file operations will succeed.
 """
 
 

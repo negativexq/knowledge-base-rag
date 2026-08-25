@@ -59,6 +59,66 @@ Kurumsal veriler her gece otomatik olarak yedeklenir ve yedekler 35 gün
 boyunca ayrı bir depolama bölgesinde saklanır. Manuel bir yedekten geri
 yükleme talebi, destek ekibine bir talep açılarak yapılır ve genellikle
 24 saat içinde tamamlanır.
+
+# Özel Entegrasyonlar
+
+Kurumsal müşteriler, Nimbus mühendislik ekibiyle birlikte özel API
+entegrasyonları geliştirebilir. Bu tür projeler için minimum taahhüt
+süresi 6 aydır ve ayrı bir entegrasyon ücreti uygulanır.
+
+# IP Kısıtlaması
+
+Yöneticiler, hesaba erişimi belirli bir IP adresi listesiyle
+sınırlayabilir. IP kısıtlaması etkinleştirildiğinde, listede olmayan
+bir adresten gelen tüm istekler (API dahil) 403 hatasıyla reddedilir.
+
+# Çift Faktörlü Kimlik Doğrulama Zorunluluğu
+
+Yöneticiler, tüm kurumsal hesap üyeleri için çift faktörlü kimlik
+doğrulamayı (2FA) zorunlu kılabilir. Zorunluluk etkinleştirildikten
+sonra 2FA kurmamış üyeler bir sonraki girişte otomatik olarak kurulum
+akışına yönlendirilir, hesapları askıya alınmaz.
+
+# Veri İşleme Sözleşmesi
+
+Kurumsal müşteriler, GDPR uyumluluğu için bir Veri İşleme Sözleşmesi
+(DPA) imzalayabilir. DPA, Yönetim Konsolu'ndaki Hukuki Belgeler
+bölümünden dijital olarak imzalanır, ayrı bir kağıt süreç gerekmez.
+
+# Kullanıcı Sağlama
+
+Kurumsal paket, SCIM 2.0 protokolü üzerinden otomatik kullanıcı
+sağlama (provisioning) destekler — bir kimlik sağlayıcıdan kullanıcı
+eklendiğinde veya çıkarıldığında Nimbus hesabı otomatik güncellenir,
+manuel senkronizasyon gerekmez.
+
+# Loglama Saklama Süresi
+
+Sistem logları (API çağrıları, hata izleri) 180 gün boyunca saklanır —
+bu, denetim kaydının (audit log) 90 günlük saklama süresinden farklı
+bir retention politikasıdır ve ayrı bir `/admin/system-logs` uç
+noktasından erişilir.
+
+# Destek Yanıt Süreleri
+
+Kurumsal destek, kritik önem derecesindeki taleplere 1 saat içinde,
+yüksek önem derecesindekilere 4 saat içinde yanıt verir. Standart
+önem derecesindeki talepler için garanti edilen yanıt süresi 1 iş
+günüdür.
+
+# Alt Hesaplar
+
+Bir kurumsal hesap, ayrı faturalandırma ve depolama kotalarına sahip
+en fazla 10 alt hesap (sub-account) oluşturabilir. Alt hesaplar ana
+hesabın SSO yapılandırmasını miras alır ama kendi rol/izin
+atamalarına sahiptir.
+
+# Dışa Aktarma Formatları
+
+Toplu veri dışa aktarma, ZIP (orijinal dosya yapısı) veya tek bir
+tar.gz arşivi (sıkıştırılmış, daha küçük indirme boyutu) formatında
+istenebilir. ZIP formatı varsayılandır ve API çağrısında format
+belirtilmezse kullanılır.
 """
 
 
