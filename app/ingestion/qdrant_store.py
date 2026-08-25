@@ -25,9 +25,17 @@ class UnexpectedCollectionSchemaError(Exception):
 
 
 class QdrantStore:
-    def __init__(self, client: QdrantClient, collection_name: str):
+    def __init__(
+        self, client: QdrantClient, collection_name: str, dense_dimension: int = EMBEDDING_DIM
+    ):
+        # Sprint 18: parameterized so a benchmark collection can use a
+        # different embedding model's real output dimension (e.g.
+        # Qwen3-Embedding-4B) without touching the production default —
+        # every existing call site omits this and gets EMBEDDING_DIM
+        # (nomic's 768), unchanged.
         self._client = client
         self._collection_name = collection_name
+        self._dense_dimension = dense_dimension
 
     def ensure_collection(self) -> None:
         if self._client.collection_exists(self._collection_name):
@@ -110,7 +118,7 @@ class QdrantStore:
             # confusingly, at the first upsert instead of here.
             dense_params = dense_vectors[VECTOR_NAME]
             schema_mismatch = (
-                dense_params.size != EMBEDDING_DIM
+                dense_params.size != self._dense_dimension
                 or dense_params.distance != qmodels.Distance.COSINE
             )
             if schema_mismatch:
@@ -118,8 +126,8 @@ class QdrantStore:
                     f"Collection {self._collection_name!r} already exists but its "
                     f"{VECTOR_NAME!r} dense vector is size={dense_params.size}, "
                     f"distance={dense_params.distance.name} — this app requires "
-                    f"size={EMBEDDING_DIM}, distance={qmodels.Distance.COSINE.name}. Left "
-                    "untouched rather than deleted and recreated — delete it yourself if "
+                    f"size={self._dense_dimension}, distance={qmodels.Distance.COSINE.name}. "
+                    "Left untouched rather than deleted and recreated — delete it yourself if "
                     "that's genuinely safe, or point QDRANT_COLLECTION_NAME at a fresh "
                     "collection name."
                 )
@@ -130,7 +138,7 @@ class QdrantStore:
             collection_name=self._collection_name,
             vectors_config={
                 VECTOR_NAME: qmodels.VectorParams(
-                    size=EMBEDDING_DIM, distance=qmodels.Distance.COSINE
+                    size=self._dense_dimension, distance=qmodels.Distance.COSINE
                 )
             },
             sparse_vectors_config={

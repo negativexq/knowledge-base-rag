@@ -83,6 +83,40 @@ async def test_search_applies_search_query_prefix_to_dense_embedding():
 
 
 @pytest.mark.asyncio
+async def test_search_accepts_a_query_prefix_override_for_a_different_embedding_model():
+    """Sprint 18: scripts/benchmark_embeddings.py needs to reuse this
+    exact function for a challenger embedding model with its own
+    instruction format — asserting the override actually reaches
+    ollama.embed() (not silently ignored, not blended with
+    SEARCH_QUERY_PREFIX) is what proves that reuse doesn't quietly carry
+    nomic's prefix over to a different model.
+    """
+    client = QdrantClient(":memory:")
+    store = QdrantStore(client=client, collection_name=COLLECTION + "_prefix_override")
+    store.ensure_collection()
+    store.upsert_chunks(
+        [_chunk("placeholder")],
+        [[0.0] * 768],
+        [SparseVector(indices=[1], values=[1.0])],
+    )
+    ollama = _FakeOllama()
+
+    await search(
+        "how many gb of free storage",
+        ollama=ollama,
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=client,
+        collection_name=COLLECTION + "_prefix_override",
+        embed_model="qwen3-embedding:4b",
+        query_prefix="Instruct: retrieve relevant passages\nQuery: ",
+    )
+
+    assert ollama.calls[0]["prefix"] == "Instruct: retrieve relevant passages\nQuery: "
+    assert ollama.calls[0]["prefix"] != SEARCH_QUERY_PREFIX
+    assert ollama.calls[0]["model"] == "qwen3-embedding:4b"
+
+
+@pytest.mark.asyncio
 async def test_search_returns_hybrid_results():
     client = QdrantClient(":memory:")
     store = QdrantStore(client=client, collection_name=COLLECTION + "2")

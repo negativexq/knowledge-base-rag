@@ -1,0 +1,876 @@
+[
+  {
+    "id": "pdf-free-storage-tr-query",
+    "query": "Nimbus'ta ücretsiz hesap kaç GB depolama alanı içerir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "1/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-free-storage-en-query",
+    "query": "How many GB of storage does a free Nimbus account include?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "1/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-2fa-sms-tr-query",
+    "query": "Nimbus'ta SMS tabanlı iki faktörlü kimlik doğrulama destekleniyor mu?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "1/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-2fa-sms-en-query",
+    "query": "Is SMS-based two-factor authentication supported on Nimbus?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "1/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-plus-tier-price-tr-query",
+    "query": "Nimbus'un Plus paket fiyatı nedir ve ne kadar depolama sunar?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "2/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-plus-tier-price-en-query",
+    "query": "What is the price of Nimbus's Plus tier and how much storage does it offer?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "2/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-shared-link-expiry-tr-query",
+    "query": "Paylaşılan bağlantılar için varsayılan son kullanma süresi nedir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "3/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-shared-link-expiry-en-query",
+    "query": "What is the default expiration period for shared links?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "3/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-sync-paused-cause-tr-query",
+    "query": "Masaüstü senkronizasyon istemcisinde 'Sync Paused' durumunun en yaygın nedeni nedir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "4/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-sync-paused-cause-en-query",
+    "query": "What is the most common cause of the 'Sync Paused' status in the desktop sync client?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "4/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-annual-refund-window-tr-query",
+    "query": "Yıllık planlar kaç gün içinde tam iade edilebilir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "5/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-annual-refund-window-en-query",
+    "query": "Within how many days can annual plans be refunded in full?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "5/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-data-export-tr-query",
+    "query": "Nimbus'ta tam veri dışa aktarma talebi nasıl yapılır ve indirme bağlantısı kaç gün geçerlidir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "6/0"
+      ]
+    ]
+  },
+  {
+    "id": "pdf-data-export-en-query",
+    "query": "How is a full data export requested on Nimbus, and how many days is the download link valid?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_handbook_pdf",
+        "6/0"
+      ]
+    ]
+  },
+  {
+    "id": "api-auth-tr-query",
+    "query": "Nimbus API istekleri hangi header'ı içermeli ve token ne kadar sürede geçerliliğini yitirir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Authentication"
+      ]
+    ]
+  },
+  {
+    "id": "api-auth-en-query",
+    "query": "Which header must Nimbus API requests include, and how long until the token expires?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Authentication"
+      ]
+    ]
+  },
+  {
+    "id": "api-rate-limit-tr-query",
+    "query": "Nimbus API'sinin varsayılan hız sınırı dakikada kaç istektir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Rate Limits"
+      ]
+    ]
+  },
+  {
+    "id": "api-rate-limit-en-query",
+    "query": "What is the default rate limit for the Nimbus API, in requests per minute?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Rate Limits"
+      ]
+    ]
+  },
+  {
+    "id": "api-pagination-tr-query",
+    "query": "Nimbus API'sinde bir liste uç noktası varsayılan olarak sayfa başına en fazla kaç öğe döndürür?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Pagination"
+      ]
+    ]
+  },
+  {
+    "id": "api-pagination-en-query",
+    "query": "By default, how many items per page does a Nimbus API list endpoint return at most?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Pagination"
+      ]
+    ]
+  },
+  {
+    "id": "api-webhooks-tr-query",
+    "query": "Nimbus webhook payload'ları hangi algoritmayla imzalanır ve imza hangi header'da gönderilir?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Webhooks"
+      ]
+    ]
+  },
+  {
+    "id": "api-webhooks-en-query",
+    "query": "Which algorithm signs Nimbus webhook payloads, and which header carries the signature?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Webhooks"
+      ]
+    ]
+  },
+  {
+    "id": "api-error-codes-tr-query",
+    "query": "Nimbus API'sinde 409 Conflict hatası en yaygın olarak hangi durumda oluşur?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Error Codes"
+      ]
+    ]
+  },
+  {
+    "id": "api-error-codes-en-query",
+    "query": "What is the most common cause of a 409 Conflict error in the Nimbus API?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Error Codes"
+      ]
+    ]
+  },
+  {
+    "id": "api-versioning-tr-query",
+    "query": "Nimbus-Version header'ı gönderilmezse hangi API sürümü varsayılan olarak kullanılır?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "API Versioning"
+      ]
+    ]
+  },
+  {
+    "id": "api-versioning-en-query",
+    "query": "Which API version is used by default if the Nimbus-Version header is omitted?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "API Versioning"
+      ]
+    ]
+  },
+  {
+    "id": "api-upload-limit-tr-query",
+    "query": "Nimbus'un doğrudan (direct) yükleme uç noktası en fazla kaç boyutundaki dosyaları kabul eder?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "File Upload Size Limits"
+      ]
+    ]
+  },
+  {
+    "id": "api-upload-limit-en-query",
+    "query": "What is the maximum file size the Nimbus direct upload endpoint accepts?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "File Upload Size Limits"
+      ]
+    ]
+  },
+  {
+    "id": "api-idempotency-tr-query",
+    "query": "Aynı Idempotency-Key ile yapılan bir istek kaç saat içinde tekrarlanırsa orijinal yanıt döndürülür?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Idempotency"
+      ]
+    ]
+  },
+  {
+    "id": "api-idempotency-en-query",
+    "query": "Within how many hours does replaying a request with the same Idempotency-Key return the original response?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Idempotency"
+      ]
+    ]
+  },
+  {
+    "id": "api-sandbox-tr-query",
+    "query": "Nimbus sandbox API anahtarları hangi önekle (prefix) başlar?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Sandbox Environment"
+      ]
+    ]
+  },
+  {
+    "id": "api-sandbox-en-query",
+    "query": "What prefix do Nimbus sandbox API keys start with?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Sandbox Environment"
+      ]
+    ]
+  },
+  {
+    "id": "api-deprecation-tr-query",
+    "query": "Kullanımdan kaldırılan (deprecated) bir Nimbus API uç noktası, kaldırılmadan önce en az kaç ay daha kullanılabilir kalır?",
+    "query_lang": "tr",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Deprecation Policy"
+      ]
+    ]
+  },
+  {
+    "id": "api-deprecation-en-query",
+    "query": "For how many months at minimum does a deprecated Nimbus API endpoint remain available before removal?",
+    "query_lang": "en",
+    "content_lang": "en",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_api_reference_md",
+        "Deprecation Policy"
+      ]
+    ]
+  },
+  {
+    "id": "md-install-command-tr-query",
+    "query": "Nimbus CLI nasıl kurulur ve hangi Python sürümü gerekir?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kurulum"
+      ]
+    ]
+  },
+  {
+    "id": "md-install-command-en-query",
+    "query": "How do you install the Nimbus CLI and which Python version is required?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kurulum"
+      ]
+    ]
+  },
+  {
+    "id": "md-windows-shell-support-tr-query",
+    "query": "Windows'ta Nimbus CLI hangi kabuk (shell) üzerinden resmi olarak destekleniyor?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kurulum/Sistem Gereksinimleri"
+      ]
+    ]
+  },
+  {
+    "id": "md-windows-shell-support-en-query",
+    "query": "Which shell is officially supported for the Nimbus CLI on Windows?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kurulum/Sistem Gereksinimleri"
+      ]
+    ]
+  },
+  {
+    "id": "md-token-lifetime-tr-query",
+    "query": "Nimbus CLI erişim token'ları kaç gün geçerlidir?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kimlik Doğrulama/Token Süresi"
+      ]
+    ]
+  },
+  {
+    "id": "md-token-lifetime-en-query",
+    "query": "How many days are Nimbus CLI access tokens valid for?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kimlik Doğrulama/Token Süresi"
+      ]
+    ]
+  },
+  {
+    "id": "md-sync-conflict-flags-tr-query",
+    "query": "Bir senkronizasyon çakışmasında yerel sürümü zorla yüklemek için hangi bayrak kullanılır?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Senkronizasyon Komutları/Çakışma Çözümü"
+      ]
+    ]
+  },
+  {
+    "id": "md-sync-conflict-flags-en-query",
+    "query": "Which flag is used to force-push the local version in a sync conflict?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Senkronizasyon Komutları/Çakışma Çözümü"
+      ]
+    ]
+  },
+  {
+    "id": "md-proxy-env-var-tr-query",
+    "query": "Nimbus CLI için proxy sunucusu belirtmek amacıyla hangi ortam değişkeni kullanılır?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Sorun Giderme/Bağlantı Hataları"
+      ]
+    ]
+  },
+  {
+    "id": "md-proxy-env-var-en-query",
+    "query": "Which environment variable is used to specify a proxy server for the Nimbus CLI?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Sorun Giderme/Bağlantı Hataları"
+      ]
+    ]
+  },
+  {
+    "id": "cli-login-tr-query",
+    "query": "`nimbus login` komutu ne yapar ve kimlik bilgileri nerede saklanır?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kimlik Doğrulama"
+      ]
+    ]
+  },
+  {
+    "id": "cli-login-en-query",
+    "query": "What does the `nimbus login` command do, and where are the credentials stored?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Kimlik Doğrulama"
+      ]
+    ]
+  },
+  {
+    "id": "cli-sync-push-tr-query",
+    "query": "Yerel bir klasörü uzak depolamaya yüklemek için hangi Nimbus CLI komutu kullanılır?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Senkronizasyon Komutları"
+      ]
+    ]
+  },
+  {
+    "id": "cli-sync-push-en-query",
+    "query": "Which Nimbus CLI command is used to upload a local folder to remote storage?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Senkronizasyon Komutları"
+      ]
+    ]
+  },
+  {
+    "id": "cli-doctor-tr-query",
+    "query": "`nimbus doctor` komutu neyi kontrol eder?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Sorun Giderme"
+      ]
+    ]
+  },
+  {
+    "id": "cli-doctor-en-query",
+    "query": "What does the `nimbus doctor` command check?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_cli_md",
+        "Sorun Giderme"
+      ]
+    ]
+  },
+  {
+    "id": "sso-tr-query",
+    "query": "Nimbus Kurumsal paket hangi iki protokol üzerinden tek oturum açmayı destekler?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Tek Oturum Açma"
+      ]
+    ]
+  },
+  {
+    "id": "sso-en-query",
+    "query": "Which two protocols does the Nimbus Enterprise tier support for single sign-on?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Tek Oturum Açma"
+      ]
+    ]
+  },
+  {
+    "id": "audit-log-tr-query",
+    "query": "Nimbus kurumsal denetim kayıtları kaç gün saklanır?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Denetim Kaydı"
+      ]
+    ]
+  },
+  {
+    "id": "audit-log-en-query",
+    "query": "How many days are Nimbus enterprise audit logs retained?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Denetim Kaydı"
+      ]
+    ]
+  },
+  {
+    "id": "data-residency-tr-query",
+    "query": "Kurumsal müşteriler veri bölgesini ne zaman seçebilir ve sonradan değiştirebilir mi?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Veri Konumu"
+      ]
+    ]
+  },
+  {
+    "id": "data-residency-en-query",
+    "query": "When can enterprise customers choose their data region, and can it be changed later?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Veri Konumu"
+      ]
+    ]
+  },
+  {
+    "id": "roles-tr-query",
+    "query": "Nimbus Kurumsal paketin sunduğu beş yerleşik rolden hangisi tek başına faturalandırmayı değiştirebilir?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Roller ve İzinler"
+      ]
+    ]
+  },
+  {
+    "id": "roles-en-query",
+    "query": "Of the five built-in roles the Nimbus Enterprise tier offers, which one alone can change billing?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Roller ve İzinler"
+      ]
+    ]
+  },
+  {
+    "id": "sla-tr-query",
+    "query": "Nimbus Kurumsal SLA'sı aylık kaç yüzde çalışma süresi garantisi verir?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Hizmet Seviyesi Anlaşması"
+      ]
+    ]
+  },
+  {
+    "id": "sla-en-query",
+    "query": "What monthly uptime percentage does the Nimbus Enterprise SLA guarantee?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Hizmet Seviyesi Anlaşması"
+      ]
+    ]
+  },
+  {
+    "id": "billing-cycle-tr-query",
+    "query": "Kurumsal faturalandırma varsayılan olarak hangi döngüdedir ve yıllık faturalandırma ne kadar indirim sağlar?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Faturalandırma Döngüsü"
+      ]
+    ]
+  },
+  {
+    "id": "billing-cycle-en-query",
+    "query": "What is the default enterprise billing cycle, and how much discount does annual billing provide?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Faturalandırma Döngüsü"
+      ]
+    ]
+  },
+  {
+    "id": "retention-tr-query",
+    "query": "Kurumsal hesaplarda silinen dosyalar kalıcı olarak silinmeden önce kaç gün çöp kutusunda tutulur?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Veri Saklama Politikası"
+      ]
+    ]
+  },
+  {
+    "id": "retention-en-query",
+    "query": "How many days are deleted files kept in the enterprise trash before permanent deletion?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Veri Saklama Politikası"
+      ]
+    ]
+  },
+  {
+    "id": "backup-tr-query",
+    "query": "Kurumsal veriler ne sıklıkla yedeklenir ve yedekler kaç gün saklanır?",
+    "query_lang": "tr",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Yedekleme"
+      ]
+    ]
+  },
+  {
+    "id": "backup-en-query",
+    "query": "How often is enterprise data backed up, and how many days are backups retained?",
+    "query_lang": "en",
+    "content_lang": "tr",
+    "expected_locations": [
+      [
+        "filesystem",
+        "nimbus_kurumsal_sss_md",
+        "Yedekleme"
+      ]
+    ]
+  },
+  {
+    "id": "not-found-unrelated-tr-query",
+    "query": "Nimbus'un merkez ofisi hangi şehirde bulunuyor?",
+    "query_lang": "tr",
+    "content_lang": null,
+    "expected_locations": [],
+    "expect_not_found": true
+  },
+  {
+    "id": "not-found-unrelated-en-query",
+    "query": "Which city is Nimbus's headquarters located in?",
+    "query_lang": "en",
+    "content_lang": null,
+    "expected_locations": [],
+    "expect_not_found": true
+  }
+]

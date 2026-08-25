@@ -2071,7 +2071,166 @@ altında hiçbir dosya değiştirilmedi. Sadece yeni bir fixture
 (`tests/fixtures/golden_set_en.json`) eklendi, README ve PLANNING.md
 güncellendi.
 
-## Sprint 18 (stretch) — İkinci Connector (Confluence)
+## Sprint 18 — Multilingual Embedding Benchmark: Nomic vs Qwen3-Embedding-4B
+
+Amaç: Sprint 17.7'nin bulduğu çapraz-dilli retrieval zayıflığına karşı
+`Qwen/Qwen3-Embedding-4B`'nin `nomic-embed-text`'e göre gerçekten daha
+iyi olup olmadığını kontrollü, tek-değişkenli bir benchmark'la ölçmek —
+production default'u sonuç kanıtlanmadan değiştirmeden. Bkz.
+docs/sprint-18-plan.md.
+
+Scope:
+
+1. `Qwen/Qwen3-Embedding-4B` için config-driven embedding model desteği
+   (`app/llm/embedding_models.py`) — Qwen3'ün resmi asimetrik instruction
+   formatı, nomic'in prefix'i taşınmadan
+2. Pipeline fingerprint (`app/ingestion/fingerprint.py`) — embedding
+   model/revision/dimension/instruction + mevcut index schema version'ı
+   tek bir deterministic hash'te birleştiren, registry'ye kaydedilen,
+   `ingest_connector`'a opsiyonel parametre olarak bağlanan bir
+   reconciliation mekanizması
+3. Benchmark izolasyonu — ayrı Qdrant collection'ları, ayrı SQLite
+   registry'leri, production'a hiç dokunmadan
+4. Golden set'in 4 dil-çifti hücresine (TR→TR, EN→EN, TR→EN, EN→TR)
+   genişletilmesi, gerçek yeni içerikle (`nimbus_api_reference.md`,
+   `nimbus_kurumsal_sss.md`)
+5. Rank-aware metrikler (Recall@1/3/5, MRR, nDCG@5) — daha önce hiç
+   yoktu
+6. `scripts/benchmark_embeddings.py` CLI — operasyonel metriklerle
+   birlikte, `artifacts/embedding-benchmark/{results.json,report.md}`
+   üretiyor
+
+DoD: 8 gerçek retrieval hücresi (4 dil-çifti x 2 model) + operasyonel
+metrikler gerçek servislere karşı ölçülmüş; testler ve lint temiz;
+sonuç kanıtlanmadan iddia yok.
+
+### Kapanış notu
+
+**1. Mimari: yeni bir transport DEĞİL, config-driven bir model seçimi.**
+Qwen3-Embedding-4B de nomic gibi Ollama üzerinden servis ediliyor
+(`qwen3-embedding:4b`, gerçekten `ollama pull` ile indirildi, GERÇEK bir
+`/api/embeddings` çağrısıyla boyutu doğrulandı: **2560**, model kartıyla
+uyumlu). Bu yüzden yeni bir `EmbeddingProvider` alt sınıfı yerine
+`EmbeddingModelConfig` (`app/llm/embedding_models.py`) eklendi — model
+adı/revision/dimension/query+document instruction, hepsi
+`Settings`'ten configurable (magic constant yok). Qwen3'ün resmi
+asimetrik formatı (`Instruct: {task}\nQuery: ` sadece sorgu tarafında,
+doküman tarafı çıplak metin) `app/retrieval/search.py::search()`'e
+eklenen `query_prefix` parametresiyle (varsayılan: nomic'in
+`SEARCH_QUERY_PREFIX`'i, GERİYE DÖNÜK UYUMLU) mümkün oldu — bu olmadan
+`search()` nomic'in prefix'ini Qwen3'e KÖRÜ KÖRÜNE taşırdı, tam da
+kullanıcının yasakladığı hata. `QdrantStore.__init__`'e opsiyonel
+`dense_dimension` parametresi eklendi (varsayılan: mevcut
+`EMBEDDING_DIM=768`, GERİYE DÖNÜK UYUMLU) — Qwen3'ün 2560 boyutlu
+collection'ı bunsuz açılamazdı.
+
+**2. Pipeline fingerprint, YENİ bir mekanizma değil, Sprint 17.1'in
+mekanizmasının genişletilmesi.** `app/ingestion/fingerprint.py::
+PipelineFingerprint`, embedding config'ini mevcut
+`CURRENT_INDEX_SCHEMA_VERSION`'la (paralel bir sayaç İCAT ETMEDEN)
+birleştirip deterministic bir SHA-256 digest üretiyor — testle
+kanıtlandı: aynı config'ten iki fingerprint HER ZAMAN aynı digest'i
+üretiyor (dict/kwarg sırası farklı olsa bile, `sort_keys=True` sayesinde),
+embedding_model/dimension/instruction/index_schema_version'dan HERHANGİ
+biri değişirse digest DEĞİŞİYOR. Registry'ye nullable
+`pipeline_fingerprint` kolonu eklendi (Sprint 17.4'ün öğrettiği ders:
+NOT NULL/default YOK — `ALTER TABLE ADD COLUMN`). `ingest_connector`'a
+OPSİYONEL bir parametre olarak bağlandı — GERÇEKTEN kanıtlandı: content
+DEĞİŞMEMİŞKEN sadece embedding modeli değişince (aynı senaryo, iki farklı
+fingerprint) `files_processed=1` (zorla yeniden indexleniyor, SKIP
+EDİLMİYOR), fix'ten ÖNCE (kontrol geçici olarak `if False and ...` ile
+devre dışı bırakılıp doğrulandı) aynı test GERÇEKTEN
+`files_skipped=1` ile fail ediyordu — yani mevcut chunk_count/
+content_hash reconciliation'ı bu senaryoyu YAKALAYAMIYORDU. Parametre
+verilmediğinde (mevcut TÜM production çağrı yerleri, SyncManager dahil)
+davranış BİREBİR AYNI — ayrı bir testle kanıtlandı. Production
+SyncManager'a GERÇEK bir fingerprint bağlamak bilinçli olarak bu
+sprintin DIŞINDA bırakıldı — bağlamak her kullanıcının mevcut index'ini
+bir sonraki sync'te zorla yeniden indexlerdi, ki bu bir benchmark
+sprint'inin yan etkisi olmamalı.
+
+**3. Golden set, 4 dil-çifti hücresine gerçek içerikle genişletildi —
+uydurulmadı, ingest edilmiş içerikten doğrulandı.** İki yeni gerçek
+fixture doküman yazıldı: `nimbus_api_reference.md` (İngilizce, 10 H1
+bölüm — auth, rate limits, pagination, webhooks, error codes,
+versioning, upload limits, idempotency, sandbox, deprecation) ve
+`nimbus_kurumsal_sss.md` (Türkçe, 8 H1 bölüm — SSO, denetim kaydı, veri
+konumu, roller, SLA, faturalandırma, veri saklama, yedekleme). Mevcut
+iki dokümanın (PDF handbook, CLI referansı) daha önce kullanılmamış
+paragraf/heading'leri de (PDF sayfa 6, CLI'ın "Kimlik Doğrulama"/
+"Senkronizasyon Komutları"/"Sorun Giderme" üst-seviye bölümleri) madene
+çıkarıldı. Toplam 68 soru (66 gerçek + 2 not-found kontrol), 4 gerçek
+Qdrant collection'ına (`kb_corpus_verify`) ingest edilip HER `expected_
+location` `location_for()` çıktısıyla GERÇEKTEN eşleştirildi (0 uyuşmazlık,
+doğrudan doğrulandı) — hücre başına dağılım: TR→TR=16, EN→EN=17,
+TR→EN=17, EN→TR=16, hepsi 15-20 hedefinin üzerinde. Her yeni gerçeğin
+hem TR hem EN soru formu var; mevcut 11 gerçeğin (6 PDF + 5 CLI)
+TR/EN soru çiftleri Sprint 17.7'nin `golden_set.json`/`golden_set_en.json`'ından
+BİREBİR yeniden kullanıldı (paraphrase-kolay, uydurma soru YOK).
+
+**4. Gerçek 68-soruluk, 2-modelli benchmark koşumu — sonuçlar
+(`artifacts/embedding-benchmark/report.md`):**
+
+```
+Model     TR→TR R@5  EN→EN R@5  TR→EN R@5  EN→TR R@5   MRR    nDCG@5  p95(ms)
+nomic       1.000      1.000      0.625      0.588     0.701   0.726    46.7
+qwen3-4b    1.000      1.000      1.000      0.941     0.884   0.910   131.3
+```
+
+Çapraz-dilli hücrelerin İKİSİ de belirgin şekilde iyileşti (TR→EN Recall@5
++0.353, MRR +0.480; EN→TR Recall@5 +0.375, MRR +0.247), tek-dilli
+hücrelerin İKİSİ de HİÇ DEĞİŞMEDİ (1.000→1.000, precision/recall dahil
+ondalık basamağa kadar aynı) — Sprint 17.7'nin bulduğu dil-uyuşmazlığı
+zayıflığını gerçekten kapatan bir sonuç, regresyon yok.
+
+**Operasyonel maliyet gerçek, ölçülmüş ve ciddi:**
+
+```
+                          nomic      qwen3-4b
+dimension                   768         2560   (3.3x)
+indexing throughput      25.57         2.03    chunks/sec (12.6x YAVAŞ)
+query embed p50 (ms)      33.6        242.4    (7.2x)
+query embed p95 (ms)      43.6        369.0    (8.5x)
+total retrieval p95 (ms)  46.7        131.3    (2.8x)
+model load/warmup (s)     0.54         3.49    (6.5x)
+Qdrant storage (tahmini) 160KB        384KB    (2.4x)
+```
+
+RAM/VRAM kullanımı ölçülMEDİ — bu ortamda Ollama'nın subprocess bellek
+kullanımını güvenilir şekilde izole ölçecek bir mekanizma yoktu,
+uydurulmadı, raporda açıkça "not measured" olarak işaretlendi.
+
+**5. Karar kuralı MEKANİK olarak `ADOPT_QWEN3` çıkardı (`scripts/
+benchmark_embeddings.py::decide()`), ama production default DEĞİŞMEDİ.**
+Kural: HER İKİ çapraz-dilli Recall@5 hücresi iyileşmeli VE çapraz-dilli
+MRR iyileşmeli VE hiçbir tek-dilli hücre ciddi regresyon (>%10) göstermemeli
+— üçü de sağlandı, test edildi (`tests/test_benchmark_embeddings.py`,
+ADOPT/KEEP/NEED_MORE_DATA senaryolarının hepsi sentetik ama gerçekçi
+verilerle ayrı ayrı kanıtlandı). Bu, sadece ortalama skor yükseldiği için
+otomatik "kazanan" ilan etme riskini kapatıyor — kullanıcının açıkça
+istediği gibi. Ama gerçek maliyet (7-12x latency/throughput, 3.3x boyut)
+üretim varsayılanını hemen değiştirmeyi GEREKTİRMİYOR — bu bir
+mühendislik/ürün trade-off kararı, bu sprintin kapsamı sadece ÖLÇMEKTİ.
+`settings.ollama_embed_model` hâlâ `nomic-embed-text`, hiçbir production
+çağrı yeri değişmedi.
+
+**6. Sınırlamalar, dürüstçe:** Tek golden set (68 soru, 4 doküman, tek
+fictional domain), tek koşum, istatistiksel anlamlılık testi yok (küçük
+n, LLM judge yok — bu retrieval-only bir benchmark, generation kalitesi
+kapsam dışı bırakıldı, kullanıcının istediği gibi). RAM/VRAM ölçülmedi.
+Qdrant storage rakamı gerçek bir disk ölçümü değil, nokta sayısı x
+(dimension x 4 byte + 2048 byte tahmini payload/sparse overhead)
+formülüyle hesaplanmış bir TAHMİN — raporda açıkça böyle etiketlendi.
+
+**37 yeni test** (`tests/test_embedding_models.py` +7,
+`tests/test_fingerprint.py` +9, `tests/test_rank_metrics.py` +9,
+`tests/test_benchmark_embeddings.py` +11, `tests/test_search.py` +1 —
+query_prefix override, `tests/test_sync_scenarios.py` +3 — fingerprint
+mismatch/match/backward-compat, `tests/test_document_registry.py` şema
+testi güncellendi), 485 test yeşil (448→485), 2'si servis/API key
+gerektirdiği için skip, `ruff check app tests scripts` temiz.
+
+## Sprint 19 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

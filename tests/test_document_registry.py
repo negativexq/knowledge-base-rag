@@ -221,6 +221,7 @@ def test_schema_creates_documents_table_with_expected_columns(tmp_path):
         "version",
         "status",
         "chunk_count",
+        "pipeline_fingerprint",
     }
 
 

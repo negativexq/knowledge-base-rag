@@ -10,6 +10,7 @@ from opentelemetry import trace
 
 from app.connectors.base import Connector
 from app.ingestion.chunker import DEFAULT_CHUNK_SIZE_TOKENS, DEFAULT_OVERLAP_TOKENS, chunk_document
+from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
 from app.ingestion.qdrant_store import QdrantStore
 from app.registry.store import DocumentRegistry
@@ -155,6 +156,7 @@ async def ingest_connector(
     upsert_batch_size: int = 64,
     embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
     tracer: trace.Tracer | None = None,
+    pipeline_fingerprint: PipelineFingerprint | None = None,
 ) -> IngestStats:
     """Connector-driven, multi-format, INCREMENTAL ingestion (ingest_path
     above is the PDF-only, folder-glob, registry-less entry point).
@@ -295,6 +297,23 @@ async def ingest_connector(
                             connector.source_type, document.source_id, content_hash
                         )
                         index_present_and_complete = actual_chunk_count == expected_chunk_count
+                    # Sprint 18: an OPTIONAL extra reconciliation
+                    # dimension, off by default (pipeline_fingerprint is
+                    # None for every existing caller — SyncManager never
+                    # passes one, so production behavior here is
+                    # unchanged). When a caller DOES pass one (the
+                    # benchmark script), content_hash/chunk_count staying
+                    # identical is no longer sufficient: a document
+                    # re-indexed under a different embedding model,
+                    # instruction, or index schema has stale vectors that
+                    # count_for_document_version can't see (the count can
+                    # match while every vector is wrong) — see
+                    # app/ingestion/fingerprint.py, docs/sprint-18-plan.md.
+                    if index_present_and_complete and pipeline_fingerprint is not None:
+                        stored_fingerprint = record.pipeline_fingerprint if record else None
+                        index_present_and_complete = (
+                            stored_fingerprint == pipeline_fingerprint.digest()
+                        )
                     check_span.set_attribute(
                         "check.index_present_and_complete", index_present_and_complete
                     )
@@ -503,7 +522,13 @@ async def ingest_connector(
             # partway through doesn't leave the registry claiming a document
             # was ingested when it wasn't.
             registry.upsert_document(
-                connector.source_type, document.source_id, content_hash, chunk_count=len(chunks)
+                connector.source_type,
+                document.source_id,
+                content_hash,
+                chunk_count=len(chunks),
+                pipeline_fingerprint=(
+                    pipeline_fingerprint.digest() if pipeline_fingerprint is not None else None
+                ),
             )
             files_processed += 1
 

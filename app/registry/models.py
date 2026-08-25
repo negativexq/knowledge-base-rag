@@ -29,3 +29,11 @@ class DocumentRecord:
     # (Sprints 3/13) — every existing DocumentRecord(...) call site
     # keeps working.
     chunk_count: int | None = None
+    # Sprint 18: PipelineFingerprint.digest() from the last real ingest —
+    # None = "never fingerprinted" (a legacy row, or a document upserted
+    # without passing one), same defaulting reasoning as chunk_count
+    # above. Lets a future reconciliation check detect "content hash is
+    # unchanged but the embedding model/instruction/index schema this was
+    # indexed under has changed" — something content_hash alone can never
+    # see. See app/ingestion/fingerprint.py.
+    pipeline_fingerprint: str | None = None

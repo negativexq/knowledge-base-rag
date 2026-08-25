@@ -13,10 +13,11 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from qdrant_client import QdrantClient
 
 from app.connectors.filesystem import LocalFilesystemConnector
+from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.ingest import ingest_connector
 from app.ingestion.models import Chunk
 from app.ingestion.qdrant_store import EMBEDDING_DIM, QdrantStore
-from app.registry.store import DocumentRegistry
+from app.registry.store import CURRENT_INDEX_SCHEMA_VERSION, DocumentRegistry
 from app.retrieval.sparse import SparseVector
 
 COLLECTION = "test_sync_scenarios"
@@ -586,4 +587,124 @@ async def test_real_sprint_17_2_upgrade_with_existing_qdrant_data_ends_up_tracke
         connector, store, migrated_registry, _fake_embed, _FakeSparseEncoder()
     )
     assert second.files_processed == 0  # genuine no-op now
+    assert second.files_skipped == 1
+
+
+@pytest.mark.asyncio
+async def test_pipeline_fingerprint_mismatch_forces_reindex_even_with_unchanged_content(
+    tmp_path,
+):
+    """Sprint 18: content_hash and chunk_count staying identical is not
+    enough once the EMBEDDING MODEL a document was indexed under changes
+    — the vectors in Qdrant are for a completely different model, but
+    nothing about the document's own content changed, so content_hash
+    comparison alone would trust them forever. Passing a
+    pipeline_fingerprint into ingest_connector adds exactly the
+    reconciliation dimension chunk_count already established for partial
+    point loss (Sprint 17.2) — a stored fingerprint that doesn't match
+    the CURRENT one is treated the same as an incomplete index.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "a.md").write_text("# A\n\nContent that never changes.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    fingerprint_v1 = PipelineFingerprint(
+        embedding_model="nomic-embed-text",
+        embedding_revision="latest",
+        embedding_dimension=768,
+        query_instruction="search_query: ",
+        document_instruction="search_document: ",
+        index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
+    )
+    first = await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        pipeline_fingerprint=fingerprint_v1,
+    )
+    assert first.files_processed == 1
+    assert registry.get_document("filesystem", "a_md").pipeline_fingerprint == (
+        fingerprint_v1.digest()
+    )
+
+    # Content is UNCHANGED — only the embedding model (a different name,
+    # standing in for e.g. swapping to Qwen3-Embedding-4B) changed.
+    fingerprint_v2 = PipelineFingerprint(
+        embedding_model="qwen3-embedding:4b",
+        embedding_revision="latest",
+        embedding_dimension=2560,
+        query_instruction="Instruct: x\nQuery: ",
+        document_instruction="",
+        index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
+    )
+    second = await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        pipeline_fingerprint=fingerprint_v2,
+    )
+
+    assert second.files_processed == 1  # forced re-index, NOT skipped
+    assert second.files_skipped == 0
+    assert registry.get_document("filesystem", "a_md").pipeline_fingerprint == (
+        fingerprint_v2.digest()
+    )
+
+
+@pytest.mark.asyncio
+async def test_pipeline_fingerprint_match_is_skipped_normally(tmp_path):
+    """The other half: an unchanged document with a MATCHING fingerprint
+    must still be skipped — passing a fingerprint must not turn every
+    sync into a full re-index.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "a.md").write_text("# A\n\nContent that never changes.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    fingerprint = PipelineFingerprint(
+        embedding_model="nomic-embed-text",
+        embedding_revision="latest",
+        embedding_dimension=768,
+        query_instruction="search_query: ",
+        document_instruction="search_document: ",
+        index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
+    )
+    await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        pipeline_fingerprint=fingerprint,
+    )
+
+    second = await ingest_connector(
+        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        pipeline_fingerprint=fingerprint,
+    )
+
+    assert second.files_processed == 0
+    assert second.files_skipped == 1
+
+
+@pytest.mark.asyncio
+async def test_omitting_pipeline_fingerprint_keeps_existing_behavior_unchanged(tmp_path):
+    """Backward compatibility: every existing caller (SyncManager, all
+    prior sprints' tests) never passes pipeline_fingerprint — the default
+    None must skip this check entirely, not treat "no fingerprint given"
+    as a mismatch.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "a.md").write_text("# A\n\nContent that never changes.")
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = _store()
+    registry = _registry(tmp_path)
+
+    await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
+
+    assert second.files_processed == 0
     assert second.files_skipped == 1

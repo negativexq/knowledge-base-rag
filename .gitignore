@@ -13,3 +13,4 @@ data/*
 data/documents/*
 !data/documents/.gitkeep
 *.db
+artifacts/embedding-benchmark/work/

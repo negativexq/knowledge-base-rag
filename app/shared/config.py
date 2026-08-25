@@ -11,6 +11,25 @@ class Settings(BaseSettings):
     ollama_model: str = "qwen2.5:7b-instruct"
     ollama_embed_model: str = "nomic-embed-text"
 
+    # Sprint 18: Qwen3-Embedding-4B benchmark challenger config — served
+    # via the same Ollama instance as everything else (no new transport),
+    # so only its model name/revision/dimension/instruction strings need
+    # to be configurable. Defaults match Qwen3-Embedding's published
+    # model card (asymmetric instruction: queries get an "Instruct: ...
+    # \nQuery: " prefix, documents get none) — see
+    # app/llm/embedding_models.py. Not used by the production default
+    # embedding path (settings.embedding_provider/ollama_embed_model
+    # unchanged); only scripts/benchmark_embeddings.py reads these.
+    qwen3_embed_model: str = "qwen3-embedding:4b"
+    qwen3_embed_revision: str = "latest"
+    # Verified against a real /api/embeddings call before use, not
+    # assumed from the model card — see docs/sprint-18-plan.md.
+    qwen3_embed_dimension: int = Field(default=2560, gt=0)
+    qwen3_query_instruction: str = (
+        "Given a search query, retrieve relevant passages that answer the query"
+    )
+    qwen3_document_instruction: str = ""
+
     # Generation (chat) and embedding are independent choices — Claude has
     # no embedding endpoint, so embedding_provider can never follow
     # generation_provider. embedding_provider is a Literal of one value

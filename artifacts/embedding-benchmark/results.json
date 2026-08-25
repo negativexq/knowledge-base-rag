@@ -1,0 +1,142 @@
+{
+  "baseline": {
+    "model_key": "nomic",
+    "ollama_model": "nomic-embed-text",
+    "fingerprint_digest": "57ec1f71ebbe089c",
+    "overall": {
+      "recall_at_1": 0.6363636363636364,
+      "recall_at_3": 0.7575757575757576,
+      "recall_at_5": 0.803030303030303,
+      "mrr": 0.7007575757575758,
+      "ndcg_at_5": 0.7264648248799617
+    },
+    "by_cell": {
+      "en_query_en_content": {
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0,
+        "question_count": 17
+      },
+      "en_query_tr_content": {
+        "recall_at_1": 0.375,
+        "recall_at_3": 0.5625,
+        "recall_at_5": 0.625,
+        "mrr": 0.4739583333333333,
+        "ndcg_at_5": 0.5120335040760192,
+        "question_count": 16
+      },
+      "tr_query_en_content": {
+        "recall_at_1": 0.23529411764705882,
+        "recall_at_3": 0.47058823529411764,
+        "recall_at_5": 0.5882352941176471,
+        "mrr": 0.36274509803921573,
+        "ndcg_at_5": 0.41901250725233535,
+        "question_count": 17
+      },
+      "tr_query_tr_content": {
+        "recall_at_1": 0.9375,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 0.96875,
+        "ndcg_at_5": 0.9769331095982161,
+        "question_count": 16
+      }
+    },
+    "not_found_accuracy": 0.0,
+    "not_found_question_count": 2,
+    "operational": {
+      "embedding_dimension": 768,
+      "indexing_seconds": 1.2512857080437243,
+      "chunks_indexed": 32,
+      "chunks_per_second": 25.573695754928107,
+      "model_load_seconds": 0.537166207912378,
+      "query_embed_p50_ms": 33.60845800489187,
+      "query_embed_p95_ms": 43.59262506477535,
+      "total_retrieval_p50_ms": 40.526458993554115,
+      "total_retrieval_p95_ms": 46.711333096027374,
+      "qdrant_storage_bytes_estimate": 163840,
+      "ram_mb": "not measured"
+    }
+  },
+  "challenger": {
+    "model_key": "qwen3-4b",
+    "ollama_model": "qwen3-embedding:4b",
+    "fingerprint_digest": "d09fbe9d0a305b92",
+    "overall": {
+      "recall_at_1": 0.803030303030303,
+      "recall_at_3": 0.9696969696969697,
+      "recall_at_5": 0.9848484848484849,
+      "mrr": 0.8843434343434343,
+      "ndcg_at_5": 0.9100790998390554
+    },
+    "by_cell": {
+      "en_query_en_content": {
+        "recall_at_1": 0.9411764705882353,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 0.9705882352941176,
+        "ndcg_at_5": 0.9782899855042034,
+        "question_count": 17
+      },
+      "en_query_tr_content": {
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.9375,
+        "recall_at_5": 1.0,
+        "mrr": 0.7208333333333333,
+        "ndcg_at_5": 0.7920269580414554,
+        "question_count": 16
+      },
+      "tr_query_en_content": {
+        "recall_at_1": 0.7647058823529411,
+        "recall_at_3": 0.9411764705882353,
+        "recall_at_5": 0.9411764705882353,
+        "mrr": 0.8431372549019608,
+        "ndcg_at_5": 0.8683446768907598,
+        "question_count": 17
+      },
+      "tr_query_tr_content": {
+        "recall_at_1": 1.0,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0,
+        "question_count": 16
+      }
+    },
+    "not_found_accuracy": 0.0,
+    "not_found_question_count": 2,
+    "operational": {
+      "embedding_dimension": 2560,
+      "indexing_seconds": 15.798640749999322,
+      "chunks_indexed": 32,
+      "chunks_per_second": 2.025490705584996,
+      "model_load_seconds": 3.4860997500363737,
+      "query_embed_p50_ms": 242.40979098249227,
+      "query_embed_p95_ms": 369.00249996688217,
+      "total_retrieval_p50_ms": 125.76766591519117,
+      "total_retrieval_p95_ms": 131.30358408670872,
+      "qdrant_storage_bytes_estimate": 393216,
+      "ram_mb": "not measured"
+    }
+  },
+  "decision": {
+    "recommendation": "ADOPT_QWEN3",
+    "reason": "Both cross-lingual Recall@5 cells improved, cross-lingual MRR improved, and mono-lingual cells did not regress materially.",
+    "cross_lingual_recall_at_5_deltas": {
+      "tr_query_en_content": 0.3529411764705882,
+      "en_query_tr_content": 0.375
+    },
+    "cross_lingual_mrr_deltas": {
+      "tr_query_en_content": 0.48039215686274506,
+      "en_query_tr_content": 0.246875
+    },
+    "mono_lingual_recall_at_5_deltas": {
+      "tr_query_tr_content": 0.0,
+      "en_query_en_content": 0.0
+    }
+  },
+  "golden_set_path": "tests/fixtures/embedding_benchmark_golden.json",
+  "question_count": 68
+}

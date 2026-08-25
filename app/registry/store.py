@@ -13,9 +13,22 @@ CREATE TABLE IF NOT EXISTS documents (
     version        INTEGER NOT NULL,
     status         TEXT    NOT NULL,
     chunk_count    INTEGER,
+    pipeline_fingerprint TEXT,
     PRIMARY KEY (source_type, source_id)
 );
 """
+
+
+def _migrate_add_pipeline_fingerprint_column(conn: sqlite3.Connection) -> None:
+    # Sprint 18: same nullable-ADD-COLUMN approach Sprint 17.3 used for
+    # chunk_count, applying the lesson Sprint 17.4 learned the hard way —
+    # no NOT NULL/default, so every pre-existing row becomes NULL (=
+    # "never fingerprinted"), never a value that could collide with a
+    # real digest. See app/ingestion/fingerprint.py.
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
+    if "pipeline_fingerprint" not in columns:
+        conn.execute("ALTER TABLE documents ADD COLUMN pipeline_fingerprint TEXT")
+
 
 def _migrate_add_chunk_count_column(conn: sqlite3.Connection) -> None:
     # Sprint 17.2: CREATE TABLE IF NOT EXISTS alone doesn't add a new
@@ -131,13 +144,16 @@ class IndexSchemaMismatchError(Exception):
 # apart from "content actually changed" using version alone.
 _UPSERT = """
 INSERT INTO documents
-    (source_type, source_id, content_hash, last_synced_at, version, status, chunk_count)
-VALUES (:source_type, :source_id, :content_hash, :last_synced_at, 1, :status, :chunk_count)
+    (source_type, source_id, content_hash, last_synced_at, version, status, chunk_count,
+     pipeline_fingerprint)
+VALUES (:source_type, :source_id, :content_hash, :last_synced_at, 1, :status, :chunk_count,
+        :pipeline_fingerprint)
 ON CONFLICT(source_type, source_id) DO UPDATE SET
     content_hash = excluded.content_hash,
     last_synced_at = excluded.last_synced_at,
     status = excluded.status,
     chunk_count = excluded.chunk_count,
+    pipeline_fingerprint = excluded.pipeline_fingerprint,
     version = CASE WHEN documents.content_hash != excluded.content_hash
                     THEN documents.version + 1
                     ELSE documents.version
@@ -145,12 +161,14 @@ ON CONFLICT(source_type, source_id) DO UPDATE SET
 """
 
 _SELECT_ONE = """
-SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count
+SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count,
+       pipeline_fingerprint
 FROM documents WHERE source_type = ? AND source_id = ?;
 """
 
 _SELECT_ALL = """
-SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count
+SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count,
+       pipeline_fingerprint
 FROM documents ORDER BY source_type, source_id;
 """
 
@@ -162,7 +180,16 @@ _DELETE_ONE = "DELETE FROM documents WHERE source_type = ? AND source_id = ?;"
 
 
 def _row_to_record(row: tuple) -> DocumentRecord:
-    source_type, source_id, content_hash, last_synced_at, version, status, chunk_count = row
+    (
+        source_type,
+        source_id,
+        content_hash,
+        last_synced_at,
+        version,
+        status,
+        chunk_count,
+        pipeline_fingerprint,
+    ) = row
     return DocumentRecord(
         source_type=source_type,
         source_id=source_id,
@@ -171,6 +198,7 @@ def _row_to_record(row: tuple) -> DocumentRecord:
         version=version,
         status=status,
         chunk_count=chunk_count,
+        pipeline_fingerprint=pipeline_fingerprint,
     )
 
 
@@ -194,6 +222,7 @@ class DocumentRegistry:
         with self._conn:
             self._conn.execute(_SCHEMA)
             _migrate_add_chunk_count_column(self._conn)
+            _migrate_add_pipeline_fingerprint_column(self._conn)
             self._conn.execute(_METADATA_SCHEMA)
 
     def upsert_document(
@@ -203,6 +232,7 @@ class DocumentRegistry:
         content_hash: str,
         status: str = DEFAULT_STATUS,
         chunk_count: int | None = None,
+        pipeline_fingerprint: str | None = None,
     ) -> DocumentRecord:
         # Timestamp is written as an ISO 8601 string, not a datetime object —
         # sqlite3's implicit datetime adapters were deprecated in Python
@@ -218,6 +248,7 @@ class DocumentRegistry:
                     "last_synced_at": last_synced_at,
                     "status": status,
                     "chunk_count": chunk_count,
+                    "pipeline_fingerprint": pipeline_fingerprint,
                 },
             )
         return self.get_document(source_type, source_id)

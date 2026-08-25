@@ -47,12 +47,23 @@ async def search(
     page_numbers: list[int] | None = None,
     filters: qmodels.Filter | None = None,
     tracer: trace.Tracer | None = None,
+    query_prefix: str = SEARCH_QUERY_PREFIX,
 ) -> list[SearchResult]:
+    # Sprint 18: query_prefix is a parameter (defaulting to nomic's own
+    # SEARCH_QUERY_PREFIX, so every existing caller is unaffected) rather
+    # than a hardcoded constant, so scripts/benchmark_embeddings.py can
+    # reuse this EXACT retrieval code path for a challenger embedding
+    # model with its own instruction format
+    # (app/llm/embedding_models.py::EmbeddingModelConfig.query_prefix())
+    # instead of silently applying nomic's "search_query: " to it. Using
+    # the same search() for both keeps retrieval configuration (top_k,
+    # top_n, RRF, filters) guaranteed identical between baseline and
+    # challenger — only the prefix and embed_model differ.
     tracer = tracer or get_tracer(__name__)
 
     with tracer.start_as_current_span("embed_query") as span:
         span.set_attribute("embed.model", embed_model)
-        dense_vector = await ollama.embed(query, model=embed_model, prefix=SEARCH_QUERY_PREFIX)
+        dense_vector = await ollama.embed(query, model=embed_model, prefix=query_prefix)
         sparse_vector = sparse_encoder.embed_query(query)
 
     resolved_filters = filters or build_filter(doc_ids, source_types, source_ids, page_numbers)

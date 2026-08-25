@@ -549,6 +549,24 @@ check of the code/tests where noted.
   golden-set combination, not a general claim about cross-lingual rerank
   performance everywhere. See the Sprint 17.7 closing note in
   `docs/PLANNING.md` for the full 8-cell breakdown.
+- **Sprint 18 benchmarked `Qwen/Qwen3-Embedding-4B` as a challenger to
+  `nomic-embed-text` specifically to test whether a different embedding
+  model closes the cross-lingual gap above — production still defaults
+  to nomic-embed-text; this is a completed benchmark, not yet an
+  adopted change.** A real, isolated 68-question benchmark (16-17
+  questions per language-pair cell, reranker off, retrieval-only,
+  against native Ollama + docker-compose Qdrant — see
+  `scripts/benchmark_embeddings.py`) found Qwen3-Embedding-4B closed
+  most of the cross-lingual recall gap (TR→EN Recall@5 0.625→1.000,
+  EN→TR Recall@5 0.588→0.941) with zero mono-lingual regression
+  (TR→TR and EN→EN both stayed at 1.000), at the cost of ~3.6x higher
+  query latency (p95 46.7ms→131.3ms), ~3.3x the embedding dimension
+  (768→2560, more Qdrant storage), and ~12x slower indexing throughput
+  in this environment (25.6→2.0 chunks/sec) — see
+  `artifacts/embedding-benchmark/report.md` for the full table and
+  `docs/PLANNING.md`'s Sprint 18 closing note for the adoption decision
+  and what would need to happen before switching the production
+  default.
 - **The root cause of PDF's weaker retrieval within mono-lingual pairs**
   (PDF+English recall 0.857 vs. Markdown+Turkish recall 1.000 — page-level
   chunk granularity vs. Markdown's heading-scoped blocks giving the
