@@ -161,7 +161,10 @@ class QdrantStore:
         # touch an existing collection" policy elsewhere. No query-
         # latency benchmark was run against real Qdrant this sprint;
         # see docs/sprint-17-3-plan.md for the reasoning.
-        for field_name in ("source_type", "source_id", "document_version"):
+        # Sprint 23: tenant_id joins this list — it's now the single
+        # most-filtered field in the collection (build_acl_filter adds
+        # it to EVERY retrieval call, not just maintenance queries).
+        for field_name in ("tenant_id", "source_type", "source_id", "document_version"):
             self._client.create_payload_index(
                 collection_name=self._collection_name,
                 field_name=field_name,
@@ -171,20 +174,29 @@ class QdrantStore:
     def count(self) -> int:
         return self._client.count(self._collection_name, exact=True).count
 
-    def has_document_version(self, source_type: str, source_id: str, document_version: str) -> bool:
+    def has_document_version(
+        self, tenant_id: str, source_type: str, source_id: str, document_version: str
+    ) -> bool:
         """Cheap presence check: does at least one point exist for this
-        (source_type, source_id, document_version)? A limit=1 scroll, not
-        an exact count — used by ingest_connector (Sprint 17.2) to detect
-        registry/Qdrant drift: a document whose content_hash hasn't
-        changed can still have had its Qdrant points disappear by some
-        means other than this app's own delete calls (manual deletion,
-        external tooling, data loss) while the registry has no way to
-        notice on its own. See docs/sprint-17-2-plan.md.
+        (tenant_id, source_type, source_id, document_version)? A limit=1
+        scroll, not an exact count — used by ingest_connector (Sprint
+        17.2) to detect registry/Qdrant drift: a document whose
+        content_hash hasn't changed can still have had its Qdrant points
+        disappear by some means other than this app's own delete calls
+        (manual deletion, external tooling, data loss) while the
+        registry has no way to notice on its own. See
+        docs/sprint-17-2-plan.md. tenant_id (Sprint 23) is part of every
+        one of these lookups so a query for one tenant's document can
+        never observe another tenant's points, even if they somehow
+        shared a (source_type, source_id) pair.
         """
         points, _ = self._client.scroll(
             collection_name=self._collection_name,
             scroll_filter=qmodels.Filter(
                 must=[
+                    qmodels.FieldCondition(
+                        key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
+                    ),
                     qmodels.FieldCondition(
                         key="source_type", match=qmodels.MatchValue(value=source_type)
                     ),
@@ -202,19 +214,23 @@ class QdrantStore:
         return len(points) > 0
 
     def count_for_document_version(
-        self, source_type: str, source_id: str, document_version: str
+        self, tenant_id: str, source_type: str, source_id: str, document_version: str
     ) -> int:
-        """Exact count of points for this (source_type, source_id,
-        document_version) — more expensive than has_document_version
-        (a real count query, not a bounded presence scroll). Used
-        (Sprint 17.2 bonus) to detect PARTIAL index loss — some but not
-        all of a multi-chunk document's points missing — which a plain
-        presence check can't distinguish from a fully-intact index.
+        """Exact count of points for this (tenant_id, source_type,
+        source_id, document_version) — more expensive than
+        has_document_version (a real count query, not a bounded presence
+        scroll). Used (Sprint 17.2 bonus) to detect PARTIAL index loss —
+        some but not all of a multi-chunk document's points missing —
+        which a plain presence check can't distinguish from a
+        fully-intact index.
         """
         return self._client.count(
             collection_name=self._collection_name,
             count_filter=qmodels.Filter(
                 must=[
+                    qmodels.FieldCondition(
+                        key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
+                    ),
                     qmodels.FieldCondition(
                         key="source_type", match=qmodels.MatchValue(value=source_type)
                     ),
@@ -231,12 +247,12 @@ class QdrantStore:
         ).count
 
     def list_point_ids_for_version(
-        self, source_type: str, source_id: str, document_version: str
+        self, tenant_id: str, source_type: str, source_id: str, document_version: str
     ) -> set[str]:
-        """Every point ID currently present for this (source_type,
-        source_id, document_version) — the primitive Sprint 17.3's
-        duplicate-point cleanup is built on: delete_stale_versions only
-        removes points whose document_version DIFFERS from a kept
+        """Every point ID currently present for this (tenant_id,
+        source_type, source_id, document_version) — the primitive Sprint
+        17.3's duplicate-point cleanup is built on: delete_stale_versions
+        only removes points whose document_version DIFFERS from a kept
         version, so points that already share the CURRENT version (a
         stale point-ID-scheme leftover, or any other source of
         same-version duplicates — see docs/sprint-17-3-plan.md) are
@@ -249,6 +265,9 @@ class QdrantStore:
         offset = None
         scroll_filter = qmodels.Filter(
             must=[
+                qmodels.FieldCondition(
+                    key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
+                ),
                 qmodels.FieldCondition(
                     key="source_type", match=qmodels.MatchValue(value=source_type)
                 ),
@@ -289,19 +308,25 @@ class QdrantStore:
             points_selector=qmodels.PointIdsList(points=list(point_ids)),
         )
 
-    def list_source_ids(self, source_type: str) -> set[str]:
+    def list_source_ids(self, tenant_id: str, source_type: str) -> set[str]:
         """Every distinct source_id currently present in Qdrant for this
-        source_type — used (Sprint 17.3) to find documents whose points
-        exist in Qdrant but whose registry row is gone entirely (a
-        reset/lost registry, a partial restore), which the registry-only
-        deletion loop in ingest_connector can't see on its own. Paginated
-        (a real collection can hold many points per document, and many
-        documents per source_type).
+        (tenant_id, source_type) — used (Sprint 17.3) to find documents
+        whose points exist in Qdrant but whose registry row is gone
+        entirely (a reset/lost registry, a partial restore), which the
+        registry-only deletion loop in ingest_connector can't see on its
+        own. Paginated (a real collection can hold many points per
+        document, and many documents per source_type). Scoped by
+        tenant_id (Sprint 23) so this drift-detection scan can never
+        surface (and therefore never trigger deletion of) another
+        tenant's documents.
         """
         ids: set[str] = set()
         offset = None
         scroll_filter = qmodels.Filter(
             must=[
+                qmodels.FieldCondition(
+                    key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
+                ),
                 qmodels.FieldCondition(
                     key="source_type", match=qmodels.MatchValue(value=source_type)
                 ),
@@ -321,21 +346,27 @@ class QdrantStore:
                 break
         return ids
 
-    def delete_by_source(self, source_type: str, source_id: str) -> None:
+    def delete_by_source(self, tenant_id: str, source_type: str, source_id: str) -> None:
         """Delete EVERY point belonging to one document, identified by its
-        life-of-the-document-stable (source_type, source_id) pair — not by
-        doc_id, which is a content hash and changes on every edit. Used by
-        sync when a document has vanished from its connector entirely (a
-        real, full deletion — see docs/sprint-13-plan.md for why a
-        changed-but-still-present document uses delete_stale_versions()
-        instead, since Sprint 13). Safe to call when the document has no
-        points yet (e.g. brand new) — deletes zero, no error.
+        life-of-the-document-stable (tenant_id, source_type, source_id)
+        triple — not by doc_id, which is a content hash and changes on
+        every edit. Used by sync when a document has vanished from its
+        connector entirely (a real, full deletion — see
+        docs/sprint-13-plan.md for why a changed-but-still-present
+        document uses delete_stale_versions() instead, since Sprint 13).
+        Safe to call when the document has no points yet (e.g. brand
+        new) — deletes zero, no error. tenant_id (Sprint 23) guards
+        against this ever deleting another tenant's points that happen
+        to share a (source_type, source_id) pair.
         """
         self._client.delete(
             collection_name=self._collection_name,
             points_selector=qmodels.FilterSelector(
                 filter=qmodels.Filter(
                     must=[
+                        qmodels.FieldCondition(
+                            key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
+                        ),
                         qmodels.FieldCondition(
                             key="source_type", match=qmodels.MatchValue(value=source_type)
                         ),
@@ -347,10 +378,12 @@ class QdrantStore:
             ),
         )
 
-    def delete_stale_versions(self, source_type: str, source_id: str, keep_version: str) -> None:
-        """Delete every point for (source_type, source_id) whose
-        document_version is NOT keep_version — the cleanup half of a
-        zero-downtime versioned re-index with deferred cleanup (Sprint
+    def delete_stale_versions(
+        self, tenant_id: str, source_type: str, source_id: str, keep_version: str
+    ) -> None:
+        """Delete every point for (tenant_id, source_type, source_id)
+        whose document_version is NOT keep_version — the cleanup half of
+        a zero-downtime versioned re-index with deferred cleanup (Sprint
         13): call ONLY after the new version's chunks have been fully
         embedded and upserted, so the old version's chunks stay
         searchable until the new ones are confirmed written. Between that
@@ -367,6 +400,9 @@ class QdrantStore:
                 filter=qmodels.Filter(
                     must=[
                         qmodels.FieldCondition(
+                            key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
+                        ),
+                        qmodels.FieldCondition(
                             key="source_type", match=qmodels.MatchValue(value=source_type)
                         ),
                         qmodels.FieldCondition(
@@ -382,10 +418,12 @@ class QdrantStore:
             ),
         )
 
-    def delete_version(self, source_type: str, source_id: str, document_version: str) -> None:
-        """Delete every point for (source_type, source_id) whose
-        document_version MATCHES the given one — the mirror image of
-        delete_stale_versions (which deletes everything EXCEPT one
+    def delete_version(
+        self, tenant_id: str, source_type: str, source_id: str, document_version: str
+    ) -> None:
+        """Delete every point for (tenant_id, source_type, source_id)
+        whose document_version MATCHES the given one — the mirror image
+        of delete_stale_versions (which deletes everything EXCEPT one
         version). Used to roll back a partially-upserted NEW version when
         a multi-batch re-index fails partway through: earlier batches may
         already be committed under this document_version, and a plain
@@ -399,6 +437,9 @@ class QdrantStore:
             points_selector=qmodels.FilterSelector(
                 filter=qmodels.Filter(
                     must=[
+                        qmodels.FieldCondition(
+                            key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
+                        ),
                         qmodels.FieldCondition(
                             key="source_type", match=qmodels.MatchValue(value=source_type)
                         ),
@@ -444,9 +485,18 @@ class QdrantStore:
         # corresponding chunks and silently collide on point ID, with the
         # second upsert overwriting the first — no error, no visible
         # duplicate, just data loss. See docs/sprint-17-plan.md.
+        #
+        # Sprint 23: tenant_id is prepended for the exact same reason —
+        # without it, tenant A's "handbook.pdf" chunk 1 and tenant B's
+        # "handbook.pdf" chunk 1 (identical source_type/source_id/doc_id/
+        # page/paragraph/char_range, a real possibility once two tenants
+        # share a source_type) would collide on point ID, and the second
+        # tenant's upsert would silently overwrite the first's point —
+        # cross-tenant data loss, not just a citation bug.
         key = (
-            f"{chunk.source_type}:{chunk.source_id}:{chunk.doc_id}:{chunk.page_number}:"
-            f"{chunk.paragraph_index}:{chunk.char_range[0]}:{chunk.char_range[1]}"
+            f"{chunk.tenant_id}:{chunk.source_type}:{chunk.source_id}:{chunk.doc_id}:"
+            f"{chunk.page_number}:{chunk.paragraph_index}:{chunk.char_range[0]}:"
+            f"{chunk.char_range[1]}"
         )
         return str(uuid.uuid5(_POINT_ID_NAMESPACE, key))
 
@@ -465,6 +515,18 @@ class QdrantStore:
                 ),
             },
             payload={
+                # Sprint 23: tenant_id/visibility are the ACL payload
+                # fields app/retrieval/filters.py::build_acl_filter and
+                # app/security/models.py::RetrievalContext enforce
+                # against at retrieval time — mandatory, not optional
+                # metadata. "visibility" defaults to "tenant" (shared
+                # within the owning tenant); a future "private" value
+                # would need an allowed_user_ids-style condition too,
+                # not added here since nothing in this app produces
+                # private-visibility chunks yet — see docs/security.md's
+                # known limitations.
+                "tenant_id": chunk.tenant_id,
+                "visibility": "tenant",
                 "doc_id": chunk.doc_id,
                 "source_type": chunk.source_type,
                 "source_id": chunk.source_id,

@@ -2,7 +2,7 @@ import asyncio
 import logging
 from collections import Counter
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Protocol
 
@@ -13,7 +13,7 @@ from app.ingestion.chunker import DEFAULT_CHUNK_SIZE_TOKENS, DEFAULT_OVERLAP_TOK
 from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
 from app.ingestion.qdrant_store import QdrantStore
-from app.registry.store import DocumentRegistry
+from app.registry.store import DEFAULT_TENANT_ID, DocumentRegistry
 from app.retrieval.sparse import SparseVector
 from app.shared.slug import slugify
 from app.shared.tracing import get_tracer
@@ -157,6 +157,7 @@ async def ingest_connector(
     embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
     tracer: trace.Tracer | None = None,
     pipeline_fingerprint: PipelineFingerprint | None = None,
+    tenant_id: str = DEFAULT_TENANT_ID,
 ) -> IngestStats:
     """Connector-driven, multi-format, INCREMENTAL ingestion (ingest_path
     above is the PDF-only, folder-glob, registry-less entry point).
@@ -196,6 +197,18 @@ async def ingest_connector(
     The whole call is wrapped in one "ingest_connector" span so every
     document's work shares a single trace_id — see
     docs/adr/0004-single-trace-per-sync-run.md.
+
+    Sprint 23: tenant_id identifies which tenant owns EVERY document
+    this call touches — server-side configuration
+    (app/wiring.py::connector_tenant_ids, threaded through
+    app/sync/manager.py::SyncManager), never a value derived from a
+    request. It's folded into the registry's primary key, every Qdrant
+    maintenance-query filter this function issues, AND (via
+    dataclasses.replace() right after chunking) every chunk's payload —
+    the field app/retrieval/filters.py::build_acl_filter enforces at
+    retrieval time. Defaulted to DEFAULT_TENANT_ID ("default") purely so
+    existing single-tenant tests/callers don't need updating; it is
+    never omitted by any real production call site.
     """
     tracer = tracer or get_tracer(__name__)
 
@@ -232,10 +245,12 @@ async def ingest_connector(
         # source_id it never had is a safe no-op.
         registry_source_ids = {
             record.source_id
-            for record in registry.list_documents(source_type=connector.source_type)
+            for record in registry.list_documents(
+                tenant_id=tenant_id, source_type=connector.source_type
+            )
         }
         with tracer.start_as_current_span("fetch_qdrant_source_ids") as span:
-            qdrant_source_ids = store.list_source_ids(connector.source_type)
+            qdrant_source_ids = store.list_source_ids(tenant_id, connector.source_type)
             span.set_attribute("fetch.qdrant_source_id_count", len(qdrant_source_ids))
         known_source_ids = registry_source_ids | qdrant_source_ids
 
@@ -243,8 +258,8 @@ async def ingest_connector(
             with tracer.start_as_current_span("delete_document") as span:
                 span.set_attribute("delete.source_type", connector.source_type)
                 span.set_attribute("delete.source_id", source_id)
-                store.delete_by_source(connector.source_type, source_id)
-                registry.delete_document(connector.source_type, source_id)
+                store.delete_by_source(tenant_id, connector.source_type, source_id)
+                registry.delete_document(tenant_id, connector.source_type, source_id)
             files_deleted += 1
 
         for document in current_documents:
@@ -253,7 +268,7 @@ async def ingest_connector(
                 check_span.set_attribute("check.source_id", document.source_id)
                 content_hash = await connector.get_content_hash(document)
                 changed = registry.has_changed(
-                    connector.source_type, document.source_id, content_hash
+                    tenant_id, connector.source_type, document.source_id, content_hash
                 )
                 check_span.set_attribute("check.changed", changed)
 
@@ -288,13 +303,15 @@ async def ingest_connector(
                 # to compare a count against yet.
                 index_present_and_complete = True
                 if not changed:
-                    record = registry.get_document(connector.source_type, document.source_id)
+                    record = registry.get_document(
+                        tenant_id, connector.source_type, document.source_id
+                    )
                     expected_chunk_count = record.chunk_count if record else None
                     if expected_chunk_count is None:
                         index_present_and_complete = False
                     else:
                         actual_chunk_count = store.count_for_document_version(
-                            connector.source_type, document.source_id, content_hash
+                            tenant_id, connector.source_type, document.source_id, content_hash
                         )
                         index_present_and_complete = actual_chunk_count == expected_chunk_count
                     # Sprint 18: an OPTIONAL extra reconciliation
@@ -362,6 +379,14 @@ async def ingest_connector(
                         )
                     else:
                         raise ValueError(f"Unsupported content_type: {document.content_type!r}")
+                    # Sprint 23: tenant ownership is stamped onto every
+                    # chunk HERE, immediately after chunking and before
+                    # any embedding/point-ID computation — the chunker
+                    # functions themselves have no notion of tenancy.
+                    # Every downstream use of `chunks` (embedding,
+                    # point_id_for, the Qdrant payload) sees the correct
+                    # tenant_id from this point on.
+                    chunks = [replace(chunk, tenant_id=tenant_id) for chunk in chunks]
                     span.set_attribute("parse.chunk_count", len(chunks))
 
                 # Zero-downtime versioned re-index with DEFERRED cleanup
@@ -407,7 +432,8 @@ async def ingest_connector(
                 # snapshot is always empty, so rollback behavior there is
                 # unchanged.
                 points_before_attempt = store.list_point_ids_for_version(
-                    connector.source_type, document.source_id, document_version=content_hash
+                    tenant_id, connector.source_type, document.source_id,
+                    document_version=content_hash,
                 )
                 try:
                     for batch_start in range(0, len(chunks), upsert_batch_size):
@@ -457,6 +483,7 @@ async def ingest_connector(
                         # failure.
                         try:
                             points_after_attempt = store.list_point_ids_for_version(
+                                tenant_id,
                                 connector.source_type,
                                 document.source_id,
                                 document_version=content_hash,
@@ -480,7 +507,8 @@ async def ingest_connector(
                         span.set_attribute("rollback.document_version", content_hash)
                         span.set_attribute("rollback.reason", "error")
                         points_after_attempt = store.list_point_ids_for_version(
-                            connector.source_type, document.source_id, document_version=content_hash
+                            tenant_id, connector.source_type, document.source_id,
+                            document_version=content_hash,
                         )
                         added_by_this_attempt = points_after_attempt - points_before_attempt
                         span.set_attribute("rollback.points_deleted", len(added_by_this_attempt))
@@ -504,7 +532,8 @@ async def ingest_connector(
                 with tracer.start_as_current_span("cleanup_duplicate_points") as span:
                     expected_ids = {QdrantStore.point_id_for(chunk) for chunk in chunks}
                     actual_ids = store.list_point_ids_for_version(
-                        connector.source_type, document.source_id, document_version=content_hash
+                        tenant_id, connector.source_type, document.source_id,
+                        document_version=content_hash,
                     )
                     extra_ids = actual_ids - expected_ids
                     span.set_attribute("cleanup.extra_point_count", len(extra_ids))
@@ -515,13 +544,15 @@ async def ingest_connector(
                     span.set_attribute("delete_stale_chunks.source_id", document.source_id)
                     span.set_attribute("delete_stale_chunks.keep_version", content_hash)
                     store.delete_stale_versions(
-                        connector.source_type, document.source_id, keep_version=content_hash
+                        tenant_id, connector.source_type, document.source_id,
+                        keep_version=content_hash,
                     )
 
             # Registered only after a successful chunk+upsert, so a failure
             # partway through doesn't leave the registry claiming a document
             # was ingested when it wasn't.
             registry.upsert_document(
+                tenant_id,
                 connector.source_type,
                 document.source_id,
                 content_hash,

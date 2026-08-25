@@ -385,7 +385,9 @@ def validate_structural(
     duplicate_points = 0
     for doc in docs:
         expected = doc.chunk_count or 0
-        actual = store.count_for_document_version(doc.source_type, doc.source_id, doc.content_hash)
+        actual = store.count_for_document_version(
+            doc.tenant_id, doc.source_type, doc.source_id, doc.content_hash
+        )
         actual_chunk_total += actual
         if actual != expected:
             findings.append(

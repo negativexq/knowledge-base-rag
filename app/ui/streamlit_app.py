@@ -8,7 +8,14 @@ Run with: make ui   (equivalent to `streamlit run app/ui/streamlit_app.py`)
 
 import streamlit as st
 
+from app.ui.dev_auth import render_dev_token_selector
+
 st.set_page_config(page_title="Knowledge Base RAG", page_icon="📚", layout="wide")
+
+# Sprint 23: the backend now enforces auth/RBAC on /chat, /sources, and
+# /sync/* — this UI must send a real (demo) bearer token or every page
+# gets 401s. See app/ui/dev_auth.py; this selector is LOCAL DEV ONLY.
+render_dev_token_selector()
 
 pages = st.navigation(
     [

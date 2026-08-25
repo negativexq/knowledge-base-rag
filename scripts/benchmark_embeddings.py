@@ -57,6 +57,7 @@ from app.llm.ollama_client import OllamaClient
 from app.registry.store import DocumentRegistry
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
+from app.security.models import RetrievalContext
 from app.shared.config import settings
 from tests.fixtures.golden_api_reference_en import build_golden_api_reference_en
 from tests.fixtures.golden_enterprise_faq_tr import build_golden_enterprise_faq_tr
@@ -367,6 +368,7 @@ async def run_config_benchmark(
         retrieval_start = time.perf_counter()
         results = await search(
             query, ollama, sparse_encoder, qdrant_client, collection_name, config.ollama_model,
+            RetrievalContext.system(),  # Sprint 23: isolated benchmark collection, not a tenant
             reranker=None,  # rule: reranker OFF for this benchmark
             query_prefix=config.query_prefix(),
             dimensions=config.output_dimension,

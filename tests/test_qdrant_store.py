@@ -286,6 +286,8 @@ def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
     assert store.count() == 1
     point = store._client.retrieve(COLLECTION, ids=[QdrantStore.point_id_for(chunk)])[0]
     assert point.payload == {
+        "tenant_id": chunk.tenant_id,
+        "visibility": "tenant",
         "doc_id": chunk.doc_id,
         "source_type": chunk.source_type,
         "source_id": chunk.source_id,
@@ -390,7 +392,7 @@ def test_delete_by_source_removes_all_points_for_that_document():
         [_sparse_vector(), _sparse_vector()],
     )
 
-    store.delete_by_source("pdf", "doc1")
+    store.delete_by_source("default", "pdf", "doc1")
 
     assert store.count() == 0
 
@@ -416,7 +418,7 @@ def test_delete_by_source_does_not_touch_other_documents():
     )
     assert store.count() == 2  # sanity: both documents really did land as separate points
 
-    store.delete_by_source("pdf", "doc1")
+    store.delete_by_source("default", "pdf", "doc1")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -442,7 +444,7 @@ def test_two_documents_with_the_same_doc_id_and_coordinates_but_different_source
 
     assert store.count() == 2  # the critical assertion the original bug's test never made
 
-    store.delete_by_source("pdf", "contract-a")
+    store.delete_by_source("default", "pdf", "contract-a")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -461,7 +463,7 @@ def test_delete_by_source_does_not_touch_a_different_source_type_with_the_same_s
         [_sparse_vector(), _sparse_vector()],
     )
 
-    store.delete_by_source("pdf", "readme")
+    store.delete_by_source("default", "pdf", "readme")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -482,7 +484,7 @@ def test_delete_stale_versions_removes_only_the_old_version():
     )
     assert store.count() == 2  # sanity: both versions coexist before cleanup
 
-    store.delete_stale_versions("pdf", "doc1", keep_version="v2")
+    store.delete_stale_versions("default", "pdf", "doc1", keep_version="v2")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -502,7 +504,7 @@ def test_delete_stale_versions_does_not_touch_other_documents():
         [_sparse_vector()] * 3,
     )
 
-    store.delete_stale_versions("pdf", "doc1", keep_version="v2")
+    store.delete_stale_versions("default", "pdf", "doc1", keep_version="v2")
 
     assert store.count() == 2
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -520,7 +522,7 @@ def test_delete_stale_versions_does_not_touch_a_different_source_type_with_the_s
         [_sparse_vector(), _sparse_vector()],
     )
 
-    store.delete_stale_versions("pdf", "readme", keep_version="some-other-version")
+    store.delete_stale_versions("default", "pdf", "readme", keep_version="some-other-version")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -529,7 +531,8 @@ def test_delete_stale_versions_does_not_touch_a_different_source_type_with_the_s
 
 def test_delete_stale_versions_on_a_document_with_no_points_is_a_no_op():
     store = _store()
-    store.delete_stale_versions("pdf", "never-existed", keep_version="v1")  # must not raise
+    # must not raise
+    store.delete_stale_versions("default", "pdf", "never-existed", keep_version="v1")
     assert store.count() == 0
 
 
@@ -547,7 +550,7 @@ def test_delete_version_removes_only_points_with_the_given_version():
     )
     assert store.count() == 2  # sanity: both versions coexist before rollback
 
-    store.delete_version("pdf", "doc1", document_version="v2")
+    store.delete_version("default", "pdf", "doc1", document_version="v2")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -566,7 +569,7 @@ def test_delete_version_does_not_touch_other_documents():
         [_sparse_vector()] * 2,
     )
 
-    store.delete_version("pdf", "doc1", document_version="v1")
+    store.delete_version("default", "pdf", "doc1", document_version="v1")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -584,7 +587,7 @@ def test_delete_version_does_not_touch_a_different_source_type_with_the_same_sou
         [_sparse_vector(), _sparse_vector()],
     )
 
-    store.delete_version("pdf", "readme", document_version="v1")
+    store.delete_version("default", "pdf", "readme", document_version="v1")
 
     assert store.count() == 1
     remaining, _ = store._client.scroll(COLLECTION, limit=10)
@@ -593,14 +596,14 @@ def test_delete_version_does_not_touch_a_different_source_type_with_the_same_sou
 
 def test_delete_version_on_a_document_with_no_points_is_a_no_op():
     store = _store()
-    store.delete_version("pdf", "never-existed", document_version="v1")  # must not raise
+    store.delete_version("default", "pdf", "never-existed", document_version="v1")  # must not raise
     assert store.count() == 0
 
 
 def test_delete_by_source_on_a_document_with_no_points_is_a_no_op():
     store = _store()
 
-    store.delete_by_source("pdf", "never-existed")  # must not raise
+    store.delete_by_source("default", "pdf", "never-existed")  # must not raise
 
     assert store.count() == 0
 
@@ -611,13 +614,16 @@ def test_has_document_version_is_true_when_a_matching_point_exists():
         [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
     )
 
-    assert store.has_document_version("pdf", "doc1", document_version="v1") is True
+    assert store.has_document_version("default", "pdf", "doc1", document_version="v1") is True
 
 
 def test_has_document_version_is_false_when_no_points_exist():
     store = _store()
 
-    assert store.has_document_version("pdf", "never-existed", document_version="v1") is False
+    assert (
+        store.has_document_version("default", "pdf", "never-existed", document_version="v1")
+        is False
+    )
 
 
 def test_has_document_version_is_false_after_the_points_are_deleted():
@@ -630,11 +636,11 @@ def test_has_document_version_is_false_after_the_points_are_deleted():
     store.upsert_chunks(
         [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
     )
-    assert store.has_document_version("pdf", "doc1", document_version="v1") is True
+    assert store.has_document_version("default", "pdf", "doc1", document_version="v1") is True
 
-    store.delete_by_source("pdf", "doc1")  # simulates external/manual deletion
+    store.delete_by_source("default", "pdf", "doc1")  # simulates external/manual deletion
 
-    assert store.has_document_version("pdf", "doc1", document_version="v1") is False
+    assert store.has_document_version("default", "pdf", "doc1", document_version="v1") is False
 
 
 def test_has_document_version_is_false_for_a_different_version_of_the_same_document():
@@ -643,7 +649,7 @@ def test_has_document_version_is_false_for_a_different_version_of_the_same_docum
         [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
     )
 
-    assert store.has_document_version("pdf", "doc1", document_version="v2") is False
+    assert store.has_document_version("default", "pdf", "doc1", document_version="v2") is False
 
 
 def test_has_document_version_is_false_for_a_different_source_id_with_the_same_version():
@@ -652,7 +658,7 @@ def test_has_document_version_is_false_for_a_different_source_id_with_the_same_v
         [_chunk(doc_id="v1", source_id="doc1")], [_dense_vector()], [_sparse_vector()]
     )
 
-    assert store.has_document_version("pdf", "doc2", document_version="v1") is False
+    assert store.has_document_version("default", "pdf", "doc2", document_version="v1") is False
 
 
 def test_list_point_ids_for_version_returns_all_matching_ids():
@@ -663,7 +669,7 @@ def test_list_point_ids_for_version_returns_all_matching_ids():
         [chunk_a, chunk_b], [_dense_vector(), _dense_vector()], [_sparse_vector(), _sparse_vector()]
     )
 
-    ids = store.list_point_ids_for_version("pdf", "doc1", document_version="v1")
+    ids = store.list_point_ids_for_version("default", "pdf", "doc1", document_version="v1")
 
     assert ids == {QdrantStore.point_id_for(chunk_a), QdrantStore.point_id_for(chunk_b)}
 
@@ -680,7 +686,7 @@ def test_list_point_ids_for_version_excludes_other_versions_and_documents():
         [_chunk(doc_id="v1", source_id="doc2")], [_dense_vector()], [_sparse_vector()]
     )
 
-    ids = store.list_point_ids_for_version("pdf", "doc1", document_version="v1")
+    ids = store.list_point_ids_for_version("default", "pdf", "doc1", document_version="v1")
 
     expected = {QdrantStore.point_id_for(_chunk(doc_id="v1", source_id="doc1"))}
     assert ids == expected
@@ -689,7 +695,10 @@ def test_list_point_ids_for_version_excludes_other_versions_and_documents():
 def test_list_point_ids_for_version_on_a_document_with_no_points_returns_empty_set():
     store = _store()
 
-    assert store.list_point_ids_for_version("pdf", "never-existed", document_version="v1") == set()
+    result = store.list_point_ids_for_version(
+        "default", "pdf", "never-existed", document_version="v1"
+    )
+    assert result == set()
 
 
 def test_delete_points_removes_only_the_given_ids():
@@ -729,7 +738,7 @@ def test_list_source_ids_returns_distinct_source_ids_for_the_source_type():
         [_sparse_vector()] * 3,
     )
 
-    assert store.list_source_ids("pdf") == {"doc1", "doc2"}
+    assert store.list_source_ids("default", "pdf") == {"doc1", "doc2"}
 
 
 def test_list_source_ids_excludes_other_source_types():
@@ -743,13 +752,13 @@ def test_list_source_ids_excludes_other_source_types():
         [_sparse_vector(), _sparse_vector()],
     )
 
-    assert store.list_source_ids("pdf") == {"doc1"}
+    assert store.list_source_ids("default", "pdf") == {"doc1"}
 
 
 def test_list_source_ids_on_an_empty_collection_returns_empty_set():
     store = _store()
 
-    assert store.list_source_ids("pdf") == set()
+    assert store.list_source_ids("default", "pdf") == set()
 
 
 def test_ensure_collection_creates_payload_indexes_on_a_fresh_collection():
@@ -772,7 +781,7 @@ def test_ensure_collection_creates_payload_indexes_on_a_fresh_collection():
     store = QdrantStore(client=client, collection_name=COLLECTION)
     store.ensure_collection()
 
-    assert set(indexed_fields) == {"source_type", "source_id", "document_version"}
+    assert set(indexed_fields) == {"tenant_id", "source_type", "source_id", "document_version"}
 
 
 def test_ensure_collection_does_not_reindex_an_existing_valid_collection():

@@ -13,6 +13,7 @@ import streamlit as st
 
 from app.llm.prompt import NOT_FOUND_PHRASE
 from app.ui.citation_formatting import highlight_citations
+from app.ui.dev_auth import auth_headers
 from app.ui.sse_client import parse_sse_lines
 from app.ui.trace_client import fetch_trace_spans
 
@@ -45,7 +46,8 @@ if question:
         # the loop as each SSE event arrives, not after the whole response
         # is collected.
         with httpx.stream(
-            "POST", f"{BACKEND_URL}/chat", json={"question": question}, timeout=120.0
+            "POST", f"{BACKEND_URL}/chat", json={"question": question}, timeout=120.0,
+            headers=auth_headers(),
         ) as response:
             for event in parse_sse_lines(response.iter_lines()):
                 if event.event == "message":

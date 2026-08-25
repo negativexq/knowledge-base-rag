@@ -70,7 +70,7 @@ async def test_embed_failure_mid_reindex_leaves_old_version_searchable(tmp_path)
         connector, store, registry, _fake_embed, _FakeSparseEncoder(),
         chunk_size_tokens=15, overlap_tokens=5,
     )
-    old_hash = registry.get_document("filesystem", "doc_md").content_hash
+    old_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     old_points_before = [p for p in _all_points(store) if p.payload["source_id"] == "doc_md"]
     assert len(old_points_before) > 1  # sanity: really did split into multiple chunks
 
@@ -106,7 +106,7 @@ async def test_embed_failure_mid_reindex_leaves_old_version_searchable(tmp_path)
 
     # Registry still points at the OLD hash — a retry will correctly see
     # this document as still "changed" and try again.
-    assert registry.get_document("filesystem", "doc_md").content_hash == old_hash
+    assert registry.get_document("default", "filesystem", "doc_md").content_hash == old_hash
 
 
 async def test_multi_batch_partial_failure_rolls_back_the_partial_new_version(tmp_path):
@@ -132,7 +132,7 @@ async def test_multi_batch_partial_failure_rolls_back_the_partial_new_version(tm
         connector, store, registry, _fake_embed, _FakeSparseEncoder(),
         chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
     )
-    old_hash = registry.get_document("filesystem", "doc_md").content_hash
+    old_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     old_points_before = [
         p for p in _all_points(store, "test_versioned_reindex_rollback")
         if p.payload["source_id"] == "doc_md"
@@ -186,7 +186,7 @@ async def test_multi_batch_partial_failure_rolls_back_the_partial_new_version(tm
 
     # Registry still points at the OLD hash — a retry will correctly see
     # this document as still "changed".
-    assert registry.get_document("filesystem", "doc_md").content_hash == old_hash
+    assert registry.get_document("default", "filesystem", "doc_md").content_hash == old_hash
 
 
 async def test_successful_reindex_cleans_up_the_old_version(tmp_path):
@@ -231,14 +231,14 @@ async def test_duplicate_visibility_window_really_exists_before_cleanup(tmp_path
     observed = {}
 
     class _SnapshotStore(QdrantStore):
-        def delete_stale_versions(self, source_type, source_id, keep_version):
+        def delete_stale_versions(self, tenant_id, source_type, source_id, keep_version):
             points = _all_points(self, "test_versioned_reindex_window")
             matching = [p for p in points if p.payload["source_id"] == source_id]
             observed["document_versions_present"] = {
                 p.payload["document_version"] for p in matching
             }
             observed["texts_present"] = {p.payload["text"] for p in matching}
-            return super().delete_stale_versions(source_type, source_id, keep_version)
+            return super().delete_stale_versions(tenant_id, source_type, source_id, keep_version)
 
     snapshot_store = _SnapshotStore(
         client=real_store._client, collection_name="test_versioned_reindex_window"
@@ -378,7 +378,7 @@ async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(
         connector, store, registry, _fake_embed, _FakeSparseEncoder(),
         chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
     )
-    old_hash = registry.get_document("filesystem", "doc_md").content_hash
+    old_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     old_points_before = [
         p for p in _all_points(store, "test_versioned_reindex_cancellation")
         if p.payload["source_id"] == "doc_md"
@@ -431,7 +431,7 @@ async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(
     ]
     assert new_version_points == []
 
-    assert registry.get_document("filesystem", "doc_md").content_hash == old_hash
+    assert registry.get_document("default", "filesystem", "doc_md").content_hash == old_hash
 
 
 async def test_cancellation_rollback_failure_does_not_mask_the_original_cancelledError(tmp_path):
@@ -525,7 +525,7 @@ async def test_failed_reconciliation_repair_does_not_delete_previously_healthy_p
         connector, store, registry, _fake_embed, _FakeSparseEncoder(),
         chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
     )
-    doc_hash = registry.get_document("filesystem", "doc_md").content_hash
+    doc_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     healthy_points_before = [
         p for p in _all_points(store, "test_reconciliation_rollback_safety")
         if p.payload["source_id"] == "doc_md"
@@ -583,4 +583,4 @@ async def test_failed_reconciliation_repair_does_not_delete_previously_healthy_p
     # Content is unchanged, so the registry's content_hash is untouched
     # either way — this isn't what proves the fix, the point count above
     # is.
-    assert registry.get_document("filesystem", "doc_md").content_hash == doc_hash
+    assert registry.get_document("default", "filesystem", "doc_md").content_hash == doc_hash

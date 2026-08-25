@@ -1,0 +1,53 @@
+{
+  "ingest": {
+    "tenant_a_files": 1,
+    "tenant_b_files": 1
+  },
+  "tenant_a_to_a": {
+    "found_own_secret": true,
+    "leaked_other_tenant_secret": false,
+    "tenants_seen": [
+      "tenant-a"
+    ]
+  },
+  "tenant_a_to_b_attack": {
+    "found_own_secret": false,
+    "leaked_other_tenant_secret": false,
+    "tenants_seen": [
+      "tenant-a"
+    ]
+  },
+  "tenant_b_to_b": {
+    "found_own_secret": true,
+    "leaked_other_tenant_secret": false,
+    "tenants_seen": [
+      "tenant-b"
+    ]
+  },
+  "tenant_b_to_a_attack": {
+    "found_own_secret": false,
+    "leaked_other_tenant_secret": false,
+    "tenants_seen": [
+      "tenant-b"
+    ]
+  },
+  "performance_sanity": {
+    "with_acl_filter_avg_ms": 41.923647203172244,
+    "without_acl_filter_system_context_avg_ms": 40.22229999924699,
+    "sample_count": 15
+  },
+  "rbac": {
+    "no_credentials": 401,
+    "tenant_a_user_sync": 403,
+    "tenant_a_operator_sync": 200,
+    "tenant_b_operator_sync_wrong_tenant": 403,
+    "tenant_a_sources": [
+      {
+        "source_type": "filesystem",
+        "document_count": 1,
+        "is_running": false
+      }
+    ],
+    "tenant_b_sources": []
+  }
+}

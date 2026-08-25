@@ -12,6 +12,7 @@ from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
+from app.security.models import RetrievalContext
 from app.shared.config import settings
 
 
@@ -48,6 +49,9 @@ async def run_golden_set(
     )
 
     async def search_fn(question: str) -> list[SearchResult]:
+        # Sprint 23: this CLI evaluates a single, isolated golden-set
+        # collection outside any real tenant boundary — an explicit
+        # system context, not a fabricated tenant.
         return await search(
             question,
             ollama,
@@ -55,6 +59,7 @@ async def run_golden_set(
             qdrant_client,
             collection_name,
             settings.ollama_embed_model,
+            RetrievalContext.system(),
             reranker=reranker,
         )
 

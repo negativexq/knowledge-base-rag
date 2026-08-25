@@ -29,6 +29,7 @@ from app.llm.embedding_models import EmbeddingModelConfig
 from app.llm.ollama_client import OllamaClient
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
+from app.security.models import RetrievalContext
 
 CROSS_LINGUAL_CELLS = ["tr_query_en_content", "en_query_tr_content"]
 MONO_LINGUAL_CELLS = ["tr_query_tr_content", "en_query_en_content"]
@@ -94,8 +95,11 @@ async def _run_questions(
         expected_locations: list[Location] = [tuple(loc) for loc in question["expected_locations"]]
         is_not_found = question.get("expect_not_found", False)
 
+        # Sprint 23: migration validation reads a single isolated target
+        # collection outside any real tenant boundary — system context.
         results = await search(
             query, ollama, sparse_encoder, qdrant_client, collection_name, config.ollama_model,
+            RetrievalContext.system(),
             reranker=None,
             query_prefix=config.query_prefix(),
             dimensions=config.output_dimension,
@@ -243,8 +247,8 @@ async def run_smoke(
         try:
             results = await search(
                 question["query"], ollama, sparse_encoder, qdrant_client, collection_name,
-                config.ollama_model, reranker=None, query_prefix=config.query_prefix(),
-                dimensions=config.output_dimension,
+                config.ollama_model, RetrievalContext.system(), reranker=None,
+                query_prefix=config.query_prefix(), dimensions=config.output_dimension,
             )
         except Exception as exc:  # noqa: BLE001 - any failure here is a real smoke failure
             errors.append(f"{question['id']}: {exc}")

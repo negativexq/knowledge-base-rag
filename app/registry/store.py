@@ -4,8 +4,17 @@ from pathlib import Path
 
 from app.registry.models import DEFAULT_STATUS, DocumentRecord
 
+# Sprint 23: tenant_id is part of the PRIMARY KEY (not just a plain
+# column) — the whole point is that two tenants using the identical
+# (source_type, source_id) pair (e.g. both a "filesystem" source named
+# "handbook.pdf") must never collide on one registry row. See
+# _migrate_add_tenant_id_and_rebuild_pk for how an existing (pre-Sprint-
+# 23) database gets here.
+DEFAULT_TENANT_ID = "default"
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS documents (
+    tenant_id      TEXT    NOT NULL,
     source_type    TEXT    NOT NULL,
     source_id      TEXT    NOT NULL,
     content_hash   TEXT    NOT NULL,
@@ -14,9 +23,41 @@ CREATE TABLE IF NOT EXISTS documents (
     status         TEXT    NOT NULL,
     chunk_count    INTEGER,
     pipeline_fingerprint TEXT,
-    PRIMARY KEY (source_type, source_id)
+    PRIMARY KEY (tenant_id, source_type, source_id)
 );
 """
+
+
+def _migrate_add_tenant_id_and_rebuild_pk(conn: sqlite3.Connection) -> None:
+    # Same rename-rebuild-copy-drop shape Sprint 17.4 used for a NOT NULL
+    # relaxation — SQLite has no ALTER TABLE ... ADD COLUMN TO PRIMARY
+    # KEY, so widening the PK from (source_type, source_id) to
+    # (tenant_id, source_type, source_id) requires a real table rebuild,
+    # not just an ADD COLUMN. Every pre-existing row is backfilled with
+    # DEFAULT_TENANT_ID ("default") — the same default
+    # app/ingestion/models.py::Chunk.tenant_id and app/sync/manager.py's
+    # tenant_ids.get(source_type, "default") fallback use, so a registry
+    # row and the Qdrant points it describes agree on which tenant owns
+    # them even for data that predates Sprint 23. Run AFTER the
+    # chunk_count/pipeline_fingerprint migrations below, so this rebuild
+    # copies their already-corrected shape forward, not the legacy one.
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
+    if "tenant_id" in columns:
+        return
+    conn.execute("ALTER TABLE documents RENAME TO documents_pre_23")
+    conn.execute(_SCHEMA)
+    conn.execute(
+        f"""
+        INSERT INTO documents
+            (tenant_id, source_type, source_id, content_hash, last_synced_at, version, status,
+             chunk_count, pipeline_fingerprint)
+        SELECT
+            '{DEFAULT_TENANT_ID}', source_type, source_id, content_hash, last_synced_at, version,
+            status, chunk_count, pipeline_fingerprint
+        FROM documents_pre_23;
+        """
+    )
+    conn.execute("DROP TABLE documents_pre_23")
 
 
 def _migrate_add_pipeline_fingerprint_column(conn: sqlite3.Connection) -> None:
@@ -110,8 +151,14 @@ _INDEX_SCHEMA_VERSION_KEY = "index_schema_version"
 # locations) — an unchanged document's content_hash can never detect
 # this on its own, same reasoning as version 2's bump. See
 # docs/sprint-17-6-plan.md.
+# Version 4 = Sprint 23's tenant-aware point identity — point_id_for now
+# prepends chunk.tenant_id to its canonical key, so EVERY previously
+# indexed point's ID changes (not just points for tenants other than
+# "default" — the default tenant's own points move too, since the old
+# key format never included any tenant segment at all). See
+# app/ingestion/qdrant_store.py::point_id_for and docs/security.md.
 # Version 1 is implicit: any registry with no stored version at all.
-CURRENT_INDEX_SCHEMA_VERSION = 3
+CURRENT_INDEX_SCHEMA_VERSION = 4
 
 
 class IndexSchemaMismatchError(Exception):
@@ -144,11 +191,11 @@ class IndexSchemaMismatchError(Exception):
 # apart from "content actually changed" using version alone.
 _UPSERT = """
 INSERT INTO documents
-    (source_type, source_id, content_hash, last_synced_at, version, status, chunk_count,
-     pipeline_fingerprint)
-VALUES (:source_type, :source_id, :content_hash, :last_synced_at, 1, :status, :chunk_count,
-        :pipeline_fingerprint)
-ON CONFLICT(source_type, source_id) DO UPDATE SET
+    (tenant_id, source_type, source_id, content_hash, last_synced_at, version, status,
+     chunk_count, pipeline_fingerprint)
+VALUES (:tenant_id, :source_type, :source_id, :content_hash, :last_synced_at, 1, :status,
+        :chunk_count, :pipeline_fingerprint)
+ON CONFLICT(tenant_id, source_type, source_id) DO UPDATE SET
     content_hash = excluded.content_hash,
     last_synced_at = excluded.last_synced_at,
     status = excluded.status,
@@ -161,26 +208,35 @@ ON CONFLICT(source_type, source_id) DO UPDATE SET
 """
 
 _SELECT_ONE = """
-SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count,
-       pipeline_fingerprint
-FROM documents WHERE source_type = ? AND source_id = ?;
+SELECT tenant_id, source_type, source_id, content_hash, last_synced_at, version, status,
+       chunk_count, pipeline_fingerprint
+FROM documents WHERE tenant_id = ? AND source_type = ? AND source_id = ?;
 """
 
 _SELECT_ALL = """
-SELECT source_type, source_id, content_hash, last_synced_at, version, status, chunk_count,
-       pipeline_fingerprint
-FROM documents ORDER BY source_type, source_id;
+SELECT tenant_id, source_type, source_id, content_hash, last_synced_at, version, status,
+       chunk_count, pipeline_fingerprint
+FROM documents ORDER BY tenant_id, source_type, source_id;
 """
 
 _SELECT_BY_SOURCE_TYPE = _SELECT_ALL.replace(
     "FROM documents ORDER BY", "FROM documents WHERE source_type = ? ORDER BY"
 )
 
-_DELETE_ONE = "DELETE FROM documents WHERE source_type = ? AND source_id = ?;"
+_SELECT_BY_TENANT = _SELECT_ALL.replace(
+    "FROM documents ORDER BY", "FROM documents WHERE tenant_id = ? ORDER BY"
+)
+
+_SELECT_BY_TENANT_AND_SOURCE_TYPE = _SELECT_ALL.replace(
+    "FROM documents ORDER BY", "FROM documents WHERE tenant_id = ? AND source_type = ? ORDER BY"
+)
+
+_DELETE_ONE = "DELETE FROM documents WHERE tenant_id = ? AND source_type = ? AND source_id = ?;"
 
 
 def _row_to_record(row: tuple) -> DocumentRecord:
     (
+        tenant_id,
         source_type,
         source_id,
         content_hash,
@@ -191,6 +247,7 @@ def _row_to_record(row: tuple) -> DocumentRecord:
         pipeline_fingerprint,
     ) = row
     return DocumentRecord(
+        tenant_id=tenant_id,
         source_type=source_type,
         source_id=source_id,
         content_hash=content_hash,
@@ -223,10 +280,12 @@ class DocumentRegistry:
             self._conn.execute(_SCHEMA)
             _migrate_add_chunk_count_column(self._conn)
             _migrate_add_pipeline_fingerprint_column(self._conn)
+            _migrate_add_tenant_id_and_rebuild_pk(self._conn)
             self._conn.execute(_METADATA_SCHEMA)
 
     def upsert_document(
         self,
+        tenant_id: str,
         source_type: str,
         source_id: str,
         content_hash: str,
@@ -234,14 +293,23 @@ class DocumentRegistry:
         chunk_count: int | None = None,
         pipeline_fingerprint: str | None = None,
     ) -> DocumentRecord:
-        # Timestamp is written as an ISO 8601 string, not a datetime object —
-        # sqlite3's implicit datetime adapters were deprecated in Python
-        # 3.12, so this avoids relying on them or writing a custom adapter.
+        # tenant_id has no default — every write call site (only
+        # app/ingestion/ingest.py::ingest_connector) must say explicitly
+        # which tenant owns this row, sourced from server-side connector
+        # configuration (app/wiring.py::connector_tenant_ids), never a
+        # request value. See app/ingestion/models.py::Chunk.tenant_id for
+        # the matching Qdrant-payload half of this.
+        #
+        # Timestamp is written as an ISO 8601 string, not a datetime
+        # object — sqlite3's implicit datetime adapters were deprecated
+        # in Python 3.12, so this avoids relying on them or writing a
+        # custom adapter.
         last_synced_at = datetime.now(UTC).isoformat()
         with self._conn:
             self._conn.execute(
                 _UPSERT,
                 {
+                    "tenant_id": tenant_id,
                     "source_type": source_type,
                     "source_id": source_id,
                     "content_hash": content_hash,
@@ -251,27 +319,47 @@ class DocumentRegistry:
                     "pipeline_fingerprint": pipeline_fingerprint,
                 },
             )
-        return self.get_document(source_type, source_id)
+        return self.get_document(tenant_id, source_type, source_id)
 
-    def get_document(self, source_type: str, source_id: str) -> DocumentRecord | None:
-        row = self._conn.execute(_SELECT_ONE, (source_type, source_id)).fetchone()
+    def get_document(
+        self, tenant_id: str, source_type: str, source_id: str
+    ) -> DocumentRecord | None:
+        row = self._conn.execute(_SELECT_ONE, (tenant_id, source_type, source_id)).fetchone()
         return _row_to_record(row) if row else None
 
-    def delete_document(self, source_type: str, source_id: str) -> None:
+    def delete_document(self, tenant_id: str, source_type: str, source_id: str) -> None:
         with self._conn:
-            self._conn.execute(_DELETE_ONE, (source_type, source_id))
+            self._conn.execute(_DELETE_ONE, (tenant_id, source_type, source_id))
 
-    def has_changed(self, source_type: str, source_id: str, content_hash: str) -> bool:
-        existing = self.get_document(source_type, source_id)
+    def has_changed(
+        self, tenant_id: str, source_type: str, source_id: str, content_hash: str
+    ) -> bool:
+        existing = self.get_document(tenant_id, source_type, source_id)
         if existing is None:
             return True
         return existing.content_hash != content_hash
 
-    def list_documents(self, source_type: str | None = None) -> list[DocumentRecord]:
-        if source_type is None:
-            rows = self._conn.execute(_SELECT_ALL).fetchall()
-        else:
+    def list_documents(
+        self, tenant_id: str | None = None, source_type: str | None = None
+    ) -> list[DocumentRecord]:
+        """tenant_id=None means ALL tenants — an admin/system-only query
+        shape (app/api/sources.py's user-facing endpoint always passes a
+        real tenant_id; only internal maintenance code should ever pass
+        None here). Combining both filters is supported since
+        app/ingestion/ingest.py::ingest_connector needs exactly
+        "this tenant's documents of this source_type" for its
+        deletion-detection phase.
+        """
+        if tenant_id is not None and source_type is not None:
+            rows = self._conn.execute(
+                _SELECT_BY_TENANT_AND_SOURCE_TYPE, (tenant_id, source_type)
+            ).fetchall()
+        elif tenant_id is not None:
+            rows = self._conn.execute(_SELECT_BY_TENANT, (tenant_id,)).fetchall()
+        elif source_type is not None:
             rows = self._conn.execute(_SELECT_BY_SOURCE_TYPE, (source_type,)).fetchall()
+        else:
+            rows = self._conn.execute(_SELECT_ALL).fetchall()
         return [_row_to_record(row) for row in rows]
 
     def get_index_schema_version(self) -> int | None:

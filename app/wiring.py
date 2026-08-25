@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI
 from qdrant_client import QdrantClient
 
@@ -25,11 +27,15 @@ from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
+from app.security.auth import build_token_authenticator
+from app.security.models import RetrievalContext
 from app.shared.config import Settings
 from app.shared.tracing import setup_tracing
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
 from app.sync.scheduler import SyncScheduler, sync_intervals_from_settings
+
+logger = logging.getLogger(__name__)
 
 
 def build_connectors(settings: Settings) -> dict[str, Connector]:
@@ -46,6 +52,23 @@ def build_connectors(settings: Settings) -> dict[str, Connector]:
     if settings.notion_api_key:
         connectors["notion"] = NotionConnector(api_key=settings.notion_api_key)
     return connectors
+
+
+def connector_tenant_ids(settings: Settings) -> dict[str, str]:
+    """Sprint 23: which tenant owns each connector's documents — SERVER-
+    SIDE configuration only, keyed the same way build_connectors() keys
+    its dict (by source_type). This app has exactly one connector
+    instance per source_type, so this is a 1:1 source_type->tenant
+    mapping today, not a general multi-tenant-per-connector scheme —
+    matches this app's existing architecture rather than inventing a
+    new one. Used by build_app() to give SyncManager a real tenant_id
+    for every ingest_connector() call it makes; never derived from a
+    request.
+    """
+    return {
+        "filesystem": settings.filesystem_tenant_id,
+        "notion": settings.notion_tenant_id,
+    }
 
 
 def build_chat_dependencies(
@@ -71,7 +94,7 @@ def build_chat_dependencies(
     chat_provider = get_chat_provider(settings)
     embed_config = active_embedding_config(settings)
 
-    async def search_fn(question: str) -> list[SearchResult]:
+    async def search_fn(question: str, context: RetrievalContext) -> list[SearchResult]:
         return await search(
             question,
             ollama,
@@ -79,6 +102,7 @@ def build_chat_dependencies(
             qdrant_client,
             collection_name,
             default_embed_model(settings),
+            context,
             reranker=reranker,
             query_prefix=embed_config.query_prefix(),
             dimensions=embed_config.output_dimension,
@@ -146,6 +170,11 @@ def build_app(settings: Settings) -> FastAPI:
             dimensions=embed_config.output_dimension,
         )
 
+    tenant_ids = {
+        source_type: tenant_id
+        for source_type, tenant_id in connector_tenant_ids(settings).items()
+        if source_type in connectors
+    }
     manager = SyncManager(
         connectors=connectors,
         store=store,
@@ -155,6 +184,7 @@ def build_app(settings: Settings) -> FastAPI:
         sparse_encoder=sparse_encoder,
         embedding_concurrency=settings.embedding_concurrency,
         pipeline_fingerprint=build_pipeline_fingerprint(embed_config),
+        tenant_ids=tenant_ids,
     )
     chat_deps, chat_provider = build_chat_dependencies(
         settings, qdrant_client, ollama, sparse_encoder, collection_name
@@ -163,6 +193,17 @@ def build_app(settings: Settings) -> FastAPI:
 
     async def readiness_check() -> dict:
         return await check_readiness(qdrant_client, ollama, settings)
+
+    # Sprint 23: security boundary wiring. auth_enabled defaults True —
+    # False is a real, explicit escape hatch (see app/api/deps.py) that
+    # must never be silent, hence the loud warning log here.
+    if not settings.auth_enabled:
+        logger.warning(
+            "AUTH_ENABLED=false — authentication is DISABLED. Every request is treated as "
+            "an ADMIN in tenant 'local-dev'. This must NEVER be used outside local "
+            "development. See docs/security.md."
+        )
+    token_authenticator = build_token_authenticator(settings.auth_tokens_json)
 
     # Long-lived HTTP clients (Ollama x2 — embedding and chat are separate
     # instances — Notion, when configured — and Qdrant) all need closing
@@ -189,4 +230,7 @@ def build_app(settings: Settings) -> FastAPI:
         scheduler=scheduler,
         on_shutdown=on_shutdown,
         readiness_check=readiness_check,
+        token_authenticator=token_authenticator,
+        auth_enabled=settings.auth_enabled,
+        tenant_ids=tenant_ids,
     )

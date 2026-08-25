@@ -2793,10 +2793,90 @@ default'u — ama bu bir kod-satırı değişikliği değil, doğrulanmış bir
 migration sonucu. Rollback her zaman mümkün (`kb_chunks` silinmedi).
 
 **Sıradaki mantıklı iş:** `cleanup-old` ile eski `kb_chunks` collection'ının
-temizlenmesi (ayrı, insan onaylı bir işlem) ve Sprint 22 (stretch)'te
+temizlenmesi (ayrı, insan onaylı bir işlem) ve Sprint 24 (stretch)'te
 ertelenen Confluence connector'ı.
 
-## Sprint 23 (stretch) — İkinci Connector (Confluence)
+## Sprint 23 — Security Boundary & Tenant-Aware Retrieval
+
+Orijinal roadmap'in Faz 1'i: "hangi kullanıcı hangi belgeyi görmeye
+yetkili?" sorusunu retrieval seviyesinde ZORUNLU hale getirmek —
+prompt'ta değil, generation'da değil, citation post-check'te değil;
+kontrol retrieval'dan ÖNCE.
+
+**Security model:** `UserContext(user_id, tenant_id, roles)` —
+yalnızca doğrulanmış `Authorization: Bearer <token>`'dan
+(`app/security/auth.py::TokenAuthenticator`) inşa ediliyor, request
+body/query'den ASLA. Üç lineer rol: `USER < OPERATOR < ADMIN`.
+`RetrievalContext(tenant_id, is_system)` bilinçli olarak AYRI bir tip —
+`RetrievalContext.system()` cross-tenant retrieval'a giden TEK yol ve
+kod tabanında hiçbir yerde gerçek bir request'ten inşa edilmiyor.
+
+**Zorunlu ACL filtresi:** `app/retrieval/search.py::search()` artık
+ZORUNLU bir `context: RetrievalContext` parametresi alıyor (default
+yok — bu kod tabanındaki her çağrı noktası gerçek bir tenant-scoped
+kullanıcı mı yoksa privileged system context mi olduğunu açıkça
+belirtiyor). `build_acl_filter` sadece explicit system context için
+`None` dönüyor, aksi halde tenant_id yoksa `MissingTenantContextError`
+fırlatıyor (fail-closed, asla "her şeyi döndür" yok). `combine_filters`
+ACL'yi kullanıcı filtresiyle AND'liyor — kötü niyetli bir filtre başka
+bir tenant'ı belirtse bile sonuç kümesini sadece DARALTIYOR, asla
+genişletmiyor.
+
+**Chunk/registry/point identity:** `Chunk.tenant_id` (default
+"default", `ingest_connector` içinde chunking sonrası
+`dataclasses.replace` ile set ediliyor), Qdrant payload'a
+`tenant_id`/`visibility` eklendi, `point_id_for` canonical key'ine
+tenant_id eklendi (`CURRENT_INDEX_SCHEMA_VERSION` 3→4 — her mevcut
+point ID değişiyor), `DocumentRegistry` PK'sı `(source_type,
+source_id)` → `(tenant_id, source_type, source_id)` (gerçek
+rename-rebuild-copy-drop migration, mevcut satırlar "default"a
+backfill ediliyor).
+
+**Endpoint policy:** `/chat` USER+; `/sources` tenant-scoped (başka
+tenant'a ait source_type response'ta hiç görünmüyor); `/sync/{type}`
+ve `/sync/{type}/history` OPERATOR+ VE o source_type'ın caller'ın
+tenant'ına ait olması (`_require_owned_source_type`).
+
+**Gerçek doğrulama — sadece unit test değil:**
+`tests/test_cross_tenant_e2e.py` (12 test) GERÇEK Qdrant server'a karşı
+çalışıyor (`:memory:` mode hybrid prefetch+fusion filter'ı sessizce
+düşürüyor — bilinen bir limitasyon) — iki gerçek tenant tek collection'ı
+paylaşıyor, dense/sparse(gerçek BM25)/hybrid izolasyon, filter-override
+saldırısı, reranker'ın sadece authorized candidate gördüğü, citation
+leakage önleme. Ayrıca gerçek local script (Docker Qdrant + native
+Ollama + gerçek FastAPI app + gerçek token'lar) çalıştırıldı:
+
+```
+tenant A → A: found_own=true, leaked=false
+tenant A → B (saldırı): leaked=false
+tenant B → B: found_own=true, leaked=false
+tenant B → A (saldırı): leaked=false
+RBAC: no-creds=401, wrong-role=403, correct-operator=200, wrong-tenant-operator=403
+/sources: tenant-a kendi source'unu görüyor, tenant-b hiçbir şey görmüyor
+performans: ACL filtreli 41.9ms vs filtresiz 40.2ms (~%4 fark, gerçek Ollama embed çağrısı domine ediyor)
+```
+
+`cross_tenant_leakage_rate=0%`, `unauthorized_sync_success_rate=0%`,
+`unauthorized_citation_rate=0%` — hepsi hedef (%0) karşılandı.
+
+**Testler:** 70 yeni test (`test_security_*.py`, `test_api_deps.py`,
+`test_retrieval_acl.py`, `test_cross_tenant_e2e.py`,
+`test_registry_tenant_isolation.py`, `test_point_id_tenant_isolation.py`,
++ mevcut registry/qdrant_store/sync/api testlerine tenant_id parametresi
+eklenmesi) — `ruff check app tests scripts` temiz, tüm suite yeşil.
+
+**Bilinen limitasyonlar** (`docs/security.md`'de detaylı): Bu sadece
+Faz 1 — prompt injection/untrusted-context savunmaları planlanan sonraki
+security sprint'in konusu. Auth demo/local-oriented (gerçek JWT/OIDC
+değil). Bir connector instance'ı = bir tenant (birden fazla tenant aynı
+connector'ı paylaşamıyor). `visibility` alanı şu an sadece "tenant"
+üretiyor, "private" için henüz enforcement yok.
+
+**Production default DEĞİŞMEDİ** — bu sprint retrieval authorization
+correctness'i hedefliyor, embedding modeli/chunking/reranker/generation
+aynı kaldı.
+
+## Sprint 24 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

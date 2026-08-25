@@ -12,6 +12,7 @@ from app.api.health import router as health_router
 from app.api.sources import router as sources_router
 from app.api.sync import router as sync_router
 from app.registry.store import DocumentRegistry
+from app.security.auth import TokenAuthenticator
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
 
@@ -37,6 +38,9 @@ def create_app(
     scheduler: SchedulerProtocol | None = None,
     on_shutdown: list[Callable[[], Awaitable[None]]] | None = None,
     readiness_check: Callable[[], Awaitable[dict]] | None = None,
+    token_authenticator: TokenAuthenticator | None = None,
+    auth_enabled: bool = True,
+    tenant_ids: dict[str, str] | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -89,6 +93,17 @@ def create_app(
     app.state.chat_deps = chat_deps
     app.state.list_ollama_models = list_ollama_models
     app.state.readiness_check = readiness_check
+    # Sprint 23: security boundary state — app/api/deps.py::
+    # get_current_user reads token_authenticator/auth_enabled directly
+    # off app.state; app/api/sources.py and app/api/sync.py read
+    # tenant_ids the same way to scope responses/authorize actions to
+    # the caller's own tenant. auth_enabled defaults True even when
+    # this factory is called with no arguments (every existing test
+    # that builds an app via create_app() without touching auth gets
+    # secure-by-default behavior, not an accidental open door).
+    app.state.token_authenticator = token_authenticator
+    app.state.auth_enabled = auth_enabled
+    app.state.tenant_ids = tenant_ids or {}
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)

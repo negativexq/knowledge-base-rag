@@ -37,3 +37,10 @@ class DocumentRecord:
     # indexed under has changed" — something content_hash alone can never
     # see. See app/ingestion/fingerprint.py.
     pipeline_fingerprint: str | None = None
+    # Sprint 23: which tenant owns this document — part of the registry's
+    # actual PRIMARY KEY (app/registry/store.py), not just informational.
+    # Defaulted to "default" for the same backward-compatibility reason
+    # chunk_count/pipeline_fingerprint were — every pre-Sprint-23 row is
+    # backfilled to this exact value by
+    # _migrate_add_tenant_id_and_rebuild_pk.
+    tenant_id: str = "default"

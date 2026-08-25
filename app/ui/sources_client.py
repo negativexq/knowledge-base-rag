@@ -2,11 +2,15 @@ import os
 
 import httpx
 
+from app.ui.dev_auth import auth_headers
+
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 
 def _client() -> httpx.Client:
-    return httpx.Client(base_url=BACKEND_URL, timeout=30.0)
+    # Sprint 23: carries the sidebar-selected demo token (see
+    # app/ui/dev_auth.py) — /sources and /sync/* now require it.
+    return httpx.Client(base_url=BACKEND_URL, timeout=30.0, headers=auth_headers())
 
 
 def fetch_sources(client: httpx.Client | None = None) -> list[dict]:

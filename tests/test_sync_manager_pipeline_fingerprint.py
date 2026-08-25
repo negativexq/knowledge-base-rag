@@ -126,7 +126,7 @@ async def test_new_document_is_indexed_and_registry_stores_the_active_fingerprin
     result = await manager.trigger_sync("filesystem", TRIGGER_MANUAL)
 
     assert result.stats.files_processed == 1
-    record = registry.get_document("filesystem", "one_md")
+    record = registry.get_document("default", "filesystem", "one_md")
     assert record.pipeline_fingerprint == QWEN_FINGERPRINT.digest()
     assert store.upserted_vector_dims == {DIMENSION}
 
@@ -144,7 +144,7 @@ async def test_changed_document_is_reindexed_and_fingerprint_is_preserved(tmp_pa
     result = await manager.trigger_sync("filesystem", TRIGGER_MANUAL)
 
     assert result.stats.files_processed == 1  # re-indexed, not skipped
-    record = registry.get_document("filesystem", "one_md")
+    record = registry.get_document("default", "filesystem", "one_md")
     assert record.pipeline_fingerprint == QWEN_FINGERPRINT.digest()
     assert store.upserted_vector_dims == {DIMENSION}
 
@@ -182,7 +182,7 @@ async def test_unchanged_content_with_a_stale_fingerprint_is_treated_as_stale_an
     (docs_dir / "one.md").write_text("# One\n\nContent about apples.")
     old_manager, store, registry = _make_manager(tmp_path, docs_dir, NOMIC_FINGERPRINT)
     await old_manager.trigger_sync("filesystem", TRIGGER_MANUAL)
-    record_before = registry.get_document("filesystem", "one_md")
+    record_before = registry.get_document("default", "filesystem", "one_md")
     assert record_before.pipeline_fingerprint == NOMIC_FINGERPRINT.digest()
     calls_after_nomic_sync = store.upsert_calls
 
@@ -193,7 +193,7 @@ async def test_unchanged_content_with_a_stale_fingerprint_is_treated_as_stale_an
 
     assert result.stats.files_processed == 1  # NOT skipped, despite unchanged content
     assert store.upsert_calls > calls_after_nomic_sync
-    record_after = registry.get_document("filesystem", "one_md")
+    record_after = registry.get_document("default", "filesystem", "one_md")
     assert record_after.pipeline_fingerprint == QWEN_FINGERPRINT.digest()
 
 

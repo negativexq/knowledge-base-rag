@@ -337,7 +337,9 @@ async def test_validate_structural_fails_on_chunk_count_mismatch(tmp_path):
         dense_dimension=target_config.dimension,
     )
     doc = target_registry.list_documents()[0]
-    point_ids = store.list_point_ids_for_version(doc.source_type, doc.source_id, doc.content_hash)
+    point_ids = store.list_point_ids_for_version(
+        doc.tenant_id, doc.source_type, doc.source_id, doc.content_hash
+    )
     store.delete_points(list(point_ids))
 
     result = engine.validate_structural(client, target_registry, manifest, target_config)

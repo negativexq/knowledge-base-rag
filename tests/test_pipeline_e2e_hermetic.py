@@ -24,6 +24,7 @@ from app.llm.grounding import check_grounding
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseVector
+from app.security.models import RetrievalContext
 from app.ui.citation_formatting import highlight_citations
 
 COLLECTION = "test_pipeline_e2e_hermetic"
@@ -106,6 +107,7 @@ async def test_single_pdf_end_to_end_with_multisource_citation_format(sample_pdf
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="fake",
+        context=RetrievalContext(tenant_id="default"),
         top_k=10,
         top_n=3,
     )

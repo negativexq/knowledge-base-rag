@@ -131,7 +131,7 @@ async def test_notion_pages_ingest_with_source_type_notion_and_heading_citations
     assert point.payload["heading_path"] == ["Kurulum"]
     assert "Install steps" in point.payload["text"]
 
-    record = registry.get_document("notion", "page-kurulum")
+    record = registry.get_document("default", "notion", "page-kurulum")
     assert record is not None
     assert record.source_type == "notion"
 
@@ -236,5 +236,5 @@ async def test_notion_sync_deletes_pages_removed_from_the_workspace(tmp_path):
     all_points, _ = store._client.scroll(COLLECTION, limit=100)
     assert not any(p.payload["source_id"] == "page-a" for p in all_points)
     assert any(p.payload["source_id"] == "page-b" for p in all_points)
-    assert registry.get_document("notion", "page-a") is None
-    assert registry.get_document("notion", "page-b") is not None
+    assert registry.get_document("default", "notion", "page-a") is None
+    assert registry.get_document("default", "notion", "page-b") is not None

@@ -57,6 +57,7 @@ class SyncManager:
         tracer: trace.Tracer | None = None,
         embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
         pipeline_fingerprint: PipelineFingerprint | None = None,
+        tenant_ids: dict[str, str] | None = None,
     ):
         # Sprint 22 patch: pipeline_fingerprint identifies the embedding
         # model/revision/backend/dimension/instruction/index-schema
@@ -85,6 +86,15 @@ class SyncManager:
         self._tracer = tracer or get_tracer(__name__)
         self._embedding_concurrency = embedding_concurrency
         self._pipeline_fingerprint = pipeline_fingerprint
+        # Sprint 23: which tenant owns each connector's documents —
+        # server-side configuration (app/wiring.py::connector_tenant_ids),
+        # NEVER derived from a sync request. A source_type missing from
+        # this mapping falls back to "default" (the same default
+        # app/ingestion/models.py::Chunk.tenant_id itself uses) rather
+        # than raising — every existing test/caller that never heard of
+        # tenancy keeps working under one consistent, real tenant value,
+        # not silently under "no tenant restriction."
+        self._tenant_ids = tenant_ids or {}
         self._running: dict[str, bool] = dict.fromkeys(connectors, False)
 
     @property
@@ -144,6 +154,7 @@ class SyncManager:
                     embedding_concurrency=self._embedding_concurrency,
                     tracer=self._tracer,
                     pipeline_fingerprint=self._pipeline_fingerprint,
+                    tenant_id=self._tenant_ids.get(source_type, "default"),
                 )
             except asyncio.CancelledError:
                 # Sprint 17: CancelledError is a BaseException, not an

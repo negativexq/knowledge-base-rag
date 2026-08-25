@@ -7,6 +7,7 @@ from app.api.chat import ChatDependencies, _sse_event_stream
 from app.main import create_app
 from app.registry.store import DocumentRegistry
 from app.retrieval.hybrid_search import SearchResult
+from app.security.models import RetrievalContext
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
 
@@ -40,10 +41,12 @@ def _client_with_chat_deps(chat_deps: ChatDependencies, tmp_path) -> TestClient:
     )
     registry = DocumentRegistry(tmp_path / "registry.db")
     history = SyncHistory(tmp_path / "registry.db")
-    return TestClient(create_app(manager, history, registry, chat_deps=chat_deps))
+    return TestClient(
+        create_app(manager, history, registry, chat_deps=chat_deps, auth_enabled=False)
+    )
 
 
-async def _fake_search(question: str) -> list[SearchResult]:
+async def _fake_search(question: str, context: RetrievalContext) -> list[SearchResult]:
     return [
         SearchResult(
             score=0.9,
@@ -88,7 +91,7 @@ def test_chat_endpoint_streams_sse_events_with_tokens_metadata_and_grounding(tmp
 async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_results_to_stream_fn():
     received = {}
 
-    async def search_fn(question: str) -> list[SearchResult]:
+    async def search_fn(question: str, context: RetrievalContext) -> list[SearchResult]:
         received["question"] = question
         return [SearchResult(score=1.0, payload={"text": "x"})]
 
@@ -97,11 +100,71 @@ async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_res
         yield {"type": "token", "content": "ok"}
 
     deps = ChatDependencies(search_fn=search_fn, stream_fn=stream_fn)
-    events = [line async for line in _sse_event_stream("What is X?", deps)]
+    context = RetrievalContext(tenant_id="default")
+    events = [line async for line in _sse_event_stream("What is X?", deps, context)]
 
     assert received["question"] == "What is X?"
     assert len(received["chunks"]) == 1
     assert events == ['data: {"token": "ok"}\n\n']
+
+
+def test_chat_requires_authentication(tmp_path):
+    deps = ChatDependencies(search_fn=_fake_search, stream_fn=_fake_stream)
+    manager = SyncManager(
+        connectors={"filesystem": _StubConnector()},
+        store=None,
+        registry=DocumentRegistry(tmp_path / "registry.db"),
+        history=SyncHistory(tmp_path / "registry.db"),
+        embed_fn=None,
+        sparse_encoder=_FakeSparseEncoder(),
+    )
+    registry = DocumentRegistry(tmp_path / "registry.db")
+    history = SyncHistory(tmp_path / "registry.db")
+    client = TestClient(
+        create_app(manager, history, registry, chat_deps=deps, auth_enabled=True)
+    )
+
+    response = client.post("/chat", json={"question": "hi"})
+
+    assert response.status_code == 401
+
+
+def test_chat_passes_the_authenticated_users_own_tenant_as_retrieval_context(tmp_path):
+    """The concrete proof that /chat never lets tenant_id come from the
+    request body — it's derived exclusively from the resolved
+    UserContext and handed to search_fn as a RetrievalContext.
+    """
+    from app.security.auth import DEFAULT_DEV_TOKENS, TokenAuthenticator
+
+    received_context = {}
+
+    async def _capturing_search(question: str, context: RetrievalContext):
+        received_context["context"] = context
+        return []
+
+    deps = ChatDependencies(search_fn=_capturing_search, stream_fn=_fake_stream)
+    manager = SyncManager(
+        connectors={"filesystem": _StubConnector()},
+        store=None,
+        registry=DocumentRegistry(tmp_path / "registry.db"),
+        history=SyncHistory(tmp_path / "registry.db"),
+        embed_fn=None,
+        sparse_encoder=_FakeSparseEncoder(),
+    )
+    registry = DocumentRegistry(tmp_path / "registry.db")
+    history = SyncHistory(tmp_path / "registry.db")
+    client = TestClient(
+        create_app(
+            manager, history, registry, chat_deps=deps,
+            token_authenticator=TokenAuthenticator(DEFAULT_DEV_TOKENS), auth_enabled=True,
+        )
+    )
+
+    client.post(
+        "/chat", json={"question": "hi"}, headers={"Authorization": "Bearer token-user-a"}
+    )
+
+    assert received_context["context"] == RetrievalContext(tenant_id="tenant-a")
 
 
 async def test_sse_event_stream_opens_a_chat_request_root_span():
@@ -110,14 +173,15 @@ async def test_sse_event_stream_opens_a_chat_request_root_span():
     provider.add_span_processor(SimpleSpanProcessor(exporter))
     tracer = provider.get_tracer("test")
 
-    async def search_fn(question: str) -> list[SearchResult]:
+    async def search_fn(question: str, context: RetrievalContext) -> list[SearchResult]:
         return []
 
     async def stream_fn(question: str, chunks: list[SearchResult]):
         yield {"type": "token", "content": "ok"}
 
     deps = ChatDependencies(search_fn=search_fn, stream_fn=stream_fn)
-    _ = [line async for line in _sse_event_stream("q", deps, tracer=tracer)]
+    context = RetrievalContext(tenant_id="default")
+    _ = [line async for line in _sse_event_stream("q", deps, context, tracer=tracer)]
 
     span_names = {s.name for s in exporter.get_finished_spans()}
     assert "chat_request" in span_names

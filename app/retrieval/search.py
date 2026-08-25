@@ -5,9 +5,10 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
 from app.llm.provider import EmbeddingProvider
-from app.retrieval.filters import build_filter
+from app.retrieval.filters import build_acl_filter, build_filter, combine_filters
 from app.retrieval.hybrid_search import SearchResult, hybrid_search
 from app.retrieval.sparse import SparseVector
+from app.security.models import RetrievalContext
 from app.shared.tracing import get_tracer
 
 # Query-side counterpart to app/ingestion/ingest.py's SEARCH_DOCUMENT_PREFIX —
@@ -38,6 +39,7 @@ async def search(
     qdrant_client: QdrantClient,
     collection_name: str,
     embed_model: str,
+    context: RetrievalContext,
     reranker: RerankerProtocol | None = None,
     top_k: int = RERANK_CANDIDATE_K,
     top_n: int = RERANK_TOP_N,
@@ -68,6 +70,16 @@ async def search(
     # at the truncated one, a real dimension mismatch Qdrant rejects
     # outright. Reproduced for real running the Sprint 19 benchmark
     # before this parameter was added — see docs/sprint-19-plan.md.
+    #
+    # Sprint 23: `context` is REQUIRED (no default) — every call site in
+    # this codebase (production chat, benchmark scripts, evaluation CLI,
+    # migration quality gate) must now say explicitly whether it's
+    # authorizing as a real tenant-scoped user
+    # (RetrievalContext.for_user(...)) or as privileged internal system
+    # code (RetrievalContext.system()). There is no third, implicit
+    # option — see app/retrieval/filters.py::build_acl_filter, which
+    # raises rather than building an unrestricted filter for anything
+    # in between.
     tracer = tracer or get_tracer(__name__)
 
     with tracer.start_as_current_span("embed_query") as span:
@@ -77,7 +89,22 @@ async def search(
         )
         sparse_vector = sparse_encoder.embed_query(query)
 
-    resolved_filters = filters or build_filter(doc_ids, source_types, source_ids, page_numbers)
+    # Sprint 23: the ACL filter is built from `context` alone — never
+    # from anything the caller passed in `filters`/doc_ids/source_types/
+    # etc. Those user-supplied filters are ADDITIONAL constraints
+    # (AND-ed in via combine_filters), never a substitute for or an
+    # override of the ACL half. A caller passing filters=None still gets
+    # the full ACL filter; a caller maliciously passing a filter naming
+    # a DIFFERENT tenant only narrows the result set further (AND
+    # semantics), it can never widen it past what the ACL already
+    # allows.
+    with tracer.start_as_current_span("build_acl_filter") as span:
+        acl_filter = build_acl_filter(context)
+        span.set_attribute("acl.is_system", context.is_system)
+        span.set_attribute("acl.tenant_scoped", acl_filter is not None)
+
+    user_filters = filters or build_filter(doc_ids, source_types, source_ids, page_numbers)
+    resolved_filters = combine_filters(acl_filter, user_filters)
 
     with tracer.start_as_current_span("retrieve_hybrid") as span:
         span.set_attribute("retrieve.top_k", top_k)

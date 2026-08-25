@@ -32,3 +32,19 @@ class Chunk:
     # Defaulted for the same backward-compatibility reason heading_path
     # was (Sprint 3) — every existing Chunk(...) call site keeps working.
     document_version: str = ""
+    # Sprint 23: which tenant owns this chunk — the security boundary
+    # this whole field exists for is enforced at retrieval time
+    # (app/retrieval/filters.py::build_acl_filter), but it has to be
+    # written into every point's Qdrant payload AND folded into the
+    # point-identity key (QdrantStore.point_id_for) at ingest time for
+    # that enforcement to have anything to filter on. NOT set by the
+    # chunker functions themselves (chunk_document/chunk_markdown_*
+    # have no notion of tenancy) — app/ingestion/ingest.py::
+    # ingest_connector sets it via dataclasses.replace() immediately
+    # after chunking, from the tenant_id the caller (SyncManager, itself
+    # wired from server-side connector configuration — never a request
+    # body value) supplies. Defaulted to "default" for the same
+    # backward-compatibility reason document_version was — every
+    # existing Chunk(...) call site (chunker/tests) keeps working
+    # unchanged; production ingest always overwrites it explicitly.
+    tenant_id: str = "default"

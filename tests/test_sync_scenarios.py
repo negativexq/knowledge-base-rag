@@ -121,8 +121,8 @@ async def test_deleting_a_file_leaves_zero_orphan_chunks(tmp_path):
     all_points = _all_points(store)
     assert not any(p.payload["source_id"] == "a_md" for p in all_points)
     assert any(p.payload["source_id"] == "b_md" for p in all_points)
-    assert registry.get_document("filesystem", "a_md") is None
-    assert registry.get_document("filesystem", "b_md") is not None
+    assert registry.get_document("default", "filesystem", "a_md") is None
+    assert registry.get_document("default", "filesystem", "b_md") is not None
 
 
 @pytest.mark.asyncio
@@ -235,11 +235,11 @@ async def test_manually_deleting_qdrant_points_triggers_automatic_reindex_on_nex
     first = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
     assert first.files_processed == 1
     assert store.count() > 0
-    hash_before = registry.get_document("filesystem", "a_md").content_hash
+    hash_before = registry.get_document("default", "filesystem", "a_md").content_hash
 
     # Simulate external data loss — NOT this app's own delete path, and
     # the registry is never touched.
-    store.delete_by_source("filesystem", "a_md")
+    store.delete_by_source("default", "filesystem", "a_md")
     assert store.count() == 0
 
     second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
@@ -253,7 +253,7 @@ async def test_manually_deleting_qdrant_points_triggers_automatic_reindex_on_nex
     # Content is genuinely unchanged, so the registry's hash is the same
     # as before — this proves the trigger was the missing index, not a
     # content edit.
-    assert registry.get_document("filesystem", "a_md").content_hash == hash_before
+    assert registry.get_document("default", "filesystem", "a_md").content_hash == hash_before
 
 
 @pytest.mark.asyncio
@@ -302,7 +302,7 @@ async def test_partial_qdrant_point_loss_is_detected_and_triggers_reindex(tmp_pa
         chunk_size_tokens=15, overlap_tokens=5,
     )
     assert first.files_processed == 1
-    original_chunk_count = registry.get_document("filesystem", "doc_md").chunk_count
+    original_chunk_count = registry.get_document("default", "filesystem", "doc_md").chunk_count
     assert original_chunk_count >= 3  # sanity: really did split into several chunks
 
     all_points = _all_points(store)
@@ -354,7 +354,7 @@ async def test_extra_same_version_point_is_cleaned_up_and_the_loop_actually_stop
     registry = _registry(tmp_path)
 
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
-    content_hash = registry.get_document("filesystem", "doc_md").content_hash
+    content_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
 
     # Simulate exactly the Sprint 17.2-disclosed edge case: a duplicate
     # point sharing the SAME document_version but a different point ID
@@ -373,14 +373,18 @@ async def test_extra_same_version_point_is_cleaned_up_and_the_loop_actually_stop
         [duplicate_chunk], [[0.01] * EMBEDDING_DIM], [SparseVector(indices=[], values=[])]
     )
 
-    ids_with_duplicate = store.list_point_ids_for_version("filesystem", "doc_md", content_hash)
+    ids_with_duplicate = store.list_point_ids_for_version(
+        "default", "filesystem", "doc_md", content_hash
+    )
     assert QdrantStore.point_id_for(duplicate_chunk) in ids_with_duplicate  # sanity: really added
 
     # First sync after the duplicate appears: cleaned up.
     second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
     assert second.files_processed == 1
 
-    ids_after_cleanup = store.list_point_ids_for_version("filesystem", "doc_md", content_hash)
+    ids_after_cleanup = store.list_point_ids_for_version(
+        "default", "filesystem", "doc_md", content_hash
+    )
     assert QdrantStore.point_id_for(duplicate_chunk) not in ids_after_cleanup
 
     # Second sync: the loop must actually terminate here, not repeat.
@@ -420,8 +424,9 @@ async def test_qdrant_only_orphan_is_cleaned_up_even_when_the_registry_never_kne
     # its rows deleted.
     (docs_dir / "a.md").unlink()
     fresh_registry = DocumentRegistry(tmp_path / "a_completely_different_registry.db")
-    assert fresh_registry.get_document("filesystem", "a_md") is None  # sanity: genuinely unknown
-    assert fresh_registry.get_document("filesystem", "b_md") is None
+    # sanity: genuinely unknown
+    assert fresh_registry.get_document("default", "filesystem", "a_md") is None
+    assert fresh_registry.get_document("default", "filesystem", "b_md") is None
 
     result = await ingest_connector(
         connector, store, fresh_registry, _fake_embed, _FakeSparseEncoder()
@@ -459,7 +464,7 @@ async def test_a_genuinely_empty_document_does_not_loop_forever(tmp_path):
 
     first = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
     assert first.files_processed == 1
-    record = registry.get_document("filesystem", "empty_md")
+    record = registry.get_document("default", "filesystem", "empty_md")
     assert record.chunk_count == 0  # genuinely zero, now distinguishable from "unknown"
 
     second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
@@ -490,7 +495,7 @@ async def test_untracked_chunk_count_is_promoted_after_one_forced_reindex(tmp_pa
     registry = _registry(tmp_path)
 
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
-    record = registry.get_document("filesystem", "doc_md")
+    record = registry.get_document("default", "filesystem", "doc_md")
     assert record.chunk_count is not None and record.chunk_count > 0  # sanity
 
     # Simulate an untracked row (e.g. migrated from a pre-chunk_count
@@ -501,12 +506,12 @@ async def test_untracked_chunk_count_is_promoted_after_one_forced_reindex(tmp_pa
             "UPDATE documents SET chunk_count = NULL WHERE source_type = 'filesystem' "
             "AND source_id = 'doc_md'"
         )
-    assert registry.get_document("filesystem", "doc_md").chunk_count is None  # sanity
+    assert registry.get_document("default", "filesystem", "doc_md").chunk_count is None  # sanity
 
     second = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
     assert second.files_processed == 1  # forced re-ingest, not skipped
     assert second.files_skipped == 0
-    promoted = registry.get_document("filesystem", "doc_md")
+    promoted = registry.get_document("default", "filesystem", "doc_md")
     assert promoted.chunk_count is not None and promoted.chunk_count > 0  # now tracked
 
     third = await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
@@ -539,7 +544,7 @@ async def test_real_sprint_17_2_upgrade_with_existing_qdrant_data_ends_up_tracke
     original_registry = _registry(tmp_path)
 
     await ingest_connector(connector, store, original_registry, _fake_embed, _FakeSparseEncoder())
-    original_record = original_registry.get_document("filesystem", "doc_md")
+    original_record = original_registry.get_document("default", "filesystem", "doc_md")
     real_content_hash = original_record.content_hash
     points_before = [p for p in _all_points(store) if p.payload["source_id"] == "doc_md"]
     assert len(points_before) > 0  # sanity: real points genuinely exist
@@ -573,14 +578,14 @@ async def test_real_sprint_17_2_upgrade_with_existing_qdrant_data_ends_up_tracke
     raw_conn.close()
 
     migrated_registry = DocumentRegistry(migrated_db_path)  # must migrate on open
-    assert migrated_registry.get_document("filesystem", "doc_md").chunk_count is None
+    assert migrated_registry.get_document("default", "filesystem", "doc_md").chunk_count is None
 
     first = await ingest_connector(
         connector, store, migrated_registry, _fake_embed, _FakeSparseEncoder()
     )
     assert first.files_processed == 1  # forced re-ingest — chunk_count was untracked
     assert first.files_skipped == 0
-    after_first = migrated_registry.get_document("filesystem", "doc_md")
+    after_first = migrated_registry.get_document("default", "filesystem", "doc_md")
     assert after_first.chunk_count is not None and after_first.chunk_count > 0
 
     second = await ingest_connector(
@@ -625,7 +630,7 @@ async def test_pipeline_fingerprint_mismatch_forces_reindex_even_with_unchanged_
         pipeline_fingerprint=fingerprint_v1,
     )
     assert first.files_processed == 1
-    assert registry.get_document("filesystem", "a_md").pipeline_fingerprint == (
+    assert registry.get_document("default", "filesystem", "a_md").pipeline_fingerprint == (
         fingerprint_v1.digest()
     )
 
@@ -646,7 +651,7 @@ async def test_pipeline_fingerprint_mismatch_forces_reindex_even_with_unchanged_
 
     assert second.files_processed == 1  # forced re-index, NOT skipped
     assert second.files_skipped == 0
-    assert registry.get_document("filesystem", "a_md").pipeline_fingerprint == (
+    assert registry.get_document("default", "filesystem", "a_md").pipeline_fingerprint == (
         fingerprint_v2.digest()
     )
 

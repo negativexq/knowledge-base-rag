@@ -36,8 +36,18 @@ def _real_client(tmp_path, docs_dir) -> TestClient:
         history=history,
         embed_fn=_fake_embed,
         sparse_encoder=_FakeSparseEncoder(),
+        tenant_ids={"filesystem": "local-dev"},
     )
-    return TestClient(create_app(manager, history, registry))
+    # Sprint 23: /sync is OPERATOR+ and tenant-scoped — auth_enabled=False
+    # gives every request ADMIN in tenant "local-dev" (see
+    # app/api/deps.py), and tenant_ids maps "filesystem" to that same
+    # tenant so the ownership check doesn't 403 these tests.
+    return TestClient(
+        create_app(
+            manager, history, registry, auth_enabled=False,
+            tenant_ids={"filesystem": "local-dev"},
+        )
+    )
 
 
 def test_post_sync_triggers_a_real_ingest_and_returns_the_result(tmp_path):
@@ -82,7 +92,9 @@ def test_post_sync_when_already_running_returns_409():
         def list_documents(self, source_type=None):
             return []
 
-    client = TestClient(create_app(_StubManager(), _StubHistory(), _StubRegistry()))
+    client = TestClient(
+        create_app(_StubManager(), _StubHistory(), _StubRegistry(), auth_enabled=False)
+    )
     response = client.post("/sync/filesystem")
 
     assert response.status_code == 409
@@ -116,3 +128,98 @@ def test_get_sync_history_for_a_source_with_no_runs_returns_empty_list(tmp_path)
 
     assert response.status_code == 200
     assert response.json() == []
+
+
+# ------------------------- Sprint 23: real auth/RBAC/tenant enforcement
+
+
+def _real_auth_client(tmp_path, docs_dir, tenant_ids) -> TestClient:
+    from app.security.auth import DEFAULT_DEV_TOKENS, TokenAuthenticator
+
+    connector = LocalFilesystemConnector(docs_dir)
+    store = QdrantStore(client=QdrantClient(":memory:"), collection_name=COLLECTION)
+    registry = DocumentRegistry(tmp_path / "registry.db")
+    history = SyncHistory(tmp_path / "registry.db")
+    manager = SyncManager(
+        connectors={"filesystem": connector},
+        store=store,
+        registry=registry,
+        history=history,
+        embed_fn=_fake_embed,
+        sparse_encoder=_FakeSparseEncoder(),
+        tenant_ids=tenant_ids,
+    )
+    return TestClient(
+        create_app(
+            manager, history, registry,
+            token_authenticator=TokenAuthenticator(DEFAULT_DEV_TOKENS),
+            auth_enabled=True,
+            tenant_ids=tenant_ids,
+        )
+    )
+
+
+def test_sync_with_no_credentials_returns_401(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
+
+    response = client.post("/sync/filesystem")
+
+    assert response.status_code == 401
+
+
+def test_sync_with_plain_user_role_is_forbidden(tmp_path):
+    """Mutation endpoints are never open to a plain USER — matches
+    Sprint 23's endpoint policy (/sync requires OPERATOR+).
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
+
+    response = client.post(
+        "/sync/filesystem", headers={"Authorization": "Bearer token-user-a"}
+    )
+
+    assert response.status_code == 403
+
+
+def test_sync_with_operator_role_for_the_owning_tenant_succeeds(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "readme.md").write_text("# A\n\nContent.")
+    client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
+
+    response = client.post(
+        "/sync/filesystem", headers={"Authorization": "Bearer token-operator-a"}
+    )
+
+    assert response.status_code == 200
+
+
+def test_operator_for_a_different_tenant_cannot_sync_someone_elses_source(tmp_path):
+    """Section 12's exact scenario: "filesystem" belongs to tenant-a in
+    this app's server-side configuration — tenant-b's operator must be
+    refused even though they hold a genuinely valid OPERATOR token.
+    """
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
+
+    response = client.post(
+        "/sync/filesystem", headers={"Authorization": "Bearer token-operator-b"}
+    )
+
+    assert response.status_code == 403
+
+
+def test_wrong_tenant_operator_cannot_read_sync_history_either(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
+
+    response = client.get(
+        "/sync/filesystem/history", headers={"Authorization": "Bearer token-operator-b"}
+    )
+
+    assert response.status_code == 403

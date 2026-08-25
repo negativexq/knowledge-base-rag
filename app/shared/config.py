@@ -84,6 +84,26 @@ class Settings(BaseSettings):
     # behavior), so a fresh/unmigrated deployment is entirely unaffected.
     qdrant_active_alias: str = "kb_active"
 
+    # Sprint 23: security boundary. Defaults to enabled — an explicit,
+    # loud local-dev-only opt-out (never the silent/ambiguous default;
+    # app/wiring.py logs a warning at startup when this is False). See
+    # docs/security.md.
+    auth_enabled: bool = True
+    # Optional raw JSON blob — {"token-...": {"user_id":...,
+    # "tenant_id":..., "roles": ["USER"]}} — REPLACING (not merging with)
+    # app/security/auth.py::DEFAULT_DEV_TOKENS for a real deployment.
+    # None (default) uses the demo dev token fixture — appropriate for
+    # local development only.
+    auth_tokens_json: str | None = None
+
+    # Sprint 23: which tenant owns documents ingested through each
+    # connector — server-side configuration, never a value a request/
+    # ingest call can choose. Matches this app's existing one-connector-
+    # instance-per-source_type architecture (app/wiring.py::
+    # build_connectors): each connector is wholly owned by one tenant.
+    filesystem_tenant_id: str = "tenant-a"
+    notion_tenant_id: str = "tenant-a"
+
     claude_api_key: str | None = None
     claude_model: str = "claude-haiku-4-5-20251001"
     claude_max_tokens: int = 2048

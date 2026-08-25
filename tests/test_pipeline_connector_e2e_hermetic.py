@@ -23,6 +23,7 @@ from app.llm.grounding import check_grounding
 from app.registry.store import DocumentRegistry
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseVector
+from app.security.models import RetrievalContext
 from app.ui.citation_formatting import highlight_citations
 
 COLLECTION = "test_pipeline_connector_e2e_hermetic"
@@ -102,8 +103,8 @@ async def test_mixed_pdf_and_markdown_folder_end_to_end(sample_pdf, tmp_path):
     assert store.count() == stats.chunks_upserted
 
     # both documents registered under the connector's source_type
-    assert registry.get_document("filesystem", "handbook_pdf") is not None
-    assert registry.get_document("filesystem", "readme_md") is not None
+    assert registry.get_document("default", "filesystem", "handbook_pdf") is not None
+    assert registry.get_document("default", "filesystem", "readme_md") is not None
 
     # --- PDF chunk: retrieve, generate, ground a page/paragraph citation ---
     pdf_results = await search(
@@ -113,6 +114,7 @@ async def test_mixed_pdf_and_markdown_folder_end_to_end(sample_pdf, tmp_path):
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="fake",
+        context=RetrievalContext(tenant_id="default"),
         top_k=10,
         top_n=3,
     )
@@ -140,6 +142,7 @@ async def test_mixed_pdf_and_markdown_folder_end_to_end(sample_pdf, tmp_path):
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="fake",
+        context=RetrievalContext(tenant_id="default"),
         top_k=10,
         top_n=3,
     )

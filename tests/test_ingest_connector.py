@@ -134,8 +134,8 @@ async def test_ingest_connector_registers_both_documents_with_correct_source_typ
 
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
 
-    pdf_record = registry.get_document("filesystem", "handbook_pdf")
-    md_record = registry.get_document("filesystem", "readme_md")
+    pdf_record = registry.get_document("default", "filesystem", "handbook_pdf")
+    md_record = registry.get_document("default", "filesystem", "readme_md")
 
     assert pdf_record is not None
     assert md_record is not None
@@ -155,7 +155,7 @@ async def test_ingest_connector_registry_hash_matches_connector_hash(sample_pdf,
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
 
     for document in await connector.list_documents():
-        record = registry.get_document(connector.source_type, document.source_id)
+        record = registry.get_document("default", connector.source_type, document.source_id)
         assert record.content_hash == await connector.get_content_hash(document)
 
 
@@ -169,18 +169,18 @@ async def test_ingest_connector_rerun_bumps_registry_version_only_when_content_c
     registry = _registry(tmp_path)
 
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
-    first_version = registry.get_document("filesystem", "readme_md").version
+    first_version = registry.get_document("default", "filesystem", "readme_md").version
 
     # unchanged re-run — ingest_connector skips it entirely (Sprint 4), so
     # this also proves the skip path doesn't touch the registry version
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
-    second_version = registry.get_document("filesystem", "readme_md").version
+    second_version = registry.get_document("default", "filesystem", "readme_md").version
 
     assert second_version == first_version
 
     (Path(docs_dir) / "readme.md").write_text("# Kurulum\n\nUpdated install steps.")
     await ingest_connector(connector, store, registry, _fake_embed, _FakeSparseEncoder())
-    third_version = registry.get_document("filesystem", "readme_md").version
+    third_version = registry.get_document("default", "filesystem", "readme_md").version
 
     assert third_version == first_version + 1
 
@@ -230,8 +230,8 @@ async def test_two_files_with_identical_content_keep_independent_identity(tmp_pa
     # nothing silently overwritten.
     assert store.count() == stats.chunks_upserted
 
-    doc_a = registry.get_document("filesystem", "a_md")
-    doc_b = registry.get_document("filesystem", "b_md")
+    doc_a = registry.get_document("default", "filesystem", "a_md")
+    doc_b = registry.get_document("default", "filesystem", "b_md")
     assert doc_a is not None
     assert doc_b is not None
     assert doc_a.content_hash == doc_b.content_hash  # same content -> same hash, by design
@@ -243,7 +243,7 @@ async def test_two_files_with_identical_content_keep_independent_identity(tmp_pa
     # Deleting one document's points must not touch the other's, even
     # though they share a doc_id — proves citation identity (source_id)
     # stayed independent all the way through Qdrant, not just registry.
-    store.delete_by_source("filesystem", "a_md")
+    store.delete_by_source("default", "filesystem", "a_md")
     remaining, _ = store._client.scroll(COLLECTION, limit=100)
     assert remaining
     assert all(point.payload["source_id"] == "b_md" for point in remaining)
@@ -273,4 +273,4 @@ async def test_duplicate_source_ids_from_a_connector_fail_fast(tmp_path):
     # collection SCHEMA may exist from ensure_collection(), but zero
     # points and zero registry rows for this connector).
     assert store.count() == 0
-    assert registry.list_documents(source_type="fake") == []
+    assert registry.list_documents(tenant_id="default", source_type="fake") == []

@@ -25,7 +25,7 @@ def _registry(tmp_path) -> DocumentRegistry:
 def test_upsert_document_creates_a_new_record_at_version_1(tmp_path):
     registry = _registry(tmp_path)
 
-    record = registry.upsert_document("pdf", "handbook", "hash-a")
+    record = registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
     assert record.source_type == "pdf"
     assert record.source_id == "handbook"
@@ -38,7 +38,7 @@ def test_upsert_document_creates_a_new_record_at_version_1(tmp_path):
 def test_upsert_document_records_the_given_chunk_count(tmp_path):
     registry = _registry(tmp_path)
 
-    record = registry.upsert_document("pdf", "handbook", "hash-a", chunk_count=7)
+    record = registry.upsert_document("t1", "pdf", "handbook", "hash-a", chunk_count=7)
 
     assert record.chunk_count == 7
 
@@ -50,7 +50,7 @@ def test_upsert_document_with_chunk_count_zero_is_distinguishable_from_never_tra
     """
     registry = _registry(tmp_path)
 
-    record = registry.upsert_document("filesystem", "empty_md", "hash-empty", chunk_count=0)
+    record = registry.upsert_document("t1", "filesystem", "empty_md", "hash-empty", chunk_count=0)
 
     assert record.chunk_count == 0
     assert record.chunk_count is not None
@@ -58,27 +58,27 @@ def test_upsert_document_with_chunk_count_zero_is_distinguishable_from_never_tra
 
 def test_upsert_document_chunk_count_updates_on_re_ingest(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "handbook", "hash-a", chunk_count=7)
+    registry.upsert_document("t1", "pdf", "handbook", "hash-a", chunk_count=7)
 
-    record = registry.upsert_document("pdf", "handbook", "hash-b", chunk_count=9)
+    record = registry.upsert_document("t1", "pdf", "handbook", "hash-b", chunk_count=9)
 
     assert record.chunk_count == 9
 
 
 def test_upsert_document_with_unchanged_hash_does_not_bump_version(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "handbook", "hash-a")
+    registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
-    second = registry.upsert_document("pdf", "handbook", "hash-a")
+    second = registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
     assert second.version == 1
 
 
 def test_upsert_document_with_changed_hash_bumps_version(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "handbook", "hash-a")
+    registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
-    updated = registry.upsert_document("pdf", "handbook", "hash-b")
+    updated = registry.upsert_document("t1", "pdf", "handbook", "hash-b")
 
     assert updated.content_hash == "hash-b"
     assert updated.version == 2
@@ -86,9 +86,9 @@ def test_upsert_document_with_changed_hash_bumps_version(tmp_path):
 
 def test_upsert_document_refreshes_last_synced_at_even_when_hash_unchanged(tmp_path):
     registry = _registry(tmp_path)
-    first = registry.upsert_document("pdf", "handbook", "hash-a")
+    first = registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
-    second = registry.upsert_document("pdf", "handbook", "hash-a")
+    second = registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
     assert second.last_synced_at >= first.last_synced_at
 
@@ -96,7 +96,7 @@ def test_upsert_document_refreshes_last_synced_at_even_when_hash_unchanged(tmp_p
 def test_upsert_document_accepts_a_custom_status(tmp_path):
     registry = _registry(tmp_path)
 
-    record = registry.upsert_document("pdf", "handbook", "hash-a", status="error")
+    record = registry.upsert_document("t1", "pdf", "handbook", "hash-a", status="error")
 
     assert record.status == "error"
 
@@ -104,14 +104,14 @@ def test_upsert_document_accepts_a_custom_status(tmp_path):
 def test_get_document_returns_none_when_not_registered(tmp_path):
     registry = _registry(tmp_path)
 
-    assert registry.get_document("pdf", "missing") is None
+    assert registry.get_document("t1", "pdf", "missing") is None
 
 
 def test_get_document_returns_the_stored_record(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "handbook", "hash-a")
+    registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
-    record = registry.get_document("pdf", "handbook")
+    record = registry.get_document("t1", "pdf", "handbook")
 
     assert record is not None
     assert record.content_hash == "hash-a"
@@ -119,30 +119,30 @@ def test_get_document_returns_the_stored_record(tmp_path):
 
 def test_delete_document_removes_the_record(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "handbook", "hash-a")
+    registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
-    registry.delete_document("pdf", "handbook")
+    registry.delete_document("t1", "pdf", "handbook")
 
-    assert registry.get_document("pdf", "handbook") is None
+    assert registry.get_document("t1", "pdf", "handbook") is None
 
 
 def test_delete_document_on_unregistered_document_is_a_no_op(tmp_path):
     registry = _registry(tmp_path)
 
-    registry.delete_document("pdf", "never-existed")  # must not raise
+    registry.delete_document("t1", "pdf", "never-existed")  # must not raise
 
 
 def test_has_changed_is_true_for_a_never_registered_document(tmp_path):
     registry = _registry(tmp_path)
 
-    assert registry.has_changed("pdf", "handbook", "hash-a") is True
+    assert registry.has_changed("t1", "pdf", "handbook", "hash-a") is True
 
 
 def test_has_changed_is_false_when_hash_matches_the_registered_one(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "handbook", "hash-a")
+    registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
-    assert registry.has_changed("pdf", "handbook", "hash-a") is False
+    assert registry.has_changed("t1", "pdf", "handbook", "hash-a") is False
 
 
 def test_has_changed_is_true_when_hash_differs_from_the_registered_one(tmp_path):
@@ -150,18 +150,18 @@ def test_has_changed_is_true_when_hash_differs_from_the_registered_one(tmp_path)
     hash changed.
     """
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "handbook", "hash-a")
+    registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
-    assert registry.has_changed("pdf", "handbook", "hash-b") is True
+    assert registry.has_changed("t1", "pdf", "handbook", "hash-b") is True
 
 
 def test_two_documents_with_same_source_id_but_different_source_type_are_distinct(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "readme", "hash-pdf")
-    registry.upsert_document("markdown", "readme", "hash-markdown")
+    registry.upsert_document("t1", "pdf", "readme", "hash-pdf")
+    registry.upsert_document("t1", "markdown", "readme", "hash-markdown")
 
-    pdf_doc = registry.get_document("pdf", "readme")
-    md_doc = registry.get_document("markdown", "readme")
+    pdf_doc = registry.get_document("t1", "pdf", "readme")
+    md_doc = registry.get_document("t1", "markdown", "readme")
 
     assert pdf_doc.content_hash == "hash-pdf"
     assert md_doc.content_hash == "hash-markdown"
@@ -169,9 +169,9 @@ def test_two_documents_with_same_source_id_but_different_source_type_are_distinc
 
 def test_list_documents_returns_all_registered_documents(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "a", "hash-a")
-    registry.upsert_document("pdf", "b", "hash-b")
-    registry.upsert_document("markdown", "c", "hash-c")
+    registry.upsert_document("t1", "pdf", "a", "hash-a")
+    registry.upsert_document("t1", "pdf", "b", "hash-b")
+    registry.upsert_document("t1", "markdown", "c", "hash-c")
 
     records = registry.list_documents()
 
@@ -184,8 +184,8 @@ def test_list_documents_returns_all_registered_documents(tmp_path):
 
 def test_list_documents_filters_by_source_type(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("pdf", "a", "hash-a")
-    registry.upsert_document("markdown", "c", "hash-c")
+    registry.upsert_document("t1", "pdf", "a", "hash-a")
+    registry.upsert_document("t1", "markdown", "c", "hash-c")
 
     records = registry.list_documents(source_type="pdf")
 
@@ -195,11 +195,11 @@ def test_list_documents_filters_by_source_type(tmp_path):
 def test_data_persists_to_the_real_file_across_separate_connections(tmp_path):
     db_path = tmp_path / "registry.db"
     first_connection = DocumentRegistry(db_path)
-    first_connection.upsert_document("pdf", "handbook", "hash-a")
+    first_connection.upsert_document("t1", "pdf", "handbook", "hash-a")
     first_connection.close()
 
     second_connection = DocumentRegistry(db_path)
-    record = second_connection.get_document("pdf", "handbook")
+    record = second_connection.get_document("t1", "pdf", "handbook")
 
     assert record is not None
     assert record.content_hash == "hash-a"
@@ -214,6 +214,7 @@ def test_schema_creates_documents_table_with_expected_columns(tmp_path):
     raw_conn.close()
 
     assert columns == {
+        "tenant_id",
         "source_type",
         "source_id",
         "content_hash",
@@ -257,7 +258,10 @@ def test_a_pre_sprint_17_2_registry_file_gets_the_chunk_count_column_migrated(tm
 
     registry = DocumentRegistry(db_path)  # must migrate on open, not crash
 
-    record = registry.get_document("pdf", "old-doc")
+    # Sprint 23: a pre-existing row predates tenant_id entirely, so the
+    # tenant migration backfills it to DEFAULT_TENANT_ID ("default") —
+    # not the "t1" this test file otherwise uses for fresh writes.
+    record = registry.get_document("default", "pdf", "old-doc")
     assert record is not None
     assert record.chunk_count is None  # pre-existing row, never tracked — NULL, doesn't crash
 
@@ -330,8 +334,7 @@ def test_upsert_document_with_chunk_count_none_no_longer_raises_against_a_real_1
 
     registry = DocumentRegistry(db_path)  # must migrate the NOT NULL away
 
-    record = registry.upsert_document(
-        "filesystem", "new-doc", "hash-new", chunk_count=None
+    record = registry.upsert_document("t1", "filesystem", "new-doc", "hash-new", chunk_count=None
     )  # must not raise sqlite3.IntegrityError
 
     assert record.chunk_count is None
@@ -352,7 +355,7 @@ def test_a_real_sprint_17_2_row_with_ambiguous_zero_becomes_null_after_migration
 
     registry = DocumentRegistry(db_path)
 
-    record = registry.get_document("filesystem", "legacy-doc")
+    record = registry.get_document("default", "filesystem", "legacy-doc")
     assert record is not None
     assert record.chunk_count is None  # the ambiguous legacy 0 -> NULL, not preserved as 0
 
@@ -377,7 +380,7 @@ def test_a_real_sprint_17_2_row_with_a_real_nonzero_count_is_preserved(tmp_path)
 
     registry = DocumentRegistry(db_path)
 
-    record = registry.get_document("filesystem", "real-doc")
+    record = registry.get_document("default", "filesystem", "real-doc")
     assert record is not None
     assert record.chunk_count == 5
 
@@ -386,7 +389,7 @@ def test_last_synced_at_is_a_real_datetime_with_timezone(tmp_path):
     registry = _registry(tmp_path)
     before = datetime.now(UTC) - timedelta(seconds=1)
 
-    record = registry.upsert_document("pdf", "handbook", "hash-a")
+    record = registry.upsert_document("t1", "pdf", "handbook", "hash-a")
 
     assert isinstance(record.last_synced_at, datetime)
     assert record.last_synced_at.tzinfo is not None
@@ -414,7 +417,7 @@ def test_a_registry_with_documents_but_no_version_row_is_detected_as_stale(tmp_p
     must be treated as needing migration, not silently trusted.
     """
     registry = _registry(tmp_path)
-    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry.upsert_document("t1", "filesystem", "handbook", "hash-a")
 
     with pytest.raises(IndexSchemaMismatchError):
         registry.ensure_index_schema_version()
@@ -422,7 +425,7 @@ def test_a_registry_with_documents_but_no_version_row_is_detected_as_stale(tmp_p
 
 def test_a_registry_with_an_explicit_stale_version_row_is_detected(tmp_path):
     registry = _registry(tmp_path)
-    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry.upsert_document("t1", "filesystem", "handbook", "hash-a")
     registry._set_index_schema_version(CURRENT_INDEX_SCHEMA_VERSION - 1)
 
     with pytest.raises(IndexSchemaMismatchError):
@@ -438,7 +441,7 @@ def test_a_registry_with_a_version_ahead_of_current_is_detected_as_a_downgrade(t
     the raise path, not a silent accept.
     """
     registry = _registry(tmp_path)
-    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry.upsert_document("t1", "filesystem", "handbook", "hash-a")
     registry._set_index_schema_version(CURRENT_INDEX_SCHEMA_VERSION + 1)
 
     with pytest.raises(IndexSchemaMismatchError):
@@ -455,7 +458,7 @@ def test_corrupted_non_numeric_schema_version_metadata_raises_index_schema_misma
     follows.
     """
     registry = _registry(tmp_path)
-    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry.upsert_document("t1", "filesystem", "handbook", "hash-a")
     with registry._conn:
         registry._conn.execute(
             "INSERT INTO registry_metadata (key, value) VALUES ('index_schema_version', "
@@ -478,7 +481,7 @@ def test_a_registry_stamped_at_the_previous_real_version_is_detected_as_stale(tm
     upgrade path this sprint exists for.
     """
     registry = _registry(tmp_path)
-    registry.upsert_document("filesystem", "handbook", "hash-a")
+    registry.upsert_document("t1", "filesystem", "handbook", "hash-a")
     registry._set_index_schema_version(2)
 
     with pytest.raises(IndexSchemaMismatchError):

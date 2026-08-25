@@ -53,6 +53,7 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 - [LLM providers](#llm-providers)
 - [Connectors](#connectors)
 - [Sync](#sync)
+- [Security](#security)
 - [Citation format](#citation-format)
 - [UI](#ui)
 - [Development setup](#development-setup-host-venv-for-running-tests)
@@ -202,7 +203,8 @@ verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
 |---|---|---|
 | Parsing | PyMuPDF (`fitz`) — PDF; hand-written heading-block parser — Markdown; `trafilatura` — web pages | Page/paragraph extraction ported from production-rag-platform (Sprint 0); Markdown's heading-path location scheme (Sprint 3) is reused by the web parser too (Sprint 6) |
 | Chunking | Whitespace token counter, 500/50 (size/overlap) | Provisional default, unchanged since Sprint 0 — never re-tuned against a larger corpus (see Known Limitations) |
-| Document registry | SQLite (stdlib `sqlite3`), no ORM | `(source_type, source_id)` primary key, content-hash diffing for incremental sync (Sprint 2) |
+| Document registry | SQLite (stdlib `sqlite3`), no ORM | `(tenant_id, source_type, source_id)` primary key (Sprint 23 — was `(source_type, source_id)` before tenant isolation), content-hash diffing for incremental sync (Sprint 2) |
+| Security boundary | Bearer-token auth → `UserContext` → mandatory Qdrant `tenant_id` ACL filter | Server-owned identity and authorization — never trusts a tenant_id/role from the request itself; enforced BEFORE dense/sparse/hybrid retrieval, not via a prompt or a post-hoc citation check (Sprint 23, see [Security](#security)) |
 | Connectors | `LocalFilesystemConnector` (PDF/Markdown); `NotionConnector` (Notion API, 429 retry/backoff) | Shared async `Connector` Protocol (Sprint 3, generalized to async in Sprint 6) |
 | Sync | Hand-rolled `asyncio` loop (`SyncScheduler`) + per-connector concurrency guard | APScheduler/Celery deliberately rejected — no cron expressions or job persistence needed (Sprint 7); re-index is zero-downtime with deferred cleanup, not atomic (Sprint 13); embedding calls run with bounded concurrency, default 4, picked from a real benchmark that found a throughput plateau past that point — see [Sync](#sync) (Sprint 14) |
 | Provider abstraction | `ChatProvider`/`EmbeddingProvider` Protocols — Ollama (native) + Claude (Anthropic API) | Claude has no embedding endpoint, so embedding always stays on Ollama regardless of chat provider (Sprint 1) |
@@ -381,6 +383,54 @@ captured from the same OTel spans Jaeger uses — Sprint 8):
 
 Embedding dominates, as expected — Qdrant's own write path is fast and
 not the bottleneck worth optimizing further.
+
+## Security
+
+Sprint 23 closed Phase 1 of the roadmap's security work — tenant-aware
+retrieval authorization enforced as a mandatory server-side boundary,
+not a convention:
+
+```
+authenticated identity (Bearer token → UserContext)
+      ↓
+server-owned tenant/role (never from the request body)
+      ↓
+mandatory Qdrant ACL filter (tenant_id, ANDed with any user filter)
+      ↓
+dense + sparse (BM25) hybrid retrieval, RRF-fused
+      ↓
+authorized candidates only
+      ↓
+reranker
+      ↓
+generation / citations
+```
+
+**Cross-tenant retrieval is blocked before candidate generation** — this
+claim is backed by `tests/test_cross_tenant_e2e.py`, run against a real
+Qdrant server (not `:memory:`, which silently drops filters on hybrid
+prefetch+fusion queries): two real tenants, each with a document
+containing a unique secret phrase, in ONE shared collection. Dense-only,
+sparse-only, and hybrid retrieval are all proven tenant-isolated; a
+malicious filter naming another tenant only narrows results (AND
+semantics), never widens them; the reranker only ever receives
+already-authorized candidates; a fabricated citation for another
+tenant's document is rejected by grounding.
+
+Roles: `USER` (chat) < `OPERATOR` (trigger/read syncs for their own
+tenant) < `ADMIN`. `/sync/{source_type}` requires OPERATOR+ AND
+ownership of that source_type by the caller's tenant; `/sources` is
+tenant-scoped (a source_type owned by another tenant doesn't even
+appear in the response).
+
+Local development: `AUTH_ENABLED=true` by default (see `.env.example`);
+setting it `false` is a loud, explicit local-only bypass, never the
+silent default. The Streamlit UI has a sidebar demo-token selector
+(`app/ui/dev_auth.py`) — clearly labeled, never a real credential.
+
+Full threat model, auth/tenant model, and known limitations (this is
+Phase 1 only — prompt-injection/untrusted-context defenses are a later
+sprint) in [docs/security.md](docs/security.md).
 
 ## Citation format
 

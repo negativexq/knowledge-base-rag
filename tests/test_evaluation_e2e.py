@@ -23,6 +23,7 @@ from app.registry.store import DocumentRegistry
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
+from app.security.models import RetrievalContext
 from app.shared.config import settings
 from tests.fixtures.golden_markdown_source import build_golden_markdown_source
 from tests.fixtures.golden_source import build_golden_source_pdf
@@ -93,6 +94,7 @@ async def test_real_golden_set_run_reports_metrics_by_content_type(tmp_path):
                 qdrant_client,
                 COLLECTION,
                 settings.ollama_embed_model,
+                RetrievalContext(tenant_id="default"),
             )
 
         async def generate_fn(question: str, chunks: list[SearchResult]) -> str:

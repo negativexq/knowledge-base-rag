@@ -11,6 +11,7 @@ from app.retrieval.filters import build_filter
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.search import RERANK_CANDIDATE_K, SEARCH_QUERY_PREFIX, search
 from app.retrieval.sparse import SparseVector
+from app.security.models import RetrievalContext
 
 
 def _local_tracer_with_exporter():
@@ -80,6 +81,7 @@ async def test_search_applies_search_query_prefix_to_dense_embedding():
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
     )
 
     assert ollama.calls[0]["prefix"] == SEARCH_QUERY_PREFIX
@@ -112,6 +114,7 @@ async def test_search_accepts_a_query_prefix_override_for_a_different_embedding_
         qdrant_client=client,
         collection_name=COLLECTION + "_prefix_override",
         embed_model="qwen3-embedding:4b",
+        context=RetrievalContext(tenant_id="default"),
         query_prefix="Instruct: retrieve relevant passages\nQuery: ",
     )
 
@@ -147,6 +150,7 @@ async def test_search_forwards_a_dimensions_override_to_the_embedding_call():
         qdrant_client=client,
         collection_name=COLLECTION + "_dims",
         embed_model="qwen3-embedding:4b",
+        context=RetrievalContext(tenant_id="default"),
         dimensions=1024,
     )
 
@@ -172,6 +176,7 @@ async def test_search_without_dimensions_override_leaves_it_none():
         qdrant_client=client,
         collection_name=COLLECTION + "_no_dims",
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
     )
 
     assert ollama.calls[0]["dimensions"] is None
@@ -197,6 +202,7 @@ async def test_search_returns_hybrid_results():
         qdrant_client=client,
         collection_name=COLLECTION + "2",
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
     )
 
     assert len(results) == 1
@@ -221,10 +227,19 @@ async def test_search_builds_and_passes_filter_from_doc_ids(monkeypatch):
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
         doc_ids=["doc-a", "doc-b"],
     )
 
-    assert captured["filters"] == build_filter(doc_ids=["doc-a", "doc-b"])
+    # Sprint 23: the filter actually passed to hybrid_search is now the
+    # ACL filter AND the user-supplied doc_ids filter — never just the
+    # bare doc_ids filter on its own, even for a normal, non-adversarial
+    # caller.
+    from app.retrieval.filters import build_acl_filter, combine_filters
+
+    expected_acl = build_acl_filter(RetrievalContext(tenant_id="default"))
+    expected_user = build_filter(doc_ids=["doc-a", "doc-b"])
+    assert captured["filters"] == combine_filters(expected_acl, expected_user)
 
 
 class _FakeReranker:
@@ -258,6 +273,7 @@ async def test_search_uses_reranker_when_provided(monkeypatch):
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
         reranker=reranker,
         top_n=2,
     )
@@ -286,6 +302,7 @@ async def test_search_fetches_rerank_candidate_k_from_hybrid_search_by_default(m
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
         reranker=_FakeReranker(),
     )
 
@@ -313,6 +330,7 @@ async def test_search_without_reranker_falls_back_to_hybrid_order_truncated_to_t
         qdrant_client=client,
         collection_name=COLLECTION,
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
         top_n=2,
     )
 
@@ -340,6 +358,7 @@ async def test_search_creates_embed_and_retrieve_spans_with_attributes():
         qdrant_client=client,
         collection_name=COLLECTION + "3",
         embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
         tracer=tracer,
     )
 
@@ -373,6 +392,7 @@ async def test_search_creates_rerank_span_only_when_reranker_provided():
             qdrant_client=client,
             collection_name=COLLECTION,
             embed_model="nomic-embed-text",
+            context=RetrievalContext(tenant_id="default"),
             reranker=_FakeReranker(),
             top_n=1,
             tracer=tracer,
@@ -388,6 +408,7 @@ async def test_search_creates_rerank_span_only_when_reranker_provided():
             qdrant_client=client,
             collection_name=COLLECTION,
             embed_model="nomic-embed-text",
+            context=RetrievalContext(tenant_id="default"),
             top_n=1,
             tracer=tracer2,
         )
