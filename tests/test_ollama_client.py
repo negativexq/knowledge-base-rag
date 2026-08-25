@@ -91,6 +91,73 @@ async def test_embed_raises_when_unreachable():
 
 
 @pytest.mark.asyncio
+async def test_embed_without_dimensions_uses_the_singular_endpoint_unchanged():
+    """Sprint 19: dimensions=None (every existing caller, including
+    nomic's production path) must keep using the OLD /api/embeddings
+    endpoint — not the new /api/embed one.
+    """
+    seen_path = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen_path["path"] = request.url.path
+        return httpx.Response(200, json={"embedding": [0.1, 0.2]})
+
+    client = OllamaClient(http_client=_mock_client(handler))
+    await client.embed("hello world", model="nomic-embed-text")
+
+    assert seen_path["path"] == "/api/embeddings"
+
+
+@pytest.mark.asyncio
+async def test_embed_with_dimensions_uses_the_plural_endpoint_and_passes_dimensions():
+    captured_body = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/api/embed"
+        captured_body.update(json.loads(request.content))
+        return httpx.Response(200, json={"embeddings": [[0.1, 0.2, 0.3, 0.4]]})
+
+    client = OllamaClient(http_client=_mock_client(handler))
+    embedding = await client.embed(
+        "hello world", model="qwen3-embedding:4b", prefix="Instruct: x\nQuery: ", dimensions=4
+    )
+
+    assert embedding == [0.1, 0.2, 0.3, 0.4]
+    assert captured_body["dimensions"] == 4
+    assert captured_body["input"] == "Instruct: x\nQuery: hello world"
+    assert captured_body["model"] == "qwen3-embedding:4b"
+
+
+@pytest.mark.asyncio
+async def test_embed_with_dimensions_does_not_raise_when_backend_silently_clamps():
+    """Ollama silently clamps an out-of-range dimensions request to the
+    model's native dimension instead of erroring — embed() must not try
+    to validate this itself; the caller (the benchmark script) is
+    responsible for checking len(result) against what it asked for.
+    """
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        # Backend "clamps": returns 2 floats even though 999 was requested.
+        return httpx.Response(200, json={"embeddings": [[0.1, 0.2]]})
+
+    client = OllamaClient(http_client=_mock_client(handler))
+    embedding = await client.embed("hello world", model="qwen3-embedding:0.6b", dimensions=999)
+
+    assert embedding == [0.1, 0.2]
+
+
+@pytest.mark.asyncio
+async def test_embed_with_dimensions_raises_when_unreachable():
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("connection refused", request=request)
+
+    client = OllamaClient(http_client=_mock_client(handler))
+
+    with pytest.raises(OllamaUnreachableError):
+        await client.embed("hello world", model="qwen3-embedding:4b", dimensions=1024)
+
+
+@pytest.mark.asyncio
 async def test_stream_chat_yields_content_tokens_in_order():
     ndjson = "\n".join(
         [

@@ -2230,7 +2230,153 @@ mismatch/match/backward-compat, `tests/test_document_registry.py` şema
 testi güncellendi), 485 test yeşil (448→485), 2'si servis/API key
 gerektirdiği için skip, `ruff check app tests scripts` temiz.
 
-## Sprint 19 (stretch) — İkinci Connector (Confluence)
+## Sprint 19 — Qwen3 Size & Dimension Trade-off Benchmark
+
+Amaç: Sprint 18 "Qwen3-Embedding-4B nomic'ten daha mı iyi?" sorusunu
+cevapladı (evet, çapraz-dilli tarafta). Bu sprint farklı bir soru
+soruyor: hangi Qwen3 varyantı (boyut x output-dimension) production için
+en iyi kalite/maliyet dengesini veriyor? Bkz. docs/sprint-19-plan.md.
+
+Scope:
+
+1. 6 configuration'ın gerçek karşılaştırması: `nomic@native`,
+   `qwen3-0.6b@native`, `qwen3-4b@native`, `qwen3-4b@1024`,
+   `qwen3-0.6b@1024`, `qwen3-0.6b@768`
+2. Ollama'nın resmi Matryoshka output-dimension mekanizması
+   (`/api/embed`'in `dimensions` parametresi) — hack yok, GERÇEK backend
+   mekanizması
+3. `EmbeddingModelConfig` genişletmesi: `output_dimension`, `backend`,
+   Qwen3-Embedding-0.6B desteği
+4. Aynı 68 soruluk golden set (Sprint 18 ile apples-to-apples)
+5. Cross-lingual/mono-lingual agregeler, Pareto frontier, production
+   karar kuralı (quality winner + efficiency winner ayrı ayrı)
+6. Gerçek disk kullanımı ölçümü (`docker exec du`)
+
+DoD: 6 configuration da gerçek servislere karşı ölçülmüş; testler ve
+lint temiz; production default değişmedi.
+
+### Kapanış notu
+
+**1. Ollama'nın resmi dimension mekanizması gerçekten doğrulandı, hack
+YAPILMADI.** Ollama 0.32.6'nın `/api/embed` (çoğul) endpoint'i bir
+`dimensions` parametresi destekliyor — GERÇEKTEN test edildi:
+`qwen3-embedding:4b`'ye `dimensions=1024` verildiğinde dönen vektör,
+native 2560 boyutlu çıktının ilk 1024'ünün normalize edilmiş hali
+DEĞİL (doğrudan karşılaştırıldı, farklı değerler) — yani gerçekten
+backend'in kendi mekanizması. Ollama, aralık dışı bir `dimensions`
+isteğini SESSİZCE native boyuta clamp'liyor (hata vermiyor) — bu yüzden
+`OllamaClient.embed()`'e eklenen `dimensions` parametresi hiçbir
+doğrulama yapmıyor, sadece backend'den ne dönerse onu veriyor;
+GERÇEKTEN desteklenip desteklenmediğini anlamak için
+`scripts/benchmark_embeddings.py::probe_dimension_support()` her
+configuration için GERÇEK bir çağrı yapıp dönen vektörün uzunluğunu
+istenenle karşılaştırıyor. `dimensions=None` (mevcut TÜM production
+çağrı yerleri) eski `/api/embeddings` endpoint'ini KULLANMAYA DEVAM
+EDİYOR — testle kanıtlandı (`test_embed_without_dimensions_uses_the_
+singular_endpoint_unchanged`).
+
+**2. İki gerçek bug bulundu ve düzeltildi — İKİSİ de ilk gerçek koşum
+denemesinde ortaya çıktı, varsayımla değil.**
+
+- **`search()` `dimensions` parametresi hiç almıyordu.** İlk gerçek
+  6-configuration koşumu `qwen3-4b@1024`'te GERÇEKTEN çöktü:
+  `Qdrant Vector dimension error: expected dim: 1024, got 2560` —
+  indexleme 1024 boyutunda doğru çalışmıştı ama `search()`'ün kendi
+  iç `ollama.embed()` çağrısı `dimensions` hiç geçmediği için sorguyu
+  HER ZAMAN native (2560) boyutunda embed ediyordu. Fix: `search()`'e
+  opsiyonel `dimensions: int | None = None` parametresi eklendi
+  (varsayılan `None`, mevcut TÜM çağrı yerleri etkilenmedi),
+  `EmbeddingProvider` protokolüne de aynı parametre eklendi. Test
+  ÖNCE fail ettiği kanıtlanarak yazıldı (fix geçici geri alınıp
+  doğrulandı: `test_search_forwards_a_dimensions_override_to_the_
+  embedding_call` gerçekten `AssertionError` ile fail etti).
+- **Disk kullanımı ölçümü `du -sb` ile YANLIŞ ölçülüyordu.** İlk
+  başarılı koşumda TÜM 6 configuration ~211MB gibi neredeyse AYNI
+  storage rakamı gösterdi — şüpheli, çünkü 768 ve 2560 boyut arasında
+  gerçek bir fark olmalıydı. GERÇEKTEN araştırıldı: `du -sb`
+  (`--apparent-size`) Qdrant'ın WAL/mmap dosyalarının PREALLOCATE
+  edilmiş, çoğunlukla boş SPARSE mantıksal boyutunu raporluyor (örn.
+  32 chunk'lık bir collection için 32MB'lık bir WAL segment dosyası) —
+  gerçek disk kullanımını DEĞİL. Doğrudan container'a `docker exec du
+  -sk` ile karşılaştırıldı: `nomic@native` 2444KB, `qwen3-4b@native`
+  2944KB — GERÇEKTEN farklı, anlamlı rakamlar. Fix: `-sb` yerine
+  `-sk` (block-based, sparse-farkında) kullanılıyor, testle kanıtlandı
+  (`test_storage_measurement_uses_block_based_du_not_apparent_size`).
+
+**3. Gerçek 6-configuration koşumu (`artifacts/embedding-benchmark-
+sprint19/report.md`):**
+
+```
+Config              Cross R@5  Cross MRR  Mono R@5  Dim    Query p95(ms)  Index chunks/s  Storage(real)
+nomic@native          0.607      0.418      1.000    768       46.1           29.96         2.3MB
+qwen3-0.6b@native     0.910      0.696      1.000   1024      134.0           11.50         2.4MB
+qwen3-4b@native       0.971      0.782      1.000   2560      251.8            2.45         3.0MB
+qwen3-4b@1024         0.971      0.755      1.000   1024      265.7            2.46         2.6MB
+qwen3-0.6b@1024       0.910      0.710      1.000   1024      141.2           11.20         2.4MB
+qwen3-0.6b@768        0.939      0.723      1.000   768       139.3           11.48         2.4MB
+```
+
+Hiçbir configuration mono-lingual tarafta hiç regresyon göstermedi
+(TR→TR ve EN→EN hepsi 1.000). `qwen3-4b@native` Sprint 18'in kalite
+tavanını doğruladı. Truncation (2560→1024) `qwen3-4b`'nin cross-lingual
+Recall@5'ini KORUDU (0.971→0.971, hiç kayıp yok) ama MRR'de küçük bir
+kayıp var (0.782→0.755) — boyut küçültmenin bedavaya gelmediğinin
+kanıtı, ama recall tarafında ölçülebilir bir bedeli yok.
+
+**4. Pareto frontier: `qwen3-0.6b@1024`, `qwen3-0.6b@768` tarafından
+domine edildi** — aynı veya daha iyi cross-lingual kalite, aynı/daha
+düşük dimension, daha düşük p95 sağlıyor. Diğer 5 configuration
+frontier'da (hiçbiri başka biri tarafından domine edilmiyor) — her biri
+gerçek bir trade-off temsil ediyor.
+
+**5. QUALITY WINNER: `qwen3-4b@native`.** Ağırlıklı skor (0.4×cross_recall5
++ 0.3×cross_mrr + 0.3×overall_ndcg5) ile en yüksek — beklenen sonuç,
+Sprint 18'in kalite tavanı.
+
+**6. EFFICIENCY WINNER: `qwen3-4b@1024`** (kabul eşiklerini geçen tek
+gerçek aday bu koşumda). Eşikler (`qwen3-4b@native`'e göre): cross-lingual
+Recall@5 kaybı ≤0.05, cross-lingual MRR kaybı ≤0.05, mono-lingual Recall@5
+regresyonu ≤0.02. `qwen3-4b@1024` recall'de HİÇ kayıp yaşamadı (0.971→0.971),
+MRR kaybı 0.027 (eşiğin altında) — dimension'ı 2560'tan 1024'e indirerek
+(%60 daha küçük vektör, daha az storage) kaliteyi neredeyse tamamen
+koruyor.
+
+**Sınır-vaka dürüstlüğü: `qwen3-0.6b@768` eşiğe çok yakın, koşumdan
+koşuma değişti.** İlk (kısa süre önce, storage bug'ı düzeltmeden ÖNCE
+alınan) koşumda `qwen3-0.6b@768`'in cross-lingual MRR kaybı 0.044
+(eşiğin altında, kabul edildi); bu FİNAL koşumda 0.059 (eşiğin ÜSTÜNDE,
+reddedildi) — SADECE LLM/embedding çağrılarının doğal run-to-run
+gürültüsünden kaynaklanan bir fark, kod DEĞİŞMEDİ. Bu, 68 sorunun küçük
+bir örneklem olduğunun ve eşiğe yakın kararların gürültüye duyarlı
+olduğunun somut kanıtı — "İstatistiksel uyarı" bölümünde zaten
+belirtilen sınırlamanın gerçek bir örneği.
+
+**7. PRODUCTION RECOMMENDATION: `qwen3-4b@1024` bir sonraki migration
+adayı olarak önerildi — nomic hâlâ GERÇEK production default'u,
+`settings.ollama_embed_model` değişmedi.** Bu sadece bir öneri, bir
+uygulanmış değişiklik değil.
+
+**8. İstatistiksel sınırlama (dürüstçe belirtildi, kod yazılmadı).**
+Bootstrap confidence interval EKLENMEDİ — kullanıcının kendi izniyle
+("fazla karmaşık hale gelirse zorunlu değil, limitation olarak belirt")
+bu sprint kapsamında atlandı; 68 sorunun küçüklüğü ve yukarıdaki
+sınır-vaka örneği zaten neden gerekli olduğunu somut olarak gösteriyor.
+RAM/VRAM yine ölçülmedi — güvenilir bir izole ölçüm mekanizması yok.
+
+**Yeni testler:** `tests/test_ollama_client.py` +4 (dimensions
+parametresi: endpoint seçimi, payload, silent-clamp, unreachable),
+`tests/test_embedding_models.py` +8 (0.6b config, output_dimension
+override, label(), parse_config_token), `tests/test_fingerprint.py` +2
+(aynı model farklı dimension → farklı fingerprint, farklı model aynı
+dimension → yine farklı fingerprint), `tests/test_search.py` +2
+(dimensions forwarding, GERÇEKTEN fail ettiği kanıtlanarak),
+`tests/test_benchmark_embeddings.py` yeniden yazıldı (+8 net: Pareto
+dominance, quality/efficiency winner senaryoları, storage measurement
+regression testleri, collection isolation, golden set bütünlüğü).
+`ruff check app tests scripts` temiz, tüm mevcut testler (Sprint 18
+dahil) hâlâ yeşil.
+
+## Sprint 20 (stretch) — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

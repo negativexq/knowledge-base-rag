@@ -1,5 +1,5 @@
 from app.ingestion.fingerprint import PipelineFingerprint, build_pipeline_fingerprint
-from app.llm.embedding_models import nomic_config, qwen3_4b_config
+from app.llm.embedding_models import get_embedding_model_config, nomic_config, qwen3_4b_config
 from app.registry.store import CURRENT_INDEX_SCHEMA_VERSION
 from app.shared.config import Settings
 
@@ -88,3 +88,34 @@ def test_build_pipeline_fingerprint_differs_between_nomic_and_qwen3():
     qwen3_fp = build_pipeline_fingerprint(qwen3_4b_config(Settings()))
 
     assert nomic_fp.digest() != qwen3_fp.digest()
+
+
+def test_same_model_different_output_dimension_produces_different_fingerprint():
+    """Sprint 19: qwen3-4b@2560 (native) and qwen3-4b@1024 (Matryoshka-
+    truncated) are the SAME underlying model but produce genuinely
+    different vectors — an index built under one is stale under the
+    other, so their fingerprints must differ even though ollama_model,
+    revision, and instructions are all identical.
+    """
+    settings = Settings()
+    native = get_embedding_model_config("qwen3-4b", settings)
+    truncated = get_embedding_model_config("qwen3-4b", settings, output_dimension=1024)
+
+    native_fp = build_pipeline_fingerprint(native)
+    truncated_fp = build_pipeline_fingerprint(truncated)
+
+    assert native.ollama_model == truncated.ollama_model  # sanity: same model
+    assert native_fp.digest() != truncated_fp.digest()
+
+
+def test_qwen3_0_6b_and_qwen3_4b_at_the_same_dimension_still_differ():
+    """Two DIFFERENT models that happen to be configured at the same
+    output dimension are not the same pipeline — embedding_model itself
+    must remain part of the fingerprint even when dimension matches.
+    """
+    settings = Settings()
+    small = get_embedding_model_config("qwen3-0.6b", settings, output_dimension=1024)
+    large = get_embedding_model_config("qwen3-4b", settings, output_dimension=1024)
+
+    assert small.dimension == large.dimension == 1024
+    assert build_pipeline_fingerprint(small).digest() != build_pipeline_fingerprint(large).digest()

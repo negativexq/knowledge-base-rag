@@ -26,9 +26,13 @@ class _FakeOllama:
     def __init__(self):
         self.calls = []
 
-    async def embed(self, text: str, model: str, prefix: str = "") -> list[float]:
-        self.calls.append({"text": text, "model": model, "prefix": prefix})
-        vector = [0.0] * 768
+    async def embed(
+        self, text: str, model: str, prefix: str = "", dimensions: int | None = None
+    ) -> list[float]:
+        self.calls.append(
+            {"text": text, "model": model, "prefix": prefix, "dimensions": dimensions}
+        )
+        vector = [0.0] * (dimensions or 768)
         vector[0] = 1.0
         return vector
 
@@ -114,6 +118,63 @@ async def test_search_accepts_a_query_prefix_override_for_a_different_embedding_
     assert ollama.calls[0]["prefix"] == "Instruct: retrieve relevant passages\nQuery: "
     assert ollama.calls[0]["prefix"] != SEARCH_QUERY_PREFIX
     assert ollama.calls[0]["model"] == "qwen3-embedding:4b"
+
+
+@pytest.mark.asyncio
+async def test_search_forwards_a_dimensions_override_to_the_embedding_call():
+    """Sprint 19: without this, a Matryoshka-truncated config (e.g.
+    qwen3-4b@1024) embedded its QUERY at the model's native dimension
+    while the collection was indexed at the truncated one — a real
+    dimension mismatch Qdrant rejects outright. Reproduced running the
+    real benchmark before this parameter existed.
+    """
+    client = QdrantClient(":memory:")
+    store = QdrantStore(
+        client=client, collection_name=COLLECTION + "_dims", dense_dimension=1024
+    )
+    store.ensure_collection()
+    store.upsert_chunks(
+        [_chunk("placeholder")],
+        [[0.0] * 1024],
+        [SparseVector(indices=[1], values=[1.0])],
+    )
+    ollama = _FakeOllama()
+
+    await search(
+        "how many gb of free storage",
+        ollama=ollama,
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=client,
+        collection_name=COLLECTION + "_dims",
+        embed_model="qwen3-embedding:4b",
+        dimensions=1024,
+    )
+
+    assert ollama.calls[0]["dimensions"] == 1024
+
+
+@pytest.mark.asyncio
+async def test_search_without_dimensions_override_leaves_it_none():
+    client = QdrantClient(":memory:")
+    store = QdrantStore(client=client, collection_name=COLLECTION + "_no_dims")
+    store.ensure_collection()
+    store.upsert_chunks(
+        [_chunk("placeholder")],
+        [[0.0] * 768],
+        [SparseVector(indices=[1], values=[1.0])],
+    )
+    ollama = _FakeOllama()
+
+    await search(
+        "query",
+        ollama=ollama,
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=client,
+        collection_name=COLLECTION + "_no_dims",
+        embed_model="nomic-embed-text",
+    )
+
+    assert ollama.calls[0]["dimensions"] is None
 
 
 @pytest.mark.asyncio

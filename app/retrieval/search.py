@@ -48,6 +48,7 @@ async def search(
     filters: qmodels.Filter | None = None,
     tracer: trace.Tracer | None = None,
     query_prefix: str = SEARCH_QUERY_PREFIX,
+    dimensions: int | None = None,
 ) -> list[SearchResult]:
     # Sprint 18: query_prefix is a parameter (defaulting to nomic's own
     # SEARCH_QUERY_PREFIX, so every existing caller is unaffected) rather
@@ -59,11 +60,21 @@ async def search(
     # the same search() for both keeps retrieval configuration (top_k,
     # top_n, RRF, filters) guaranteed identical between baseline and
     # challenger — only the prefix and embed_model differ.
+    #
+    # Sprint 19: dimensions (default None, every existing caller
+    # unaffected) is passed straight through to ollama.embed() — without
+    # it, a Matryoshka-truncated config (e.g. qwen3-4b@1024) would embed
+    # the QUERY at its native dimension while the collection was indexed
+    # at the truncated one, a real dimension mismatch Qdrant rejects
+    # outright. Reproduced for real running the Sprint 19 benchmark
+    # before this parameter was added — see docs/sprint-19-plan.md.
     tracer = tracer or get_tracer(__name__)
 
     with tracer.start_as_current_span("embed_query") as span:
         span.set_attribute("embed.model", embed_model)
-        dense_vector = await ollama.embed(query, model=embed_model, prefix=query_prefix)
+        dense_vector = await ollama.embed(
+            query, model=embed_model, prefix=query_prefix, dimensions=dimensions
+        )
         sparse_vector = sparse_encoder.embed_query(query)
 
     resolved_filters = filters or build_filter(doc_ids, source_types, source_ids, page_numbers)

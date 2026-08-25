@@ -1,0 +1,492 @@
+{
+  "results": [
+    {
+      "label": "nomic@native",
+      "model_key": "nomic",
+      "ollama_model": "nomic-embed-text",
+      "requested_dimension": 768,
+      "actual_dimension_returned": 768,
+      "supported": true,
+      "fingerprint_digest": "57ec1f71ebbe089c",
+      "overall": {
+        "recall_at_1": 0.6363636363636364,
+        "recall_at_3": 0.7575757575757576,
+        "recall_at_5": 0.803030303030303,
+        "mrr": 0.7007575757575758,
+        "ndcg_at_5": 0.7264648248799617
+      },
+      "by_cell": {
+        "en_query_en_content": {
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_5": 1.0,
+          "question_count": 17
+        },
+        "en_query_tr_content": {
+          "recall_at_1": 0.375,
+          "recall_at_3": 0.5625,
+          "recall_at_5": 0.625,
+          "mrr": 0.4739583333333333,
+          "ndcg_at_5": 0.5120335040760192,
+          "question_count": 16
+        },
+        "tr_query_en_content": {
+          "recall_at_1": 0.23529411764705882,
+          "recall_at_3": 0.47058823529411764,
+          "recall_at_5": 0.5882352941176471,
+          "mrr": 0.36274509803921573,
+          "ndcg_at_5": 0.41901250725233535,
+          "question_count": 17
+        },
+        "tr_query_tr_content": {
+          "recall_at_1": 0.9375,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 0.96875,
+          "ndcg_at_5": 0.9769331095982161,
+          "question_count": 16
+        }
+      },
+      "cross_lingual": {
+        "recall_at_5": 0.6066176470588236,
+        "mrr": 0.4183517156862745,
+        "ndcg_at_5": 0.46552300566417726
+      },
+      "mono_lingual": {
+        "recall_at_5": 1.0,
+        "mrr": 0.984375,
+        "ndcg_at_5": 0.988466554799108
+      },
+      "not_found_accuracy": 0.0,
+      "not_found_question_count": 2,
+      "operational": {
+        "embedding_dimension": 768,
+        "indexing_seconds": 1.0682000420056283,
+        "chunks_indexed": 32,
+        "chunks_per_second": 29.956935725182635,
+        "model_load_seconds": 0.28131562494672835,
+        "query_embed_p50_ms": 32.74566703476012,
+        "query_embed_p95_ms": 46.13470798358321,
+        "total_retrieval_p50_ms": 39.20183295849711,
+        "total_retrieval_p95_ms": 47.627042047679424,
+        "query_sample_count": 68,
+        "storage_bytes": 2342912,
+        "storage_measurement": "real",
+        "ram_mb": "not measured",
+        "vram_mb": "not measured"
+      }
+    },
+    {
+      "label": "qwen3-0.6b@native",
+      "model_key": "qwen3-0.6b",
+      "ollama_model": "qwen3-embedding:0.6b",
+      "requested_dimension": 1024,
+      "actual_dimension_returned": 1024,
+      "supported": true,
+      "fingerprint_digest": "0287fcc7160b6765",
+      "overall": {
+        "recall_at_1": 0.7575757575757576,
+        "recall_at_3": 0.9090909090909091,
+        "recall_at_5": 0.9545454545454546,
+        "mrr": 0.8338383838383838,
+        "ndcg_at_5": 0.864148249163789
+      },
+      "by_cell": {
+        "en_query_en_content": {
+          "recall_at_1": 0.9411764705882353,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 0.9705882352941176,
+          "ndcg_at_5": 0.9782899855042034,
+          "question_count": 17
+        },
+        "en_query_tr_content": {
+          "recall_at_1": 0.4375,
+          "recall_at_3": 0.875,
+          "recall_at_5": 0.9375,
+          "mrr": 0.640625,
+          "ndcg_at_5": 0.7158997232724514,
+          "question_count": 16
+        },
+        "tr_query_en_content": {
+          "recall_at_1": 0.7058823529411765,
+          "recall_at_3": 0.7647058823529411,
+          "recall_at_5": 0.8823529411764706,
+          "mrr": 0.7519607843137255,
+          "ndcg_at_5": 0.7833840803122315,
+          "question_count": 17
+        },
+        "tr_query_tr_content": {
+          "recall_at_1": 0.9375,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 0.96875,
+          "ndcg_at_5": 0.9769331095982161,
+          "question_count": 16
+        }
+      },
+      "cross_lingual": {
+        "recall_at_5": 0.9099264705882353,
+        "mrr": 0.6962928921568627,
+        "ndcg_at_5": 0.7496419017923415
+      },
+      "mono_lingual": {
+        "recall_at_5": 1.0,
+        "mrr": 0.9696691176470589,
+        "ndcg_at_5": 0.9776115475512097
+      },
+      "not_found_accuracy": 0.0,
+      "not_found_question_count": 2,
+      "operational": {
+        "embedding_dimension": 1024,
+        "indexing_seconds": 2.781989083974622,
+        "chunks_indexed": 32,
+        "chunks_per_second": 11.502561309220402,
+        "model_load_seconds": 0.40113966702483594,
+        "query_embed_p50_ms": 120.99525006487966,
+        "query_embed_p95_ms": 133.99400003254414,
+        "total_retrieval_p50_ms": 99.16666697245091,
+        "total_retrieval_p95_ms": 106.76770901773125,
+        "query_sample_count": 68,
+        "storage_bytes": 2424832,
+        "storage_measurement": "real",
+        "ram_mb": "not measured",
+        "vram_mb": "not measured"
+      }
+    },
+    {
+      "label": "qwen3-4b@native",
+      "model_key": "qwen3-4b",
+      "ollama_model": "qwen3-embedding:4b",
+      "requested_dimension": 2560,
+      "actual_dimension_returned": 2560,
+      "supported": true,
+      "fingerprint_digest": "d09fbe9d0a305b92",
+      "overall": {
+        "recall_at_1": 0.803030303030303,
+        "recall_at_3": 0.9696969696969697,
+        "recall_at_5": 0.9848484848484849,
+        "mrr": 0.8843434343434343,
+        "ndcg_at_5": 0.9100790998390554
+      },
+      "by_cell": {
+        "en_query_en_content": {
+          "recall_at_1": 0.9411764705882353,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 0.9705882352941176,
+          "ndcg_at_5": 0.9782899855042034,
+          "question_count": 17
+        },
+        "en_query_tr_content": {
+          "recall_at_1": 0.5,
+          "recall_at_3": 0.9375,
+          "recall_at_5": 1.0,
+          "mrr": 0.7208333333333333,
+          "ndcg_at_5": 0.7920269580414554,
+          "question_count": 16
+        },
+        "tr_query_en_content": {
+          "recall_at_1": 0.7647058823529411,
+          "recall_at_3": 0.9411764705882353,
+          "recall_at_5": 0.9411764705882353,
+          "mrr": 0.8431372549019608,
+          "ndcg_at_5": 0.8683446768907598,
+          "question_count": 17
+        },
+        "tr_query_tr_content": {
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_5": 1.0,
+          "question_count": 16
+        }
+      },
+      "cross_lingual": {
+        "recall_at_5": 0.9705882352941176,
+        "mrr": 0.7819852941176471,
+        "ndcg_at_5": 0.8301858174661076
+      },
+      "mono_lingual": {
+        "recall_at_5": 1.0,
+        "mrr": 0.9852941176470589,
+        "ndcg_at_5": 0.9891449927521017
+      },
+      "not_found_accuracy": 0.0,
+      "not_found_question_count": 2,
+      "operational": {
+        "embedding_dimension": 2560,
+        "indexing_seconds": 13.055013500037603,
+        "chunks_indexed": 32,
+        "chunks_per_second": 2.4511656000897917,
+        "model_load_seconds": 0.6623255830490962,
+        "query_embed_p50_ms": 241.36933300178498,
+        "query_embed_p95_ms": 251.7787079559639,
+        "total_retrieval_p50_ms": 125.55916700512171,
+        "total_retrieval_p95_ms": 131.70162495225668,
+        "query_sample_count": 68,
+        "storage_bytes": 2998272,
+        "storage_measurement": "real",
+        "ram_mb": "not measured",
+        "vram_mb": "not measured"
+      }
+    },
+    {
+      "label": "qwen3-4b@1024",
+      "model_key": "qwen3-4b",
+      "ollama_model": "qwen3-embedding:4b",
+      "requested_dimension": 1024,
+      "actual_dimension_returned": 1024,
+      "supported": true,
+      "fingerprint_digest": "80ba45288bd4aae3",
+      "overall": {
+        "recall_at_1": 0.803030303030303,
+        "recall_at_3": 0.9545454545454546,
+        "recall_at_5": 0.9848484848484849,
+        "mrr": 0.878030303030303,
+        "ndcg_at_5": 0.9050611763683051
+      },
+      "by_cell": {
+        "en_query_en_content": {
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_5": 1.0,
+          "question_count": 17
+        },
+        "en_query_tr_content": {
+          "recall_at_1": 0.5,
+          "recall_at_3": 0.9375,
+          "recall_at_5": 1.0,
+          "mrr": 0.7104166666666667,
+          "ndcg_at_5": 0.7838438484432393,
+          "question_count": 16
+        },
+        "tr_query_en_content": {
+          "recall_at_1": 0.7058823529411765,
+          "recall_at_3": 0.8823529411764706,
+          "recall_at_5": 0.9411764705882353,
+          "mrr": 0.7990196078431373,
+          "ndcg_at_5": 0.8348550626597828,
+          "question_count": 17
+        },
+        "tr_query_tr_content": {
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_5": 1.0,
+          "question_count": 16
+        }
+      },
+      "cross_lingual": {
+        "recall_at_5": 0.9705882352941176,
+        "mrr": 0.754718137254902,
+        "ndcg_at_5": 0.809349455551511
+      },
+      "mono_lingual": {
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      },
+      "not_found_accuracy": 0.0,
+      "not_found_question_count": 2,
+      "operational": {
+        "embedding_dimension": 1024,
+        "indexing_seconds": 13.013860707986169,
+        "chunks_indexed": 32,
+        "chunks_per_second": 2.4589167440806152,
+        "model_load_seconds": 0.6806481670355424,
+        "query_embed_p50_ms": 249.19691600371152,
+        "query_embed_p95_ms": 265.68645890802145,
+        "total_retrieval_p50_ms": 132.1771671064198,
+        "total_retrieval_p95_ms": 142.23333296831697,
+        "query_sample_count": 68,
+        "storage_bytes": 2555904,
+        "storage_measurement": "real",
+        "ram_mb": "not measured",
+        "vram_mb": "not measured"
+      }
+    },
+    {
+      "label": "qwen3-0.6b@1024",
+      "model_key": "qwen3-0.6b",
+      "ollama_model": "qwen3-embedding:0.6b",
+      "requested_dimension": 1024,
+      "actual_dimension_returned": 1024,
+      "supported": true,
+      "fingerprint_digest": "0287fcc7160b6765",
+      "overall": {
+        "recall_at_1": 0.7727272727272727,
+        "recall_at_3": 0.9090909090909091,
+        "recall_at_5": 0.9545454545454546,
+        "mrr": 0.8406565656565657,
+        "ndcg_at_5": 0.8690762263696934
+      },
+      "by_cell": {
+        "en_query_en_content": {
+          "recall_at_1": 0.9411764705882353,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 0.9705882352941176,
+          "ndcg_at_5": 0.9782899855042034,
+          "question_count": 17
+        },
+        "en_query_tr_content": {
+          "recall_at_1": 0.5,
+          "recall_at_3": 0.875,
+          "recall_at_5": 0.9375,
+          "mrr": 0.66875,
+          "ndcg_at_5": 0.7362276292468072,
+          "question_count": 16
+        },
+        "tr_query_en_content": {
+          "recall_at_1": 0.7058823529411765,
+          "recall_at_3": 0.7647058823529411,
+          "recall_at_5": 0.8823529411764706,
+          "mrr": 0.7519607843137255,
+          "ndcg_at_5": 0.7833840803122315,
+          "question_count": 17
+        },
+        "tr_query_tr_content": {
+          "recall_at_1": 0.9375,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 0.96875,
+          "ndcg_at_5": 0.9769331095982161,
+          "question_count": 16
+        }
+      },
+      "cross_lingual": {
+        "recall_at_5": 0.9099264705882353,
+        "mrr": 0.7103553921568627,
+        "ndcg_at_5": 0.7598058547795193
+      },
+      "mono_lingual": {
+        "recall_at_5": 1.0,
+        "mrr": 0.9696691176470589,
+        "ndcg_at_5": 0.9776115475512097
+      },
+      "not_found_accuracy": 0.0,
+      "not_found_question_count": 2,
+      "operational": {
+        "embedding_dimension": 1024,
+        "indexing_seconds": 2.857792375027202,
+        "chunks_indexed": 32,
+        "chunks_per_second": 11.197454468572234,
+        "model_load_seconds": 0.4621025420492515,
+        "query_embed_p50_ms": 131.18075008969754,
+        "query_embed_p95_ms": 141.160957980901,
+        "total_retrieval_p50_ms": 107.83879202790558,
+        "total_retrieval_p95_ms": 115.45320902951062,
+        "query_sample_count": 68,
+        "storage_bytes": 2424832,
+        "storage_measurement": "real",
+        "ram_mb": "not measured",
+        "vram_mb": "not measured"
+      }
+    },
+    {
+      "label": "qwen3-0.6b@768",
+      "model_key": "qwen3-0.6b",
+      "ollama_model": "qwen3-embedding:0.6b",
+      "requested_dimension": 768,
+      "actual_dimension_returned": 768,
+      "supported": true,
+      "fingerprint_digest": "da5276efd87f34e8",
+      "overall": {
+        "recall_at_1": 0.7878787878787878,
+        "recall_at_3": 0.9090909090909091,
+        "recall_at_5": 0.9696969696969697,
+        "mrr": 0.8545454545454545,
+        "ndcg_at_5": 0.8831773863405024
+      },
+      "by_cell": {
+        "en_query_en_content": {
+          "recall_at_1": 0.9411764705882353,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 0.9705882352941176,
+          "ndcg_at_5": 0.9782899855042034,
+          "question_count": 17
+        },
+        "en_query_tr_content": {
+          "recall_at_1": 0.5,
+          "recall_at_3": 0.875,
+          "recall_at_5": 0.9375,
+          "mrr": 0.6791666666666667,
+          "ndcg_at_5": 0.7444107388450232,
+          "question_count": 16
+        },
+        "tr_query_en_content": {
+          "recall_at_1": 0.7058823529411765,
+          "recall_at_3": 0.7647058823529411,
+          "recall_at_5": 0.9411764705882353,
+          "mrr": 0.7666666666666666,
+          "ndcg_at_5": 0.8087179954930193,
+          "question_count": 17
+        },
+        "tr_query_tr_content": {
+          "recall_at_1": 1.0,
+          "recall_at_3": 1.0,
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "ndcg_at_5": 1.0,
+          "question_count": 16
+        }
+      },
+      "cross_lingual": {
+        "recall_at_5": 0.9393382352941176,
+        "mrr": 0.7229166666666667,
+        "ndcg_at_5": 0.7765643671690212
+      },
+      "mono_lingual": {
+        "recall_at_5": 1.0,
+        "mrr": 0.9852941176470589,
+        "ndcg_at_5": 0.9891449927521017
+      },
+      "not_found_accuracy": 0.0,
+      "not_found_question_count": 2,
+      "operational": {
+        "embedding_dimension": 768,
+        "indexing_seconds": 2.7874947920208797,
+        "chunks_indexed": 32,
+        "chunks_per_second": 11.479842075974112,
+        "model_load_seconds": 0.39479233301244676,
+        "query_embed_p50_ms": 130.03162492532283,
+        "query_embed_p95_ms": 139.34300001710653,
+        "total_retrieval_p50_ms": 106.59683402627707,
+        "total_retrieval_p95_ms": 112.67533304635435,
+        "query_sample_count": 68,
+        "storage_bytes": 2375680,
+        "storage_measurement": "real",
+        "ram_mb": "not measured",
+        "vram_mb": "not measured"
+      }
+    }
+  ],
+  "decision": {
+    "quality_winner": "qwen3-4b@native",
+    "efficiency_winner": "qwen3-4b@1024",
+    "efficiency_candidates": [
+      "qwen3-4b@native",
+      "qwen3-4b@1024"
+    ],
+    "production_recommendation": "Recommended next migration candidate: qwen3-4b@1024 — stays within acceptance thresholds of qwen3-4b@native (cross-lingual Recall@5/MRR loss <= 0.05, mono-lingual regression <= 0.02) at a real dimension/latency cost saving. nomic remains the current production default — this is a candidate for the next migration decision, not an applied change.",
+    "pareto_dominated": {
+      "qwen3-0.6b@1024": "qwen3-0.6b@768"
+    },
+    "acceptance_thresholds": {
+      "max_cross_recall_at_5_loss": 0.05,
+      "max_cross_mrr_loss": 0.05,
+      "max_mono_recall_at_5_regression": 0.02,
+      "quality_ceiling": "qwen3-4b@native"
+    }
+  },
+  "golden_set_path": "tests/fixtures/embedding_benchmark_golden.json",
+  "question_count": 68
+}

@@ -30,6 +30,16 @@ class Settings(BaseSettings):
     )
     qwen3_document_instruction: str = ""
 
+    # Sprint 19: Qwen3-Embedding-0.6B — the smaller sibling, same
+    # instruction convention as the 4B (qwen3_query_instruction/
+    # qwen3_document_instruction above are shared across both sizes,
+    # a property of the Qwen3-Embedding family's format, not the 4B
+    # specifically). Verified via a real /api/embed call: native output
+    # dimension is 1024, not guessed.
+    qwen3_0_6b_embed_model: str = "qwen3-embedding:0.6b"
+    qwen3_0_6b_embed_revision: str = "latest"
+    qwen3_0_6b_embed_dimension: int = Field(default=1024, gt=0)
+
     # Generation (chat) and embedding are independent choices — Claude has
     # no embedding endpoint, so embedding_provider can never follow
     # generation_provider. embedding_provider is a Literal of one value

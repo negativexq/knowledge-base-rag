@@ -567,6 +567,25 @@ check of the code/tests where noted.
   `docs/PLANNING.md`'s Sprint 18 closing note for the adoption decision
   and what would need to happen before switching the production
   default.
+- **Sprint 19 asked a narrower question: which Qwen3-Embedding size/
+  dimension is the best quality/cost trade-off, not just "is Qwen3
+  better?"** Same 68-question golden set, 6 real configurations
+  (`nomic@native`, `qwen3-0.6b@native`, `qwen3-4b@native`,
+  `qwen3-4b@1024`, `qwen3-0.6b@1024`, `qwen3-0.6b@768` — the last three
+  using Ollama's own official Matryoshka `dimensions` parameter, not a
+  client-side truncation hack). Quality winner: `qwen3-4b@native`
+  (unchanged from Sprint 18). A separate, explicit efficiency winner —
+  `qwen3-4b@1024` in the final run — is only recommended if it stays
+  within stated acceptance thresholds (cross-lingual Recall@5/MRR loss
+  ≤0.05, mono-lingual regression ≤0.02) relative to the quality
+  ceiling; one candidate (`qwen3-0.6b@768`) sat right at that threshold
+  and flipped between passing and failing across runs from ordinary
+  run-to-run noise — a concrete demonstration of why the report treats
+  small deltas as noise, not signal, on a 68-question set. `nomic-embed-
+  text` remains the actual production default; see
+  `artifacts/embedding-benchmark-sprint19/report.md` and
+  `docs/PLANNING.md`'s Sprint 19 closing note for the full Pareto
+  frontier and decision rule.
 - **The root cause of PDF's weaker retrieval within mono-lingual pairs**
   (PDF+English recall 0.857 vs. Markdown+Turkish recall 1.000 — page-level
   chunk granularity vs. Markdown's heading-scoped blocks giving the

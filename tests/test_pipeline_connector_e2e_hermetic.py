@@ -39,7 +39,9 @@ class _FakeSparseEncoder:
 
 
 class _FakeOllamaEmbed:
-    async def embed(self, text: str, model: str, prefix: str = "") -> list[float]:
+    async def embed(
+        self, text: str, model: str, prefix: str = "", dimensions: int | None = None
+    ) -> list[float]:
         vector = [0.01] * EMBEDDING_DIM
         vector[hash(text.lower()[:20]) % EMBEDDING_DIM] = 1.0
         return vector

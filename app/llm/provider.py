@@ -25,7 +25,9 @@ class EmbeddingProvider(Protocol):
     ChatProvider selection.
     """
 
-    async def embed(self, text: str, model: str, prefix: str = "") -> list[float]: ...
+    async def embed(
+        self, text: str, model: str, prefix: str = "", dimensions: int | None = None
+    ) -> list[float]: ...
 
 
 def default_chat_model(settings: Settings) -> str:

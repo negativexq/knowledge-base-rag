@@ -14,3 +14,4 @@ data/documents/*
 !data/documents/.gitkeep
 *.db
 artifacts/embedding-benchmark/work/
+artifacts/embedding-benchmark-sprint19/work/
