@@ -1,0 +1,190 @@
+{
+  "schema_version": "evaluation-corpus-v2",
+  "documents": [
+    {
+      "source_id": "account-security",
+      "path": "account-security.md",
+      "tenant_id": "tenant-a",
+      "language": "tr",
+      "content_type": "markdown",
+      "title": "account-security",
+      "generated": false
+    },
+    {
+      "source_id": "digital-goods-policy",
+      "path": "digital-goods-policy.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "digital-goods-policy",
+      "generated": false
+    },
+    {
+      "source_id": "employee-handbook-en",
+      "path": "employee-handbook-en.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "Employee and Customer Operations Handbook",
+      "generated": true
+    },
+    {
+      "source_id": "enterprise-contract-guide",
+      "path": "enterprise-contract-guide.pdf",
+      "tenant_id": "tenant-b",
+      "language": "en",
+      "content_type": "pdf",
+      "title": "Enterprise Contract Guide",
+      "generated": true,
+      "page_count": 15
+    },
+    {
+      "source_id": "injection-bearing-policy",
+      "path": "injection-bearing-policy.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "injection-bearing-policy",
+      "generated": false
+    },
+    {
+      "source_id": "long-policy-tr",
+      "path": "long-policy-tr.md",
+      "tenant_id": "tenant-a",
+      "language": "tr",
+      "content_type": "markdown",
+      "title": "Uzun Bölgesel Politika El Kitabı",
+      "generated": true
+    },
+    {
+      "source_id": "marketplace-returns",
+      "path": "marketplace-returns.md",
+      "tenant_id": "tenant-a",
+      "language": "tr",
+      "content_type": "markdown",
+      "title": "marketplace-returns",
+      "generated": false
+    },
+    {
+      "source_id": "premium-returns-2026",
+      "path": "premium-returns-2026.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "premium-returns-2026",
+      "generated": false
+    },
+    {
+      "source_id": "product-guide-en",
+      "path": "product-guide-en.pdf",
+      "tenant_id": "tenant-b",
+      "language": "en",
+      "content_type": "pdf",
+      "title": "Northstar Product Guide",
+      "generated": true,
+      "page_count": 15
+    },
+    {
+      "source_id": "refund-policy-2025",
+      "path": "refund-policy-2025.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "refund-policy-2025",
+      "generated": false
+    },
+    {
+      "source_id": "refund-policy-2026",
+      "path": "refund-policy-2026.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "refund-policy-2026",
+      "generated": false
+    },
+    {
+      "source_id": "regional-returns-eu",
+      "path": "regional-returns-eu.pdf",
+      "tenant_id": "tenant-b",
+      "language": "en",
+      "content_type": "pdf",
+      "title": "Regional Returns — European Union",
+      "generated": true,
+      "page_count": 15
+    },
+    {
+      "source_id": "regional-returns-tr",
+      "path": "regional-returns-tr.pdf",
+      "tenant_id": "tenant-b",
+      "language": "tr",
+      "content_type": "pdf",
+      "title": "Bölgesel İadeler — Türkiye",
+      "generated": true,
+      "page_count": 15
+    },
+    {
+      "source_id": "returns-manual-tr",
+      "path": "returns-manual-tr.pdf",
+      "tenant_id": "tenant-b",
+      "language": "tr",
+      "content_type": "pdf",
+      "title": "İade Operasyonları Kılavuzu",
+      "generated": true,
+      "page_count": 15
+    },
+    {
+      "source_id": "shipping-and-delivery",
+      "path": "shipping-and-delivery.md",
+      "tenant_id": "tenant-a",
+      "language": "tr",
+      "content_type": "markdown",
+      "title": "shipping-and-delivery",
+      "generated": false
+    },
+    {
+      "source_id": "standard-returns-2026",
+      "path": "standard-returns-2026.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "standard-returns-2026",
+      "generated": false
+    },
+    {
+      "source_id": "subscription-billing",
+      "path": "subscription-billing.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "subscription-billing",
+      "generated": false
+    },
+    {
+      "source_id": "support-escalation",
+      "path": "support-escalation.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "support-escalation",
+      "generated": false
+    },
+    {
+      "source_id": "support-playbook",
+      "path": "support-playbook.md",
+      "tenant_id": "tenant-a",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "Support Operations Playbook",
+      "generated": true
+    },
+    {
+      "source_id": "tenant-b-api-limits",
+      "path": "tenant-b-api-limits.md",
+      "tenant_id": "tenant-b",
+      "language": "en",
+      "content_type": "markdown",
+      "title": "tenant-b-api-limits",
+      "generated": false
+    }
+  ]
+}

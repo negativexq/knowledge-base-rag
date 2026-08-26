@@ -1,0 +1,44 @@
+{
+  "schema_version": "evaluation-corpus-v2-benchmark-plan",
+  "status": "prepared_not_executed",
+  "corpus_path": "data/evaluation/evaluation-corpus-v2",
+  "dataset_path": "data/evaluation/evaluation-corpus-v2/golden-dataset-v2.json",
+  "fingerprints_path": "artifacts/evaluation-corpus-v2/fingerprints.json",
+  "controls": {
+    "embedding_model": "Qwen3-Embedding-4B",
+    "embedding_dimension": 1024,
+    "retrieval": "dense + BM25 + reciprocal rank fusion",
+    "reranker": "BAAI/bge-reranker-v2-m3",
+    "candidate_k": 20,
+    "top_n": 5,
+    "chunking": "baseline 500/50",
+    "prompt": "answer_v3",
+    "validation": "STRICT",
+    "acl": "server-owned tenant ACL",
+    "index_policy": "isolated evaluation index only; do not mutate kb_active or production collections"
+  },
+  "planned_matrix": {
+    "retrieval_quality": ["Recall@k", "MRR", "nDCG", "language-pair breakdown", "category breakdown"],
+    "reranker_analysis": ["rescue/drop by category", "latency", "authorized-candidate preservation"],
+    "answerability": ["development/calibration threshold tuning", "frozen_test only after lock"],
+    "chunking_comparison": ["baseline 500/50", "token-aware 256", "token-aware 384", "token-aware 512", "token-aware 768"],
+    "future_axes": ["answerability strategies", "token-aware chunking", "claim-level grounding"]
+  },
+  "execution_guards": [
+    "Do not tune thresholds or models on frozen_test.",
+    "Do not run generation or LLM judging as part of retrieval-only measurements.",
+    "Do not batch-call Qwen, BGE, or Ollama during corpus preparation.",
+    "Do not reindex or migrate the production Qdrant alias/collection."
+  ],
+  "not_run_in_preparation": [
+    "full embedding benchmark",
+    "full reranker benchmark",
+    "400-500 question retrieval benchmark",
+    "generation benchmark",
+    "DeepEval/LLM judge",
+    "Ollama batch generation",
+    "Qwen3-Embedding-4B batch embedding",
+    "BGE cross-encoder batch scoring",
+    "production reindex/migration"
+  ]
+}

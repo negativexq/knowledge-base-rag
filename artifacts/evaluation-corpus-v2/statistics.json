@@ -1,0 +1,307 @@
+{
+  "schema_version": "evaluation-corpus-v2",
+  "document_count": 20,
+  "markdown_count": 15,
+  "pdf_count": 5,
+  "document_language_counts": {
+    "tr": 6,
+    "en": 14
+  },
+  "document_tenant_counts": {
+    "tenant-a": 14,
+    "tenant-b": 6
+  },
+  "total_characters": 529347,
+  "total_words": 73641,
+  "document_word_percentiles": {
+    "p0": 49,
+    "p25": 57,
+    "p50": 83,
+    "p75": 7906,
+    "p90": 10723,
+    "p100": 11424
+  },
+  "question_count": 445,
+  "split_counts": {
+    "development": 202,
+    "calibration": 110,
+    "frozen_test": 133
+  },
+  "case_family_count": 112,
+  "category_counts": {
+    "acl_negative": 24,
+    "ambiguous": 24,
+    "cross_lingual": 80,
+    "hard_answerable": 109,
+    "injection_bearing": 20,
+    "multi_document": 24,
+    "standard_answerable": 80,
+    "unanswerable": 60,
+    "version_conflict": 24
+  },
+  "answerability_counts": {
+    "answerable": 337,
+    "unanswerable": 84,
+    "ambiguous": 24
+  },
+  "language_pair_counts": {
+    "en->en": 162,
+    "en->none": 54,
+    "en->tr": 27,
+    "tr->en": 88,
+    "tr->mixed": 4,
+    "tr->none": 54,
+    "tr->tr": 56
+  },
+  "answerable_language_pair_counts": {
+    "en->en": 162,
+    "en->tr": 27,
+    "tr->en": 88,
+    "tr->mixed": 4,
+    "tr->tr": 56
+  },
+  "query_language_counts": {
+    "en": 243,
+    "tr": 202
+  },
+  "non_answerable_query_language_counts": {
+    "en": 54,
+    "tr": 54
+  },
+  "split_cross_tabs": {
+    "answerability": {
+      "ambiguous": {
+        "development": 12,
+        "calibration": 6,
+        "frozen_test": 6
+      },
+      "answerable": {
+        "development": 148,
+        "calibration": 85,
+        "frozen_test": 104
+      },
+      "unanswerable": {
+        "development": 42,
+        "calibration": 19,
+        "frozen_test": 23
+      }
+    },
+    "primary_category": {
+      "acl_negative": {
+        "development": 12,
+        "calibration": 4,
+        "frozen_test": 8
+      },
+      "ambiguous": {
+        "development": 12,
+        "calibration": 6,
+        "frozen_test": 6
+      },
+      "cross_lingual": {
+        "development": 36,
+        "calibration": 20,
+        "frozen_test": 24
+      },
+      "hard_answerable": {
+        "development": 48,
+        "calibration": 29,
+        "frozen_test": 32
+      },
+      "injection_bearing": {
+        "development": 8,
+        "calibration": 4,
+        "frozen_test": 8
+      },
+      "multi_document": {
+        "development": 12,
+        "calibration": 4,
+        "frozen_test": 8
+      },
+      "standard_answerable": {
+        "development": 36,
+        "calibration": 20,
+        "frozen_test": 24
+      },
+      "unanswerable": {
+        "development": 30,
+        "calibration": 15,
+        "frozen_test": 15
+      },
+      "version_conflict": {
+        "development": 8,
+        "calibration": 8,
+        "frozen_test": 8
+      }
+    },
+    "query_language": {
+      "en": {
+        "development": 108,
+        "calibration": 62,
+        "frozen_test": 73
+      },
+      "tr": {
+        "development": 94,
+        "calibration": 48,
+        "frozen_test": 60
+      }
+    },
+    "tenant": {
+      "tenant-a": {
+        "development": 158,
+        "calibration": 86,
+        "frozen_test": 103
+      },
+      "tenant-b": {
+        "development": 44,
+        "calibration": 24,
+        "frozen_test": 30
+      }
+    },
+    "difficulty": {
+      "easy": {
+        "development": 36,
+        "calibration": 20,
+        "frozen_test": 24
+      },
+      "hard": {
+        "development": 166,
+        "calibration": 90,
+        "frozen_test": 109
+      }
+    }
+  },
+  "question_tenant_counts": {
+    "tenant-a": 347,
+    "tenant-b": 98
+  },
+  "fingerprints": {
+    "corpus_fingerprint": "cfb96bcd01ad52fd5837b53ef1f63fe56c3655aeafa5d02d18f8a587182753fb",
+    "dataset_fingerprint": "641523448f45e5f89a414ff94851a9c18c09ac112e926925efd20e2356ebc975"
+  },
+  "inference_executed": false,
+  "chunking_stress_dry_run": {
+    "method": "whitespace proxy; no model tokenizer",
+    "counts_by_source": {
+      "account-security": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "digital-goods-policy": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "employee-handbook-en": {
+        "256": 36,
+        "384": 21,
+        "512": 16,
+        "768": 11
+      },
+      "enterprise-contract-guide": {
+        "256": 60,
+        "384": 42,
+        "512": 30,
+        "768": 15
+      },
+      "injection-bearing-policy": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "long-policy-tr": {
+        "256": 31,
+        "384": 21,
+        "512": 16,
+        "768": 11
+      },
+      "marketplace-returns": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "premium-returns-2026": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "product-guide-en": {
+        "256": 60,
+        "384": 35,
+        "512": 30,
+        "768": 15
+      },
+      "refund-policy-2025": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "refund-policy-2026": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "regional-returns-eu": {
+        "256": 60,
+        "384": 45,
+        "512": 30,
+        "768": 21
+      },
+      "regional-returns-tr": {
+        "256": 48,
+        "384": 30,
+        "512": 30,
+        "768": 15
+      },
+      "returns-manual-tr": {
+        "256": 51,
+        "384": 30,
+        "512": 30,
+        "768": 15
+      },
+      "shipping-and-delivery": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "standard-returns-2026": {
+        "256": 2,
+        "384": 2,
+        "512": 2,
+        "768": 2
+      },
+      "subscription-billing": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "support-escalation": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      },
+      "support-playbook": {
+        "256": 42,
+        "384": 25,
+        "512": 19,
+        "768": 13
+      },
+      "tenant-b-api-limits": {
+        "256": 1,
+        "384": 1,
+        "512": 1,
+        "768": 1
+      }
+    }
+  }
+}

@@ -140,6 +140,8 @@ claim-level semantic grounding. See [docs/security.md](docs/security.md).
 The README reports current decisions; detailed runs and per-query evidence
 remain in [artifacts/](artifacts/) and the linked deep dives.
 
+The next benchmark preparation set is documented in [Evaluation Corpus v2](docs/evaluation-dataset.md); it is a frozen, model-free fixture expansion and has not been benchmarked yet.
+
 | Layer | Active decision | Evidence |
 | --- | --- | --- |
 | Embeddings | Qwen3-Embedding-4B @ 1024 | [Multilingual embedding benchmark](artifacts/embedding-benchmark-sprint21/stability.json) and migration artifacts |
@@ -287,6 +289,8 @@ artifacts/    Machine-readable benchmark and evaluation evidence
   cross-lingual lift, and latency cost.
 - [Chunking decision](docs/chunking.md) — tokenizer-aware implementation,
   context efficiency, boundary checks, and the current production decision.
+- [Evaluation Corpus v2](docs/evaluation-dataset.md) — corpus design, golden
+  schema, frozen splits, static validation, and the next-run manifest.
 - [Embedding migration](docs/embedding-migration.md) — model/index lifecycle,
   fingerprinting, activation, and rollback.
 - [Architecture decisions](docs/adr/README.md) — focused design records.

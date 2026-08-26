@@ -1,5 +1,6 @@
 import hashlib
 import json
+from typing import Any
 
 
 def golden_set_fingerprint(questions: list[dict]) -> str:
@@ -37,3 +38,32 @@ def corpus_fingerprint(documents: dict[str, str]) -> str:
     """
     canonical = json.dumps(dict(sorted(documents.items())), sort_keys=True, ensure_ascii=True)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def evaluation_corpus_fingerprint(documents: list[dict[str, Any]]) -> str:
+    """Fingerprint an evaluation corpus's identity, metadata, and text.
+
+    This includes tenant, language, content type, and relative path so a
+    corpus can be reproduced without depending on a live index or model
+    output.
+    """
+    canonical = [
+        {
+            "source_id": document["source_id"],
+            "path": document["path"],
+            "tenant_id": document["tenant_id"],
+            "language": document["language"],
+            "content_type": document["content_type"],
+            "text": document["text"],
+        }
+        for document in sorted(documents, key=lambda item: item["source_id"])
+    ]
+    payload = json.dumps(canonical, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def evaluation_dataset_fingerprint(questions: list[dict[str, Any]]) -> str:
+    """Fingerprint every evaluator-owned field in a v2 golden dataset."""
+    canonical = [question for question in sorted(questions, key=lambda item: item["id"])]
+    payload = json.dumps(canonical, sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()

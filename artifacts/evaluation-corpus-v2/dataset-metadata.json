@@ -1,0 +1,13 @@
+{
+  "schema_version": "golden-dataset-v2",
+  "question_count": 445,
+  "corpus_fingerprint": "cfb96bcd01ad52fd5837b53ef1f63fe56c3655aeafa5d02d18f8a587182753fb",
+  "dataset_fingerprint": "641523448f45e5f89a414ff94851a9c18c09ac112e926925efd20e2356ebc975",
+  "split_policy": "Assign whole case families with deterministic size-aware stratification across 45% development, 25% calibration, and 30% frozen_test targets.",
+  "frozen_test_policy": "Frozen IDs and intent are not used for answerability threshold/model tuning; changes require a new dataset fingerprint and review.",
+  "case_family_policy": "All paraphrases and variants of one fact, near-miss, ACL, injection, version, or multi-document intent share one case_family and one split.",
+  "case_family_count": 112,
+  "frozen_test_id_sha256": "5e536947d21b3de07896134b4d8a676cdeb7f8ba4e7db1a5b864200950cb3c7c",
+  "frozen_test_count": 133,
+  "inference_executed": false
+}
