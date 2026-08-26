@@ -87,6 +87,23 @@ never been tested against a real workspace (no API key available).
 
 ## Architecture
 
+The Sprint 24 React console is a presentation client, not a second backend:
+
+```text
+React UI
+   ↓ HTTP / SSE
+FastAPI
+   ↓
+Authentication / tenant ACL
+   ↓
+Qdrant + Ollama + Jaeger
+```
+
+The `/ui/*` aggregation endpoints are read-only presentation endpoints. They
+reuse the existing authentication, tenant-scoping, registry, sync-history,
+migration, evaluation-artifact, and Jaeger logic; they do not introduce a
+privileged bypass.
+
 ```mermaid
 graph TD
     subgraph Host["Host machine"]
@@ -469,7 +486,52 @@ close this gap — not attempted yet. See the Sprint 12 closing note in
 [docs/PLANNING.md](docs/PLANNING.md) for the real bug this sprint fixed
 (a citation-free answer used to be reported `grounded: True`).
 
-## UI
+## RAG Operations Console
+
+The React frontend (`frontend/`) is the RAG Operations Console. It is not a
+ChatGPT clone: its purpose is operational truth and evidence inspection around
+the existing RAG pipeline.
+
+Navigation:
+
+- Overview
+- Playground
+- Knowledge
+- Sync Runs
+- Evaluations
+- Traces
+- Settings
+
+Playground combines the streamed answer with clickable citations, an Evidence
+Inspector for Sources, Retrieval stages, tenant ACL/Security context, and the
+Jaeger trace waterfall. Operational values come from the backend or are
+explicitly client-measured; unavailable values render as `—`, `Not available`,
+or `Not yet measured`.
+
+Real local showcase (captured from the running stack, with live answer and
+evidence payloads):
+
+![RAG Operations Console Playground](docs/assets/sprint-24-playground.png)
+
+Run the frontend locally:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Set `VITE_API_BASE_URL` in `frontend/.env.local` when the FastAPI backend is
+not at `http://localhost:8000`. The backend's `CORS_ORIGINS` is an explicit
+allow-list; do not use `*` for authenticated browser traffic.
+
+The sign-in/top-bar selector is clearly marked Development identity and is
+local/demo auth UX only. It stores a demo token in localStorage for local
+convenience; it is not the production authentication design. FastAPI remains
+the authorization enforcement point for identity, role, tenant ACL, and sync
+permissions.
+
+## Legacy Streamlit UI
 
 A multi-page Streamlit UI (Chat, Sources, Sync Status) runs in its own
 venv (`.venv-ui`) — `streamlit==1.61.1` and this project's `fastapi==0.115.6`

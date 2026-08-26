@@ -7,6 +7,7 @@ from app.api.chat import ChatDependencies, _sse_event_stream
 from app.main import create_app
 from app.registry.store import DocumentRegistry
 from app.retrieval.hybrid_search import SearchResult
+from app.retrieval.report import RetrievalReport
 from app.security.models import RetrievalContext
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
@@ -46,7 +47,9 @@ def _client_with_chat_deps(chat_deps: ChatDependencies, tmp_path) -> TestClient:
     )
 
 
-async def _fake_search(question: str, context: RetrievalContext) -> list[SearchResult]:
+async def _fake_search(
+    question: str, context: RetrievalContext, report: RetrievalReport
+) -> list[SearchResult]:
     return [
         SearchResult(
             score=0.9,
@@ -91,7 +94,9 @@ def test_chat_endpoint_streams_sse_events_with_tokens_metadata_and_grounding(tmp
 async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_results_to_stream_fn():
     received = {}
 
-    async def search_fn(question: str, context: RetrievalContext) -> list[SearchResult]:
+    async def search_fn(
+        question: str, context: RetrievalContext, report: RetrievalReport
+    ) -> list[SearchResult]:
         received["question"] = question
         return [SearchResult(score=1.0, payload={"text": "x"})]
 
@@ -105,7 +110,14 @@ async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_res
 
     assert received["question"] == "What is X?"
     assert len(received["chunks"]) == 1
-    assert events == ['data: {"token": "ok"}\n\n']
+    # Sprint 24: the stream also carries sources/retrieval/done events
+    # now — this asserts the token event is still emitted as before,
+    # not that it's the ONLY event.
+    assert 'data: {"token": "ok"}\n\n' in events
+    assert any(e.startswith("event: sources\n") for e in events)
+    assert any(e.startswith("event: retrieval\n") for e in events)
+    assert any(e.startswith("event: security\n") for e in events)
+    assert any(e.startswith("event: done\n") for e in events)
 
 
 def test_chat_requires_authentication(tmp_path):
@@ -138,7 +150,9 @@ def test_chat_passes_the_authenticated_users_own_tenant_as_retrieval_context(tmp
 
     received_context = {}
 
-    async def _capturing_search(question: str, context: RetrievalContext):
+    async def _capturing_search(
+        question: str, context: RetrievalContext, report: RetrievalReport
+    ):
         received_context["context"] = context
         return []
 
@@ -173,7 +187,9 @@ async def test_sse_event_stream_opens_a_chat_request_root_span():
     provider.add_span_processor(SimpleSpanProcessor(exporter))
     tracer = provider.get_tracer("test")
 
-    async def search_fn(question: str, context: RetrievalContext) -> list[SearchResult]:
+    async def search_fn(
+        question: str, context: RetrievalContext, report: RetrievalReport
+    ) -> list[SearchResult]:
         return []
 
     async def stream_fn(question: str, chunks: list[SearchResult]):

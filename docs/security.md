@@ -161,6 +161,20 @@ Demo tokens (`app/security/auth.py::DEFAULT_DEV_TOKENS`) are for local
 testing only — their names (`token-user-a`, `token-operator-b`, ...) are
 deliberately unmistakable as non-production values.
 
+The React console's selector is labelled **Development identity**. It is a
+local/demo UX that stores one of these explicitly configured demo tokens in
+browser localStorage; it is not production authentication. Production
+authorization still occurs in FastAPI from the server-side token verifier and
+tenant/role context.
+
+## Browser CORS
+
+FastAPI accepts an explicit, configurable `CORS_ORIGINS` allow-list (local
+defaults are `http://localhost:5173,http://127.0.0.1:5173`). Credentialed CORS
+is disabled because the console sends an Authorization header rather than
+cookies. Production deployments must set their own exact frontend origin(s);
+`*` is not a permitted authenticated-browser default.
+
 ## Known limitations
 
 - **This is Phase 1 only.** Tenant ACL prevents cross-tenant retrieval,

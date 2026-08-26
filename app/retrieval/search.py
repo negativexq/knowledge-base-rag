@@ -6,7 +6,8 @@ from qdrant_client.http import models as qmodels
 
 from app.llm.provider import EmbeddingProvider
 from app.retrieval.filters import build_acl_filter, build_filter, combine_filters
-from app.retrieval.hybrid_search import SearchResult, hybrid_search
+from app.retrieval.hybrid_search import DEFAULT_PREFETCH_LIMIT, SearchResult, hybrid_search
+from app.retrieval.report import RetrievalReport, stage_timer
 from app.retrieval.sparse import SparseVector
 from app.security.models import RetrievalContext
 from app.shared.tracing import get_tracer
@@ -51,6 +52,7 @@ async def search(
     tracer: trace.Tracer | None = None,
     query_prefix: str = SEARCH_QUERY_PREFIX,
     dimensions: int | None = None,
+    report: RetrievalReport | None = None,
 ) -> list[SearchResult]:
     # Sprint 18: query_prefix is a parameter (defaulting to nomic's own
     # SEARCH_QUERY_PREFIX, so every existing caller is unaffected) rather
@@ -80,14 +82,23 @@ async def search(
     # option — see app/retrieval/filters.py::build_acl_filter, which
     # raises rather than building an unrestricted filter for anything
     # in between.
+    #
+    # Sprint 24: `report` (default None — every non-UI caller is
+    # unaffected and pays nothing) collects REAL measured stage
+    # timings/counts for the operations console's Retrieval inspector.
+    # See app/retrieval/report.py: nothing in it is estimated, and a
+    # stage the pipeline genuinely doesn't run is simply absent.
     tracer = tracer or get_tracer(__name__)
 
     with tracer.start_as_current_span("embed_query") as span:
         span.set_attribute("embed.model", embed_model)
-        dense_vector = await ollama.embed(
-            query, model=embed_model, prefix=query_prefix, dimensions=dimensions
-        )
-        sparse_vector = sparse_encoder.embed_query(query)
+        with stage_timer(report, "query_embedding", model=embed_model, dimensions=dimensions):
+            dense_vector = await ollama.embed(
+                query, model=embed_model, prefix=query_prefix, dimensions=dimensions
+            )
+        with stage_timer(report, "sparse_encoding", model="Qdrant/bm25") as timer:
+            sparse_vector = sparse_encoder.embed_query(query)
+            timer.candidates_out = len(sparse_vector.indices)
 
     # Sprint 23: the ACL filter is built from `context` alone — never
     # from anything the caller passed in `filters`/doc_ids/source_types/
@@ -106,16 +117,39 @@ async def search(
     user_filters = filters or build_filter(doc_ids, source_types, source_ids, page_numbers)
     resolved_filters = combine_filters(acl_filter, user_filters)
 
+    if report is not None:
+        report.acl_applied = acl_filter is not None
+        report.acl_tenant_id = context.tenant_id
+        report.is_system_context = context.is_system
+        report.user_filters_applied = user_filters is not None
+
     with tracer.start_as_current_span("retrieve_hybrid") as span:
         span.set_attribute("retrieve.top_k", top_k)
-        candidates = hybrid_search(
-            qdrant_client,
-            collection_name,
-            dense_vector,
-            sparse_vector,
-            top_k=top_k,
-            filters=resolved_filters,
-        )
+        # Dense, sparse, and RRF fusion all happen inside ONE Qdrant
+        # query_points call (prefetch + FusionQuery) — Qdrant does the
+        # fusion server-side, so this app never observes the per-branch
+        # dense/sparse candidate lists separately. `prefetch_limit` is
+        # therefore reported as the CONFIGURED per-branch limit (a real
+        # config value), not as a measured count of what each branch
+        # returned — a number this code genuinely cannot see.
+        with stage_timer(
+            report,
+            "hybrid_retrieval",
+            fusion="RRF",
+            branches=["dense", "sparse_bm25"],
+            configured_prefetch_limit_per_branch=DEFAULT_PREFETCH_LIMIT,
+            fusion_performed_by="qdrant",
+        ) as timer:
+            candidates = hybrid_search(
+                qdrant_client,
+                collection_name,
+                dense_vector,
+                sparse_vector,
+                top_k=top_k,
+                filters=resolved_filters,
+            )
+            timer.candidates_out = len(candidates)
+            timer.top_score = candidates[0].score if candidates else None
         span.set_attribute("retrieve.candidate_count", len(candidates))
         if candidates:
             span.set_attribute("retrieve.top_score", candidates[0].score)
@@ -123,9 +157,23 @@ async def search(
     if reranker is not None:
         with tracer.start_as_current_span("rerank") as span:
             span.set_attribute("rerank.top_n", top_n)
-            results = reranker.rerank(query, candidates, top_n=top_n)
+            with stage_timer(
+                report, "rerank", model=type(reranker).__name__, top_n=top_n
+            ) as timer:
+                results = reranker.rerank(query, candidates, top_n=top_n)
+                timer.candidates_in = len(candidates)
+                timer.candidates_out = len(results)
+                timer.top_score = results[0].score if results else None
             if results:
                 span.set_attribute("rerank.top_score", results[0].score)
         return results
 
-    return candidates[:top_n]
+    # No reranker configured — the report gets NO "rerank" stage at all
+    # (rather than a zero-duration placeholder), so the UI renders the
+    # pipeline that actually ran.
+    with stage_timer(report, "truncate_to_top_n", top_n=top_n) as timer:
+        results = candidates[:top_n]
+        timer.candidates_in = len(candidates)
+        timer.candidates_out = len(results)
+        timer.top_score = results[0].score if results else None
+    return results

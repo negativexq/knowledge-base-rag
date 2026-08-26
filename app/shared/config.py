@@ -104,6 +104,13 @@ class Settings(BaseSettings):
     filesystem_tenant_id: str = "tenant-a"
     notion_tenant_id: str = "tenant-a"
 
+    # Sprint 24: comma-separated origins allowed to call this API from a
+    # browser — the React operations console (frontend/) runs on its own
+    # origin in local development. An explicit allow-list, never "*";
+    # app/main.py also refuses to enable credentialed CORS, since this
+    # app authenticates via an Authorization header, not cookies.
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+
     claude_api_key: str | None = None
     claude_model: str = "claude-haiku-4-5-20251001"
     claude_max_tokens: int = 2048

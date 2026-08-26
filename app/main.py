@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from typing import Protocol
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.chat import ChatDependencies
 from app.api.chat import router as chat_router
@@ -11,6 +12,7 @@ from app.api.health import ListModelsFn
 from app.api.health import router as health_router
 from app.api.sources import router as sources_router
 from app.api.sync import router as sync_router
+from app.api.ui import router as ui_router
 from app.registry.store import DocumentRegistry
 from app.security.auth import TokenAuthenticator
 from app.sync.history import SyncHistory
@@ -41,6 +43,8 @@ def create_app(
     token_authenticator: TokenAuthenticator | None = None,
     auth_enabled: bool = True,
     tenant_ids: dict[str, str] | None = None,
+    qdrant_client: object | None = None,
+    cors_origins: list[str] | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -104,8 +108,29 @@ def create_app(
     app.state.token_authenticator = token_authenticator
     app.state.auth_enabled = auth_enabled
     app.state.tenant_ids = tenant_ids or {}
+    # Sprint 24: app/api/ui.py's read-only aggregation endpoints need the
+    # live Qdrant client to report real migration/alias state. Optional —
+    # every existing test builds an app without one, and those endpoints
+    # degrade to `available: false` rather than failing.
+    app.state.qdrant_client = qdrant_client
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)
     app.include_router(health_router)
+    app.include_router(ui_router)
+
+    # Sprint 24: the React console (frontend/) runs on its own origin in
+    # local development (Vite dev server on :5173), so it needs explicit
+    # CORS. Deliberately an explicit allow-list passed in by the caller
+    # — never "*", and never with allow_credentials, since this app
+    # authenticates via an Authorization header the browser sends
+    # explicitly, not via cookies.
+    if cors_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=cors_origins,
+            allow_credentials=False,
+            allow_methods=["GET", "POST"],
+            allow_headers=["Authorization", "Content-Type"],
+        )
     return app

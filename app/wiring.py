@@ -25,6 +25,7 @@ from app.migration.startup_guard import ensure_embedding_schema_match
 from app.registry.store import DocumentRegistry
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.hybrid_search import SearchResult
+from app.retrieval.report import RetrievalReport
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
 from app.security.auth import build_token_authenticator
@@ -94,7 +95,9 @@ def build_chat_dependencies(
     chat_provider = get_chat_provider(settings)
     embed_config = active_embedding_config(settings)
 
-    async def search_fn(question: str, context: RetrievalContext) -> list[SearchResult]:
+    async def search_fn(
+        question: str, context: RetrievalContext, report: RetrievalReport
+    ) -> list[SearchResult]:
         return await search(
             question,
             ollama,
@@ -106,6 +109,7 @@ def build_chat_dependencies(
             reranker=reranker,
             query_prefix=embed_config.query_prefix(),
             dimensions=embed_config.output_dimension,
+            report=report,
         )
 
     def stream_fn(question: str, chunks: list[SearchResult]):
@@ -233,4 +237,6 @@ def build_app(settings: Settings) -> FastAPI:
         token_authenticator=token_authenticator,
         auth_enabled=settings.auth_enabled,
         tenant_ids=tenant_ids,
+        qdrant_client=qdrant_client,
+        cors_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
     )

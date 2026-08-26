@@ -2876,7 +2876,79 @@ connector'ı paylaşamıyor). `visibility` alanı şu an sadece "tenant"
 correctness'i hedefliyor, embedding modeli/chunking/reranker/generation
 aynı kaldı.
 
-## Sprint 24 (stretch) — İkinci Connector (Confluence)
+## Sprint 24 — RAG Operations Console (closing note)
+
+Sprint 24 added a React-based RAG Operations Console because the existing
+Streamlit surface was useful for chat but did not expose the operational
+evidence needed to inspect a real answer: retrieval stages, tenant ACL
+context, sync history, evaluation provenance, settings, and Jaeger spans.
+The console is a presentation client; it does not create a second business
+logic or authorization layer.
+
+**Architecture:**
+
+```text
+React UI
+   ↓ HTTP / SSE
+FastAPI
+   ↓
+Authentication / tenant ACL
+   ↓
+Qdrant + Ollama + Jaeger
+```
+
+The `/ui/*` endpoints are read-only aggregations that reuse existing domain
+and security logic. They resolve identity through the Sprint 23 bearer-token
+boundary, scope registry/history data to the caller's tenant, and expose only
+span names/timings to the browser.
+
+**Pages completed:** Overview, Playground, Knowledge, Sync Runs, Evaluations,
+Traces, Settings, plus sign-in/development identity UX. Playground combines a
+real SSE answer with clickable citations and Sources, Retrieval, Security, and
+Trace inspectors. Settings shows the active `qwen3-4b@1024` pipeline when the
+backend reports it and keeps rollback read-only/disabled when no safe UI write
+action exists.
+
+**Real local verification:** The local FastAPI, Qdrant, Ollama, Jaeger, and
+React stack was verified across sign-in, overview, a real Playground query,
+citation interaction, Retrieval/Security/Trace tabs, USER versus OPERATOR sync
+permissions, tenant-scoped Knowledge, Evaluations, and Settings. The console
+renders unavailable and not-yet-indexed states explicitly; it does not replace
+missing operational values with demo numbers.
+
+**Backend inspection events:** `/chat` now emits authorized `sources`, the
+measured retrieval report, existing metadata/token/grounding events, and a
+terminal `done` event. Retrieval reports contain measured stage timings and
+observed counts; RRF and reranker scores remain scores, never confidence or
+probability. Client-observed stream timing is labelled separately from the
+backend Jaeger generation span.
+
+**Security behavior:** `/ui/*` read endpoints require credentials, reject
+invalid credentials with 401, preserve tenant scoping for overview,
+documents, and sync history, preserve OPERATOR ownership checks for sync
+history, and do not expose token maps, environment values, secrets, or
+internal client representations. CORS is an explicit configurable origin
+allow-list with credentialed CORS disabled. The development identity selector
+is local/demo auth UX and FastAPI remains the authorization enforcement point.
+
+**Frontend tests and gates:** Vitest + React Testing Library cover auth header
+handling, 401/403 states, role-aware sync actions, SSE event dispatch and
+aggregation, citations, all Evidence Inspector tabs, degraded/empty states,
+tenant-scoped rendering, evaluation/settings semantics, and Jaeger async
+state. The final frontend run passed 18 tests in 6 files; ESLint, TypeScript
+typecheck, and the production Vite build also passed. The full backend run
+passed 797 tests, skipped 2 environment-dependent tests, and emitted 6
+warnings; `ruff check app tests scripts` passed.
+
+**Known limitations:** The identity selector is not production authentication;
+production must replace it with a real verifier/login flow. Chat trace history
+is not persisted as a general server-side index. The console remains
+read-only for settings/migration controls. Claim-level grounding,
+prompt-injection defenses, reranker benchmarking, token-aware chunking,
+answerability, vLLM serving, PostgreSQL registry, and distributed sync remain
+future roadmap work and were not started in this sprint.
+
+## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
 

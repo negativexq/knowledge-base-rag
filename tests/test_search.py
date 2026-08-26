@@ -9,6 +9,7 @@ from app.ingestion.models import Chunk
 from app.ingestion.qdrant_store import QdrantStore
 from app.retrieval.filters import build_filter
 from app.retrieval.hybrid_search import SearchResult
+from app.retrieval.report import RetrievalReport
 from app.retrieval.search import RERANK_CANDIDATE_K, SEARCH_QUERY_PREFIX, search
 from app.retrieval.sparse import SparseVector
 from app.security.models import RetrievalContext
@@ -416,3 +417,96 @@ async def test_search_creates_rerank_span_only_when_reranker_provided():
         assert "rerank" not in span_names2
     finally:
         sm.hybrid_search = original
+
+
+@pytest.mark.asyncio
+async def test_search_populates_a_report_with_real_stages_when_given_one():
+    client = QdrantClient(":memory:")
+    store = QdrantStore(client=client, collection_name=COLLECTION + "_report")
+    store.ensure_collection()
+    store.upsert_chunks(
+        [_chunk("placeholder")],
+        [[0.0] * 768],
+        [SparseVector(indices=[1], values=[1.0])],
+    )
+    report = RetrievalReport()
+
+    await search(
+        "hello",
+        ollama=_FakeOllama(),
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=client,
+        collection_name=COLLECTION + "_report",
+        embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
+        report=report,
+    )
+
+    stage_names = [s.name for s in report.stages]
+    assert "query_embedding" in stage_names
+    assert "sparse_encoding" in stage_names
+    assert "hybrid_retrieval" in stage_names
+    # No reranker was passed — the report must not claim one ran.
+    assert "rerank" not in stage_names
+    assert "truncate_to_top_n" in stage_names
+    assert report.acl_applied is True
+    assert report.acl_tenant_id == "default"
+    assert report.is_system_context is False
+    assert all(s.duration_ms >= 0 for s in report.stages)
+
+
+@pytest.mark.asyncio
+async def test_search_report_records_a_rerank_stage_when_a_reranker_is_given():
+    client = QdrantClient(":memory:")
+    store = QdrantStore(client=client, collection_name=COLLECTION + "_report_rerank")
+    store.ensure_collection()
+    store.upsert_chunks(
+        [_chunk("placeholder")],
+        [[0.0] * 768],
+        [SparseVector(indices=[1], values=[1.0])],
+    )
+    report = RetrievalReport()
+
+    await search(
+        "hello",
+        ollama=_FakeOllama(),
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=client,
+        collection_name=COLLECTION + "_report_rerank",
+        embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
+        reranker=_FakeReranker(),
+        report=report,
+    )
+
+    stage_names = [s.name for s in report.stages]
+    assert "rerank" in stage_names
+    assert "truncate_to_top_n" not in stage_names
+
+
+@pytest.mark.asyncio
+async def test_search_report_reflects_a_system_context_with_no_tenant():
+    client = QdrantClient(":memory:")
+    store = QdrantStore(client=client, collection_name=COLLECTION + "_report_system")
+    store.ensure_collection()
+    store.upsert_chunks(
+        [_chunk("placeholder")],
+        [[0.0] * 768],
+        [SparseVector(indices=[1], values=[1.0])],
+    )
+    report = RetrievalReport()
+
+    await search(
+        "hello",
+        ollama=_FakeOllama(),
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=client,
+        collection_name=COLLECTION + "_report_system",
+        embed_model="nomic-embed-text",
+        context=RetrievalContext.system(),
+        report=report,
+    )
+
+    assert report.acl_applied is False
+    assert report.is_system_context is True
+    assert report.acl_tenant_id is None
