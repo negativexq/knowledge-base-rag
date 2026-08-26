@@ -24,3 +24,5 @@ artifacts/embedding-benchmark-sprint20/work/
 artifacts/embedding-benchmark-sprint21/work/
 artifacts/embedding-benchmark-sprint21/cache/
 artifacts/embedding-migration-sprint22/work/
+artifacts/chunking-benchmark-sprint27/work/
+artifacts/chunking-benchmark-sprint27/*.partial.json

@@ -81,6 +81,16 @@ export interface ActiveIndex {
   rollback_available: boolean
   migration_id: string | null
   available: boolean
+  chunking: {
+    name: string
+    mode: string
+    target_tokens: number
+    overlap_tokens: number
+    hard_max_tokens: number | null
+    tokenizer_model: string
+    tokenizer_revision: string
+    boundary_strategy: string
+  }
 }
 
 export interface OverviewSource extends SourceSummary {
@@ -138,6 +148,7 @@ export interface UiSettings {
     sparse_model: string
     reranker_model: string | null
     fusion: string
+    chunking: ActiveIndex["chunking"]
   }
   authentication: {
     enabled: boolean
@@ -197,6 +208,7 @@ export interface Evaluations {
   security_validation: Record<string, unknown> | null
   prompt_injection: PromptInjectionEvaluation | null
   reranker_decision: RerankerDecision | null
+  chunking_decision: ChunkingDecision | null
   timeline: EvaluationTimelineEntry[]
   available: boolean
 }
@@ -218,6 +230,25 @@ export interface RerankerDecision {
   recommendation: string
   rule: string
   configs: RerankerDecisionConfig[]
+  available: boolean
+}
+
+export interface ChunkingDecisionConfig {
+  config: string
+  overall: Record<string, number>
+  cross_lingual: Record<string, number | null>
+  chunk_stats: Record<string, unknown>
+  context_efficiency: Record<string, number | string | null>
+  latency: Record<string, number | string | null>
+}
+
+export interface ChunkingDecision {
+  source: string
+  dataset: string
+  question_count: number
+  recommendation: string
+  rule: string
+  configs: ChunkingDecisionConfig[]
   available: boolean
 }
 
@@ -259,6 +290,7 @@ export interface RetrievedSource {
   document_version: string | null
   tenant_id: string | null
   visibility: string | null
+  token_count?: number | null
 }
 
 export interface RetrievalStageInfo {
@@ -286,6 +318,10 @@ export interface RetrievalReportPayload {
     candidate_k: number
     top_n: number
   } | null
+  context?: {
+    retrieved_chunk_count?: number
+    top_context_tokens?: number | null
+  }
   security: {
     prompt_policy_version: string | null
     untrusted_context_enabled: boolean

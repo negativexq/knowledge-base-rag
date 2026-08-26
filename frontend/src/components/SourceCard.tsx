@@ -43,6 +43,9 @@ export function SourceCard({
       <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-[var(--color-muted-foreground)]">
         <span className="capitalize">{source.source_type}</span>
         {location && <span className="font-technical">{location}</span>}
+        {source.token_count !== null && source.token_count !== undefined && (
+          <span className="font-technical">{source.token_count} tokens</span>
+        )}
         {source.score !== null && (
           <span className="font-technical text-[var(--color-subtle-foreground)]">
             ranking score {formatScore(source.score)}

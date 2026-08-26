@@ -1,0 +1,107 @@
+{
+  "baseline": {
+    "total_chunks": 51,
+    "avg_tokens_per_chunk": 68.745,
+    "median_tokens_per_chunk": 71,
+    "p95_tokens_per_chunk": 90,
+    "max_tokens_per_chunk": 100,
+    "chunks_per_document": 12.75,
+    "chunks_by_document": {
+      "nimbus_api_reference_md": 20,
+      "nimbus_cli_md": 8,
+      "nimbus_handbook_pdf": 6,
+      "nimbus_kurumsal_sss_md": 17
+    },
+    "overlap_ratio": "not measured",
+    "chunks_exceeding_hard_max": "not enforced",
+    "boundary": {
+      "sentence_split_rate": "not measured",
+      "heading_preservation_rate": "not measured",
+      "page_crossing_rate": "not measured"
+    }
+  },
+  "384-48": {
+    "total_chunks": 51,
+    "avg_tokens_per_chunk": 68.745,
+    "median_tokens_per_chunk": 71,
+    "p95_tokens_per_chunk": 90,
+    "max_tokens_per_chunk": 100,
+    "chunks_per_document": 12.75,
+    "chunks_by_document": {
+      "nimbus_api_reference_md": 20,
+      "nimbus_cli_md": 8,
+      "nimbus_handbook_pdf": 6,
+      "nimbus_kurumsal_sss_md": 17
+    },
+    "overlap_ratio": 0.0,
+    "chunks_exceeding_hard_max": 0,
+    "boundary": {
+      "sentence_split_rate": 0.0,
+      "heading_preservation_rate": 1.0,
+      "page_crossing_rate": 0.0
+    }
+  },
+  "256-32": {
+    "total_chunks": 51,
+    "avg_tokens_per_chunk": 68.745,
+    "median_tokens_per_chunk": 71,
+    "p95_tokens_per_chunk": 90,
+    "max_tokens_per_chunk": 100,
+    "chunks_per_document": 12.75,
+    "chunks_by_document": {
+      "nimbus_api_reference_md": 20,
+      "nimbus_cli_md": 8,
+      "nimbus_handbook_pdf": 6,
+      "nimbus_kurumsal_sss_md": 17
+    },
+    "overlap_ratio": 0.0,
+    "chunks_exceeding_hard_max": 0,
+    "boundary": {
+      "sentence_split_rate": 0.0,
+      "heading_preservation_rate": 1.0,
+      "page_crossing_rate": 0.0
+    }
+  },
+  "512-64": {
+    "total_chunks": 51,
+    "avg_tokens_per_chunk": 68.745,
+    "median_tokens_per_chunk": 71,
+    "p95_tokens_per_chunk": 90,
+    "max_tokens_per_chunk": 100,
+    "chunks_per_document": 12.75,
+    "chunks_by_document": {
+      "nimbus_api_reference_md": 20,
+      "nimbus_cli_md": 8,
+      "nimbus_handbook_pdf": 6,
+      "nimbus_kurumsal_sss_md": 17
+    },
+    "overlap_ratio": 0.0,
+    "chunks_exceeding_hard_max": 0,
+    "boundary": {
+      "sentence_split_rate": 0.0,
+      "heading_preservation_rate": 1.0,
+      "page_crossing_rate": 0.0
+    }
+  },
+  "768-96": {
+    "total_chunks": 51,
+    "avg_tokens_per_chunk": 68.745,
+    "median_tokens_per_chunk": 71,
+    "p95_tokens_per_chunk": 90,
+    "max_tokens_per_chunk": 100,
+    "chunks_per_document": 12.75,
+    "chunks_by_document": {
+      "nimbus_api_reference_md": 20,
+      "nimbus_cli_md": 8,
+      "nimbus_handbook_pdf": 6,
+      "nimbus_kurumsal_sss_md": 17
+    },
+    "overlap_ratio": 0.0,
+    "chunks_exceeding_hard_max": 0,
+    "boundary": {
+      "sentence_split_rate": 0.0,
+      "heading_preservation_rate": 1.0,
+      "page_crossing_rate": 0.0
+    }
+  }
+}

@@ -84,6 +84,7 @@ def source_payload(rank: int, result: SearchResult) -> dict:
         "document_version": payload.get("document_version"),
         "tenant_id": payload.get("tenant_id"),
         "visibility": payload.get("visibility"),
+        "token_count": payload.get("token_count"),
     }
 
 
@@ -124,6 +125,15 @@ async def _sse_event_stream(
         report.untrusted_context_enabled = deps.prompt_version == "v3"
         report.security_validation_mode = deps.security_validation_mode
         chunks = await deps.search_fn(question, context, report)
+        token_counts = [chunk.payload.get("token_count") for chunk in chunks]
+        report.context = {
+            "retrieved_chunk_count": len(chunks),
+            "top_context_tokens": (
+                sum(token_counts)
+                if token_counts and all(isinstance(value, int) for value in token_counts)
+                else None
+            ),
+        }
 
         # Sprint 24: the authorized context is emitted BEFORE the first
         # token, so the Evidence Inspector is populated while the answer

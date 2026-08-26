@@ -2,7 +2,9 @@ import hashlib
 import re
 from dataclasses import dataclass
 
+from app.ingestion.chunking_config import ChunkingConfig
 from app.ingestion.models import Chunk
+from app.ingestion.tokenizer import token_offsets
 from app.parsing.models import Paragraph
 from app.parsing.pdf_parser import extract_paragraphs
 
@@ -71,6 +73,96 @@ class ChunkSpan:
     paragraph_index: int
     char_range: tuple[int, int]
     text: str
+    token_count: int | None = None
+    overlap_token_count: int | None = None
+    sentence_split: bool | None = None
+    heading_preserved: bool | None = None
+    page_crossing: bool | None = None
+
+
+def _sentence_end_positions(text: str, start: int, end: int) -> list[int]:
+    """Return sentence-ending character positions in a bounded window."""
+    pattern = re.compile(r"[.!?。！？][\"'’”»\)\]]?(?=\s|$)")
+    return [match.end() for match in pattern.finditer(text, start, end)]
+
+
+def _token_aware_spans(
+    page_text: str,
+    offsets: list[tuple[int, int, int]],
+    page_number: int,
+    config: ChunkingConfig,
+    heading_preserved: bool | None = None,
+) -> list[ChunkSpan]:
+    """Split one page/heading section using real tokenizer offsets.
+
+    Character ranges are retained from the original text, rather than
+    decoding token IDs back to text. This preserves citation locations and
+    Unicode source text while keeping the token boundary deterministic.
+    """
+    tokenizer_offsets = token_offsets(page_text, config.tokenizer_model, config.tokenizer_revision)
+    if not tokenizer_offsets:
+        return []
+    hard_max = config.hard_max_tokens or config.target_tokens
+    token_ends = [end for _, end in tokenizer_offsets]
+    spans: list[ChunkSpan] = []
+    start_token = 0
+    while start_token < len(tokenizer_offsets):
+        target_token = min(start_token + config.target_tokens, len(tokenizer_offsets))
+        hard_token = min(start_token + hard_max, len(tokenizer_offsets))
+        end_token = target_token
+        sentence_split = False
+        if target_token < len(tokenizer_offsets) and target_token < hard_token:
+            target_char = tokenizer_offsets[target_token - 1][1]
+            hard_char = tokenizer_offsets[hard_token - 1][1]
+            sentence_ends = _sentence_end_positions(page_text, target_char, hard_char)
+            if sentence_ends:
+                sentence_end = sentence_ends[0]
+                while end_token < hard_token and token_ends[end_token - 1] < sentence_end:
+                    end_token += 1
+        end_token = min(end_token, hard_token)
+        start_char = tokenizer_offsets[start_token][0]
+        end_char = tokenizer_offsets[end_token - 1][1]
+        text = page_text[start_char:end_char].strip()
+        if text:
+            # A true value means this non-final boundary had to cut through
+            # a sentence because no sentence ending fit below hard_max.
+            sentence_split = bool(
+                end_token < len(tokenizer_offsets)
+                and not re.search(r"[.!?。！？][\"\'’”»\)\]]?$", text)
+            )
+            paragraph_index = _paragraph_index_for_char(offsets, start_char)
+            actual_count = end_token - start_token
+            previous_end = spans[-1].char_range[1] if spans else None
+            overlap_count = 0
+            if previous_end is not None and start_char < previous_end:
+                overlap_start = max(start_char, tokenizer_offsets[start_token][0])
+                overlap_count = max(
+                    0,
+                    min(previous_end, end_char) - overlap_start,
+                )
+                # The char count above is only a defensive diagnostic. The
+                # actual token overlap is known from the token window.
+                overlap_count = min(config.overlap_tokens, actual_count)
+            spans.append(
+                ChunkSpan(
+                    page_number=page_number,
+                    paragraph_index=paragraph_index,
+                    char_range=(start_char, end_char),
+                    text=text,
+                    token_count=actual_count,
+                    overlap_token_count=overlap_count,
+                    sentence_split=sentence_split,
+                    heading_preserved=heading_preserved,
+                    page_crossing=False,
+                )
+            )
+        if end_token >= len(tokenizer_offsets):
+            break
+        next_start = max(start_token + 1, end_token - config.overlap_tokens)
+        if next_start <= start_token:
+            next_start = start_token + 1
+        start_token = next_start
+    return spans
 
 
 def _chunk_page_text(
@@ -120,6 +212,7 @@ def chunk_document(
     chunk_size_tokens: int = DEFAULT_CHUNK_SIZE_TOKENS,
     overlap_tokens: int = DEFAULT_OVERLAP_TOKENS,
     doc_id: str | None = None,
+    chunking_config: ChunkingConfig | None = None,
 ) -> list[Chunk]:
     doc_id = doc_id or compute_doc_id(pdf_path)
     paragraphs = extract_paragraphs(pdf_path)
@@ -131,9 +224,12 @@ def chunk_document(
     spans: list[ChunkSpan] = []
     for page_number, page_paragraphs in paragraphs_by_page.items():
         page_text, offsets = _build_page_text(page_paragraphs)
-        spans.extend(
-            _chunk_page_text(page_text, offsets, page_number, chunk_size_tokens, overlap_tokens)
-        )
+        if chunking_config is not None and chunking_config.token_aware:
+            spans.extend(_token_aware_spans(page_text, offsets, page_number, chunking_config))
+        else:
+            spans.extend(
+                _chunk_page_text(page_text, offsets, page_number, chunk_size_tokens, overlap_tokens)
+            )
 
     return [
         Chunk(
@@ -145,6 +241,13 @@ def chunk_document(
             char_range=span.char_range,
             text=span.text,
             document_version=doc_id,
+            token_count=span.token_count,
+            overlap_token_count=span.overlap_token_count,
+            chunking_mode=(chunking_config.mode if chunking_config else None),
+            boundary_strategy=(chunking_config.boundary_strategy if chunking_config else None),
+            sentence_split=span.sentence_split,
+            heading_preserved=span.heading_preserved,
+            page_crossing=span.page_crossing,
         )
         for span in spans
     ]

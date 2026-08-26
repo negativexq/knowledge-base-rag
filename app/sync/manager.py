@@ -4,6 +4,7 @@ import logging
 from opentelemetry import trace
 
 from app.connectors.base import Connector
+from app.ingestion.chunking_config import ChunkingConfig
 from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.ingest import (
     DEFAULT_EMBEDDING_CONCURRENCY,
@@ -58,6 +59,7 @@ class SyncManager:
         embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
         pipeline_fingerprint: PipelineFingerprint | None = None,
         tenant_ids: dict[str, str] | None = None,
+        chunking_config: ChunkingConfig | None = None,
     ):
         # Sprint 22 patch: pipeline_fingerprint identifies the embedding
         # model/revision/backend/dimension/instruction/index-schema
@@ -86,6 +88,7 @@ class SyncManager:
         self._tracer = tracer or get_tracer(__name__)
         self._embedding_concurrency = embedding_concurrency
         self._pipeline_fingerprint = pipeline_fingerprint
+        self._chunking_config = chunking_config
         # Sprint 23: which tenant owns each connector's documents —
         # server-side configuration (app/wiring.py::connector_tenant_ids),
         # NEVER derived from a sync request. A source_type missing from
@@ -155,6 +158,7 @@ class SyncManager:
                     tracer=self._tracer,
                     pipeline_fingerprint=self._pipeline_fingerprint,
                     tenant_id=self._tenant_ids.get(source_type, "default"),
+                    chunking_config=self._chunking_config,
                 )
             except asyncio.CancelledError:
                 # Sprint 17: CancelledError is a BaseException, not an

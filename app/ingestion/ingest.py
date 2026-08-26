@@ -10,6 +10,7 @@ from opentelemetry import trace
 
 from app.connectors.base import Connector
 from app.ingestion.chunker import DEFAULT_CHUNK_SIZE_TOKENS, DEFAULT_OVERLAP_TOKENS, chunk_document
+from app.ingestion.chunking_config import ChunkingConfig
 from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
 from app.ingestion.qdrant_store import QdrantStore
@@ -100,6 +101,7 @@ async def ingest_path(
     upsert_batch_size: int = 64,
     embedding_concurrency: int = DEFAULT_EMBEDDING_CONCURRENCY,
     tracer: trace.Tracer | None = None,
+    chunking_config: ChunkingConfig | None = None,
 ) -> IngestStats:
     tracer = tracer or get_tracer(__name__)
     store.ensure_collection()
@@ -117,7 +119,12 @@ async def ingest_path(
 
             with tracer.start_as_current_span("parse_and_chunk") as span:
                 chunks = chunk_document(
-                    str(pdf_path), source_id, "pdf", chunk_size_tokens, overlap_tokens
+                    str(pdf_path),
+                    source_id,
+                    "pdf",
+                    chunk_size_tokens,
+                    overlap_tokens,
+                    chunking_config=chunking_config,
                 )
                 span.set_attribute("parse.chunk_count", len(chunks))
 
@@ -158,6 +165,7 @@ async def ingest_connector(
     tracer: trace.Tracer | None = None,
     pipeline_fingerprint: PipelineFingerprint | None = None,
     tenant_id: str = DEFAULT_TENANT_ID,
+    chunking_config: ChunkingConfig | None = None,
 ) -> IngestStats:
     """Connector-driven, multi-format, INCREMENTAL ingestion (ingest_path
     above is the PDF-only, folder-glob, registry-less entry point).
@@ -358,6 +366,7 @@ async def ingest_connector(
                             chunk_size_tokens,
                             overlap_tokens,
                             doc_id=content_hash,
+                            chunking_config=chunking_config,
                         )
                     elif document.content_type == "markdown":
                         chunks = chunk_markdown_document(
@@ -367,6 +376,7 @@ async def ingest_connector(
                             chunk_size_tokens,
                             overlap_tokens,
                             doc_id=content_hash,
+                            chunking_config=chunking_config,
                         )
                     elif document.content_type == "notion":
                         chunks = chunk_markdown_text(
@@ -376,6 +386,7 @@ async def ingest_connector(
                             content_hash,
                             chunk_size_tokens,
                             overlap_tokens,
+                            chunking_config,
                         )
                     else:
                         raise ValueError(f"Unsupported content_type: {document.content_type!r}")
@@ -432,7 +443,9 @@ async def ingest_connector(
                 # snapshot is always empty, so rollback behavior there is
                 # unchanged.
                 points_before_attempt = store.list_point_ids_for_version(
-                    tenant_id, connector.source_type, document.source_id,
+                    tenant_id,
+                    connector.source_type,
+                    document.source_id,
                     document_version=content_hash,
                 )
                 try:
@@ -507,7 +520,9 @@ async def ingest_connector(
                         span.set_attribute("rollback.document_version", content_hash)
                         span.set_attribute("rollback.reason", "error")
                         points_after_attempt = store.list_point_ids_for_version(
-                            tenant_id, connector.source_type, document.source_id,
+                            tenant_id,
+                            connector.source_type,
+                            document.source_id,
                             document_version=content_hash,
                         )
                         added_by_this_attempt = points_after_attempt - points_before_attempt
@@ -532,7 +547,9 @@ async def ingest_connector(
                 with tracer.start_as_current_span("cleanup_duplicate_points") as span:
                     expected_ids = {QdrantStore.point_id_for(chunk) for chunk in chunks}
                     actual_ids = store.list_point_ids_for_version(
-                        tenant_id, connector.source_type, document.source_id,
+                        tenant_id,
+                        connector.source_type,
+                        document.source_id,
                         document_version=content_hash,
                     )
                     extra_ids = actual_ids - expected_ids
@@ -544,7 +561,9 @@ async def ingest_connector(
                     span.set_attribute("delete_stale_chunks.source_id", document.source_id)
                     span.set_attribute("delete_stale_chunks.keep_version", content_hash)
                     store.delete_stale_versions(
-                        tenant_id, connector.source_type, document.source_id,
+                        tenant_id,
+                        connector.source_type,
+                        document.source_id,
                         keep_version=content_hash,
                     )
 

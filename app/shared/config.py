@@ -3,6 +3,12 @@ from typing import Literal, cast
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.ingestion.chunking_config import (
+    BOUNDARY_STRATEGY,
+    QWEN3_EMBEDDING_TOKENIZER,
+    QWEN3_TOKENIZER_REVISION,
+    ChunkingConfig,
+)
 from app.reranker.config import (
     MULTILINGUAL_RERANKER_MODEL,
     RERANKER_BACKEND,
@@ -107,6 +113,32 @@ class Settings(BaseSettings):
     reranker_candidate_k: int = Field(default=RERANKER_CANDIDATE_K, gt=0)
     reranker_top_n: int = Field(default=RERANKER_TOP_N, gt=0)
     reranker_trust_remote_code: bool = False
+
+    # Sprint 27: production keeps the legacy word-window as the explicit
+    # benchmark baseline until a measured candidate is adopted. Switching
+    # to token-aware mode is one server-owned setting; ingestion,
+    # fingerprinting, and the Operations Console all read this method.
+    chunking_mode: Literal["baseline", "token_aware"] = "baseline"
+    chunk_target_tokens: int = Field(default=512, gt=0)
+    chunk_overlap_tokens: int = Field(default=64, ge=0)
+    chunk_hard_max_tokens: int | None = Field(default=576, gt=0)
+    chunk_tokenizer_model: str = QWEN3_EMBEDDING_TOKENIZER
+    chunk_tokenizer_revision: str = QWEN3_TOKENIZER_REVISION
+    chunk_boundary_strategy: str = BOUNDARY_STRATEGY
+
+    def chunking_config(self) -> ChunkingConfig:
+        if self.chunking_mode == "baseline":
+            return ChunkingConfig.current_baseline()
+        return ChunkingConfig(
+            name=f"{self.chunk_target_tokens}-{self.chunk_overlap_tokens}",
+            mode="token_aware",
+            target_tokens=self.chunk_target_tokens,
+            overlap_tokens=self.chunk_overlap_tokens,
+            hard_max_tokens=self.chunk_hard_max_tokens,
+            tokenizer_model=self.chunk_tokenizer_model,
+            tokenizer_revision=self.chunk_tokenizer_revision,
+            boundary_strategy=self.chunk_boundary_strategy,
+        )
 
     # Sprint 22: the logical Qdrant alias real traffic is served through
     # once a migration has activated it — see app/migration/aliasing.py.

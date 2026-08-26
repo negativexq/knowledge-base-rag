@@ -298,6 +298,13 @@ def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
         "heading_path": list(chunk.heading_path),
         "heading_occurrence": chunk.heading_occurrence,
         "document_version": chunk.document_version,
+        "token_count": None,
+        "overlap_token_count": None,
+        "chunking_mode": None,
+        "boundary_strategy": None,
+        "sentence_split": None,
+        "heading_preserved": None,
+        "page_crossing": None,
     }
 
 

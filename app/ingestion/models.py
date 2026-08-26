@@ -48,3 +48,13 @@ class Chunk:
     # existing Chunk(...) call site (chunker/tests) keeps working
     # unchanged; production ingest always overwrites it explicitly.
     tenant_id: str = "default"
+    # Sprint 27: measured with the configured production-compatible
+    # tokenizer for token-aware indexes. Legacy baseline chunks leave these
+    # fields unset so the benchmark can distinguish measured from unknown.
+    token_count: int | None = None
+    overlap_token_count: int | None = None
+    chunking_mode: str | None = None
+    boundary_strategy: str | None = None
+    sentence_split: bool | None = None
+    heading_preserved: bool | None = None
+    page_crossing: bool | None = None

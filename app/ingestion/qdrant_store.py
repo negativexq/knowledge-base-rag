@@ -537,5 +537,12 @@ class QdrantStore:
                 "heading_path": list(chunk.heading_path),
                 "heading_occurrence": chunk.heading_occurrence,
                 "document_version": chunk.document_version,
+                "token_count": chunk.token_count,
+                "overlap_token_count": chunk.overlap_token_count,
+                "chunking_mode": chunk.chunking_mode,
+                "boundary_strategy": chunk.boundary_strategy,
+                "sentence_split": chunk.sentence_split,
+                "heading_preserved": chunk.heading_preserved,
+                "page_crossing": chunk.page_crossing,
             },
         )

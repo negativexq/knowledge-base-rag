@@ -32,6 +32,10 @@ function formatLatency(value: number | string | null | undefined) {
   return typeof value === "number" ? `${value.toFixed(1)} ms` : value ?? "—"
 }
 
+function formatCount(value: number | string | null | undefined) {
+  return typeof value === "number" ? value.toFixed(1) : value ?? "—"
+}
+
 export default function Evaluations() {
   const query = useQuery({ queryKey: ["evaluations"], queryFn: uiApi.evaluations })
 
@@ -121,6 +125,51 @@ export default function Evaluations() {
                 </table>
               </div>
               <p className="mt-3 text-[11px] text-[var(--color-subtle-foreground)]">{data.reranker_decision.rule}</p>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Chunking Decision</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!data.chunking_decision ? (
+            <EmptyState
+              title="Chunking benchmark not available"
+              description="Run python -m scripts.benchmark_chunking to produce the Sprint 27 artifact."
+            />
+          ) : (
+            <>
+              <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">
+                {data.chunking_decision.question_count} questions · recommendation: {data.chunking_decision.recommendation} · source: {data.chunking_decision.source}
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="text-[var(--color-muted-foreground)]">
+                    <tr>
+                      <th className="pb-2 pr-3">Config</th>
+                      <th className="pb-2 pr-3">R@5</th>
+                      <th className="pb-2 pr-3">Cross R@5</th>
+                      <th className="pb-2 pr-3">Avg context</th>
+                      <th className="pb-2">Chunks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.chunking_decision.configs.map((config) => (
+                      <tr key={config.config} className="border-t border-[var(--color-border)]">
+                        <td className="py-2 pr-3 font-medium">{config.config}</td>
+                        <td className="py-2 pr-3 font-technical">{formatMetric(config.overall.recall_at_5)}</td>
+                        <td className="py-2 pr-3 font-technical">{formatMetric(config.cross_lingual.recall_at_5)}</td>
+                        <td className="py-2 pr-3 font-technical">{formatCount(config.context_efficiency.avg_top5_context_tokens)}</td>
+                        <td className="py-2 font-technical">{String(config.chunk_stats.total_chunks ?? "—")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3 text-[11px] text-[var(--color-subtle-foreground)]">{data.chunking_decision.rule}</p>
             </>
           )}
         </CardContent>

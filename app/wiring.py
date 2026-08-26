@@ -205,8 +205,9 @@ def build_app(settings: Settings) -> FastAPI:
         embed_fn=embed_fn,
         sparse_encoder=sparse_encoder,
         embedding_concurrency=settings.embedding_concurrency,
-        pipeline_fingerprint=build_pipeline_fingerprint(embed_config),
+        pipeline_fingerprint=build_pipeline_fingerprint(embed_config, settings.chunking_config()),
         tenant_ids=tenant_ids,
+        chunking_config=settings.chunking_config(),
     )
     chat_deps, chat_provider = build_chat_dependencies(
         settings, qdrant_client, ollama, sparse_encoder, collection_name

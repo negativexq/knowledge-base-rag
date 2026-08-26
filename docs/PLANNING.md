@@ -3050,6 +3050,75 @@ English regression, multilingual decision, latency trade-off, and known
 limitations. No embedding, chunking, generation, async serving redesign,
 distributed sync, or database migration work was started.
 
+## Sprint 27 — Token-Aware Chunking & Context Efficiency (closing note)
+
+Sprint 27 first inspected the real production path: the legacy chunker used a
+500/50 whitespace-word window with sentence-end extension; Markdown preserved
+heading/block sections and PDF parsing preserved page boundaries and page-based
+citation metadata. The new `ChunkingConfig` keeps that baseline reproducible
+and adds deterministic Qwen3-Embedding-4B tokenizer-aware candidates with real
+token counts, bounded overlap, sentence/heading awareness, PDF page isolation,
+and chunk metadata carried into Qdrant.
+
+The pipeline fingerprint now includes chunking mode, tokenizer model/revision,
+target, overlap, hard max, boundary strategy, and the existing parser/index
+schema. A config change therefore marks unchanged document content stale and
+requires re-indexing. Benchmark indexes used isolated physical Qdrant
+collections; the active production collection was not modified.
+
+The unchanged 220-question multilingual dataset was used with Qwen3-Embedding-
+4B@1024, BM25, Qdrant RRF, BAAI/bge-reranker-v2-m3, candidate k=20, output n=5,
+the same parser, corpus, ACL, and controls. Candidates were baseline, 256/32,
+384/48, 512/64, and 768/96. Hard max was fixed before the run at target + 64.
+Fixed-seed 5,000-iteration paired bootstrap artifacts and query-level case
+artifacts are written under `artifacts/chunking-benchmark-sprint27/`.
+
+On this four-document fixture, every token-aware candidate produced the same
+51 chunk text/location payloads. The measured average chunk was approximately
+69 Qwen tokens and the maximum was 100, so none of the 256–768 targets was
+exercised. Baseline overall Recall@5 was 1.0000, MRR
+0.9635, and nDCG@5 0.9729; the identical token-aware payload measured Recall@5
+1.0000, MRR 0.9643, and nDCG@5 0.9736 in all four language cells. Candidate
+hard-max violations were zero, average top-five context was 351.37–351.54 real
+Qwen tokens versus baseline 351.33, and p95 was 412–414 versus baseline 412.
+Exact evidence spans
+are absent from the dataset, so citation precision/evidence density remains
+not measured. Real tokenizer envelope overhead was approximately 263.7% for
+the token-aware payload (baseline approximately 263.6%); the security envelope
+was retained.
+
+The pre-committed Pareto rule requires the quality floor and a candidate that
+dominates baseline on context tokens, chunk count, or storage. No candidate
+did, so the production decision is **KEEP_CURRENT**. No migration, alias
+switch, or rollback action was performed. The token-aware implementation is
+ready for a larger representative corpus. The first local CPU BGE reranker
+timings were not causally interpretable because identical payloads showed
+large order/runtime differences. A controlled follow-up loaded one model,
+warmed it twice, used the same 20 candidates, timed only `predict()`, and ran
+five balanced repetitions. Corrected p50/p95 were 2570/4054 ms (baseline),
+2237/2483 (256/32), 2254/3631 (384/48), 2265/2857 (512/64), and 2354/5931
+(768/96). The residual spread is unexplained runtime/order variance and is
+excluded from the chunking decision; reranker serving remains synchronous in
+the async retrieval path.
+
+Frontend Settings, Retrieval inspector, and Evaluations expose the active
+chunking config and real Sprint 27 artifact when present. A 26-request real
+local generation sanity subset then exercised legacy 500/50 chunking,
+answer_v3, strict validation, canonical citations, and tenant ACL; its
+machine-readable result is `artifacts/chunking-benchmark-sprint27/generation-
+sanity.json`. It recorded 100% citation integrity (26/26), 100% not-found
+accuracy (4/4), 100% strict/security validation (26/26), 100% generation
+success (26/26), and 100% security-control success (2/2); answer relevancy
+was not measured. Both security controls were safely validated without unsafe
+token release; the withheld-answer branch remains covered by strict unit
+tests. Tests cover tokenizer
+counts, determinism, Unicode/Turkish text, candidates, Markdown headings/code,
+PDF pages, overlap, fingerprint invalidation, UI rendering, and regression
+preservation. Frontend had 18 tests across 6 files; typecheck, lint, and
+production build passed. The final backend gate was `844 passed, 2 skipped, 6
+warnings`; the skips were the optional Notion API and provider-comparison tests
+without their external credentials.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

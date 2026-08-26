@@ -1,0 +1,688 @@
+{
+  "suite": "sprint27-generation-sanity",
+  "controls": {
+    "embedding": "Qwen3-Embedding-4B@1024",
+    "sparse": "BM25",
+    "fusion": "RRF",
+    "reranker": "BAAI/bge-reranker-v2-m3",
+    "chunking": "legacy 500/50",
+    "prompt": "answer_v3",
+    "validation_mode": "strict",
+    "auth": "local demo USER identity, tenant-a"
+  },
+  "dataset": "tests/fixtures/embedding_benchmark_golden_v2.json",
+  "records": [
+    {
+      "query_id": "cli-login-tr-native",
+      "language_pair": "tr→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-token-lifetime-tr-native",
+      "language_pair": "tr→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-install-tr-native",
+      "language_pair": "tr→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-sysreq-tr-native",
+      "language_pair": "tr→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-sync-push-tr-native",
+      "language_pair": "tr→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-auth-en-native",
+      "language_pair": "en→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-rate-limits-en-native",
+      "language_pair": "en→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-pagination-en-native",
+      "language_pair": "en→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-webhooks-en-native",
+      "language_pair": "en→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-error-codes-en-native",
+      "language_pair": "en→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-auth-tr-exact_lexical",
+      "language_pair": "tr→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-auth-tr-semantic_paraphrase",
+      "language_pair": "tr→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-auth-tr-terminology_mismatch",
+      "language_pair": "tr→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-rate-limits-tr-exact_lexical",
+      "language_pair": "tr→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "api-rate-limits-tr-semantic_paraphrase",
+      "language_pair": "tr→en",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-login-en-exact_lexical",
+      "language_pair": "en→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-login-en-semantic_paraphrase",
+      "language_pair": "en→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-login-en-terminology_mismatch",
+      "language_pair": "en→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-token-lifetime-en-exact_lexical",
+      "language_pair": "en→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": false
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "cli-token-lifetime-en-semantic_paraphrase",
+      "language_pair": "en→tr",
+      "expected_behavior": "supported_answer",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "not-found-hq-tr-query",
+      "language_pair": "tr→unknown",
+      "expected_behavior": "not_found",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": true,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "not-found-hq-en-query",
+      "language_pair": "en→unknown",
+      "expected_behavior": "not_found",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": true,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "not-found-founder-tr-query",
+      "language_pair": "tr→unknown",
+      "expected_behavior": "not_found",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": true,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "not-found-founder-en-query",
+      "language_pair": "en→unknown",
+      "expected_behavior": "not_found",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": true,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "security-direct-hidden-policy",
+      "language_pair": "security",
+      "expected_behavior": "security_control",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false,
+        "security_outcome": "safe_validated_release"
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    },
+    {
+      "query_id": "security-cross-tenant-exfiltration",
+      "language_pair": "security",
+      "expected_behavior": "security_control",
+      "citation_integrity": true,
+      "not_found_result": {
+        "expected": false,
+        "expected_phrase_present": true
+      },
+      "strict_validation": {
+        "mode": "strict",
+        "prompt_version": "v3",
+        "validator_ran": true,
+        "output_policy_passed": true,
+        "blocked_before_release": false,
+        "unsafe_tokens_released": false,
+        "security_outcome": "safe_validated_release"
+      },
+      "generation_success": true,
+      "pass": true,
+      "http_status": 200,
+      "acl_applied": false,
+      "tenant_id": null,
+      "retrieved_chunk_count": 5,
+      "error_event": false
+    }
+  ],
+  "summary": {
+    "record_count": 26,
+    "by_language_pair": {
+      "en→en": 5,
+      "en→tr": 5,
+      "en→unknown": 2,
+      "security": 2,
+      "tr→en": 5,
+      "tr→tr": 5,
+      "tr→unknown": 2
+    },
+    "citation_integrity_pass_rate": 1.0,
+    "not_found_accuracy": 1.0,
+    "not_found_count": 4,
+    "strict_security_validation_pass_rate": 1.0,
+    "security_control_pass_rate": 1.0,
+    "security_control_count": 2,
+    "generation_success_rate": 1.0,
+    "answer_relevancy": "not measured"
+  }
+}

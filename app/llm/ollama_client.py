@@ -83,6 +83,37 @@ class OllamaClient:
         except httpx.HTTPError as exc:
             raise OllamaUnreachableError(f"Could not reach Ollama: {exc}") from exc
 
+    async def embed_many(
+        self,
+        texts: list[str],
+        model: str,
+        prefix: str = "",
+        dimensions: int | None = None,
+    ) -> list[list[float]]:
+        """Embed a batch through Ollama's plural endpoint.
+
+        Sprint 27 uses this for the frozen query-vector phase of the
+        chunking benchmark. It is semantically identical to calling
+        ``embed`` once per text, but avoids reloading/re-scheduling the same
+        local model for every configuration.
+        """
+        if not texts:
+            return []
+        try:
+            response = await self._client.post(
+                "/api/embed",
+                json={
+                    "model": model,
+                    "input": [f"{prefix}{text}" for text in texts],
+                    "dimensions": dimensions,
+                    "keep_alive": DEFAULT_KEEP_ALIVE,
+                },
+            )
+            response.raise_for_status()
+            return response.json()["embeddings"]
+        except httpx.HTTPError as exc:
+            raise OllamaUnreachableError(f"Could not reach Ollama: {exc}") from exc
+
     async def stream_chat(self, messages: list[dict], model: str) -> AsyncIterator[str]:
         try:
             async with self._client.stream(

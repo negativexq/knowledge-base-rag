@@ -24,6 +24,14 @@ export function RetrievalPipeline({ report }: { report: RetrievalReportPayload }
           </div>
         </div>
       )}
+      {report.context && (
+        <div className="rounded-md border border-dashed border-[var(--color-border)] px-3 py-2 text-xs">
+          <div className="font-medium text-[var(--color-foreground)]">Retrieved context</div>
+          <div className="mt-1 font-technical text-[11px] text-[var(--color-muted-foreground)]">
+            chunks: {report.context.retrieved_chunk_count ?? "—"} · top-5 context tokens: {report.context.top_context_tokens ?? "—"}
+          </div>
+        </div>
+      )}
       {report.stages.map((stage, i) => (
         <div key={stage.name}>
           <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3">

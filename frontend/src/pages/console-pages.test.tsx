@@ -58,6 +58,16 @@ const activeIndex = {
   rollback_available: false,
   migration_id: null,
   available: true,
+  chunking: {
+    name: "baseline",
+    mode: "baseline",
+    target_tokens: 500,
+    overlap_tokens: 50,
+    hard_max_tokens: null,
+    tokenizer_model: "Qwen/Qwen3-Embedding-4B",
+    tokenizer_revision: "main",
+    boundary_strategy: "legacy_word_sentence_heading_page_v1",
+  },
 }
 
 function renderWithClient(element: React.ReactElement) {
@@ -208,6 +218,7 @@ describe("console page regression states", () => {
         available: true,
       },
       reranker_decision: null,
+      chunking_decision: null,
       timeline: [],
       available: true,
     })
@@ -229,6 +240,7 @@ describe("console page regression states", () => {
         sparse_model: "Qdrant/bm25",
         reranker_model: "BAAI/bge-reranker-v2-m3",
         fusion: "RRF",
+        chunking: activeIndex.chunking,
       },
       authentication: { enabled: true, scheme: "bearer", roles: ["USER", "OPERATOR", "ADMIN"] },
       security: {

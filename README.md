@@ -23,7 +23,13 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
   unchanged, update changed, delete vanished — no orphan chunks)
 - **Hybrid search** — Qwen3-Embedding-4B@1024 + BM25 sparse retrieval with
   native Qdrant RRF fusion and the Sprint 26-adopted multilingual
-  `BAAI/bge-reranker-v2-m3` reranker
+  `BAAI/bge-reranker-v2-m3` reranker. Sprint 27 added a real Qwen-tokenizer
+  aware chunker and benchmarked 256/32, 384/48, 512/64, and 768/96 against
+  the legacy 500/50 baseline; the current production decision is
+  `KEEP_CURRENT` because this tiny corpus showed no efficiency-dominating
+  candidate. The corpus averages about 69 Qwen tokens per chunk, so it does
+  not exercise the 256–768 token boundaries; see
+  [docs/chunking.md](docs/chunking.md).
 - **Source-scoped citation validation** — every citation is checked against
   the exact `(source_type, source_id, location)` it was generated from, so
   two different documents can never spoof each other's citations (proven
@@ -77,7 +83,9 @@ is fully working end to end:
   mid-batch failure (see [Sync](#sync))
 - Distributed tracing (OpenTelemetry + Jaeger) across both sync and chat
 - Golden-set evaluation (DeepEval + a local judge model)
-- A multi-page Streamlit UI (Chat, Sources, Sync Status)
+- A React RAG Operations Console (Overview, Playground, Knowledge, Sync Runs,
+  Evaluations, Traces, Settings), with the legacy Streamlit surface retained
+  for compatibility
 - One-command Docker Compose deployment, with sync data surviving a
   container restart
 - CI (lint + real-Qdrant test suite + Docker build) on every push
@@ -234,7 +242,7 @@ verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
 | Layer | Technology | Notes |
 |---|---|---|
 | Parsing | PyMuPDF (`fitz`) — PDF; hand-written heading-block parser — Markdown; `trafilatura` — web pages | Page/paragraph extraction ported from production-rag-platform (Sprint 0); Markdown's heading-path location scheme (Sprint 3) is reused by the web parser too (Sprint 6) |
-| Chunking | Whitespace token counter, 500/50 (size/overlap) | Provisional default, unchanged since Sprint 0 — never re-tuned against a larger corpus (see Known Limitations) |
+| Chunking | Production: legacy whitespace window 500/50; benchmark: Qwen3 tokenizer-aware candidates | Sprint 27 measured real token counts and kept the legacy production baseline because the four-document corpus produced no Pareto-dominating candidate; see [docs/chunking.md](docs/chunking.md) |
 | Document registry | SQLite (stdlib `sqlite3`), no ORM | `(tenant_id, source_type, source_id)` primary key (Sprint 23 — was `(source_type, source_id)` before tenant isolation), content-hash diffing for incremental sync (Sprint 2) |
 | Security boundary | Bearer-token auth → `UserContext` → mandatory Qdrant `tenant_id` ACL filter | Server-owned identity and authorization — never trusts a tenant_id/role from the request itself; enforced BEFORE dense/sparse/hybrid retrieval, not via a prompt or a post-hoc citation check (Sprint 23, see [Security](#security)) |
 | Connectors | `LocalFilesystemConnector` (PDF/Markdown); `NotionConnector` (Notion API, 429 retry/backoff) | Shared async `Connector` Protocol (Sprint 3, generalized to async in Sprint 6) |
@@ -243,7 +251,7 @@ verified in a sprint closing note in [docs/PLANNING.md](docs/PLANNING.md)):
 | Embedding | Ollama, `Qwen3-Embedding-4B` truncated to 1024 dims (Sprint 22, migrated from `nomic-embed-text`@768) | Matryoshka-truncated dense output, cosine distance, + BM25 sparse + native RRF fusion; selected via a full benchmark provenance chain — nomic baseline → multilingual benchmark → size/dimension benchmark → stability/non-inferiority evaluation → real, rollback-tested Qdrant index migration (Sprints 18-22, see below); config is a single source of truth (`EMBEDDING_MODEL_KEY`/`EMBEDDING_OUTPUT_DIMENSION`), not scattered hardcoded strings |
 | Generation | Ollama `qwen2.5:7b-instruct` (default) or Claude | Model is a config value, not hardcoded |
 | Vector DB | Qdrant | Dense + sparse (BM25 via FastEmbed `Qdrant/bm25`) hybrid search with native RRF fusion |
-| Reranking | `sentence-transformers` CrossEncoder, `ms-marco-MiniLM-L-6-v2` | Candidate k=20 → top n=5 (Sprint 5) |
+| Reranking | `sentence-transformers` CrossEncoder, `BAAI/bge-reranker-v2-m3` | Candidate k=20 → top n=5 (Sprint 26); controlled Sprint 27 timing is not used as a chunking decision signal |
 | Backend | FastAPI | SSE streaming for `/chat`; containerized since Sprint 11 |
 | Citations | `[s.source_type:source_id/location]` | `location` is `page/paragraph` for PDF or a heading path for Markdown/web/Notion — checked against the full triple so two sources can't spoof each other's citations; citation *integrity*, not semantic grounding (Sprint 0/3/5/12, see [Citation format](#citation-format)) |
 | Observability | OpenTelemetry + Jaeger | A full sync run and a full chat request are each a single trace end to end (Sprint 8) |

@@ -1,0 +1,502 @@
+{
+  "method": {
+    "model": "BAAI/bge-reranker-v2-m3",
+    "backend": "sentence-transformers",
+    "device": "cpu",
+    "candidate_count": 20,
+    "batch_size": 20,
+    "model_loads": 1,
+    "warmup_calls": 2,
+    "repetitions_per_config": 5,
+    "seed": 2701,
+    "timed_boundary": "CrossEncoder.predict only",
+    "unmeasured": [
+      "Qdrant",
+      "embedding",
+      "retrieval",
+      "indexing",
+      "generation"
+    ]
+  },
+  "query": "fixture query id: api-auth-en-native",
+  "candidate_input": {
+    "equivalent_across_configs": {
+      "baseline": true,
+      "256-32": true,
+      "384-48": true,
+      "512-64": true,
+      "768-96": true
+    },
+    "canonical": {
+      "sha256": "4bef6918d9d461d4597220e402c6ce2635780c8cfca7038e1ff537efafb9ceca",
+      "candidate_count": 20,
+      "text_lengths": [
+        193,
+        203,
+        213,
+        220,
+        220,
+        225,
+        233,
+        243,
+        245,
+        247,
+        252,
+        259,
+        260,
+        261,
+        263,
+        267,
+        273,
+        275,
+        276,
+        320
+      ],
+      "token_lengths": [
+        39,
+        49,
+        53,
+        48,
+        52,
+        72,
+        46,
+        54,
+        58,
+        59,
+        61,
+        60,
+        58,
+        60,
+        56,
+        67,
+        77,
+        59,
+        68,
+        76
+      ]
+    },
+    "per_config": {
+      "baseline": {
+        "sha256": "4bef6918d9d461d4597220e402c6ce2635780c8cfca7038e1ff537efafb9ceca",
+        "candidate_count": 20,
+        "text_lengths": [
+          193,
+          203,
+          213,
+          220,
+          220,
+          225,
+          233,
+          243,
+          245,
+          247,
+          252,
+          259,
+          260,
+          261,
+          263,
+          267,
+          273,
+          275,
+          276,
+          320
+        ],
+        "token_lengths": [
+          39,
+          49,
+          53,
+          48,
+          52,
+          72,
+          46,
+          54,
+          58,
+          59,
+          61,
+          60,
+          58,
+          60,
+          56,
+          67,
+          77,
+          59,
+          68,
+          76
+        ]
+      },
+      "256-32": {
+        "sha256": "4bef6918d9d461d4597220e402c6ce2635780c8cfca7038e1ff537efafb9ceca",
+        "candidate_count": 20,
+        "text_lengths": [
+          193,
+          203,
+          213,
+          220,
+          220,
+          225,
+          233,
+          243,
+          245,
+          247,
+          252,
+          259,
+          260,
+          261,
+          263,
+          267,
+          273,
+          275,
+          276,
+          320
+        ],
+        "token_lengths": [
+          39,
+          49,
+          53,
+          48,
+          52,
+          72,
+          46,
+          54,
+          58,
+          59,
+          61,
+          60,
+          58,
+          60,
+          56,
+          67,
+          77,
+          59,
+          68,
+          76
+        ]
+      },
+      "384-48": {
+        "sha256": "4bef6918d9d461d4597220e402c6ce2635780c8cfca7038e1ff537efafb9ceca",
+        "candidate_count": 20,
+        "text_lengths": [
+          193,
+          203,
+          213,
+          220,
+          220,
+          225,
+          233,
+          243,
+          245,
+          247,
+          252,
+          259,
+          260,
+          261,
+          263,
+          267,
+          273,
+          275,
+          276,
+          320
+        ],
+        "token_lengths": [
+          39,
+          49,
+          53,
+          48,
+          52,
+          72,
+          46,
+          54,
+          58,
+          59,
+          61,
+          60,
+          58,
+          60,
+          56,
+          67,
+          77,
+          59,
+          68,
+          76
+        ]
+      },
+      "512-64": {
+        "sha256": "4bef6918d9d461d4597220e402c6ce2635780c8cfca7038e1ff537efafb9ceca",
+        "candidate_count": 20,
+        "text_lengths": [
+          193,
+          203,
+          213,
+          220,
+          220,
+          225,
+          233,
+          243,
+          245,
+          247,
+          252,
+          259,
+          260,
+          261,
+          263,
+          267,
+          273,
+          275,
+          276,
+          320
+        ],
+        "token_lengths": [
+          39,
+          49,
+          53,
+          48,
+          52,
+          72,
+          46,
+          54,
+          58,
+          59,
+          61,
+          60,
+          58,
+          60,
+          56,
+          67,
+          77,
+          59,
+          68,
+          76
+        ]
+      },
+      "768-96": {
+        "sha256": "4bef6918d9d461d4597220e402c6ce2635780c8cfca7038e1ff537efafb9ceca",
+        "candidate_count": 20,
+        "text_lengths": [
+          193,
+          203,
+          213,
+          220,
+          220,
+          225,
+          233,
+          243,
+          245,
+          247,
+          252,
+          259,
+          260,
+          261,
+          263,
+          267,
+          273,
+          275,
+          276,
+          320
+        ],
+        "token_lengths": [
+          39,
+          49,
+          53,
+          48,
+          52,
+          72,
+          46,
+          54,
+          58,
+          59,
+          61,
+          60,
+          58,
+          60,
+          56,
+          67,
+          77,
+          59,
+          68,
+          76
+        ]
+      }
+    }
+  },
+  "latency_ms": {
+    "baseline": {
+      "count": 5,
+      "mean_ms": 2782.037,
+      "median_ms": 2570.376,
+      "p50_ms": 2570.376,
+      "p95_ms": 4054.337,
+      "min_ms": 2186.03,
+      "max_ms": 4054.337,
+      "stddev_ms": 766.609
+    },
+    "256-32": {
+      "count": 5,
+      "mean_ms": 2229.341,
+      "median_ms": 2236.696,
+      "p50_ms": 2236.696,
+      "p95_ms": 2483.384,
+      "min_ms": 1974.878,
+      "max_ms": 2483.384,
+      "stddev_ms": 189.786
+    },
+    "384-48": {
+      "count": 5,
+      "mean_ms": 2579.106,
+      "median_ms": 2254.456,
+      "p50_ms": 2254.456,
+      "p95_ms": 3630.995,
+      "min_ms": 2159.621,
+      "max_ms": 3630.995,
+      "stddev_ms": 623.388
+    },
+    "512-64": {
+      "count": 5,
+      "mean_ms": 2373.99,
+      "median_ms": 2264.688,
+      "p50_ms": 2264.688,
+      "p95_ms": 2856.75,
+      "min_ms": 2068.955,
+      "max_ms": 2856.75,
+      "stddev_ms": 313.429
+    },
+    "768-96": {
+      "count": 5,
+      "mean_ms": 3090.012,
+      "median_ms": 2354.183,
+      "p50_ms": 2354.183,
+      "p95_ms": 5930.973,
+      "min_ms": 2083.22,
+      "max_ms": 5930.973,
+      "stddev_ms": 1629.782
+    }
+  },
+  "order": [
+    {
+      "position": 0,
+      "config": "baseline",
+      "duration_ms": 2884.421
+    },
+    {
+      "position": 1,
+      "config": "384-48",
+      "duration_ms": 2159.621
+    },
+    {
+      "position": 2,
+      "config": "768-96",
+      "duration_ms": 2083.22
+    },
+    {
+      "position": 3,
+      "config": "256-32",
+      "duration_ms": 1974.878
+    },
+    {
+      "position": 4,
+      "config": "512-64",
+      "duration_ms": 2068.955
+    },
+    {
+      "position": 5,
+      "config": "baseline",
+      "duration_ms": 2215.022
+    },
+    {
+      "position": 6,
+      "config": "384-48",
+      "duration_ms": 2254.456
+    },
+    {
+      "position": 7,
+      "config": "768-96",
+      "duration_ms": 2985.507
+    },
+    {
+      "position": 8,
+      "config": "512-64",
+      "duration_ms": 2501.891
+    },
+    {
+      "position": 9,
+      "config": "256-32",
+      "duration_ms": 2236.696
+    },
+    {
+      "position": 10,
+      "config": "384-48",
+      "duration_ms": 2181.04
+    },
+    {
+      "position": 11,
+      "config": "baseline",
+      "duration_ms": 2186.03
+    },
+    {
+      "position": 12,
+      "config": "256-32",
+      "duration_ms": 2140.122
+    },
+    {
+      "position": 13,
+      "config": "768-96",
+      "duration_ms": 2096.18
+    },
+    {
+      "position": 14,
+      "config": "512-64",
+      "duration_ms": 2177.667
+    },
+    {
+      "position": 15,
+      "config": "512-64",
+      "duration_ms": 2264.688
+    },
+    {
+      "position": 16,
+      "config": "384-48",
+      "duration_ms": 2669.421
+    },
+    {
+      "position": 17,
+      "config": "256-32",
+      "duration_ms": 2311.627
+    },
+    {
+      "position": 18,
+      "config": "baseline",
+      "duration_ms": 2570.376
+    },
+    {
+      "position": 19,
+      "config": "768-96",
+      "duration_ms": 2354.183
+    },
+    {
+      "position": 20,
+      "config": "384-48",
+      "duration_ms": 3630.995
+    },
+    {
+      "position": 21,
+      "config": "768-96",
+      "duration_ms": 5930.973
+    },
+    {
+      "position": 22,
+      "config": "baseline",
+      "duration_ms": 4054.337
+    },
+    {
+      "position": 23,
+      "config": "512-64",
+      "duration_ms": 2856.75
+    },
+    {
+      "position": 24,
+      "config": "256-32",
+      "duration_ms": 2483.384
+    }
+  ],
+  "interpretation": "All config labels were measured with the same candidate input; any residual difference is runtime variance, not a demonstrated chunking-cost causal effect.",
+  "elapsed_seconds": 79.777
+}

@@ -57,6 +57,7 @@ const report: RetrievalReportPayload = {
     candidate_k: 20,
     top_n: 5,
   },
+  context: { retrieved_chunk_count: 5, top_context_tokens: null },
 }
 
 const source: RetrievedSource = {

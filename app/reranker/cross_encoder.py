@@ -1,3 +1,6 @@
+import time
+from concurrent.futures import ThreadPoolExecutor
+
 from sentence_transformers import CrossEncoder
 
 from app.reranker.config import EXISTING_RERANKER_MODEL, RERANKER_BACKEND
@@ -39,3 +42,76 @@ class CrossEncoderReranker:
             SearchResult(score=float(score), payload=candidate.payload)
             for candidate, score in reranked[:top_n]
         ]
+
+    def rerank_many(
+        self,
+        requests: list[tuple[str, list[SearchResult]]],
+        top_n: int,
+    ) -> list[list[SearchResult]]:
+        """Rerank independent requests with bounded offline concurrency.
+
+        This is used only by offline benchmarks. Production ``search`` keeps
+        the per-request ``rerank`` call and therefore retains its existing
+        latency semantics; only the offline benchmark overlaps requests.
+        """
+        ranked, _timings = self.rerank_many_with_timings(requests, top_n)
+        return ranked
+
+    def rerank_many_with_timings(
+        self,
+        requests: list[tuple[str, list[SearchResult]]],
+        top_n: int,
+    ) -> tuple[list[list[SearchResult]], list[float]]:
+        """Return offline batch results and measured per-request durations."""
+        if not requests:
+            return [], []
+
+        def rerank_one(request: tuple[str, list[SearchResult]]) -> tuple[list[SearchResult], float]:
+            started = time.perf_counter()
+            result = self.rerank(request[0], request[1], top_n=top_n)
+            return result, (time.perf_counter() - started) * 1000
+
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            measured = list(executor.map(rerank_one, requests))
+        return (
+            [result for result, _duration in measured],
+            [duration for _result, duration in measured],
+        )
+
+    def rerank_batch_with_amortized_timing(
+        self,
+        requests: list[tuple[str, list[SearchResult]]],
+        top_n: int,
+    ) -> tuple[list[list[SearchResult]], float]:
+        """Score an offline matrix in one model batch.
+
+        Benchmarking all 220 questions as 220 independent CrossEncoder calls
+        makes model-call overhead dominate the retrieval experiment. This
+        method keeps request boundaries for ranking while using one local
+        inference batch; callers must label its duration as amortized.
+        Production ``search`` never uses this path.
+        """
+        if not requests:
+            return [], 0.0
+        pairs: list[list[str]] = []
+        widths: list[int] = []
+        for query, candidates in requests:
+            pairs.extend([[query, candidate.payload["text"]] for candidate in candidates])
+            widths.append(len(candidates))
+        started = time.perf_counter()
+        batch_size = 8 if self.device == "mps" else 64
+        scores = self._model.predict(pairs, batch_size=batch_size, show_progress_bar=False)
+        elapsed_ms = (time.perf_counter() - started) * 1000
+        ranked: list[list[SearchResult]] = []
+        cursor = 0
+        for width in widths:
+            scored = list(zip(requests[len(ranked)][1], scores[cursor : cursor + width]))
+            cursor += width
+            scored.sort(key=lambda pair: -pair[1])
+            ranked.append(
+                [
+                    SearchResult(score=float(score), payload=candidate.payload)
+                    for candidate, score in scored[:top_n]
+                ]
+            )
+        return ranked, elapsed_ms / len(requests)

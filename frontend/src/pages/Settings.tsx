@@ -70,6 +70,16 @@ export default function SettingsPage() {
             label="Active collection"
             value={data.active_pipeline.active_collection ?? "unavailable"}
           />
+          <Row label="Chunking" value={data.active_pipeline.chunking.name} />
+          <Row label="Tokenizer" value={data.active_pipeline.chunking.tokenizer_model} />
+          <Row
+            label="Target / overlap"
+            value={`${data.active_pipeline.chunking.target_tokens} / ${data.active_pipeline.chunking.overlap_tokens} tokens`}
+          />
+          <Row
+            label="Hard max"
+            value={data.active_pipeline.chunking.hard_max_tokens ?? "not enforced"}
+          />
           {data.active_pipeline.previous && (
             <Row
               label="Previous"

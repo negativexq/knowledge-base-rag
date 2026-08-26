@@ -88,6 +88,12 @@ EMBEDDING_DECISION_TIMELINE = [
         "question": "Does authorized document content stay untrusted during generation?",
         "artifact_dir": "security-sprint25",
     },
+    {
+        "sprint": 27,
+        "title": "Token-aware chunking",
+        "question": "Does real tokenizer-aware chunking improve retrieval without wasting context?",
+        "artifact_dir": "chunking-benchmark-sprint27",
+    },
 ]
 
 
@@ -128,7 +134,8 @@ def _active_index_payload(request: Request) -> dict:
     come from the registry's recorded state, not from config.
     """
     config = active_embedding_config(settings)
-    fingerprint = build_pipeline_fingerprint(config)
+    chunking = settings.chunking_config()
+    fingerprint = build_pipeline_fingerprint(config, chunking)
 
     payload = {
         "model": config.ollama_model,
@@ -143,6 +150,7 @@ def _active_index_payload(request: Request) -> dict:
         "rollback_available": False,
         "migration_id": None,
         "available": False,
+        "chunking": chunking.as_dict(),
     }
 
     qdrant_client = getattr(request.app.state, "qdrant_client", None)
@@ -291,6 +299,7 @@ async def ui_settings(request: Request, user: UserContext = Depends(get_current_
             "sparse_model": SPARSE_MODEL_NAME,
             "reranker_model": settings.reranker_model if settings.reranker_enabled else None,
             "fusion": "RRF",
+            "chunking": settings.chunking_config().as_dict(),
         },
         "authentication": {
             "enabled": getattr(settings, "auth_enabled", True),
@@ -323,6 +332,7 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
     security = _read_artifact("security-sprint23/security-validation.json")
     prompt_injection = _read_artifact("security-sprint25/adversarial-results.json")
     reranker_benchmark = _read_artifact("reranker-benchmark-sprint26/results.json")
+    chunking_benchmark = _read_artifact("chunking-benchmark-sprint27/results.json")
 
     baseline = None
     if sprint21:
@@ -394,6 +404,30 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
             "available": True,
         }
 
+    chunking_decision = None
+    if chunking_benchmark:
+        chunking_decision = {
+            "source": "artifacts/chunking-benchmark-sprint27/results.json",
+            "dataset": chunking_benchmark.get("dataset"),
+            "question_count": chunking_benchmark.get("question_count"),
+            "recommendation": chunking_benchmark.get("production_decision", {}).get(
+                "recommendation", "NEED_MORE_DATA"
+            ),
+            "rule": chunking_benchmark.get("production_decision", {}).get("rule"),
+            "configs": [
+                {
+                    "config": name,
+                    "overall": result.get("overall"),
+                    "cross_lingual": result.get("cross_lingual"),
+                    "chunk_stats": result.get("chunk_stats"),
+                    "context_efficiency": result.get("context_efficiency"),
+                    "latency": result.get("latency"),
+                }
+                for name, result in chunking_benchmark.get("results", {}).items()
+            ],
+            "available": True,
+        }
+
     return {
         "baseline": baseline,
         "migration_quality_gate": migration_gate,
@@ -412,12 +446,14 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
             else None
         ),
         "reranker_decision": reranker_decision,
+        "chunking_decision": chunking_decision,
         "timeline": timeline,
         "available": (
             baseline is not None
             or migration_gate is not None
             or prompt_injection is not None
             or reranker_decision is not None
+            or chunking_decision is not None
         ),
     }
 

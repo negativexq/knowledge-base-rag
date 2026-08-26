@@ -2,6 +2,7 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass
 
+from app.ingestion.chunking_config import ChunkingConfig
 from app.llm.embedding_models import EmbeddingModelConfig
 from app.registry.store import CURRENT_INDEX_SCHEMA_VERSION
 
@@ -32,6 +33,16 @@ class PipelineFingerprint:
     # a genuinely different vector space even with an identical model
     # name, so this is a real fingerprint dimension, not decoration.
     embedding_backend: str = "ollama"
+    # Sprint 27: chunking is part of the vector/index contract. Defaults
+    # preserve direct test/benchmark construction while making the legacy
+    # baseline explicit for callers that predate this field set.
+    chunking_mode: str = "baseline"
+    tokenizer_model: str = "Qwen/Qwen3-Embedding-4B"
+    tokenizer_revision: str = "main"
+    target_tokens: int = 500
+    overlap_tokens: int = 50
+    hard_max_tokens: int | None = None
+    boundary_strategy: str = "legacy_word_sentence_heading_page_v1"
 
     def canonical(self) -> str:
         # sort_keys=True is what makes this deterministic across
@@ -44,7 +55,11 @@ class PipelineFingerprint:
         return hashlib.sha256(self.canonical().encode("utf-8")).hexdigest()[:16]
 
 
-def build_pipeline_fingerprint(embedding_config: EmbeddingModelConfig) -> PipelineFingerprint:
+def build_pipeline_fingerprint(
+    embedding_config: EmbeddingModelConfig,
+    chunking_config: ChunkingConfig | None = None,
+) -> PipelineFingerprint:
+    chunking = chunking_config or ChunkingConfig.current_baseline()
     return PipelineFingerprint(
         embedding_model=embedding_config.ollama_model,
         embedding_revision=embedding_config.revision,
@@ -53,4 +68,11 @@ def build_pipeline_fingerprint(embedding_config: EmbeddingModelConfig) -> Pipeli
         document_instruction=embedding_config.document_prefix(),
         index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
         embedding_backend=embedding_config.backend,
+        chunking_mode=chunking.mode,
+        tokenizer_model=chunking.tokenizer_model,
+        tokenizer_revision=chunking.tokenizer_revision,
+        target_tokens=chunking.target_tokens,
+        overlap_tokens=chunking.overlap_tokens,
+        hard_max_tokens=chunking.hard_max_tokens,
+        boundary_strategy=chunking.boundary_strategy,
     )
