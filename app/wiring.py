@@ -39,6 +39,16 @@ from app.sync.scheduler import SyncScheduler, sync_intervals_from_settings
 logger = logging.getLogger(__name__)
 
 
+def build_reranker(settings: Settings):
+    """Build the server-owned production reranker, or explicitly disable it."""
+    if not settings.reranker_enabled:
+        return None
+    return CrossEncoderReranker(
+        settings.reranker_model,
+        trust_remote_code=settings.reranker_trust_remote_code,
+    )
+
+
 def build_connectors(settings: Settings) -> dict[str, Connector]:
     """Which connectors are "active" — same question
     app.sync.scheduler.sync_intervals_from_settings answers for scheduling
@@ -91,7 +101,7 @@ def build_chat_dependencies(
     builds its own, even when generation_provider="ollama") — so the
     caller can close it on shutdown too.
     """
-    reranker = CrossEncoderReranker()
+    reranker = build_reranker(settings)
     chat_provider = get_chat_provider(settings)
     embed_config = active_embedding_config(settings)
 
@@ -107,6 +117,8 @@ def build_chat_dependencies(
             default_embed_model(settings),
             context,
             reranker=reranker,
+            top_k=settings.reranker_candidate_k,
+            top_n=settings.reranker_top_n,
             query_prefix=embed_config.query_prefix(),
             dimensions=embed_config.output_dimension,
             report=report,

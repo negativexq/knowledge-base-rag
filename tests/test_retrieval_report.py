@@ -56,6 +56,7 @@ def test_retrieval_report_as_dict_includes_authorization_and_total_duration():
         "user_filters_applied": True,
     }
     assert result["total_duration_ms"] == 15.0
+    assert result["reranker"] is None
     assert [s["name"] for s in result["stages"]] == ["a", "b"]
 
 

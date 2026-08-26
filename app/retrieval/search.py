@@ -5,6 +5,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
 from app.llm.provider import EmbeddingProvider
+from app.reranker.config import RERANKER_CANDIDATE_K, RERANKER_TOP_N
 from app.retrieval.filters import build_acl_filter, build_filter, combine_filters
 from app.retrieval.hybrid_search import DEFAULT_PREFETCH_LIMIT, SearchResult, hybrid_search
 from app.retrieval.report import RetrievalReport, stage_timer
@@ -19,8 +20,10 @@ SEARCH_QUERY_PREFIX = "search_query: "
 
 # Provisional, like the chunker's chunk size — a starting assumption pending
 # real signal from evaluation (Sprint 9).
-RERANK_CANDIDATE_K = 20  # how many hybrid candidates to fetch before reranking
-RERANK_TOP_N = 5  # how many results to return after reranking
+# Compatibility exports for existing callers; values live in
+# app.reranker.config so wiring and UI cannot drift.
+RERANK_CANDIDATE_K = RERANKER_CANDIDATE_K
+RERANK_TOP_N = RERANKER_TOP_N
 
 
 class SparseEncoderProtocol(Protocol):
@@ -122,6 +125,13 @@ async def search(
         report.acl_tenant_id = context.tenant_id
         report.is_system_context = context.is_system
         report.user_filters_applied = user_filters is not None
+        report.reranker = {
+            "enabled": reranker is not None,
+            "model": getattr(reranker, "model_name", None),
+            "backend": getattr(reranker, "backend", None),
+            "candidate_k": top_k,
+            "top_n": top_n,
+        }
 
     with tracer.start_as_current_span("retrieve_hybrid") as span:
         span.set_attribute("retrieve.top_k", top_k)
@@ -158,7 +168,11 @@ async def search(
         with tracer.start_as_current_span("rerank") as span:
             span.set_attribute("rerank.top_n", top_n)
             with stage_timer(
-                report, "rerank", model=type(reranker).__name__, top_n=top_n
+                report,
+                "rerank",
+                model=getattr(reranker, "model_name", type(reranker).__name__),
+                backend=getattr(reranker, "backend", None),
+                top_n=top_n,
             ) as timer:
                 results = reranker.rerank(query, candidates, top_n=top_n)
                 timer.candidates_in = len(candidates)

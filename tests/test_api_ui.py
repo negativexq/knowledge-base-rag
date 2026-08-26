@@ -30,13 +30,19 @@ def _client(tmp_path, docs_dir, tenant_ids=None, cors_origins=None) -> TestClien
     registry = DocumentRegistry(tmp_path / "registry.db")
     history = SyncHistory(tmp_path / "registry.db")
     manager = SyncManager(
-        connectors={"filesystem": connector}, store=store, registry=registry, history=history,
-        embed_fn=_fake_embed, sparse_encoder=_FakeSparseEncoder(),
+        connectors={"filesystem": connector},
+        store=store,
+        registry=registry,
+        history=history,
+        embed_fn=_fake_embed,
+        sparse_encoder=_FakeSparseEncoder(),
         tenant_ids=tenant_ids or {"filesystem": "tenant-a"},
     )
     return TestClient(
         create_app(
-            manager, history, registry,
+            manager,
+            history,
+            registry,
             token_authenticator=TokenAuthenticator(DEFAULT_DEV_TOKENS),
             auth_enabled=True,
             tenant_ids=tenant_ids or {"filesystem": "tenant-a"},
@@ -235,6 +241,8 @@ def test_settings_reports_real_retrieval_and_auth_configuration(tmp_path):
     assert body["authentication"]["enabled"] is True
     assert body["authentication"]["scheme"] == "bearer"
     assert set(body["authentication"]["roles"]) == {"USER", "OPERATOR", "ADMIN"}
+    assert body["retrieval"]["reranker_model"] == "BAAI/bge-reranker-v2-m3"
+    assert body["retrieval"]["reranker_enabled"] is True
 
 
 def test_evaluations_reports_unavailable_rather_than_fabricating(tmp_path, monkeypatch):

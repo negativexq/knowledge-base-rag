@@ -14,6 +14,16 @@ const STAGE_LABEL: Record<string, string> = {
 export function RetrievalPipeline({ report }: { report: RetrievalReportPayload }) {
   return (
     <div className="flex flex-col gap-1">
+      {report.reranker && (
+        <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-xs">
+          <div className="font-medium text-[var(--color-foreground)]">Active reranker</div>
+          <div className="mt-1 font-technical text-[11px] text-[var(--color-muted-foreground)]">
+            {report.reranker.enabled
+              ? `${report.reranker.model ?? "—"} · ${report.reranker.backend ?? "—"} · ${report.reranker.candidate_k} → ${report.reranker.top_n}`
+              : "Disabled · hybrid RRF results"}
+          </div>
+        </div>
+      )}
       {report.stages.map((stage, i) => (
         <div key={stage.name}>
           <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3">

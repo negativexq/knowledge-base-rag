@@ -28,7 +28,7 @@ from app.api.deps import get_current_user
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.llm.embedding_models import active_embedding_config
 from app.migration.embedding_migration import get_status as migration_status
-from app.retrieval.search import RERANK_CANDIDATE_K, RERANK_TOP_N
+from app.reranker.config import RERANKER_CANDIDATE_K, RERANKER_TOP_N
 from app.retrieval.sparse import MODEL_NAME as SPARSE_MODEL_NAME
 from app.security.models import Role, UserContext
 from app.shared.config import settings
@@ -76,18 +76,18 @@ EMBEDDING_DECISION_TIMELINE = [
         "question": "Can the decision be migrated safely, with rollback?",
         "artifact_dir": "embedding-migration-sprint22",
     },
-        {
-            "sprint": 23,
-            "title": "Tenant-aware retrieval security",
-            "question": "Can a tenant ever retrieve another tenant's content?",
-            "artifact_dir": "security-sprint23",
-        },
-        {
-            "sprint": 25,
-            "title": "Prompt injection resistance",
-            "question": "Does authorized document content stay untrusted during generation?",
-            "artifact_dir": "security-sprint25",
-        },
+    {
+        "sprint": 23,
+        "title": "Tenant-aware retrieval security",
+        "question": "Can a tenant ever retrieve another tenant's content?",
+        "artifact_dir": "security-sprint23",
+    },
+    {
+        "sprint": 25,
+        "title": "Prompt injection resistance",
+        "question": "Does authorized document content stay untrusted during generation?",
+        "artifact_dir": "security-sprint25",
+    },
 ]
 
 
@@ -284,10 +284,12 @@ async def ui_settings(request: Request, user: UserContext = Depends(get_current_
     return {
         "active_pipeline": _active_index_payload(request),
         "retrieval": {
-            "rerank_candidate_k": RERANK_CANDIDATE_K,
-            "rerank_top_n": RERANK_TOP_N,
+            "rerank_candidate_k": settings.reranker_candidate_k or RERANKER_CANDIDATE_K,
+            "rerank_top_n": settings.reranker_top_n or RERANKER_TOP_N,
+            "reranker_enabled": settings.reranker_enabled,
+            "reranker_backend": settings.reranker_backend,
             "sparse_model": SPARSE_MODEL_NAME,
-            "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+            "reranker_model": settings.reranker_model if settings.reranker_enabled else None,
             "fusion": "RRF",
         },
         "authentication": {
@@ -320,6 +322,7 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
     sprint22 = _read_artifact("embedding-migration-sprint22/migration-result.json")
     security = _read_artifact("security-sprint23/security-validation.json")
     prompt_injection = _read_artifact("security-sprint25/adversarial-results.json")
+    reranker_benchmark = _read_artifact("reranker-benchmark-sprint26/results.json")
 
     baseline = None
     if sprint21:
@@ -366,6 +369,31 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
         artifact_dir = EVALUATION_ARTIFACT_ROOT / entry["artifact_dir"]
         timeline.append({**entry, "available": artifact_dir.exists()})
 
+    reranker_decision = None
+    if reranker_benchmark:
+        reranker_decision = {
+            "source": "artifacts/reranker-benchmark-sprint26/results.json",
+            "dataset": reranker_benchmark.get("dataset"),
+            "question_count": reranker_benchmark.get("question_count"),
+            "recommendation": reranker_benchmark.get("production_decision", {}).get(
+                "recommendation", "NEED_MORE_DATA"
+            ),
+            "rule": reranker_benchmark.get("production_decision", {}).get("rule"),
+            "configs": [
+                {
+                    "config": name,
+                    "model": result.get("model"),
+                    "overall": result.get("overall"),
+                    "cross_lingual": result.get("cross_lingual"),
+                    "mono_lingual": result.get("mono_lingual"),
+                    "latency": result.get("latency"),
+                    "rescue_drop": result.get("rescue_drop"),
+                }
+                for name, result in reranker_benchmark.get("results", {}).items()
+            ],
+            "available": True,
+        }
+
     return {
         "baseline": baseline,
         "migration_quality_gate": migration_gate,
@@ -383,9 +411,13 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
             if prompt_injection
             else None
         ),
+        "reranker_decision": reranker_decision,
         "timeline": timeline,
         "available": (
-            baseline is not None or migration_gate is not None or prompt_injection is not None
+            baseline is not None
+            or migration_gate is not None
+            or prompt_injection is not None
+            or reranker_decision is not None
         ),
     }
 

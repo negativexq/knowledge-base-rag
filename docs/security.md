@@ -155,6 +155,17 @@ server-owned mode. The strict gate is useful release protection, not a
 complete semantic injection detector. Claim-level factual grounding remains
 out of scope.
 
+## Reranker decision
+
+The retrieval reranker is server-configured in `app/shared/config.py`; the
+browser cannot select a model or change candidate counts. Sprint 26 compared
+OFF, the historical English MiniLM reranker, and the multilingual
+`BAAI/bge-reranker-v2-m3` on the unchanged 220-question set. The selected
+multilingual model improves measured cross-lingual ranking, but it does not
+change the ACL boundary: it receives only candidates already authorized by
+the tenant filter. The benchmark result and latency trade-off are recorded in
+`artifacts/reranker-benchmark-sprint26/` and `docs/reranking.md`.
+
 The reproducible suite is `tests/fixtures/security_sprint25/adversarial.json`
 and the CLI is `python -m scripts.evaluate_prompt_injection`. Its security
 rates are deterministic checks, not a claim of provable model security.

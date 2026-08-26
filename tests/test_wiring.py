@@ -33,7 +33,7 @@ async def test_real_chat_wiring_uses_server_security_mode(monkeypatch):
         if False:
             yield {}
 
-    monkeypatch.setattr(wiring, "CrossEncoderReranker", lambda: object())
+    monkeypatch.setattr(wiring, "build_reranker", lambda settings: object())
     monkeypatch.setattr(wiring, "get_chat_provider", lambda settings: object())
     monkeypatch.setattr(
         wiring,

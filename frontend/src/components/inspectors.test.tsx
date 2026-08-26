@@ -50,6 +50,13 @@ const report: RetrievalReportPayload = {
     output_policy_violations: [],
   },
   total_duration_ms: 12.2,
+  reranker: {
+    enabled: true,
+    model: "BAAI/bge-reranker-v2-m3",
+    backend: "sentence-transformers",
+    candidate_k: 20,
+    top_n: 5,
+  },
 }
 
 const source: RetrievedSource = {

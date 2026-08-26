@@ -207,6 +207,7 @@ describe("console page regression states", () => {
         breakdown: {},
         available: true,
       },
+      reranker_decision: null,
       timeline: [],
       available: true,
     })
@@ -223,8 +224,10 @@ describe("console page regression states", () => {
       retrieval: {
         rerank_candidate_k: 20,
         rerank_top_n: 5,
+        reranker_enabled: true,
+        reranker_backend: "sentence-transformers",
         sparse_model: "Qdrant/bm25",
-        reranker_model: "cross-encoder/ms-marco-MiniLM-L-6-v2",
+        reranker_model: "BAAI/bge-reranker-v2-m3",
         fusion: "RRF",
       },
       authentication: { enabled: true, scheme: "bearer", roles: ["USER", "OPERATOR", "ADMIN"] },
@@ -243,6 +246,7 @@ describe("console page regression states", () => {
     })
     renderWithClient(<SettingsPage />)
     expect(await screen.findByText("qwen3-4b@1024")).toBeInTheDocument()
+    expect(screen.getByText("BAAI/bge-reranker-v2-m3")).toBeInTheDocument()
     expect(screen.getByText("disabled")).toBeInTheDocument()
     expect(screen.getByText("Fast")).toBeInTheDocument()
     expect(screen.getByText("Post-stream validation")).toBeInTheDocument()

@@ -1,0 +1,890 @@
+{
+  "off_vs_existing": {
+    "overall": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.23076923076923078,
+        "lower": 0.17307692307692307,
+        "upper": 0.28846153846153844,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.4182692307692308,
+        "lower": 0.35096153846153844,
+        "upper": 0.4855769230769231,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.40865384615384615,
+        "lower": 0.34134615384615385,
+        "upper": 0.47596153846153844,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.3142628205128205,
+        "lower": 0.26330128205128206,
+        "upper": 0.365224358974359,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.33884603359235305,
+        "lower": 0.2865735118415773,
+        "upper": 0.38998741354840283,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      }
+    },
+    "cross_lingual": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.27564102564102566,
+        "lower": 0.20512820512820512,
+        "upper": 0.34615384615384615,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.5256410256410257,
+        "lower": 0.44871794871794873,
+        "upper": 0.6089743589743589,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.5128205128205128,
+        "lower": 0.4358974358974359,
+        "upper": 0.5961538461538461,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.38450854700854703,
+        "lower": 0.32542735042735044,
+        "upper": 0.44540598290598293,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.41778392134120296,
+        "lower": 0.35790429150082925,
+        "upper": 0.4792279795267142,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      }
+    },
+    "mono_lingual": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.09615384615384616,
+        "lower": 0.0,
+        "upper": 0.19230769230769232,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.09615384615384616,
+        "lower": 0.019230769230769232,
+        "upper": 0.17307692307692307,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.09615384615384616,
+        "lower": 0.019230769230769232,
+        "upper": 0.17307692307692307,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.10352564102564103,
+        "lower": 0.032051282051282055,
+        "upper": 0.18301282051282053,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.1020323703458032,
+        "lower": 0.036057821152084106,
+        "upper": 0.17811268282967146,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      }
+    },
+    "tr_query_tr_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.2,
+        "lower": 0.0,
+        "upper": 0.4,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.2,
+        "lower": 0.04,
+        "upper": 0.36,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.2,
+        "lower": 0.04,
+        "upper": 0.36,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.21533333333333335,
+        "lower": 0.07333333333333333,
+        "upper": 0.366,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.21222733031927066,
+        "lower": 0.08246425246579403,
+        "upper": 0.3517534860262239,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      }
+    },
+    "en_query_en_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      }
+    },
+    "tr_query_en_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.43209876543209874,
+        "lower": 0.32098765432098764,
+        "upper": 0.5432098765432098,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.691358024691358,
+        "lower": 0.5925925925925926,
+        "upper": 0.7901234567901234,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.7037037037037037,
+        "lower": 0.6049382716049383,
+        "upper": 0.8024691358024691,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.5530864197530864,
+        "lower": 0.47448559670781887,
+        "upper": 0.6327160493827161,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.5918326742281989,
+        "lower": 0.5147453045203356,
+        "upper": 0.6674498754638979,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      }
+    },
+    "en_query_tr_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.10666666666666667,
+        "lower": 0.04,
+        "upper": 0.18666666666666668,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.3466666666666667,
+        "lower": 0.24,
+        "upper": 0.4666666666666667,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.30666666666666664,
+        "lower": 0.2,
+        "upper": 0.41333333333333333,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.20244444444444445,
+        "lower": 0.13466666666666666,
+        "upper": 0.27466666666666667,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.2298112682232474,
+        "lower": 0.15555362233089268,
+        "upper": 0.3069760575329897,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      }
+    }
+  },
+  "off_vs_multilingual": {
+    "overall": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.2692307692307692,
+        "lower": -0.3317307692307692,
+        "upper": -0.20673076923076922,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.057692307692307696,
+        "lower": -0.09134615384615384,
+        "upper": -0.028846153846153848,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.03365384615384615,
+        "lower": -0.057692307692307696,
+        "upper": -0.009615384615384616,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.16947115384615385,
+        "lower": -0.21033653846153846,
+        "upper": -0.12980769230769232,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.13485410748106139,
+        "lower": -0.1684620366579237,
+        "upper": -0.10227096436708817,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      }
+    },
+    "cross_lingual": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.3333333333333333,
+        "lower": -0.41025641025641024,
+        "upper": -0.2564102564102564,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.07051282051282051,
+        "lower": -0.11538461538461539,
+        "upper": -0.03205128205128205,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.04487179487179487,
+        "lower": -0.08333333333333333,
+        "upper": -0.019230769230769232,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.21260683760683763,
+        "lower": -0.26175213675213677,
+        "upper": -0.16559829059829062,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.16989775595141018,
+        "lower": -0.2113215553273139,
+        "upper": -0.13158826245324243,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      }
+    },
+    "mono_lingual": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.07692307692307693,
+        "lower": -0.15384615384615385,
+        "upper": -0.019230769230769232,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.019230769230769232,
+        "lower": -0.057692307692307696,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.04006410256410257,
+        "lower": -0.08653846153846154,
+        "upper": -0.0032051282051282046,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.02972316207001494,
+        "lower": -0.06448208389277824,
+        "upper": -0.0020617449862620654,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      }
+    },
+    "tr_query_tr_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.16,
+        "lower": -0.32,
+        "upper": -0.04,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.04,
+        "lower": -0.12,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.08333333333333334,
+        "lower": -0.17666666666666667,
+        "upper": -0.006666666666666665,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.06182417710563107,
+        "lower": -0.13165848203118471,
+        "upper": -0.004288429571425096,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      }
+    },
+    "en_query_en_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      }
+    },
+    "tr_query_en_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.38271604938271603,
+        "lower": -0.5061728395061729,
+        "upper": -0.25925925925925924,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.1111111111111111,
+        "lower": -0.18518518518518517,
+        "upper": -0.04938271604938271,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.07407407407407407,
+        "lower": -0.13580246913580246,
+        "upper": -0.024691358024691357,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.25205761316872427,
+        "lower": -0.3271604938271605,
+        "upper": -0.17695473251028807,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.2067163459531847,
+        "lower": -0.27072645626101866,
+        "upper": -0.14375963473091466,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      }
+    },
+    "en_query_tr_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.28,
+        "lower": -0.38666666666666666,
+        "upper": -0.18666666666666668,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.02666666666666667,
+        "lower": -0.06666666666666667,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.013333333333333334,
+        "lower": -0.04,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.17,
+        "lower": -0.23333333333333334,
+        "upper": -0.11222222222222224,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.13013367874949378,
+        "lower": -0.17997555198758822,
+        "upper": -0.08603415961904454,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      }
+    }
+  },
+  "existing_vs_multilingual": {
+    "overall": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.5,
+        "lower": -0.5673076923076923,
+        "upper": -0.4326923076923077,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.47596153846153844,
+        "lower": -0.5432692307692307,
+        "upper": -0.40865384615384615,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.4423076923076923,
+        "lower": -0.5096153846153846,
+        "upper": -0.375,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.4837339743589744,
+        "lower": -0.5448717948717948,
+        "upper": -0.41931089743589745,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.4737001410734144,
+        "lower": -0.5341408706030735,
+        "upper": -0.410693265773012,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 208
+      }
+    },
+    "cross_lingual": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.6089743589743589,
+        "lower": -0.6858974358974359,
+        "upper": -0.532051282051282,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.5961538461538461,
+        "lower": -0.6730769230769231,
+        "upper": -0.5192307692307693,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.5576923076923077,
+        "lower": -0.6346153846153846,
+        "upper": -0.4807692307692308,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.5971153846153846,
+        "lower": -0.6697649572649572,
+        "upper": -0.5282051282051282,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.5876816772926131,
+        "lower": -0.659364181361152,
+        "upper": -0.5193677609874573,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 156
+      }
+    },
+    "mono_lingual": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.17307692307692307,
+        "lower": -0.2692307692307692,
+        "upper": -0.07692307692307693,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.11538461538461539,
+        "lower": -0.21153846153846154,
+        "upper": -0.038461538461538464,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.09615384615384616,
+        "lower": -0.17307692307692307,
+        "upper": -0.019230769230769232,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.14358974358974358,
+        "lower": -0.23012820512820514,
+        "upper": -0.06410256410256411,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.13175553241581814,
+        "lower": -0.21371436909164343,
+        "upper": -0.057692307692307696,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 52
+      }
+    },
+    "tr_query_tr_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.36,
+        "lower": -0.56,
+        "upper": -0.16,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.24,
+        "lower": -0.4,
+        "upper": -0.08,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.2,
+        "lower": -0.36,
+        "upper": -0.04,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.2986666666666667,
+        "lower": -0.46399999999999997,
+        "upper": -0.14533333333333334,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.2740515074249017,
+        "lower": -0.43215505826737505,
+        "upper": -0.1295256197142834,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 25
+      }
+    },
+    "en_query_en_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "mrr": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": 0.0,
+        "lower": 0.0,
+        "upper": 0.0,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 27
+      }
+    },
+    "tr_query_en_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.8148148148148148,
+        "lower": -0.8888888888888888,
+        "upper": -0.7283950617283951,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.8024691358024691,
+        "lower": -0.8888888888888888,
+        "upper": -0.7160493827160493,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.7777777777777778,
+        "lower": -0.8641975308641975,
+        "upper": -0.6790123456790124,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.8051440329218107,
+        "lower": -0.873045267489712,
+        "upper": -0.7273662551440329,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.7985490201813835,
+        "lower": -0.867430364285715,
+        "upper": -0.7210005912338423,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 81
+      }
+    },
+    "en_query_tr_content": {
+      "recall_at_1": {
+        "delta_left_minus_right": -0.38666666666666666,
+        "lower": -0.5066666666666667,
+        "upper": -0.28,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "recall_at_3": {
+        "delta_left_minus_right": -0.37333333333333335,
+        "lower": -0.49333333333333335,
+        "upper": -0.26666666666666666,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "recall_at_5": {
+        "delta_left_minus_right": -0.32,
+        "lower": -0.4266666666666667,
+        "upper": -0.21333333333333335,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "mrr": {
+        "delta_left_minus_right": -0.37244444444444447,
+        "lower": -0.4797777777777778,
+        "upper": -0.27199999999999996,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      },
+      "ndcg_at_5": {
+        "delta_left_minus_right": -0.35994494697274115,
+        "lower": -0.4660272969615565,
+        "upper": -0.261477318566973,
+        "seed": 2601,
+        "iterations": 5000,
+        "question_count": 75
+      }
+    }
+  }
+}

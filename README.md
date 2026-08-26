@@ -21,8 +21,9 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 - **Multi-source ingestion** — filesystem (PDF/Markdown) and Notion behind
   one `Connector` interface, with hash-based incremental sync (skip
   unchanged, update changed, delete vanished — no orphan chunks)
-- **Hybrid search** — dense + sparse (BM25) retrieval with native Qdrant
-  RRF fusion, cross-encoder reranking
+- **Hybrid search** — Qwen3-Embedding-4B@1024 + BM25 sparse retrieval with
+  native Qdrant RRF fusion and the Sprint 26-adopted multilingual
+  `BAAI/bge-reranker-v2-m3` reranker
 - **Source-scoped citation validation** — every citation is checked against
   the exact `(source_type, source_id, location)` it was generated from, so
   two different documents can never spoof each other's citations (proven
@@ -56,6 +57,7 @@ Full sprint-by-sprint plan: [docs/PLANNING.md](docs/PLANNING.md).
 - [Security](#security)
 - [Citation format](#citation-format)
 - [UI](#ui)
+- [RAG Operations Console](#rag-operations-console)
 - [Development setup](#development-setup-host-venv-for-running-tests)
 - [Known Limitations](#known-limitations)
 - [License](#license)
@@ -103,6 +105,19 @@ The `/ui/*` aggregation endpoints are read-only presentation endpoints. They
 reuse the existing authentication, tenant-scoping, registry, sync-history,
 migration, evaluation-artifact, and Jaeger logic; they do not introduce a
 privileged bypass.
+
+### RAG Operations Console
+
+This is an operations console for a RAG system, not a ChatGPT clone. It
+navigates through Overview, Playground, Knowledge, Sync Runs, Evaluations,
+Traces, and Settings. Playground combines a streamed answer with evidence,
+retrieval stages, tenant ACL context, and the trace waterfall. The React UI
+runs locally with `cd frontend && npm install && npm run dev`; configure the
+backend with `VITE_API_BASE_URL` in `frontend/.env.example`.
+
+The development identity selector is local/demo auth UX only. It may store a
+demo token in browser localStorage for convenience; production authentication
+and authorization remain server-owned FastAPI responsibilities.
 
 ```mermaid
 graph TD
@@ -418,7 +433,7 @@ dense + sparse (BM25) hybrid retrieval, RRF-fused
       ↓
 authorized candidates only
       ↓
-reranker
+multilingual reranker (`BAAI/bge-reranker-v2-m3`, 20 → 5)
       ↓
 generation / citations
 ```
@@ -464,6 +479,22 @@ setting: **buffer → validate → release**. `fast` is an explicit development
 opt-in: **stream → post-check**; a violation may be detected only after output
 has begun. The browser cannot downgrade the backend mode through request
 fields, query parameters, or headers.
+
+### Sprint 26 — Multilingual reranker decision
+
+The full 220-question multilingual set was held constant across reranker OFF,
+the existing English `cross-encoder/ms-marco-MiniLM-L-6-v2`, and
+`BAAI/bge-reranker-v2-m3`. The winner was adopted only after paired 5,000
+iteration bootstrap comparisons and latency measurement. The benchmark
+artifact is [artifacts/reranker-benchmark-sprint26/report.md](artifacts/reranker-benchmark-sprint26/report.md);
+the methodology and decision rule are in [docs/reranking.md](docs/reranking.md).
+
+The old English reranker remains documented as historical evidence: it caused
+a large cross-lingual regression on the controlled set. The selected BGE
+challenger recovered cross-lingual Recall@5/MRR with no mono-lingual Recall@5
+regression under the pre-committed rule. Its local CPU rerank p50 was about
+1.96s and total retrieval p95 about 2.46s in this environment; this is an
+explicit operational cost, not hidden behind the quality result.
 
 ## Citation format
 

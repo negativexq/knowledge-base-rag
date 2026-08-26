@@ -43,7 +43,14 @@ async def run_golden_set(
     ollama = OllamaClient(base_url=settings.ollama_base_url)
     qdrant_client = QdrantClient(url=settings.qdrant_url)
     sparse_encoder = SparseEncoder()
-    reranker = CrossEncoderReranker() if use_reranker else None
+    reranker = (
+        CrossEncoderReranker(
+            settings.reranker_model,
+            trust_remote_code=settings.reranker_trust_remote_code,
+        )
+        if use_reranker and settings.reranker_enabled
+        else None
+    )
     metrics = build_default_metrics(
         judge_model_name=settings.eval_judge_model, base_url=settings.ollama_base_url
     )

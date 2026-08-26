@@ -3,6 +3,13 @@ from typing import Literal, cast
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.reranker.config import (
+    MULTILINGUAL_RERANKER_MODEL,
+    RERANKER_BACKEND,
+    RERANKER_CANDIDATE_K,
+    RERANKER_TOP_N,
+)
+
 SecurityValidationMode = Literal["fast", "strict"]
 VALID_SECURITY_VALIDATION_MODES = ("fast", "strict")
 
@@ -88,6 +95,18 @@ class Settings(BaseSettings):
     # app/main.py's startup schema-mismatch guard).
     embedding_model_key: Literal["nomic", "qwen3-4b", "qwen3-0.6b"] = "qwen3-4b"
     embedding_output_dimension: int | None = 1024
+
+    # Sprint 26: reranking is independently configurable from the embedding
+    # pipeline. Sprint 26's full 220-question benchmark adopted the
+    # multilingual challenger: it recovered cross-lingual rank quality
+    # without a mono-lingual Recall@5 regression. Latency is documented in
+    # artifacts/reranker-benchmark-sprint26/report.md.
+    reranker_enabled: bool = True
+    reranker_model: str = MULTILINGUAL_RERANKER_MODEL
+    reranker_backend: Literal["sentence-transformers"] = RERANKER_BACKEND
+    reranker_candidate_k: int = Field(default=RERANKER_CANDIDATE_K, gt=0)
+    reranker_top_n: int = Field(default=RERANKER_TOP_N, gt=0)
+    reranker_trust_remote_code: bool = False
 
     # Sprint 22: the logical Qdrant alias real traffic is served through
     # once a migration has activated it — see app/migration/aliasing.py.

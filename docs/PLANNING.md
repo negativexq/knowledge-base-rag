@@ -3009,6 +3009,47 @@ an external judge. The structured envelope has measurable context overhead.
 Prompt-injection resistance is tested against the documented suite; it is not
 claimed to be solved universally.
 
+## Sprint 26 — Multilingual Reranker Decision (closing note)
+
+Sprint 26 kept the Sprint 22 production embedding fixed at
+Qwen3-Embedding-4B@1024, with BM25 sparse retrieval, Qdrant RRF, the same
+corpus, ACL filters, candidate k=20, output n=5, and the unchanged 220-query
+dataset. It compared reranker OFF, the historical English
+`cross-encoder/ms-marco-MiniLM-L-6-v2`, and the single multilingual challenger
+`BAAI/bge-reranker-v2-m3`. The challenger was selected from its official model
+card for explicit multilingual reranking support and standard local
+Transformer/SentenceTransformer serving.
+
+The full run produced `artifacts/reranker-benchmark-sprint26/results.json`,
+`paired-comparison.json`, `cases.json`, and `report.md`. Fixed-seed 5,000
+iteration paired bootstrap comparisons covered overall, mono-lingual,
+cross-lingual, and all four language-pair cells. The decision rule was fixed
+before the run: multilingual must meet or beat OFF on cross-lingual Recall@5
+and MRR, mono-lingual Recall@5 regression must be <=0.01, and total retrieval
+p95 must be <=3000ms in the measured configuration.
+
+Measured cross-lingual Recall@5 was OFF 0.9563, existing English 0.4511, and
+multilingual 1.0000. Cross MRR was 0.7448, 0.3670, and 0.9558 respectively.
+Mono-lingual Recall@5 was OFF 1.0000, existing 0.9000, and multilingual
+1.0000. The existing model dropped 85 expected top-five cases; multilingual
+rescued 63 and dropped none. Local CPU multilingual rerank p50/p95 was
+1956.6/2138.9ms and total retrieval p95 was 2457.7ms; memory/VRAM was not
+measured. The synchronous CrossEncoder call inside the async search path is a
+known event-loop risk and was measured, not refactored in this sprint.
+
+**Production decision: ADOPT_MULTILINGUAL.** `Settings` now owns the active
+reranker model/backend/enabled/top_n/candidate_k values, and the production
+default is `BAAI/bge-reranker-v2-m3`. The UI Settings and Retrieval inspector
+read this server-owned configuration; Evaluations reads the real benchmark
+artifact. The production collection was never mutated by the benchmark.
+
+Tests cover configuration wiring, disabled path, rank/rescue/drop semantics,
+paired aggregation, UI active-reranker rendering, and regression preservation.
+README, `docs/security.md`, and `docs/reranking.md` document the historical
+English regression, multilingual decision, latency trade-off, and known
+limitations. No embedding, chunking, generation, async serving redesign,
+distributed sync, or database migration work was started.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

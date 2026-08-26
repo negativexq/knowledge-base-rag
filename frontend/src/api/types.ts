@@ -133,8 +133,10 @@ export interface UiSettings {
   retrieval: {
     rerank_candidate_k: number
     rerank_top_n: number
+    reranker_enabled: boolean
+    reranker_backend: string
     sparse_model: string
-    reranker_model: string
+    reranker_model: string | null
     fusion: string
   }
   authentication: {
@@ -194,7 +196,28 @@ export interface Evaluations {
   migration_quality_gate: MigrationQualityGate | null
   security_validation: Record<string, unknown> | null
   prompt_injection: PromptInjectionEvaluation | null
+  reranker_decision: RerankerDecision | null
   timeline: EvaluationTimelineEntry[]
+  available: boolean
+}
+
+export interface RerankerDecisionConfig {
+  config: string
+  model: string
+  overall: Record<string, number>
+  cross_lingual: Record<string, number | null>
+  mono_lingual: Record<string, number | null>
+  latency: Record<string, number | string | null>
+  rescue_drop: Record<string, number | string | null>
+}
+
+export interface RerankerDecision {
+  source: string
+  dataset: string
+  question_count: number
+  recommendation: string
+  rule: string
+  configs: RerankerDecisionConfig[]
   available: boolean
 }
 
@@ -256,6 +279,13 @@ export interface RetrievalReportPayload {
     user_filters_applied: boolean
   }
   total_duration_ms: number
+  reranker: {
+    enabled: boolean
+    model: string | null
+    backend: string | null
+    candidate_k: number
+    top_n: number
+  } | null
   security: {
     prompt_policy_version: string | null
     untrusted_context_enabled: boolean

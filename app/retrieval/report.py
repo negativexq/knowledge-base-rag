@@ -60,6 +60,7 @@ class RetrievalReport:
     security_validation_mode: str | None = None
     output_policy_passed: bool | None = None
     output_policy_violations: list[str] = field(default_factory=list)
+    reranker: dict | None = None
 
     def record(self, stage: RetrievalStage) -> None:
         self.stages.append(stage)
@@ -74,6 +75,7 @@ class RetrievalReport:
                 "user_filters_applied": self.user_filters_applied,
             },
             "total_duration_ms": round(sum(s.duration_ms for s in self.stages), 3),
+            "reranker": self.reranker,
             "security": {
                 "prompt_policy_version": self.prompt_policy_version,
                 "untrusted_context_enabled": self.untrusted_context_enabled,

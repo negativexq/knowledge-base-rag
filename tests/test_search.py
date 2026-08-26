@@ -21,6 +21,7 @@ def _local_tracer_with_exporter():
     provider.add_span_processor(SimpleSpanProcessor(exporter))
     return provider.get_tracer("test"), exporter
 
+
 COLLECTION = "test_search"
 
 
@@ -133,9 +134,7 @@ async def test_search_forwards_a_dimensions_override_to_the_embedding_call():
     real benchmark before this parameter existed.
     """
     client = QdrantClient(":memory:")
-    store = QdrantStore(
-        client=client, collection_name=COLLECTION + "_dims", dense_dimension=1024
-    )
+    store = QdrantStore(client=client, collection_name=COLLECTION + "_dims", dense_dimension=1024)
     store.ensure_collection()
     store.upsert_chunks(
         [_chunk("placeholder")],
@@ -453,6 +452,13 @@ async def test_search_populates_a_report_with_real_stages_when_given_one():
     assert report.acl_tenant_id == "default"
     assert report.is_system_context is False
     assert all(s.duration_ms >= 0 for s in report.stages)
+    assert report.reranker == {
+        "enabled": False,
+        "model": None,
+        "backend": None,
+        "candidate_k": 20,
+        "top_n": 5,
+    }
 
 
 @pytest.mark.asyncio

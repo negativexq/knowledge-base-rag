@@ -111,7 +111,9 @@ export default function SettingsPage() {
           <Row label="Top n (post-rerank)" value={data.retrieval.rerank_top_n} />
           <Row label="Fusion" value={data.retrieval.fusion} />
           <Row label="Sparse model" value={data.retrieval.sparse_model} />
-          <Row label="Reranker model" value={data.retrieval.reranker_model} />
+          <Row label="Reranker enabled" value={data.retrieval.reranker_enabled ? "Yes" : "No"} />
+          <Row label="Reranker backend" value={data.retrieval.reranker_backend} />
+          <Row label="Reranker model" value={data.retrieval.reranker_model ?? "Not enabled"} />
         </CardContent>
       </Card>
 
