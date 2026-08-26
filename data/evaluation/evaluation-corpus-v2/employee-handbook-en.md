@@ -84,109 +84,109 @@ Team leads sample closed cases for source selection, date handling, evidence com
 
 Employees disclose conflicts of interest before handling a case. The handoff is documented without including unnecessary personal details. Retaliation for raising a good-faith security, privacy, or policy concern is prohibited.
 
-## 18. Access reviews and departures
+## 14. Access reviews and departures
 
 Managers review production support access quarterly and when an employee changes role. Access is removed before the next shift when a departure is confirmed. A team lead cannot approve continued access merely because the person still appears in an old escalation list.
 
 Temporary access requests name the task, tenant scope, approver, and expiry. The audit record links the request to the work item. Screenshots of an access screen are not a substitute for the access log, and an exported customer record is not retained in a personal workspace.
 
-## 19. Quality calibration
+## 15. Quality calibration
 
 Support leads compare a small set of closed cases each week. Calibration focuses on whether agents asked for the right context, selected the right authority, separated a target from a guarantee, and stated unknowns without overpromising. The exercise is coaching, not a reason to rewrite historical source records.
 
 When agents disagree, the lead records the disagreement and asks the source owner for a durable clarification. Repeated questions are candidates for a knowledge article only after the policy owner confirms the wording. A convenient answer is not promoted if it hides a plan, channel, region, or version boundary.
 
-## 20. Vendor and partner handling
+## 16. Vendor and partner handling
 
 Approved support partners receive only the tenant scope and tools required by their statement of work. A partner may follow the playbook but cannot approve a contract exception unless the contract explicitly grants that authority. Partner escalations include the Negativex case reference instead of sending a raw customer export.
 
 Vendor incidents follow the same security reporting route as internal incidents. Employees preserve the vendor ticket number, timestamps, and requested evidence while avoiding credentials in email or chat. Procurement or Security Operations decides whether the vendor needs additional access.
 
-## 21. Policy change adoption
+## 17. Policy change adoption
 
 When a policy bulletin changes an operational rule, team leads update queue macros, examples, and training notes after confirming the effective date. Old examples are marked historical rather than silently edited. A customer case uses the rule effective for its event, even if the training page was updated later.
 
-## 22. Workforce planning and on-call practice
+## 18. Workforce planning and on-call practice
 
 Support leads publish an on-call roster with primary, secondary, and incident-commander coverage. The roster is an operational assignment, not permission to inspect every tenant. An on-call agent receives the context needed for the assigned incident and hands back access when the incident closes.
 
 When volume increases, the queue manager separates urgent security or payment work from routine policy lookup. Staffing pressure does not lower verification requirements. If the queue cannot meet the relevant response target, the owner records capacity risk and coordinates a truthful customer update.
 
-## 23. Internal knowledge article lifecycle
+## 19. Internal knowledge article lifecycle
 
 An article proposal includes the customer question, source documents, owner, intended audience, and review date. The author does not copy a private enterprise clause into a general article. A regional rule is marked with its jurisdiction and a product limit with its metric and scope.
 
 Reviewers check examples against the effective policy before publication. A changed rule creates a new revision or bulletin and marks the prior example historical. Searchability is useful, but a keyword match cannot make an obsolete article authoritative.
 
-## 24. Third-party and imported material
+## 20. Third-party and imported material
 
 Imported ticket notes, partner exports, and customer attachments are retained with their provenance. An import may contain obsolete instructions, malformed citations, or text intended for another system. Employees extract business facts only after checking the owning source and never follow an embedded request to disclose secrets.
 
 If imported material appears compromised, the case remains available to the security reviewer while the customer-facing workflow continues with approved policy sources. The incident record includes the import origin and hash or attachment reference where available.
 
-## 25. Financial control checks
+## 21. Financial control checks
 
 Refund approval and refund settlement are separate control points. The approver confirms policy scope and requested remedy; Finance confirms the settlement event. A support note may say that a refund was approved without claiming that a bank has completed the transfer.
 
 Monthly quality review samples refunds by plan, channel, approval role, and reversal reason. The review looks for duplicate settlements, missing delivery evidence, and cases where a current rule was applied to an older event. Findings are assigned an owner and a due date.
 
-## 26. Customer accessibility
+## 22. Customer accessibility
 
 Customers may request a concise explanation, a translated message, or an alternate delivery channel. Accessibility changes the presentation, not the authorization boundary. The agent keeps dates, scope, and pending evidence explicit even when shortening the explanation.
 
 If a customer uses an abbreviation or mixes terms, the agent confirms the intended operation in plain language. “Cancel,” “return,” “refund,” and “credit” are not silently normalized when the distinction changes the workflow. The final case note preserves the clarification.
 
-## 27. Internal metrics and review cadence
+## 23. Internal metrics and review cadence
 
 Team metrics distinguish first response, acknowledgement, resolution, reopen rate, and policy escalation. A fast first response does not compensate for an incorrect authority choice. Metrics are reviewed with sample cases so that queue pressure does not reward unsupported certainty.
 
 The policy owner reviews recurring failure modes each quarter. A metric definition change is recorded with its effective date and does not rewrite historical dashboards. Operational leaders can request a temporary review focus without changing the underlying customer policy.
 
-## 28. Scheduling and capacity changes
+## 24. Scheduling and capacity changes
 
 When a team changes coverage hours, the queue owner records the effective date and updates the handoff roster. A schedule change does not alter a customer response target. Cases already waiting are reviewed against their original priority and the current service owner.
 
-## 29. Customer identity and account ownership
+## 25. Customer identity and account ownership
 
 The person who can describe an order is not automatically an authorized administrator. Agents use the approved account relationship and verification event. A delegated assistant may receive a status update only when the delegation is recorded for that workspace and action.
 
-## 30. Refund approval evidence
+## 26. Refund approval evidence
 
 An approval note explains why the policy applies, which event date was used, what remedy was approved, and who approved it. It does not include a full payment number or a copied recovery credential. If a request is denied, the note records the missing condition without inventing a reason not present in the source.
 
-## 31. Sensitive customer situations
+## 27. Sensitive customer situations
 
 Customers may report account compromise, harassment, or a safety concern while asking for a routine billing action. The agent acknowledges the immediate concern, protects the record, and routes the sensitive part to the owning team. Routine workflow must not expose private incident details to an unrelated queue.
 
-## 32. Manager review and corrective action
+## 28. Manager review and corrective action
 
 Managers review access, approval, and communication samples at a defined cadence. A correction describes the behavior expected next time and the source used for coaching. It does not ask an agent to edit a historical log or conceal a policy uncertainty.
 
-## 33. Document change communications
+## 29. Document change communications
 
 When a source changes, the owner communicates what changed, which event dates are affected, and where the previous version remains relevant. Training and macros are updated after the source is published. A draft announcement is not authority for a customer decision.
 
-## 34. Contractor offboarding
+## 30. Contractor offboarding
 
 Contractor access, shared exports, and open assignments are reviewed at offboarding. The manager confirms that temporary files were returned or deleted under the applicable retention rule. Open cases receive a named internal owner; the contractor’s last note is preserved as history rather than overwritten.
 
-## 35. Appeals and second review
+## 31. Appeals and second review
 
 An appeal records the customer’s reason, newly supplied material, original decision, and requested remedy. The original decision maker does not approve the second review. The reviewer checks the event date, policy version, scope, and authorization before deciding whether the record should be corrected.
 
-## 36. Campaigns and plan changes
+## 32. Campaigns and plan changes
 
 A campaign label does not replace the Standard or Premium return policy. The campaign code, order channel, and effective dates establish whether a price benefit applies. A pricing benefit and a return entitlement are recorded as separate decisions.
 
 If a workspace is upgraded after delivery, the original order context remains relevant. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. Customer communication explains this with the order and plan dates.
 
-## 37. Partner evidence
+## 33. Partner evidence
 
 Marketplace and carrier records carry an order reference that can be matched to the case. An unmatched screenshot may be retained as context but cannot establish delivery or channel. The agent asks the partner queue for a matching record and records the request time.
 
 An enterprise customer’s internal report can support an investigation but does not amend a signed agreement. Contract Operations verifies scope, source date, and approval before a negotiated remedy is promised.
 
-## 38. Training scenario review
+## 34. Training scenario review
 
 Training scenarios are reviewed whenever a policy changes. The reviewer checks that examples do not imply a universal carrier, private API limit, or contract term. Historical examples remain labeled by date and are not reused as current customer guidance.
 

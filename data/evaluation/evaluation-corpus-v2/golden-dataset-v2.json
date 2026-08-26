@@ -2119,7 +2119,7 @@
       "cross_lingual"
     ],
     "answerability": "answerable",
-    "expected_answer": "within 2 business hours",
+    "expected_answer": "within 4 business hours",
     "expected_source_ids": [
       "support-escalation"
     ],
@@ -2151,7 +2151,7 @@
       "cross_lingual"
     ],
     "answerability": "answerable",
-    "expected_answer": "within 2 business hours",
+    "expected_answer": "within 4 business hours",
     "expected_source_ids": [
       "support-escalation"
     ],
@@ -3135,8 +3135,8 @@
     "id": "cross-27-0",
     "question": "başarısız ödeme politikası için yeniden deneme takvimi nasıl uygulanıyor?",
     "query_language": "tr",
-    "evidence_language": "en",
-    "language_pair": "tr->en",
+    "evidence_language": "tr",
+    "language_pair": "tr->tr",
     "category": "cross_lingual",
     "tags": [
       "answerable",
@@ -3167,8 +3167,8 @@
     "id": "cross-27-1",
     "question": "Müşteri yeniden deneme takvimi hakkında soruyor; başarısız ödeme politikası kapsamında nasıl yanıt verilir?",
     "query_language": "tr",
-    "evidence_language": "en",
-    "language_pair": "tr->en",
+    "evidence_language": "tr",
+    "language_pair": "tr->tr",
     "category": "cross_lingual",
     "tags": [
       "answerable",
@@ -4035,8 +4035,8 @@
     "id": "hard-annual-cancel",
     "question": "Can a customer avoid the next annual renewal by cancelling after the charge has already been processed?",
     "query_language": "en",
-    "evidence_language": "en",
-    "language_pair": "en->en",
+    "evidence_language": "tr",
+    "language_pair": "en->tr",
     "category": "hard_answerable",
     "tags": [
       "context_sensitive",
@@ -6521,7 +6521,7 @@
   },
   {
     "id": "native-00-2",
-    "question": "For a the 2026 standard return policy case, how is the direct-sale refund window handled?",
+    "question": "For a 2026 standard return policy case, how is the direct-sale refund window handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -6553,7 +6553,7 @@
   },
   {
     "id": "native-00-3",
-    "question": "Can you confirm the the direct-sale refund window detail for the 2026 standard return policy?",
+    "question": "Can you confirm the direct-sale refund window detail for the 2026 standard return policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -6649,7 +6649,7 @@
   },
   {
     "id": "native-01-2",
-    "question": "For a the 2026 premium return policy case, how is the premium return window handled?",
+    "question": "For a 2026 premium return policy case, how is the premium return window handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -6681,7 +6681,7 @@
   },
   {
     "id": "native-01-3",
-    "question": "Can you confirm the the premium return window detail for the 2026 premium return policy?",
+    "question": "Can you confirm the premium return window detail for the 2026 premium return policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -6905,7 +6905,7 @@
   },
   {
     "id": "native-03-2",
-    "question": "For a the digital-goods policy case, how is the post-activation refund rule handled?",
+    "question": "For a digital-goods policy case, how is the post-activation refund rule handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -6937,7 +6937,7 @@
   },
   {
     "id": "native-03-3",
-    "question": "Can you confirm the the post-activation refund rule detail for the digital-goods policy?",
+    "question": "Can you confirm the post-activation refund rule detail for the digital-goods policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -7801,7 +7801,7 @@
   },
   {
     "id": "native-10-2",
-    "question": "For a the support escalation policy case, how is the critical incident acknowledgement target handled?",
+    "question": "For a support escalation policy case, how is the critical incident acknowledgement target handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -7833,7 +7833,7 @@
   },
   {
     "id": "native-10-3",
-    "question": "Can you confirm the the critical incident acknowledgement target detail for the support escalation policy?",
+    "question": "Can you confirm the critical incident acknowledgement target detail for the support escalation policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -7875,7 +7875,7 @@
       "native"
     ],
     "answerability": "answerable",
-    "expected_answer": "within 2 business hours",
+    "expected_answer": "within 4 business hours",
     "expected_source_ids": [
       "support-escalation"
     ],
@@ -7907,7 +7907,7 @@
       "native"
     ],
     "answerability": "answerable",
-    "expected_answer": "within 2 business hours",
+    "expected_answer": "within 4 business hours",
     "expected_source_ids": [
       "support-escalation"
     ],
@@ -7929,7 +7929,7 @@
   },
   {
     "id": "native-11-2",
-    "question": "For a the support escalation policy case, how is the standard ticket response target handled?",
+    "question": "For a support escalation policy case, how is the standard ticket response target handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -7939,7 +7939,7 @@
       "native"
     ],
     "answerability": "answerable",
-    "expected_answer": "within 2 business hours",
+    "expected_answer": "within 4 business hours",
     "expected_source_ids": [
       "support-escalation"
     ],
@@ -7961,7 +7961,7 @@
   },
   {
     "id": "native-11-3",
-    "question": "Can you confirm the the standard ticket response target detail for the support escalation policy?",
+    "question": "Can you confirm the standard ticket response target detail for the support escalation policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -7971,7 +7971,7 @@
       "native"
     ],
     "answerability": "answerable",
-    "expected_answer": "within 2 business hours",
+    "expected_answer": "within 4 business hours",
     "expected_source_ids": [
       "support-escalation"
     ],
@@ -8057,7 +8057,7 @@
   },
   {
     "id": "native-12-2",
-    "question": "For a the superseded 2025 return policy case, how is the historical standard return window handled?",
+    "question": "For a superseded 2025 return policy case, how is the historical standard return window handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8089,7 +8089,7 @@
   },
   {
     "id": "native-12-3",
-    "question": "Can you confirm the the historical standard return window detail for the superseded 2025 return policy?",
+    "question": "Can you confirm the historical standard return window detail for the superseded 2025 return policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8185,7 +8185,7 @@
   },
   {
     "id": "native-13-2",
-    "question": "For a the current 2026 return policy case, how is the effective date of the current standard rule handled?",
+    "question": "For a current 2026 return policy case, how is the effective date of the current standard rule handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8217,7 +8217,7 @@
   },
   {
     "id": "native-13-3",
-    "question": "Can you confirm the the effective date of the current standard rule detail for the current 2026 return policy?",
+    "question": "Can you confirm the effective date of the current standard rule detail for the current 2026 return policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8441,7 +8441,7 @@
   },
   {
     "id": "native-15-2",
-    "question": "For a the operations handbook case, how is the distinction between a response target and a resolution guarantee handled?",
+    "question": "For an operations handbook case, how is the distinction between a response target and a resolution guarantee handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8473,7 +8473,7 @@
   },
   {
     "id": "native-15-3",
-    "question": "Can you confirm the the distinction between a response target and a resolution guarantee detail for the operations handbook?",
+    "question": "Can you confirm the distinction between a response target and a resolution guarantee detail for the operations handbook?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8569,7 +8569,7 @@
   },
   {
     "id": "native-16-2",
-    "question": "For a the support playbook case, how is the minimum context for triage handled?",
+    "question": "For a support playbook case, how is the minimum context for triage handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8601,7 +8601,7 @@
   },
   {
     "id": "native-16-3",
-    "question": "Can you confirm the the minimum context for triage detail for the support playbook?",
+    "question": "Can you confirm the minimum context for triage detail for the support playbook?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8697,7 +8697,7 @@
   },
   {
     "id": "native-17-2",
-    "question": "For a the customer refund exception policy case, how is the evidence for a damaged-item claim handled?",
+    "question": "For a customer refund exception policy case, how is the evidence for a damaged-item claim handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8729,7 +8729,7 @@
   },
   {
     "id": "native-17-3",
-    "question": "Can you confirm the the evidence for a damaged-item claim detail for the customer refund exception policy?",
+    "question": "Can you confirm the evidence for a damaged-item claim detail for the customer refund exception policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8825,7 +8825,7 @@
   },
   {
     "id": "native-18-2",
-    "question": "For a the tenant-b integration contract case, how is the private integration rate limit handled?",
+    "question": "For a tenant-b integration contract case, how is the private integration rate limit handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8857,7 +8857,7 @@
   },
   {
     "id": "native-18-3",
-    "question": "Can you confirm the the private integration rate limit detail for the tenant-b integration contract?",
+    "question": "Can you confirm the private integration rate limit detail for the tenant-b integration contract?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8953,7 +8953,7 @@
   },
   {
     "id": "native-19-2",
-    "question": "For a the EU regional returns guide case, how is the statutory withdrawal period handled?",
+    "question": "For an EU regional returns guide case, how is the statutory withdrawal period handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -8985,7 +8985,7 @@
   },
   {
     "id": "native-19-3",
-    "question": "Can you confirm the the statutory withdrawal period detail for the EU regional returns guide?",
+    "question": "Can you confirm the statutory withdrawal period detail for the EU regional returns guide?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9209,7 +9209,7 @@
   },
   {
     "id": "native-21-2",
-    "question": "For a the product plan guide case, how is the Premium seat limit handled?",
+    "question": "For a product plan guide case, how is the Premium seat limit handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9241,7 +9241,7 @@
   },
   {
     "id": "native-21-3",
-    "question": "Can you confirm the the Premium seat limit detail for the product plan guide?",
+    "question": "Can you confirm the Premium seat limit detail for the product plan guide?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9337,7 +9337,7 @@
   },
   {
     "id": "native-22-2",
-    "question": "For a the public API guide case, how is the public API rate limit handled?",
+    "question": "For a public API guide case, how is the public API rate limit handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9369,7 +9369,7 @@
   },
   {
     "id": "native-22-3",
-    "question": "Can you confirm the the public API rate limit detail for the public API guide?",
+    "question": "Can you confirm the public API rate limit detail for the public API guide?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9593,7 +9593,7 @@
   },
   {
     "id": "native-24-2",
-    "question": "For a the enterprise contract guide case, how is the example enterprise retention period handled?",
+    "question": "For an enterprise contract guide case, how is the example enterprise retention period handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9625,7 +9625,7 @@
   },
   {
     "id": "native-24-3",
-    "question": "Can you confirm the the example enterprise retention period detail for the enterprise contract guide?",
+    "question": "Can you confirm the example enterprise retention period detail for the enterprise contract guide?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9721,7 +9721,7 @@
   },
   {
     "id": "native-25-2",
-    "question": "For a the 2026 standard return policy case, how is the required return-case fields handled?",
+    "question": "For a 2026 standard return policy case, how are the required return-case fields handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9753,7 +9753,7 @@
   },
   {
     "id": "native-25-3",
-    "question": "Can you confirm the the required return-case fields detail for the 2026 standard return policy?",
+    "question": "Can you confirm the required return-case fields detail for the 2026 standard return policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9849,7 +9849,7 @@
   },
   {
     "id": "native-26-2",
-    "question": "For a the digital-goods policy case, how is the decisive evidence for activation handled?",
+    "question": "For a digital-goods policy case, how is the decisive evidence for activation handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9881,7 +9881,7 @@
   },
   {
     "id": "native-26-3",
-    "question": "Can you confirm the the decisive evidence for activation detail for the digital-goods policy?",
+    "question": "Can you confirm the decisive evidence for activation detail for the digital-goods policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -9915,8 +9915,8 @@
     "id": "native-27-0",
     "question": "What does the failed-payment policy say about the retry schedule?",
     "query_language": "en",
-    "evidence_language": "en",
-    "language_pair": "en->en",
+    "evidence_language": "tr",
+    "language_pair": "en->tr",
     "category": "hard_answerable",
     "tags": [
       "answerable",
@@ -9947,8 +9947,8 @@
     "id": "native-27-1",
     "question": "A customer asks about the retry schedule. What should I tell them?",
     "query_language": "en",
-    "evidence_language": "en",
-    "language_pair": "en->en",
+    "evidence_language": "tr",
+    "language_pair": "en->tr",
     "category": "hard_answerable",
     "tags": [
       "answerable",
@@ -9977,10 +9977,10 @@
   },
   {
     "id": "native-27-2",
-    "question": "For a the failed-payment policy case, how is the retry schedule handled?",
+    "question": "For a failed-payment policy case, how is the retry schedule handled?",
     "query_language": "en",
-    "evidence_language": "en",
-    "language_pair": "en->en",
+    "evidence_language": "tr",
+    "language_pair": "en->tr",
     "category": "hard_answerable",
     "tags": [
       "answerable",
@@ -10009,10 +10009,10 @@
   },
   {
     "id": "native-27-3",
-    "question": "Can you confirm the the retry schedule detail for the failed-payment policy?",
+    "question": "Can you confirm the retry schedule detail for the failed-payment policy?",
     "query_language": "en",
-    "evidence_language": "en",
-    "language_pair": "en->en",
+    "evidence_language": "tr",
+    "language_pair": "en->tr",
     "category": "hard_answerable",
     "tags": [
       "answerable",
@@ -10233,7 +10233,7 @@
   },
   {
     "id": "native-29-2",
-    "question": "For a the critical incident policy case, how is the escalation role handled?",
+    "question": "For a critical incident policy case, how is the escalation role handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -10265,7 +10265,7 @@
   },
   {
     "id": "native-29-3",
-    "question": "Can you confirm the the escalation role detail for the critical incident policy?",
+    "question": "Can you confirm the escalation role detail for the critical incident policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -10361,7 +10361,7 @@
   },
   {
     "id": "native-30-2",
-    "question": "For a the current return policy case, how is the policy that the 2026 version supersedes handled?",
+    "question": "For a current return policy case, how is the policy that the 2026 version supersedes handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -10393,7 +10393,7 @@
   },
   {
     "id": "native-30-3",
-    "question": "Can you confirm the the policy that the 2026 version supersedes detail for the current return policy?",
+    "question": "Can you confirm the policy that the 2026 version supersedes detail for the current return policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -10617,7 +10617,7 @@
   },
   {
     "id": "native-32-2",
-    "question": "For a the audit section of the employee handbook case, how is safe evidence citation handled?",
+    "question": "For the audit section of the employee handbook, how should evidence citation be handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -10745,7 +10745,7 @@
   },
   {
     "id": "native-33-2",
-    "question": "For a the closure section of the support playbook case, how is what a closure note must state handled?",
+    "question": "What must a support playbook closure note state?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -10873,7 +10873,7 @@
   },
   {
     "id": "native-34-2",
-    "question": "For a the adversarial-text policy case, how is the status of document-borne instructions handled?",
+    "question": "How should document-borne instructions in an adversarial-text policy be treated?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -10905,7 +10905,7 @@
   },
   {
     "id": "native-34-3",
-    "question": "Can you confirm the the status of document-borne instructions detail for the adversarial-text policy?",
+    "question": "Can you confirm the status of document-borne instructions in the adversarial-text policy?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -11001,7 +11001,7 @@
   },
   {
     "id": "native-35-2",
-    "question": "For a the EU returns guide case, how is the delivery event that starts the withdrawal clock handled?",
+    "question": "For an EU returns guide case, which delivery event starts the withdrawal clock?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -11033,7 +11033,7 @@
   },
   {
     "id": "native-35-3",
-    "question": "Can you confirm the the delivery event that starts the withdrawal clock detail for the EU returns guide?",
+    "question": "Can you confirm the delivery event that starts the withdrawal clock for the EU returns guide?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -11257,7 +11257,7 @@
   },
   {
     "id": "native-37-2",
-    "question": "For a the API versioning guide case, how is the current API version handled?",
+    "question": "For an API versioning guide case, how is the current API version handled?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -11289,7 +11289,7 @@
   },
   {
     "id": "native-37-3",
-    "question": "Can you confirm the the current API version detail for the API versioning guide?",
+    "question": "Can you confirm the current API version detail for the API versioning guide?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -11513,7 +11513,7 @@
   },
   {
     "id": "native-39-2",
-    "question": "For a the enterprise exception guide case, how is the authority for a negotiated exception handled?",
+    "question": "For an enterprise exception guide case, which source controls a negotiated exception?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",
@@ -11545,7 +11545,7 @@
   },
   {
     "id": "native-39-3",
-    "question": "Can you confirm the the authority for a negotiated exception detail for the enterprise exception guide?",
+    "question": "Can you confirm the authority for a negotiated exception in the enterprise exception guide?",
     "query_language": "en",
     "evidence_language": "en",
     "language_pair": "en->en",

@@ -6,9 +6,10 @@ from app.evaluation.dataset_fingerprint import (
     evaluation_corpus_fingerprint,
     evaluation_dataset_fingerprint,
 )
-from scripts.build_evaluation_corpus_v2 import build_questions
+from scripts.build_evaluation_artifacts import build_artifacts
 from scripts.evaluation_corpus_quality import quality_metrics
-from scripts.validate_evaluation_corpus import validate
+from scripts.render_evaluation_pdfs import render_all
+from scripts.validate_evaluation_corpus import expected_evidence_language, validate
 
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = ROOT / "data/evaluation/evaluation-corpus-v2"
@@ -64,11 +65,60 @@ def test_corpus_v2_fingerprints_are_deterministic():
 
 
 def test_corpus_v2_split_is_deterministic():
-    first = build_questions()
-    second = build_questions()
+    first = _load_questions()
+    second = json.loads(DATASET.read_text(encoding="utf-8"))
 
     assert [(q["id"], q["split"]) for q in first] == [(q["id"], q["split"]) for q in second]
     assert {q["split"] for q in first} == {"development", "calibration", "frozen_test"}
+
+
+def test_artifact_builder_does_not_mutate_canonical_assets(tmp_path):
+    canonical = [
+        path for path in CORPUS.rglob("*")
+        if path.is_file() and path.name != "__pycache__"
+    ]
+    before = {path: path.read_bytes() for path in canonical}
+    build_artifacts(CORPUS, DATASET, tmp_path / "artifacts")
+
+    assert {path: path.read_bytes() for path in canonical} == before
+
+
+def test_pdf_sources_exist_and_render_to_selectable_text(tmp_path):
+    manifest = json.loads((CORPUS / "corpus-manifest.json").read_text(encoding="utf-8"))
+    pdfs = [document for document in manifest["documents"] if document["content_type"] == "pdf"]
+    assert all((CORPUS / document["source_path"]).is_file() for document in pdfs)
+
+    rendered = render_all(tmp_path)
+    assert len(rendered) == len(pdfs)
+    for path in rendered:
+        assert path.stat().st_size > 0
+        assert path.read_bytes().startswith(b"%PDF")
+
+
+def test_answerable_evidence_language_is_derived_from_manifest():
+    manifest = json.loads((CORPUS / "corpus-manifest.json").read_text(encoding="utf-8"))
+    languages = {document["source_id"]: document["language"] for document in manifest["documents"]}
+    questions = _load_questions()
+    mixed = next(question for question in questions if question["id"] == "multi-01-0")
+    assert expected_evidence_language(mixed, languages) == "mixed"
+    assert mixed["evidence_language"] == "mixed"
+
+
+def test_validator_rejects_evidence_language_drift(tmp_path):
+    def mutate(questions):
+        question = next(q for q in questions if q["answerability"] == "answerable")
+        question["evidence_language"] = "tr" if question["evidence_language"] != "tr" else "en"
+
+    report = _isolated_copy(tmp_path, mutate)
+    assert any("evidence_language" in error for error in report["errors"])
+
+
+def test_validator_rejects_generated_query_grammar(tmp_path):
+    def mutate(questions):
+        questions[0]["question"] = "For a the support case, how is the issue handled?"
+
+    report = _isolated_copy(tmp_path, mutate)
+    assert any("generated query grammar artifact" in error for error in report["errors"])
 
 
 def test_corpus_v2_case_families_never_cross_splits():
@@ -99,11 +149,11 @@ def test_statistics_separate_answerable_pairs_and_split_cross_tabs():
     stats = json.loads((ARTIFACTS / "statistics.json").read_text(encoding="utf-8"))
 
     assert stats["answerable_language_pair_counts"] == {
-        "en->en": 154,
-        "en->tr": 31,
-        "tr->en": 84,
+        "en->en": 149,
+        "en->tr": 36,
+        "tr->en": 82,
         "tr->mixed": 4,
-        "tr->tr": 64,
+        "tr->tr": 66,
     }
     assert stats["non_answerable_query_language_counts"] == {"en": 54, "tr": 54}
     assert set(stats["split_cross_tabs"]) == {

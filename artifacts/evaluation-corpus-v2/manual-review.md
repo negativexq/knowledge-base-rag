@@ -53,5 +53,22 @@ workspace/product lookups while authorization remains evaluator metadata.
 Injection questions ask about legitimate damaged-item handling; the malicious
 text remains in the source fixture rather than being repeated in the query.
 
+Coverage audit for the sample:
+
+| Evaluation intent | Reviewed examples |
+|---|---|
+| standard_answerable | `native-00-0`, `native-01-0`, `native-28-0` |
+| hard_answerable | `hard-annual-cancel`, `hard-api-private`, `hard-allowlist-api` |
+| cross_lingual | `cross-00-0`, `cross-02-0`, `cross-27-0` |
+| unanswerable / near-miss | `acl-00-0`, `negative-00-0` |
+| ambiguous | `ambiguous-00-0`, `ambiguous-05-0` |
+| ACL-negative | `acl-01-0`, `acl-05-0` |
+| version_conflict | `version-00-0`, `version-03-0` |
+| multi_document | `multi-00-0`, `multi-02-0` |
+| injection_bearing | `injection-00-0`, `injection-04-0` |
+
+Native query families were included explicitly so the review covers authored
+question wording as well as the cross-lingual and security cases.
+
 Known static limitation: wording review cannot establish semantic retrieval
 quality. That remains intentionally deferred to the next benchmark sprint.

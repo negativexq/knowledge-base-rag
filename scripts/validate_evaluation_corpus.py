@@ -49,6 +49,12 @@ VALID_CATEGORIES = {
     "acl_negative",
     "injection_bearing",
 }
+QUERY_ARTIFACT_PATTERNS = (
+    r"\bthe\s+the\b",
+    r"\bfor\s+a\s+the\b",
+    r"\b(?:using|according to) the (?:english|turkish) (?:source|document|policy)\b",
+    r"\b(?:check|verify) the tenant boundary\b",
+)
 
 
 def _normalise_query(query: str) -> str:
@@ -59,6 +65,25 @@ def _read_document(path: Path, content_type: str) -> str:
     if content_type == "markdown":
         return path.read_text(encoding="utf-8")
     return "\n\n".join(paragraph.text for paragraph in extract_paragraphs(str(path)))
+
+
+def expected_evidence_language(
+    question: dict[str, Any], source_languages: dict[str, str]
+) -> str | None:
+    """Derive the evidence language from evaluator-owned source references."""
+    references = (
+        question.get("expected_source_ids", [])
+        + question.get("supporting_source_ids", [])
+        + question.get("required_evidence", [])
+    )
+    languages = {
+        source_languages[reference]
+        for reference in references
+        if reference in source_languages
+    }
+    if not languages:
+        return None
+    return languages.pop() if len(languages) == 1 else "mixed"
 
 
 def _load_json(path: Path) -> Any:
@@ -79,6 +104,7 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
         errors.append(f"expected 15–25 corpus documents, found {len(documents)}")
 
     source_map: dict[tuple[str, str], dict[str, Any]] = {}
+    source_ids_seen: set[str] = set()
     corpus_records: list[dict[str, Any]] = []
     for index, document in enumerate(documents):
         prefix = f"document[{index}]"
@@ -90,6 +116,9 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
         key = (document["tenant_id"], document["source_id"])
         if key in source_map:
             errors.append(f"duplicate document identity: {key}")
+        if document["source_id"] in source_ids_seen:
+            errors.append(f"duplicate source_id: {document['source_id']}")
+        source_ids_seen.add(document["source_id"])
         source_map[key] = document
         if document["tenant_id"] not in VALID_TENANTS:
             errors.append(f"{prefix} has invalid tenant_id")
@@ -108,6 +137,14 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
         if path.suffix.lower() != (".pdf" if document["content_type"] == "pdf" else ".md"):
             errors.append(f"{prefix} extension does not match content_type")
             continue
+        if document["content_type"] == "pdf":
+            source_path = document.get("source_path")
+            if not source_path:
+                errors.append(f"{prefix} PDF is missing source_path")
+            elif not (corpus_dir / source_path).is_file():
+                errors.append(f"{prefix} PDF source_path does not exist: {source_path}")
+            elif Path(source_path).suffix.lower() != ".md":
+                errors.append(f"{prefix} PDF source_path must point to Markdown")
         try:
             text = _read_document(path, document["content_type"])
         except Exception as exc:  # pragma: no cover - error is reported, not hidden
@@ -200,6 +237,11 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
         )
         if query_has_label_leakage(question["question"]):
             errors.append(f"{prefix} contains evaluation-label or language-hint leakage")
+        if any(
+            re.search(pattern, question["question"], re.IGNORECASE)
+            for pattern in QUERY_ARTIFACT_PATTERNS
+        ):
+            errors.append(f"{prefix} contains a generated query grammar artifact")
         qlang = question["query_language"]
         elang = question["evidence_language"]
         if qlang not in VALID_LANGUAGES:
@@ -250,6 +292,17 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
                 errors.append(f"{prefix} required_evidence must be a subset of expected_source_ids")
             if any(source_tenants.get(ref) != question["tenant_id"] for ref in expected):
                 errors.append(f"{prefix} expected evidence crosses the caller tenant boundary")
+            source_languages = {
+                document["source_id"]: document["language"]
+                for document in documents
+                if "source_id" in document
+            }
+            derived_language = expected_evidence_language(question, source_languages)
+            if question["evidence_language"] != derived_language:
+                errors.append(
+                    f"{prefix} evidence_language {question['evidence_language']!r} does not match "
+                    f"referenced source languages ({derived_language!r})"
+                )
         elif question["answerability"] == "unanswerable":
             if question["expected_answer"] is not None or expected or required_evidence:
                 errors.append(f"{prefix} unanswerable records cannot require evidence or an answer")
