@@ -12,6 +12,7 @@ from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.security.models import RetrievalContext, UserContext
+from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer
 
 router = APIRouter()
@@ -98,6 +99,8 @@ class ChatDependencies:
 
     search_fn: SearchFn
     stream_fn: StreamFn
+    prompt_version: str = "unknown"
+    security_validation_mode: SecurityValidationMode = "strict"
 
 
 async def _sse_event_stream(
@@ -117,6 +120,9 @@ async def _sse_event_stream(
     with tracer.start_as_current_span("chat_request") as span:
         span.set_attribute("chat.question_char_count", len(question))
         report = RetrievalReport()
+        report.prompt_policy_version = deps.prompt_version
+        report.untrusted_context_enabled = deps.prompt_version == "v3"
+        report.security_validation_mode = deps.security_validation_mode
         chunks = await deps.search_fn(question, context, report)
 
         # Sprint 24: the authorized context is emitted BEFORE the first
@@ -128,7 +134,11 @@ async def _sse_event_stream(
         sources = [source_payload(i, c) for i, c in enumerate(chunks, start=1)]
         yield f"event: sources\ndata: {json.dumps({'sources': sources})}\n\n"
         yield f"event: retrieval\ndata: {json.dumps(report.as_dict())}\n\n"
-        yield f"event: security\ndata: {json.dumps(report.as_dict()['authorization'])}\n\n"
+        security_payload = {
+            **report.as_dict()["authorization"],
+            **report.as_dict()["security"],
+        }
+        yield f"event: security\ndata: {json.dumps(security_payload)}\n\n"
 
         # stream_answer() (app/llm/generate.py) already yields its own
         # "metadata" event carrying a trace_id extracted from its own
@@ -142,6 +152,12 @@ async def _sse_event_stream(
             elif event["type"] == "metadata":
                 payload = {k: v for k, v in event.items() if k != "type"}
                 yield f"event: metadata\ndata: {json.dumps(payload)}\n\n"
+            elif event["type"] == "security_validation":
+                payload = {k: v for k, v in event.items() if k != "type"}
+                yield f"event: security\ndata: {json.dumps(payload)}\n\n"
+            elif event["type"] == "error":
+                payload = {k: v for k, v in event.items() if k != "type"}
+                yield f"event: error\ndata: {json.dumps(payload)}\n\n"
             else:
                 payload = {k: v for k, v in event.items() if k != "type"}
                 yield f"event: grounding\ndata: {json.dumps(payload)}\n\n"

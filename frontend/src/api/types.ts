@@ -142,6 +142,11 @@ export interface UiSettings {
     scheme: string
     roles: string[]
   }
+  security: {
+    prompt_policy_version: string
+    untrusted_context_enabled: boolean
+    validation_mode: string
+  }
   integrations: {
     qdrant_url: string
     ollama_base_url: string
@@ -188,7 +193,18 @@ export interface Evaluations {
   baseline: EvaluationBaseline | null
   migration_quality_gate: MigrationQualityGate | null
   security_validation: Record<string, unknown> | null
+  prompt_injection: PromptInjectionEvaluation | null
   timeline: EvaluationTimelineEntry[]
+  available: boolean
+}
+
+export interface PromptInjectionEvaluation {
+  source: string
+  prompt_version: string
+  mode: string
+  case_count: number
+  metrics: Record<string, number | null>
+  breakdown: Record<string, Record<string, number | null>>
   available: boolean
 }
 
@@ -240,11 +256,20 @@ export interface RetrievalReportPayload {
     user_filters_applied: boolean
   }
   total_duration_ms: number
+  security: {
+    prompt_policy_version: string | null
+    untrusted_context_enabled: boolean
+    security_validation_mode: string | null
+    output_policy_passed: boolean | null
+    output_policy_violations: string[]
+  }
 }
 
 export interface ChatMetadata {
   prompt_version: string
   trace_id: string
+  untrusted_context_enabled?: boolean
+  security_validation_mode?: string
 }
 
 export interface GroundingResult {

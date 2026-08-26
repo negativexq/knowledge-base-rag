@@ -28,7 +28,9 @@ export function RetrievalPipeline({ report }: { report: RetrievalReportPayload }
             <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 font-technical text-[11px] text-[var(--color-muted-foreground)]">
               <span>in: {stage.candidates_in ?? "—"}</span>
               <span>out: {stage.candidates_out ?? "—"}</span>
-              <span>top score: {formatScore(stage.top_score)}</span>
+              <span>
+                {stage.detail.fusion === "RRF" ? "RRF score" : "stage score"}: {formatScore(stage.top_score)}
+              </span>
               {Object.entries(stage.detail).map(([key, value]) => (
                 <span key={key} className="text-[var(--color-subtle-foreground)]">
                   {key}: {String(value)}

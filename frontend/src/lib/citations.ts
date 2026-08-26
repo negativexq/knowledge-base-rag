@@ -1,8 +1,8 @@
 import type { RetrievedSource } from "@/api/types"
 
 // Mirrors app/llm/grounding.py's _CITATION_RE exactly:
-// r"\[s\.([\w\-]+):([\w\-]+)/([^\]]+)\]"
-const CITATION_RE = /\[s\.([\w-]+):([\w-]+)\/([^\]]+)\]/g
+// r"\[s\.([\w\-]+):([^/\]]+)/([^\]]+)\]"
+const CITATION_RE = /\[s\.([\w-]+):([^/\]]+)\/([^\]]+)\]/g
 
 export interface AnswerSegment {
   type: "text" | "citation"

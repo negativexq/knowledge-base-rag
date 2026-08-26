@@ -110,6 +110,47 @@ export default function Evaluations() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Prompt Injection</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!data.prompt_injection ? (
+            <EmptyState
+              title="Security evaluation not available"
+              description="Run python -m scripts.evaluate_prompt_injection to produce the Sprint 25 artifact."
+            />
+          ) : (
+            <>
+              <p className="mb-3 text-xs text-[var(--color-muted-foreground)]">
+                {data.prompt_injection.case_count} cases · {data.prompt_injection.prompt_version} · {data.prompt_injection.mode} · source: {data.prompt_injection.source}
+              </p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {[
+                  ["Injection success rate", "injection_success_rate"],
+                  ["Citation spoof rate", "citation_spoof_success_rate"],
+                  ["Citation suppression rate", "citation_suppression_success_rate"],
+                  ["Unauthorized citation rate", "unauthorized_citation_rate"],
+                  ["Cross-tenant exfiltration", "cross_tenant_exfiltration_rate"],
+                  ["Benign answer success", "benign_answer_success_rate"],
+                ].map(([label, key]) => (
+                  <EvaluationMetric
+                    key={key}
+                    metric={{
+                      key,
+                      label,
+                      value: data.prompt_injection!.metrics[key] ?? null,
+                      stddev: null,
+                      runs: null,
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Embedding Decision History</CardTitle>
         </CardHeader>
         <CardContent>

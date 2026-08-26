@@ -112,16 +112,22 @@ def build_chat_dependencies(
             report=report,
         )
 
-    def stream_fn(question: str, chunks: list[SearchResult]):
-        return stream_answer(
-            question,
-            chunks,
-            chat_provider,
-            model=default_chat_model(settings),
+    return (
+        ChatDependencies(
+            search_fn=search_fn,
+            stream_fn=lambda question, chunks: stream_answer(
+                question,
+                chunks,
+                chat_provider,
+                model=default_chat_model(settings),
+                prompt_version=settings.active_prompt_version,
+                validation_mode=settings.security_validation_mode,
+            ),
             prompt_version=settings.active_prompt_version,
-        )
-
-    return ChatDependencies(search_fn=search_fn, stream_fn=stream_fn), chat_provider
+            security_validation_mode=settings.security_validation_mode,
+        ),
+        chat_provider,
+    )
 
 
 def build_app(settings: Settings) -> FastAPI:

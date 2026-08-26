@@ -20,6 +20,10 @@ RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/wh
 
 COPY app/ ./app/
 COPY prompts/ ./prompts/
+# Evaluation artifacts are read-only server-side data for the operations
+# console. Keep them in the image so /ui/evaluations reflects the measured
+# Sprint 25 result instead of silently reporting an unavailable artifact.
+COPY artifacts/ ./artifacts/
 
 EXPOSE 8000
 

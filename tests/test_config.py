@@ -1,8 +1,35 @@
 from app.shared.config import Settings
 
 
-def test_active_prompt_version_defaults_to_v1():
-    assert Settings().active_prompt_version == "v1"
+def test_active_prompt_version_defaults_to_v3_trust_boundary():
+    assert Settings().active_prompt_version == "v3"
+
+
+def test_security_validation_mode_defaults_to_strict_when_env_is_missing(monkeypatch):
+    monkeypatch.delenv("SECURITY_VALIDATION_MODE", raising=False)
+
+    assert Settings(_env_file=None).security_validation_mode == "strict"
+
+
+def test_security_validation_mode_accepts_explicit_strict(monkeypatch):
+    monkeypatch.setenv("SECURITY_VALIDATION_MODE", "strict")
+
+    assert Settings(_env_file=None).security_validation_mode == "strict"
+
+
+def test_security_validation_mode_accepts_explicit_fast_opt_in(monkeypatch):
+    monkeypatch.setenv("SECURITY_VALIDATION_MODE", "fast")
+
+    assert Settings(_env_file=None).security_validation_mode == "fast"
+
+
+def test_security_validation_mode_rejects_unknown_value(monkeypatch):
+    import pytest
+
+    monkeypatch.setenv("SECURITY_VALIDATION_MODE", "disabled")
+
+    with pytest.raises(Exception):
+        Settings(_env_file=None)
 
 
 def test_active_prompt_version_overridable_via_env(monkeypatch):

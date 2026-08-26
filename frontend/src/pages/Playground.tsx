@@ -102,6 +102,20 @@ export default function Playground() {
       {
         onSources: (sources) => updateCurrent({ sources: sources as RetrievedSource[] }),
         onRetrieval: (report) => updateCurrent({ report: report as RetrievalReportPayload }),
+        onSecurity: (security) =>
+          setTurns((prev) => {
+            const copy = [...prev]
+            const currentTurn = copy[copy.length - 1]
+            if (!currentTurn?.report) return prev
+            copy[copy.length - 1] = {
+              ...currentTurn,
+              report: {
+                ...currentTurn.report,
+                security: { ...currentTurn.report.security, ...(security as object) },
+              },
+            }
+            return copy
+          }),
         onMetadata: (metadata) => updateCurrent({ metadata: metadata as ChatMetadata }),
         onToken: (token) => {
           if (firstTokenAt === null) firstTokenAt = performance.now()

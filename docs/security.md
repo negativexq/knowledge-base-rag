@@ -20,10 +20,19 @@ instruction, not a post-hoc citation check.
   different tenant.
 - Content belonging to another tenant leaking into a generated answer's
   citations.
+- Direct user prompt injection and indirect instructions in authorized
+  retrieved content.
+- Fake system/developer/assistant messages, metadata injection, citation
+  spoofing or suppression, tool-like text, representative obfuscation, and
+  English/Turkish mixed attacks.
+- Deterministic output-policy checks and adversarial evaluation behavior.
 
 **Explicitly out of scope this sprint** (see Known limitations):
-- Prompt injection / untrusted-context attacks using content the user
-  IS authorized to retrieve — that's Phase 2.
+- Model provider compromise.
+- Host-level compromise.
+- Malicious connector credentials.
+- Enterprise DLP.
+- Full content malware scanning.
 - A production-grade identity provider (OAuth/OIDC, SSO, MFA).
 - Row-level "private to one user" visibility beyond the tenant boundary
   (the `visibility` payload field supports `tenant`/`private` as a
@@ -100,6 +109,56 @@ migration engine's quality gate, the evaluation CLI) explicitly
 constructs `RetrievalContext.system()` — a privileged, tenant-unrestricted
 context that is NEVER built from request data anywhere in this codebase.
 
+## Untrusted RAG context and instruction hierarchy
+
+Sprint 23 answers: **can this user retrieve this chunk?** Sprint 25 answers a
+different question: **if an authorized chunk contains instructions, should the
+model obey them?** The answer is no. Tenant ACL remains mandatory and runs
+before retrieval; it is not a prompt-injection defense by itself.
+
+The generation boundary is:
+
+```text
+TRUSTED
+  system policy
+  server-owned security rules
+  authenticated UserContext / tenant context
+  server-owned generation rules
+
+UNTRUSTED
+  user question (request semantics, not policy)
+  retrieved document body
+  retrieved title, heading, source name and location metadata
+```
+
+`answer_v3` keeps one provider `system` message for trusted policy and one
+provider `user` message containing a JSON-encoded user request plus a
+`<retrieved_context trust="untrusted">` envelope. Each record has a length
+prefix and JSON-encoded metadata/body, so text such as `</document>`, fake
+`<system>` tags, or role labels cannot change the message role or envelope
+structure. The data is preserved; instruction-looking sentences are not
+removed by a brittle regex.
+
+The envelope exposes a server-generated `canonical_citation` separately from
+raw document text. `check_grounding` accepts only citation triples belonging
+to the authorized chunk set. A document's fake citation to another source is
+therefore not an approved citation; a request to suppress citations does not
+remove the citation requirement.
+
+Production/default chat configuration is `strict`. `strict` buffers the
+answer, validates prompt-disclosure, citation integrity, and citation-
+suppression policy, and only then releases it. `fast` is an explicit
+server-side opt-in for latency-sensitive development paths: it streams
+immediately and runs post-stream validation, so output may reach the client
+before a violation is detected. The frontend cannot select or weaken this
+server-owned mode. The strict gate is useful release protection, not a
+complete semantic injection detector. Claim-level factual grounding remains
+out of scope.
+
+The reproducible suite is `tests/fixtures/security_sprint25/adversarial.json`
+and the CLI is `python -m scripts.evaluate_prompt_injection`. Its security
+rates are deterministic checks, not a claim of provable model security.
+
 **Verified, not just designed:** `tests/test_cross_tenant_e2e.py` proves
 this against a REAL Qdrant server (not `:memory:`, which silently drops
 filters on hybrid prefetch+fusion queries — see that file's own
@@ -143,9 +202,12 @@ blue/green migration machinery, not mutated in place.
 ## Observability
 
 Structured span attributes only — `acl.is_system`, `acl.tenant_scoped`
-(from `search()`'s `build_acl_filter` span). No raw token, tenant_id, or
-document content is logged. See Known limitations for what audit
-logging does NOT yet exist.
+(from `search()`'s `build_acl_filter` span). Generation additionally records
+low-cardinality `prompt_policy_version`, `untrusted_context_enabled`,
+`security_validation_mode`, `output_policy_passed`, and evaluation category
+only on the evaluation path. No raw token, prompt, or document content is
+logged. A failed runtime release check emits the minimal
+`rag_output_policy_violation` event without answer/document content.
 
 ## Local development auth
 
@@ -177,12 +239,18 @@ cookies. Production deployments must set their own exact frontend origin(s);
 
 ## Known limitations
 
-- **This is Phase 1 only.** Tenant ACL prevents cross-tenant retrieval,
-  but retrieved content is not yet protected by the dedicated
-  prompt-injection / untrusted-context controls planned for the next
-  security sprint. A malicious document a tenant IS authorized to see
-  could still attempt to manipulate generation — that threat is
-  unaddressed here.
+- **Prompt injection is not "solved."** Sprint 25 adds a documented trust
+  boundary, structured serialization, deterministic output checks, and an
+  adversarial suite. Fast mode can expose unsafe tokens before the post-check;
+  strict mode is the release-gated option. Neither mode provides claim-level
+  semantic grounding, and non-deterministic model behavior means a single run
+  is not proof of security.
+- **The output checks are intentionally narrow.** They catch hidden-policy
+  disclosure markers, unauthorized/fake citations, and citation suppression;
+  they are not a general-purpose injection classifier or malware scanner.
+- **Context envelope overhead is not benchmarked yet.** The JSON records are
+  length-prefixed and human-debuggable, but a full token-budget study across
+  providers remains future work.
 - **Authentication is demo/local-oriented**, not an enterprise identity
   provider. `TokenAuthenticator` is a simple in-memory dict lookup — no
   token expiry, rotation, revocation, or signature verification. A real

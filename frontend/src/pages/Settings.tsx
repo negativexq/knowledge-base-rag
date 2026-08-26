@@ -39,6 +39,15 @@ export default function SettingsPage() {
   }
 
   const data = query.data!
+  const validationMode = data.security.validation_mode
+  const validationModeLabel =
+    validationMode === "strict" ? "Strict" : validationMode === "fast" ? "Fast" : validationMode
+  const releasePolicy =
+    validationMode === "strict"
+      ? "Validate before release"
+      : validationMode === "fast"
+        ? "Post-stream validation"
+        : "Not available"
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
@@ -118,6 +127,26 @@ export default function SettingsPage() {
           <Row label="Scheme" value={data.authentication.scheme} />
           <Row label="Roles" value={data.authentication.roles.join(" < ")} />
           <Row label="Current identity" value={`${identity?.user_id} (${identity?.tenant_id})`} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Generation security</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Row label="Prompt policy" value={data.security.prompt_policy_version} />
+          <Row
+            label="Retrieved context"
+            value={<StatusBadge status={data.security.untrusted_context_enabled ? "enabled" : "disabled"} />}
+          />
+          <Row label="Validation mode" value={validationModeLabel} />
+          <Row label="Release policy" value={releasePolicy} />
+          <p className="mt-3 text-[11px] text-[var(--color-subtle-foreground)]">
+            Retrieved body and metadata remain untrusted reference data. Authorization is still
+            enforced by the backend before retrieval. Validation mode is server-owned and read-only;
+            the client cannot downgrade strict enforcement.
+          </p>
         </CardContent>
       </Card>
 

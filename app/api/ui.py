@@ -76,12 +76,18 @@ EMBEDDING_DECISION_TIMELINE = [
         "question": "Can the decision be migrated safely, with rollback?",
         "artifact_dir": "embedding-migration-sprint22",
     },
-    {
-        "sprint": 23,
-        "title": "Tenant-aware retrieval security",
-        "question": "Can a tenant ever retrieve another tenant's content?",
-        "artifact_dir": "security-sprint23",
-    },
+        {
+            "sprint": 23,
+            "title": "Tenant-aware retrieval security",
+            "question": "Can a tenant ever retrieve another tenant's content?",
+            "artifact_dir": "security-sprint23",
+        },
+        {
+            "sprint": 25,
+            "title": "Prompt injection resistance",
+            "question": "Does authorized document content stay untrusted during generation?",
+            "artifact_dir": "security-sprint25",
+        },
 ]
 
 
@@ -289,6 +295,11 @@ async def ui_settings(request: Request, user: UserContext = Depends(get_current_
             "scheme": "bearer",
             "roles": [r.value for r in Role],
         },
+        "security": {
+            "prompt_policy_version": settings.active_prompt_version,
+            "untrusted_context_enabled": settings.active_prompt_version == "v3",
+            "validation_mode": settings.security_validation_mode,
+        },
         "integrations": {
             "qdrant_url": settings.qdrant_url,
             "ollama_base_url": settings.ollama_base_url,
@@ -308,6 +319,7 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
     sprint21 = _read_artifact("embedding-benchmark-sprint21/stability.json")
     sprint22 = _read_artifact("embedding-migration-sprint22/migration-result.json")
     security = _read_artifact("security-sprint23/security-validation.json")
+    prompt_injection = _read_artifact("security-sprint25/adversarial-results.json")
 
     baseline = None
     if sprint21:
@@ -358,8 +370,23 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
         "baseline": baseline,
         "migration_quality_gate": migration_gate,
         "security_validation": security,
+        "prompt_injection": (
+            {
+                "source": "artifacts/security-sprint25/adversarial-results.json",
+                "prompt_version": prompt_injection.get("prompt_version"),
+                "mode": prompt_injection.get("mode"),
+                "case_count": prompt_injection.get("case_count", 0),
+                "metrics": prompt_injection.get("metrics", {}),
+                "breakdown": prompt_injection.get("breakdown", {}),
+                "available": True,
+            }
+            if prompt_injection
+            else None
+        ),
         "timeline": timeline,
-        "available": baseline is not None or migration_gate is not None,
+        "available": (
+            baseline is not None or migration_gate is not None or prompt_injection is not None
+        ),
     }
 
 

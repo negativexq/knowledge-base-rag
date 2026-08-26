@@ -91,6 +91,21 @@ def test_chat_endpoint_streams_sse_events_with_tokens_metadata_and_grounding(tmp
     assert '"grounded": true' in body
 
 
+def test_chat_ignores_client_mode_downgrade_and_uses_server_owned_strict(tmp_path):
+    deps = ChatDependencies(search_fn=_fake_search, stream_fn=_fake_stream)
+    client = _client_with_chat_deps(deps, tmp_path)
+
+    response = client.post(
+        "/chat?validation_mode=fast&security=false",
+        json={"question": "How long is the refund window?", "mode": "fast"},
+        headers={"X-Validation-Mode": "fast"},
+    )
+
+    assert response.status_code == 200
+    assert '"security_validation_mode": "strict"' in response.text
+    assert deps.security_validation_mode == "strict"
+
+
 async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_results_to_stream_fn():
     received = {}
 

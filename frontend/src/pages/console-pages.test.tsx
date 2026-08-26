@@ -191,11 +191,29 @@ describe("console page regression states", () => {
       },
       migration_quality_gate: null,
       security_validation: null,
+      prompt_injection: {
+        source: "artifacts/security-sprint25/adversarial-results.json",
+        prompt_version: "v3",
+        mode: "strict",
+        case_count: 82,
+        metrics: {
+          injection_success_rate: 0,
+          citation_spoof_success_rate: 0,
+          citation_suppression_success_rate: 0,
+          unauthorized_citation_rate: 0,
+          cross_tenant_exfiltration_rate: 0,
+          benign_answer_success_rate: 1,
+        },
+        breakdown: {},
+        available: true,
+      },
       timeline: [],
       available: true,
     })
     renderWithClient(<Evaluations />)
     expect(await screen.findByText("0.9630")).toBeInTheDocument()
+    expect(screen.getByText("Injection success rate")).toBeInTheDocument()
+    expect(screen.getAllByText("0.0000").length).toBeGreaterThan(0)
     expect(screen.getByText("Faithfulness — not yet measured")).toBeInTheDocument()
   })
 
@@ -210,6 +228,11 @@ describe("console page regression states", () => {
         fusion: "RRF",
       },
       authentication: { enabled: true, scheme: "bearer", roles: ["USER", "OPERATOR", "ADMIN"] },
+      security: {
+        prompt_policy_version: "answer_v3",
+        untrusted_context_enabled: true,
+        validation_mode: "fast",
+      },
       integrations: {
         qdrant_url: "http://localhost:6333",
         ollama_base_url: "http://localhost:11434",
@@ -221,6 +244,8 @@ describe("console page regression states", () => {
     renderWithClient(<SettingsPage />)
     expect(await screen.findByText("qwen3-4b@1024")).toBeInTheDocument()
     expect(screen.getByText("disabled")).toBeInTheDocument()
+    expect(screen.getByText("Fast")).toBeInTheDocument()
+    expect(screen.getByText("Post-stream validation")).toBeInTheDocument()
     expect(screen.getByText(/not exposed as a control/)).toBeInTheDocument()
   })
 

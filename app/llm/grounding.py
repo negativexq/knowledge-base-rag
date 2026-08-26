@@ -8,7 +8,7 @@ from app.retrieval.hybrid_search import SearchResult
 # "Kurulum/Adım 1" for a markdown heading path. It can't be constrained to
 # digits the way the Sprint 0/1 format was, since markdown locations aren't
 # numeric — so this captures everything up to the closing "]" instead.
-_CITATION_RE = re.compile(r"\[s\.([\w\-]+):([\w\-]+)/([^\]]+)\]")
+_CITATION_RE = re.compile(r"\[s\.([\w\-]+):([^/\]]+)/([^\]]+)\]")
 
 
 @dataclass(frozen=True)

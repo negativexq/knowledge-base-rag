@@ -40,11 +40,25 @@ class _FakeOllama:
             yield token
 
 
-async def _collect(query, chunks, ollama, model="qwen", prompt_version="v1", tracer=None):
+async def _collect(
+    query,
+    chunks,
+    ollama,
+    model="qwen",
+    prompt_version="v1",
+    validation_mode="fast",
+    tracer=None,
+):
     return [
         event
         async for event in stream_answer(
-            query, chunks, ollama, model=model, prompt_version=prompt_version, tracer=tracer
+            query,
+            chunks,
+            ollama,
+            model=model,
+            prompt_version=prompt_version,
+            validation_mode=validation_mode,
+            tracer=tracer,
         )
     ]
 
@@ -186,3 +200,99 @@ async def test_stream_answer_generate_span_does_not_contain_full_answer_text():
     generate_span = next(s for s in exporter.get_finished_spans() if s.name == "generate")
     for value in generate_span.attributes.values():
         assert "Refunds take 30 days" not in str(value)
+
+
+@pytest.mark.asyncio
+async def test_v3_fast_reports_untrusted_context_and_output_validation():
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["Refunds take 30 days [s.pdf:doc/2/0]."])
+
+    events = await _collect("How long?", chunks, ollama, prompt_version="v3")
+
+    assert events[0]["untrusted_context_enabled"] is True
+    security = next(event for event in events if event["type"] == "security_validation")
+    assert security["passed"] is True
+    assert any("retrieved_context" in message["content"] for message in ollama.received_messages)
+
+
+@pytest.mark.asyncio
+async def test_v3_default_mode_is_strict_and_withholds_before_token_release():
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["Refunds take 30 days without a citation."])
+
+    events = [
+        event
+        async for event in stream_answer(
+            "How long?", chunks, ollama, model="qwen", prompt_version="v3"
+        )
+    ]
+
+    assert [event for event in events if event["type"] == "token"] == []
+    assert (
+        next(event for event in events if event["type"] == "security_validation")["passed"]
+        is False
+    )
+    assert any(event["type"] == "error" for event in events)
+
+
+@pytest.mark.asyncio
+async def test_v3_strict_withholds_answer_when_citation_policy_fails():
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["Refunds take 30 days without a citation."])
+
+    events = await _collect(
+        "How long?", chunks, ollama, prompt_version="v3", validation_mode="strict"
+    )
+
+    assert [event for event in events if event["type"] == "token"] == []
+    security = next(event for event in events if event["type"] == "security_validation")
+    assert security["passed"] is False
+    assert any(event["type"] == "error" for event in events)
+
+
+@pytest.mark.asyncio
+async def test_v3_strict_withholds_unauthorized_citation_before_token_release():
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["Refunds take 30 days [s.filesystem:other-secret/1/0]."])
+
+    events = await _collect(
+        "How long?", chunks, ollama, prompt_version="v3", validation_mode="strict"
+    )
+
+    assert [event for event in events if event["type"] == "token"] == []
+    security = next(event for event in events if event["type"] == "security_validation")
+    assert security["passed"] is False
+    assert "unauthorized_citation" in security["violations"]
+
+
+@pytest.mark.asyncio
+async def test_v3_fast_violation_is_reported_after_tokens_may_have_streamed():
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["Refunds take 30 days [s.filesystem:other-secret/1/0]."])
+
+    events = await _collect(
+        "How long?", chunks, ollama, prompt_version="v3", validation_mode="fast"
+    )
+
+    assert [event["content"] for event in events if event["type"] == "token"]
+    security = next(event for event in events if event["type"] == "security_validation")
+    assert security["passed"] is False
+    assert "unauthorized_citation" in security["violations"]
+
+
+@pytest.mark.asyncio
+async def test_v3_strict_releases_only_after_policy_passes():
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["Refunds take 30 days [s.pdf:doc/2/0]."])
+
+    events = await _collect(
+        "How long?", chunks, ollama, prompt_version="v3", validation_mode="strict"
+    )
+
+    assert [event["content"] for event in events if event["type"] == "token"] == [
+        "Refunds take 30 days [s.pdf:doc/2/0]."
+    ]
+    assert (
+        next(event for event in events if event["type"] == "security_validation")["passed"]
+        is True
+    )

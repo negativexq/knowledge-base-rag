@@ -55,6 +55,11 @@ class RetrievalReport:
     acl_tenant_id: str | None = None
     is_system_context: bool = False
     user_filters_applied: bool = False
+    prompt_policy_version: str | None = None
+    untrusted_context_enabled: bool = False
+    security_validation_mode: str | None = None
+    output_policy_passed: bool | None = None
+    output_policy_violations: list[str] = field(default_factory=list)
 
     def record(self, stage: RetrievalStage) -> None:
         self.stages.append(stage)
@@ -69,6 +74,13 @@ class RetrievalReport:
                 "user_filters_applied": self.user_filters_applied,
             },
             "total_duration_ms": round(sum(s.duration_ms for s in self.stages), 3),
+            "security": {
+                "prompt_policy_version": self.prompt_policy_version,
+                "untrusted_context_enabled": self.untrusted_context_enabled,
+                "security_validation_mode": self.security_validation_mode,
+                "output_policy_passed": self.output_policy_passed,
+                "output_policy_violations": self.output_policy_violations,
+            },
         }
 
 

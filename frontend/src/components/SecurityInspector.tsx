@@ -20,6 +20,14 @@ export function SecurityInspector({
   }
 
   const auth = report.authorization
+  const mode = report.security.security_validation_mode
+  const modeLabel = mode === "strict" ? "Strict" : mode === "fast" ? "Fast" : mode ?? "—"
+  const releasePolicy =
+    mode === "strict"
+      ? "Validate before release"
+      : mode === "fast"
+        ? "Post-stream validation"
+        : "—"
 
   return (
     <div className="flex flex-col gap-4">
@@ -50,6 +58,38 @@ export function SecurityInspector({
             {auth.user_filters_applied ? "yes" : "no"}
           </span>
         </div>
+      </div>
+
+      <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3">
+        <div className="mb-2 text-xs font-medium text-[var(--color-foreground)]">
+          Untrusted RAG context
+        </div>
+        <div className="grid grid-cols-2 gap-y-1.5 text-xs">
+          <span className="text-[var(--color-muted-foreground)]">Context boundary</span>
+          <Badge variant={report.security.untrusted_context_enabled ? "success" : "warning"} className="w-fit">
+            {report.security.untrusted_context_enabled ? "Isolated" : "Not enabled"}
+          </Badge>
+          <span className="text-[var(--color-muted-foreground)]">Prompt policy</span>
+          <span className="font-technical text-[var(--color-foreground)]">
+            {report.security.prompt_policy_version ?? "—"}
+          </span>
+          <span className="text-[var(--color-muted-foreground)]">Output validation</span>
+          <span className="font-technical text-[var(--color-foreground)]">
+            {modeLabel}
+            {report.security.output_policy_passed === null
+              ? " · not yet measured"
+              : report.security.output_policy_passed
+                ? " · passed"
+                : " · failed"}
+          </span>
+          <span className="text-[var(--color-muted-foreground)]">Release policy</span>
+          <span className="font-technical text-[var(--color-foreground)]">{releasePolicy}</span>
+        </div>
+        {report.security.output_policy_violations.length > 0 && (
+          <p className="mt-2 text-[11px] text-[var(--color-error)]">
+            Violations: {report.security.output_policy_violations.join(", ")}
+          </p>
+        )}
       </div>
 
       <div>

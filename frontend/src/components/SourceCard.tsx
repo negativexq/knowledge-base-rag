@@ -45,7 +45,7 @@ export function SourceCard({
         {location && <span className="font-technical">{location}</span>}
         {source.score !== null && (
           <span className="font-technical text-[var(--color-subtle-foreground)]">
-            score {formatScore(source.score)}
+            ranking score {formatScore(source.score)}
           </span>
         )}
       </div>

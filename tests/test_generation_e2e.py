@@ -58,6 +58,9 @@ async def test_answer_streams_as_multiple_incremental_events_not_one_blob():
             ollama,
             model=settings.ollama_model,
             prompt_version=settings.active_prompt_version,
+            # This test verifies the explicit low-latency FAST path. The
+            # production/default path is STRICT and intentionally buffers.
+            validation_mode="fast",
         ):
             if event["type"] == "token":
                 arrival_times.append(time.monotonic())

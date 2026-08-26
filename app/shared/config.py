@@ -1,7 +1,20 @@
-from typing import Literal
+from typing import Literal, cast
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+SecurityValidationMode = Literal["fast", "strict"]
+VALID_SECURITY_VALIDATION_MODES = ("fast", "strict")
+
+
+def validate_security_validation_mode(value: str) -> SecurityValidationMode:
+    """Validate the server-owned release mode at every generation boundary."""
+    if value not in VALID_SECURITY_VALIDATION_MODES:
+        raise ValueError(
+            f"security validation mode must be one of {VALID_SECURITY_VALIDATION_MODES}, "
+            f"got {value!r}"
+        )
+    return cast(SecurityValidationMode, value)
 
 
 class Settings(BaseSettings):
@@ -141,7 +154,12 @@ class Settings(BaseSettings):
 
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
-    active_prompt_version: str = "v1"
+    # Sprint 25: v3 is the production trust-boundary prompt. v1/v2 remain
+    # loadable for reproducible baseline comparisons.
+    active_prompt_version: str = "v3"
+    # Production/default is release-gated. FAST is an explicit, documented
+    # opt-in for latency-sensitive development paths only.
+    security_validation_mode: SecurityValidationMode = "strict"
 
     # DeepEval judge model for app/evaluation — deliberately independent of
     # ollama_model (generation). production-rag-platform found a smaller

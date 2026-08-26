@@ -42,6 +42,13 @@ const report: RetrievalReportPayload = {
     is_system_context: false,
     user_filters_applied: false,
   },
+  security: {
+    prompt_policy_version: "answer_v3",
+    untrusted_context_enabled: true,
+    security_validation_mode: "fast",
+    output_policy_passed: null,
+    output_policy_violations: [],
+  },
   total_duration_ms: 12.2,
 }
 
@@ -65,9 +72,9 @@ describe("Evidence Inspector", () => {
     render(<RetrievalPipeline report={report} />)
     expect(screen.getByText("Dense + sparse → RRF fusion")).toBeInTheDocument()
     expect(screen.getByText("Reranker")).toBeInTheDocument()
-    expect(screen.getByText("top score: 0.240")).toBeInTheDocument()
+    expect(screen.getByText("RRF score: 0.240")).toBeInTheDocument()
     expect(screen.getByText("in: —")).toBeInTheDocument()
-    expect(screen.getByText("top score: —")).toBeInTheDocument()
+    expect(screen.getByText("stage score: —")).toBeInTheDocument()
     expect(screen.queryByText(/confidence|probability/i)).not.toBeInTheDocument()
   })
 
@@ -78,6 +85,11 @@ describe("Evidence Inspector", () => {
     expect(screen.getByText("USER")).toBeInTheDocument()
     expect(screen.getByText("mandatory ACL filter")).toBeInTheDocument()
     expect(screen.getByText("authorized candidates only")).toBeInTheDocument()
+    expect(screen.getByText("Isolated")).toBeInTheDocument()
+    expect(screen.getByText("answer_v3")).toBeInTheDocument()
+    expect(screen.getByText(/^Fast/)).toBeInTheDocument()
+    expect(screen.getByText("Post-stream validation")).toBeInTheDocument()
+    expect(screen.getByText(/not yet measured/)).toBeInTheDocument()
   })
 
   it("renders a defensive source payload", () => {

@@ -2948,6 +2948,67 @@ prompt-injection defenses, reranker benchmarking, token-aware chunking,
 answerability, vLLM serving, PostgreSQL registry, and distributed sync remain
 future roadmap work and were not started in this sprint.
 
+## Sprint 25 — Prompt Injection Defense & Untrusted RAG Context (closing note)
+
+Sprint 25 closed the Phase 2 prompt-injection/untrusted-context boundary. The
+threat model covers direct user injection, indirect instructions in authorized
+documents, fake system/developer text, metadata injection, citation spoofing or
+suppression, exfiltration requests, tool-like text, obfuscation, and Turkish /
+English mixed-language cases. Model-provider compromise, host compromise,
+malicious connector credentials, enterprise DLP, and full malware scanning are
+explicitly out of scope.
+
+The trusted control plane remains server-owned system policy, identity/tenant
+context, ACL authorization, and generation rules. User input and retrieved
+document body plus metadata are serialized as untrusted data. `answer_v3` keeps
+that separation in a dedicated provider system message and a JSON-encoded,
+human-debuggable `<retrieved_context trust="untrusted">` envelope. Delimiter
+strings in document content cannot create provider roles. Canonical citations
+are server-approved and output validation rejects hidden-policy leakage,
+unauthorized/fake citations, and citation suppression.
+
+Fast mode streams immediately and performs the existing end-of-stream policy
+check. Strict mode buffers the answer and releases it only after the
+deterministic output/citation gate passes. This is a release gate, not a claim-
+level grounding system; claim-level semantic grounding remains future work.
+The backend emits low-cardinality security metadata and a minimal
+`rag_output_policy_violation` audit event without raw prompts, documents, or
+secrets.
+
+**Pages and UI:** Playground Security inspector now shows untrusted-context
+isolation, policy version, and validation mode. Evaluations renders the real
+Sprint 25 artifact metrics when available. Settings exposes the active security
+configuration. No per-request UI claim says that all injections were blocked.
+
+**Evaluation:** The dedicated 82-case suite contains direct, indirect,
+fake-role, citation, exfiltration, multilingual, obfuscation, tool-like, and
+15 benign controls. The strict local Ollama run produced 0.0 injection,
+citation-spoof, citation-suppression, unauthorized-citation, and cross-tenant
+exfiltration rates, with 1.0 benign-answer success under the deterministic
+oracle. Category and language breakdowns were also zero. The v2/v3 benign
+subset measured citation integrity and not-found behavior with zero delta;
+answer relevancy was left explicitly not measured because the optional local
+judge did not complete reliably. Context overhead was recorded using a
+whitespace estimate: +154.16% (818 to 2079 estimated tokens).
+
+**Verification:** Prompt serialization, metadata/delimiter safety, citation
+integrity, direct/indirect and multilingual attacks, strict/fast streaming,
+Sprint 23 tenant isolation, UI security metadata, full backend tests, Ruff,
+frontend tests, typecheck, lint, and production build are covered by the
+Sprint 25 test and gate runs. Real local FastAPI/Qdrant/Ollama/Jaeger smoke
+verification covered authorization, v3 generation, citation handling, and
+security metadata. The final report and raw machine-readable results live in
+`artifacts/security-sprint25/`.
+
+**Production mode and known limitations:** The final server-owned default is
+`strict`: answer buffer → deterministic validation → release. Fast mode remains
+an explicit latency-sensitive development opt-in and can expose a harmful
+prefix before its final post-check. Strict validation uses deterministic narrow
+checks and does not prove semantic truth. Answer relevancy was not measured by
+an external judge. The structured envelope has measurable context overhead.
+Prompt-injection resistance is tested against the documented suite; it is not
+claimed to be solved universally.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

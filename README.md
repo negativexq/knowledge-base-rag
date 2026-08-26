@@ -445,9 +445,25 @@ setting it `false` is a loud, explicit local-only bypass, never the
 silent default. The Streamlit UI has a sidebar demo-token selector
 (`app/ui/dev_auth.py`) — clearly labeled, never a real credential.
 
-Full threat model, auth/tenant model, and known limitations (this is
-Phase 1 only — prompt-injection/untrusted-context defenses are a later
-sprint) in [docs/security.md](docs/security.md).
+Full threat model, auth/tenant model, untrusted-context instruction boundary,
+and known limitations are in [docs/security.md](docs/security.md).
+
+### Tenant ACL is not prompt-injection defense
+
+Tenant ACL answers: **Can this user retrieve this chunk?** Prompt-injection
+defense answers: **If an authorized chunk contains instructions, should the
+model obey them?** Sprint 25 keeps the first boundary in retrieval and adds a
+second boundary in generation: `answer_v3` treats document body and metadata as
+untrusted reference data, preserves canonical citations, and evaluates direct,
+indirect, fake-role, exfiltration, multilingual, and citation attacks. The
+evaluation suite is resistance testing, not a claim that prompt injection is
+solved.
+
+Production/default chat uses the server-owned `SECURITY_VALIDATION_MODE=strict`
+setting: **buffer → validate → release**. `fast` is an explicit development
+opt-in: **stream → post-check**; a violation may be detected only after output
+has begun. The browser cannot downgrade the backend mode through request
+fields, query parameters, or headers.
 
 ## Citation format
 
