@@ -12,6 +12,8 @@ and trace waterfall visible instead of hiding them behind a chat transcript.
 
 ![RAG Operations Console Playground](docs/assets/rag-playground.jpg)
 
+![RAG Operations Console Trace Waterfall](docs/assets/rag-playground-trace.jpg)
+
 ## Why this project
 
 Most RAG demos stop at “retrieve a few chunks and ask a model.” This project
@@ -175,12 +177,8 @@ production authentication design.
 
 ![RAG Operations Console Evaluations](docs/assets/rag-evaluations.jpg)
 
-Additional real console captures are kept in [`docs/assets/`](docs/assets/):
-[Overview](docs/assets/rag-overview.jpg),
-[Knowledge](docs/assets/rag-knowledge.jpg),
-[Sync Runs](docs/assets/rag-sync-runs.jpg),
-[Settings](docs/assets/rag-settings.jpg), and
-[Traces](docs/assets/rag-traces.jpg).
+For the remaining real UI captures—including Retrieval, Security, and the
+scrolled Settings sections—see the [complete screenshot asset set](docs/assets/).
 
 ## Quick start
 
