@@ -35,6 +35,27 @@ def test_setup_tracing_is_idempotent():
     assert provider_first is provider_second
 
 
+def test_setup_tracing_uses_explicit_endpoint(monkeypatch):
+    import app.shared.tracing as tracing_module
+
+    captured = {}
+
+    class FakeExporter:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+        def shutdown(self):
+            return None
+
+    monkeypatch.setattr(tracing_module, "OTLPSpanExporter", FakeExporter)
+    monkeypatch.setattr(tracing_module, "_configured", False)
+
+    tracing_module.setup_tracing(endpoint="http://custom-jaeger:4317")
+
+    assert captured["endpoint"] == "http://custom-jaeger:4317"
+    assert captured["insecure"] is True
+
+
 def test_get_tracer_produces_spans_with_attributes():
     tracer, exporter = _local_tracer_with_in_memory_exporter()
 

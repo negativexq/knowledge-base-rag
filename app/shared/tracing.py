@@ -4,12 +4,12 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from app.shared.config import settings
-
 _configured = False
 
 
-def setup_tracing(service_name: str = "knowledge-base-rag") -> None:
+def setup_tracing(
+    service_name: str = "knowledge-base-rag", *, endpoint: str = "http://localhost:4317"
+) -> None:
     """Configure the global TracerProvider to export spans to Jaeger via
     OTLP gRPC. Idempotent — safe to call multiple times.
     """
@@ -19,7 +19,7 @@ def setup_tracing(service_name: str = "knowledge-base-rag") -> None:
 
     resource = Resource.create({"service.name": service_name})
     provider = TracerProvider(resource=resource)
-    exporter = OTLPSpanExporter(endpoint=settings.otel_exporter_otlp_endpoint, insecure=True)
+    exporter = OTLPSpanExporter(endpoint=endpoint, insecure=True)
     provider.add_span_processor(BatchSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
     _configured = True

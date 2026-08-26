@@ -1,12 +1,13 @@
 import pytest
 
+from app.reranker.config import MULTILINGUAL_RERANKER_MODEL
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.hybrid_search import SearchResult
 
 
 @pytest.fixture(scope="module")
 def reranker() -> CrossEncoderReranker:
-    return CrossEncoderReranker()
+    return CrossEncoderReranker(MULTILINGUAL_RERANKER_MODEL)
 
 
 def _result(text: str) -> SearchResult:

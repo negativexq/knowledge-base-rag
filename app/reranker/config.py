@@ -24,7 +24,7 @@ class RerankerConfig:
 
 
 def benchmark_config(name: str) -> RerankerConfig:
-    """Return one of Sprint 26's pre-registered benchmark cells."""
+    """Return one of the registered benchmark cells."""
     if name == "off":
         return RerankerConfig(False, "not enabled", RERANKER_BACKEND)
     if name == "existing":

@@ -46,3 +46,8 @@ deterministic citation/disclosure/suppression checks pass.
 `/ui/*` endpoints are read-only presentation aggregations over existing domain
 logic. They do not accept a caller-selected tenant, do not expose internal
 clients or credentials, and do not create a privileged request path.
+
+Runtime configuration is injected into the application state at boot. UI
+settings, active-index reporting, and tracing all read the same `Settings`
+instance used by the real wiring, so a custom runtime configuration cannot
+silently diverge from the values shown in the console.

@@ -32,6 +32,83 @@ def test_security_validation_mode_rejects_unknown_value(monkeypatch):
         Settings(_env_file=None)
 
 
+def test_development_auth_uses_demo_tokens_when_explicit_config_is_empty():
+    config = Settings(_env_file=None, app_env="development", auth_tokens_json="")
+
+    assert config.app_env == "development"
+
+
+def test_production_auth_rejects_empty_credentials():
+    import pytest
+
+    with pytest.raises(ValueError, match="Production authentication requires explicit"):
+        Settings(_env_file=None, app_env="production", auth_tokens_json="")
+
+
+def test_production_auth_accepts_explicit_credentials():
+    config = Settings(
+        _env_file=None,
+        app_env="production",
+        auth_tokens_json='{"prod-token": {"user_id": "u", "tenant_id": "t", "roles": ["USER"]}}',
+    )
+
+    assert config.app_env == "production"
+
+
+def test_production_auth_cannot_be_disabled():
+    import pytest
+
+    with pytest.raises(ValueError, match="Production authentication must remain enabled"):
+        Settings(_env_file=None, app_env="production", auth_enabled=False)
+
+
+def test_malformed_auth_json_is_rejected_at_settings_boundary():
+    import pytest
+
+    with pytest.raises(ValueError, match="AUTH_TOKENS_JSON must contain valid JSON"):
+        Settings(_env_file=None, auth_tokens_json="not-json")
+
+
+def test_invalid_auth_role_is_rejected_at_settings_boundary():
+    import pytest
+
+    with pytest.raises(ValueError, match="contains an invalid role"):
+        Settings(
+            _env_file=None,
+            auth_tokens_json='{"token": {"user_id": "u", "tenant_id": "t", "roles": ["ROOT"]}}',
+        )
+
+
+def test_auth_identity_fields_are_required_at_settings_boundary():
+    import pytest
+
+    with pytest.raises(ValueError, match="missing required field"):
+        Settings(
+            _env_file=None,
+            auth_tokens_json='{"token": {"roles": ["USER"]}}',
+        )
+
+
+def test_auth_user_id_is_required_at_settings_boundary():
+    import pytest
+
+    with pytest.raises(ValueError, match="missing required field.*user_id"):
+        Settings(
+            _env_file=None,
+            auth_tokens_json='{"token": {"tenant_id": "t", "roles": ["USER"]}}',
+        )
+
+
+def test_auth_tenant_id_is_required_at_settings_boundary():
+    import pytest
+
+    with pytest.raises(ValueError, match="missing required field.*tenant_id"):
+        Settings(
+            _env_file=None,
+            auth_tokens_json='{"token": {"user_id": "u", "roles": ["USER"]}}',
+        )
+
+
 def test_active_prompt_version_overridable_via_env(monkeypatch):
     monkeypatch.setenv("ACTIVE_PROMPT_VERSION", "v2")
 

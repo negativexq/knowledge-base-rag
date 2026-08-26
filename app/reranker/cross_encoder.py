@@ -3,14 +3,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 from sentence_transformers import CrossEncoder
 
-from app.reranker.config import EXISTING_RERANKER_MODEL, RERANKER_BACKEND
+from app.reranker.config import RERANKER_BACKEND
 from app.retrieval.hybrid_search import SearchResult
 
-# Benchmarked on M2 CPU with real chunk-sized text: ~9s one-time model load
-# (cached), ~2.8-9ms/pair to score. Reranking a top-20 batch costs ~60-180ms
-# per query — acceptable (an LLM generation call afterwards already takes
-# seconds).
-MODEL_NAME = EXISTING_RERANKER_MODEL
+# Model load and inference latency depend on the selected model and hardware;
+# see docs/reranking.md and artifacts/reranker-benchmark-sprint26/.
 
 
 class CrossEncoderReranker:
@@ -18,7 +15,7 @@ class CrossEncoderReranker:
 
     def __init__(
         self,
-        model_name: str = MODEL_NAME,
+        model_name: str,
         trust_remote_code: bool = False,
         device: str | None = None,
     ) -> None:

@@ -59,3 +59,23 @@ def test_build_token_authenticator_parses_multiple_roles():
     user = build_token_authenticator(custom).authenticate("t")
 
     assert user.roles == frozenset({Role.USER, Role.OPERATOR})
+
+
+def test_build_token_authenticator_rejects_demo_fallback_in_production():
+    import pytest
+
+    with pytest.raises(ValueError, match="Production authentication requires explicit"):
+        build_token_authenticator(None, app_env="production")
+
+
+def test_build_token_authenticator_rejects_production_auth_bypass():
+    import pytest
+
+    with pytest.raises(ValueError, match="Production authentication must remain enabled"):
+        build_token_authenticator(None, app_env="production", auth_enabled=False)
+
+
+def test_build_token_authenticator_allows_demo_tokens_only_in_development():
+    authenticator = build_token_authenticator("", app_env="development")
+
+    assert authenticator.authenticate("token-admin-a") is not None

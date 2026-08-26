@@ -33,6 +33,11 @@ services:
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
       - QDRANT_URL=http://qdrant:6333
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      # The default compose stack is local development. Set APP_ENV=production
+      # and provide explicit AUTH_TOKENS_JSON for a production-like deployment.
+      - APP_ENV=${APP_ENV:-development}
+      - AUTH_ENABLED=${AUTH_ENABLED:-true}
+      - AUTH_TOKENS_JSON=${AUTH_TOKENS_JSON:-}
       # LocalFilesystemConnector's scan root is bind-mounted separately
       # from the registry_data named volume below (non-overlapping mount
       # points — see docs/sprint-11-plan.md for why).

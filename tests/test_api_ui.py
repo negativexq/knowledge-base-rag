@@ -9,6 +9,7 @@ from app.main import create_app
 from app.registry.store import DocumentRegistry
 from app.retrieval.sparse import SparseVector
 from app.security.auth import DEFAULT_DEV_TOKENS, TokenAuthenticator
+from app.shared.config import Settings
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
 
@@ -24,7 +25,7 @@ async def _fake_embed(text: str) -> list[float]:
     return [0.01] * EMBEDDING_DIM
 
 
-def _client(tmp_path, docs_dir, tenant_ids=None, cors_origins=None) -> TestClient:
+def _client(tmp_path, docs_dir, tenant_ids=None, cors_origins=None, settings=None) -> TestClient:
     connector = LocalFilesystemConnector(docs_dir)
     store = QdrantStore(client=QdrantClient(":memory:"), collection_name=COLLECTION)
     registry = DocumentRegistry(tmp_path / "registry.db")
@@ -47,6 +48,7 @@ def _client(tmp_path, docs_dir, tenant_ids=None, cors_origins=None) -> TestClien
             auth_enabled=True,
             tenant_ids=tenant_ids or {"filesystem": "tenant-a"},
             cors_origins=cors_origins,
+            settings=settings,
         )
     )
 
@@ -166,7 +168,7 @@ def test_identity_never_lets_the_caller_choose_a_tenant():
     from app.api.ui import identity
 
     params = inspect.signature(identity).parameters
-    assert set(params) == {"user"}
+    assert set(params) == {"request", "user"}
 
 
 def test_overview_is_tenant_scoped(tmp_path):
@@ -243,6 +245,53 @@ def test_settings_reports_real_retrieval_and_auth_configuration(tmp_path):
     assert set(body["authentication"]["roles"]) == {"USER", "OPERATOR", "ADMIN"}
     assert body["retrieval"]["reranker_model"] == "BAAI/bge-reranker-v2-m3"
     assert body["retrieval"]["reranker_enabled"] is True
+
+
+def test_ui_reports_the_injected_runtime_settings(tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    runtime_settings = Settings(
+        _env_file=None,
+        reranker_model="custom/reranker",
+        security_validation_mode="fast",
+        ollama_model="custom/generation-model",
+        qdrant_url="http://qdrant.internal:6333",
+        otel_exporter_otlp_endpoint="http://otel.internal:4317",
+    )
+    client = _client(tmp_path, docs_dir, settings=runtime_settings)
+
+    body = client.get("/ui/settings", headers=_auth("token-user-a")).json()
+
+    assert body["retrieval"]["reranker_model"] == "custom/reranker"
+    assert body["security"]["validation_mode"] == "fast"
+    assert body["integrations"]["generation_model"] == "custom/generation-model"
+    assert body["integrations"]["qdrant_url"] == "http://qdrant.internal:6333"
+    assert body["integrations"]["otel_endpoint"] == "http://otel.internal:4317"
+    assert body["authentication"]["enabled"] is True
+
+
+def test_trace_detail_offloads_sync_client_to_a_worker_thread(tmp_path, monkeypatch):
+    called = False
+
+    def fake_fetch(*args, **kwargs):
+        return []
+
+    async def fake_to_thread(function, *args, **kwargs):
+        nonlocal called
+        called = function is fake_fetch
+        return []
+
+    monkeypatch.setattr("asyncio.to_thread", fake_to_thread)
+    monkeypatch.setattr("app.ui.trace_client.fetch_trace_spans", fake_fetch)
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    client = _client(tmp_path, docs_dir)
+
+    response = client.get("/ui/traces/deadbeef", headers=_auth("token-user-a"))
+
+    assert response.status_code == 200
+    assert response.json()["available"] is False
+    assert called is True
 
 
 def test_evaluations_reports_unavailable_rather_than_fabricating(tmp_path, monkeypatch):

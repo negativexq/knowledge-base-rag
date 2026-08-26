@@ -4,12 +4,12 @@ from pathlib import Path
 
 from app.registry.models import DEFAULT_STATUS, DocumentRecord
 
-# Sprint 23: tenant_id is part of the PRIMARY KEY (not just a plain
+# tenant_id is part of the PRIMARY KEY (not just a plain
 # column) — the whole point is that two tenants using the identical
 # (source_type, source_id) pair (e.g. both a "filesystem" source named
 # "handbook.pdf") must never collide on one registry row. See
-# _migrate_add_tenant_id_and_rebuild_pk for how an existing (pre-Sprint-
-# 23) database gets here.
+# _migrate_add_tenant_id_and_rebuild_pk for how an existing database gets
+# here.
 DEFAULT_TENANT_ID = "default"
 
 _SCHEMA = """
@@ -29,8 +29,7 @@ CREATE TABLE IF NOT EXISTS documents (
 
 
 def _migrate_add_tenant_id_and_rebuild_pk(conn: sqlite3.Connection) -> None:
-    # Same rename-rebuild-copy-drop shape Sprint 17.4 used for a NOT NULL
-    # relaxation — SQLite has no ALTER TABLE ... ADD COLUMN TO PRIMARY
+    # SQLite has no ALTER TABLE operation for adding a column to a PRIMARY
     # KEY, so widening the PK from (source_type, source_id) to
     # (tenant_id, source_type, source_id) requires a real table rebuild,
     # not just an ADD COLUMN. Every pre-existing row is backfilled with
@@ -38,7 +37,7 @@ def _migrate_add_tenant_id_and_rebuild_pk(conn: sqlite3.Connection) -> None:
     # app/ingestion/models.py::Chunk.tenant_id and app/sync/manager.py's
     # tenant_ids.get(source_type, "default") fallback use, so a registry
     # row and the Qdrant points it describes agree on which tenant owns
-    # them even for data that predates Sprint 23. Run AFTER the
+    # them even for data that predates this schema. Run AFTER the
     # chunk_count/pipeline_fingerprint migrations below, so this rebuild
     # copies their already-corrected shape forward, not the legacy one.
     columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
@@ -61,10 +60,8 @@ def _migrate_add_tenant_id_and_rebuild_pk(conn: sqlite3.Connection) -> None:
 
 
 def _migrate_add_pipeline_fingerprint_column(conn: sqlite3.Connection) -> None:
-    # Sprint 18: same nullable-ADD-COLUMN approach Sprint 17.3 used for
-    # chunk_count, applying the lesson Sprint 17.4 learned the hard way —
-    # no NOT NULL/default, so every pre-existing row becomes NULL (=
-    # "never fingerprinted"), never a value that could collide with a
+    # Keep this nullable: pre-existing rows are intentionally marked as
+    # never fingerprinted, not assigned a value that could collide with a
     # real digest. See app/ingestion/fingerprint.py.
     columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
     if "pipeline_fingerprint" not in columns:
@@ -72,28 +69,27 @@ def _migrate_add_pipeline_fingerprint_column(conn: sqlite3.Connection) -> None:
 
 
 def _migrate_add_chunk_count_column(conn: sqlite3.Connection) -> None:
-    # Sprint 17.2: CREATE TABLE IF NOT EXISTS alone doesn't add a new
+    # CREATE TABLE IF NOT EXISTS alone doesn't add a new
     # column to a table that already exists from before this column was
     # introduced — a real ALTER TABLE migration is needed for those.
-    # Sprint 17.3: nullable, no default — an ADD COLUMN with no default
+    # Nullable, no default — an ADD COLUMN with no default
     # leaves every existing row NULL, which is exactly the correct
     # "never tracked" state for anything that predates this column
     # (distinct from a real, tracked 0).
     #
-    # Sprint 17.4: a REAL Sprint 17.2 database already has this column
-    # (as NOT NULL DEFAULT 0) — the membership check below is False for
-    # that shape, so Sprint 17.3's migration was a complete no-op for
-    # it: the NOT NULL constraint survived, and DocumentRegistry's own
+    # An older database may already have this column as NOT NULL DEFAULT 0.
+    # The membership check below detects that shape and rebuilds the table;
+    # the NOT NULL constraint otherwise survives, and DocumentRegistry's own
     # public chunk_count=None default could raise sqlite3.IntegrityError
     # against it. SQLite has no ALTER COLUMN to relax NOT NULL, so a
     # genuinely NOT NULL chunk_count column is fixed by rebuilding the
     # table: rename it aside, create the (now nullable) real schema,
     # copy every row across — converting the ambiguous legacy 0 to NULL
-    # specifically (not every value: a real non-zero count Sprint
-    # 17.2's ingest_connector wrote is already unambiguous and is kept
+    # specifically (not every value: a real non-zero count already is
+    # unambiguous and is kept
     # as-is; only 0 was ever ambiguous between "genuinely empty" and
     # "the column's own untouched default") — then drop the renamed
-    # original. See docs/sprint-17-4-plan.md.
+    # original.
     columns = {row[1]: row for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
     if "chunk_count" not in columns:
         conn.execute("ALTER TABLE documents ADD COLUMN chunk_count INTEGER")
@@ -140,18 +136,17 @@ CREATE TABLE IF NOT EXISTS registry_metadata (
 
 _INDEX_SCHEMA_VERSION_KEY = "index_schema_version"
 
-# Sprint 17.1: bumped whenever a change to how Qdrant point identity or
+# Bumped whenever a change to how Qdrant point identity or
 # registry content is derived would leave EXISTING (already-synced) data
 # silently wrong until its next real content edit — content_hash alone
 # can't detect this, since it's unrelated to the point-ID formula.
-# Version 2 = Sprint 17's point_id_for fix (now includes source_id, so
+# Version 2 includes source_id in point_id_for, so
 # two documents with identical content no longer collide on point ID).
-# Version 3 = Sprint 17.5's heading_occurrence fix (repeated identical
+# Version 3 includes heading occurrence, so repeated identical
 # Markdown heading paths now get distinct point IDs and citation
 # locations) — an unchanged document's content_hash can never detect
 # this on its own, same reasoning as version 2's bump. See
-# docs/sprint-17-6-plan.md.
-# Version 4 = Sprint 23's tenant-aware point identity — point_id_for now
+# Version 4 is tenant-aware point identity — point_id_for now
 # prepends chunk.tenant_id to its canonical key, so EVERY previously
 # indexed point's ID changes (not just points for tenants other than
 # "default" — the default tenant's own points move too, since the old
@@ -164,7 +159,7 @@ CURRENT_INDEX_SCHEMA_VERSION = 4
 class IndexSchemaMismatchError(Exception):
     """Raised by ensure_index_schema_version() when this registry's
     tracked index schema version is older than what this code expects —
-    e.g. a registry built before Sprint 17's point_id_for fix (which
+    e.g. a registry built before source_id was included in point_id_for (which
     added source_id to the point-ID key) may already have silently
     collided/overwritten points for documents with identical content but
     different sources, and incremental sync's content_hash comparison
@@ -177,7 +172,7 @@ class IndexSchemaMismatchError(Exception):
     UnexpectedCollectionSchemaError) — an automatic re-index would need
     real, possibly slow or failing, network calls per connector before
     the app can even serve /health, hidden inside what looks like an
-    ordinary boot. See docs/sprint-17-1-plan.md.
+    ordinary boot.
 
     Fix: wipe and rebuild the index —
         docker compose down -v && docker compose up
@@ -187,7 +182,7 @@ class IndexSchemaMismatchError(Exception):
 
 # version only increments when content_hash actually changes — re-syncing
 # unchanged content (the common case) just refreshes last_synced_at, so a
-# later sprint's "skip unchanged documents" logic can tell "still current"
+# incremental sync's "skip unchanged documents" logic can tell "still current"
 # apart from "content actually changed" using version alone.
 _UPSERT = """
 INSERT INTO documents
@@ -261,7 +256,7 @@ def _row_to_record(row: tuple) -> DocumentRecord:
 
 class DocumentRegistry:
     """SQLite-backed metadata store for tracking known documents across all
-    source types — the foundation incremental sync (Sprint 4) compares
+    source types — the foundation incremental sync compares
     against. Not async: sqlite3 file I/O here is local and fast, matching
     QdrantStore's precedent of a synchronous store called from async
     ingestion code.
@@ -371,8 +366,8 @@ class DocumentRegistry:
         try:
             return int(row[0])
         except ValueError as exc:
-            # Sprint 17.2: a corrupted/non-numeric stored value must
-            # fail the same clear way every other schema-mismatch path
+            # A corrupted/non-numeric stored value must fail the same clear
+            # way every other schema-mismatch path
             # in this codebase does, not a raw ValueError.
             raise IndexSchemaMismatchError(
                 f"registry_metadata.{_INDEX_SCHEMA_VERSION_KEY!r} is not a valid integer: "
@@ -407,8 +402,7 @@ class DocumentRegistry:
             self._set_index_schema_version(CURRENT_INDEX_SCHEMA_VERSION)
             return
         # Either no version was ever recorded but real documents already
-        # exist (a registry that predates this tracking mechanism
-        # entirely, and therefore predates Sprint 17's point-ID fix too),
+        # exist (a registry that predates this tracking mechanism entirely),
         # or an explicitly stored version is behind current.
         effective_stored = stored if stored is not None else 1
         raise IndexSchemaMismatchError(
@@ -420,7 +414,7 @@ class DocumentRegistry:
 
     def get_metadata(self, key: str) -> str | None:
         """Generic key-value read on the same registry_metadata table
-        get_index_schema_version already uses — Sprint 22 reuses this
+        get_index_schema_version already uses — migrations reuse this
         table (rather than adding a new one) to record which physical
         Qdrant collection/alias is active, the previous one (rollback
         target), and the current migration_id, so a process restart can

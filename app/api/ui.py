@@ -1,4 +1,4 @@
-"""Sprint 24: read-only aggregation endpoints for the RAG Operations
+"""Read-only aggregation endpoints for the RAG Operations
 Console (frontend/).
 
 Strictly aggregation over EXISTING domain logic — this module owns no
@@ -7,7 +7,7 @@ business rules of its own. Every endpoint is:
   * read-only (no mutation lives here — `/sync` remains the only
     mutation surface, with its own OPERATOR+ gate),
   * behind the same `get_current_user` boundary as every other
-    authenticated endpoint (Sprint 23), and
+    authenticated endpoint, and
   * tenant-scoped wherever it touches tenant-owned data — these
     endpoints must not become a way to read across the ACL that
     app/retrieval/filters.py enforces for retrieval.
@@ -19,6 +19,7 @@ explicitly (`null` / `available: false`) so the UI can render "—"
 rather than a plausible-looking number.
 """
 
+import asyncio
 import json
 from pathlib import Path
 
@@ -27,15 +28,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.api.deps import get_current_user
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.llm.embedding_models import active_embedding_config
+from app.llm.provider import default_chat_model
 from app.migration.embedding_migration import get_status as migration_status
-from app.reranker.config import RERANKER_CANDIDATE_K, RERANKER_TOP_N
 from app.retrieval.sparse import MODEL_NAME as SPARSE_MODEL_NAME
 from app.security.models import Role, UserContext
-from app.shared.config import settings
 
 router = APIRouter(prefix="/ui", tags=["ui"])
 
-# Sprint 18-22's real benchmark/migration artifacts, read server-side.
+# Real benchmark/migration artifacts, read server-side.
 # The browser never touches the repo filesystem — it asks for this
 # endpoint, and the server reads only these known, explicitly-listed
 # paths (never a client-supplied one).
@@ -111,8 +111,14 @@ def _read_artifact(relative_path: str) -> dict | None:
         return None
 
 
+def _runtime_settings(request: Request):
+    return request.app.state.settings
+
+
 @router.get("/identity")
-async def identity(user: UserContext = Depends(get_current_user)) -> dict:
+async def identity(
+    request: Request, user: UserContext = Depends(get_current_user)
+) -> dict:
     """Server-owned identity for the console header. The UI renders
     whatever this returns — it never derives tenant/role from anything
     it holds locally, and it can never send a tenant_id of its own
@@ -124,15 +130,16 @@ async def identity(user: UserContext = Depends(get_current_user)) -> dict:
         "roles": sorted(r.value for r in user.roles),
         "can_sync": user.has_role(Role.OPERATOR),
         "is_admin": user.has_role(Role.ADMIN),
-        "auth_enabled": getattr(settings, "auth_enabled", True),
+        "auth_enabled": _runtime_settings(request).auth_enabled,
     }
 
 
 def _active_index_payload(request: Request) -> dict:
-    """Sprint 22's real migration/alias state, read through the same
+    """Current migration/alias state, read through the same
     functions the migration CLI uses. `previous`/`rollback_available`
     come from the registry's recorded state, not from config.
     """
+    settings = _runtime_settings(request)
     config = active_embedding_config(settings)
     chunking = settings.chunking_config()
     fingerprint = build_pipeline_fingerprint(config, chunking)
@@ -187,8 +194,8 @@ async def active_index(request: Request, user: UserContext = Depends(get_current
 async def overview(request: Request, user: UserContext = Depends(get_current_user)) -> dict:
     """Operational summary, tenant-scoped. `chunk_count` is summed from
     the registry's own per-document chunk_count — which is None for a
-    document never re-ingested since chunk tracking landed (Sprint
-    17.3), so `chunk_count_complete` reports whether every document
+    document that has never been re-ingested since chunk tracking was
+    introduced, so `chunk_count_complete` reports whether every document
     actually contributed a real number. The UI must not present a
     partial sum as a total.
     """
@@ -246,7 +253,7 @@ async def overview(request: Request, user: UserContext = Depends(get_current_use
         "recent_runs": recent_runs[:10],
         "active_index": _active_index_payload(request),
         "security": {
-            "auth_enabled": getattr(settings, "auth_enabled", True),
+            "auth_enabled": _runtime_settings(request).auth_enabled,
             "tenant_isolation": True,
             "mandatory_acl": True,
             "tenant_id": user.tenant_id,
@@ -289,11 +296,12 @@ async def ui_settings(request: Request, user: UserContext = Depends(get_current_
     write counterpart — the browser must never be able to mutate
     server config (docs/security.md).
     """
+    settings = _runtime_settings(request)
     return {
         "active_pipeline": _active_index_payload(request),
         "retrieval": {
-            "rerank_candidate_k": settings.reranker_candidate_k or RERANKER_CANDIDATE_K,
-            "rerank_top_n": settings.reranker_top_n or RERANKER_TOP_N,
+            "rerank_candidate_k": settings.reranker_candidate_k,
+            "rerank_top_n": settings.reranker_top_n,
             "reranker_enabled": settings.reranker_enabled,
             "reranker_backend": settings.reranker_backend,
             "sparse_model": SPARSE_MODEL_NAME,
@@ -302,7 +310,7 @@ async def ui_settings(request: Request, user: UserContext = Depends(get_current_
             "chunking": settings.chunking_config().as_dict(),
         },
         "authentication": {
-            "enabled": getattr(settings, "auth_enabled", True),
+            "enabled": settings.auth_enabled,
             "scheme": "bearer",
             "roles": [r.value for r in Role],
         },
@@ -316,14 +324,14 @@ async def ui_settings(request: Request, user: UserContext = Depends(get_current_
             "ollama_base_url": settings.ollama_base_url,
             "otel_endpoint": settings.otel_exporter_otlp_endpoint,
             "generation_provider": settings.generation_provider,
-            "generation_model": settings.ollama_model,
+            "generation_model": default_chat_model(settings),
         },
     }
 
 
 @router.get("/evaluations")
 async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
-    """Sprint 18-23's REAL artifacts, read from disk server-side. An
+    """Measured artifacts, read from disk server-side. An
     artifact that isn't present is reported `available: false` — never
     substituted with example numbers.
     """
@@ -459,7 +467,9 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
 
 
 @router.get("/traces/{trace_id}")
-async def trace_detail(trace_id: str, user: UserContext = Depends(get_current_user)) -> dict:
+async def trace_detail(
+    trace_id: str, request: Request, user: UserContext = Depends(get_current_user)
+) -> dict:
     """Real span timings for one trace, fetched from Jaeger with the
     same client app/ui/trace_client.py already uses. Returns
     `available: false` (not a 500) when Jaeger is unreachable or the
@@ -470,12 +480,15 @@ async def trace_detail(trace_id: str, user: UserContext = Depends(get_current_us
     """
     from app.ui.trace_client import fetch_trace_spans
 
+    settings = _runtime_settings(request)
     jaeger_url = settings.otel_exporter_otlp_endpoint.replace(":4317", ":16686")
     if not jaeger_url.startswith("http"):
         jaeger_url = "http://localhost:16686"
 
     try:
-        spans = fetch_trace_spans(trace_id, jaeger_url=jaeger_url, max_attempts=2)
+        spans = await asyncio.to_thread(
+            fetch_trace_spans, trace_id, jaeger_url=jaeger_url, max_attempts=2
+        )
     except Exception:  # noqa: BLE001 - Jaeger down is a renderable state, not a 500
         return {"trace_id": trace_id, "available": False, "spans": [], "jaeger_url": jaeger_url}
 

@@ -126,6 +126,11 @@ is an explicit server-side opt-in that streams immediately and performs a
 post-stream check; output may reach the client before a violation is detected.
 The frontend cannot downgrade the server-owned mode.
 
+Authentication is environment-scoped: `APP_ENV=development` with an empty
+`AUTH_TOKENS_JSON` enables the documented demo identities. In
+`APP_ENV=production`, explicit credentials/verifier configuration is required;
+the demo token fallback and `AUTH_ENABLED=false` are rejected at startup.
+
 This design is tested against the documented adversarial suite; it is not a
 claim of universal prompt-injection immunity. Citation integrity is also not
 claim-level semantic grounding. See [docs/security.md](docs/security.md).
@@ -186,7 +191,7 @@ scrolled Settings sections—see the [complete screenshot asset set](docs/assets
 
 - Python 3.11 or newer
 - Docker Desktop or a compatible Docker Engine
-- Node.js and npm for the React console
+- Node.js 22 and npm for the React console
 - Native [Ollama](https://ollama.com) on the host
 - Enough local disk/RAM for Qwen3-Embedding-4B and the configured generation
   model
@@ -205,7 +210,7 @@ docker compose up -d --build
 
 # React Operations Console.
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
@@ -232,7 +237,7 @@ The most important server-owned settings are:
 | Chunking | `CHUNKING_MODE=baseline`, legacy 500/50 production baseline |
 | Generation | Ollama, default `qwen2.5:7b-instruct` |
 | Prompt/security | `ACTIVE_PROMPT_VERSION=v3`, `SECURITY_VALIDATION_MODE=strict` |
-| Auth/CORS | `AUTH_ENABLED=true`, explicit `CORS_ORIGINS` allow-list |
+| Auth/CORS | `APP_ENV=development`, `AUTH_ENABLED=true`, explicit `CORS_ORIGINS` allow-list |
 
 Do not change model, dimension, or chunk settings without activating a matching
 indexed collection. See [docs/embedding-migration.md](docs/embedding-migration.md)
@@ -257,8 +262,8 @@ npm run lint
 npm run build
 ```
 
-The last full verification recorded 844 backend tests passed, 2 skipped
-(external Notion/provider checks), 18 frontend tests passed, and green
+The last full verification recorded 859 backend tests passed, 2 skipped
+(external credential checks), 18 frontend tests passed, and green
 typecheck, lint, build, and Ruff gates.
 
 ## Project structure

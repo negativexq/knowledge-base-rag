@@ -1,6 +1,6 @@
 # Security Model
 
-Sprint 23 closes Phase 1 of the original roadmap's security work: making
+This document describes the security model: making
 "which tenant is allowed to see this chunk" a server-owned, mandatory
 question the retrieval layer answers before a candidate ever reaches a
 reranker or the generation model — not a convention, not a prompt-level
@@ -8,7 +8,7 @@ instruction, not a post-hoc citation check.
 
 ## Threat model
 
-**In scope this sprint:**
+**In scope:**
 - A user authenticated as tenant A retrieving, via any retrieval path
   (dense, sparse/BM25, or hybrid RRF fusion), content that belongs to
   tenant B.
@@ -27,7 +27,7 @@ instruction, not a post-hoc citation check.
   English/Turkish mixed attacks.
 - Deterministic output-policy checks and adversarial evaluation behavior.
 
-**Explicitly out of scope this sprint** (see Known limitations):
+**Explicitly out of scope** (see Known limitations):
 - Model provider compromise.
 - Host-level compromise.
 - Malicious connector credentials.
@@ -53,6 +53,13 @@ role-gated action is `403`.
 This is intentionally NOT a full OAuth/OIDC implementation — see Known
 limitations. The token→identity mapping is swappable behind
 `TokenAuthenticator`'s one method without touching any call site.
+
+The authentication boundary is explicit at startup. Development may leave
+`AUTH_TOKENS_JSON` empty and use the demo fixture. Production requires
+`AUTH_TOKENS_JSON` (or a replacement verifier integration); it rejects empty
+credentials and rejects `AUTH_ENABLED=false`. Malformed token JSON, unknown
+roles, and missing `user_id`/`tenant_id` are configuration errors rather than
+request-time failures. Demo credentials are never a production fallback.
 
 ## Tenant model
 
@@ -104,15 +111,15 @@ never widen it. There is no "no context = return everything" path:
 `build_acl_filter` raises `MissingTenantContextError` for a
 non-system context with no tenant_id.
 
-Internal, non-request-driven code (benchmark scripts, the Sprint 22
-migration engine's quality gate, the evaluation CLI) explicitly
+Internal, non-request-driven code (benchmark scripts, the migration engine's
+quality gate, and the evaluation CLI) explicitly
 constructs `RetrievalContext.system()` — a privileged, tenant-unrestricted
 context that is NEVER built from request data anywhere in this codebase.
 
 ## Untrusted RAG context and instruction hierarchy
 
-Sprint 23 answers: **can this user retrieve this chunk?** Sprint 25 answers a
-different question: **if an authorized chunk contains instructions, should the
+Tenant ACL answers: **can this user retrieve this chunk?** Prompt policy answers
+a different question: **if an authorized chunk contains instructions, should the
 model obey them?** The answer is no. Tenant ACL remains mandatory and runs
 before retrieval; it is not a prompt-injection defense by itself.
 
@@ -158,7 +165,7 @@ out of scope.
 ## Reranker decision
 
 The retrieval reranker is server-configured in `app/shared/config.py`; the
-browser cannot select a model or change candidate counts. Sprint 26 compared
+browser cannot select a model or change candidate counts. The benchmark compared
 OFF, the historical English MiniLM reranker, and the multilingual
 `BAAI/bge-reranker-v2-m3` on the unchanged 220-question set. The selected
 multilingual model improves measured cross-lingual ranking, but it does not
@@ -207,7 +214,7 @@ canonical key — two tenants sharing an otherwise-identical
 get genuinely different point UUIDs, never a silent overwrite. This
 required bumping `CURRENT_INDEX_SCHEMA_VERSION` to 4 (every previously
 indexed point's ID changes, since the old key format had no tenant
-segment at all) — an existing index must be rebuilt via the Sprint 22
+segment at all) — an existing index must be rebuilt via the versioned
 blue/green migration machinery, not mutated in place.
 
 ## Observability
@@ -250,7 +257,7 @@ cookies. Production deployments must set their own exact frontend origin(s);
 
 ## Known limitations
 
-- **Prompt injection is not "solved."** Sprint 25 adds a documented trust
+- **Prompt injection is not "solved."** The documented trust
   boundary, structured serialization, deterministic output checks, and an
   adversarial suite. Fast mode can expose unsafe tokens before the post-check;
   strict mode is the release-gated option. Neither mode provides claim-level
@@ -274,17 +281,16 @@ cookies. Production deployments must set their own exact frontend origin(s);
   architecture. A deployment needing multiple tenants under literally
   the same source_type (e.g. two tenants each with their own
   "filesystem" root) needs a further connector-layer change, not
-  addressed this sprint.
+  addressed here.
 - **`visibility` payload field is schema-only.** Every chunk is written
   with `visibility="tenant"`; nothing produces or enforces a `private`
   (single-user) visibility level yet.
 - **No structured audit-event persistence.** `authentication_failed`/
   `authorization_denied`/`sync_denied` are observable as HTTP status
   codes (401/403) and span attributes, but there is no dedicated,
-  queryable audit log table — see the Sprint 23 report for what was and
-  wasn't built here.
+  queryable audit log table.
 - **Registry tenant migration backfills everything to `"default"`.** A
-  real multi-tenant deployment upgrading from a pre-Sprint-23 registry
+  real multi-tenant deployment upgrading from a pre-tenant-aware registry
   must manually reassign existing rows to their real tenant_id after
   the automatic migration runs — there is no way for the migration
   itself to infer the correct tenant retroactively.

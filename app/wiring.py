@@ -66,7 +66,7 @@ def build_connectors(settings: Settings) -> dict[str, Connector]:
 
 
 def connector_tenant_ids(settings: Settings) -> dict[str, str]:
-    """Sprint 23: which tenant owns each connector's documents — SERVER-
+    """Which tenant owns each connector's documents — SERVER-
     SIDE configuration only, keyed the same way build_connectors() keys
     its dict (by source_type). This app has exactly one connector
     instance per source_type, so this is a 1:1 source_type->tenant
@@ -149,12 +149,12 @@ def build_app(settings: Settings) -> FastAPI:
     real Qdrant/Ollama/SQLite at import time. See
     docs/adr/0005-real-wiring-pulled-forward.md.
     """
-    setup_tracing()
+    setup_tracing(endpoint=settings.otel_exporter_otlp_endpoint)
 
     ollama = OllamaClient(base_url=settings.ollama_base_url)
     qdrant_client = QdrantClient(url=settings.qdrant_url)
 
-    # Sprint 22: fail fast if the configured embedding dimension doesn't
+    # Fail fast if the configured embedding dimension doesn't
     # match whatever's actually in the active collection/alias — a stale
     # .env after a partial/aborted migration must never silently serve
     # dimension-mismatched traffic. See app/migration/startup_guard.py.
@@ -176,7 +176,7 @@ def build_app(settings: Settings) -> FastAPI:
     )
     registry = DocumentRegistry(settings.registry_db_path)
     # Fail fast if this registry's index predates the current point-ID
-    # schema (Sprint 17.1) — refuse to start on a possibly-corrupt index
+    # schema — refuse to start on a possibly-corrupt index
     # rather than serve traffic against it. See
     # app/registry/store.py::IndexSchemaMismatchError.
     registry.ensure_index_schema_version()
@@ -217,7 +217,7 @@ def build_app(settings: Settings) -> FastAPI:
     async def readiness_check() -> dict:
         return await check_readiness(qdrant_client, ollama, settings)
 
-    # Sprint 23: security boundary wiring. auth_enabled defaults True —
+    # Security boundary wiring. auth_enabled defaults True —
     # False is a real, explicit escape hatch (see app/api/deps.py) that
     # must never be silent, hence the loud warning log here.
     if not settings.auth_enabled:
@@ -226,13 +226,16 @@ def build_app(settings: Settings) -> FastAPI:
             "an ADMIN in tenant 'local-dev'. This must NEVER be used outside local "
             "development. See docs/security.md."
         )
-    token_authenticator = build_token_authenticator(settings.auth_tokens_json)
+    token_authenticator = build_token_authenticator(
+        settings.auth_tokens_json,
+        app_env=settings.app_env,
+        auth_enabled=settings.auth_enabled,
+    )
 
     # Long-lived HTTP clients (Ollama x2 — embedding and chat are separate
     # instances — Notion, when configured — and Qdrant) all need closing
     # on app shutdown to avoid leaking connections; nothing previously
-    # called any of them. See docs/sprint-15-plan.md,
-    # docs/sprint-16-plan.md (QdrantClient.close() is sync, wrapped here
+    # called any of them. QdrantClient.close() is sync, wrapped here
     # since on_shutdown hooks are async; each hook now runs in its own
     # try/except in app/main.py's lifespan, so one client failing to
     # close can't skip the rest).
@@ -258,4 +261,5 @@ def build_app(settings: Settings) -> FastAPI:
         tenant_ids=tenant_ids,
         qdrant_client=qdrant_client,
         cors_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
+        settings=settings,
     )

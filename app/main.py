@@ -15,6 +15,7 @@ from app.api.sync import router as sync_router
 from app.api.ui import router as ui_router
 from app.registry.store import DocumentRegistry
 from app.security.auth import TokenAuthenticator
+from app.shared.config import Settings
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
 
@@ -41,10 +42,11 @@ def create_app(
     on_shutdown: list[Callable[[], Awaitable[None]]] | None = None,
     readiness_check: Callable[[], Awaitable[dict]] | None = None,
     token_authenticator: TokenAuthenticator | None = None,
-    auth_enabled: bool = True,
+    auth_enabled: bool | None = None,
     tenant_ids: dict[str, str] | None = None,
     qdrant_client: object | None = None,
     cors_origins: list[str] | None = None,
+    settings: Settings | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -72,10 +74,15 @@ def create_app(
     (Ollama, Notion, Qdrant) that would otherwise leak connections on
     exit. Same optional-hook pattern as `scheduler`; defaults to None, so
     no existing test needs to know about it. Each hook runs inside its
-    own try/except (Sprint 16) — one client's aclose() raising (e.g.
+    own try/except — one client's aclose() raising (e.g.
     Notion erroring on a half-open connection) must not skip closing the
     rest.
     """
+
+    runtime_settings = settings or Settings(_env_file=None)
+    effective_auth_enabled = (
+        runtime_settings.auth_enabled if auth_enabled is None else auth_enabled
+    )
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -97,7 +104,7 @@ def create_app(
     app.state.chat_deps = chat_deps
     app.state.list_ollama_models = list_ollama_models
     app.state.readiness_check = readiness_check
-    # Sprint 23: security boundary state — app/api/deps.py::
+    # Security boundary state — app/api/deps.py::
     # get_current_user reads token_authenticator/auth_enabled directly
     # off app.state; app/api/sources.py and app/api/sync.py read
     # tenant_ids the same way to scope responses/authorize actions to
@@ -106,20 +113,21 @@ def create_app(
     # that builds an app via create_app() without touching auth gets
     # secure-by-default behavior, not an accidental open door).
     app.state.token_authenticator = token_authenticator
-    app.state.auth_enabled = auth_enabled
+    app.state.auth_enabled = effective_auth_enabled
     app.state.tenant_ids = tenant_ids or {}
-    # Sprint 24: app/api/ui.py's read-only aggregation endpoints need the
+    # The read-only UI aggregation endpoints need the
     # live Qdrant client to report real migration/alias state. Optional —
     # every existing test builds an app without one, and those endpoints
     # degrade to `available: false` rather than failing.
     app.state.qdrant_client = qdrant_client
+    app.state.settings = runtime_settings
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)
     app.include_router(health_router)
     app.include_router(ui_router)
 
-    # Sprint 24: the React console (frontend/) runs on its own origin in
+    # The React console (frontend/) runs on its own origin in
     # local development (Vite dev server on :5173), so it needs explicit
     # CORS. Deliberately an explicit allow-list passed in by the caller
     # — never "*", and never with allow_credentials, since this app

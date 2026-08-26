@@ -61,24 +61,17 @@ class SyncManager:
         tenant_ids: dict[str, str] | None = None,
         chunking_config: ChunkingConfig | None = None,
     ):
-        # Sprint 22 patch: pipeline_fingerprint identifies the embedding
+        # pipeline_fingerprint identifies the embedding
         # model/revision/backend/dimension/instruction/index-schema
         # combination `embed_fn` and `store` were actually built from —
         # app/wiring.py builds it via
         # app/ingestion/fingerprint.py::build_pipeline_fingerprint(
         # app/llm/embedding_models.py::active_embedding_config(settings)),
-        # the SAME single source of truth the Sprint 22 migration itself
+        # the same source of truth used by index migration
         # reads. Passed straight through to every ingest_connector() call
         # below so production sync gets the same content_hash-can't-see-
-        # a-model-swap protection Sprint 18 already gave the benchmark/
-        # migration paths — previously (Sprint 18-21) this was optional
-        # and SyncManager never supplied one, so a content-hash-unchanged
-        # document indexed under an OLD embedding model (e.g. before a
-        # migration activated) could be skipped forever even though its
-        # vectors are stale relative to the NOW-active pipeline. Optional
-        # (defaults to None) purely so existing tests that construct a
-        # SyncManager without one don't need updating — real wiring
-        # always supplies one.
+        # a model swap — content hashes alone cannot detect that. It is
+        # optional only for test callers; real wiring always supplies it.
         self._connectors = connectors
         self._store = store
         self._registry = registry
@@ -89,7 +82,7 @@ class SyncManager:
         self._embedding_concurrency = embedding_concurrency
         self._pipeline_fingerprint = pipeline_fingerprint
         self._chunking_config = chunking_config
-        # Sprint 23: which tenant owns each connector's documents —
+        # Which tenant owns each connector's documents —
         # server-side configuration (app/wiring.py::connector_tenant_ids),
         # NEVER derived from a sync request. A source_type missing from
         # this mapping falls back to "default" (the same default
@@ -136,17 +129,8 @@ class SyncManager:
             self._running[source_type] = True
             run_id: int | None = None
             try:
-                # Sprint 17.5: start_run (a SQLite INSERT) used to run
-                # OUTSIDE this try block, with `self._running[source_type]
-                # = True` already set above it. If start_run itself
-                # raised, nothing caught it — the `finally` below never
-                # ran (it belongs to this try, which was never entered),
-                # leaving _running stuck True forever, indistinguishable
-                # from a real in-progress sync. Moving it inside means a
-                # start_run failure now takes the same `except Exception`
-                # path as any other failure, so `finally` always resets
-                # _running regardless of where the failure came from. See
-                # docs/sprint-17-5-plan.md.
+                # Keep run creation inside the guarded region so a failed
+                # SQLite insert cannot leave the source marked as running.
                 run_id = self._history.start_run(source_type, trigger, trace_id=trace_id)
                 stats = await ingest_connector(
                     self._connectors[source_type],
@@ -161,7 +145,7 @@ class SyncManager:
                     chunking_config=self._chunking_config,
                 )
             except asyncio.CancelledError:
-                # Sprint 17: CancelledError is a BaseException, not an
+                # CancelledError is a BaseException, not an
                 # Exception, so the `except Exception as exc:` branch
                 # below never caught a real task.cancel() — the
                 # sync_runs row was left stuck at STATUS_RUNNING forever,
@@ -169,12 +153,12 @@ class SyncManager:
                 # Record it as cancelled, then re-raise (never swallow a
                 # cancellation — the calling task must still stop).
                 span.set_attribute("sync.status", STATUS_CANCELLED)
-                # Sprint 17.1: finish_run itself can fail (a real
+                # finish_run itself can fail (a real
                 # possibility — the same shutdown sequence that
                 # triggered this cancellation may already be tearing
                 # down the sqlite connection). Log it, but never let it
                 # replace the CancelledError the caller needs to see.
-                # Sprint 17.5: run_id can now be None (start_run itself
+                # run_id can be None (start_run itself
                 # was cancelled before ever returning) — nothing was
                 # recorded as started, so there's nothing to finish.
                 if run_id is not None:
@@ -191,7 +175,7 @@ class SyncManager:
                 raise
             except Exception as exc:
                 span.set_attribute("sync.status", STATUS_ERROR)
-                # Sprint 17.5: run_id is None only when start_run itself
+                # run_id is None only when start_run itself
                 # raised exc — there's no run row to finish, and the
                 # caller needs to see this failure directly rather than
                 # a swallowed SyncRunResult(status=ERROR), since (unlike

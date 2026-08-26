@@ -26,6 +26,7 @@ from app.ingestion.models import Chunk
 from app.ingestion.qdrant_store import EMBEDDING_DIM, QdrantStore
 from app.llm.generate import stream_answer
 from app.llm.grounding import check_grounding
+from app.reranker.config import MULTILINGUAL_RERANKER_MODEL
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.filters import build_filter
 from app.retrieval.hybrid_search import dense_only_search, hybrid_search
@@ -257,7 +258,7 @@ async def test_reranker_only_ever_sees_authorized_candidates(two_tenant_collecti
     """
     client, sparse_encoder, ollama = two_tenant_collection
 
-    real_reranker = CrossEncoderReranker()
+    real_reranker = CrossEncoderReranker(MULTILINGUAL_RERANKER_MODEL)
     seen_candidates = []
     original_rerank = real_reranker.rerank
 
