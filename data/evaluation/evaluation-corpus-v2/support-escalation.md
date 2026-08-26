@@ -1,5 +1,11 @@
-# Support Escalation
+# Support Escalation Standard
 
-Standard-priority tickets receive a response within 2 business hours. High-priority tickets receive a response within 4 business hours. Critical security incidents are acknowledged within 1 hour and escalated to the incident commander.
+Owner: Support Operations
+Effective date: 2026-01-15
+Authority: numeric acknowledgement and response targets
 
-The response target is not a resolution guarantee. The case record must contain impact, tenant, affected service, and the latest customer-visible update.
+Standard-priority tickets receive a response within 2 business hours. High-priority tickets receive a response within 4 business hours. A critical security incident is acknowledged within 1 hour and is escalated to the incident commander.
+
+The response target is not a resolution guarantee. The case record includes tenant, impact, affected service, severity rationale, and the latest customer-visible update. The Support Operations Playbook defines the triage procedure and uses this document as the authority for the numeric targets.
+
+If an enterprise agreement contains a stricter commitment, Contract Operations verifies the signed term before an operator quotes it.

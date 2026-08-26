@@ -10,7 +10,7 @@ reproducibility.
 ## Corpus design
 
 The corpus lives under `data/evaluation/evaluation-corpus-v2/` and contains 20
-fictional Northstar Cloud documents: 15 Markdown files and five generated,
+fictional Negativex documents: 15 Markdown files and five generated,
 text-selectable PDFs. It covers Turkish and English content, two tenants,
 short and long documents, heading-heavy and paragraph-heavy Markdown,
 bullet/table-like policy text, repeated terminology, regional rules,
@@ -18,11 +18,17 @@ versioned policies, cross-document references, and controlled adversarial
 document text.
 
 The long-document set includes `long-policy-tr.md`,
-`employee-handbook-en.md`, `support-playbook.md`, and five 15-page PDF
-fixtures. The generated PDF sources are deterministic and do not require OCR.
-The manifest records each source identity, tenant, language, content type, and
-path. Question labels are stored separately and are never inserted into the
-corpus documents.
+`employee-handbook-en.md`, `support-playbook.md`, and five deterministic,
+text-selectable PDF fixtures. The Markdown documents are authored by document
+type (regional policy, internal handbook, and support playbook); PDF pages are
+separate sections rather than repeated topic expansions. Question labels are
+stored separately and are never inserted into the corpus documents.
+
+The manifest also records an authority role, scope, and related source graph.
+In context, the authority order is: applicable statutory/regional policy,
+signed enterprise agreement or amendment, current product-specific policy,
+operational procedure, then general handbook guidance. `support-escalation`
+owns numeric support targets; `support-playbook` owns the procedure.
 
 ## Golden dataset schema
 
@@ -31,14 +37,21 @@ corpus documents.
 - `question`, `query_language`, `evidence_language`, and `language_pair`
 - `category`, `tags`, `difficulty`, and `rationale`
 - `answerability`: `answerable`, `unanswerable`, or `ambiguous`
-- `expected_answer`, `expected_source_ids`, `relevant_source_ids`,
-  `distractor_source_ids`, and `required_evidence`
+- `expected_answer`, `expected_source_ids`, `supporting_source_ids`,
+  `relevant_source_ids`, `distractor_source_ids`, and `required_evidence`
 - `tenant_id` and deterministic `split`
 
-Source identity is document-level in this preparation pass. The required
-evidence list supports multi-document answers; near-miss and ACL-negative
-records retain the relevant unauthorized/distractor source IDs while carrying
-no expected evidence.
+Source identity is document-level in this preparation pass. `expected_source_ids`
+are authoritative evidence required for the answer; `supporting_source_ids` are
+optional correct context; `relevant_source_ids` is their backward-compatible
+union and never contains distractors. `distractor_source_ids` identifies
+semantically close but incorrect, superseded, or unauthorized sources. The
+required evidence list supports multi-document answers; near-miss and
+ACL-negative records carry distractors but no expected evidence.
+
+`fact_id` is a stable fact or intent identifier, not a document ID. A single
+source can therefore contribute multiple facts such as
+`subscription.cancel-before-renewal` and `subscription.annual-discount`.
 
 Categories cover standard and hard answerable cases, unanswerable and
 near-miss cases, ambiguity, version/conflict resolution, cross-lingual lookup,
@@ -50,7 +63,7 @@ mixed-evidence multi-document cases.
 
 The deterministic split assigns whole `case_family` groups with a size-aware
 stratification target of approximately 45% `development`, 25% `calibration`,
-and 30% `frozen_test`. The current counts are 202 / 110 / 133 for 445
+and 30% `frozen_test`. The current counts are 200 / 112 / 133 for 445
 questions. A fact's paraphrases, near-miss variants, ACL variants, version
 variants, and other intent variants cannot cross split boundaries. The split
 metadata and frozen ID digest are in
@@ -81,10 +94,16 @@ question distributions, answerable-only language-pair counts, non-answerable
 query-language counts, and split cross-tabs for answerability, primary
 category, query language, tenant, and difficulty. Its all-record language-pair
 counts include `none` for unanswerable/ambiguous records; the
-`answerable_language_pair_counts` field is the language-pair view of the
-answerable subset. It also contains a whitespace-proxy chunking dry-run for
-256, 384, 512, and 768 targets. It is a structural pre-check, not a retrieval
-metric.
+`answerable_language_pair_counts` field is explicitly the language-pair view
+of the answerable subset. It also contains substantive paragraph uniqueness,
+repeated n-gram checks, a language sanity check, and a whitespace-proxy
+chunking dry-run for 256, 384, 512, and 768 targets. These are structural
+pre-checks, not retrieval metrics.
+
+The validator rejects count-based operational-record filler, excessive
+substantive paragraph duplication, language/manifest mismatches, query wording
+that reveals evaluation labels, invalid authority references, and source IDs
+that are used as fact IDs.
 `fingerprints.json` contains deterministic SHA-256 corpus and dataset
 fingerprints over canonical metadata/text/records.
 
@@ -105,6 +124,6 @@ or production reindexing.
 
 Labels are document-level rather than exact span-level, so citation-sensitive
 span evaluation remains a follow-up. The documents are synthetic fixtures and
-do not model every production connector or file format. Static wording review
-reduces obvious template leakage, but semantic duplicate detection and model
-quality remain intentionally deferred to the benchmark sprint.
+do not model every production connector or file format. Static checks and
+manual review reduce template leakage, but semantic duplicate detection and
+model quality remain intentionally deferred to the benchmark sprint.

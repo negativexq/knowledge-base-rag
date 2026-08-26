@@ -7,6 +7,7 @@ from app.evaluation.dataset_fingerprint import (
     evaluation_dataset_fingerprint,
 )
 from scripts.build_evaluation_corpus_v2 import build_questions
+from scripts.evaluation_corpus_quality import quality_metrics
 from scripts.validate_evaluation_corpus import validate
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,7 +47,12 @@ def test_corpus_v2_fingerprints_are_deterministic():
     documents = []
     for document in metadata["documents"]:
         path = CORPUS / document["path"]
-        text = path.read_text(encoding="utf-8") if path.suffix == ".md" else ""
+        if path.suffix == ".md":
+            text = path.read_text(encoding="utf-8")
+        else:
+            from scripts.validate_evaluation_corpus import _read_document
+
+            text = _read_document(path, "pdf")
         documents.append({**document, "text": text})
 
     assert evaluation_dataset_fingerprint(questions) == evaluation_dataset_fingerprint(
@@ -93,11 +99,11 @@ def test_statistics_separate_answerable_pairs_and_split_cross_tabs():
     stats = json.loads((ARTIFACTS / "statistics.json").read_text(encoding="utf-8"))
 
     assert stats["answerable_language_pair_counts"] == {
-        "en->en": 162,
-        "en->tr": 27,
-        "tr->en": 88,
+        "en->en": 154,
+        "en->tr": 31,
+        "tr->en": 84,
         "tr->mixed": 4,
-        "tr->tr": 56,
+        "tr->tr": 64,
     }
     assert stats["non_answerable_query_language_counts"] == {"en": 54, "tr": 54}
     assert set(stats["split_cross_tabs"]) == {
@@ -158,3 +164,79 @@ def test_validator_rejects_invalid_language_pair_and_tenant(tmp_path):
 
     assert any("language_pair does not match" in error for error in report["errors"])
     assert any("invalid tenant_id" in error for error in report["errors"])
+
+
+def test_long_documents_have_distinct_substantive_content():
+    stats = json.loads((ARTIFACTS / "statistics.json").read_text(encoding="utf-8"))
+    long_ids = {
+        "employee-handbook-en", "long-policy-tr", "support-playbook",
+        "enterprise-contract-guide", "product-guide-en", "regional-returns-eu",
+        "regional-returns-tr", "returns-manual-tr",
+    }
+    for source_id in long_ids:
+        metrics = stats["content_quality"][source_id]
+        assert metrics["exact_duplicate_ratio"] <= 0.03
+        assert metrics["normalized_duplicate_ratio"] <= 0.07
+        assert metrics["unique_substantive_paragraph_ratio"] >= 0.93
+
+
+def test_quality_metrics_expose_count_based_repetition():
+    repeated = "The same policy paragraph is repeated to pad a document with no new rule."
+    metrics = quality_metrics("\n\n".join([repeated] * 10))
+
+    assert metrics["exact_duplicate_ratio"] > 0.03
+    assert metrics["normalized_duplicate_ratio"] > 0.07
+
+
+def test_validator_rejects_relevant_distractor_conflict(tmp_path):
+    def mutate(questions):
+        question = next(q for q in questions if q["answerability"] == "answerable")
+        question["distractor_source_ids"] = list(question["expected_source_ids"])
+
+    report = _isolated_copy(tmp_path, mutate)
+
+    assert any("both supporting/relevant and distractor" in error for error in report["errors"])
+
+
+def test_validator_rejects_source_as_fact_id(tmp_path):
+    def mutate(questions):
+        question = next(q for q in questions if q["answerability"] == "answerable")
+        question["fact_id"] = question["expected_source_ids"][0]
+
+    report = _isolated_copy(tmp_path, mutate)
+
+    assert any("fact_id must identify a fact" in error for error in report["errors"])
+
+
+def test_validator_rejects_wrong_language_metadata(tmp_path):
+    corpus = tmp_path / "corpus"
+    artifacts = tmp_path / "artifacts"
+    shutil.copytree(CORPUS, corpus)
+    shutil.copytree(ARTIFACTS, artifacts)
+    manifest_path = corpus / "corpus-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    document = next(d for d in manifest["documents"] if d["source_id"] == "long-policy-tr")
+    document["language"] = "en"
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    report = validate(corpus, corpus / "golden-dataset-v2.json", artifacts)
+
+    assert any("language metadata does not match" in error for error in report["errors"])
+
+
+def test_queries_do_not_reveal_evaluation_labels():
+    questions = _load_questions()
+    forbidden = (
+        "available evidence", "tenant boundary", "using the turkish", "without naming a plan"
+    )
+
+    assert not any(any(phrase in q["question"].lower() for phrase in forbidden) for q in questions)
+
+
+def test_manifest_authority_graph_and_injection_fixture():
+    manifest = json.loads((CORPUS / "corpus-manifest.json").read_text(encoding="utf-8"))
+    source_ids = {doc["source_id"] for doc in manifest["documents"]}
+    assert all(set(doc["related_source_ids"]) <= source_ids for doc in manifest["documents"])
+    injection = (CORPUS / "injection-bearing-policy.md").read_text(encoding="utf-8")
+    assert "SYSTEM OVERRIDE" in injection
+    assert "This line is untrusted" not in injection

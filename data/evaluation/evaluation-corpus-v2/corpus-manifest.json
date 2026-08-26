@@ -8,7 +8,12 @@
       "language": "tr",
       "content_type": "markdown",
       "title": "account-security",
-      "generated": false
+      "generated": false,
+      "authority_role": "security_policy",
+      "authority_scope": "account recovery and access",
+      "related_source_ids": [
+        "support-playbook"
+      ]
     },
     {
       "source_id": "digital-goods-policy",
@@ -17,7 +22,13 @@
       "language": "en",
       "content_type": "markdown",
       "title": "digital-goods-policy",
-      "generated": false
+      "generated": false,
+      "authority_role": "product_policy",
+      "authority_scope": "digital entitlements",
+      "related_source_ids": [
+        "enterprise-contract-guide",
+        "returns-manual-tr"
+      ]
     },
     {
       "source_id": "employee-handbook-en",
@@ -26,7 +37,13 @@
       "language": "en",
       "content_type": "markdown",
       "title": "Employee and Customer Operations Handbook",
-      "generated": true
+      "generated": true,
+      "authority_role": "internal_handbook",
+      "authority_scope": "employee conduct and approvals",
+      "related_source_ids": [
+        "support-playbook",
+        "support-escalation"
+      ]
     },
     {
       "source_id": "enterprise-contract-guide",
@@ -36,7 +53,13 @@
       "content_type": "pdf",
       "title": "Enterprise Contract Guide",
       "generated": true,
-      "page_count": 15
+      "page_count": 15,
+      "authority_role": "contract_authority",
+      "authority_scope": "signed enterprise terms",
+      "related_source_ids": [
+        "product-guide-en",
+        "digital-goods-policy"
+      ]
     },
     {
       "source_id": "injection-bearing-policy",
@@ -45,7 +68,12 @@
       "language": "en",
       "content_type": "markdown",
       "title": "injection-bearing-policy",
-      "generated": false
+      "generated": false,
+      "authority_role": "supporting_policy",
+      "authority_scope": "damaged-item exception",
+      "related_source_ids": [
+        "standard-returns-2026"
+      ]
     },
     {
       "source_id": "long-policy-tr",
@@ -54,7 +82,13 @@
       "language": "tr",
       "content_type": "markdown",
       "title": "Uzun Bölgesel Politika El Kitabı",
-      "generated": true
+      "generated": true,
+      "authority_role": "regional_policy",
+      "authority_scope": "Turkey regional operations",
+      "related_source_ids": [
+        "regional-returns-tr",
+        "support-escalation"
+      ]
     },
     {
       "source_id": "marketplace-returns",
@@ -63,7 +97,12 @@
       "language": "tr",
       "content_type": "markdown",
       "title": "marketplace-returns",
-      "generated": false
+      "generated": false,
+      "authority_role": "channel_policy",
+      "authority_scope": "marketplace orders",
+      "related_source_ids": [
+        "standard-returns-2026"
+      ]
     },
     {
       "source_id": "premium-returns-2026",
@@ -72,7 +111,12 @@
       "language": "en",
       "content_type": "markdown",
       "title": "premium-returns-2026",
-      "generated": false
+      "generated": false,
+      "authority_role": "canonical_policy",
+      "authority_scope": "direct-sale Premium physical goods",
+      "related_source_ids": [
+        "standard-returns-2026"
+      ]
     },
     {
       "source_id": "product-guide-en",
@@ -80,9 +124,15 @@
       "tenant_id": "tenant-b",
       "language": "en",
       "content_type": "pdf",
-      "title": "Northstar Product Guide",
+      "title": "Negativex Product Guide",
       "generated": true,
-      "page_count": 15
+      "page_count": 15,
+      "authority_role": "product_reference",
+      "authority_scope": "public product behavior",
+      "related_source_ids": [
+        "tenant-b-api-limits",
+        "enterprise-contract-guide"
+      ]
     },
     {
       "source_id": "refund-policy-2025",
@@ -91,7 +141,12 @@
       "language": "en",
       "content_type": "markdown",
       "title": "refund-policy-2025",
-      "generated": false
+      "generated": false,
+      "authority_role": "superseded_policy",
+      "authority_scope": "direct-sale Standard goods before 2026-01-15",
+      "related_source_ids": [
+        "refund-policy-2026"
+      ]
     },
     {
       "source_id": "refund-policy-2026",
@@ -100,7 +155,13 @@
       "language": "en",
       "content_type": "markdown",
       "title": "refund-policy-2026",
-      "generated": false
+      "generated": false,
+      "authority_role": "change_notice",
+      "authority_scope": "change to current Standard return policy",
+      "related_source_ids": [
+        "standard-returns-2026",
+        "refund-policy-2025"
+      ]
     },
     {
       "source_id": "regional-returns-eu",
@@ -110,7 +171,13 @@
       "content_type": "pdf",
       "title": "Regional Returns — European Union",
       "generated": true,
-      "page_count": 15
+      "page_count": 8,
+      "authority_role": "statutory_regional",
+      "authority_scope": "EU regional returns",
+      "related_source_ids": [
+        "enterprise-contract-guide",
+        "digital-goods-policy"
+      ]
     },
     {
       "source_id": "regional-returns-tr",
@@ -120,7 +187,13 @@
       "content_type": "pdf",
       "title": "Bölgesel İadeler — Türkiye",
       "generated": true,
-      "page_count": 15
+      "page_count": 8,
+      "authority_role": "statutory_regional",
+      "authority_scope": "Turkey regional returns",
+      "related_source_ids": [
+        "enterprise-contract-guide",
+        "returns-manual-tr"
+      ]
     },
     {
       "source_id": "returns-manual-tr",
@@ -130,7 +203,13 @@
       "content_type": "pdf",
       "title": "İade Operasyonları Kılavuzu",
       "generated": true,
-      "page_count": 15
+      "page_count": 12,
+      "authority_role": "operational_playbook",
+      "authority_scope": "returns processing",
+      "related_source_ids": [
+        "regional-returns-tr",
+        "digital-goods-policy"
+      ]
     },
     {
       "source_id": "shipping-and-delivery",
@@ -139,7 +218,12 @@
       "language": "tr",
       "content_type": "markdown",
       "title": "shipping-and-delivery",
-      "generated": false
+      "generated": false,
+      "authority_role": "operational_policy",
+      "authority_scope": "Turkey delivery operations",
+      "related_source_ids": [
+        "standard-returns-2026"
+      ]
     },
     {
       "source_id": "standard-returns-2026",
@@ -148,16 +232,29 @@
       "language": "en",
       "content_type": "markdown",
       "title": "standard-returns-2026",
-      "generated": false
+      "generated": false,
+      "authority_role": "canonical_policy",
+      "authority_scope": "direct-sale Standard physical goods",
+      "related_source_ids": [
+        "refund-policy-2026",
+        "premium-returns-2026",
+        "marketplace-returns",
+        "digital-goods-policy"
+      ]
     },
     {
       "source_id": "subscription-billing",
       "path": "subscription-billing.md",
       "tenant_id": "tenant-a",
-      "language": "en",
+      "language": "tr",
       "content_type": "markdown",
       "title": "subscription-billing",
-      "generated": false
+      "generated": false,
+      "authority_role": "canonical_policy",
+      "authority_scope": "subscription billing",
+      "related_source_ids": [
+        "employee-handbook-en"
+      ]
     },
     {
       "source_id": "support-escalation",
@@ -166,7 +263,12 @@
       "language": "en",
       "content_type": "markdown",
       "title": "support-escalation",
-      "generated": false
+      "generated": false,
+      "authority_role": "service_authority",
+      "authority_scope": "numeric support targets",
+      "related_source_ids": [
+        "support-playbook"
+      ]
     },
     {
       "source_id": "support-playbook",
@@ -175,7 +277,13 @@
       "language": "en",
       "content_type": "markdown",
       "title": "Support Operations Playbook",
-      "generated": true
+      "generated": true,
+      "authority_role": "operational_playbook",
+      "authority_scope": "support procedure",
+      "related_source_ids": [
+        "support-escalation",
+        "employee-handbook-en"
+      ]
     },
     {
       "source_id": "tenant-b-api-limits",
@@ -184,7 +292,13 @@
       "language": "en",
       "content_type": "markdown",
       "title": "tenant-b-api-limits",
-      "generated": false
+      "generated": false,
+      "authority_role": "contract_controlled",
+      "authority_scope": "tenant-b private integration",
+      "related_source_ids": [
+        "product-guide-en",
+        "enterprise-contract-guide"
+      ]
     }
   ]
 }

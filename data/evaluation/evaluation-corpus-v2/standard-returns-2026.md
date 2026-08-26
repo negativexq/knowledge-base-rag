@@ -1,9 +1,15 @@
 # Standard Returns — 2026
 
-Effective 2026-01-15, standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and returned with its order reference. This policy supersedes the 2025 standard-return window.
+Document owner: Customer Policy Operations
+Effective date: 2026-01-15
+Scope: Negativex direct-sale physical goods on the Standard plan
 
-The 14-day window applies to ordinary physical goods sold directly by Northstar Cloud. Marketplace orders, premium-plan orders, digital goods, and regional statutory rights are governed by their own documents.
+Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.
 
-## Evidence handling
+This is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.
 
-Support must record the plan, order channel, delivery date, and requested remedy before approving a refund. A generic “refund period” answer is insufficient when a plan or channel is known.
+## Case record
+
+Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. If one of those fields is unknown, keep the case pending rather than quote a generic return period.
+
+Related: Premium Returns — 2026; Marketplace Returns; Digital Goods Policy. The 2026 policy bulletin explains the change from the superseded 2025 rule.

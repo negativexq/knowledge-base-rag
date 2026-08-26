@@ -4,6 +4,15 @@
   "corpus_path": "data/evaluation/evaluation-corpus-v2",
   "dataset_path": "data/evaluation/evaluation-corpus-v2/golden-dataset-v2.json",
   "fingerprints_path": "artifacts/evaluation-corpus-v2/fingerprints.json",
+  "preflight": {
+    "required_validator": "scripts.validate_evaluation_corpus",
+    "case_family_split_integrity": "required",
+    "authority_graph_integrity": "required",
+    "language_sanity": "required",
+    "max_exact_substantive_duplicate_ratio": 0.03,
+    "max_normalized_substantive_duplicate_ratio": 0.07,
+    "frozen_test_policy": "development and calibration only for tuning; frozen_test is pre-registered"
+  },
   "controls": {
     "embedding_model": "Qwen3-Embedding-4B",
     "embedding_dimension": 1024,

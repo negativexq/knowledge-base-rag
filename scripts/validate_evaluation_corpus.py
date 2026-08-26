@@ -20,12 +20,24 @@ from app.evaluation.dataset_fingerprint import (
     evaluation_dataset_fingerprint,
 )
 from app.parsing.pdf_parser import extract_paragraphs
+from scripts.evaluation_corpus_quality import (
+    language_matches,
+    language_scores,
+    quality_metrics,
+    query_has_label_leakage,
+)
 
 VALID_LANGUAGES = {"en", "tr"}
 VALID_TENANTS = {"tenant-a", "tenant-b"}
 VALID_SPLITS = {"development", "calibration", "frozen_test"}
 VALID_ANSWERABILITY = {"answerable", "unanswerable", "ambiguous"}
 VALID_CONTENT_TYPES = {"markdown", "pdf"}
+VALID_AUTHORITY_ROLES = {
+    "canonical_policy", "channel_policy", "product_policy", "operational_policy",
+    "security_policy", "service_authority", "superseded_policy", "change_notice",
+    "supporting_policy", "contract_controlled", "regional_policy", "internal_handbook",
+    "operational_playbook", "statutory_regional", "product_reference", "contract_authority",
+}
 VALID_CATEGORIES = {
     "standard_answerable",
     "hard_answerable",
@@ -46,7 +58,7 @@ def _normalise_query(query: str) -> str:
 def _read_document(path: Path, content_type: str) -> str:
     if content_type == "markdown":
         return path.read_text(encoding="utf-8")
-    return "\n".join(paragraph.text for paragraph in extract_paragraphs(str(path)))
+    return "\n\n".join(paragraph.text for paragraph in extract_paragraphs(str(path)))
 
 
 def _load_json(path: Path) -> Any:
@@ -85,6 +97,10 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
             errors.append(f"{prefix} has invalid language")
         if document["content_type"] not in VALID_CONTENT_TYPES:
             errors.append(f"{prefix} has invalid content_type")
+        if document.get("authority_role") not in VALID_AUTHORITY_ROLES:
+            errors.append(f"{prefix} has invalid or missing authority_role")
+        if not document.get("authority_scope"):
+            errors.append(f"{prefix} has missing authority_scope")
         path = corpus_dir / document["path"]
         if not path.is_file():
             errors.append(f"{prefix} path does not exist: {document['path']}")
@@ -103,11 +119,46 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
             errors.append(f"{prefix} Markdown has no heading")
         if document["content_type"] == "pdf" and not text.strip():
             errors.append(f"{prefix} PDF has no selectable text")
+        if not language_matches(text, document["language"]):
+            errors.append(
+                f"{prefix} language metadata does not match content: "
+                f"expected {document['language']} "
+                f"({language_scores(text)})"
+            )
+        if re.search(r"(?:operational record|operasyon kaydı)\s+\d+", text, re.IGNORECASE):
+            errors.append(f"{prefix} contains count-based operational-record filler")
         corpus_records.append({**document, "text": text})
 
-    long_documents = [record for record in corpus_records if len(record["text"].split()) > 768]
-    if len(long_documents) < 5:
-        errors.append(f"expected at least 5 documents above 768 words, found {len(long_documents)}")
+    source_id_names = {source_id for _, source_id in source_map}
+    for document in documents:
+        for related in document.get("related_source_ids", []):
+            if related not in source_id_names:
+                errors.append(
+                    f"document {document.get('source_id')} references unknown related source "
+                    f"{related}"
+                )
+
+    content_metrics = {
+        record["source_id"]: quality_metrics(record["text"])
+        for record in corpus_records
+    }
+    for source_id, metrics in content_metrics.items():
+        if metrics["exact_duplicate_ratio"] > 0.03:
+            errors.append(f"{source_id} exceeds exact substantive paragraph duplicate threshold")
+        if metrics["normalized_duplicate_ratio"] > 0.07:
+            errors.append(
+                f"{source_id} exceeds normalized substantive paragraph duplicate threshold"
+            )
+        if metrics["repeated_long_ngram_ratio"] > 0.20:
+            errors.append(f"{source_id} contains excessive repeated long n-grams")
+
+    long_documents = [
+        record for record in corpus_records
+        if len(record["text"].split()) > 768
+        or (record["content_type"] == "pdf" and (record.get("page_count") or 0) >= 8)
+    ]
+    if len(long_documents) < 8:
+        errors.append(f"expected eight long/stress documents, found {len(long_documents)}")
 
     try:
         questions = _load_json(dataset_path)
@@ -131,7 +182,8 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
         required = {
             "id", "question", "query_language", "evidence_language", "language_pair",
             "category", "answerability", "expected_answer", "expected_source_ids",
-            "relevant_source_ids", "distractor_source_ids", "required_evidence",
+            "relevant_source_ids", "supporting_source_ids", "distractor_source_ids",
+            "required_evidence",
             "tenant_id", "split", "case_family", "fact_id", "intent_group",
             "difficulty", "rationale",
         }
@@ -146,6 +198,8 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
         normalized_queries.setdefault(_normalise_query(question["question"]), []).append(
             question_id
         )
+        if query_has_label_leakage(question["question"]):
+            errors.append(f"{prefix} contains evaluation-label or language-hint leakage")
         qlang = question["query_language"]
         elang = question["evidence_language"]
         if qlang not in VALID_LANGUAGES:
@@ -168,17 +222,27 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
 
         expected = question["expected_source_ids"]
         relevant = question["relevant_source_ids"]
+        supporting = question["supporting_source_ids"]
         distractors = question["distractor_source_ids"]
         required_evidence = question["required_evidence"]
         references = (
             ("expected", expected),
             ("relevant", relevant),
+            ("supporting", supporting),
             ("distractor", distractors),
             ("required", required_evidence),
         )
         for label, refs in references:
             if not isinstance(refs, list) or any(ref not in source_ids for ref in refs):
                 errors.append(f"{prefix} has an unknown {label} source reference")
+        if set(relevant) != set(expected) | set(supporting):
+            errors.append(
+                f"{prefix} relevant_source_ids must equal expected plus supporting sources"
+            )
+        if set(distractors) & (set(expected) | set(supporting)):
+            errors.append(f"{prefix} source cannot be both supporting/relevant and distractor")
+        if question["fact_id"] in source_id_names:
+            errors.append(f"{prefix} fact_id must identify a fact, not a source document")
         if question["answerability"] == "answerable":
             if not question["expected_answer"] or not expected or not required_evidence:
                 errors.append(f"{prefix} answerable records require answer and evidence")
@@ -191,6 +255,21 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
                 errors.append(f"{prefix} unanswerable records cannot require evidence or an answer")
         elif question["expected_answer"] is not None or expected or required_evidence:
             errors.append(f"{prefix} ambiguous records cannot carry required answer evidence")
+
+    fact_signatures: dict[str, set[tuple[str, str, tuple[str, ...]]]] = {}
+    for question in questions:
+        signature = (
+            question.get("answerability", ""),
+            str(question.get("expected_answer")),
+            tuple(sorted(question.get("expected_source_ids", []))),
+        )
+        fact_signatures.setdefault(question.get("fact_id"), set()).add(signature)
+    for fact_id, signatures in fact_signatures.items():
+        allowed_case_prefixes = (
+            "case.", "version.", "multi.", "acl.", "injection.", "negative.", "ambiguous."
+        )
+        if len(signatures) > 1 and not fact_id.startswith(allowed_case_prefixes):
+            errors.append(f"fact_id maps to conflicting evidence signatures: {fact_id}")
 
     duplicates = [ids for ids in normalized_queries.values() if len(ids) > 1]
     if duplicates:
@@ -273,6 +352,14 @@ def validate(corpus_dir: Path, dataset_path: Path, artifact_dir: Path) -> dict[s
             )
         ),
         "split_cross_tabs": stats.get("split_cross_tabs", {}),
+        "content_quality": content_metrics,
+        "non_answerable_query_language_counts": dict(
+            Counter(
+                question.get("query_language")
+                for question in questions
+                if question.get("answerability") != "answerable"
+            )
+        ),
         "corpus_fingerprint": corpus_fp,
         "dataset_fingerprint": dataset_fp,
         "heavy_inference_executed": False,

@@ -1,43 +1,57 @@
-# Evaluation Corpus v2 manual sample review
+# Evaluation Corpus v2 manual review
 
-This is a static, stratified review of 36 records (four from each category)
-after corpus generation. The review is intentionally text-only; no model,
-retriever, reranker, judge, or generation call was used.
+Review method: opened all eight long documents after the quality rewrite and
+read a deterministic 60-question stratified sample. The sample covers the
+available categories, all three splits, both query languages, and both
+answerability classes where present. This is a wording/evidence review only;
+no embedding, reranking, generation, or judge call was made.
 
-Reviewed categories:
+## Long-document review
 
-- `acl_negative`: `acl-00-0`, `acl-00-1`, `acl-00-2`, `acl-00-3`
-- `ambiguous`: `ambiguous-00-0`, `ambiguous-00-1`, `ambiguous-00-2`, `ambiguous-01-0`
-- `cross_lingual`: `cross-00-0`, `cross-00-1`, `cross-01-0`, `cross-01-1`
-- `hard_answerable`: `hard-activation-evidence`, `hard-allowlist-api`, `hard-annual-cancel`, `hard-api-private`
-- `injection_bearing`: `injection-00-0`, `injection-00-1`, `injection-00-2`, `injection-00-3`
-- `multi_document`: `multi-00-0`, `multi-00-1`, `multi-00-2`, `multi-00-3`
-- `standard_answerable`: `native-00-0`, `native-00-1`, `native-00-2`, `native-00-3`
-- `unanswerable`: `negative-00-0`, `negative-00-1`, `negative-00-2`, `negative-00-3`
-- `version_conflict`: `version-00-0`, `version-00-1`, `version-00-2`, `version-00-3`
+| Source | Review result |
+|---|---|
+| `employee-handbook-en.md` | Reads as an internal employee/customer-operations handbook; approval, data, access, secrets, audit, conflict, and incident responsibilities are distinct. |
+| `long-policy-tr.md` | Natural Turkish policy prose; plan/channel/region/date boundaries, escalation, retention, communication, and audit procedures are explicit. |
+| `support-playbook.md` | Operational Tier 1/Tier 2 flow with intake, tenant verification, severity table, routing, incident handling, evidence, handoff, and closure. Numeric targets defer to `support-escalation`. |
+| `enterprise-contract-guide.pdf` | Contract-operations reference with precedence, signed/effective dates, amendments, SLA credits, retention, exceptions, and audit evidence. |
+| `product-guide-en.pdf` | Product documentation style; plans, seats, roles, API behavior, pagination, versions, deprecation, sandbox, exports, and enterprise overrides are separated. |
+| `regional-returns-eu.pdf` | Jurisdiction-specific compliance-oriented guide with withdrawal clock, exceptions, digital goods, channel/plan interaction, contracts, and evidence. |
+| `regional-returns-tr.pdf` | Independent Turkish regional operations guide, not a translation of the EU document; delivery, cayma, personalization, digital content, contract, and records differ. |
+| `returns-manual-tr.pdf` | Turkish operator runbook with decision table, evidence checklist, approvals, customer communication, and closure flow. |
 
-## Review findings
+All long documents add new rules, constraints, exceptions, procedures, or
+evidence. No `Operational record N` / `Operasyon kaydı N` filler remains. PDF
+text is selectable and Turkish characters are embedded with a Unicode-capable
+font when the builder runs on the local or CI host.
 
-- Answerable records point to a source that contains the stated business
-  fact; multi-document records require both listed source identities.
-- Standard, premium, marketplace, digital activation, regional, and
-  enterprise terms are intentionally close but remain resolvable by plan,
-  channel, tenant, region, or contract authority.
-- Cross-language samples use Turkish queries against English evidence and
-  preserve the explicit `tr->en`/`en->tr` metadata.
-- Unanswerable samples have no expected evidence and retain nearby documents
-  as distractors. ACL samples point only to tenant-b facts while the caller is
-  tenant-a.
-- Version samples distinguish the effective delivery date from the newer
-  document and retain the superseding source as a distractor.
-- Injection samples contain real refund evidence alongside controlled
-  adversarial text; the expected answer follows business evidence and not the
-  document instruction.
-- The sampled wording includes direct, operator, customer-scenario,
-  comparison, temporal, and policy-review forms. The generated set is still a
-  synthetic fixture and semantic paraphrase leakage should be checked again
-  during the next benchmark review.
+## Query review
 
-No sampled record was removed or relabeled during this review. The validator
-remains the authority for IDs, paths, tenant boundaries, split values,
-answerability/evidence consistency, and fingerprints.
+The following 60 IDs were read for answer determinism, natural phrasing,
+near-miss quality, cross-language naturalness, duplicate leakage, and absence
+of evaluator instructions:
+
+```text
+acl-00-0, acl-00-1, acl-01-0, acl-01-1, acl-02-0, acl-02-1,
+acl-03-0, acl-03-1, acl-04-0, acl-04-1, acl-05-0, acl-05-1,
+ambiguous-00-0, ambiguous-00-1, ambiguous-01-0, ambiguous-01-1,
+ambiguous-03-0, ambiguous-03-1, ambiguous-05-0, ambiguous-05-1,
+ambiguous-06-0, ambiguous-06-1, cross-00-0, cross-00-1, cross-02-0,
+cross-02-1, cross-03-0, cross-03-1, cross-04-0, cross-04-1,
+cross-06-0, cross-06-1, cross-13-0, cross-13-1,
+hard-activation-evidence, hard-allowlist-api, hard-annual-cancel,
+hard-api-private, hard-api-public, hard-api-version, hard-citation-date,
+hard-closure-unknown, hard-order-channel,
+injection-00-0, injection-00-1, injection-01-0, injection-01-1,
+injection-02-0, injection-02-1, injection-03-0, injection-03-1,
+injection-04-0, injection-04-1, multi-00-0, multi-00-1, multi-01-0,
+multi-01-1, multi-02-0, multi-02-1, multi-04-0
+```
+
+The review found no language-source hints, tenant-boundary instructions, or
+answerability-label language in this sample. ACL questions read as ordinary
+workspace/product lookups while authorization remains evaluator metadata.
+Injection questions ask about legitimate damaged-item handling; the malicious
+text remains in the source fixture rather than being repeated in the query.
+
+Known static limitation: wording review cannot establish semantic retrieval
+quality. That remains intentionally deferred to the next benchmark sprint.

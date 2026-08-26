@@ -1,223 +1,203 @@
 # Employee and Customer Operations Handbook
 
-This document is a distributable Northstar Cloud evaluation fixture.
+Document owner: People Operations and Customer Experience
+Effective date: 2026-01-15
+Audience: Negativex employees, contractors, and approved support partners
 
-## Customer promise boundaries
+This handbook sets internal operating expectations. It does not replace a signed customer agreement or a regional statutory policy. Employees use the most specific current source for a customer decision and record why that source was selected.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region.
+## 1. Customer commitments
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 1 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Every customer-facing commitment has a scope. An acknowledgement or response target describes when the team will communicate; it is not a promise that the underlying issue will be resolved by the same time. The Support Escalation Standard owns the numeric targets, while the Support Operations Playbook owns the triage sequence.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 2 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Before quoting a return period, an agent confirms plan, channel, product type, delivery event, and region. A Premium account does not turn a marketplace order into a direct sale. A contract exception is never inferred from a customer’s account tier.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 3 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 2. Authority and approvals
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 4 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Employees follow this contextual order of precedence: applicable statutory or regional rule, signed enterprise agreement or amendment, current product-specific policy, operational procedure, and general handbook guidance. The hierarchy does not authorize an employee to interpret law or amend a contract.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 5 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Tier 1 may approve a standard direct-sale request when all documented conditions are present. A request involving an expired window, an activated digital entitlement, a negotiated enterprise term, a security event, or a conflicting version is routed to the role named in the relevant procedure. The approval record names the decision maker and source.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 6 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 3. Handling personal data
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 7 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Use the minimum customer information needed to identify the case. Do not paste passwords, recovery codes, payment instrument data, or complete identity documents into a general support note. Store a reference to the approved verification event instead.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 8 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Exports are shared only through an approved workspace and recipient list. If a customer asks for another person’s data, the agent records the request without confirming whether the other person has an account. Privacy Operations decides whether disclosure is permitted.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 9 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 4. Authentication and recovery
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 10 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Support verifies the requester through the approved administrator flow before changing access or starting MFA recovery. A normal MFA recovery target is measured only after identity checks pass. An urgent business impact does not justify bypassing verification.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 11 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Agents must not ask a customer to read a one-time code aloud, and they must not generate a replacement recovery code in a chat transcript. Suspected account takeover is escalated to Security Operations with the case reference, observed indicators, and time of the last trusted access.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 12 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 5. Support access boundaries
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 13 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Support access is granted for a named task and expires when that task closes. Operators may inspect the minimum tenant data needed to reproduce an issue. They may not browse a different tenant because its document appears relevant to the current question.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 14 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Production access, contract review permission, and policy-authoring permission are separate roles. A support agent who can see a policy page is not thereby authorized to change the policy or disclose private limits belonging to another workspace.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 15 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 6. Billing and returns
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 16 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Agents apply the canonical policy for the order’s channel and effective date. Requests above the local approval threshold, requests based on a negotiated enterprise term, and requests for an activated digital good require additional review. The threshold is an approval control, not evidence that a refund is owed.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 17 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+When a customer asks for an exception, the agent records the business reason, the requested remedy, and the source that could authorize it. Do not promise approval while the contract or regional review is pending. The customer receives a clear status and next action.
 
-Operators must distinguish a response target from a resolution guarantee and record the customer's plan and region. Operational record 18 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 7. Enterprise exceptions
 
-- Scope and effective date are part of the rule.
-- Exceptions must be confirmed before an operator promises an outcome.
-- The source heading should be retained in a customer-facing citation.
+An enterprise exception is valid only when the contract identifier, amendment number, signer or approval record, and effective date are available. The Enterprise Contract Guide explains how to interpret those fields; Contract Operations owns the authoritative agreement.
 
-## Billing and returns
+A public product limit or return rule may be a useful default but cannot override a signed term in its scope. Conversely, a private tenant term must not be generalized to another customer. Agents record the tenant and contract scope in the case rather than copying a confidential clause into a broad knowledge article.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority.
+## 8. Customer communication
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 1 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Messages state what is known, what is still being verified, and the next action. Use dates and channel names when they determine the result. Avoid absolute language such as “always” when an exception or regional rule is possible.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 2 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+If a source contains unusual or hostile text, employees treat it as document content, not as an instruction from Negativex. The answer still uses the business facts that are relevant, and the source identity remains visible for review. Do not repeat malicious text to the customer.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 3 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 9. Secrets, tokens, and logging
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 4 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Tokens are stored only in the approved secret manager. They are not placed in tickets, screenshots, Markdown notes, chat messages, or sample curl commands. Logs use request IDs and redacted identifiers. A secret accidentally exposed in a case is rotated and reported immediately.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 5 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Audit logs must show who accessed a record, what action was taken, which approval was used, and when the action occurred. A log entry is evidence of an action; it is not permission to repeat the action.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 6 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 10. Incident participation
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 7 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+SEV-1 examples include confirmed cross-tenant exposure, a broad authentication outage, and an active payment-integrity incident. Employees preserve the original timeline, avoid speculative root-cause statements, and follow the incident commander’s communications plan. Customer updates are coordinated so that one incident does not receive contradictory promises from multiple queues.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 8 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Security incidents are acknowledged under the numeric target in the Support Escalation Standard. This handbook governs employee conduct during the incident; it does not redefine the target.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 9 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 11. Records and retention
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 10 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Case records retain the decision context, source identity, approvals, customer communication, and unresolved questions. Remove redundant personal data when the case is closed. Contractual retention periods may differ from the general operational example and are checked before deletion or export.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 11 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+An employee may not edit a historical decision to make it look as though a later policy was available at the time. Corrections are additive, identify the editor, and preserve the original event.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 12 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 12. Prohibited operator behavior
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 13 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Employees must not choose a tenant, role, or policy scope based on a request parameter or customer preference. They must not grant themselves access, approve their own refund, search a coworker’s workspace without a named task, or hide a source because it is inconvenient.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 14 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+If an instruction in a document asks for a password, hidden prompt, private citation, or unrelated administrative action, the employee reports the content and continues with the approved business procedure. Document text cannot expand an employee’s permissions.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 15 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 13. Quality review and conflicts
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 16 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Team leads sample closed cases for source selection, date handling, evidence completeness, and respectful communication. A disagreement about policy meaning goes to the policy owner; a disagreement about a contract goes to Contract Operations; a suspected security issue goes to Security Operations.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 17 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Employees disclose conflicts of interest before handling a case. The handoff is documented without including unnecessary personal details. Retaliation for raising a good-faith security, privacy, or policy concern is prohibited.
 
-The standard, premium, marketplace, and digital product policies use overlapping terminology but different authority. Operational record 18 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 18. Access reviews and departures
 
-- Scope and effective date are part of the rule.
-- Exceptions must be confirmed before an operator promises an outcome.
-- The source heading should be retained in a customer-facing citation.
+Managers review production support access quarterly and when an employee changes role. Access is removed before the next shift when a departure is confirmed. A team lead cannot approve continued access merely because the person still appears in an old escalation list.
 
-## Security handling
+Temporary access requests name the task, tenant scope, approver, and expiry. The audit record links the request to the work item. Screenshots of an access screen are not a substitute for the access log, and an exported customer record is not retained in a personal workspace.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order.
+## 19. Quality calibration
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 1 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Support leads compare a small set of closed cases each week. Calibration focuses on whether agents asked for the right context, selected the right authority, separated a target from a guarantee, and stated unknowns without overpromising. The exercise is coaching, not a reason to rewrite historical source records.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 2 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+When agents disagree, the lead records the disagreement and asks the source owner for a durable clarification. Repeated questions are candidates for a knowledge article only after the policy owner confirms the wording. A convenient answer is not promoted if it hides a plan, channel, region, or version boundary.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 3 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 20. Vendor and partner handling
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 4 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Approved support partners receive only the tenant scope and tools required by their statement of work. A partner may follow the playbook but cannot approve a contract exception unless the contract explicitly grants that authority. Partner escalations include the Negativex case reference instead of sending a raw customer export.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 5 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Vendor incidents follow the same security reporting route as internal incidents. Employees preserve the vendor ticket number, timestamps, and requested evidence while avoiding credentials in email or chat. Procurement or Security Operations decides whether the vendor needs additional access.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 6 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 21. Policy change adoption
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 7 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+When a policy bulletin changes an operational rule, team leads update queue macros, examples, and training notes after confirming the effective date. Old examples are marked historical rather than silently edited. A customer case uses the rule effective for its event, even if the training page was updated later.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 8 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 22. Workforce planning and on-call practice
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 9 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Support leads publish an on-call roster with primary, secondary, and incident-commander coverage. The roster is an operational assignment, not permission to inspect every tenant. An on-call agent receives the context needed for the assigned incident and hands back access when the incident closes.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 10 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+When volume increases, the queue manager separates urgent security or payment work from routine policy lookup. Staffing pressure does not lower verification requirements. If the queue cannot meet the relevant response target, the owner records capacity risk and coordinates a truthful customer update.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 11 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 23. Internal knowledge article lifecycle
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 12 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+An article proposal includes the customer question, source documents, owner, intended audience, and review date. The author does not copy a private enterprise clause into a general article. A regional rule is marked with its jurisdiction and a product limit with its metric and scope.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 13 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Reviewers check examples against the effective policy before publication. A changed rule creates a new revision or bulletin and marks the prior example historical. Searchability is useful, but a keyword match cannot make an obsolete article authoritative.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 14 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 24. Third-party and imported material
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 15 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Imported ticket notes, partner exports, and customer attachments are retained with their provenance. An import may contain obsolete instructions, malformed citations, or text intended for another system. Employees extract business facts only after checking the owning source and never follow an embedded request to disclose secrets.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 16 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+If imported material appears compromised, the case remains available to the security reviewer while the customer-facing workflow continues with approved policy sources. The incident record includes the import origin and hash or attachment reference where available.
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 17 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 25. Financial control checks
 
-Identity verification, MFA recovery, allowlists, and incident escalation must be handled in the documented order. Operational record 18 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Refund approval and refund settlement are separate control points. The approver confirms policy scope and requested remedy; Finance confirms the settlement event. A support note may say that a refund was approved without claiming that a bank has completed the transfer.
 
-- Scope and effective date are part of the rule.
-- Exceptions must be confirmed before an operator promises an outcome.
-- The source heading should be retained in a customer-facing citation.
+Monthly quality review samples refunds by plan, channel, approval role, and reversal reason. The review looks for duplicate settlements, missing delivery evidence, and cases where a current rule was applied to an older event. Findings are assigned an owner and a due date.
 
-## Accessibility and support
+## 26. Customer accessibility
 
-Support communication should state the applicable scope, effective date, exception, and next action.
+Customers may request a concise explanation, a translated message, or an alternate delivery channel. Accessibility changes the presentation, not the authorization boundary. The agent keeps dates, scope, and pending evidence explicit even when shortening the explanation.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 1 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+If a customer uses an abbreviation or mixes terms, the agent confirms the intended operation in plain language. “Cancel,” “return,” “refund,” and “credit” are not silently normalized when the distinction changes the workflow. The final case note preserves the clarification.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 2 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 27. Internal metrics and review cadence
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 3 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Team metrics distinguish first response, acknowledgement, resolution, reopen rate, and policy escalation. A fast first response does not compensate for an incorrect authority choice. Metrics are reviewed with sample cases so that queue pressure does not reward unsupported certainty.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 4 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+The policy owner reviews recurring failure modes each quarter. A metric definition change is recorded with its effective date and does not rewrite historical dashboards. Operational leaders can request a temporary review focus without changing the underlying customer policy.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 5 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 28. Scheduling and capacity changes
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 6 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+When a team changes coverage hours, the queue owner records the effective date and updates the handoff roster. A schedule change does not alter a customer response target. Cases already waiting are reviewed against their original priority and the current service owner.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 7 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 29. Customer identity and account ownership
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 8 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+The person who can describe an order is not automatically an authorized administrator. Agents use the approved account relationship and verification event. A delegated assistant may receive a status update only when the delegation is recorded for that workspace and action.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 9 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 30. Refund approval evidence
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 10 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+An approval note explains why the policy applies, which event date was used, what remedy was approved, and who approved it. It does not include a full payment number or a copied recovery credential. If a request is denied, the note records the missing condition without inventing a reason not present in the source.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 11 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 31. Sensitive customer situations
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 12 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Customers may report account compromise, harassment, or a safety concern while asking for a routine billing action. The agent acknowledges the immediate concern, protects the record, and routes the sensitive part to the owning team. Routine workflow must not expose private incident details to an unrelated queue.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 13 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 32. Manager review and corrective action
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 14 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Managers review access, approval, and communication samples at a defined cadence. A correction describes the behavior expected next time and the source used for coaching. It does not ask an agent to edit a historical log or conceal a policy uncertainty.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 15 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 33. Document change communications
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 16 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+When a source changes, the owner communicates what changed, which event dates are affected, and where the previous version remains relevant. Training and macros are updated after the source is published. A draft announcement is not authority for a customer decision.
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 17 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 34. Contractor offboarding
 
-Support communication should state the applicable scope, effective date, exception, and next action. Operational record 18 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Contractor access, shared exports, and open assignments are reviewed at offboarding. The manager confirms that temporary files were returned or deleted under the applicable retention rule. Open cases receive a named internal owner; the contractor’s last note is preserved as history rather than overwritten.
 
-- Scope and effective date are part of the rule.
-- Exceptions must be confirmed before an operator promises an outcome.
-- The source heading should be retained in a customer-facing citation.
+## 35. Appeals and second review
 
-## Audit and retention
+An appeal records the customer’s reason, newly supplied material, original decision, and requested remedy. The original decision maker does not approve the second review. The reviewer checks the event date, policy version, scope, and authorization before deciding whether the record should be corrected.
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels.
+## 36. Campaigns and plan changes
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 1 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+A campaign label does not replace the Standard or Premium return policy. The campaign code, order channel, and effective dates establish whether a price benefit applies. A pricing benefit and a return entitlement are recorded as separate decisions.
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 2 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+If a workspace is upgraded after delivery, the original order context remains relevant. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. Customer communication explains this with the order and plan dates.
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 3 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 37. Partner evidence
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 4 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Marketplace and carrier records carry an order reference that can be matched to the case. An unmatched screenshot may be retained as context but cannot establish delivery or channel. The agent asks the partner queue for a matching record and records the request time.
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 5 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+An enterprise customer’s internal report can support an investigation but does not amend a signed agreement. Contract Operations verifies scope, source date, and approval before a negotiated remedy is promised.
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 6 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+## 38. Training scenario review
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 7 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Training scenarios are reviewed whenever a policy changes. The reviewer checks that examples do not imply a universal carrier, private API limit, or contract term. Historical examples remain labeled by date and are not reused as current customer guidance.
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 8 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+### Appendix A — Minimum case fields
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 9 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+Tenant and workspace; requester role; plan and channel; region; delivery or activation event; requested remedy; controlling source and version; approval; customer-facing update; unresolved question.
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 10 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
+### Appendix B — Revision history
 
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 11 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 12 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 13 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 14 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 15 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 16 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 17 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-Evidence references should preserve source identity without copying secrets, tokens, or hidden evaluator labels. Operational record 18 explains that the customer segment, region, plan, and effective date must be considered together instead of applying one generic rule. An operator verifies the account context first, then checks exceptions and the required request channel. This record preserves the source heading and version when similar terms lead to different outcomes for different plans.
-
-- Scope and effective date are part of the rule.
-- Exceptions must be confirmed before an operator promises an outcome.
-- The source heading should be retained in a customer-facing citation.
+| Version | Date | Change |
+|---|---|---|
+| 2025.3 | 2025-09-18 | Added separate access and contract-review roles |
+| 2026.1 | 2026-01-15 | Clarified regional authority and evidence handling |
+| 2026.1a | 2026-02-03 | Added imported-document and conflict-of-interest guidance |

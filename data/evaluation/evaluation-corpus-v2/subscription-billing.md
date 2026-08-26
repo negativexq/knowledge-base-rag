@@ -1,5 +1,13 @@
-# Subscription and Billing
+# Abonelik ve Faturalandırma İşletim Politikası
 
-Customers may cancel a subscription up to 48 hours before the next renewal to prevent the next charge. Cancellation does not shorten an already-paid period. Annual plans include a 15% discount compared with twelve monthly payments.
+Belge sahibi: Billing Operations
+Yürürlük: 2026-01-15
+Kapsam: Negativex aylık ve yıllık çalışma alanı abonelikleri
 
-Failed payments are retried three times over seven days. If all retries fail, the workspace enters read-only protection until payment succeeds.
+Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder. Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.
+
+## Başarısız ödeme
+
+Ödeme sağlayıcısı başarısız bir tahsilattan sonra yedi gün içinde üç yeniden deneme yapar. Üç deneme de başarısız olursa çalışma alanı salt-okunur korumaya alınır. Yeni ödeme doğrulandığında faturalandırma durumu düzeltilir; bu işlem geçmişteki iptal zamanını değiştirmez.
+
+Görevli yenileme tarihi, plan türü, ödeme sağlayıcısı olay kimliği ve müşteriye verilen taahhüdü kaydeder. Kurumsal faturalandırma şartları imzalı sözleşmede farklı olabilir.

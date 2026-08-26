@@ -1,5 +1,9 @@
-# Account Security
+# Hesap Güvenliği ve Kurtarma Standardı
 
-Security-sensitive account recovery requests require a verified administrator and a case reference. MFA recovery is normally completed within 24 hours after identity checks pass.
+Belge sahibi: Security Operations
+Yürürlük: 2026-01-15
+Kapsam: yönetici hesabı, MFA kurtarma ve IP izin listesi talepleri
 
-An enterprise administrator may enable an IP allowlist. Requests from an address outside the list are denied, including API requests. Support must never request a password or reveal a recovery code.
+Güvenlik hassasiyetli kurtarma taleplerinde doğrulanmış bir yönetici ve vaka referansı gerekir. Kimlik kontrolleri başarıyla tamamlandıktan sonra MFA kurtarma normalde 24 saat içinde sonuçlandırılır. Destek ekibi parola, tek kullanımlık kod veya kurtarma kodu istemez ve ifşa etmez.
+
+Kurumsal yönetici IP izin listesini etkinleştirmişse liste dışında kalan istekler, API istekleri dâhil, reddedilir. İstisna talebi açmak izin listesini geçici olarak gevşetmez; görevli talebi güvenlik kuyruğuna yönlendirir ve doğrulama kanıtını vaka kaydına ekler.

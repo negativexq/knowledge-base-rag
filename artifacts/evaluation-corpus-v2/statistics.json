@@ -4,27 +4,189 @@
   "markdown_count": 15,
   "pdf_count": 5,
   "document_language_counts": {
-    "tr": 6,
-    "en": 14
+    "tr": 7,
+    "en": 13
   },
   "document_tenant_counts": {
     "tenant-a": 14,
     "tenant-b": 6
   },
-  "total_characters": 529347,
-  "total_words": 73641,
+  "total_characters": 85446,
+  "total_words": 12100,
   "document_word_percentiles": {
-    "p0": 49,
-    "p25": 57,
-    "p50": 83,
-    "p75": 7906,
-    "p90": 10723,
-    "p100": 11424
+    "p0": 90,
+    "p25": 112,
+    "p50": 152,
+    "p75": 484,
+    "p90": 2634,
+    "p100": 2742
+  },
+  "content_quality": {
+    "account-security": {
+      "substantive_paragraph_count": 2,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "digital-goods-policy": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "employee-handbook-en": {
+      "substantive_paragraph_count": 60,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "enterprise-contract-guide": {
+      "substantive_paragraph_count": 29,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "injection-bearing-policy": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "long-policy-tr": {
+      "substantive_paragraph_count": 63,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "marketplace-returns": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "premium-returns-2026": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "product-guide-en": {
+      "substantive_paragraph_count": 29,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "refund-policy-2025": {
+      "substantive_paragraph_count": 2,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "refund-policy-2026": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "regional-returns-eu": {
+      "substantive_paragraph_count": 15,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "regional-returns-tr": {
+      "substantive_paragraph_count": 16,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "returns-manual-tr": {
+      "substantive_paragraph_count": 23,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "shipping-and-delivery": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "standard-returns-2026": {
+      "substantive_paragraph_count": 4,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "subscription-billing": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "support-escalation": {
+      "substantive_paragraph_count": 3,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "support-playbook": {
+      "substantive_paragraph_count": 56,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    },
+    "tenant-b-api-limits": {
+      "substantive_paragraph_count": 2,
+      "exact_duplicate_ratio": 0.0,
+      "normalized_duplicate_ratio": 0.0,
+      "unique_substantive_paragraph_ratio": 1.0,
+      "repeated_long_ngram_count": 0,
+      "repeated_long_ngram_ratio": 0.0
+    }
   },
   "question_count": 445,
   "split_counts": {
-    "development": 202,
-    "calibration": 110,
+    "development": 200,
+    "calibration": 112,
     "frozen_test": 133
   },
   "case_family_count": 112,
@@ -45,24 +207,24 @@
     "ambiguous": 24
   },
   "language_pair_counts": {
-    "en->en": 162,
+    "en->en": 154,
     "en->none": 54,
-    "en->tr": 27,
-    "tr->en": 88,
+    "en->tr": 31,
+    "tr->en": 84,
     "tr->mixed": 4,
     "tr->none": 54,
-    "tr->tr": 56
+    "tr->tr": 64
   },
   "answerable_language_pair_counts": {
-    "en->en": 162,
-    "en->tr": 27,
-    "tr->en": 88,
+    "en->en": 154,
+    "en->tr": 31,
+    "tr->en": 84,
     "tr->mixed": 4,
-    "tr->tr": 56
+    "tr->tr": 64
   },
   "query_language_counts": {
-    "en": 243,
-    "tr": 202
+    "en": 239,
+    "tr": 206
   },
   "non_answerable_query_language_counts": {
     "en": 54,
@@ -76,20 +238,20 @@
         "frozen_test": 6
       },
       "answerable": {
-        "development": 148,
-        "calibration": 85,
+        "development": 150,
+        "calibration": 83,
         "frozen_test": 104
       },
       "unanswerable": {
-        "development": 42,
-        "calibration": 19,
+        "development": 38,
+        "calibration": 23,
         "frozen_test": 23
       }
     },
     "primary_category": {
       "acl_negative": {
-        "development": 12,
-        "calibration": 4,
+        "development": 8,
+        "calibration": 8,
         "frozen_test": 8
       },
       "ambiguous": {
@@ -103,8 +265,8 @@
         "frozen_test": 24
       },
       "hard_answerable": {
-        "development": 48,
-        "calibration": 29,
+        "development": 50,
+        "calibration": 27,
         "frozen_test": 32
       },
       "injection_bearing": {
@@ -135,20 +297,20 @@
     },
     "query_language": {
       "en": {
-        "development": 108,
-        "calibration": 62,
-        "frozen_test": 73
+        "development": 107,
+        "calibration": 61,
+        "frozen_test": 71
       },
       "tr": {
-        "development": 94,
-        "calibration": 48,
-        "frozen_test": 60
+        "development": 93,
+        "calibration": 51,
+        "frozen_test": 62
       }
     },
     "tenant": {
       "tenant-a": {
-        "development": 158,
-        "calibration": 86,
+        "development": 156,
+        "calibration": 88,
         "frozen_test": 103
       },
       "tenant-b": {
@@ -164,8 +326,8 @@
         "frozen_test": 24
       },
       "hard": {
-        "development": 166,
-        "calibration": 90,
+        "development": 164,
+        "calibration": 92,
         "frozen_test": 109
       }
     }
@@ -175,8 +337,8 @@
     "tenant-b": 98
   },
   "fingerprints": {
-    "corpus_fingerprint": "cfb96bcd01ad52fd5837b53ef1f63fe56c3655aeafa5d02d18f8a587182753fb",
-    "dataset_fingerprint": "641523448f45e5f89a414ff94851a9c18c09ac112e926925efd20e2356ebc975"
+    "corpus_fingerprint": "86b0789bcd59dc59e29261783b5897d24020b2fb63a5e29bc17bc9c985bd1771",
+    "dataset_fingerprint": "f994303f2ecddc326743252a9a2f90c89d7868b7e93808f5e1afdcedc62da049"
   },
   "inference_executed": false,
   "chunking_stress_dry_run": {
@@ -189,51 +351,51 @@
         "768": 1
       },
       "digital-goods-policy": {
-        "256": 1,
-        "384": 1,
-        "512": 1,
-        "768": 1
+        "256": 2,
+        "384": 2,
+        "512": 2,
+        "768": 2
       },
       "employee-handbook-en": {
-        "256": 36,
-        "384": 21,
-        "512": 16,
-        "768": 11
+        "256": 37,
+        "384": 37,
+        "512": 37,
+        "768": 37
       },
       "enterprise-contract-guide": {
-        "256": 60,
-        "384": 42,
-        "512": 30,
+        "256": 15,
+        "384": 15,
+        "512": 15,
         "768": 15
       },
       "injection-bearing-policy": {
-        "256": 1,
-        "384": 1,
-        "512": 1,
-        "768": 1
+        "256": 3,
+        "384": 3,
+        "512": 3,
+        "768": 3
       },
       "long-policy-tr": {
-        "256": 31,
-        "384": 21,
-        "512": 16,
-        "768": 11
+        "256": 37,
+        "384": 37,
+        "512": 37,
+        "768": 37
       },
       "marketplace-returns": {
-        "256": 1,
-        "384": 1,
-        "512": 1,
-        "768": 1
+        "256": 2,
+        "384": 2,
+        "512": 2,
+        "768": 2
       },
       "premium-returns-2026": {
-        "256": 1,
-        "384": 1,
-        "512": 1,
-        "768": 1
+        "256": 2,
+        "384": 2,
+        "512": 2,
+        "768": 2
       },
       "product-guide-en": {
-        "256": 60,
-        "384": 35,
-        "512": 30,
+        "256": 15,
+        "384": 15,
+        "512": 15,
         "768": 15
       },
       "refund-policy-2025": {
@@ -249,28 +411,28 @@
         "768": 1
       },
       "regional-returns-eu": {
-        "256": 60,
-        "384": 45,
-        "512": 30,
-        "768": 21
+        "256": 8,
+        "384": 8,
+        "512": 8,
+        "768": 8
       },
       "regional-returns-tr": {
-        "256": 48,
-        "384": 30,
-        "512": 30,
-        "768": 15
+        "256": 8,
+        "384": 8,
+        "512": 8,
+        "768": 8
       },
       "returns-manual-tr": {
-        "256": 51,
-        "384": 30,
-        "512": 30,
-        "768": 15
+        "256": 12,
+        "384": 12,
+        "512": 12,
+        "768": 12
       },
       "shipping-and-delivery": {
-        "256": 1,
-        "384": 1,
-        "512": 1,
-        "768": 1
+        "256": 2,
+        "384": 2,
+        "512": 2,
+        "768": 2
       },
       "standard-returns-2026": {
         "256": 2,
@@ -279,10 +441,10 @@
         "768": 2
       },
       "subscription-billing": {
-        "256": 1,
-        "384": 1,
-        "512": 1,
-        "768": 1
+        "256": 2,
+        "384": 2,
+        "512": 2,
+        "768": 2
       },
       "support-escalation": {
         "256": 1,
@@ -291,10 +453,10 @@
         "768": 1
       },
       "support-playbook": {
-        "256": 42,
-        "384": 25,
-        "512": 19,
-        "768": 13
+        "256": 34,
+        "384": 34,
+        "512": 34,
+        "768": 34
       },
       "tenant-b-api-limits": {
         "256": 1,
