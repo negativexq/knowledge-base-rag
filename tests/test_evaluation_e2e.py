@@ -7,7 +7,9 @@ Sprint 9 closing note; a 12-question x 7B-judge run is too slow for every
 test invocation.
 """
 
+import json
 import socket
+import urllib.request
 
 import pytest
 from qdrant_client import QdrantClient
@@ -39,11 +41,27 @@ def _port_open(host: str, port: int) -> bool:
         return False
 
 
-_services_up = _port_open("localhost", 11434) and _port_open("localhost", 6333)
+
+
+def _configured_model_available() -> bool:
+    try:
+        with urllib.request.urlopen("http://localhost:11434/api/tags", timeout=0.5) as response:
+            models = json.load(response).get("models", [])
+        return any(model.get("name") == settings.ollama_model for model in models)
+    except (OSError, ValueError):
+        return False
+
+
+_services_up = (
+    _port_open("localhost", 11434)
+    and _port_open("localhost", 6333)
+    and _configured_model_available()
+)
 
 
 @pytest.mark.skipif(
-    not _services_up, reason="requires native Ollama on :11434 and Qdrant on :6333"
+    not _services_up,
+    reason="requires Qdrant and the configured native Ollama generation model",
 )
 @pytest.mark.asyncio
 async def test_real_golden_set_run_reports_metrics_by_content_type(tmp_path):

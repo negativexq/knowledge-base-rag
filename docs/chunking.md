@@ -98,8 +98,8 @@ candidate texts and 1172 total Qwen tokens. Corrected p50/p95 values were:
 
 The residual spread, including one 768 outlier, is unexplained runtime/order
 variance, not a demonstrated chunking-cost causal chain. These timings are
-not used to select a chunk config. Memory/VRAM was not measured; reranker
-inference remains synchronous in the async retrieval path.
+not used to select a chunk config. Memory/VRAM was not measured; production
+search isolates synchronous reranker inference in a worker thread.
 
 Storage uses Qdrant's block-based `du -sk` measurement. The fixture is too
 small to predict production-scale storage or indexing behavior. Boundary
@@ -115,8 +115,8 @@ the legacy baseline does not carry equivalent structural flags.
   exercise the 256–768 token boundaries.
 - The dataset has expected source locations but no exact evidence spans;
   citation precision proxy and evidence density are not measured.
-- Reranker inference is synchronous in the async retrieval path; Sprint 27 does
-  not refactor serving or event-loop scheduling.
+- Reranker inference uses the synchronous local model behind a worker-thread
+  boundary in the async retrieval path; ranking semantics remain unchanged.
 - The benchmark measures retrieval/candidate and context efficiency, not
   claim-level semantic grounding or answer relevancy.
 - No production migration was performed because KEEP_CURRENT won the

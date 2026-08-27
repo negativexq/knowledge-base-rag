@@ -43,9 +43,9 @@ top-five cases and rescued one.
 
 Rerank p50/p95 on the local CPU benchmark were `1956.6/2138.9ms` for BGE,
 `140.1/162.8ms` for MiniLM, and not measured for OFF because no rerank stage
-ran. Memory/VRAM was not measured. The production CrossEncoder call remains a
-synchronous CPU/MPS call inside an async retrieval function; event-loop
-offloading is a future operational improvement, not part of this sprint.
+ran. Memory/VRAM was not measured. The production CrossEncoder call remains
+synchronous CPU/MPS work, but the async retrieval path isolates it in a worker
+thread so it does not block the event loop.
 
 ## Reproduction and artifacts
 

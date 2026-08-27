@@ -1,3 +1,4 @@
+import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -18,14 +19,26 @@ class CrossEncoderReranker:
         model_name: str,
         trust_remote_code: bool = False,
         device: str | None = None,
+        max_concurrency: int = 1,
     ) -> None:
+        if max_concurrency < 1:
+            raise ValueError("max_concurrency must be at least 1")
         self.model_name = model_name
         self.trust_remote_code = trust_remote_code
+        self.max_concurrency = max_concurrency
+        self._async_semaphore = asyncio.Semaphore(max_concurrency)
         kwargs = {"trust_remote_code": True} if trust_remote_code else {}
         if device is not None:
             kwargs["device"] = device
         self.device = device
         self._model = CrossEncoder(model_name, **kwargs)
+
+    async def async_rerank(
+        self, query: str, candidates: list[SearchResult], top_n: int
+    ) -> list[SearchResult]:
+        """Run sync inference off-loop with a per-instance concurrency bound."""
+        async with self._async_semaphore:
+            return await asyncio.to_thread(self.rerank, query, candidates, top_n)
 
     def rerank(self, query: str, candidates: list[SearchResult], top_n: int) -> list[SearchResult]:
         if not candidates:
@@ -47,9 +60,9 @@ class CrossEncoderReranker:
     ) -> list[list[SearchResult]]:
         """Rerank independent requests with bounded offline concurrency.
 
-        This is used only by offline benchmarks. Production ``search`` keeps
-        the per-request ``rerank`` call and therefore retains its existing
-        latency semantics; only the offline benchmark overlaps requests.
+        This is used only by offline benchmarks. Production ``search`` uses
+        ``async_rerank`` to keep sync inference off the event loop while
+        bounding access to the shared model instance.
         """
         ranked, _timings = self.rerank_many_with_timings(requests, top_n)
         return ranked
@@ -68,7 +81,7 @@ class CrossEncoderReranker:
             result = self.rerank(request[0], request[1], top_n=top_n)
             return result, (time.perf_counter() - started) * 1000
 
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=self.max_concurrency) as executor:
             measured = list(executor.map(rerank_one, requests))
         return (
             [result for result, _duration in measured],

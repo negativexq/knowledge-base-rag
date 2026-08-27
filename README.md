@@ -205,7 +205,7 @@ cp .env.example .env
 
 # Ollama runs natively on the host.
 ollama pull qwen3-embedding:4b
-ollama pull qwen2.5:7b-instruct
+ollama pull qwen3:4b
 
 # Qdrant, Jaeger, and the FastAPI service.
 docker compose up -d --build
@@ -235,9 +235,9 @@ The most important server-owned settings are:
 | --- | --- |
 | Embedding | `EMBEDDING_MODEL_KEY=qwen3-4b`, `EMBEDDING_OUTPUT_DIMENSION=1024` |
 | Retrieval | Qdrant `kb_active`, BM25 sparse, RRF |
-| Reranking | enabled, `BAAI/bge-reranker-v2-m3`, `20 → 5` |
+| Reranking | `DEV_FAST`: `15 → 5`; global/reference: `20 → 5`, `BAAI/bge-reranker-v2-m3` |
 | Chunking | `CHUNKING_MODE=baseline`, legacy 500/50 production baseline |
-| Generation | Ollama, default `qwen2.5:7b-instruct` |
+| Generation | `DEV_FAST`: Ollama `qwen3:4b`, `think=false` |
 | Prompt/security | `ACTIVE_PROMPT_VERSION=v3`, `SECURITY_VALIDATION_MODE=strict` |
 | Auth/CORS | `APP_ENV=development`, `AUTH_ENABLED=true`, explicit `CORS_ORIGINS` allow-list |
 
@@ -291,6 +291,8 @@ artifacts/    Machine-readable benchmark and evaluation evidence
   context efficiency, boundary checks, and the current production decision.
 - [Evaluation Corpus v2](docs/evaluation-dataset.md) — corpus design, golden
   schema, frozen splits, static validation, and the next-run manifest.
+- [Phase 5.5 runtime optimization](docs/phase-5-5-runtime-optimization.md) —
+  local generation profile and guarded candidate-k sweep.
 - [Embedding migration](docs/embedding-migration.md) — model/index lifecycle,
   fingerprinting, activation, and rollback.
 - [Architecture decisions](docs/adr/README.md) — focused design records.
@@ -298,8 +300,8 @@ artifacts/    Machine-readable benchmark and evaluation evidence
 
 ## Current limitations
 
-- BGE reranking is still a synchronous local model call inside the async
-  retrieval path; concurrency-oriented serving is not yet implemented.
+- BGE reranking runs in a worker thread from the async retrieval path; bounded
+  multi-request serving remains a separate concern.
 - The chunking benchmark corpus is too short to distinguish 256–768 token
   boundaries. Revisit it when substantially longer documents exercise those
   limits.

@@ -18,12 +18,13 @@ def test_benchmark_configs_are_explicit_and_keep_candidate_contract():
     assert (multilingual.candidate_k, multilingual.top_n) == (20, 5)
 
 
-def test_production_settings_default_to_multilingual_winner():
+def test_runtime_profiles_keep_local_and_reference_candidate_budgets_distinct():
     config = Settings(_env_file=None)
     assert config.reranker_enabled is True
     assert config.reranker_model == MULTILINGUAL_RERANKER_MODEL
-    assert config.reranker_candidate_k == 20
+    assert config.reranker_candidate_k == 15
     assert config.reranker_top_n == 5
+    assert Settings.benchmark_reference().reranker_candidate_k == 20
 
 
 def test_reranker_can_be_disabled_without_constructing_model(monkeypatch):

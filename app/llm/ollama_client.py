@@ -25,9 +25,11 @@ class OllamaClient:
         base_url: str | None = None,
         http_client: httpx.AsyncClient | None = None,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
+        think: bool | None = None,
     ):
         self._owns_client = http_client is None
         self._client = http_client or httpx.AsyncClient(base_url=base_url, timeout=timeout)
+        self.think = think
 
     async def list_models(self) -> list[str]:
         try:
@@ -124,6 +126,7 @@ class OllamaClient:
                     "messages": messages,
                     "stream": True,
                     "keep_alive": DEFAULT_KEEP_ALIVE,
+                    **({"think": self.think} if self.think is not None else {}),
                 },
             ) as response:
                 response.raise_for_status()

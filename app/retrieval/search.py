@@ -1,3 +1,4 @@
+import asyncio
 from typing import Protocol
 
 from opentelemetry import trace
@@ -174,7 +175,16 @@ async def search(
                 backend=getattr(reranker, "backend", None),
                 top_n=top_n,
             ) as timer:
-                results = reranker.rerank(query, candidates, top_n=top_n)
+                # CrossEncoder inference is synchronous CPU/MPS work. Keep
+                # the production ordering (ACL -> retrieve -> rerank -> top_n)
+                # while moving it off the event loop. The production
+                # CrossEncoder exposes async_rerank(), which also bounds
+                # concurrent calls on its shared model instance.
+                async_rerank = getattr(reranker, "async_rerank", None)
+                if async_rerank is not None:
+                    results = await async_rerank(query, candidates, top_n)
+                else:
+                    results = await asyncio.to_thread(reranker.rerank, query, candidates, top_n)
                 timer.candidates_in = len(candidates)
                 timer.candidates_out = len(results)
                 timer.top_score = results[0].score if results else None

@@ -1,0 +1,19 @@
+{
+  "collection": "kb_eval_phase55_0175aa4a2f9b",
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "source_count": 20,
+  "chunk_count": 186,
+  "tenant_ids": [
+    "tenant-a",
+    "tenant-b"
+  ],
+  "dense_dimension": 1024,
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "embedding_model": "qwen3-embedding:4b",
+  "embedding_dimension": 1024,
+  "chunking_mode": "baseline",
+  "ingest_totals": {
+    "files_processed": 20,
+    "chunks_upserted": 186
+  }
+}

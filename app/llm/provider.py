@@ -56,7 +56,10 @@ def get_chat_provider(settings: Settings) -> ChatProvider:
 
     from app.llm.ollama_provider import OllamaProvider
 
-    return OllamaProvider(base_url=settings.ollama_base_url)
+    return OllamaProvider(
+        base_url=settings.ollama_base_url,
+        think=settings.ollama_thinking,
+    )
 
 
 def get_embedding_provider(settings: Settings) -> EmbeddingProvider:

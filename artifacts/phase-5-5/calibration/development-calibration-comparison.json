@@ -1,0 +1,173 @@
+{
+  "schema_version": "phase-5-5-calibration-comparison-v1",
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "development_artifact": "artifacts/phase-5-5/full/candidate-sweep.json",
+  "calibration_artifact": "artifacts/phase-5-5/calibration/candidate-sweep.json",
+  "splits": {
+    "development": {
+      "question_count": 200,
+      "case_family_count": 51
+    },
+    "calibration": {
+      "question_count": 112,
+      "case_family_count": 28
+    }
+  },
+  "metrics": {
+    "development": {
+      "20": {
+        "candidate_recall": 0.973333,
+        "all_required_evidence_recall": 0.973333,
+        "recall_at_5": 0.88,
+        "mrr": 0.601889,
+        "ndcg_at_5": 0.678009,
+        "family_recall_at_5": 0.895299,
+        "reranker_p50_ms": 3273.98,
+        "reranker_p95_ms": 4119.52,
+        "total_p50_ms": 3286.123,
+        "total_p95_ms": 4128.292,
+        "pairs_scored": 4000,
+        "pairs_per_second": 6.173
+      },
+      "15": {
+        "candidate_recall": 0.96,
+        "all_required_evidence_recall": 0.96,
+        "recall_at_5": 0.88,
+        "mrr": 0.604889,
+        "ndcg_at_5": 0.681342,
+        "family_recall_at_5": 0.895299,
+        "reranker_p50_ms": 2552.728,
+        "reranker_p95_ms": 3162.124,
+        "total_p50_ms": 2559.626,
+        "total_p95_ms": 3170.15,
+        "pairs_scored": 3000,
+        "pairs_per_second": 5.911
+      }
+    },
+    "calibration": {
+      "20": {
+        "candidate_recall": 0.963855,
+        "all_required_evidence_recall": 0.963855,
+        "recall_at_5": 0.819277,
+        "mrr": 0.665462,
+        "ndcg_at_5": 0.705879,
+        "family_recall_at_5": 0.833333,
+        "reranker_p50_ms": 3201.119,
+        "reranker_p95_ms": 4498.699,
+        "total_p50_ms": 3209.018,
+        "total_p95_ms": 4505.472,
+        "pairs_scored": 2240,
+        "pairs_per_second": 6.105
+      },
+      "15": {
+        "candidate_recall": 0.951807,
+        "all_required_evidence_recall": 0.951807,
+        "recall_at_5": 0.819277,
+        "mrr": 0.66747,
+        "ndcg_at_5": 0.708522,
+        "family_recall_at_5": 0.873016,
+        "reranker_p50_ms": 2441.952,
+        "reranker_p95_ms": 3092.892,
+        "total_p50_ms": 2449.304,
+        "total_p95_ms": 3100.745,
+        "pairs_scored": 1680,
+        "pairs_per_second": 6.176
+      }
+    }
+  },
+  "recall_at_5_slices": {
+    "development": {
+      "category": {
+        "cross_lingual": {
+          "20": 0.777778,
+          "15": 0.777778
+        },
+        "hard_answerable": {
+          "20": 0.9,
+          "15": 0.9
+        },
+        "multi_document": {
+          "20": 0.75,
+          "15": 0.75
+        },
+        "version_conflict": {
+          "20": 1.0,
+          "15": 1.0
+        },
+        "injection_bearing": {
+          "20": 1.0,
+          "15": 1.0
+        },
+        "standard_answerable": {
+          "20": 0.944444,
+          "15": 0.944444
+        },
+        "unanswerable": {
+          "20": null,
+          "15": null
+        },
+        "ambiguous": {
+          "20": null,
+          "15": null
+        }
+      },
+      "language_pair": {
+        "tr->en": {
+          "20": 0.810811,
+          "15": 0.810811
+        },
+        "en->tr": {
+          "20": 0.846154,
+          "15": 0.846154
+        }
+      }
+    },
+    "calibration": {
+      "category": {
+        "cross_lingual": {
+          "20": 0.55,
+          "15": 0.5
+        },
+        "hard_answerable": {
+          "20": 0.888889,
+          "15": 0.925926
+        },
+        "multi_document": {
+          "20": 1.0,
+          "15": 1.0
+        },
+        "version_conflict": {
+          "20": 0.75,
+          "15": 0.75
+        },
+        "injection_bearing": {
+          "20": 1.0,
+          "15": 1.0
+        },
+        "standard_answerable": {
+          "20": 0.95,
+          "15": 0.95
+        },
+        "unanswerable": {
+          "20": null,
+          "15": null
+        },
+        "ambiguous": {
+          "20": null,
+          "15": null
+        }
+      },
+      "language_pair": {
+        "tr->en": {
+          "20": 0.666667,
+          "15": 0.666667
+        },
+        "en->tr": {
+          "20": 0.4,
+          "15": 0.4
+        }
+      }
+    }
+  }
+}

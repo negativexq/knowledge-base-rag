@@ -1,0 +1,85 @@
+{
+  "category": "cross_lingual",
+  "member_count": 20,
+  "member_ids": [
+    "cross-04-0",
+    "cross-04-1",
+    "cross-09-0",
+    "cross-09-1",
+    "cross-13-0",
+    "cross-13-1",
+    "cross-14-0",
+    "cross-14-1",
+    "cross-19-0",
+    "cross-19-1",
+    "cross-22-0",
+    "cross-22-1",
+    "cross-25-0",
+    "cross-25-1",
+    "cross-28-0",
+    "cross-28-1",
+    "cross-31-0",
+    "cross-31-1",
+    "cross-35-0",
+    "cross-35-1"
+  ],
+  "language_pair_groups": {
+    "en->tr": {
+      "query_ids": [
+        "cross-04-0",
+        "cross-04-1",
+        "cross-09-0",
+        "cross-09-1",
+        "cross-14-0",
+        "cross-14-1",
+        "cross-28-0",
+        "cross-28-1",
+        "cross-31-0",
+        "cross-31-1"
+      ],
+      "k20": {
+        "record_count": 10,
+        "eligible_count": 10,
+        "numerator": 4,
+        "denominator": 10,
+        "recall_at_5": 0.4
+      },
+      "k15": {
+        "record_count": 10,
+        "eligible_count": 10,
+        "numerator": 4,
+        "denominator": 10,
+        "recall_at_5": 0.4
+      }
+    },
+    "tr->en": {
+      "query_ids": [
+        "cross-13-0",
+        "cross-13-1",
+        "cross-19-0",
+        "cross-19-1",
+        "cross-22-0",
+        "cross-22-1",
+        "cross-25-0",
+        "cross-25-1",
+        "cross-35-0",
+        "cross-35-1"
+      ],
+      "k20": {
+        "record_count": 10,
+        "eligible_count": 10,
+        "numerator": 7,
+        "denominator": 10,
+        "recall_at_5": 0.7
+      },
+      "k15": {
+        "record_count": 10,
+        "eligible_count": 10,
+        "numerator": 6,
+        "denominator": 10,
+        "recall_at_5": 0.6
+      }
+    }
+  },
+  "other_or_mixed_pairs": []
+}

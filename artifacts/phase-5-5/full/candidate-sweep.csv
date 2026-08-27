@@ -1,0 +1,4 @@
+candidate_k,pre_rerank_candidate_recall,pre_rerank_any_required_evidence,pre_rerank_all_required_evidence,pre_rerank_recall_at_10,pre_rerank_recall_at_15,pre_rerank_recall_at_20,post_rerank_recall_at_5,mrr,ndcg_at_5,rerank_p50_ms,rerank_p95_ms,total_p95_ms
+20,0.973333,0.973333,0.973333,0.926667,0.96,0.973333,0.88,0.601889,0.678009,3273.98,4119.52,4128.292
+15,0.96,0.96,0.96,0.926667,0.96,,0.88,0.604889,0.681342,2552.728,3162.124,3170.15
+10,0.926667,0.926667,0.926667,0.926667,,,0.88,0.598444,0.682294,1869.209,2679.252,2685.745

@@ -119,6 +119,43 @@ def test_generation_provider_defaults_to_ollama_local_first():
     assert Settings().generation_provider == "ollama"
 
 
+def test_dev_fast_profile_selects_qwen3_without_thinking():
+    settings = Settings.dev_fast()
+
+    assert settings.runtime_profile == "DEV_FAST"
+    assert settings.ollama_model == "qwen3:4b"
+    assert settings.ollama_thinking is False
+    assert settings.embedding_model_key == "qwen3-4b"
+    assert settings.embedding_output_dimension == 1024
+    assert settings.reranker_candidate_k == 15
+
+
+def test_default_dev_fast_profile_uses_local_candidate_budget():
+    settings = Settings(_env_file=None)
+
+    assert settings.runtime_profile == "DEV_FAST"
+    assert settings.reranker_candidate_k == 15
+
+
+def test_benchmark_reference_profile_preserves_retrieval_reference():
+    settings = Settings.benchmark_reference()
+
+    assert settings.runtime_profile == "BENCHMARK_REFERENCE"
+    assert settings.reranker_candidate_k == 20
+    assert settings.reranker_top_n == 5
+    assert settings.embedding_model_key == "qwen3-4b"
+    assert settings.embedding_output_dimension == 1024
+    assert settings.security_validation_mode == "strict"
+    assert settings.reranker_max_concurrency == 1
+
+
+def test_reranker_candidate_k_cannot_be_smaller_than_top_n():
+    import pytest
+
+    with pytest.raises(ValueError, match="reranker_candidate_k must be greater"):
+        Settings(_env_file=None, reranker_candidate_k=4, reranker_top_n=5)
+
+
 def test_embedding_provider_defaults_to_ollama():
     assert Settings().embedding_provider == "ollama"
 

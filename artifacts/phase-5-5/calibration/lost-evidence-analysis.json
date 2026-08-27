@@ -1,0 +1,86 @@
+{
+  "schema_version": "phase-5-5-lost-evidence-v1",
+  "source_artifact": "artifacts/phase-5-5/full/candidate-sweep.json",
+  "split": "development",
+  "reference_candidate_k": 20,
+  "comparison_candidate_k": 15,
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "lost_case_count": 2,
+  "quality_affected_count": 1,
+  "no_final_r5_impact_count": 1,
+  "cases": [
+    {
+      "query_id": "cross-30-1",
+      "case_family": "fact-30",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "tenant_id": "tenant-a",
+      "expected_source_ids": [
+        "refund-policy-2026"
+      ],
+      "required_evidence": [
+        "refund-policy-2026"
+      ],
+      "k20_expected_candidate_ranks": {
+        "refund-policy-2026": 18
+      },
+      "k15_expected_candidate_ranks": {
+        "refund-policy-2026": null
+      },
+      "k20_post_rerank_top5": [
+        "marketplace-returns",
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "k15_post_rerank_top5": [
+        "marketplace-returns",
+        "refund-policy-2025",
+        "long-policy-tr",
+        "long-policy-tr",
+        "standard-returns-2026"
+      ],
+      "k20_final_recall_at_5": true,
+      "k15_final_recall_at_5": false,
+      "final_impact": "quality_affected"
+    },
+    {
+      "query_id": "hard-marketplace-channel",
+      "case_family": "hard-marketplace-channel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "tenant_id": "tenant-a",
+      "expected_source_ids": [
+        "marketplace-returns"
+      ],
+      "required_evidence": [
+        "marketplace-returns"
+      ],
+      "k20_expected_candidate_ranks": {
+        "marketplace-returns": 17
+      },
+      "k15_expected_candidate_ranks": {
+        "marketplace-returns": null
+      },
+      "k20_post_rerank_top5": [
+        "support-playbook",
+        "premium-returns-2026",
+        "long-policy-tr",
+        "employee-handbook-en",
+        "refund-policy-2026"
+      ],
+      "k15_post_rerank_top5": [
+        "support-playbook",
+        "premium-returns-2026",
+        "long-policy-tr",
+        "employee-handbook-en",
+        "refund-policy-2026"
+      ],
+      "k20_final_recall_at_5": false,
+      "k15_final_recall_at_5": false,
+      "final_impact": "no_final_r5_impact"
+    }
+  ]
+}

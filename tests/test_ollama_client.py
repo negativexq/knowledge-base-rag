@@ -173,9 +173,10 @@ async def test_stream_chat_yields_content_tokens_in_order():
         assert body["stream"] is True
         assert body["model"] == "qwen2.5:3b-instruct"
         assert body["keep_alive"] == DEFAULT_KEEP_ALIVE
+        assert body["think"] is False
         return httpx.Response(200, content=ndjson)
 
-    client = OllamaClient(http_client=_mock_client(handler))
+    client = OllamaClient(http_client=_mock_client(handler), think=False)
     tokens = [
         token
         async for token in client.stream_chat(

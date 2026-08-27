@@ -691,7 +691,7 @@ def report_markdown(payload: dict, paired: dict) -> str:
         "",
         f"Production recommendation: **{payload['production_decision']['recommendation']}**",
         "",
-        "This benchmark does not claim production-scale storage behavior for the tiny four-document fixture corpus. Qwen tokenizer/model and BGE reranker are served locally; reranker inference remains synchronous in the async retrieval path.",
+        "This benchmark does not claim production-scale storage behavior for the tiny four-document fixture corpus. Qwen tokenizer/model and BGE reranker are served locally; production search isolates synchronous reranker inference in a worker thread.",
         "",
     ]
     return "\n".join(lines)

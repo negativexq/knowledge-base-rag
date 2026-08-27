@@ -1,0 +1,448 @@
+{
+  "schema_version": "phase-5-5-final-decision-v1",
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "phase_status": "closed",
+  "decision": {
+    "quality_reference_candidate_k": 20,
+    "dev_fast_candidate_k": 15,
+    "global_reference_candidate_k": 20,
+    "recommendation": "A"
+  },
+  "metrics": {
+    "candidate_recall": {
+      "development": {
+        "20": 0.973333,
+        "15": 0.96,
+        "delta_15_minus_20": -0.013333
+      },
+      "calibration": {
+        "20": 0.963855,
+        "15": 0.951807,
+        "delta_15_minus_20": -0.012048
+      }
+    },
+    "all_evidence_recall": {
+      "development": {
+        "20": 0.973333,
+        "15": 0.96,
+        "delta_15_minus_20": -0.013333
+      },
+      "calibration": {
+        "20": 0.963855,
+        "15": 0.951807,
+        "delta_15_minus_20": -0.012048
+      }
+    },
+    "R@5": {
+      "development": {
+        "20": 0.88,
+        "15": 0.88,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 0.819277,
+        "15": 0.819277,
+        "delta_15_minus_20": 0.0
+      }
+    },
+    "MRR": {
+      "development": {
+        "20": 0.601889,
+        "15": 0.604889,
+        "delta_15_minus_20": 0.003
+      },
+      "calibration": {
+        "20": 0.665462,
+        "15": 0.66747,
+        "delta_15_minus_20": 0.002008
+      }
+    },
+    "nDCG@5": {
+      "development": {
+        "20": 0.678009,
+        "15": 0.681342,
+        "delta_15_minus_20": 0.003333
+      },
+      "calibration": {
+        "20": 0.705879,
+        "15": 0.708522,
+        "delta_15_minus_20": 0.002643
+      }
+    },
+    "family_R@5": {
+      "development": {
+        "20": 0.895299,
+        "15": 0.895299,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 0.833333,
+        "15": 0.873016,
+        "delta_15_minus_20": 0.039683
+      }
+    },
+    "cross_lingual_R@5": {
+      "development": {
+        "20": 0.777778,
+        "15": 0.777778,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 0.55,
+        "15": 0.5,
+        "delta_15_minus_20": -0.05
+      }
+    },
+    "TR->EN_R@5": {
+      "development": {
+        "20": 0.810811,
+        "15": 0.810811,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 0.666667,
+        "15": 0.666667,
+        "delta_15_minus_20": 0.0
+      }
+    },
+    "EN->TR_R@5": {
+      "development": {
+        "20": 0.846154,
+        "15": 0.846154,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 0.4,
+        "15": 0.4,
+        "delta_15_minus_20": 0.0
+      }
+    },
+    "multi_doc_R@5": {
+      "development": {
+        "20": 0.75,
+        "15": 0.75,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 1.0,
+        "15": 1.0,
+        "delta_15_minus_20": 0.0
+      }
+    },
+    "hard_R@5": {
+      "development": {
+        "20": 0.9,
+        "15": 0.9,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 0.888889,
+        "15": 0.925926,
+        "delta_15_minus_20": 0.037037
+      }
+    },
+    "version_R@5": {
+      "development": {
+        "20": 1.0,
+        "15": 1.0,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 0.75,
+        "15": 0.75,
+        "delta_15_minus_20": 0.0
+      }
+    },
+    "injection_R@5": {
+      "development": {
+        "20": 1.0,
+        "15": 1.0,
+        "delta_15_minus_20": 0.0
+      },
+      "calibration": {
+        "20": 1.0,
+        "15": 1.0,
+        "delta_15_minus_20": 0.0
+      }
+    },
+    "reranker_p95_ms": {
+      "development": {
+        "20": 4119.52,
+        "15": 3162.124,
+        "delta_15_minus_20": -957.396
+      },
+      "calibration": {
+        "20": 4498.699,
+        "15": 3092.892,
+        "delta_15_minus_20": -1405.807
+      }
+    },
+    "total_p95_ms": {
+      "development": {
+        "20": 4128.292,
+        "15": 3170.15,
+        "delta_15_minus_20": -958.142
+      },
+      "calibration": {
+        "20": 4505.472,
+        "15": 3100.745,
+        "delta_15_minus_20": -1404.727
+      }
+    },
+    "actual_pairs": {
+      "development": {
+        "20": 4000,
+        "15": 3000,
+        "delta_15_minus_20": -1000
+      },
+      "calibration": {
+        "20": 2240,
+        "15": 1680,
+        "delta_15_minus_20": -560
+      }
+    }
+  },
+  "critical_slice_counts": {
+    "development": {
+      "20": {
+        "cross_lingual": {
+          "record_count": 36,
+          "eligible_count": 36,
+          "numerator": 28,
+          "denominator": 36,
+          "recall_at_5": 0.7777777777777778
+        },
+        "multi_document": {
+          "record_count": 12,
+          "eligible_count": 12,
+          "numerator": 12,
+          "denominator": 12,
+          "recall_at_5": 1.0
+        },
+        "hard_answerable": {
+          "record_count": 50,
+          "eligible_count": 50,
+          "numerator": 45,
+          "denominator": 50,
+          "recall_at_5": 0.9
+        },
+        "version_conflict": {
+          "record_count": 8,
+          "eligible_count": 8,
+          "numerator": 8,
+          "denominator": 8,
+          "recall_at_5": 1.0
+        },
+        "injection_bearing": {
+          "record_count": 8,
+          "eligible_count": 8,
+          "numerator": 8,
+          "denominator": 8,
+          "recall_at_5": 1.0
+        },
+        "acl_negative": {
+          "security_invariant": "unauthorized_source_in_top5",
+          "numerator": 0,
+          "denominator": 8,
+          "rate": 0.0
+        },
+        "language_pair": {
+          "tr->en": {
+            "record_count": 37,
+            "eligible_count": 37,
+            "numerator": 30,
+            "denominator": 37,
+            "recall_at_5": 0.8108108108108109
+          },
+          "en->tr": {
+            "record_count": 13,
+            "eligible_count": 13,
+            "numerator": 11,
+            "denominator": 13,
+            "recall_at_5": 0.8461538461538461
+          }
+        }
+      },
+      "15": {
+        "cross_lingual": {
+          "record_count": 36,
+          "eligible_count": 36,
+          "numerator": 28,
+          "denominator": 36,
+          "recall_at_5": 0.7777777777777778
+        },
+        "multi_document": {
+          "record_count": 12,
+          "eligible_count": 12,
+          "numerator": 12,
+          "denominator": 12,
+          "recall_at_5": 1.0
+        },
+        "hard_answerable": {
+          "record_count": 50,
+          "eligible_count": 50,
+          "numerator": 45,
+          "denominator": 50,
+          "recall_at_5": 0.9
+        },
+        "version_conflict": {
+          "record_count": 8,
+          "eligible_count": 8,
+          "numerator": 8,
+          "denominator": 8,
+          "recall_at_5": 1.0
+        },
+        "injection_bearing": {
+          "record_count": 8,
+          "eligible_count": 8,
+          "numerator": 8,
+          "denominator": 8,
+          "recall_at_5": 1.0
+        },
+        "acl_negative": {
+          "security_invariant": "unauthorized_source_in_top5",
+          "numerator": 0,
+          "denominator": 8,
+          "rate": 0.0
+        },
+        "language_pair": {
+          "tr->en": {
+            "record_count": 37,
+            "eligible_count": 37,
+            "numerator": 30,
+            "denominator": 37,
+            "recall_at_5": 0.8108108108108109
+          },
+          "en->tr": {
+            "record_count": 13,
+            "eligible_count": 13,
+            "numerator": 11,
+            "denominator": 13,
+            "recall_at_5": 0.8461538461538461
+          }
+        }
+      }
+    },
+    "calibration": {
+      "20": {
+        "cross_lingual": {
+          "record_count": 20,
+          "eligible_count": 20,
+          "numerator": 11,
+          "denominator": 20,
+          "recall_at_5": 0.55
+        },
+        "multi_document": {
+          "record_count": 4,
+          "eligible_count": 4,
+          "numerator": 4,
+          "denominator": 4,
+          "recall_at_5": 1.0
+        },
+        "hard_answerable": {
+          "record_count": 27,
+          "eligible_count": 27,
+          "numerator": 24,
+          "denominator": 27,
+          "recall_at_5": 0.8888888888888888
+        },
+        "version_conflict": {
+          "record_count": 8,
+          "eligible_count": 8,
+          "numerator": 6,
+          "denominator": 8,
+          "recall_at_5": 0.75
+        },
+        "injection_bearing": {
+          "record_count": 4,
+          "eligible_count": 4,
+          "numerator": 4,
+          "denominator": 4,
+          "recall_at_5": 1.0
+        },
+        "acl_negative": {
+          "security_invariant": "unauthorized_source_in_top5",
+          "numerator": 0,
+          "denominator": 8,
+          "rate": 0.0
+        },
+        "language_pair": {
+          "tr->en": {
+            "record_count": 18,
+            "eligible_count": 18,
+            "numerator": 12,
+            "denominator": 18,
+            "recall_at_5": 0.6666666666666666
+          },
+          "en->tr": {
+            "record_count": 10,
+            "eligible_count": 10,
+            "numerator": 4,
+            "denominator": 10,
+            "recall_at_5": 0.4
+          }
+        }
+      },
+      "15": {
+        "cross_lingual": {
+          "record_count": 20,
+          "eligible_count": 20,
+          "numerator": 10,
+          "denominator": 20,
+          "recall_at_5": 0.5
+        },
+        "multi_document": {
+          "record_count": 4,
+          "eligible_count": 4,
+          "numerator": 4,
+          "denominator": 4,
+          "recall_at_5": 1.0
+        },
+        "hard_answerable": {
+          "record_count": 27,
+          "eligible_count": 27,
+          "numerator": 25,
+          "denominator": 27,
+          "recall_at_5": 0.9259259259259259
+        },
+        "version_conflict": {
+          "record_count": 8,
+          "eligible_count": 8,
+          "numerator": 6,
+          "denominator": 8,
+          "recall_at_5": 0.75
+        },
+        "injection_bearing": {
+          "record_count": 4,
+          "eligible_count": 4,
+          "numerator": 4,
+          "denominator": 4,
+          "recall_at_5": 1.0
+        },
+        "acl_negative": {
+          "security_invariant": "unauthorized_source_in_top5",
+          "numerator": 0,
+          "denominator": 8,
+          "rate": 0.0
+        },
+        "language_pair": {
+          "tr->en": {
+            "record_count": 18,
+            "eligible_count": 18,
+            "numerator": 12,
+            "denominator": 18,
+            "recall_at_5": 0.6666666666666666
+          },
+          "en->tr": {
+            "record_count": 10,
+            "eligible_count": 10,
+            "numerator": 4,
+            "denominator": 10,
+            "recall_at_5": 0.4
+          }
+        }
+      }
+    }
+  }
+}

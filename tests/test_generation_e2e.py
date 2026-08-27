@@ -7,8 +7,10 @@ Skipped automatically if Ollama isn't reachable, so it doesn't break
 CI/offline runs.
 """
 
+import json
 import socket
 import time
+import urllib.request
 
 import pytest
 
@@ -25,6 +27,15 @@ def _ollama_up() -> bool:
         with socket.create_connection(("localhost", 11434), timeout=0.5):
             return True
     except OSError:
+        return False
+
+
+def _configured_model_available() -> bool:
+    try:
+        with urllib.request.urlopen("http://localhost:11434/api/tags", timeout=0.5) as response:
+            models = json.load(response).get("models", [])
+        return any(model.get("name") == settings.ollama_model for model in models)
+    except (OSError, ValueError):
         return False
 
 
@@ -46,7 +57,10 @@ CONTEXT_CHUNKS = [
 ]
 
 
-@pytest.mark.skipif(not _ollama_up(), reason="requires native Ollama on :11434")
+@pytest.mark.skipif(
+    not (_ollama_up() and _configured_model_available()),
+    reason="requires native Ollama and the configured generation model",
+)
 @pytest.mark.asyncio
 async def test_answer_streams_as_multiple_incremental_events_not_one_blob():
     ollama = OllamaClient(base_url=settings.ollama_base_url)
@@ -74,7 +88,10 @@ async def test_answer_streams_as_multiple_incremental_events_not_one_blob():
         await ollama.aclose()
 
 
-@pytest.mark.skipif(not _ollama_up(), reason="requires native Ollama on :11434")
+@pytest.mark.skipif(
+    not (_ollama_up() and _configured_model_available()),
+    reason="requires native Ollama and the configured generation model",
+)
 @pytest.mark.asyncio
 async def test_answer_citations_are_grounded_in_real_context():
     ollama = OllamaClient(base_url=settings.ollama_base_url)
@@ -103,7 +120,10 @@ async def test_answer_citations_are_grounded_in_real_context():
         await ollama.aclose()
 
 
-@pytest.mark.skipif(not _ollama_up(), reason="requires native Ollama on :11434")
+@pytest.mark.skipif(
+    not (_ollama_up() and _configured_model_available()),
+    reason="requires native Ollama and the configured generation model",
+)
 @pytest.mark.asyncio
 async def test_out_of_context_question_gets_not_found_reply_not_a_hallucination():
     ollama = OllamaClient(base_url=settings.ollama_base_url)

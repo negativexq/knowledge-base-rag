@@ -1,0 +1,241 @@
+{
+  "development": {
+    "k20_hit_k15_miss": [
+      {
+        "query_id": "cross-30-1",
+        "case_family": "fact-30",
+        "category": "cross_lingual",
+        "query_language": "tr",
+        "evidence_language": "en",
+        "language_pair": "tr->en",
+        "tenant_id": "tenant-a",
+        "expected_source_ids": [
+          "refund-policy-2026"
+        ],
+        "pre_rerank_k20_ranks": {
+          "refund-policy-2026": 18
+        },
+        "pre_rerank_k15_ranks": {
+          "refund-policy-2026": null
+        },
+        "post_rerank_k20_first_ranks": {
+          "refund-policy-2026": 3
+        },
+        "post_rerank_k15_first_ranks": {
+          "refund-policy-2026": null
+        },
+        "post_rerank_k20_top5_hit": true,
+        "post_rerank_k15_top5_hit": false,
+        "k20_ranked_top5": [
+          "marketplace-returns",
+          "refund-policy-2025",
+          "refund-policy-2026",
+          "long-policy-tr",
+          "long-policy-tr"
+        ],
+        "k15_ranked_top5": [
+          "marketplace-returns",
+          "refund-policy-2025",
+          "long-policy-tr",
+          "long-policy-tr",
+          "standard-returns-2026"
+        ]
+      }
+    ],
+    "k20_miss_k15_hit": [
+      {
+        "query_id": "cross-29-1",
+        "case_family": "fact-29",
+        "category": "cross_lingual",
+        "query_language": "tr",
+        "evidence_language": "en",
+        "language_pair": "tr->en",
+        "tenant_id": "tenant-a",
+        "expected_source_ids": [
+          "support-escalation"
+        ],
+        "pre_rerank_k20_ranks": {
+          "support-escalation": 9
+        },
+        "pre_rerank_k15_ranks": {
+          "support-escalation": 9
+        },
+        "post_rerank_k20_first_ranks": {
+          "support-escalation": null
+        },
+        "post_rerank_k15_first_ranks": {
+          "support-escalation": 5
+        },
+        "post_rerank_k20_top5_hit": false,
+        "post_rerank_k15_top5_hit": true,
+        "k20_ranked_top5": [
+          "long-policy-tr",
+          "long-policy-tr",
+          "long-policy-tr",
+          "employee-handbook-en",
+          "employee-handbook-en"
+        ],
+        "k15_ranked_top5": [
+          "long-policy-tr",
+          "long-policy-tr",
+          "long-policy-tr",
+          "employee-handbook-en",
+          "support-escalation"
+        ]
+      }
+    ],
+    "family_impact": [
+      {
+        "query_id": "cross-29-1",
+        "case_family": "fact-29",
+        "family_query_ids": [
+          "cross-29-0",
+          "cross-29-1",
+          "native-29-0",
+          "native-29-1",
+          "native-29-2",
+          "native-29-3"
+        ],
+        "family_query_count": 6,
+        "k20_family_hits": 3,
+        "k20_family_recall_at_5": 0.5,
+        "k15_family_hits": 4,
+        "k15_family_recall_at_5": 0.6666666666666666
+      },
+      {
+        "query_id": "cross-30-1",
+        "case_family": "fact-30",
+        "family_query_ids": [
+          "cross-30-0",
+          "cross-30-1",
+          "native-30-0",
+          "native-30-1",
+          "native-30-2",
+          "native-30-3"
+        ],
+        "family_query_count": 6,
+        "k20_family_hits": 6,
+        "k20_family_recall_at_5": 1.0,
+        "k15_family_hits": 5,
+        "k15_family_recall_at_5": 0.8333333333333334
+      }
+    ]
+  },
+  "calibration": {
+    "k20_hit_k15_miss": [
+      {
+        "query_id": "cross-19-0",
+        "case_family": "fact-19",
+        "category": "cross_lingual",
+        "query_language": "tr",
+        "evidence_language": "en",
+        "language_pair": "tr->en",
+        "tenant_id": "tenant-b",
+        "expected_source_ids": [
+          "regional-returns-eu"
+        ],
+        "pre_rerank_k20_ranks": {
+          "regional-returns-eu": 17
+        },
+        "pre_rerank_k15_ranks": {
+          "regional-returns-eu": null
+        },
+        "post_rerank_k20_first_ranks": {
+          "regional-returns-eu": 4
+        },
+        "post_rerank_k15_first_ranks": {
+          "regional-returns-eu": null
+        },
+        "post_rerank_k20_top5_hit": true,
+        "post_rerank_k15_top5_hit": false,
+        "k20_ranked_top5": [
+          "regional-returns-tr",
+          "returns-manual-tr",
+          "regional-returns-tr",
+          "regional-returns-eu",
+          "returns-manual-tr"
+        ],
+        "k15_ranked_top5": [
+          "regional-returns-tr",
+          "returns-manual-tr",
+          "regional-returns-tr",
+          "returns-manual-tr",
+          "returns-manual-tr"
+        ]
+      }
+    ],
+    "k20_miss_k15_hit": [
+      {
+        "query_id": "hard-activation-evidence",
+        "case_family": "hard-activation-evidence",
+        "category": "hard_answerable",
+        "query_language": "tr",
+        "evidence_language": "en",
+        "language_pair": "tr->en",
+        "tenant_id": "tenant-a",
+        "expected_source_ids": [
+          "digital-goods-policy"
+        ],
+        "pre_rerank_k20_ranks": {
+          "digital-goods-policy": 6
+        },
+        "pre_rerank_k15_ranks": {
+          "digital-goods-policy": 6
+        },
+        "post_rerank_k20_first_ranks": {
+          "digital-goods-policy": null
+        },
+        "post_rerank_k15_first_ranks": {
+          "digital-goods-policy": 5
+        },
+        "post_rerank_k20_top5_hit": false,
+        "post_rerank_k15_top5_hit": true,
+        "k20_ranked_top5": [
+          "long-policy-tr",
+          "long-policy-tr",
+          "long-policy-tr",
+          "long-policy-tr",
+          "long-policy-tr"
+        ],
+        "k15_ranked_top5": [
+          "long-policy-tr",
+          "long-policy-tr",
+          "long-policy-tr",
+          "long-policy-tr",
+          "digital-goods-policy"
+        ]
+      }
+    ],
+    "family_impact": [
+      {
+        "query_id": "cross-19-0",
+        "case_family": "fact-19",
+        "family_query_ids": [
+          "cross-19-0",
+          "cross-19-1",
+          "native-19-0",
+          "native-19-1",
+          "native-19-2",
+          "native-19-3"
+        ],
+        "family_query_count": 6,
+        "k20_family_hits": 5,
+        "k20_family_recall_at_5": 0.8333333333333334,
+        "k15_family_hits": 4,
+        "k15_family_recall_at_5": 0.6666666666666666
+      },
+      {
+        "query_id": "hard-activation-evidence",
+        "case_family": "hard-activation-evidence",
+        "family_query_ids": [
+          "hard-activation-evidence"
+        ],
+        "family_query_count": 1,
+        "k20_family_hits": 0,
+        "k20_family_recall_at_5": 0.0,
+        "k15_family_hits": 1,
+        "k15_family_recall_at_5": 1.0
+      }
+    ]
+  }
+}

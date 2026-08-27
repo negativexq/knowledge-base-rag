@@ -46,6 +46,7 @@ def build_reranker(settings: Settings):
     return CrossEncoderReranker(
         settings.reranker_model,
         trust_remote_code=settings.reranker_trust_remote_code,
+        max_concurrency=settings.reranker_max_concurrency,
     )
 
 

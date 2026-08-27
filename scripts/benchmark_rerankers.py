@@ -451,9 +451,8 @@ def report_markdown(payload: dict) -> str:
         "",
         (
             "Reranker inference uses the local Python sentence-transformers backend. "
-            "The production call is synchronous inside the async retrieval function, "
-            "so CPU inference can block the event loop; this sprint measures the cost "
-            "but does not refactor serving."
+            "The production call is isolated in a worker thread from the async retrieval "
+            "function; this benchmark measures model cost without changing ranking semantics."
         ),
         "",
         "Memory/VRAM was not measured. A benchmark result is not a universal security "

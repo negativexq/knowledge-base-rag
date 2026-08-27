@@ -18,6 +18,7 @@ from app.reranker.config import (
 from app.security.auth import validate_auth_configuration
 
 SecurityValidationMode = Literal["fast", "strict"]
+RuntimeProfile = Literal["DEV_FAST", "BENCHMARK_REFERENCE"]
 VALID_SECURITY_VALIDATION_MODES = ("fast", "strict")
 
 
@@ -35,9 +36,14 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     app_env: Literal["development", "production"] = "development"
+    runtime_profile: RuntimeProfile = "DEV_FAST"
 
     ollama_base_url: str = "http://host.docker.internal:11434"
-    ollama_model: str = "qwen2.5:7b-instruct"
+    # DEV_FAST is the local interactive profile. Benchmark retrieval never
+    # calls the chat provider, so changing this does not change retrieval
+    # semantics or the embedding model.
+    ollama_model: str = "qwen3:4b"
+    ollama_thinking: bool = False
     ollama_embed_model: str = "nomic-embed-text"
 
     # Qwen3-Embedding-4B benchmark configuration — served
@@ -106,8 +112,12 @@ class Settings(BaseSettings):
     reranker_enabled: bool = True
     reranker_model: str = MULTILINGUAL_RERANKER_MODEL
     reranker_backend: Literal["sentence-transformers"] = RERANKER_BACKEND
+    # The global/reference value remains RERANKER_CANDIDATE_K (20). DEV_FAST
+    # applies its measured local-iteration budget (15) unless an explicit
+    # environment or constructor override pins another value.
     reranker_candidate_k: int = Field(default=RERANKER_CANDIDATE_K, gt=0)
     reranker_top_n: int = Field(default=RERANKER_TOP_N, gt=0)
+    reranker_max_concurrency: int = Field(default=1, ge=1, le=16)
     reranker_trust_remote_code: bool = False
 
     # Production keeps the legacy word-window as the explicit
@@ -223,6 +233,47 @@ class Settings(BaseSettings):
     # unreasonable value, not pick the "right" one.
     embedding_concurrency: int = Field(default=4, ge=1, le=32)
 
+    @classmethod
+    def dev_fast(cls, **overrides: object) -> Self:
+        """Return the documented local interactive profile."""
+        values = {
+            "runtime_profile": "DEV_FAST",
+            "ollama_model": "qwen3:4b",
+            "ollama_thinking": False,
+            "reranker_candidate_k": 15,
+            "reranker_top_n": 5,
+            "embedding_model_key": "qwen3-4b",
+            "embedding_output_dimension": 1024,
+            "active_prompt_version": "v3",
+            "security_validation_mode": "strict",
+        }
+        values.update(overrides)
+        return cls(_env_file=None, **values)
+
+    @classmethod
+    def benchmark_reference(cls, **overrides: object) -> Self:
+        """Return the fixed retrieval reference profile for measurements."""
+        values = {
+            "runtime_profile": "BENCHMARK_REFERENCE",
+            "reranker_candidate_k": RERANKER_CANDIDATE_K,
+            "reranker_top_n": RERANKER_TOP_N,
+            "embedding_model_key": "qwen3-4b",
+            "embedding_output_dimension": 1024,
+            "active_prompt_version": "v3",
+            "security_validation_mode": "strict",
+        }
+        values.update(overrides)
+        return cls(_env_file=None, **values)
+
+    @model_validator(mode="after")
+    def apply_runtime_profile_defaults(self) -> Self:
+        if (
+            self.runtime_profile == "DEV_FAST"
+            and "reranker_candidate_k" not in self.model_fields_set
+        ):
+            self.reranker_candidate_k = 15
+        return self
+
     @model_validator(mode="after")
     def validate_auth(self) -> Self:
         validate_auth_configuration(
@@ -230,6 +281,15 @@ class Settings(BaseSettings):
             auth_enabled=self.auth_enabled,
             auth_tokens_json=self.auth_tokens_json,
         )
+        return self
+
+    @model_validator(mode="after")
+    def validate_reranker_bounds(self) -> Self:
+        if self.reranker_candidate_k < self.reranker_top_n:
+            raise ValueError(
+                "reranker_candidate_k must be greater than or equal to "
+                f"reranker_top_n ({self.reranker_top_n})"
+            )
         return self
 
 

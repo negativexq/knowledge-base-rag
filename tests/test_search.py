@@ -285,6 +285,55 @@ async def test_search_uses_reranker_when_provided(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_search_isolates_synchronous_reranker_in_worker_thread(monkeypatch):
+    client = QdrantClient(":memory:")
+    candidates = [SearchResult(score=0.9, payload={"text": "first"})]
+    monkeypatch.setattr(search_module, "hybrid_search", lambda *args, **kwargs: candidates)
+    calls = []
+
+    async def fake_to_thread(function, *args):
+        calls.append((function, args))
+        return function(*args)
+
+    monkeypatch.setattr(search_module.asyncio, "to_thread", fake_to_thread)
+    await search(
+        "hello",
+        ollama=_FakeOllama(),
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=client,
+        collection_name=COLLECTION,
+        embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="default"),
+        reranker=_FakeReranker(),
+    )
+
+    assert len(calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_search_propagates_reranker_exceptions_through_worker_thread(monkeypatch):
+    client = QdrantClient(":memory:")
+    candidates = [SearchResult(score=0.9, payload={"text": "first"})]
+    monkeypatch.setattr(search_module, "hybrid_search", lambda *args, **kwargs: candidates)
+
+    class _FailingReranker:
+        def rerank(self, query, candidates, top_n):
+            raise RuntimeError("reranker failed")
+
+    with pytest.raises(RuntimeError, match="reranker failed"):
+        await search(
+            "hello",
+            ollama=_FakeOllama(),
+            sparse_encoder=_FakeSparseEncoder(),
+            qdrant_client=client,
+            collection_name=COLLECTION,
+            embed_model="nomic-embed-text",
+            context=RetrievalContext(tenant_id="default"),
+            reranker=_FailingReranker(),
+        )
+
+
+@pytest.mark.asyncio
 async def test_search_fetches_rerank_candidate_k_from_hybrid_search_by_default(monkeypatch):
     client = QdrantClient(":memory:")
     captured = {}
