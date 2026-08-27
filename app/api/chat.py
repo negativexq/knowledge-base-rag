@@ -8,6 +8,7 @@ from opentelemetry import trace
 from pydantic import BaseModel
 
 from app.api.deps import get_current_user
+from app.evaluation.answerability import extract_answerability_observation
 from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
@@ -125,6 +126,37 @@ async def _sse_event_stream(
         report.untrusted_context_enabled = deps.prompt_version == "v3"
         report.security_validation_mode = deps.security_validation_mode
         chunks = await deps.search_fn(question, context, report)
+        authorized_candidate_count = report.authorized_candidate_count
+        if authorized_candidate_count is None:
+            authorized_candidate_count = len(chunks)
+        observation = extract_answerability_observation(
+            chunks,
+            authorized_candidate_count=authorized_candidate_count,
+            pre_acl_candidate_count=report.pre_acl_candidate_count,
+        )
+        report.answerability = observation.as_dict()
+        answerability_features = observation.features
+        for name, value in (
+            (
+                "answerability.authorized_candidate_count",
+                answerability_features.authorized_candidate_count,
+            ),
+            (
+                "answerability.pre_acl_candidate_count",
+                answerability_features.pre_acl_candidate_count,
+            ),
+            ("answerability.reranked_count", answerability_features.reranked_count),
+            ("answerability.top1_score", answerability_features.top1_score),
+            ("answerability.margin", answerability_features.top1_top2_margin),
+            (
+                "answerability.distinct_source_count",
+                answerability_features.distinct_source_count_top5,
+            ),
+            ("answerability.feature_latency_ms", answerability_features.feature_latency_ms),
+        ):
+            if value is not None:
+                span.set_attribute(name, value)
+        span.set_attribute("answerability.reason", observation.reason)
         token_counts = [chunk.payload.get("token_count") for chunk in chunks]
         report.context = {
             "retrieved_chunk_count": len(chunks),

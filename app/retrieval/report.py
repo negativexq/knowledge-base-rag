@@ -62,6 +62,9 @@ class RetrievalReport:
     output_policy_violations: list[str] = field(default_factory=list)
     reranker: dict | None = None
     context: dict = field(default_factory=dict)
+    answerability: dict | None = None
+    pre_acl_candidate_count: int | None = None
+    authorized_candidate_count: int | None = None
 
     def record(self, stage: RetrievalStage) -> None:
         self.stages.append(stage)
@@ -77,6 +80,7 @@ class RetrievalReport:
             },
             "total_duration_ms": round(sum(s.duration_ms for s in self.stages), 3),
             "reranker": self.reranker,
+            "answerability": self.answerability,
             "context": self.context,
             "security": {
                 "prompt_policy_version": self.prompt_policy_version,

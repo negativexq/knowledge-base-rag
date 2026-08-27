@@ -19,8 +19,8 @@ def build_acl_filter(context: RetrievalContext) -> qmodels.Filter | None:
     (RetrievalContext.system()); every other context must resolve to a
     real `tenant_id == ...` condition, or this raises rather than
     silently building an unrestricted filter. See
-    app/retrieval/search.py::search(), the one place this is combined
-    with user filters via combine_filters() before ever reaching Qdrant.
+    app/retrieval/search.py::search(), the server-owned context used for
+    the post-retrieval ACL check before reranking.
     """
     if context.is_system:
         return None
@@ -53,6 +53,21 @@ def combine_filters(
     if acl_filter is not None and user_filter is not None:
         return qmodels.Filter(must=[acl_filter, user_filter])
     return acl_filter or user_filter
+
+
+def filter_authorized_candidates(candidates: list, context: RetrievalContext) -> list:
+    """Apply the server-owned tenant boundary before reranking.
+
+    The raw candidate count is safe to retain as an integer, but unauthorized
+    result objects are discarded here and never returned downstream.
+    """
+    if context.is_system:
+        return list(candidates)
+    return [
+        candidate
+        for candidate in candidates
+        if candidate.payload.get("tenant_id") == context.tenant_id
+    ]
 
 
 def build_filter(

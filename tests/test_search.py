@@ -231,15 +231,10 @@ async def test_search_builds_and_passes_filter_from_doc_ids(monkeypatch):
         doc_ids=["doc-a", "doc-b"],
     )
 
-    # Sprint 23: the filter actually passed to hybrid_search is now the
-    # ACL filter AND the user-supplied doc_ids filter — never just the
-    # bare doc_ids filter on its own, even for a normal, non-adversarial
-    # caller.
-    from app.retrieval.filters import build_acl_filter, combine_filters
-
-    expected_acl = build_acl_filter(RetrievalContext(tenant_id="default"))
+    # User filters remain applied by Qdrant; the server-owned ACL is applied
+    # immediately after this one raw retrieval and before reranking.
     expected_user = build_filter(doc_ids=["doc-a", "doc-b"])
-    assert captured["filters"] == combine_filters(expected_acl, expected_user)
+    assert captured["filters"] == expected_user
 
 
 class _FakeReranker:
@@ -256,8 +251,8 @@ class _FakeReranker:
 async def test_search_uses_reranker_when_provided(monkeypatch):
     client = QdrantClient(":memory:")
     hybrid_candidates = [
-        SearchResult(score=0.9, payload={"text": "first"}),
-        SearchResult(score=0.5, payload={"text": "second"}),
+        SearchResult(score=0.9, payload={"text": "first", "tenant_id": "default"}),
+        SearchResult(score=0.5, payload={"text": "second", "tenant_id": "default"}),
     ]
 
     def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
@@ -285,9 +280,130 @@ async def test_search_uses_reranker_when_provided(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_search_records_raw_and_authorized_counts_without_second_retrieval(monkeypatch):
+    raw_candidates = [
+        SearchResult(
+            score=0.9,
+            payload={"text": "authorized", "tenant_id": "tenant-a", "source_id": "a"},
+        ),
+        SearchResult(
+            score=0.8,
+            payload={
+                "text": "private",
+                "tenant_id": "tenant-b",
+                "source_id": "b",
+                "secret": "must-not-leak",
+            },
+        ),
+    ]
+    calls = 0
+
+    def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
+        nonlocal calls
+        calls += 1
+        return raw_candidates
+
+    monkeypatch.setattr(search_module, "hybrid_search", fake_hybrid_search)
+    report = RetrievalReport()
+    reranker = _FakeReranker()
+
+    results = await search(
+        "hello",
+        ollama=_FakeOllama(),
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=QdrantClient(":memory:"),
+        collection_name=COLLECTION,
+        embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="tenant-a"),
+        reranker=reranker,
+        report=report,
+    )
+
+    assert calls == 1
+    assert report.pre_acl_candidate_count == 2
+    assert report.authorized_candidate_count == 1
+    assert [result.payload["source_id"] for result in reranker.calls[0]["candidates"]] == ["a"]
+    assert [result.payload["source_id"] for result in results] == ["a"]
+
+
+@pytest.mark.asyncio
+async def test_search_records_zero_counts_for_empty_raw_retrieval(monkeypatch):
+    calls = 0
+
+    def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
+        nonlocal calls
+        calls += 1
+        return []
+
+    monkeypatch.setattr(search_module, "hybrid_search", fake_hybrid_search)
+    report = RetrievalReport()
+
+    assert (
+        await search(
+            "missing",
+            ollama=_FakeOllama(),
+            sparse_encoder=_FakeSparseEncoder(),
+            qdrant_client=QdrantClient(":memory:"),
+            collection_name=COLLECTION,
+            embed_model="nomic-embed-text",
+            context=RetrievalContext(tenant_id="tenant-a"),
+            report=report,
+        )
+        == []
+    )
+    assert calls == 1
+    assert report.pre_acl_candidate_count == 0
+    assert report.authorized_candidate_count == 0
+
+
+@pytest.mark.asyncio
+async def test_search_reports_unauthorized_only_without_exposing_raw_metadata(monkeypatch):
+    raw_candidates = [
+        SearchResult(
+            score=0.9,
+            payload={
+                "text": "private",
+                "tenant_id": "tenant-b",
+                "source_id": "private-source",
+                "secret": "must-not-leak",
+            },
+        )
+    ]
+    calls = 0
+
+    def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
+        nonlocal calls
+        calls += 1
+        return raw_candidates
+
+    monkeypatch.setattr(search_module, "hybrid_search", fake_hybrid_search)
+    report = RetrievalReport()
+
+    results = await search(
+        "private",
+        ollama=_FakeOllama(),
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=QdrantClient(":memory:"),
+        collection_name=COLLECTION,
+        embed_model="nomic-embed-text",
+        context=RetrievalContext(tenant_id="tenant-a"),
+        reranker=_FakeReranker(),
+        report=report,
+    )
+
+    assert calls == 1
+    assert results == []
+    assert report.pre_acl_candidate_count == 1
+    assert report.authorized_candidate_count == 0
+    report_json = str(report.as_dict())
+    assert "private-source" not in report_json
+    assert "must-not-leak" not in report_json
+
+
+@pytest.mark.asyncio
 async def test_search_isolates_synchronous_reranker_in_worker_thread(monkeypatch):
     client = QdrantClient(":memory:")
-    candidates = [SearchResult(score=0.9, payload={"text": "first"})]
+    candidates = [SearchResult(score=0.9, payload={"text": "first", "tenant_id": "default"})]
     monkeypatch.setattr(search_module, "hybrid_search", lambda *args, **kwargs: candidates)
     calls = []
 
@@ -313,7 +429,7 @@ async def test_search_isolates_synchronous_reranker_in_worker_thread(monkeypatch
 @pytest.mark.asyncio
 async def test_search_propagates_reranker_exceptions_through_worker_thread(monkeypatch):
     client = QdrantClient(":memory:")
-    candidates = [SearchResult(score=0.9, payload={"text": "first"})]
+    candidates = [SearchResult(score=0.9, payload={"text": "first", "tenant_id": "default"})]
     monkeypatch.setattr(search_module, "hybrid_search", lambda *args, **kwargs: candidates)
 
     class _FailingReranker:
@@ -362,9 +478,9 @@ async def test_search_fetches_rerank_candidate_k_from_hybrid_search_by_default(m
 async def test_search_without_reranker_falls_back_to_hybrid_order_truncated_to_top_n(monkeypatch):
     client = QdrantClient(":memory:")
     hybrid_candidates = [
-        SearchResult(score=0.9, payload={"text": "first"}),
-        SearchResult(score=0.5, payload={"text": "second"}),
-        SearchResult(score=0.1, payload={"text": "third"}),
+        SearchResult(score=0.9, payload={"text": "first", "tenant_id": "default"}),
+        SearchResult(score=0.5, payload={"text": "second", "tenant_id": "default"}),
+        SearchResult(score=0.1, payload={"text": "third", "tenant_id": "default"}),
     ]
 
     def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
@@ -423,7 +539,9 @@ async def test_search_creates_embed_and_retrieve_spans_with_attributes():
 @pytest.mark.asyncio
 async def test_search_creates_rerank_span_only_when_reranker_provided():
     client = QdrantClient(":memory:")
-    hybrid_candidates = [SearchResult(score=0.9, payload={"text": "first"})]
+    hybrid_candidates = [
+        SearchResult(score=0.9, payload={"text": "first", "tenant_id": "default"})
+    ]
 
     def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
         return hybrid_candidates

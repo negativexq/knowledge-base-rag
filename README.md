@@ -291,6 +291,8 @@ artifacts/    Machine-readable benchmark and evaluation evidence
   context efficiency, boundary checks, and the current production decision.
 - [Evaluation Corpus v2](docs/evaluation-dataset.md) — corpus design, golden
   schema, frozen splits, static validation, and the next-run manifest.
+- [Phase 6A answerability shadow features](docs/phase-6a-answerability.md) —
+  deterministic post-retrieval signals without thresholds or abstention.
 - [Phase 5.5 runtime optimization](docs/phase-5-5-runtime-optimization.md) —
   local generation profile and guarded candidate-k sweep.
 - [Embedding migration](docs/embedding-migration.md) — model/index lifecycle,

@@ -302,6 +302,39 @@ export interface RetrievalStageInfo {
   detail: Record<string, unknown>
 }
 
+export interface AnswerabilityFeatures {
+  pre_acl_candidate_count: number | null
+  authorized_candidate_count: number
+  reranked_count: number
+  top1_score: number | null
+  top2_score: number | null
+  top3_score: number | null
+  top1_top2_margin: number | null
+  top1_top3_margin: number | null
+  mean_top3_score: number | null
+  mean_top5_score: number | null
+  min_top5_score: number | null
+  max_top5_score: number | null
+  std_top5_score: number | null
+  distinct_source_count_top5: number | null
+  distinct_document_count_top5: number | null
+  top1_fused_rank: number | null
+  top1_dense_rank: number | null
+  top1_sparse_rank: number | null
+  dense_sparse_agreement: number | null
+  fused_rerank_agreement: number | null
+  source_score_concentration: number | null
+  duplicate_source_chunk_count_top5: number | null
+  feature_latency_ms: number
+}
+
+export interface AnswerabilityObservation {
+  reason: string
+  features: AnswerabilityFeatures
+  top_authorized_source_ids: string[]
+  top_raw_reranker_scores: number[]
+}
+
 export interface RetrievalReportPayload {
   stages: RetrievalStageInfo[]
   authorization: {
@@ -318,6 +351,8 @@ export interface RetrievalReportPayload {
     candidate_k: number
     top_n: number
   } | null
+  // Additive and optional for clients that consume older retrieval reports.
+  answerability?: AnswerabilityObservation
   context?: {
     retrieved_chunk_count?: number
     top_context_tokens?: number | null

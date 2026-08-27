@@ -131,6 +131,7 @@ async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_res
     assert 'data: {"token": "ok"}\n\n' in events
     assert any(e.startswith("event: sources\n") for e in events)
     assert any(e.startswith("event: retrieval\n") for e in events)
+    assert any('"answerability":' in e for e in events if e.startswith("event: retrieval\n"))
     assert any(e.startswith("event: security\n") for e in events)
     assert any(e.startswith("event: done\n") for e in events)
 
