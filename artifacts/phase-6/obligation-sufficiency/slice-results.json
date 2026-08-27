@@ -1,0 +1,246 @@
+{
+  "v1": {
+    "acl_negative": {
+      "n": 0,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "ambiguous": {
+      "n": 3,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "cross_lingual": {
+      "n": 3,
+      "true_sufficient": 2,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "all_gold_present": 3,
+      "all_gold_present_sufficient": 2
+    },
+    "en->en": {
+      "n": 5,
+      "true_sufficient": 4,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "all_gold_present": 5,
+      "all_gold_present_sufficient": 4
+    },
+    "en->none": {
+      "n": 8,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "en->tr": {
+      "n": 3,
+      "true_sufficient": 2,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "all_gold_present": 3,
+      "all_gold_present_sufficient": 2
+    },
+    "hard_answerable": {
+      "n": 3,
+      "true_sufficient": 2,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "all_gold_present": 3,
+      "all_gold_present_sufficient": 2
+    },
+    "injection_bearing": {
+      "n": 2,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 2,
+      "all_gold_present": 2,
+      "all_gold_present_sufficient": 0
+    },
+    "multi_document": {
+      "n": 2,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 2,
+      "all_gold_present": 2,
+      "all_gold_present_sufficient": 0
+    },
+    "standard_answerable": {
+      "n": 3,
+      "true_sufficient": 3,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 3,
+      "all_gold_present_sufficient": 3
+    },
+    "tr->en": {
+      "n": 4,
+      "true_sufficient": 1,
+      "false_sufficient": 0,
+      "false_insufficient": 3,
+      "all_gold_present": 4,
+      "all_gold_present_sufficient": 1
+    },
+    "tr->none": {
+      "n": 3,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "tr->tr": {
+      "n": 1,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "all_gold_present": 1,
+      "all_gold_present_sufficient": 0
+    },
+    "unanswerable": {
+      "n": 8,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "version_conflict": {
+      "n": 0,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    }
+  },
+  "v2": {
+    "acl_negative": {
+      "n": 0,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "ambiguous": {
+      "n": 3,
+      "true_sufficient": 0,
+      "false_sufficient": 1,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "cross_lingual": {
+      "n": 1,
+      "true_sufficient": 1,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 1,
+      "all_gold_present_sufficient": 1
+    },
+    "en->en": {
+      "n": 2,
+      "true_sufficient": 1,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "all_gold_present": 2,
+      "all_gold_present_sufficient": 1
+    },
+    "en->none": {
+      "n": 8,
+      "true_sufficient": 0,
+      "false_sufficient": 1,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "en->tr": {
+      "n": 1,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "all_gold_present": 1,
+      "all_gold_present_sufficient": 0
+    },
+    "hard_answerable": {
+      "n": 2,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 2,
+      "all_gold_present": 2,
+      "all_gold_present_sufficient": 0
+    },
+    "injection_bearing": {
+      "n": 1,
+      "true_sufficient": 1,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 1,
+      "all_gold_present_sufficient": 1
+    },
+    "multi_document": {
+      "n": 0,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "standard_answerable": {
+      "n": 1,
+      "true_sufficient": 1,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 1,
+      "all_gold_present_sufficient": 1
+    },
+    "tr->en": {
+      "n": 2,
+      "true_sufficient": 2,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 2,
+      "all_gold_present_sufficient": 2
+    },
+    "tr->none": {
+      "n": 3,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "tr->tr": {
+      "n": 0,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "unanswerable": {
+      "n": 8,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    },
+    "version_conflict": {
+      "n": 0,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 0,
+      "all_gold_present": 0,
+      "all_gold_present_sufficient": 0
+    }
+  }
+}

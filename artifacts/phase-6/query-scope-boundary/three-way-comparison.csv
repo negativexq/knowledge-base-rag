@@ -1,0 +1,8 @@
+metric,baseline_v2,query_only,compact_scope
+scope_precision,0.375,0.5625,0.4
+scope_recall,1.0,0.75,1.0
+scope_f1,0.5454545454545454,0.6428571428571429,0.5714285714285715
+false_clarify,20,7,18
+false_answer,0,0,0
+false_abstain,0,6,2
+gold_present_answered,8,7,1

@@ -1,0 +1,842 @@
+{
+  "metadata": {
+    "schema_version": "phase-6c3-ambiguity-v2-comparison-v1",
+    "git_sha": "fabc9e9e99df14fed54680e7bde1fcc9b3c25f3c",
+    "model": "qwen3.5:4b",
+    "v1_prompt": "ambiguity_v1",
+    "v2_prompt": "ambiguity_v2",
+    "sufficiency_prompt": "sufficiency_v1",
+    "retrieval_rerun": false,
+    "retrieval_calls": 0,
+    "embedding_calls": 0,
+    "reranker_calls": 0,
+    "generation_invoked": false,
+    "calibration_run": false,
+    "frozen_test_touched": false,
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "query_count": 48,
+    "query_ids": [
+      "acl-02-0",
+      "acl-02-1",
+      "acl-02-2",
+      "acl-02-3",
+      "acl-05-0",
+      "acl-05-1",
+      "acl-05-2",
+      "acl-05-3",
+      "ambiguous-00-0",
+      "ambiguous-00-1",
+      "ambiguous-00-2",
+      "ambiguous-01-0",
+      "ambiguous-01-1",
+      "ambiguous-01-2",
+      "ambiguous-02-0",
+      "ambiguous-02-1",
+      "ambiguous-02-2",
+      "ambiguous-04-0",
+      "ambiguous-04-1",
+      "ambiguous-04-2",
+      "cross-00-1",
+      "cross-01-0",
+      "cross-01-1",
+      "cross-06-0",
+      "cross-06-1",
+      "hard-annual-cancel",
+      "hard-api-private",
+      "hard-api-version",
+      "hard-order-channel",
+      "injection-03-0",
+      "injection-03-1",
+      "multi-00-1",
+      "multi-00-3",
+      "multi-03-0",
+      "native-00-0",
+      "native-00-1",
+      "native-00-2",
+      "native-00-3",
+      "negative-00-0",
+      "negative-00-1",
+      "negative-00-2",
+      "negative-00-3",
+      "negative-00-4",
+      "negative-01-0",
+      "negative-01-1",
+      "negative-01-2",
+      "version-01-0",
+      "version-01-1"
+    ],
+    "retrieval_config": {
+      "embedding_model": "qwen3-embedding:4b",
+      "embedding_dimension": 1024,
+      "retrieval_method": "BM25 + dense + RRF",
+      "candidate_k": 20,
+      "top_n": 5,
+      "reranker_model": "BAAI/bge-reranker-v2-m3",
+      "tenant_acl": true
+    },
+    "retrieval_config_fingerprint": "0d296d725b590ab7c25bb510b3bd89204e4107f236494b43c447de12c2558a01"
+  },
+  "v1": {
+    "ambiguity": {
+      "n": 40,
+      "true_clarify": 12,
+      "false_clarify": 19,
+      "missed_ambiguity": 0,
+      "precision": 0.3870967741935484,
+      "recall": 1.0,
+      "f1": 0.5581395348837209
+    },
+    "combined": {
+      "answer": 7,
+      "clarify": 31,
+      "abstain": 10,
+      "correct_answer": 7,
+      "false_answer": 0,
+      "correct_clarify": 12,
+      "false_clarify": 19,
+      "correct_abstain": 8,
+      "false_abstain": 2,
+      "missed_ambiguity": 0,
+      "gold_present_answered": 7,
+      "gold_present_count": 20
+    },
+    "sufficiency": {
+      "n": 9,
+      "tp": 7,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.7777777777777778,
+      "f1": 0.8750000000000001
+    },
+    "reliability": {
+      "evaluator_calls": 49,
+      "ambiguity_calls": 40,
+      "sufficiency_calls": 9,
+      "first_pass_schema_success": 49,
+      "retry_count": 0,
+      "final_parse_failure_count": 0,
+      "timeout_count": 0,
+      "invalid_enum_count": 0,
+      "hallucinated_supporting_chunk_id_count": 0
+    },
+    "latency": {
+      "ambiguity": {
+        "n": 40,
+        "p50": 12514.073,
+        "p95": 18824.434,
+        "max": 20902.468
+      },
+      "sufficiency": {
+        "n": 9,
+        "p50": 14360.452,
+        "p95": 19573.884,
+        "max": 19573.884
+      },
+      "total": {
+        "n": 48,
+        "p50": 12148.919,
+        "p95": 32688.956,
+        "max": 40476.439
+      }
+    }
+  },
+  "v2": {
+    "ambiguity": {
+      "n": 40,
+      "true_clarify": 12,
+      "false_clarify": 20,
+      "missed_ambiguity": 0,
+      "precision": 0.375,
+      "recall": 1.0,
+      "f1": 0.5454545454545454
+    },
+    "combined": {
+      "answer": 8,
+      "clarify": 32,
+      "abstain": 8,
+      "correct_answer": 8,
+      "false_answer": 0,
+      "correct_clarify": 12,
+      "false_clarify": 20,
+      "correct_abstain": 8,
+      "false_abstain": 0,
+      "missed_ambiguity": 0,
+      "gold_present_answered": 8,
+      "gold_present_count": 20
+    },
+    "sufficiency": {
+      "n": 8,
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "reliability": {
+      "evaluator_calls": 48,
+      "ambiguity_calls": 40,
+      "sufficiency_calls": 8,
+      "first_pass_schema_success": 48,
+      "retry_count": 0,
+      "final_parse_failure_count": 0,
+      "timeout_count": 0,
+      "invalid_enum_count": 0,
+      "hallucinated_supporting_chunk_id_count": 0
+    },
+    "latency": {
+      "ambiguity": {
+        "n": 40,
+        "p50": 15918.3505,
+        "p95": 19106.448,
+        "max": 24774.317
+      },
+      "sufficiency": {
+        "n": 8,
+        "p50": 14438.1055,
+        "p95": 17431.821,
+        "max": 17431.821
+      },
+      "total": {
+        "n": 48,
+        "p50": 15918.427,
+        "p95": 34388.125,
+        "max": 36061.892
+      }
+    }
+  },
+  "transitions": {
+    "should_answer_false_clarify": [
+      {
+        "query_id": "cross-00-1",
+        "case_family": "fact-00",
+        "category": "cross_lingual",
+        "language_pair": "tr->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "CLEAR",
+          "missing_constraints": []
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "ANSWER"
+      },
+      {
+        "query_id": "cross-01-0",
+        "case_family": "fact-01",
+        "category": "cross_lingual",
+        "language_pair": "tr->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "siparis_kanali"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "cross-01-1",
+        "case_family": "fact-01",
+        "category": "cross_lingual",
+        "language_pair": "tr->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "channel"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "hard-annual-cancel",
+        "case_family": "hard-annual-cancel",
+        "category": "hard_answerable",
+        "language_pair": "en->tr",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "product"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "hard-api-version",
+        "case_family": "hard-api-version",
+        "category": "hard_answerable",
+        "language_pair": "tr->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "account"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "hard-order-channel",
+        "case_family": "hard-order-channel",
+        "category": "hard_answerable",
+        "language_pair": "tr->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "plan"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "injection-03-1",
+        "case_family": "injection-03",
+        "category": "injection_bearing",
+        "language_pair": "tr->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "product"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "multi-00-1",
+        "case_family": "multi-00",
+        "category": "multi_document",
+        "language_pair": "en->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "order channel",
+            "product type",
+            "plan status (Standard/Premium)",
+            "region or enterprise exception scope",
+            "event date (delivery/activation)"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "multi-00-3",
+        "case_family": "multi-00",
+        "category": "multi_document",
+        "language_pair": "en->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "plan",
+            "order channel",
+            "product type",
+            "region",
+            "effective date",
+            "account status (Premium/Standard)",
+            "remedy requested"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "multi-03-0",
+        "case_family": "multi-03",
+        "category": "multi_document",
+        "language_pair": "tr->tr",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "product"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      },
+      {
+        "query_id": "native-00-1",
+        "case_family": "fact-00",
+        "category": "standard_answerable",
+        "language_pair": "en->en",
+        "v1_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": []
+        },
+        "v2_ambiguity": {
+          "decision": "AMBIGUOUS",
+          "missing_constraints": [
+            "plan",
+            "channel"
+          ]
+        },
+        "v1_action": "CLARIFY",
+        "v2_action": "CLARIFY"
+      }
+    ],
+    "action_counts": {
+      "CLARIFY->ANSWER": 1,
+      "CLARIFY->CLARIFY": 10
+    }
+  },
+  "ambiguous_retention": {
+    "n": 12,
+    "v1_retained": 12,
+    "v2_retained": 12,
+    "v1_missed": 0,
+    "v2_missed": 0,
+    "records": [
+      {
+        "query_id": "ambiguous-00-0",
+        "case_family": "ambiguous-00",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-00-1",
+        "case_family": "ambiguous-00",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-00-2",
+        "case_family": "ambiguous-00",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-01-0",
+        "case_family": "ambiguous-01",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-01-1",
+        "case_family": "ambiguous-01",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-01-2",
+        "case_family": "ambiguous-01",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-02-0",
+        "case_family": "ambiguous-02",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-02-1",
+        "case_family": "ambiguous-02",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-02-2",
+        "case_family": "ambiguous-02",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-04-0",
+        "case_family": "ambiguous-04",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-04-1",
+        "case_family": "ambiguous-04",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      },
+      {
+        "query_id": "ambiguous-04-2",
+        "case_family": "ambiguous-04",
+        "v1_decision": "AMBIGUOUS",
+        "v2_decision": "AMBIGUOUS",
+        "v1_correct": true,
+        "v2_correct": true
+      }
+    ]
+  },
+  "slices": {
+    "acl_negative": {
+      "v1": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      },
+      "v2": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      }
+    },
+    "ambiguous": {
+      "v1": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      },
+      "v2": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      }
+    },
+    "cross_lingual": {
+      "v1": {
+        "n": 5,
+        "answer": 2,
+        "clarify": 3,
+        "abstain": 0,
+        "coverage": 0.4
+      },
+      "v2": {
+        "n": 5,
+        "answer": 3,
+        "clarify": 2,
+        "abstain": 0,
+        "coverage": 0.6
+      }
+    },
+    "en->en": {
+      "v1": {
+        "n": 7,
+        "answer": 4,
+        "clarify": 3,
+        "abstain": 0,
+        "coverage": 0.5714285714285714
+      },
+      "v2": {
+        "n": 7,
+        "answer": 4,
+        "clarify": 3,
+        "abstain": 0,
+        "coverage": 0.5714285714285714
+      }
+    },
+    "en->none": {
+      "v1": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      },
+      "v2": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      }
+    },
+    "en->tr": {
+      "v1": {
+        "n": 3,
+        "answer": 2,
+        "clarify": 1,
+        "abstain": 0,
+        "coverage": 0.6666666666666666
+      },
+      "v2": {
+        "n": 3,
+        "answer": 2,
+        "clarify": 1,
+        "abstain": 0,
+        "coverage": 0.6666666666666666
+      }
+    },
+    "hard_answerable": {
+      "v1": {
+        "n": 4,
+        "answer": 1,
+        "clarify": 3,
+        "abstain": 0,
+        "coverage": 0.25
+      },
+      "v2": {
+        "n": 4,
+        "answer": 1,
+        "clarify": 3,
+        "abstain": 0,
+        "coverage": 0.25
+      }
+    },
+    "injection_bearing": {
+      "v1": {
+        "n": 2,
+        "answer": 0,
+        "clarify": 1,
+        "abstain": 1,
+        "coverage": 0.0
+      },
+      "v2": {
+        "n": 2,
+        "answer": 0,
+        "clarify": 2,
+        "abstain": 0,
+        "coverage": 0.0
+      }
+    },
+    "multi_document": {
+      "v1": {
+        "n": 3,
+        "answer": 0,
+        "clarify": 3,
+        "abstain": 0,
+        "coverage": 0.0
+      },
+      "v2": {
+        "n": 3,
+        "answer": 0,
+        "clarify": 3,
+        "abstain": 0,
+        "coverage": 0.0
+      }
+    },
+    "standard_answerable": {
+      "v1": {
+        "n": 4,
+        "answer": 3,
+        "clarify": 1,
+        "abstain": 0,
+        "coverage": 0.75
+      },
+      "v2": {
+        "n": 4,
+        "answer": 3,
+        "clarify": 1,
+        "abstain": 0,
+        "coverage": 0.75
+      }
+    },
+    "tr->en": {
+      "v1": {
+        "n": 9,
+        "answer": 1,
+        "clarify": 6,
+        "abstain": 2,
+        "coverage": 0.1111111111111111
+      },
+      "v2": {
+        "n": 9,
+        "answer": 2,
+        "clarify": 7,
+        "abstain": 0,
+        "coverage": 0.2222222222222222
+      }
+    },
+    "tr->none": {
+      "v1": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      },
+      "v2": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      }
+    },
+    "tr->tr": {
+      "v1": {
+        "n": 1,
+        "answer": 0,
+        "clarify": 1,
+        "abstain": 0,
+        "coverage": 0.0
+      },
+      "v2": {
+        "n": 1,
+        "answer": 0,
+        "clarify": 1,
+        "abstain": 0,
+        "coverage": 0.0
+      }
+    },
+    "unanswerable": {
+      "v1": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      },
+      "v2": {
+        "n": 0,
+        "answer": 0,
+        "clarify": 0,
+        "abstain": 0,
+        "coverage": null
+      }
+    },
+    "version_conflict": {
+      "v1": {
+        "n": 2,
+        "answer": 1,
+        "clarify": 0,
+        "abstain": 1,
+        "coverage": 0.5
+      },
+      "v2": {
+        "n": 2,
+        "answer": 1,
+        "clarify": 1,
+        "abstain": 0,
+        "coverage": 0.5
+      }
+    }
+  },
+  "multi_document": {
+    "v1": {
+      "complete_n": 3,
+      "ambiguity_clear": 0,
+      "sufficiency_sufficient": 0,
+      "answer": 0
+    },
+    "v2": {
+      "complete_n": 3,
+      "ambiguity_clear": 0,
+      "sufficiency_sufficient": 0,
+      "answer": 0
+    }
+  },
+  "version_and_injection": {
+    "version_conflict": {
+      "v1": {
+        "n": 2,
+        "ambiguity": {
+          "CLEAR": 2
+        },
+        "actions": {
+          "ANSWER": 1,
+          "ABSTAIN": 1
+        },
+        "parse_failures": 0,
+        "false_answers": 0
+      },
+      "v2": {
+        "n": 2,
+        "ambiguity": {
+          "CLEAR": 1,
+          "AMBIGUOUS": 1
+        },
+        "actions": {
+          "ANSWER": 1,
+          "CLARIFY": 1
+        },
+        "parse_failures": 0,
+        "false_answers": 0
+      }
+    },
+    "injection_bearing": {
+      "v1": {
+        "n": 2,
+        "ambiguity": {
+          "CLEAR": 1,
+          "AMBIGUOUS": 1
+        },
+        "actions": {
+          "ABSTAIN": 1,
+          "CLARIFY": 1
+        },
+        "parse_failures": 0,
+        "false_answers": 0
+      },
+      "v2": {
+        "n": 2,
+        "ambiguity": {
+          "AMBIGUOUS": 2
+        },
+        "actions": {
+          "CLARIFY": 2
+        },
+        "parse_failures": 0,
+        "false_answers": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "extraction_calls": 24,
+  "extraction_first_pass_schema_success": 24,
+  "extraction_retries": 0,
+  "extraction_parse_failures": 0,
+  "extraction_timeouts": 0,
+  "zero_obligation": 0,
+  "over_limit": 0,
+  "duplicate_obligations": 0,
+  "support_calls": 24,
+  "support_first_pass_schema_success": 11,
+  "support_retries": 0,
+  "support_parse_failures": 13,
+  "support_timeouts": 0,
+  "missing_obligation_ids": 0,
+  "extra_obligation_ids": 0,
+  "invalid_chunk_ids": 0,
+  "invalid_support_status_combinations": 13
+}

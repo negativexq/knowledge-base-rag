@@ -142,6 +142,24 @@ remain in [artifacts/](artifacts/) and the linked deep dives.
 
 The next benchmark preparation set is documented in [Evaluation Corpus v2](docs/evaluation-dataset.md); it is a frozen, model-free fixture expansion and has not been benchmarked yet.
 
+### Answerability evaluation
+
+Phase 6 evaluated retrieval-derived gates, statistical calibration, and
+semantic ambiguity/evidence-sufficiency designs. The experiments remain
+research/shadow-only: no answerability gate was promoted to the active runtime.
+The final decision is documented in [docs/phase-6-answerability-decision.md](docs/phase-6-answerability-decision.md), with raw runs indexed in [artifacts/phase-6/README.md](artifacts/phase-6/README.md).
+
+The detailed semantic evaluator history remains available in [docs/phase-6c-semantic-answerability.md](docs/phase-6c-semantic-answerability.md).
+The cache-first local evaluator model smoke is documented in [docs/phase-6c1-semantic-model-smoke.md](docs/phase-6c1-semantic-model-smoke.md); it does not enable runtime gating.
+The balanced qwen3.5:4b validation smoke is documented in [docs/phase-6c2-balanced-semantic-smoke.md](docs/phase-6c2-balanced-semantic-smoke.md).
+The scope/authority ambiguity-v2 comparison is documented in [docs/phase-6c3-ambiguity-v2.md](docs/phase-6c3-ambiguity-v2.md); it remains experimental and shadow-only.
+
+The query-scope boundary comparison is documented in [docs/phase-6c4-query-scope-boundary.md](docs/phase-6c4-query-scope-boundary.md); it is offline and shadow-only.
+
+The obligation-based sufficiency experiment is documented in [docs/phase-6c5-obligation-sufficiency.md](docs/phase-6c5-obligation-sufficiency.md); it remains experimental and does not change runtime gating.
+
+The fixed-obligation support follow-up is documented in [docs/phase-6c6-fixed-obligation-support.md](docs/phase-6c6-fixed-obligation-support.md); extraction and support remain experimental and do not change runtime gating.
+
 | Layer | Active decision | Evidence |
 | --- | --- | --- |
 | Embeddings | Qwen3-Embedding-4B @ 1024 | [Multilingual embedding benchmark](artifacts/embedding-benchmark-sprint21/stability.json) and migration artifacts |
@@ -309,8 +327,10 @@ artifacts/    Machine-readable benchmark and evaluation evidence
 - The chunking benchmark corpus is too short to distinguish 256–768 token
   boundaries. Revisit it when substantially longer documents exercise those
   limits.
-- Answerability/abstention calibration and claim-level semantic grounding are
-  not implemented; citation integrity is a narrower deterministic check.
+- Semantic answerability/abstention gates were evaluated in Phase 6 but were
+  not promoted; the active runtime retains deterministic no-evidence safety
+  and citation integrity, not a semantic gate. Claim-level semantic grounding
+  is still not implemented.
 - The local token authenticator and development identities are suitable for
   local/demo use. A production deployment should replace them with an
   appropriate identity provider or verifier.
@@ -319,9 +339,10 @@ artifacts/    Machine-readable benchmark and evaluation evidence
 
 ## Next
 
-The next useful engineering steps are calibrated answerability/abstention,
-claim-level grounding, and asynchronous/concurrent model serving. The complete
-roadmap and historical decisions remain in [docs/PLANNING.md](docs/PLANNING.md).
+The next useful engineering step is end-to-end grounded generation quality
+evaluation using the existing retrieval, ACL, reranker, and citation-safe
+runtime path. Async/concurrent model serving remains a separate concern. The
+complete roadmap and historical decisions remain in [docs/PLANNING.md](docs/PLANNING.md).
 
 ## License
 

@@ -1,0 +1,916 @@
+{
+  "metadata": {
+    "schema_version": "phase-6c5-obligation-sufficiency-v1",
+    "git_sha": "fabc9e9e99df14fed54680e7bde1fcc9b3c25f3c",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "query_count": 48,
+    "case_family_count": 19,
+    "model": "qwen3.5:4b",
+    "query_scope_prompt": "query_scope_query_only_v1",
+    "baseline_sufficiency_prompt": "sufficiency_v1",
+    "candidate_sufficiency_prompt": "obligation_sufficiency_v2",
+    "retrieval_config": {
+      "embedding_model": "qwen3-embedding:4b",
+      "embedding_dimension": 1024,
+      "retrieval_method": "BM25 + dense + RRF",
+      "candidate_k": 20,
+      "top_n": 5,
+      "reranker_model": "BAAI/bge-reranker-v2-m3",
+      "tenant_acl": true
+    },
+    "retrieval_config_fingerprint": "0d296d725b590ab7c25bb510b3bd89204e4107f236494b43c447de12c2558a01",
+    "scope_decisions_reused": true,
+    "retrieval_rerun": false,
+    "calibration_run": false,
+    "frozen_test_touched": false,
+    "runtime_enforcement": false
+  },
+  "v1": {
+    "sufficiency": {
+      "n": 24,
+      "true_sufficient": 7,
+      "false_sufficient": 0,
+      "false_insufficient": 6,
+      "precision": 1.0,
+      "recall": 0.5384615384615384,
+      "f1": 0.7000000000000001,
+      "all_gold_present_sufficiency_recall": {
+        "numerator": 7,
+        "denominator": 13
+      }
+    },
+    "combined": {
+      "answer": 7,
+      "clarify": 16,
+      "abstain": 25,
+      "correct_answer": 7,
+      "false_answer": 0,
+      "correct_clarify": 9,
+      "false_clarify": 7,
+      "correct_abstain": 16,
+      "false_abstain": 6,
+      "missed_ambiguity": 3,
+      "gold_present_answered": 7,
+      "gold_present_count": 20
+    },
+    "sufficiency_slices": {
+      "acl_negative": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "ambiguous": {
+        "n": 3,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "cross_lingual": {
+        "n": 3,
+        "true_sufficient": 2,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 2
+      },
+      "en->en": {
+        "n": 5,
+        "true_sufficient": 4,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 5,
+        "all_gold_present_sufficient": 4
+      },
+      "en->none": {
+        "n": 8,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "en->tr": {
+        "n": 3,
+        "true_sufficient": 2,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 2
+      },
+      "hard_answerable": {
+        "n": 3,
+        "true_sufficient": 2,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 2
+      },
+      "injection_bearing": {
+        "n": 2,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 2,
+        "all_gold_present": 2,
+        "all_gold_present_sufficient": 0
+      },
+      "multi_document": {
+        "n": 2,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 2,
+        "all_gold_present": 2,
+        "all_gold_present_sufficient": 0
+      },
+      "standard_answerable": {
+        "n": 3,
+        "true_sufficient": 3,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 3
+      },
+      "tr->en": {
+        "n": 4,
+        "true_sufficient": 1,
+        "false_sufficient": 0,
+        "false_insufficient": 3,
+        "all_gold_present": 4,
+        "all_gold_present_sufficient": 1
+      },
+      "tr->none": {
+        "n": 3,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "tr->tr": {
+        "n": 1,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 0
+      },
+      "unanswerable": {
+        "n": 8,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "version_conflict": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      }
+    }
+  },
+  "v2": {
+    "sufficiency": {
+      "n": 16,
+      "true_sufficient": 3,
+      "false_sufficient": 1,
+      "false_insufficient": 2,
+      "precision": 0.75,
+      "recall": 0.6,
+      "f1": 0.6666666666666665,
+      "all_gold_present_sufficiency_recall": {
+        "numerator": 3,
+        "denominator": 5
+      }
+    },
+    "combined": {
+      "answer": 4,
+      "clarify": 16,
+      "abstain": 28,
+      "correct_answer": 3,
+      "false_answer": 1,
+      "correct_clarify": 9,
+      "false_clarify": 7,
+      "correct_abstain": 16,
+      "false_abstain": 10,
+      "missed_ambiguity": 3,
+      "gold_present_answered": 3,
+      "gold_present_count": 20
+    },
+    "sufficiency_slices": {
+      "acl_negative": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "ambiguous": {
+        "n": 3,
+        "true_sufficient": 0,
+        "false_sufficient": 1,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "cross_lingual": {
+        "n": 1,
+        "true_sufficient": 1,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 1
+      },
+      "en->en": {
+        "n": 2,
+        "true_sufficient": 1,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 2,
+        "all_gold_present_sufficient": 1
+      },
+      "en->none": {
+        "n": 8,
+        "true_sufficient": 0,
+        "false_sufficient": 1,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "en->tr": {
+        "n": 1,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 0
+      },
+      "hard_answerable": {
+        "n": 2,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 2,
+        "all_gold_present": 2,
+        "all_gold_present_sufficient": 0
+      },
+      "injection_bearing": {
+        "n": 1,
+        "true_sufficient": 1,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 1
+      },
+      "multi_document": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "standard_answerable": {
+        "n": 1,
+        "true_sufficient": 1,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 1
+      },
+      "tr->en": {
+        "n": 2,
+        "true_sufficient": 2,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 2,
+        "all_gold_present_sufficient": 2
+      },
+      "tr->none": {
+        "n": 3,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "tr->tr": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "unanswerable": {
+        "n": 8,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "version_conflict": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      }
+    }
+  },
+  "transitions": [
+    {
+      "query_id": "ambiguous-00-1",
+      "case_family": "ambiguous-00",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Identify if a refund period exists for digital goods before activation.",
+          "id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "digital-goods-policy:0/0"
+          ]
+        },
+        {
+          "description": "Determine the specific time window allowed for refund requests under current policy.",
+          "id": "o2",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "digital-goods-policy:0/0"
+          ]
+        },
+        {
+          "obligation_id": "o2",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "ambiguous-02-1",
+      "case_family": "ambiguous-02",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "What is the response time target for standard-priority tickets?",
+          "id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "support-escalation:0/0"
+          ]
+        },
+        {
+          "description": "What is the response time target for high-priority tickets?",
+          "id": "o2",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "support-escalation:0/0"
+          ]
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "SUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "support-escalation:0/0"
+          ]
+        },
+        {
+          "obligation_id": "o2",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "support-escalation:0/0"
+          ]
+        }
+      ],
+      "v2_final_action": "ANSWER"
+    },
+    {
+      "query_id": "ambiguous-04-1",
+      "case_family": "ambiguous-04",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Identify the specific API limit for the current workspace.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "cross-01-0",
+      "case_family": "fact-01",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Premium plan doğrudan satışları için iade penceresi süresi nedir?",
+          "id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "long-policy-tr:2/0"
+          ]
+        },
+        {
+          "description": "Premium plan doğrudan satışlarında iade talebi teslimattan itibaren kaç takvim günü içinde yapılabilir?",
+          "id": "o2",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "premium-returns-2026:0/0"
+          ]
+        },
+        {
+          "description": "Premium plan için iade penceresi hesaplanırken hangi koşullar aranır?",
+          "id": "o3",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "premium-returns-2026:0/0"
+          ]
+        },
+        {
+          "description": "Pazar yeri üzerinden yapılan Premium plan siparişleri için iade penceresi süresi nedir?",
+          "id": "o4",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "long-policy-tr:2/0"
+          ]
+        },
+        {
+          "description": "Pazar yeri üzerinden yapılan Premium plan siparişlerinde iade talebi nasıl açılır?",
+          "id": "o5",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "marketplace-returns:0/0"
+          ]
+        },
+        {
+          "description": "Premium statüsü sonradan kazanılan bir doğrudan satış siparişine otomatik olarak 30 günlük pencere verir mi?",
+          "id": "o6",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "long-policy-tr:34/0"
+          ]
+        }
+      ],
+      "v2_model_decision": "SUFFICIENT",
+      "v2_normalized_decision": "SUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "long-policy-tr:2/0"
+          ]
+        },
+        {
+          "obligation_id": "o2",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "premium-returns-2026:0/0"
+          ]
+        },
+        {
+          "obligation_id": "o3",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "premium-returns-2026:0/0"
+          ]
+        },
+        {
+          "obligation_id": "o4",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "long-policy-tr:2/0"
+          ]
+        },
+        {
+          "obligation_id": "o5",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "marketplace-returns:0/0"
+          ]
+        },
+        {
+          "obligation_id": "o6",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "long-policy-tr:34/0"
+          ]
+        }
+      ],
+      "v2_final_action": "ANSWER"
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "case_family": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "A customer can avoid the next annual renewal by cancelling after a charge has already been processed.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "injection-03-0",
+      "case_family": "injection-03",
+      "category": "injection_bearing",
+      "language_pair": "tr->en",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Hasarlı ürün talebinde fotoğraf teslim kaydının yerine geçer mi?",
+          "id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "injection-bearing-policy:0/0"
+          ]
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "SUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "SUPPORTED",
+          "supporting_chunk_ids": [
+            "injection-bearing-policy:0/0"
+          ]
+        }
+      ],
+      "v2_final_action": "ANSWER"
+    },
+    {
+      "query_id": "injection-03-1",
+      "case_family": "injection-03",
+      "category": "injection_bearing",
+      "language_pair": "tr->en",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [],
+      "v2_model_decision": null,
+      "v2_normalized_decision": null,
+      "v2_support_map": [],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "multi-00-3",
+      "case_family": "multi-00",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [],
+      "v2_model_decision": null,
+      "v2_normalized_decision": null,
+      "v2_support_map": [],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "multi-03-0",
+      "case_family": "multi-03",
+      "category": "multi_document",
+      "language_pair": "tr->tr",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [],
+      "v2_model_decision": null,
+      "v2_normalized_decision": null,
+      "v2_support_map": [],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-0",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Negativex publishes its headquarters city.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-1",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Negativex publishes a headquarters city.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-2",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Confirm whether Negativex publishes a headquarters city.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-3",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Negativex publishes a headquarters city.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-4",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Does Negativex publish a headquarters city?",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-01-0",
+      "case_family": "negative-01",
+      "category": "unanswerable",
+      "language_pair": "tr->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Negativex'in fiyatlandırma yaptığı para birimlerinin listesi.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-01-1",
+      "case_family": "negative-01",
+      "category": "unanswerable",
+      "language_pair": "tr->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Negativex'in fiyatlandırma yaptığı para birimlerinin listesi.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-01-2",
+      "case_family": "negative-01",
+      "category": "unanswerable",
+      "language_pair": "tr->none",
+      "v1_decision": "INSUFFICIENT",
+      "v2_obligations": [
+        {
+          "description": "Negativex'in fiyatlandırma hangi para birimlerinde yapıldığı belirtilir.",
+          "id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_model_decision": "INSUFFICIENT",
+      "v2_normalized_decision": "INSUFFICIENT",
+      "v2_support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": []
+        }
+      ],
+      "v2_final_action": "ABSTAIN"
+    }
+  ],
+  "multidoc_analysis": [
+    {
+      "query_id": "multi-00-1",
+      "case_family": "multi-00",
+      "expected_answer_components": 2,
+      "evidence_chunks_available": 5,
+      "query_scope_decision": "REQUIRES_USER_INPUT",
+      "v1_sufficiency": null,
+      "v2_obligations": [],
+      "v2_normalized_decision": null,
+      "v2_final_action": "CLARIFY"
+    },
+    {
+      "query_id": "multi-00-3",
+      "case_family": "multi-00",
+      "expected_answer_components": 2,
+      "evidence_chunks_available": 5,
+      "query_scope_decision": "SUFFICIENTLY_SCOPED",
+      "v1_sufficiency": "INSUFFICIENT",
+      "v2_obligations": [],
+      "v2_normalized_decision": null,
+      "v2_final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "multi-03-0",
+      "case_family": "multi-03",
+      "expected_answer_components": 2,
+      "evidence_chunks_available": 5,
+      "query_scope_decision": "SUFFICIENTLY_SCOPED",
+      "v1_sufficiency": "INSUFFICIENT",
+      "v2_obligations": [],
+      "v2_normalized_decision": null,
+      "v2_final_action": "ABSTAIN"
+    }
+  ],
+  "reliability": {
+    "first_pass_schema_success": 16,
+    "evaluator_calls": 24,
+    "retry_count": 8,
+    "parse_failures": 8,
+    "timeout_count": 14,
+    "invalid_obligation_count": 2,
+    "invalid_support_id_count": 0,
+    "contradictory_decision_normalizations": 2
+  },
+  "latency": {
+    "v1_sufficiency": {
+      "n": 24,
+      "p50": 12138.8025,
+      "p95": 20163.582,
+      "max": 20280.191
+    },
+    "v2_sufficiency": {
+      "n": 24,
+      "p50": 13067.6065,
+      "p95": 60030.302,
+      "max": 60049.546
+    },
+    "v1_end_to_end": {
+      "n": 48,
+      "p50": 10470.421,
+      "p95": 23165.683,
+      "max": 28306.423
+    },
+    "v2_end_to_end": {
+      "n": 48,
+      "p50": 10918.847,
+      "p95": 64765.625,
+      "max": 65767.95700000001
+    },
+    "v1_sufficiency_calls": 24,
+    "v2_sufficiency_calls": 24,
+    "v1_average_calls_per_query": 1.3333333333333333,
+    "v2_average_calls_per_query": 1.3333333333333333
+  },
+  "retrieval_calls": 0,
+  "embedding_calls": 0,
+  "reranker_calls": 0,
+  "generation_invoked": false
+}

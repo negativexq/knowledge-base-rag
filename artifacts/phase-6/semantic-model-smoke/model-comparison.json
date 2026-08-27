@@ -1,0 +1,322 @@
+{
+  "schema_version": "phase-6c1-semantic-model-smoke-v1",
+  "timestamp": "2026-08-27T13:00:51.689116+00:00",
+  "git_sha": "fabc9e9e99df14fed54680e7bde1fcc9b3c25f3c",
+  "cache_metadata": {
+    "schema_version": "phase-6c1-evaluator-input-cache-v1",
+    "created_at": "2026-08-27T12:39:00.788915+00:00",
+    "git_sha": "fabc9e9e99df14fed54680e7bde1fcc9b3c25f3c",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "retrieval_config": {
+      "embedding_model": "qwen3-embedding:4b",
+      "embedding_dimension": 1024,
+      "retrieval_method": "BM25 + dense + RRF",
+      "candidate_k": 20,
+      "top_n": 5,
+      "reranker_model": "BAAI/bge-reranker-v2-m3",
+      "tenant_acl": true
+    },
+    "retrieval_config_fingerprint": "0d296d725b590ab7c25bb510b3bd89204e4107f236494b43c447de12c2558a01",
+    "prompt_versions": {
+      "ambiguity": "ambiguity_v1",
+      "sufficiency": "sufficiency_v1"
+    },
+    "query_count": 25,
+    "query_ids": [
+      "acl-02-0",
+      "acl-02-1",
+      "acl-02-2",
+      "acl-02-3",
+      "acl-05-0",
+      "acl-05-1",
+      "acl-05-2",
+      "acl-05-3",
+      "ambiguous-00-0",
+      "ambiguous-00-1",
+      "ambiguous-00-2",
+      "ambiguous-01-0",
+      "ambiguous-01-1",
+      "ambiguous-01-2",
+      "ambiguous-02-0",
+      "ambiguous-02-1",
+      "ambiguous-02-2",
+      "cross-00-0",
+      "cross-06-0",
+      "hard-annual-cancel",
+      "injection-04-0",
+      "multi-00-1",
+      "native-00-0",
+      "negative-00-0",
+      "version-01-0"
+    ],
+    "authorized_only": true,
+    "generation_invoked": false,
+    "index_validation": {
+      "collection": "kb_eval_phase55_0175aa4a2f9b",
+      "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+      "source_count": 20,
+      "chunk_count": 186,
+      "tenant_ids": [
+        "tenant-a",
+        "tenant-b"
+      ],
+      "dense_dimension": 1024
+    },
+    "retrieval_calls_during_cache_build": 25
+  },
+  "available_models": [
+    "gemma2:2b",
+    "nomic-embed-text:latest",
+    "qwen2.5:3b-instruct",
+    "qwen2.5:7b-instruct",
+    "qwen3-embedding:0.6b",
+    "qwen3-embedding:4b",
+    "qwen3.5:4b",
+    "qwen3.5:9b"
+  ],
+  "requested_models": [
+    "qwen3.5:4b",
+    "qwen2.5:3b-instruct",
+    "gemma2:2b"
+  ],
+  "evaluated_models": [
+    "qwen3.5:4b",
+    "qwen2.5:3b-instruct",
+    "gemma2:2b"
+  ],
+  "skipped_models": {},
+  "models": [
+    {
+      "model": "qwen3.5:4b",
+      "query_count": 25,
+      "ambiguity": {
+        "n": 25,
+        "tp": 9,
+        "fp": 13,
+        "fn": 0,
+        "precision": 0.4090909090909091,
+        "recall": 1.0,
+        "f1": 0.5806451612903226
+      },
+      "sufficiency": {
+        "n": 3,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "combined": {
+        "false_answer_count": 0,
+        "false_answer_rate": 0.0,
+        "false_abstain_count": 0,
+        "missed_ambiguity_count": 0,
+        "false_clarify_count": 13,
+        "gold_present_answerable_coverage": 0.5,
+        "gold_present_answered": 3,
+        "gold_present_count": 6
+      },
+      "reliability": {
+        "evaluator_calls": 28,
+        "ambiguity_calls": 25,
+        "sufficiency_calls": 3,
+        "first_pass_schema_success": 28,
+        "retry_count": 0,
+        "final_parse_failure_count": 0,
+        "timeout_count": 0,
+        "invalid_enum_count": 0,
+        "hallucinated_supporting_chunk_id_count": 0
+      },
+      "injection_robustness": {
+        "status": "PASS",
+        "query_count": 1,
+        "parse_failures": 0
+      },
+      "multi_document": {
+        "n": 1,
+        "complete_sufficient": 0,
+        "partial_insufficient": 0
+      },
+      "latency": {
+        "ambiguity": {
+          "n": 25,
+          "p50": 4682.652,
+          "p95": 9737.711,
+          "max": 10277.922
+        },
+        "sufficiency": {
+          "n": 3,
+          "p50": 9228.278,
+          "p95": 10099.36,
+          "max": 10099.36
+        },
+        "total": {
+          "n": 25,
+          "p50": 4682.69,
+          "p95": 17478.46,
+          "max": 19506.332
+        }
+      },
+      "short_circuit_saved_sufficiency_calls": 22
+    },
+    {
+      "model": "qwen2.5:3b-instruct",
+      "query_count": 25,
+      "ambiguity": {
+        "n": 25,
+        "tp": 0,
+        "fp": 1,
+        "fn": 9,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "sufficiency": {
+        "n": 24,
+        "tp": 5,
+        "fp": 9,
+        "fn": 0,
+        "precision": 0.35714285714285715,
+        "recall": 1.0,
+        "f1": 0.5263157894736842
+      },
+      "combined": {
+        "false_answer_count": 9,
+        "false_answer_rate": 0.36,
+        "false_abstain_count": 0,
+        "missed_ambiguity_count": 9,
+        "false_clarify_count": 1,
+        "gold_present_answerable_coverage": 0.8333333333333334,
+        "gold_present_answered": 5,
+        "gold_present_count": 6
+      },
+      "reliability": {
+        "evaluator_calls": 49,
+        "ambiguity_calls": 25,
+        "sufficiency_calls": 24,
+        "first_pass_schema_success": 49,
+        "retry_count": 0,
+        "final_parse_failure_count": 0,
+        "timeout_count": 0,
+        "invalid_enum_count": 0,
+        "hallucinated_supporting_chunk_id_count": 0
+      },
+      "injection_robustness": {
+        "status": "PASS",
+        "query_count": 1,
+        "parse_failures": 0
+      },
+      "multi_document": {
+        "n": 1,
+        "complete_sufficient": 0,
+        "partial_insufficient": 0
+      },
+      "latency": {
+        "ambiguity": {
+          "n": 25,
+          "p50": 7809.944,
+          "p95": 9660.266,
+          "max": 10067.569
+        },
+        "sufficiency": {
+          "n": 24,
+          "p50": 8506.781500000001,
+          "p95": 9981.532,
+          "max": 10261.781
+        },
+        "total": {
+          "n": 25,
+          "p50": 16568.46,
+          "p95": 18514.522,
+          "max": 19922.093
+        }
+      },
+      "short_circuit_saved_sufficiency_calls": 1
+    },
+    {
+      "model": "gemma2:2b",
+      "query_count": 25,
+      "ambiguity": {
+        "n": 25,
+        "tp": 1,
+        "fp": 4,
+        "fn": 8,
+        "precision": 0.2,
+        "recall": 0.1111111111111111,
+        "f1": 0.14285714285714285
+      },
+      "sufficiency": {
+        "n": 20,
+        "tp": 0,
+        "fp": 1,
+        "fn": 5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "combined": {
+        "false_answer_count": 1,
+        "false_answer_rate": 0.04,
+        "false_abstain_count": 5,
+        "missed_ambiguity_count": 8,
+        "false_clarify_count": 4,
+        "gold_present_answerable_coverage": 0.0,
+        "gold_present_answered": 0,
+        "gold_present_count": 6
+      },
+      "reliability": {
+        "evaluator_calls": 45,
+        "ambiguity_calls": 25,
+        "sufficiency_calls": 20,
+        "first_pass_schema_success": 45,
+        "retry_count": 0,
+        "final_parse_failure_count": 0,
+        "timeout_count": 0,
+        "invalid_enum_count": 0,
+        "hallucinated_supporting_chunk_id_count": 0
+      },
+      "injection_robustness": {
+        "status": "PASS",
+        "query_count": 1,
+        "parse_failures": 0
+      },
+      "multi_document": {
+        "n": 1,
+        "complete_sufficient": 0,
+        "partial_insufficient": 0
+      },
+      "latency": {
+        "ambiguity": {
+          "n": 25,
+          "p50": 7502.743,
+          "p95": 9369.306,
+          "max": 10252.172
+        },
+        "sufficiency": {
+          "n": 20,
+          "p50": 7839.8345,
+          "p95": 9897.285,
+          "max": 10097.043
+        },
+        "total": {
+          "n": 25,
+          "p50": 15681.938,
+          "p95": 18131.924,
+          "max": 19335.466
+        }
+      },
+      "short_circuit_saved_sufficiency_calls": 5
+    }
+  ],
+  "retrieval_calls_during_model_evaluation": 0,
+  "embedding_calls_during_model_evaluation": 0,
+  "reranker_calls_during_model_evaluation": 0,
+  "generation_invoked": false,
+  "selection": {
+    "status": "SELECT_MODEL",
+    "model": "qwen3.5:4b"
+  }
+}

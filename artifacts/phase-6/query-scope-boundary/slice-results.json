@@ -1,0 +1,276 @@
+{
+  "query_only": {
+    "acl_negative": {
+      "n": 8,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 8,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "ambiguous": {
+      "n": 12,
+      "answer": 0,
+      "clarify": 9,
+      "abstain": 3,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "cross_lingual": {
+      "n": 5,
+      "answer": 2,
+      "clarify": 2,
+      "abstain": 1,
+      "false_clarify": 2,
+      "false_answer": 0,
+      "coverage": 0.4
+    },
+    "en->en": {
+      "n": 7,
+      "answer": 4,
+      "clarify": 2,
+      "abstain": 1,
+      "false_clarify": 2,
+      "false_answer": 0,
+      "coverage": 0.5714285714285714
+    },
+    "en->none": {
+      "n": 18,
+      "answer": 0,
+      "clarify": 6,
+      "abstain": 12,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "en->tr": {
+      "n": 3,
+      "answer": 2,
+      "clarify": 0,
+      "abstain": 1,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": 0.6666666666666666
+    },
+    "hard_answerable": {
+      "n": 4,
+      "answer": 2,
+      "clarify": 1,
+      "abstain": 1,
+      "false_clarify": 1,
+      "false_answer": 0,
+      "coverage": 0.5
+    },
+    "injection_bearing": {
+      "n": 2,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 2,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "multi_document": {
+      "n": 3,
+      "answer": 0,
+      "clarify": 1,
+      "abstain": 2,
+      "false_clarify": 1,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "standard_answerable": {
+      "n": 4,
+      "answer": 3,
+      "clarify": 1,
+      "abstain": 0,
+      "false_clarify": 1,
+      "false_answer": 0,
+      "coverage": 0.75
+    },
+    "tr->en": {
+      "n": 9,
+      "answer": 1,
+      "clarify": 5,
+      "abstain": 3,
+      "false_clarify": 5,
+      "false_answer": 0,
+      "coverage": 0.1111111111111111
+    },
+    "tr->none": {
+      "n": 10,
+      "answer": 0,
+      "clarify": 3,
+      "abstain": 7,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "tr->tr": {
+      "n": 1,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 1,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "unanswerable": {
+      "n": 8,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 8,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "version_conflict": {
+      "n": 2,
+      "answer": 0,
+      "clarify": 2,
+      "abstain": 0,
+      "false_clarify": 2,
+      "false_answer": 0,
+      "coverage": 0.0
+    }
+  },
+  "compact_scope": {
+    "acl_negative": {
+      "n": 8,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 8,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "ambiguous": {
+      "n": 12,
+      "answer": 0,
+      "clarify": 12,
+      "abstain": 0,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "cross_lingual": {
+      "n": 5,
+      "answer": 0,
+      "clarify": 5,
+      "abstain": 0,
+      "false_clarify": 5,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "en->en": {
+      "n": 7,
+      "answer": 0,
+      "clarify": 7,
+      "abstain": 0,
+      "false_clarify": 7,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "en->none": {
+      "n": 18,
+      "answer": 0,
+      "clarify": 9,
+      "abstain": 9,
+      "false_clarify": 0,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "en->tr": {
+      "n": 3,
+      "answer": 0,
+      "clarify": 2,
+      "abstain": 1,
+      "false_clarify": 2,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "hard_answerable": {
+      "n": 4,
+      "answer": 1,
+      "clarify": 2,
+      "abstain": 1,
+      "false_clarify": 2,
+      "false_answer": 0,
+      "coverage": 0.25
+    },
+    "injection_bearing": {
+      "n": 2,
+      "answer": 0,
+      "clarify": 1,
+      "abstain": 1,
+      "false_clarify": 1,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "multi_document": {
+      "n": 3,
+      "answer": 0,
+      "clarify": 3,
+      "abstain": 0,
+      "false_clarify": 3,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "standard_answerable": {
+      "n": 4,
+      "answer": 0,
+      "clarify": 4,
+      "abstain": 0,
+      "false_clarify": 4,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "tr->en": {
+      "n": 9,
+      "answer": 1,
+      "clarify": 7,
+      "abstain": 1,
+      "false_clarify": 7,
+      "false_answer": 0,
+      "coverage": 0.1111111111111111
+    },
+    "tr->none": {
+      "n": 10,
+      "answer": 0,
+      "clarify": 4,
+      "abstain": 6,
+      "false_clarify": 1,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "tr->tr": {
+      "n": 1,
+      "answer": 0,
+      "clarify": 1,
+      "abstain": 0,
+      "false_clarify": 1,
+      "false_answer": 0,
+      "coverage": 0.0
+    },
+    "unanswerable": {
+      "n": 8,
+      "answer": 0,
+      "clarify": 1,
+      "abstain": 7,
+      "false_clarify": 1,
+      "false_answer": 0,
+      "coverage": null
+    },
+    "version_conflict": {
+      "n": 2,
+      "answer": 0,
+      "clarify": 2,
+      "abstain": 0,
+      "false_clarify": 2,
+      "false_answer": 0,
+      "coverage": 0.0
+    }
+  }
+}

@@ -43,6 +43,23 @@ semantic grounding.
 stream. `strict` buffers the generated answer and releases it only after
 deterministic citation/disclosure/suppression checks pass.
 
+## Active runtime versus evaluated experiments
+
+The active request path is deliberately:
+
+```text
+query → hybrid retrieval → tenant ACL → BGE reranker
+      → top-5 authorized context → existing generation
+      → strict output/citation validation
+```
+
+Phase 6 answerability classifiers and semantic evaluators are evaluated or
+shadow-only research components, not active production gates. Their settings
+are disabled by default. An explicit shadow configuration may add bounded
+telemetry after retrieval/reranking, but it does not suppress generation or
+change the user-facing answer. No semantic LLM call is required by the active
+runtime path.
+
 `/ui/*` endpoints are read-only presentation aggregations over existing domain
 logic. They do not accept a caller-selected tenant, do not expose internal
 clients or credentials, and do not create a privileged request path.

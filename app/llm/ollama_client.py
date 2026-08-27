@@ -140,6 +140,40 @@ class OllamaClient:
         except httpx.HTTPError as exc:
             raise OllamaUnreachableError(f"Could not reach Ollama: {exc}") from exc
 
+    async def chat_json(
+        self,
+        messages: list[dict],
+        model: str,
+        *,
+        think: bool = False,
+        temperature: float = 0.0,
+        schema: dict | None = None,
+    ) -> str:
+        """Run a non-streaming structured JSON call, separate from generation."""
+        try:
+            response = await self._client.post(
+                "/api/chat",
+                json={
+                    "model": model,
+                    "messages": messages,
+                    "stream": False,
+                    "format": schema or "json",
+                    "options": {"temperature": temperature},
+                    "think": think,
+                    "keep_alive": DEFAULT_KEEP_ALIVE,
+                },
+            )
+            response.raise_for_status()
+            try:
+                content = response.json()["message"]["content"]
+            except (KeyError, TypeError) as exc:
+                raise ValueError("Ollama JSON chat response has no message content") from exc
+            if not isinstance(content, str):
+                raise ValueError("Ollama JSON chat returned non-string message content")
+            return content
+        except httpx.HTTPError as exc:
+            raise OllamaUnreachableError(f"Could not reach Ollama: {exc}") from exc
+
     async def aclose(self) -> None:
         if self._owns_client:
             await self._client.aclose()

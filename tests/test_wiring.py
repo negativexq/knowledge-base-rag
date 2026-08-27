@@ -54,3 +54,31 @@ async def test_real_chat_wiring_uses_server_security_mode(monkeypatch):
     assert dependencies.security_validation_mode == "strict"
     [event async for event in dependencies.stream_fn("question", [])]
     assert calls["validation_mode"] == "strict"
+
+
+def test_real_chat_wiring_keeps_semantic_gate_disabled_by_default(monkeypatch):
+    """Phase 6 research components must not enter the active path by default."""
+    import app.wiring as wiring
+
+    monkeypatch.setattr(wiring, "build_reranker", lambda settings: object())
+    monkeypatch.setattr(wiring, "get_chat_provider", lambda settings: object())
+    monkeypatch.setattr(
+        wiring,
+        "active_embedding_config",
+        lambda settings: SimpleNamespace(query_prefix=lambda: "", output_dimension=1024),
+    )
+
+    def fail_if_constructed(*args, **kwargs):
+        raise AssertionError("semantic evaluator is research-only and disabled by default")
+
+    monkeypatch.setattr(wiring, "OllamaSemanticEvaluator", fail_if_constructed)
+
+    dependencies, _ = build_chat_dependencies(
+        Settings(_env_file=None),
+        qdrant_client=object(),
+        ollama=object(),
+        sparse_encoder=object(),
+        collection_name="test",
+    )
+
+    assert dependencies.semantic_evaluator is None

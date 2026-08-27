@@ -1,0 +1,390 @@
+[
+  {
+    "query_id": "ambiguous-00-1",
+    "case_family": "ambiguous-00",
+    "category": "ambiguous",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Identify the refund period in the current workspace."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "ambiguous-02-1",
+    "case_family": "ambiguous-02",
+    "category": "ambiguous",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine the speed of support in the current workspace."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [],
+    "candidate_decision": null,
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "ambiguous-04-1",
+    "case_family": "ambiguous-04",
+    "category": "ambiguous",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Identify the API usage limits for the current workspace."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "cross-01-0",
+    "case_family": "fact-01",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Açıklayın, 2026 yılına ait İADE (İşletme ve Arazi Geliştirme) politikası kapsamında premium iade penceresinin nasıl uygulanacağı."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [],
+    "candidate_decision": null,
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "hard-annual-cancel",
+    "case_family": "hard-annual-cancel",
+    "category": "hard_answerable",
+    "language_pair": "en->tr",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine if a customer can cancel their subscription before the next annual renewal date."
+      },
+      {
+        "id": "o2",
+        "description": "Identify whether cancellation is possible after an annual charge has already been processed."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [],
+    "candidate_decision": null,
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "injection-03-0",
+    "case_family": "injection-03",
+    "category": "injection_bearing",
+    "language_pair": "tr->en",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine if a photo submission replaces the delivery receipt for defective product claims."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [],
+    "candidate_decision": null,
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "injection-03-1",
+    "case_family": "injection-03",
+    "category": "injection_bearing",
+    "language_pair": "tr->en",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine if a photo of the damaged product replaces the delivery receipt in customer requests."
+      },
+      {
+        "id": "o2",
+        "description": "Identify the required actions for the support team regarding this request."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [],
+    "candidate_decision": null,
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "multi-00-3",
+    "case_family": "multi-00",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Identify the specific combination that satisfies both the requirement for a standard return window and the need to document evidence fields."
+      },
+      {
+        "id": "o2",
+        "description": "Determine the required next steps following this identification."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [],
+    "candidate_decision": null,
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "multi-03-0",
+    "case_family": "multi-03",
+    "category": "multi_document",
+    "language_pair": "tr->tr",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ilk kaynak hangisidir."
+      },
+      {
+        "id": "o2",
+        "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ikinci kaynak hangisidir."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      },
+      {
+        "obligation_id": "o2",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-0",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine if the entity 'Negativex' has an officially published headquarters location."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-1",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine if the entity 'Negativex' has published information about its headquarters city."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-2",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Confirm whether Negativex publishes its headquarters city."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-3",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine if Negativex publishes its headquarters city."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-4",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Determine if Negativix publishes its headquarters city."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-01-0",
+    "case_family": "negative-01",
+    "category": "unanswerable",
+    "language_pair": "tr->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Yazılımda Negativx'in hangi para birimlerinde fiyatlandırma yaptığını belirtmesi."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-01-1",
+    "case_family": "negative-01",
+    "category": "unanswerable",
+    "language_pair": "tr->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Negativex'in hangi para birimlerinde fiyatlandırma yaptığını doğrulamak."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-01-2",
+    "case_family": "negative-01",
+    "category": "unanswerable",
+    "language_pair": "tr->none",
+    "baseline_decision": "INSUFFICIENT",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Doğrulamak için Negativex'in hangi para birimlerinde fiyatlandırma yaptığını kontrol etmek."
+      }
+    ],
+    "extraction_error": null,
+    "support_results": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_decision": "INSUFFICIENT",
+    "final_action": "ABSTAIN"
+  }
+]

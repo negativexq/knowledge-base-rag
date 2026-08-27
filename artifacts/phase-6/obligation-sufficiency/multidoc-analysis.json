@@ -1,0 +1,35 @@
+[
+  {
+    "query_id": "multi-00-1",
+    "case_family": "multi-00",
+    "expected_answer_components": 2,
+    "evidence_chunks_available": 5,
+    "query_scope_decision": "REQUIRES_USER_INPUT",
+    "v1_sufficiency": null,
+    "v2_obligations": [],
+    "v2_normalized_decision": null,
+    "v2_final_action": "CLARIFY"
+  },
+  {
+    "query_id": "multi-00-3",
+    "case_family": "multi-00",
+    "expected_answer_components": 2,
+    "evidence_chunks_available": 5,
+    "query_scope_decision": "SUFFICIENTLY_SCOPED",
+    "v1_sufficiency": "INSUFFICIENT",
+    "v2_obligations": [],
+    "v2_normalized_decision": null,
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "multi-03-0",
+    "case_family": "multi-03",
+    "expected_answer_components": 2,
+    "evidence_chunks_available": 5,
+    "query_scope_decision": "SUFFICIENTLY_SCOPED",
+    "v1_sufficiency": "INSUFFICIENT",
+    "v2_obligations": [],
+    "v2_normalized_decision": null,
+    "v2_final_action": "ABSTAIN"
+  }
+]

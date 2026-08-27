@@ -7,6 +7,7 @@ from app.api.chat import ChatDependencies
 from app.connectors.base import Connector
 from app.connectors.filesystem import LocalFilesystemConnector
 from app.connectors.notion import NotionConnector
+from app.evaluation.semantic_answerability import OllamaSemanticEvaluator
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.ingestion.qdrant_store import QdrantStore
 from app.llm.embedding_models import active_embedding_config
@@ -105,6 +106,14 @@ def build_chat_dependencies(
     reranker = build_reranker(settings)
     chat_provider = get_chat_provider(settings)
     embed_config = active_embedding_config(settings)
+    semantic_evaluator = None
+    if settings.semantic_answerability_enabled and settings.semantic_answerability_shadow:
+        semantic_evaluator = OllamaSemanticEvaluator(
+            ollama,
+            model=settings.answerability_eval_model,
+            timeout_seconds=settings.answerability_eval_timeout_seconds,
+            retries=settings.answerability_eval_retries,
+        )
 
     async def search_fn(
         question: str, context: RetrievalContext, report: RetrievalReport
@@ -138,6 +147,7 @@ def build_chat_dependencies(
             ),
             prompt_version=settings.active_prompt_version,
             security_validation_mode=settings.security_validation_mode,
+            semantic_evaluator=semantic_evaluator,
         ),
         chat_provider,
     )

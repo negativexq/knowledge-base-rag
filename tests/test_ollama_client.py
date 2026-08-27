@@ -201,6 +201,44 @@ async def test_stream_chat_raises_when_unreachable():
             pass
 
 
+@pytest.mark.asyncio
+async def test_chat_json_is_non_streaming_deterministic_and_thinking_disabled():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.update(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={"message": {"content": '{"decision":"CLEAR"}'}},
+        )
+
+    client = OllamaClient(http_client=_mock_client(handler))
+    content = await client.chat_json(
+        [{"role": "system", "content": "classify"}],
+        model="qwen3:4b",
+        think=False,
+        temperature=0.0,
+    )
+
+    assert content == '{"decision":"CLEAR"}'
+    assert captured["stream"] is False
+    assert captured["format"] == "json"
+    assert captured["think"] is False
+    assert captured["options"] == {"temperature": 0.0}
+    assert captured["model"] == "qwen3:4b"
+
+
+@pytest.mark.asyncio
+async def test_chat_json_raises_when_unreachable():
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("connection refused", request=request)
+
+    client = OllamaClient(http_client=_mock_client(handler))
+
+    with pytest.raises(OllamaUnreachableError):
+        await client.chat_json([], model="qwen3:4b")
+
+
 def test_default_timeout_is_generous_enough_for_slow_local_generation():
     assert DEFAULT_TIMEOUT_SECONDS >= 120.0
 

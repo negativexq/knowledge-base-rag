@@ -1,0 +1,4 @@
+model,ambiguity_f1,sufficiency_f1,false_answer_count,false_abstain_count,gold_present_answerable_coverage,total_p95_ms,final_parse_failure_count
+qwen3.5:4b,0.5806451612903226,1.0,0,0,0.5,17478.46,0
+qwen2.5:3b-instruct,0.0,0.5263157894736842,9,0,0.8333333333333334,18514.522,0
+gemma2:2b,0.14285714285714285,0.0,1,5,0.0,18131.924,0

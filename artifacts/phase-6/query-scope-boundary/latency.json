@@ -1,0 +1,48 @@
+{
+  "query_only": {
+    "scope": {
+      "n": 40,
+      "p50": 5155.041,
+      "p95": 10422.449,
+      "max": 12292.449
+    },
+    "sufficiency": {
+      "n": 24,
+      "p50": 12138.8025,
+      "p95": 20163.582,
+      "max": 20280.191
+    },
+    "total": {
+      "n": 48,
+      "p50": 10470.421,
+      "p95": 23165.683,
+      "max": 28306.423
+    },
+    "average_evaluator_calls_per_query": 1.3333333333333333,
+    "scope_calls": 40,
+    "sufficiency_calls": 24
+  },
+  "compact_scope": {
+    "scope": {
+      "n": 40,
+      "p50": 7032.227,
+      "p95": 9369.709,
+      "max": 11682.893
+    },
+    "sufficiency": {
+      "n": 10,
+      "p50": 5001.786,
+      "p95": 8513.503,
+      "max": 8513.503
+    },
+    "total": {
+      "n": 48,
+      "p50": 7334.1335,
+      "p95": 12095.047,
+      "max": 15429.339
+    },
+    "average_evaluator_calls_per_query": 1.0416666666666667,
+    "scope_calls": 40,
+    "sufficiency_calls": 10
+  }
+}

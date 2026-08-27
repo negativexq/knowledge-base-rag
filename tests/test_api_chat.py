@@ -1,9 +1,11 @@
+import pytest
 from fastapi.testclient import TestClient
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from app.api.chat import ChatDependencies, _sse_event_stream
+from app.evaluation.semantic_answerability import SemanticAnswerabilityObservation
 from app.main import create_app
 from app.registry.store import DocumentRegistry
 from app.retrieval.hybrid_search import SearchResult
@@ -136,6 +138,40 @@ async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_res
     assert any(e.startswith("event: done\n") for e in events)
 
 
+@pytest.mark.asyncio
+async def test_semantic_shadow_observation_is_additive_and_generation_still_runs():
+    calls = {"semantic": 0, "generation": 0}
+
+    async def stream_fn(question: str, chunks: list[SearchResult]):
+        calls["generation"] += 1
+        yield {"type": "token", "content": "answer"}
+
+    class FakeSemanticEvaluator:
+        async def evaluate(self, question, chunks, deterministic_reason=None):
+            calls["semantic"] += 1
+            return SemanticAnswerabilityObservation(
+                shadow_action="ANSWER",
+                latency_ms=1.0,
+            )
+
+    deps = ChatDependencies(
+        search_fn=_fake_search,
+        stream_fn=stream_fn,
+        semantic_evaluator=FakeSemanticEvaluator(),
+    )
+    events = [
+        event
+        async for event in _sse_event_stream(
+            "How long is the refund window?", deps, RetrievalContext(tenant_id="default")
+        )
+    ]
+
+    retrieval = next(event for event in events if event.startswith("event: retrieval\n"))
+    assert '"semantic_answerability"' in retrieval
+    assert '"shadow_action": "ANSWER"' in retrieval
+    assert calls == {"semantic": 1, "generation": 1}
+
+
 def test_chat_requires_authentication(tmp_path):
     deps = ChatDependencies(search_fn=_fake_search, stream_fn=_fake_stream)
     manager = SyncManager(
@@ -148,9 +184,7 @@ def test_chat_requires_authentication(tmp_path):
     )
     registry = DocumentRegistry(tmp_path / "registry.db")
     history = SyncHistory(tmp_path / "registry.db")
-    client = TestClient(
-        create_app(manager, history, registry, chat_deps=deps, auth_enabled=True)
-    )
+    client = TestClient(create_app(manager, history, registry, chat_deps=deps, auth_enabled=True))
 
     response = client.post("/chat", json={"question": "hi"})
 
@@ -166,9 +200,7 @@ def test_chat_passes_the_authenticated_users_own_tenant_as_retrieval_context(tmp
 
     received_context = {}
 
-    async def _capturing_search(
-        question: str, context: RetrievalContext, report: RetrievalReport
-    ):
+    async def _capturing_search(question: str, context: RetrievalContext, report: RetrievalReport):
         received_context["context"] = context
         return []
 
@@ -185,14 +217,16 @@ def test_chat_passes_the_authenticated_users_own_tenant_as_retrieval_context(tmp
     history = SyncHistory(tmp_path / "registry.db")
     client = TestClient(
         create_app(
-            manager, history, registry, chat_deps=deps,
-            token_authenticator=TokenAuthenticator(DEFAULT_DEV_TOKENS), auth_enabled=True,
+            manager,
+            history,
+            registry,
+            chat_deps=deps,
+            token_authenticator=TokenAuthenticator(DEFAULT_DEV_TOKENS),
+            auth_enabled=True,
         )
     )
 
-    client.post(
-        "/chat", json={"question": "hi"}, headers={"Authorization": "Bearer token-user-a"}
-    )
+    client.post("/chat", json={"question": "hi"}, headers={"Authorization": "Bearer token-user-a"})
 
     assert received_context["context"] == RetrievalContext(tenant_id="tenant-a")
 

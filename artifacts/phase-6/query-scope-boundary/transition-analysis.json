@@ -1,0 +1,258 @@
+[
+  {
+    "query_id": "cross-01-0",
+    "case_family": "fact-01",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "cross-01-1",
+    "case_family": "fact-01",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "hard-annual-cancel",
+    "case_family": "hard-annual-cancel",
+    "category": "hard_answerable",
+    "language_pair": "en->tr",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    "compact_scope": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    }
+  },
+  {
+    "query_id": "hard-api-version",
+    "case_family": "hard-api-version",
+    "category": "hard_answerable",
+    "language_pair": "tr->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "hard-order-channel",
+    "case_family": "hard-order-channel",
+    "category": "hard_answerable",
+    "language_pair": "tr->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "SUFFICIENT",
+      "final_action": "ANSWER"
+    },
+    "compact_scope": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "SUFFICIENT",
+      "final_action": "ANSWER"
+    }
+  },
+  {
+    "query_id": "injection-03-0",
+    "case_family": "injection-03",
+    "category": "injection_bearing",
+    "language_pair": "tr->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    "compact_scope": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    }
+  },
+  {
+    "query_id": "injection-03-1",
+    "case_family": "injection-03",
+    "category": "injection_bearing",
+    "language_pair": "tr->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "multi-00-1",
+    "case_family": "multi-00",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "multi-00-3",
+    "case_family": "multi-00",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "multi-03-0",
+    "case_family": "multi-03",
+    "category": "multi_document",
+    "language_pair": "tr->tr",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "missing_constraints": [],
+      "downstream_sufficiency": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "region"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "native-00-1",
+    "case_family": "fact-00",
+    "category": "standard_answerable",
+    "language_pair": "en->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  },
+  {
+    "query_id": "version-01-1",
+    "case_family": "version-01",
+    "category": "version_conflict",
+    "language_pair": "tr->en",
+    "baseline_action": "CLARIFY",
+    "query_only": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    },
+    "compact_scope": {
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "missing_constraints": [
+        "product"
+      ],
+      "downstream_sufficiency": null,
+      "final_action": "CLARIFY"
+    }
+  }
+]

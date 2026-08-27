@@ -1,0 +1,75 @@
+[
+  {
+    "query_id": "multi-00-1",
+    "case_family": "multi-00",
+    "scope_decision": "REQUIRES_USER_INPUT",
+    "expected_required_source_count": 2,
+    "evidence_chunk_count": 5,
+    "baseline_sufficiency": null,
+    "extraction_status": "error",
+    "extracted_obligations": [],
+    "support_map": [],
+    "candidate_sufficiency": null,
+    "candidate_action": "CLARIFY",
+    "failure_attribution": "QUERY_SCOPE_FAILURE"
+  },
+  {
+    "query_id": "multi-00-3",
+    "case_family": "multi-00",
+    "scope_decision": "SUFFICIENTLY_SCOPED",
+    "expected_required_source_count": 2,
+    "evidence_chunk_count": 5,
+    "baseline_sufficiency": "INSUFFICIENT",
+    "extraction_status": "ok",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Identify the specific combination that satisfies both the requirement for a standard return window and the need to document evidence fields."
+      },
+      {
+        "id": "o2",
+        "description": "Determine the required next steps following this identification."
+      }
+    ],
+    "support_map": [],
+    "candidate_sufficiency": null,
+    "candidate_action": "ABSTAIN",
+    "failure_attribution": "SUPPORT_EVALUATION_FAILURE"
+  },
+  {
+    "query_id": "multi-03-0",
+    "case_family": "multi-03",
+    "scope_decision": "SUFFICIENTLY_SCOPED",
+    "expected_required_source_count": 2,
+    "evidence_chunk_count": 5,
+    "baseline_sufficiency": "INSUFFICIENT",
+    "extraction_status": "ok",
+    "extracted_obligations": [
+      {
+        "id": "o1",
+        "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ilk kaynak hangisidir."
+      },
+      {
+        "id": "o2",
+        "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ikinci kaynak hangisidir."
+      }
+    ],
+    "support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      },
+      {
+        "obligation_id": "o2",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": [],
+        "rationale": ""
+      }
+    ],
+    "candidate_sufficiency": "INSUFFICIENT",
+    "candidate_action": "ABSTAIN",
+    "failure_attribution": "NONE"
+  }
+]

@@ -1,0 +1,209 @@
+[
+  {
+    "query_id": "cross-00-1",
+    "case_family": "fact-00",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "CLEAR",
+      "missing_constraints": []
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "ANSWER"
+  },
+  {
+    "query_id": "cross-01-0",
+    "case_family": "fact-01",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "siparis_kanali"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "cross-01-1",
+    "case_family": "fact-01",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "channel"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "hard-annual-cancel",
+    "case_family": "hard-annual-cancel",
+    "category": "hard_answerable",
+    "language_pair": "en->tr",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "product"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "hard-api-version",
+    "case_family": "hard-api-version",
+    "category": "hard_answerable",
+    "language_pair": "tr->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "account"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "hard-order-channel",
+    "case_family": "hard-order-channel",
+    "category": "hard_answerable",
+    "language_pair": "tr->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "plan"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "injection-03-1",
+    "case_family": "injection-03",
+    "category": "injection_bearing",
+    "language_pair": "tr->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "product"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "multi-00-1",
+    "case_family": "multi-00",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "order channel",
+        "product type",
+        "plan status (Standard/Premium)",
+        "region or enterprise exception scope",
+        "event date (delivery/activation)"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "multi-00-3",
+    "case_family": "multi-00",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "plan",
+        "order channel",
+        "product type",
+        "region",
+        "effective date",
+        "account status (Premium/Standard)",
+        "remedy requested"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "multi-03-0",
+    "case_family": "multi-03",
+    "category": "multi_document",
+    "language_pair": "tr->tr",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "product"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  },
+  {
+    "query_id": "native-00-1",
+    "case_family": "fact-00",
+    "category": "standard_answerable",
+    "language_pair": "en->en",
+    "v1_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": []
+    },
+    "v2_ambiguity": {
+      "decision": "AMBIGUOUS",
+      "missing_constraints": [
+        "plan",
+        "channel"
+      ]
+    },
+    "v1_action": "CLARIFY",
+    "v2_action": "CLARIFY"
+  }
+]

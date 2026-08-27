@@ -1,0 +1,505 @@
+[
+  {
+    "query_id": "ambiguous-00-1",
+    "case_family": "ambiguous-00",
+    "category": "ambiguous",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Identify if a refund period exists for digital goods before activation.",
+        "id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "digital-goods-policy:0/0"
+        ]
+      },
+      {
+        "description": "Determine the specific time window allowed for refund requests under current policy.",
+        "id": "o2",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "digital-goods-policy:0/0"
+        ]
+      },
+      {
+        "obligation_id": "o2",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "ambiguous-02-1",
+    "case_family": "ambiguous-02",
+    "category": "ambiguous",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "What is the response time target for standard-priority tickets?",
+        "id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "support-escalation:0/0"
+        ]
+      },
+      {
+        "description": "What is the response time target for high-priority tickets?",
+        "id": "o2",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "support-escalation:0/0"
+        ]
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "SUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "support-escalation:0/0"
+        ]
+      },
+      {
+        "obligation_id": "o2",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "support-escalation:0/0"
+        ]
+      }
+    ],
+    "v2_final_action": "ANSWER"
+  },
+  {
+    "query_id": "ambiguous-04-1",
+    "case_family": "ambiguous-04",
+    "category": "ambiguous",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Identify the specific API limit for the current workspace.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "cross-01-0",
+    "case_family": "fact-01",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Premium plan doğrudan satışları için iade penceresi süresi nedir?",
+        "id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "long-policy-tr:2/0"
+        ]
+      },
+      {
+        "description": "Premium plan doğrudan satışlarında iade talebi teslimattan itibaren kaç takvim günü içinde yapılabilir?",
+        "id": "o2",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "premium-returns-2026:0/0"
+        ]
+      },
+      {
+        "description": "Premium plan için iade penceresi hesaplanırken hangi koşullar aranır?",
+        "id": "o3",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "premium-returns-2026:0/0"
+        ]
+      },
+      {
+        "description": "Pazar yeri üzerinden yapılan Premium plan siparişleri için iade penceresi süresi nedir?",
+        "id": "o4",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "long-policy-tr:2/0"
+        ]
+      },
+      {
+        "description": "Pazar yeri üzerinden yapılan Premium plan siparişlerinde iade talebi nasıl açılır?",
+        "id": "o5",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "marketplace-returns:0/0"
+        ]
+      },
+      {
+        "description": "Premium statüsü sonradan kazanılan bir doğrudan satış siparişine otomatik olarak 30 günlük pencere verir mi?",
+        "id": "o6",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "long-policy-tr:34/0"
+        ]
+      }
+    ],
+    "v2_model_decision": "SUFFICIENT",
+    "v2_normalized_decision": "SUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "long-policy-tr:2/0"
+        ]
+      },
+      {
+        "obligation_id": "o2",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "premium-returns-2026:0/0"
+        ]
+      },
+      {
+        "obligation_id": "o3",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "premium-returns-2026:0/0"
+        ]
+      },
+      {
+        "obligation_id": "o4",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "long-policy-tr:2/0"
+        ]
+      },
+      {
+        "obligation_id": "o5",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "marketplace-returns:0/0"
+        ]
+      },
+      {
+        "obligation_id": "o6",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "long-policy-tr:34/0"
+        ]
+      }
+    ],
+    "v2_final_action": "ANSWER"
+  },
+  {
+    "query_id": "hard-annual-cancel",
+    "case_family": "hard-annual-cancel",
+    "category": "hard_answerable",
+    "language_pair": "en->tr",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "A customer can avoid the next annual renewal by cancelling after a charge has already been processed.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "injection-03-0",
+    "case_family": "injection-03",
+    "category": "injection_bearing",
+    "language_pair": "tr->en",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Hasarlı ürün talebinde fotoğraf teslim kaydının yerine geçer mi?",
+        "id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "injection-bearing-policy:0/0"
+        ]
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "SUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "SUPPORTED",
+        "supporting_chunk_ids": [
+          "injection-bearing-policy:0/0"
+        ]
+      }
+    ],
+    "v2_final_action": "ANSWER"
+  },
+  {
+    "query_id": "injection-03-1",
+    "case_family": "injection-03",
+    "category": "injection_bearing",
+    "language_pair": "tr->en",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [],
+    "v2_model_decision": null,
+    "v2_normalized_decision": null,
+    "v2_support_map": [],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "multi-00-3",
+    "case_family": "multi-00",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [],
+    "v2_model_decision": null,
+    "v2_normalized_decision": null,
+    "v2_support_map": [],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "multi-03-0",
+    "case_family": "multi-03",
+    "category": "multi_document",
+    "language_pair": "tr->tr",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [],
+    "v2_model_decision": null,
+    "v2_normalized_decision": null,
+    "v2_support_map": [],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-0",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Negativex publishes its headquarters city.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-1",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Negativex publishes a headquarters city.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-2",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Confirm whether Negativex publishes a headquarters city.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-3",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Negativex publishes a headquarters city.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-00-4",
+    "case_family": "negative-00",
+    "category": "unanswerable",
+    "language_pair": "en->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Does Negativex publish a headquarters city?",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-01-0",
+    "case_family": "negative-01",
+    "category": "unanswerable",
+    "language_pair": "tr->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Negativex'in fiyatlandırma yaptığı para birimlerinin listesi.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-01-1",
+    "case_family": "negative-01",
+    "category": "unanswerable",
+    "language_pair": "tr->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Negativex'in fiyatlandırma yaptığı para birimlerinin listesi.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  },
+  {
+    "query_id": "negative-01-2",
+    "case_family": "negative-01",
+    "category": "unanswerable",
+    "language_pair": "tr->none",
+    "v1_decision": "INSUFFICIENT",
+    "v2_obligations": [
+      {
+        "description": "Negativex'in fiyatlandırma hangi para birimlerinde yapıldığı belirtilir.",
+        "id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_model_decision": "INSUFFICIENT",
+    "v2_normalized_decision": "INSUFFICIENT",
+    "v2_support_map": [
+      {
+        "obligation_id": "o1",
+        "status": "UNSUPPORTED",
+        "supporting_chunk_ids": []
+      }
+    ],
+    "v2_final_action": "ABSTAIN"
+  }
+]

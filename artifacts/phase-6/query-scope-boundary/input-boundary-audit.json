@@ -1,0 +1,23 @@
+{
+  "query_only": {
+    "retrieved_content_sent": false,
+    "retrieval_ids_sent": false,
+    "scores_sent": false,
+    "ground_truth_fields_sent": false
+  },
+  "compact_scope": {
+    "retrieved_content_sent": false,
+    "retrieval_ids_sent": false,
+    "scores_sent": false,
+    "ground_truth_fields_sent": false,
+    "fields": [],
+    "allowed_fields": [
+      "title",
+      "authority_role",
+      "authority_scope"
+    ]
+  },
+  "forbidden_fields_observed": [],
+  "cache_records": 48,
+  "compact_metadata_available_records": 0
+}

@@ -1,0 +1,10 @@
+{
+  "first_pass_schema_success": 16,
+  "evaluator_calls": 24,
+  "retry_count": 8,
+  "parse_failures": 8,
+  "timeout_count": 14,
+  "invalid_obligation_count": 2,
+  "invalid_support_id_count": 0,
+  "contradictory_decision_normalizations": 2
+}

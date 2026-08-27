@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from app.api.deps import get_current_user
 from app.evaluation.answerability import extract_answerability_observation
+from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
@@ -103,6 +104,7 @@ class ChatDependencies:
     stream_fn: StreamFn
     prompt_version: str = "unknown"
     security_validation_mode: SecurityValidationMode = "strict"
+    semantic_evaluator: SemanticEvaluator | None = None
 
 
 async def _sse_event_stream(
@@ -157,6 +159,36 @@ async def _sse_event_stream(
             if value is not None:
                 span.set_attribute(name, value)
         span.set_attribute("answerability.reason", observation.reason)
+        if deps.semantic_evaluator is not None:
+            semantic_observation = await deps.semantic_evaluator.evaluate(
+                question,
+                chunks,
+                deterministic_reason=observation.reason
+                if observation.reason != "FEATURES_AVAILABLE"
+                else None,
+            )
+            report.semantic_answerability = semantic_observation.as_dict()
+            semantic_fields = semantic_observation.as_dict()
+            ambiguity = semantic_fields.get("ambiguity") or {}
+            sufficiency = semantic_fields.get("sufficiency") or {}
+            span.set_attribute(
+                "semantic_answerability.ambiguity_decision", ambiguity.get("decision", "")
+            )
+            span.set_attribute(
+                "semantic_answerability.sufficiency_decision", sufficiency.get("decision", "")
+            )
+            span.set_attribute(
+                "semantic_answerability.shadow_action",
+                semantic_observation.shadow_action,
+            )
+            span.set_attribute("semantic_answerability.latency_ms", semantic_observation.latency_ms)
+            span.set_attribute(
+                "semantic_answerability.parse_error", semantic_observation.parse_error
+            )
+            span.set_attribute(
+                "semantic_answerability.support_count",
+                len(sufficiency.get("supporting_chunk_ids", [])),
+            )
         token_counts = [chunk.payload.get("token_count") for chunk in chunks]
         report.context = {
             "retrieved_chunk_count": len(chunks),

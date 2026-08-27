@@ -1,0 +1,6 @@
+{
+  "deterministic_aggregation": true,
+  "supported_requires_valid_chunk_id": true,
+  "unsupported_requires_empty_support_ids": true,
+  "exact_obligation_id_set_required": true
+}

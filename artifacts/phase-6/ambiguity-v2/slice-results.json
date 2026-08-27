@@ -1,0 +1,242 @@
+{
+  "acl_negative": {
+    "v1": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    },
+    "v2": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    }
+  },
+  "ambiguous": {
+    "v1": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    },
+    "v2": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    }
+  },
+  "cross_lingual": {
+    "v1": {
+      "n": 5,
+      "answer": 2,
+      "clarify": 3,
+      "abstain": 0,
+      "coverage": 0.4
+    },
+    "v2": {
+      "n": 5,
+      "answer": 3,
+      "clarify": 2,
+      "abstain": 0,
+      "coverage": 0.6
+    }
+  },
+  "en->en": {
+    "v1": {
+      "n": 7,
+      "answer": 4,
+      "clarify": 3,
+      "abstain": 0,
+      "coverage": 0.5714285714285714
+    },
+    "v2": {
+      "n": 7,
+      "answer": 4,
+      "clarify": 3,
+      "abstain": 0,
+      "coverage": 0.5714285714285714
+    }
+  },
+  "en->none": {
+    "v1": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    },
+    "v2": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    }
+  },
+  "en->tr": {
+    "v1": {
+      "n": 3,
+      "answer": 2,
+      "clarify": 1,
+      "abstain": 0,
+      "coverage": 0.6666666666666666
+    },
+    "v2": {
+      "n": 3,
+      "answer": 2,
+      "clarify": 1,
+      "abstain": 0,
+      "coverage": 0.6666666666666666
+    }
+  },
+  "hard_answerable": {
+    "v1": {
+      "n": 4,
+      "answer": 1,
+      "clarify": 3,
+      "abstain": 0,
+      "coverage": 0.25
+    },
+    "v2": {
+      "n": 4,
+      "answer": 1,
+      "clarify": 3,
+      "abstain": 0,
+      "coverage": 0.25
+    }
+  },
+  "injection_bearing": {
+    "v1": {
+      "n": 2,
+      "answer": 0,
+      "clarify": 1,
+      "abstain": 1,
+      "coverage": 0.0
+    },
+    "v2": {
+      "n": 2,
+      "answer": 0,
+      "clarify": 2,
+      "abstain": 0,
+      "coverage": 0.0
+    }
+  },
+  "multi_document": {
+    "v1": {
+      "n": 3,
+      "answer": 0,
+      "clarify": 3,
+      "abstain": 0,
+      "coverage": 0.0
+    },
+    "v2": {
+      "n": 3,
+      "answer": 0,
+      "clarify": 3,
+      "abstain": 0,
+      "coverage": 0.0
+    }
+  },
+  "standard_answerable": {
+    "v1": {
+      "n": 4,
+      "answer": 3,
+      "clarify": 1,
+      "abstain": 0,
+      "coverage": 0.75
+    },
+    "v2": {
+      "n": 4,
+      "answer": 3,
+      "clarify": 1,
+      "abstain": 0,
+      "coverage": 0.75
+    }
+  },
+  "tr->en": {
+    "v1": {
+      "n": 9,
+      "answer": 1,
+      "clarify": 6,
+      "abstain": 2,
+      "coverage": 0.1111111111111111
+    },
+    "v2": {
+      "n": 9,
+      "answer": 2,
+      "clarify": 7,
+      "abstain": 0,
+      "coverage": 0.2222222222222222
+    }
+  },
+  "tr->none": {
+    "v1": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    },
+    "v2": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    }
+  },
+  "tr->tr": {
+    "v1": {
+      "n": 1,
+      "answer": 0,
+      "clarify": 1,
+      "abstain": 0,
+      "coverage": 0.0
+    },
+    "v2": {
+      "n": 1,
+      "answer": 0,
+      "clarify": 1,
+      "abstain": 0,
+      "coverage": 0.0
+    }
+  },
+  "unanswerable": {
+    "v1": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    },
+    "v2": {
+      "n": 0,
+      "answer": 0,
+      "clarify": 0,
+      "abstain": 0,
+      "coverage": null
+    }
+  },
+  "version_conflict": {
+    "v1": {
+      "n": 2,
+      "answer": 1,
+      "clarify": 0,
+      "abstain": 1,
+      "coverage": 0.5
+    },
+    "v2": {
+      "n": 2,
+      "answer": 1,
+      "clarify": 1,
+      "abstain": 0,
+      "coverage": 0.5
+    }
+  }
+}

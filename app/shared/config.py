@@ -46,6 +46,13 @@ class Settings(BaseSettings):
     ollama_thinking: bool = False
     ollama_embed_model: str = "nomic-embed-text"
 
+    # Phase 6C is opt-in shadow telemetry. It never suppresses generation.
+    semantic_answerability_enabled: bool = False
+    semantic_answerability_shadow: bool = True
+    answerability_eval_model: str = "qwen3:4b"
+    answerability_eval_timeout_seconds: float = Field(default=30.0, gt=0)
+    answerability_eval_retries: int = Field(default=1, ge=0, le=2)
+
     # Qwen3-Embedding-4B benchmark configuration — served
     # via the same Ollama instance as everything else (no new transport),
     # so only its model name/revision/dimension/instruction strings need

@@ -1,0 +1,11 @@
+{
+  "annotation_available": false,
+  "note": "The canonical dataset has source-level evidence labels, not authored obligation-component labels.",
+  "extraction_count_distribution": {
+    "1": 20,
+    "2": 4
+  },
+  "under_decomposition": null,
+  "over_decomposition": null,
+  "invented_component": null
+}

@@ -1,0 +1,8 @@
+metric,v1,v2,delta_v2_minus_v1
+precision,1.0,0.75,-0.25
+recall,0.5384615384615384,0.6,0.06153846153846154
+f1,0.7000000000000001,0.6666666666666665,-0.03333333333333355
+false_sufficient,0,1,1
+false_insufficient,6,2,-4
+gold_present_answered,7,3,-4
+gold_present_count,20,20,0

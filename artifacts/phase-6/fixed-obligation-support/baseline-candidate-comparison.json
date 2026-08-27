@@ -1,0 +1,913 @@
+{
+  "metadata": {
+    "schema_version": "phase-6c6-fixed-obligation-support-v1",
+    "git_sha": "fabc9e9e99df14fed54680e7bde1fcc9b3c25f3c",
+    "model": "qwen3.5:4b",
+    "query_scope_version": "query_scope_query_only_v1",
+    "baseline_sufficiency_version": "sufficiency_v1",
+    "extraction_version": "query_obligation_extraction_v1",
+    "support_version": "fixed_obligation_support_v1",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "retrieval_config": {
+      "embedding_model": "qwen3-embedding:4b",
+      "embedding_dimension": 1024,
+      "retrieval_method": "BM25 + dense + RRF",
+      "candidate_k": 20,
+      "top_n": 5,
+      "reranker_model": "BAAI/bge-reranker-v2-m3",
+      "tenant_acl": true
+    },
+    "retrieval_config_fingerprint": "0d296d725b590ab7c25bb510b3bd89204e4107f236494b43c447de12c2558a01",
+    "query_count": 48,
+    "query_ids": [
+      "acl-02-0",
+      "acl-02-1",
+      "acl-02-2",
+      "acl-02-3",
+      "acl-05-0",
+      "acl-05-1",
+      "acl-05-2",
+      "acl-05-3",
+      "ambiguous-00-0",
+      "ambiguous-00-1",
+      "ambiguous-00-2",
+      "ambiguous-01-0",
+      "ambiguous-01-1",
+      "ambiguous-01-2",
+      "ambiguous-02-0",
+      "ambiguous-02-1",
+      "ambiguous-02-2",
+      "ambiguous-04-0",
+      "ambiguous-04-1",
+      "ambiguous-04-2",
+      "cross-00-1",
+      "cross-01-0",
+      "cross-01-1",
+      "cross-06-0",
+      "cross-06-1",
+      "hard-annual-cancel",
+      "hard-api-private",
+      "hard-api-version",
+      "hard-order-channel",
+      "injection-03-0",
+      "injection-03-1",
+      "multi-00-1",
+      "multi-00-3",
+      "multi-03-0",
+      "native-00-0",
+      "native-00-1",
+      "native-00-2",
+      "native-00-3",
+      "negative-00-0",
+      "negative-00-1",
+      "negative-00-2",
+      "negative-00-3",
+      "negative-00-4",
+      "negative-01-0",
+      "negative-01-1",
+      "negative-01-2",
+      "version-01-0",
+      "version-01-1"
+    ],
+    "retrieval_calls": 0,
+    "embedding_calls": 0,
+    "reranker_calls": 0,
+    "generation_invoked": false,
+    "calibration_run": false,
+    "frozen_test_touched": false
+  },
+  "baseline": {
+    "sufficiency": {
+      "n": 24,
+      "true_sufficient": 7,
+      "false_sufficient": 0,
+      "false_insufficient": 6,
+      "precision": 1.0,
+      "recall": 0.5384615384615384,
+      "f1": 0.7000000000000001,
+      "all_gold_present_sufficiency_recall": {
+        "numerator": 7,
+        "denominator": 13
+      }
+    },
+    "combined": {
+      "answer": 7,
+      "clarify": 16,
+      "abstain": 25,
+      "correct_answer": 7,
+      "false_answer": 0,
+      "correct_clarify": 9,
+      "false_clarify": 7,
+      "correct_abstain": 16,
+      "false_abstain": 6,
+      "missed_ambiguity": 3,
+      "gold_present_answered": 7,
+      "gold_present_count": 20
+    },
+    "slices": {
+      "acl_negative": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "ambiguous": {
+        "n": 3,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "cross_lingual": {
+        "n": 3,
+        "true_sufficient": 2,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 2
+      },
+      "en->en": {
+        "n": 5,
+        "true_sufficient": 4,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 5,
+        "all_gold_present_sufficient": 4
+      },
+      "en->none": {
+        "n": 8,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "en->tr": {
+        "n": 3,
+        "true_sufficient": 2,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 2
+      },
+      "hard_answerable": {
+        "n": 3,
+        "true_sufficient": 2,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 2
+      },
+      "injection_bearing": {
+        "n": 2,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 2,
+        "all_gold_present": 2,
+        "all_gold_present_sufficient": 0
+      },
+      "multi_document": {
+        "n": 2,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 2,
+        "all_gold_present": 2,
+        "all_gold_present_sufficient": 0
+      },
+      "standard_answerable": {
+        "n": 3,
+        "true_sufficient": 3,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 3,
+        "all_gold_present_sufficient": 3
+      },
+      "tr->en": {
+        "n": 4,
+        "true_sufficient": 1,
+        "false_sufficient": 0,
+        "false_insufficient": 3,
+        "all_gold_present": 4,
+        "all_gold_present_sufficient": 1
+      },
+      "tr->none": {
+        "n": 3,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "tr->tr": {
+        "n": 1,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 0
+      },
+      "unanswerable": {
+        "n": 8,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "version_conflict": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      }
+    }
+  },
+  "candidate": {
+    "sufficiency": {
+      "n": 11,
+      "true_sufficient": 0,
+      "false_sufficient": 0,
+      "false_insufficient": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "all_gold_present_sufficiency_recall": {
+        "numerator": 0,
+        "denominator": 1
+      }
+    },
+    "combined": {
+      "answer": 0,
+      "clarify": 16,
+      "abstain": 32,
+      "correct_answer": 0,
+      "false_answer": 0,
+      "correct_clarify": 9,
+      "false_clarify": 7,
+      "correct_abstain": 16,
+      "false_abstain": 13,
+      "missed_ambiguity": 3,
+      "gold_present_answered": 0,
+      "gold_present_count": 20
+    },
+    "slices": {
+      "acl_negative": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "ambiguous": {
+        "n": 2,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "cross_lingual": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "en->en": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "en->none": {
+        "n": 7,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "en->tr": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "hard_answerable": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "injection_bearing": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "multi_document": {
+        "n": 1,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 0
+      },
+      "standard_answerable": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "tr->en": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "tr->none": {
+        "n": 3,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "tr->tr": {
+        "n": 1,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 1,
+        "all_gold_present": 1,
+        "all_gold_present_sufficient": 0
+      },
+      "unanswerable": {
+        "n": 8,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      },
+      "version_conflict": {
+        "n": 0,
+        "true_sufficient": 0,
+        "false_sufficient": 0,
+        "false_insufficient": 0,
+        "all_gold_present": 0,
+        "all_gold_present_sufficient": 0
+      }
+    }
+  },
+  "transitions": [
+    {
+      "query_id": "ambiguous-00-1",
+      "case_family": "ambiguous-00",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Identify the refund period in the current workspace."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "ambiguous-02-1",
+      "case_family": "ambiguous-02",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine the speed of support in the current workspace."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [],
+      "candidate_decision": null,
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "ambiguous-04-1",
+      "case_family": "ambiguous-04",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Identify the API usage limits for the current workspace."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "cross-01-0",
+      "case_family": "fact-01",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Açıklayın, 2026 yılına ait İADE (İşletme ve Arazi Geliştirme) politikası kapsamında premium iade penceresinin nasıl uygulanacağı."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [],
+      "candidate_decision": null,
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "case_family": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine if a customer can cancel their subscription before the next annual renewal date."
+        },
+        {
+          "id": "o2",
+          "description": "Identify whether cancellation is possible after an annual charge has already been processed."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [],
+      "candidate_decision": null,
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "injection-03-0",
+      "case_family": "injection-03",
+      "category": "injection_bearing",
+      "language_pair": "tr->en",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine if a photo submission replaces the delivery receipt for defective product claims."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [],
+      "candidate_decision": null,
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "injection-03-1",
+      "case_family": "injection-03",
+      "category": "injection_bearing",
+      "language_pair": "tr->en",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine if a photo of the damaged product replaces the delivery receipt in customer requests."
+        },
+        {
+          "id": "o2",
+          "description": "Identify the required actions for the support team regarding this request."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [],
+      "candidate_decision": null,
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "multi-00-3",
+      "case_family": "multi-00",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Identify the specific combination that satisfies both the requirement for a standard return window and the need to document evidence fields."
+        },
+        {
+          "id": "o2",
+          "description": "Determine the required next steps following this identification."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [],
+      "candidate_decision": null,
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "multi-03-0",
+      "case_family": "multi-03",
+      "category": "multi_document",
+      "language_pair": "tr->tr",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ilk kaynak hangisidir."
+        },
+        {
+          "id": "o2",
+          "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ikinci kaynak hangisidir."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        },
+        {
+          "obligation_id": "o2",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-0",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine if the entity 'Negativex' has an officially published headquarters location."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-1",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine if the entity 'Negativex' has published information about its headquarters city."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-2",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Confirm whether Negativex publishes its headquarters city."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-3",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine if Negativex publishes its headquarters city."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-00-4",
+      "case_family": "negative-00",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Determine if Negativix publishes its headquarters city."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-01-0",
+      "case_family": "negative-01",
+      "category": "unanswerable",
+      "language_pair": "tr->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Yazılımda Negativx'in hangi para birimlerinde fiyatlandırma yaptığını belirtmesi."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-01-1",
+      "case_family": "negative-01",
+      "category": "unanswerable",
+      "language_pair": "tr->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Negativex'in hangi para birimlerinde fiyatlandırma yaptığını doğrulamak."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    },
+    {
+      "query_id": "negative-01-2",
+      "case_family": "negative-01",
+      "category": "unanswerable",
+      "language_pair": "tr->none",
+      "baseline_decision": "INSUFFICIENT",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Doğrulamak için Negativex'in hangi para birimlerinde fiyatlandırma yaptığını kontrol etmek."
+        }
+      ],
+      "extraction_error": null,
+      "support_results": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_decision": "INSUFFICIENT",
+      "final_action": "ABSTAIN"
+    }
+  ],
+  "multidoc_analysis": [
+    {
+      "query_id": "multi-00-1",
+      "case_family": "multi-00",
+      "scope_decision": "REQUIRES_USER_INPUT",
+      "expected_required_source_count": 2,
+      "evidence_chunk_count": 5,
+      "baseline_sufficiency": null,
+      "extraction_status": "error",
+      "extracted_obligations": [],
+      "support_map": [],
+      "candidate_sufficiency": null,
+      "candidate_action": "CLARIFY",
+      "failure_attribution": "QUERY_SCOPE_FAILURE"
+    },
+    {
+      "query_id": "multi-00-3",
+      "case_family": "multi-00",
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "expected_required_source_count": 2,
+      "evidence_chunk_count": 5,
+      "baseline_sufficiency": "INSUFFICIENT",
+      "extraction_status": "ok",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Identify the specific combination that satisfies both the requirement for a standard return window and the need to document evidence fields."
+        },
+        {
+          "id": "o2",
+          "description": "Determine the required next steps following this identification."
+        }
+      ],
+      "support_map": [],
+      "candidate_sufficiency": null,
+      "candidate_action": "ABSTAIN",
+      "failure_attribution": "SUPPORT_EVALUATION_FAILURE"
+    },
+    {
+      "query_id": "multi-03-0",
+      "case_family": "multi-03",
+      "scope_decision": "SUFFICIENTLY_SCOPED",
+      "expected_required_source_count": 2,
+      "evidence_chunk_count": 5,
+      "baseline_sufficiency": "INSUFFICIENT",
+      "extraction_status": "ok",
+      "extracted_obligations": [
+        {
+          "id": "o1",
+          "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ilk kaynak hangisidir."
+        },
+        {
+          "id": "o2",
+          "description": "Belirlemek ki bölgesel cayma hakkıyla aktif edilen dijital ürün istisnayı açıklayan ikinci kaynak hangisidir."
+        }
+      ],
+      "support_map": [
+        {
+          "obligation_id": "o1",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        },
+        {
+          "obligation_id": "o2",
+          "status": "UNSUPPORTED",
+          "supporting_chunk_ids": [],
+          "rationale": ""
+        }
+      ],
+      "candidate_sufficiency": "INSUFFICIENT",
+      "candidate_action": "ABSTAIN",
+      "failure_attribution": "NONE"
+    }
+  ],
+  "failure_attribution": {
+    "DETERMINISTIC_SAFETY": 8,
+    "QUERY_SCOPE_FAILURE": 16,
+    "NONE": 11,
+    "SUPPORT_EVALUATION_FAILURE": 13
+  },
+  "structured_reliability": {
+    "extraction_calls": 24,
+    "extraction_first_pass_schema_success": 24,
+    "extraction_retries": 0,
+    "extraction_parse_failures": 0,
+    "extraction_timeouts": 0,
+    "zero_obligation": 0,
+    "over_limit": 0,
+    "duplicate_obligations": 0,
+    "support_calls": 24,
+    "support_first_pass_schema_success": 11,
+    "support_retries": 0,
+    "support_parse_failures": 13,
+    "support_timeouts": 0,
+    "missing_obligation_ids": 0,
+    "extra_obligation_ids": 0,
+    "invalid_chunk_ids": 0,
+    "invalid_support_status_combinations": 13
+  },
+  "latency": {
+    "baseline_sufficiency": {
+      "n": 24,
+      "p50": 12138.8025,
+      "p95": 20163.582,
+      "max": 20280.191
+    },
+    "candidate_extraction": {
+      "n": 24,
+      "p50": 9798.87,
+      "p95": 20064.758,
+      "max": 23104.193
+    },
+    "candidate_support": {
+      "n": 24,
+      "p50": 6484.779500000001,
+      "p95": 24292.382,
+      "max": 33491.013
+    },
+    "candidate_combined": {
+      "n": 24,
+      "p50": 16504.047,
+      "p95": 44357.14,
+      "max": 44581.113
+    },
+    "baseline_end_to_end": {
+      "n": 48,
+      "p50": 10470.421,
+      "p95": 23165.683,
+      "max": 28306.423
+    },
+    "candidate_end_to_end": {
+      "n": 48,
+      "p50": 3550.4525,
+      "p95": 42210.981,
+      "max": 44581.113
+    },
+    "baseline_calls": 24,
+    "candidate_calls": 48
+  }
+}

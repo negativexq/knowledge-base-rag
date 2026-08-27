@@ -1,0 +1,105 @@
+{
+  "n": 12,
+  "v1_retained": 12,
+  "v2_retained": 12,
+  "v1_missed": 0,
+  "v2_missed": 0,
+  "records": [
+    {
+      "query_id": "ambiguous-00-0",
+      "case_family": "ambiguous-00",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-00-1",
+      "case_family": "ambiguous-00",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-00-2",
+      "case_family": "ambiguous-00",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "case_family": "ambiguous-01",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-01-1",
+      "case_family": "ambiguous-01",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-01-2",
+      "case_family": "ambiguous-01",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-02-0",
+      "case_family": "ambiguous-02",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-02-1",
+      "case_family": "ambiguous-02",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-02-2",
+      "case_family": "ambiguous-02",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-04-0",
+      "case_family": "ambiguous-04",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-04-1",
+      "case_family": "ambiguous-04",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    },
+    {
+      "query_id": "ambiguous-04-2",
+      "case_family": "ambiguous-04",
+      "v1_decision": "AMBIGUOUS",
+      "v2_decision": "AMBIGUOUS",
+      "v1_correct": true,
+      "v2_correct": true
+    }
+  ]
+}

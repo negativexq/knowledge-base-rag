@@ -1,0 +1,146 @@
+{
+  "acl_negative": {
+    "n": 8,
+    "answer": 0,
+    "clarify": 0,
+    "abstain": 8,
+    "false_answer": 0,
+    "false_clarify": 0,
+    "false_abstain": 0
+  },
+  "all": {
+    "n": 48,
+    "answer": 7,
+    "clarify": 31,
+    "abstain": 10,
+    "false_answer": 0,
+    "false_clarify": 19,
+    "false_abstain": 2
+  },
+  "ambiguous": {
+    "n": 12,
+    "answer": 0,
+    "clarify": 12,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 0,
+    "false_abstain": 0
+  },
+  "cross_lingual": {
+    "n": 5,
+    "answer": 2,
+    "clarify": 3,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 3,
+    "false_abstain": 0
+  },
+  "en->en": {
+    "n": 7,
+    "answer": 4,
+    "clarify": 3,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 3,
+    "false_abstain": 0
+  },
+  "en->none": {
+    "n": 18,
+    "answer": 0,
+    "clarify": 14,
+    "abstain": 4,
+    "false_answer": 0,
+    "false_clarify": 5,
+    "false_abstain": 0
+  },
+  "en->tr": {
+    "n": 3,
+    "answer": 2,
+    "clarify": 1,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 1,
+    "false_abstain": 0
+  },
+  "hard_answerable": {
+    "n": 4,
+    "answer": 1,
+    "clarify": 3,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 3,
+    "false_abstain": 0
+  },
+  "injection_bearing": {
+    "n": 2,
+    "answer": 0,
+    "clarify": 1,
+    "abstain": 1,
+    "false_answer": 0,
+    "false_clarify": 1,
+    "false_abstain": 1
+  },
+  "multi_document": {
+    "n": 3,
+    "answer": 0,
+    "clarify": 3,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 3,
+    "false_abstain": 0
+  },
+  "standard_answerable": {
+    "n": 4,
+    "answer": 3,
+    "clarify": 1,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 1,
+    "false_abstain": 0
+  },
+  "tr->en": {
+    "n": 9,
+    "answer": 1,
+    "clarify": 6,
+    "abstain": 2,
+    "false_answer": 0,
+    "false_clarify": 6,
+    "false_abstain": 2
+  },
+  "tr->none": {
+    "n": 10,
+    "answer": 0,
+    "clarify": 6,
+    "abstain": 4,
+    "false_answer": 0,
+    "false_clarify": 3,
+    "false_abstain": 0
+  },
+  "tr->tr": {
+    "n": 1,
+    "answer": 0,
+    "clarify": 1,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 1,
+    "false_abstain": 0
+  },
+  "unanswerable": {
+    "n": 8,
+    "answer": 0,
+    "clarify": 8,
+    "abstain": 0,
+    "false_answer": 0,
+    "false_clarify": 8,
+    "false_abstain": 0
+  },
+  "version_conflict": {
+    "n": 2,
+    "answer": 1,
+    "clarify": 0,
+    "abstain": 1,
+    "false_answer": 0,
+    "false_clarify": 0,
+    "false_abstain": 1
+  }
+}
