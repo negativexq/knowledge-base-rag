@@ -1,0 +1,4329 @@
+{
+  "metadata": {
+    "git_sha": "06b33184d08d8e3a7566b134db64fc1806f1a324",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "frozen_test_used": false,
+    "generation_invoked": false
+  },
+  "diagnosis": "RETRIEVAL_FEATURES_INSUFFICIENT",
+  "selection": "development balanced-accuracy operating point for comparison only",
+  "candidates": {
+    "current_compact": {
+      "features": [
+        "authorized_candidate_count",
+        "reranked_count",
+        "top1_score",
+        "top2_score",
+        "top3_score",
+        "top1_top2_margin",
+        "top1_top3_margin",
+        "mean_top3_score",
+        "mean_top5_score",
+        "min_top5_score",
+        "max_top5_score",
+        "std_top5_score",
+        "distinct_source_count_top5",
+        "distinct_document_count_top5",
+        "duplicate_source_chunk_count_top5",
+        "source_score_concentration"
+      ],
+      "threshold": 0.342837309275,
+      "development": {
+        "correct_answer": 124,
+        "false_answer": 7,
+        "correct_abstain": 43,
+        "false_abstain": 26,
+        "true_abstain": 50,
+        "answerable_count": 150,
+        "predicted_abstain": 69,
+        "false_answer_rate": 0.14,
+        "false_abstention_rate": 0.17333333333333334,
+        "answerable_coverage": 0.8266666666666667,
+        "abstention_precision": 0.6231884057971014,
+        "abstention_recall": 0.86,
+        "abstention_f1": 0.7226890756302521,
+        "accuracy": 0.835,
+        "balanced_accuracy": 0.8433333333333333,
+        "tp": 43,
+        "fp": 26,
+        "tn": 124,
+        "fn": 7,
+        "auroc": 0.896667,
+        "auprc": 0.780812,
+        "brier_score": 0.106941,
+        "ece_10_bin": 0.065752
+      },
+      "calibration": {
+        "correct_answer": 60,
+        "false_answer": 21,
+        "correct_abstain": 8,
+        "false_abstain": 23,
+        "true_abstain": 29,
+        "answerable_count": 83,
+        "predicted_abstain": 31,
+        "false_answer_rate": 0.7241379310344828,
+        "false_abstention_rate": 0.27710843373493976,
+        "answerable_coverage": 0.7228915662650602,
+        "abstention_precision": 0.25806451612903225,
+        "abstention_recall": 0.27586206896551724,
+        "abstention_f1": 0.26666666666666666,
+        "accuracy": 0.6071428571428571,
+        "balanced_accuracy": 0.49937681761528874,
+        "tp": 8,
+        "fp": 23,
+        "tn": 60,
+        "fn": 21,
+        "auroc": 0.683008,
+        "auprc": 0.384516,
+        "brier_score": 0.194955,
+        "ece_10_bin": 0.164646
+      },
+      "development_threshold_curve": [
+        {
+          "threshold": 0.001694192505,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.001694192505,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.001814750042,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.006666666666666667
+        },
+        {
+          "threshold": 0.001878379384,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.013333333333333334
+        },
+        {
+          "threshold": 0.001995294133,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02
+        },
+        {
+          "threshold": 0.002021911517,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02666666666666667
+        },
+        {
+          "threshold": 0.002386304145,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.03333333333333333
+        },
+        {
+          "threshold": 0.002752521718,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04
+        },
+        {
+          "threshold": 0.003153937083,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04666666666666667
+        },
+        {
+          "threshold": 0.003895859868,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.05333333333333334
+        },
+        {
+          "threshold": 0.004232559053,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06
+        },
+        {
+          "threshold": 0.004256953077,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06666666666666667
+        },
+        {
+          "threshold": 0.004398864178,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.07333333333333333
+        },
+        {
+          "threshold": 0.004505655846,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08
+        },
+        {
+          "threshold": 0.0049112832,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08666666666666667
+        },
+        {
+          "threshold": 0.005307210692,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.09333333333333334
+        },
+        {
+          "threshold": 0.00576022059,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.1
+        },
+        {
+          "threshold": 0.00590749402,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.10666666666666667
+        },
+        {
+          "threshold": 0.00600813954,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.11333333333333333
+        },
+        {
+          "threshold": 0.006773994548,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12
+        },
+        {
+          "threshold": 0.007271571189,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12666666666666668
+        },
+        {
+          "threshold": 0.007493454183,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.13333333333333333
+        },
+        {
+          "threshold": 0.007669020348,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14
+        },
+        {
+          "threshold": 0.008160667041,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14666666666666667
+        },
+        {
+          "threshold": 0.008605417171,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.15333333333333332
+        },
+        {
+          "threshold": 0.008723567574,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16
+        },
+        {
+          "threshold": 0.008768549897,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16666666666666666
+        },
+        {
+          "threshold": 0.009662648221,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.17333333333333334
+        },
+        {
+          "threshold": 0.009710086875,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.18
+        },
+        {
+          "threshold": 0.010047879494,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.18666666666666668
+        },
+        {
+          "threshold": 0.010913831145,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.19333333333333333
+        },
+        {
+          "threshold": 0.011582162554,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.2
+        },
+        {
+          "threshold": 0.012027228521,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.20666666666666667
+        },
+        {
+          "threshold": 0.012078599605,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.21333333333333335
+        },
+        {
+          "threshold": 0.012582576266,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.22
+        },
+        {
+          "threshold": 0.012612025197,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.22666666666666666
+        },
+        {
+          "threshold": 0.012665568881,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.23333333333333334
+        },
+        {
+          "threshold": 0.014584523434,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.24
+        },
+        {
+          "threshold": 0.014713168877,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.24666666666666667
+        },
+        {
+          "threshold": 0.014868985472,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.25333333333333335
+        },
+        {
+          "threshold": 0.015942535593,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.26
+        },
+        {
+          "threshold": 0.016122729071,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.26
+        },
+        {
+          "threshold": 0.016531743585,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.26666666666666666
+        },
+        {
+          "threshold": 0.016822477006,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.2733333333333333
+        },
+        {
+          "threshold": 0.016826469566,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.28
+        },
+        {
+          "threshold": 0.017156706034,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.2866666666666667
+        },
+        {
+          "threshold": 0.017914218816,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.29333333333333333
+        },
+        {
+          "threshold": 0.018174375759,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.3
+        },
+        {
+          "threshold": 0.020580353826,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.30666666666666664
+        },
+        {
+          "threshold": 0.020839445241,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.30666666666666664
+        },
+        {
+          "threshold": 0.020926818311,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.31333333333333335
+        },
+        {
+          "threshold": 0.022525095217,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.32
+        },
+        {
+          "threshold": 0.023129259308,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.32666666666666666
+        },
+        {
+          "threshold": 0.023612356729,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3333333333333333
+        },
+        {
+          "threshold": 0.023640197308,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.34
+        },
+        {
+          "threshold": 0.024035141479,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3466666666666667
+        },
+        {
+          "threshold": 0.024409176887,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.35333333333333333
+        },
+        {
+          "threshold": 0.024562116904,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.36
+        },
+        {
+          "threshold": 0.025848377308,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.36666666666666664
+        },
+        {
+          "threshold": 0.025927841962,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.37333333333333335
+        },
+        {
+          "threshold": 0.02633524135,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38
+        },
+        {
+          "threshold": 0.0266674435,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38666666666666666
+        },
+        {
+          "threshold": 0.027271599293,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3933333333333333
+        },
+        {
+          "threshold": 0.027842687161,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4
+        },
+        {
+          "threshold": 0.028269403655,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4066666666666667
+        },
+        {
+          "threshold": 0.030967361033,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.41333333333333333
+        },
+        {
+          "threshold": 0.033842051966,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.42
+        },
+        {
+          "threshold": 0.034634865692,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4266666666666667
+        },
+        {
+          "threshold": 0.037703096257,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.43333333333333335
+        },
+        {
+          "threshold": 0.037949451813,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44
+        },
+        {
+          "threshold": 0.038901949924,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44666666666666666
+        },
+        {
+          "threshold": 0.042519549439,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4533333333333333
+        },
+        {
+          "threshold": 0.047987919802,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.46
+        },
+        {
+          "threshold": 0.049014671596,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4666666666666667
+        },
+        {
+          "threshold": 0.049185213418,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.47333333333333333
+        },
+        {
+          "threshold": 0.052198495214,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.48
+        },
+        {
+          "threshold": 0.055481708265,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4866666666666667
+        },
+        {
+          "threshold": 0.056766253715,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.4866666666666667
+        },
+        {
+          "threshold": 0.058724870887,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.49333333333333335
+        },
+        {
+          "threshold": 0.058754671471,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.5
+        },
+        {
+          "threshold": 0.060431691697,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.5066666666666667
+        },
+        {
+          "threshold": 0.063156167657,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.5133333333333333
+        },
+        {
+          "threshold": 0.067594800199,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.52
+        },
+        {
+          "threshold": 0.06814429194,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.5266666666666666
+        },
+        {
+          "threshold": 0.06988441201,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5266666666666666
+        },
+        {
+          "threshold": 0.077574561909,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5333333333333333
+        },
+        {
+          "threshold": 0.080979647319,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.54
+        },
+        {
+          "threshold": 0.082313221108,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5466666666666666
+        },
+        {
+          "threshold": 0.085860301289,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5533333333333333
+        },
+        {
+          "threshold": 0.085964227248,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.56
+        },
+        {
+          "threshold": 0.092933320625,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5666666666666667
+        },
+        {
+          "threshold": 0.103544078746,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5733333333333334
+        },
+        {
+          "threshold": 0.106474065088,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.58
+        },
+        {
+          "threshold": 0.108444765802,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5866666666666667
+        },
+        {
+          "threshold": 0.111881404525,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5933333333333334
+        },
+        {
+          "threshold": 0.114786867575,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6
+        },
+        {
+          "threshold": 0.120869708231,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6066666666666667
+        },
+        {
+          "threshold": 0.125595388754,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6133333333333333
+        },
+        {
+          "threshold": 0.127906014336,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.62
+        },
+        {
+          "threshold": 0.137870572338,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6266666666666667
+        },
+        {
+          "threshold": 0.140906062767,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6333333333333333
+        },
+        {
+          "threshold": 0.141664009257,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.64
+        },
+        {
+          "threshold": 0.171599538141,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6466666666666666
+        },
+        {
+          "threshold": 0.171638091813,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6533333333333333
+        },
+        {
+          "threshold": 0.191174718992,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.66
+        },
+        {
+          "threshold": 0.197406303227,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6666666666666666
+        },
+        {
+          "threshold": 0.209420873433,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6733333333333333
+        },
+        {
+          "threshold": 0.210058330111,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.68
+        },
+        {
+          "threshold": 0.210960809242,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6866666666666666
+        },
+        {
+          "threshold": 0.217792428459,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6933333333333334
+        },
+        {
+          "threshold": 0.222697059689,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.7
+        },
+        {
+          "threshold": 0.229866823449,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7
+        },
+        {
+          "threshold": 0.233909468329,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7066666666666667
+        },
+        {
+          "threshold": 0.239581392262,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7133333333333334
+        },
+        {
+          "threshold": 0.252684388749,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.72
+        },
+        {
+          "threshold": 0.25467577017,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.72
+        },
+        {
+          "threshold": 0.258082393144,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7266666666666667
+        },
+        {
+          "threshold": 0.261020753698,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7333333333333333
+        },
+        {
+          "threshold": 0.266986155788,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.74
+        },
+        {
+          "threshold": 0.278639578518,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7466666666666667
+        },
+        {
+          "threshold": 0.283527343075,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7533333333333333
+        },
+        {
+          "threshold": 0.291086076431,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.76
+        },
+        {
+          "threshold": 0.293428049578,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7666666666666667
+        },
+        {
+          "threshold": 0.299742740082,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7733333333333333
+        },
+        {
+          "threshold": 0.302949334903,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7733333333333333
+        },
+        {
+          "threshold": 0.303502642379,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.78
+        },
+        {
+          "threshold": 0.305812694469,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7866666666666666
+        },
+        {
+          "threshold": 0.307402999999,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7933333333333333
+        },
+        {
+          "threshold": 0.313674944577,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8
+        },
+        {
+          "threshold": 0.325649700362,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8066666666666666
+        },
+        {
+          "threshold": 0.336919738454,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8133333333333334
+        },
+        {
+          "threshold": 0.342726673129,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.82
+        },
+        {
+          "threshold": 0.342837309275,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8266666666666667
+        },
+        {
+          "threshold": 0.345102874325,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8266666666666667
+        },
+        {
+          "threshold": 0.354162448949,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8333333333333334
+        },
+        {
+          "threshold": 0.359019224861,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8333333333333334
+        },
+        {
+          "threshold": 0.363395778038,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.84
+        },
+        {
+          "threshold": 0.375232939832,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8466666666666667
+        },
+        {
+          "threshold": 0.376830066604,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8533333333333334
+        },
+        {
+          "threshold": 0.408080974433,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8533333333333334
+        },
+        {
+          "threshold": 0.409772278423,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.86
+        },
+        {
+          "threshold": 0.41375740616,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8666666666666667
+        },
+        {
+          "threshold": 0.415266560721,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8666666666666667
+        },
+        {
+          "threshold": 0.4159105717,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8733333333333333
+        },
+        {
+          "threshold": 0.41943349057,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.88
+        },
+        {
+          "threshold": 0.426171480668,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.43601746758,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.442372936667,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.452990177676,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.8933333333333333
+        },
+        {
+          "threshold": 0.505873795397,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.510055698995,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.521902251458,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.9066666666666666
+        },
+        {
+          "threshold": 0.523846037789,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.9133333333333333
+        },
+        {
+          "threshold": 0.530085298953,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.9133333333333333
+        },
+        {
+          "threshold": 0.531525765162,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.92
+        },
+        {
+          "threshold": 0.531927794643,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.9266666666666666
+        },
+        {
+          "threshold": 0.533320357903,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.9333333333333333
+        },
+        {
+          "threshold": 0.53628388497,
+          "false_answer_rate": 0.32,
+          "answerable_coverage": 0.9333333333333333
+        },
+        {
+          "threshold": 0.537494479717,
+          "false_answer_rate": 0.32,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.548587731126,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.551730969084,
+          "false_answer_rate": 0.36,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.555475232939,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.569392372988,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.593639054301,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.599393828228,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.603066542776,
+          "false_answer_rate": 0.42,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.610130441443,
+          "false_answer_rate": 0.44,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.613170472187,
+          "false_answer_rate": 0.46,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.616071263133,
+          "false_answer_rate": 0.48,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.618997048161,
+          "false_answer_rate": 0.5,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.62561349264,
+          "false_answer_rate": 0.52,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.627612808393,
+          "false_answer_rate": 0.54,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.637938765329,
+          "false_answer_rate": 0.56,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.643947504015,
+          "false_answer_rate": 0.56,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.648235548092,
+          "false_answer_rate": 0.58,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.650687571505,
+          "false_answer_rate": 0.6,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.651135878982,
+          "false_answer_rate": 0.62,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.655635262116,
+          "false_answer_rate": 0.62,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.660000236174,
+          "false_answer_rate": 0.62,
+          "answerable_coverage": 0.9733333333333334
+        },
+        {
+          "threshold": 0.665718449591,
+          "false_answer_rate": 0.64,
+          "answerable_coverage": 0.9733333333333334
+        },
+        {
+          "threshold": 0.677630174689,
+          "false_answer_rate": 0.64,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.679174212728,
+          "false_answer_rate": 0.64,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.688003375393,
+          "false_answer_rate": 0.66,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.689549320297,
+          "false_answer_rate": 0.68,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.699572892334,
+          "false_answer_rate": 0.7,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.700860128946,
+          "false_answer_rate": 0.72,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.703058186761,
+          "false_answer_rate": 0.74,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.708221062124,
+          "false_answer_rate": 0.76,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.709035025875,
+          "false_answer_rate": 0.76,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.716787875731,
+          "false_answer_rate": 0.78,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.718090645696,
+          "false_answer_rate": 0.78,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.737833229644,
+          "false_answer_rate": 0.8,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.747642266324,
+          "false_answer_rate": 0.82,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.74907956462,
+          "false_answer_rate": 0.84,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.769477194041,
+          "false_answer_rate": 0.86,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.78045508385,
+          "false_answer_rate": 0.88,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.794041503271,
+          "false_answer_rate": 0.9,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.796514949877,
+          "false_answer_rate": 0.92,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.802812194808,
+          "false_answer_rate": 0.94,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.818076988281,
+          "false_answer_rate": 0.96,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.83749076051,
+          "false_answer_rate": 0.98,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.83749076051,
+          "false_answer_rate": 1.0,
+          "answerable_coverage": 1.0
+        }
+      ]
+    },
+    "source_level_compact": {
+      "features": [
+        "top1_score",
+        "top1_top2_margin",
+        "mean_top3_score",
+        "source_top1_score",
+        "source_mean_score",
+        "source_count",
+        "source_rank_entropy",
+        "source_score_entropy",
+        "top_source_chunk_share"
+      ],
+      "threshold": 0.504929329909,
+      "development": {
+        "correct_answer": 139,
+        "false_answer": 12,
+        "correct_abstain": 38,
+        "false_abstain": 11,
+        "true_abstain": 50,
+        "answerable_count": 150,
+        "predicted_abstain": 49,
+        "false_answer_rate": 0.24,
+        "false_abstention_rate": 0.07333333333333333,
+        "answerable_coverage": 0.9266666666666666,
+        "abstention_precision": 0.7755102040816326,
+        "abstention_recall": 0.76,
+        "abstention_f1": 0.7676767676767676,
+        "accuracy": 0.885,
+        "balanced_accuracy": 0.8433333333333333,
+        "tp": 38,
+        "fp": 11,
+        "tn": 139,
+        "fn": 12,
+        "auroc": 0.904133,
+        "auprc": 0.817853,
+        "brier_score": 0.104803,
+        "ece_10_bin": 0.091329
+      },
+      "calibration": {
+        "correct_answer": 74,
+        "false_answer": 23,
+        "correct_abstain": 6,
+        "false_abstain": 9,
+        "true_abstain": 29,
+        "answerable_count": 83,
+        "predicted_abstain": 15,
+        "false_answer_rate": 0.7931034482758621,
+        "false_abstention_rate": 0.10843373493975904,
+        "answerable_coverage": 0.891566265060241,
+        "abstention_precision": 0.4,
+        "abstention_recall": 0.20689655172413793,
+        "abstention_f1": 0.2727272727272727,
+        "accuracy": 0.7142857142857143,
+        "balanced_accuracy": 0.5492314083921894,
+        "tp": 6,
+        "fp": 9,
+        "tn": 74,
+        "fn": 23,
+        "auroc": 0.74408,
+        "auprc": 0.44239,
+        "brier_score": 0.179597,
+        "ece_10_bin": 0.138246
+      },
+      "development_threshold_curve": [
+        {
+          "threshold": 0.001468763459,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.001468763459,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.004044414771,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.006666666666666667
+        },
+        {
+          "threshold": 0.00453423784,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.013333333333333334
+        },
+        {
+          "threshold": 0.004541358399,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02
+        },
+        {
+          "threshold": 0.005241936562,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02666666666666667
+        },
+        {
+          "threshold": 0.005286922236,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.03333333333333333
+        },
+        {
+          "threshold": 0.005614073095,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04
+        },
+        {
+          "threshold": 0.005641259447,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04666666666666667
+        },
+        {
+          "threshold": 0.007068099661,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.05333333333333334
+        },
+        {
+          "threshold": 0.00740043263,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06
+        },
+        {
+          "threshold": 0.008039590979,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06666666666666667
+        },
+        {
+          "threshold": 0.008405912166,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.07333333333333333
+        },
+        {
+          "threshold": 0.008559185291,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08
+        },
+        {
+          "threshold": 0.0087510026,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08666666666666667
+        },
+        {
+          "threshold": 0.008751150336,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.09333333333333334
+        },
+        {
+          "threshold": 0.009037160224,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.1
+        },
+        {
+          "threshold": 0.009244159103,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.10666666666666667
+        },
+        {
+          "threshold": 0.009476529073,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.11333333333333333
+        },
+        {
+          "threshold": 0.009508117241,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12
+        },
+        {
+          "threshold": 0.009830109658,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12666666666666668
+        },
+        {
+          "threshold": 0.010011518471,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.13333333333333333
+        },
+        {
+          "threshold": 0.010354524579,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14
+        },
+        {
+          "threshold": 0.01060474404,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14666666666666667
+        },
+        {
+          "threshold": 0.010643438976,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.15333333333333332
+        },
+        {
+          "threshold": 0.011118567656,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16
+        },
+        {
+          "threshold": 0.011740416867,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16666666666666666
+        },
+        {
+          "threshold": 0.011872814517,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.17333333333333334
+        },
+        {
+          "threshold": 0.012441156918,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.18
+        },
+        {
+          "threshold": 0.012741268912,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.18666666666666668
+        },
+        {
+          "threshold": 0.013300014049,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.19333333333333333
+        },
+        {
+          "threshold": 0.013540497751,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.2
+        },
+        {
+          "threshold": 0.013957262568,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.20666666666666667
+        },
+        {
+          "threshold": 0.01421922281,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.21333333333333335
+        },
+        {
+          "threshold": 0.014834497471,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.22
+        },
+        {
+          "threshold": 0.014838079997,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.22
+        },
+        {
+          "threshold": 0.015398381461,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.22666666666666666
+        },
+        {
+          "threshold": 0.015604961843,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.23333333333333334
+        },
+        {
+          "threshold": 0.015835619564,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.24
+        },
+        {
+          "threshold": 0.016130770244,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.24666666666666667
+        },
+        {
+          "threshold": 0.016333814216,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.25333333333333335
+        },
+        {
+          "threshold": 0.016833774508,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.26
+        },
+        {
+          "threshold": 0.017224657832,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.26
+        },
+        {
+          "threshold": 0.017339968965,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.26666666666666666
+        },
+        {
+          "threshold": 0.017746340952,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.2733333333333333
+        },
+        {
+          "threshold": 0.018445396684,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.28
+        },
+        {
+          "threshold": 0.018514269173,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.2866666666666667
+        },
+        {
+          "threshold": 0.018771498198,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.29333333333333333
+        },
+        {
+          "threshold": 0.018927932517,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3
+        },
+        {
+          "threshold": 0.019307642905,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.30666666666666664
+        },
+        {
+          "threshold": 0.019506725054,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.31333333333333335
+        },
+        {
+          "threshold": 0.019668800804,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.32
+        },
+        {
+          "threshold": 0.02128419391,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.32666666666666666
+        },
+        {
+          "threshold": 0.022892438728,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3333333333333333
+        },
+        {
+          "threshold": 0.023134089308,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.34
+        },
+        {
+          "threshold": 0.023536262587,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3466666666666667
+        },
+        {
+          "threshold": 0.023640338694,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.35333333333333333
+        },
+        {
+          "threshold": 0.024058362036,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.36
+        },
+        {
+          "threshold": 0.025250401948,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.36666666666666664
+        },
+        {
+          "threshold": 0.025822287315,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.37333333333333335
+        },
+        {
+          "threshold": 0.026473319368,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38
+        },
+        {
+          "threshold": 0.026984636927,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38666666666666666
+        },
+        {
+          "threshold": 0.030176420501,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3933333333333333
+        },
+        {
+          "threshold": 0.030312735546,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4
+        },
+        {
+          "threshold": 0.030325197777,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4066666666666667
+        },
+        {
+          "threshold": 0.030544176545,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.41333333333333333
+        },
+        {
+          "threshold": 0.030561674045,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.42
+        },
+        {
+          "threshold": 0.030676433645,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4266666666666667
+        },
+        {
+          "threshold": 0.033232308287,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.43333333333333335
+        },
+        {
+          "threshold": 0.033896493159,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44
+        },
+        {
+          "threshold": 0.038500844932,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44666666666666666
+        },
+        {
+          "threshold": 0.040031625518,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4533333333333333
+        },
+        {
+          "threshold": 0.045994410097,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.46
+        },
+        {
+          "threshold": 0.046096558913,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4666666666666667
+        },
+        {
+          "threshold": 0.048179462907,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.47333333333333333
+        },
+        {
+          "threshold": 0.050095719851,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.48
+        },
+        {
+          "threshold": 0.052574298908,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.48
+        },
+        {
+          "threshold": 0.05470154894,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.4866666666666667
+        },
+        {
+          "threshold": 0.054750271637,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.49333333333333335
+        },
+        {
+          "threshold": 0.05753599319,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.5
+        },
+        {
+          "threshold": 0.058693686463,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.5066666666666667
+        },
+        {
+          "threshold": 0.0593130227,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5066666666666667
+        },
+        {
+          "threshold": 0.060043181938,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5133333333333333
+        },
+        {
+          "threshold": 0.064903955684,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.52
+        },
+        {
+          "threshold": 0.065124185273,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5266666666666666
+        },
+        {
+          "threshold": 0.08098623953,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5333333333333333
+        },
+        {
+          "threshold": 0.083681069764,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.54
+        },
+        {
+          "threshold": 0.085640342409,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5466666666666666
+        },
+        {
+          "threshold": 0.089571847681,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5533333333333333
+        },
+        {
+          "threshold": 0.092277183413,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.56
+        },
+        {
+          "threshold": 0.095943580924,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5666666666666667
+        },
+        {
+          "threshold": 0.101420041023,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5733333333333334
+        },
+        {
+          "threshold": 0.102154791979,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.58
+        },
+        {
+          "threshold": 0.104139871288,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5866666666666667
+        },
+        {
+          "threshold": 0.104256767432,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5933333333333334
+        },
+        {
+          "threshold": 0.108517569075,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6
+        },
+        {
+          "threshold": 0.111065978239,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6066666666666667
+        },
+        {
+          "threshold": 0.114272663037,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6133333333333333
+        },
+        {
+          "threshold": 0.119925105667,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.62
+        },
+        {
+          "threshold": 0.120064928088,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6266666666666667
+        },
+        {
+          "threshold": 0.138268763909,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6333333333333333
+        },
+        {
+          "threshold": 0.138923150455,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.64
+        },
+        {
+          "threshold": 0.143509907435,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6466666666666666
+        },
+        {
+          "threshold": 0.146614548627,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6533333333333333
+        },
+        {
+          "threshold": 0.155043748005,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.66
+        },
+        {
+          "threshold": 0.183724902064,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6666666666666666
+        },
+        {
+          "threshold": 0.188481265466,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6733333333333333
+        },
+        {
+          "threshold": 0.218761493607,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.68
+        },
+        {
+          "threshold": 0.219774294285,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6866666666666666
+        },
+        {
+          "threshold": 0.243684163908,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.6866666666666666
+        },
+        {
+          "threshold": 0.245861234967,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.6933333333333334
+        },
+        {
+          "threshold": 0.24693313087,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7
+        },
+        {
+          "threshold": 0.250355652316,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7066666666666667
+        },
+        {
+          "threshold": 0.25712949503,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7133333333333334
+        },
+        {
+          "threshold": 0.258468103595,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.72
+        },
+        {
+          "threshold": 0.261717147824,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7266666666666667
+        },
+        {
+          "threshold": 0.266054212641,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7333333333333333
+        },
+        {
+          "threshold": 0.268906522258,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.74
+        },
+        {
+          "threshold": 0.273903789189,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7466666666666667
+        },
+        {
+          "threshold": 0.279674669871,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7533333333333333
+        },
+        {
+          "threshold": 0.292480815538,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.76
+        },
+        {
+          "threshold": 0.297679357539,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7666666666666667
+        },
+        {
+          "threshold": 0.322044622552,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7733333333333333
+        },
+        {
+          "threshold": 0.329616579348,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7733333333333333
+        },
+        {
+          "threshold": 0.333004346886,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.78
+        },
+        {
+          "threshold": 0.33328306431,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7866666666666666
+        },
+        {
+          "threshold": 0.338606452434,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7933333333333333
+        },
+        {
+          "threshold": 0.346734523525,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7933333333333333
+        },
+        {
+          "threshold": 0.358495934978,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8
+        },
+        {
+          "threshold": 0.364259780112,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8066666666666666
+        },
+        {
+          "threshold": 0.366093072315,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8066666666666666
+        },
+        {
+          "threshold": 0.369326531821,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8133333333333334
+        },
+        {
+          "threshold": 0.373439853452,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.82
+        },
+        {
+          "threshold": 0.373700599844,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8266666666666667
+        },
+        {
+          "threshold": 0.383291581003,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8333333333333334
+        },
+        {
+          "threshold": 0.383643084059,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.84
+        },
+        {
+          "threshold": 0.385981320093,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8466666666666667
+        },
+        {
+          "threshold": 0.402173256146,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8466666666666667
+        },
+        {
+          "threshold": 0.404963595684,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8533333333333334
+        },
+        {
+          "threshold": 0.412686767363,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.86
+        },
+        {
+          "threshold": 0.415686824447,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8666666666666667
+        },
+        {
+          "threshold": 0.425661397287,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8666666666666667
+        },
+        {
+          "threshold": 0.439445422119,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8733333333333333
+        },
+        {
+          "threshold": 0.440365943541,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8733333333333333
+        },
+        {
+          "threshold": 0.449419608475,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.88
+        },
+        {
+          "threshold": 0.47324701082,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.473675611073,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8933333333333333
+        },
+        {
+          "threshold": 0.47816379275,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.482342975072,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.9066666666666666
+        },
+        {
+          "threshold": 0.483354509806,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.9066666666666666
+        },
+        {
+          "threshold": 0.484653289278,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.9133333333333333
+        },
+        {
+          "threshold": 0.498523625043,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.92
+        },
+        {
+          "threshold": 0.504929329909,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.9266666666666666
+        },
+        {
+          "threshold": 0.518440068605,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.9266666666666666
+        },
+        {
+          "threshold": 0.523654002946,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.9333333333333333
+        },
+        {
+          "threshold": 0.524166566319,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.524962620405,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.525395745765,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.550192856146,
+          "false_answer_rate": 0.32,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.552109123949,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.5571283009,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.55757832012,
+          "false_answer_rate": 0.36,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.560068140327,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.583461348868,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.607348014309,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.616406640617,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.624017421842,
+          "false_answer_rate": 0.42,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.624813740203,
+          "false_answer_rate": 0.44,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.625168712488,
+          "false_answer_rate": 0.46,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.625361286319,
+          "false_answer_rate": 0.48,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.628687669265,
+          "false_answer_rate": 0.48,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.632557407473,
+          "false_answer_rate": 0.5,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.636397479713,
+          "false_answer_rate": 0.52,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.636445126173,
+          "false_answer_rate": 0.52,
+          "answerable_coverage": 0.9733333333333334
+        },
+        {
+          "threshold": 0.638031983163,
+          "false_answer_rate": 0.52,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.638856448212,
+          "false_answer_rate": 0.54,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.639056072824,
+          "false_answer_rate": 0.56,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.639432725136,
+          "false_answer_rate": 0.56,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.643167671835,
+          "false_answer_rate": 0.58,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.644090997149,
+          "false_answer_rate": 0.6,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.64610138494,
+          "false_answer_rate": 0.62,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.655740644593,
+          "false_answer_rate": 0.64,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.657470425395,
+          "false_answer_rate": 0.66,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.657644228586,
+          "false_answer_rate": 0.68,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.664968438267,
+          "false_answer_rate": 0.68,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.672093468269,
+          "false_answer_rate": 0.7,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.6812524557,
+          "false_answer_rate": 0.7,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.699236084685,
+          "false_answer_rate": 0.72,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.70135164874,
+          "false_answer_rate": 0.74,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.702369630541,
+          "false_answer_rate": 0.76,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.702561526151,
+          "false_answer_rate": 0.78,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.703409478096,
+          "false_answer_rate": 0.8,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.708283227564,
+          "false_answer_rate": 0.82,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.713354149652,
+          "false_answer_rate": 0.84,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.718750812347,
+          "false_answer_rate": 0.86,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.722523029558,
+          "false_answer_rate": 0.88,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.739222237352,
+          "false_answer_rate": 0.9,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.75201719466,
+          "false_answer_rate": 0.92,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.766518290792,
+          "false_answer_rate": 0.94,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.767902098564,
+          "false_answer_rate": 0.96,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.781478496891,
+          "false_answer_rate": 0.98,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.781478496891,
+          "false_answer_rate": 1.0,
+          "answerable_coverage": 1.0
+        }
+      ]
+    },
+    "relative_structural_compact": {
+      "features": [
+        "score_decay_1_2",
+        "score_decay_1_3",
+        "top1_to_mean_top5_ratio",
+        "top1_to_median_top5_ratio",
+        "top2_to_mean_top5_ratio",
+        "score_range_top5",
+        "score_iqr_top5",
+        "unique_source_ratio_top5",
+        "duplicate_source_ratio_top5",
+        "source_rank_entropy",
+        "source_score_entropy"
+      ],
+      "threshold": 0.390831132056,
+      "development": {
+        "correct_answer": 127,
+        "false_answer": 8,
+        "correct_abstain": 42,
+        "false_abstain": 23,
+        "true_abstain": 50,
+        "answerable_count": 150,
+        "predicted_abstain": 65,
+        "false_answer_rate": 0.16,
+        "false_abstention_rate": 0.15333333333333332,
+        "answerable_coverage": 0.8466666666666667,
+        "abstention_precision": 0.6461538461538462,
+        "abstention_recall": 0.84,
+        "abstention_f1": 0.7304347826086957,
+        "accuracy": 0.845,
+        "balanced_accuracy": 0.8433333333333333,
+        "tp": 42,
+        "fp": 23,
+        "tn": 127,
+        "fn": 8,
+        "auroc": 0.895333,
+        "auprc": 0.7756,
+        "brier_score": 0.113426,
+        "ece_10_bin": 0.086092
+      },
+      "calibration": {
+        "correct_answer": 70,
+        "false_answer": 25,
+        "correct_abstain": 4,
+        "false_abstain": 13,
+        "true_abstain": 29,
+        "answerable_count": 83,
+        "predicted_abstain": 17,
+        "false_answer_rate": 0.8620689655172413,
+        "false_abstention_rate": 0.1566265060240964,
+        "answerable_coverage": 0.8433734939759037,
+        "abstention_precision": 0.23529411764705882,
+        "abstention_recall": 0.13793103448275862,
+        "abstention_f1": 0.17391304347826086,
+        "accuracy": 0.6607142857142857,
+        "balanced_accuracy": 0.49065226422933117,
+        "tp": 4,
+        "fp": 13,
+        "tn": 70,
+        "fn": 25,
+        "auroc": 0.691317,
+        "auprc": 0.366252,
+        "brier_score": 0.185261,
+        "ece_10_bin": 0.138448
+      },
+      "development_threshold_curve": [
+        {
+          "threshold": 0.001166162152,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.001166162152,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.001388625561,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.006666666666666667
+        },
+        {
+          "threshold": 0.001641770152,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.013333333333333334
+        },
+        {
+          "threshold": 0.001818620298,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02
+        },
+        {
+          "threshold": 0.002010959164,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02666666666666667
+        },
+        {
+          "threshold": 0.002079111085,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.03333333333333333
+        },
+        {
+          "threshold": 0.002231530638,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04
+        },
+        {
+          "threshold": 0.002266475226,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04666666666666667
+        },
+        {
+          "threshold": 0.002375033739,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.05333333333333334
+        },
+        {
+          "threshold": 0.002667362153,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06
+        },
+        {
+          "threshold": 0.00281429508,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06666666666666667
+        },
+        {
+          "threshold": 0.003538585595,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.07333333333333333
+        },
+        {
+          "threshold": 0.003671293668,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08
+        },
+        {
+          "threshold": 0.003788076718,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08666666666666667
+        },
+        {
+          "threshold": 0.004083586049,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.09333333333333334
+        },
+        {
+          "threshold": 0.004591302254,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.1
+        },
+        {
+          "threshold": 0.005056261652,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.10666666666666667
+        },
+        {
+          "threshold": 0.005284098081,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.11333333333333333
+        },
+        {
+          "threshold": 0.006029400217,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12
+        },
+        {
+          "threshold": 0.006305289911,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12666666666666668
+        },
+        {
+          "threshold": 0.006475320365,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.13333333333333333
+        },
+        {
+          "threshold": 0.006875087162,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14
+        },
+        {
+          "threshold": 0.006888969735,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14666666666666667
+        },
+        {
+          "threshold": 0.007151435506,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.15333333333333332
+        },
+        {
+          "threshold": 0.007813549442,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16
+        },
+        {
+          "threshold": 0.008010059729,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16666666666666666
+        },
+        {
+          "threshold": 0.008281185577,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.17333333333333334
+        },
+        {
+          "threshold": 0.009475502143,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.18
+        },
+        {
+          "threshold": 0.009729553484,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.18666666666666668
+        },
+        {
+          "threshold": 0.010222480676,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.19333333333333333
+        },
+        {
+          "threshold": 0.01031724657,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.2
+        },
+        {
+          "threshold": 0.010991062736,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.20666666666666667
+        },
+        {
+          "threshold": 0.011376734948,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.21333333333333335
+        },
+        {
+          "threshold": 0.011898287452,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.22
+        },
+        {
+          "threshold": 0.012707520873,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.22666666666666666
+        },
+        {
+          "threshold": 0.013083593674,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.23333333333333334
+        },
+        {
+          "threshold": 0.01331017381,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.24
+        },
+        {
+          "threshold": 0.013976751053,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.24666666666666667
+        },
+        {
+          "threshold": 0.013993472775,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.25333333333333335
+        },
+        {
+          "threshold": 0.013993750112,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.26
+        },
+        {
+          "threshold": 0.014494461222,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.26666666666666666
+        },
+        {
+          "threshold": 0.014638233441,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.2733333333333333
+        },
+        {
+          "threshold": 0.014734677014,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.28
+        },
+        {
+          "threshold": 0.015697045403,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.2866666666666667
+        },
+        {
+          "threshold": 0.015821516008,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.29333333333333333
+        },
+        {
+          "threshold": 0.016035730625,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.3
+        },
+        {
+          "threshold": 0.016870087505,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.3
+        },
+        {
+          "threshold": 0.017347763778,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.30666666666666664
+        },
+        {
+          "threshold": 0.017502234079,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.31333333333333335
+        },
+        {
+          "threshold": 0.017986317929,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.32
+        },
+        {
+          "threshold": 0.019178532457,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.32666666666666666
+        },
+        {
+          "threshold": 0.019426627614,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.3333333333333333
+        },
+        {
+          "threshold": 0.020398308204,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.34
+        },
+        {
+          "threshold": 0.022062919919,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.3466666666666667
+        },
+        {
+          "threshold": 0.022983452799,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.35333333333333333
+        },
+        {
+          "threshold": 0.023973967517,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.36
+        },
+        {
+          "threshold": 0.024326385642,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.36666666666666664
+        },
+        {
+          "threshold": 0.035951574489,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.37333333333333335
+        },
+        {
+          "threshold": 0.03721145614,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.37333333333333335
+        },
+        {
+          "threshold": 0.038115884054,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38
+        },
+        {
+          "threshold": 0.040555109305,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38666666666666666
+        },
+        {
+          "threshold": 0.041672527355,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3933333333333333
+        },
+        {
+          "threshold": 0.041701701212,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4
+        },
+        {
+          "threshold": 0.043283290508,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4066666666666667
+        },
+        {
+          "threshold": 0.043685028457,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.41333333333333333
+        },
+        {
+          "threshold": 0.043687690486,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.42
+        },
+        {
+          "threshold": 0.043929994676,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4266666666666667
+        },
+        {
+          "threshold": 0.04502440238,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.43333333333333335
+        },
+        {
+          "threshold": 0.045295045642,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44
+        },
+        {
+          "threshold": 0.054148374711,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44666666666666666
+        },
+        {
+          "threshold": 0.058445119594,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4533333333333333
+        },
+        {
+          "threshold": 0.059700417577,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.46
+        },
+        {
+          "threshold": 0.067907458939,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4666666666666667
+        },
+        {
+          "threshold": 0.069947870332,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.47333333333333333
+        },
+        {
+          "threshold": 0.083897228146,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.47333333333333333
+        },
+        {
+          "threshold": 0.091348055676,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.48
+        },
+        {
+          "threshold": 0.093363686962,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.48
+        },
+        {
+          "threshold": 0.100545512244,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.4866666666666667
+        },
+        {
+          "threshold": 0.101708690542,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.49333333333333335
+        },
+        {
+          "threshold": 0.104000180225,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5
+        },
+        {
+          "threshold": 0.105693940141,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5066666666666667
+        },
+        {
+          "threshold": 0.106096469986,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5133333333333333
+        },
+        {
+          "threshold": 0.11008070345,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.52
+        },
+        {
+          "threshold": 0.11173679172,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5266666666666666
+        },
+        {
+          "threshold": 0.112618475863,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5333333333333333
+        },
+        {
+          "threshold": 0.115212693185,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.54
+        },
+        {
+          "threshold": 0.12131744133,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5466666666666666
+        },
+        {
+          "threshold": 0.124545680938,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5533333333333333
+        },
+        {
+          "threshold": 0.135745202039,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.56
+        },
+        {
+          "threshold": 0.147150044149,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5666666666666667
+        },
+        {
+          "threshold": 0.153788346865,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5733333333333334
+        },
+        {
+          "threshold": 0.159207011533,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.58
+        },
+        {
+          "threshold": 0.164354594549,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5866666666666667
+        },
+        {
+          "threshold": 0.164543425319,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5933333333333334
+        },
+        {
+          "threshold": 0.169777433111,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6
+        },
+        {
+          "threshold": 0.173122442104,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6066666666666667
+        },
+        {
+          "threshold": 0.194325615165,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6133333333333333
+        },
+        {
+          "threshold": 0.194689021106,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.62
+        },
+        {
+          "threshold": 0.20581201515,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6266666666666667
+        },
+        {
+          "threshold": 0.209076933473,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6333333333333333
+        },
+        {
+          "threshold": 0.209702134929,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.64
+        },
+        {
+          "threshold": 0.211224924438,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6466666666666666
+        },
+        {
+          "threshold": 0.213209683434,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6533333333333333
+        },
+        {
+          "threshold": 0.217376295084,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.66
+        },
+        {
+          "threshold": 0.218931364495,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6666666666666666
+        },
+        {
+          "threshold": 0.224967148206,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6733333333333333
+        },
+        {
+          "threshold": 0.229278726688,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.68
+        },
+        {
+          "threshold": 0.231577084556,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6866666666666666
+        },
+        {
+          "threshold": 0.235789236125,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.6866666666666666
+        },
+        {
+          "threshold": 0.236635977004,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.6933333333333334
+        },
+        {
+          "threshold": 0.237562676526,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7
+        },
+        {
+          "threshold": 0.247843822953,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7066666666666667
+        },
+        {
+          "threshold": 0.256072832071,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7066666666666667
+        },
+        {
+          "threshold": 0.265273804271,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7133333333333334
+        },
+        {
+          "threshold": 0.274443395701,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7133333333333334
+        },
+        {
+          "threshold": 0.274477091154,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.72
+        },
+        {
+          "threshold": 0.289841536094,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7266666666666667
+        },
+        {
+          "threshold": 0.291653327117,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7333333333333333
+        },
+        {
+          "threshold": 0.29421526528,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.74
+        },
+        {
+          "threshold": 0.30544363899,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7466666666666667
+        },
+        {
+          "threshold": 0.30652829294,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7533333333333333
+        },
+        {
+          "threshold": 0.312853868064,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.76
+        },
+        {
+          "threshold": 0.314717854135,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7666666666666667
+        },
+        {
+          "threshold": 0.316407835736,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7733333333333333
+        },
+        {
+          "threshold": 0.3236520448,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.78
+        },
+        {
+          "threshold": 0.331305117287,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7866666666666666
+        },
+        {
+          "threshold": 0.338739157681,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7933333333333333
+        },
+        {
+          "threshold": 0.34205025856,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8
+        },
+        {
+          "threshold": 0.344850658112,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8066666666666666
+        },
+        {
+          "threshold": 0.349706088269,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8066666666666666
+        },
+        {
+          "threshold": 0.359081758963,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8133333333333334
+        },
+        {
+          "threshold": 0.362816678064,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.82
+        },
+        {
+          "threshold": 0.366462718405,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8266666666666667
+        },
+        {
+          "threshold": 0.37898078442,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8333333333333334
+        },
+        {
+          "threshold": 0.38222434472,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.84
+        },
+        {
+          "threshold": 0.390831132056,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8466666666666667
+        },
+        {
+          "threshold": 0.40324036866,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8466666666666667
+        },
+        {
+          "threshold": 0.415520150543,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8466666666666667
+        },
+        {
+          "threshold": 0.420879372164,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8533333333333334
+        },
+        {
+          "threshold": 0.421230802611,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.86
+        },
+        {
+          "threshold": 0.428070611442,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8666666666666667
+        },
+        {
+          "threshold": 0.430505242983,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8733333333333333
+        },
+        {
+          "threshold": 0.439126746035,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.88
+        },
+        {
+          "threshold": 0.446191008916,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.88
+        },
+        {
+          "threshold": 0.45182084755,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.45923162812,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.459814932606,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.481190597792,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.8933333333333333
+        },
+        {
+          "threshold": 0.485894290299,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.485919785927,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.507244742627,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.514809624936,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.9066666666666666
+        },
+        {
+          "threshold": 0.518400875426,
+          "false_answer_rate": 0.32,
+          "answerable_coverage": 0.9066666666666666
+        },
+        {
+          "threshold": 0.522297138364,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.9066666666666666
+        },
+        {
+          "threshold": 0.526147414758,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.9133333333333333
+        },
+        {
+          "threshold": 0.526753172464,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.92
+        },
+        {
+          "threshold": 0.531435180352,
+          "false_answer_rate": 0.36,
+          "answerable_coverage": 0.92
+        },
+        {
+          "threshold": 0.53235051667,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.92
+        },
+        {
+          "threshold": 0.537574138346,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.9266666666666666
+        },
+        {
+          "threshold": 0.54508889354,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.9333333333333333
+        },
+        {
+          "threshold": 0.546006295817,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.9333333333333333
+        },
+        {
+          "threshold": 0.55197897128,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.556625099946,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.560140540253,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.565050876031,
+          "false_answer_rate": 0.42,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.567210260462,
+          "false_answer_rate": 0.44,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.574001389003,
+          "false_answer_rate": 0.44,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.574366924435,
+          "false_answer_rate": 0.46,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.574586262081,
+          "false_answer_rate": 0.48,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.575373351631,
+          "false_answer_rate": 0.5,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.576170989959,
+          "false_answer_rate": 0.52,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.580156807748,
+          "false_answer_rate": 0.54,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.580322591726,
+          "false_answer_rate": 0.54,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.580866698612,
+          "false_answer_rate": 0.56,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.581840356762,
+          "false_answer_rate": 0.58,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.586458991487,
+          "false_answer_rate": 0.6,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.59227780154,
+          "false_answer_rate": 0.6,
+          "answerable_coverage": 0.9733333333333334
+        },
+        {
+          "threshold": 0.599107161433,
+          "false_answer_rate": 0.6,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.608699540951,
+          "false_answer_rate": 0.6,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.610725697508,
+          "false_answer_rate": 0.62,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.612081430729,
+          "false_answer_rate": 0.64,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.623401592426,
+          "false_answer_rate": 0.64,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.633971243971,
+          "false_answer_rate": 0.66,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.637751583518,
+          "false_answer_rate": 0.68,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.639665468622,
+          "false_answer_rate": 0.7,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.643696913806,
+          "false_answer_rate": 0.72,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.652484762843,
+          "false_answer_rate": 0.74,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.65426727716,
+          "false_answer_rate": 0.76,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.656243998645,
+          "false_answer_rate": 0.78,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.663228742644,
+          "false_answer_rate": 0.8,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.665210456167,
+          "false_answer_rate": 0.82,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.668287186069,
+          "false_answer_rate": 0.84,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.68104057211,
+          "false_answer_rate": 0.86,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.689376002264,
+          "false_answer_rate": 0.88,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.691368246015,
+          "false_answer_rate": 0.9,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.695419052859,
+          "false_answer_rate": 0.9,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.717014160972,
+          "false_answer_rate": 0.92,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.730226737206,
+          "false_answer_rate": 0.94,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.762381983193,
+          "false_answer_rate": 0.96,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.766440858775,
+          "false_answer_rate": 0.98,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.766440858775,
+          "false_answer_rate": 1.0,
+          "answerable_coverage": 1.0
+        }
+      ]
+    },
+    "hybrid_compact": {
+      "features": [
+        "top1_score",
+        "top1_top2_margin",
+        "mean_top3_score",
+        "mean_top5_score",
+        "score_decay_1_2",
+        "score_decay_1_3",
+        "unique_source_ratio_top5",
+        "top_source_chunk_share",
+        "source_score_entropy"
+      ],
+      "threshold": 0.37255116833,
+      "development": {
+        "correct_answer": 128,
+        "false_answer": 8,
+        "correct_abstain": 42,
+        "false_abstain": 22,
+        "true_abstain": 50,
+        "answerable_count": 150,
+        "predicted_abstain": 64,
+        "false_answer_rate": 0.16,
+        "false_abstention_rate": 0.14666666666666667,
+        "answerable_coverage": 0.8533333333333334,
+        "abstention_precision": 0.65625,
+        "abstention_recall": 0.84,
+        "abstention_f1": 0.736842105263158,
+        "accuracy": 0.85,
+        "balanced_accuracy": 0.8466666666666667,
+        "tp": 42,
+        "fp": 22,
+        "tn": 128,
+        "fn": 8,
+        "auroc": 0.901067,
+        "auprc": 0.802453,
+        "brier_score": 0.104983,
+        "ece_10_bin": 0.069467
+      },
+      "calibration": {
+        "correct_answer": 63,
+        "false_answer": 22,
+        "correct_abstain": 7,
+        "false_abstain": 20,
+        "true_abstain": 29,
+        "answerable_count": 83,
+        "predicted_abstain": 27,
+        "false_answer_rate": 0.7586206896551724,
+        "false_abstention_rate": 0.24096385542168675,
+        "answerable_coverage": 0.7590361445783133,
+        "abstention_precision": 0.25925925925925924,
+        "abstention_recall": 0.2413793103448276,
+        "abstention_f1": 0.25,
+        "accuracy": 0.625,
+        "balanced_accuracy": 0.5002077274615704,
+        "tp": 7,
+        "fp": 20,
+        "tn": 63,
+        "fn": 22,
+        "auroc": 0.710428,
+        "auprc": 0.420207,
+        "brier_score": 0.180963,
+        "ece_10_bin": 0.140308
+      },
+      "development_threshold_curve": [
+        {
+          "threshold": 0.003800866911,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.003800866911,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.0
+        },
+        {
+          "threshold": 0.004759868836,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.006666666666666667
+        },
+        {
+          "threshold": 0.00483596997,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.013333333333333334
+        },
+        {
+          "threshold": 0.004877426538,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02
+        },
+        {
+          "threshold": 0.005088848662,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.02666666666666667
+        },
+        {
+          "threshold": 0.005276064306,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.03333333333333333
+        },
+        {
+          "threshold": 0.005348898356,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04
+        },
+        {
+          "threshold": 0.00547723759,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.04666666666666667
+        },
+        {
+          "threshold": 0.006631097485,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.05333333333333334
+        },
+        {
+          "threshold": 0.007026294015,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06
+        },
+        {
+          "threshold": 0.007076636515,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.06666666666666667
+        },
+        {
+          "threshold": 0.007710175103,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.07333333333333333
+        },
+        {
+          "threshold": 0.007821327779,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08
+        },
+        {
+          "threshold": 0.008091594134,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.08666666666666667
+        },
+        {
+          "threshold": 0.008153276564,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.09333333333333334
+        },
+        {
+          "threshold": 0.00854663286,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.1
+        },
+        {
+          "threshold": 0.009054158182,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.10666666666666667
+        },
+        {
+          "threshold": 0.009442999433,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.11333333333333333
+        },
+        {
+          "threshold": 0.009472287947,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12
+        },
+        {
+          "threshold": 0.00949477389,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.12666666666666668
+        },
+        {
+          "threshold": 0.009952631554,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.13333333333333333
+        },
+        {
+          "threshold": 0.010232463619,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14
+        },
+        {
+          "threshold": 0.010309548254,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.14666666666666667
+        },
+        {
+          "threshold": 0.010466785749,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.15333333333333332
+        },
+        {
+          "threshold": 0.011365757304,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16
+        },
+        {
+          "threshold": 0.011459262055,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.16666666666666666
+        },
+        {
+          "threshold": 0.011502306989,
+          "false_answer_rate": 0.0,
+          "answerable_coverage": 0.17333333333333334
+        },
+        {
+          "threshold": 0.012154079034,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.17333333333333334
+        },
+        {
+          "threshold": 0.012231265793,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.18
+        },
+        {
+          "threshold": 0.01276290188,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.18666666666666668
+        },
+        {
+          "threshold": 0.014445908394,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.19333333333333333
+        },
+        {
+          "threshold": 0.014490221456,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.2
+        },
+        {
+          "threshold": 0.014666102424,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.20666666666666667
+        },
+        {
+          "threshold": 0.014810204086,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.21333333333333335
+        },
+        {
+          "threshold": 0.014964468443,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.22
+        },
+        {
+          "threshold": 0.015112476198,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.22666666666666666
+        },
+        {
+          "threshold": 0.015120283656,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.23333333333333334
+        },
+        {
+          "threshold": 0.01600808026,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.24
+        },
+        {
+          "threshold": 0.01626713814,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.24666666666666667
+        },
+        {
+          "threshold": 0.016479744352,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.25333333333333335
+        },
+        {
+          "threshold": 0.017203595164,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.26
+        },
+        {
+          "threshold": 0.017355172753,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.26666666666666666
+        },
+        {
+          "threshold": 0.018647646802,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.2733333333333333
+        },
+        {
+          "threshold": 0.018768271862,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.28
+        },
+        {
+          "threshold": 0.019217865301,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.2866666666666667
+        },
+        {
+          "threshold": 0.019351330607,
+          "false_answer_rate": 0.02,
+          "answerable_coverage": 0.29333333333333333
+        },
+        {
+          "threshold": 0.019525594511,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.29333333333333333
+        },
+        {
+          "threshold": 0.01964149493,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3
+        },
+        {
+          "threshold": 0.020600693849,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.30666666666666664
+        },
+        {
+          "threshold": 0.020897859513,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.31333333333333335
+        },
+        {
+          "threshold": 0.021105496292,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.32
+        },
+        {
+          "threshold": 0.021164545167,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.32666666666666666
+        },
+        {
+          "threshold": 0.022246739535,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3333333333333333
+        },
+        {
+          "threshold": 0.025248901775,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.34
+        },
+        {
+          "threshold": 0.026256233028,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3466666666666667
+        },
+        {
+          "threshold": 0.02634710912,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.35333333333333333
+        },
+        {
+          "threshold": 0.026820672432,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.36
+        },
+        {
+          "threshold": 0.027280807591,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.36666666666666664
+        },
+        {
+          "threshold": 0.029766535212,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.37333333333333335
+        },
+        {
+          "threshold": 0.030046064486,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38
+        },
+        {
+          "threshold": 0.030173496993,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.38666666666666666
+        },
+        {
+          "threshold": 0.031024210055,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.3933333333333333
+        },
+        {
+          "threshold": 0.032375672417,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4
+        },
+        {
+          "threshold": 0.032778821628,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4066666666666667
+        },
+        {
+          "threshold": 0.034418168223,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.41333333333333333
+        },
+        {
+          "threshold": 0.034714623649,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.42
+        },
+        {
+          "threshold": 0.035248991947,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4266666666666667
+        },
+        {
+          "threshold": 0.035645203831,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.43333333333333335
+        },
+        {
+          "threshold": 0.038252412788,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44
+        },
+        {
+          "threshold": 0.03867288917,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.44666666666666666
+        },
+        {
+          "threshold": 0.04586518416,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4533333333333333
+        },
+        {
+          "threshold": 0.046223669487,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.46
+        },
+        {
+          "threshold": 0.047064616062,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.4666666666666667
+        },
+        {
+          "threshold": 0.047304634202,
+          "false_answer_rate": 0.04,
+          "answerable_coverage": 0.47333333333333333
+        },
+        {
+          "threshold": 0.048741592589,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.47333333333333333
+        },
+        {
+          "threshold": 0.049279849082,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.48
+        },
+        {
+          "threshold": 0.05079257372,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.4866666666666667
+        },
+        {
+          "threshold": 0.053752693218,
+          "false_answer_rate": 0.06,
+          "answerable_coverage": 0.49333333333333335
+        },
+        {
+          "threshold": 0.055537447973,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.49333333333333335
+        },
+        {
+          "threshold": 0.060712023878,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5
+        },
+        {
+          "threshold": 0.06485428909,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5066666666666667
+        },
+        {
+          "threshold": 0.066632209144,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5133333333333333
+        },
+        {
+          "threshold": 0.070098551323,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.52
+        },
+        {
+          "threshold": 0.070978319621,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5266666666666666
+        },
+        {
+          "threshold": 0.078586603846,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5333333333333333
+        },
+        {
+          "threshold": 0.080574762375,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.54
+        },
+        {
+          "threshold": 0.082417846861,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5466666666666666
+        },
+        {
+          "threshold": 0.088963343253,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5533333333333333
+        },
+        {
+          "threshold": 0.095701391116,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.56
+        },
+        {
+          "threshold": 0.096495599737,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5666666666666667
+        },
+        {
+          "threshold": 0.105643129548,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5733333333333334
+        },
+        {
+          "threshold": 0.108225560633,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.58
+        },
+        {
+          "threshold": 0.115732503455,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5866666666666667
+        },
+        {
+          "threshold": 0.116176370398,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.5933333333333334
+        },
+        {
+          "threshold": 0.118963433763,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6
+        },
+        {
+          "threshold": 0.121717599195,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6066666666666667
+        },
+        {
+          "threshold": 0.127208670704,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6133333333333333
+        },
+        {
+          "threshold": 0.136371239089,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.62
+        },
+        {
+          "threshold": 0.138285006925,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6266666666666667
+        },
+        {
+          "threshold": 0.148552473175,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6333333333333333
+        },
+        {
+          "threshold": 0.1584063658,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.64
+        },
+        {
+          "threshold": 0.16249908442,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6466666666666666
+        },
+        {
+          "threshold": 0.17679451989,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6533333333333333
+        },
+        {
+          "threshold": 0.187443905038,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.66
+        },
+        {
+          "threshold": 0.187970265488,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6666666666666666
+        },
+        {
+          "threshold": 0.202287838338,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6733333333333333
+        },
+        {
+          "threshold": 0.20903239633,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.68
+        },
+        {
+          "threshold": 0.209298914904,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6866666666666666
+        },
+        {
+          "threshold": 0.219345941997,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.6933333333333334
+        },
+        {
+          "threshold": 0.220298607123,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.7
+        },
+        {
+          "threshold": 0.220539768719,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.7066666666666667
+        },
+        {
+          "threshold": 0.221773787818,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.7133333333333334
+        },
+        {
+          "threshold": 0.22190484124,
+          "false_answer_rate": 0.08,
+          "answerable_coverage": 0.72
+        },
+        {
+          "threshold": 0.270082388029,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.72
+        },
+        {
+          "threshold": 0.270295000823,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7266666666666667
+        },
+        {
+          "threshold": 0.27067558394,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7333333333333333
+        },
+        {
+          "threshold": 0.276876268633,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.74
+        },
+        {
+          "threshold": 0.277522478481,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7466666666666667
+        },
+        {
+          "threshold": 0.279128910023,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7533333333333333
+        },
+        {
+          "threshold": 0.281522628275,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.76
+        },
+        {
+          "threshold": 0.282120740154,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7666666666666667
+        },
+        {
+          "threshold": 0.296130959188,
+          "false_answer_rate": 0.1,
+          "answerable_coverage": 0.7733333333333333
+        },
+        {
+          "threshold": 0.301796302118,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7733333333333333
+        },
+        {
+          "threshold": 0.306638814192,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.78
+        },
+        {
+          "threshold": 0.309458892893,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7866666666666666
+        },
+        {
+          "threshold": 0.309770070413,
+          "false_answer_rate": 0.12,
+          "answerable_coverage": 0.7933333333333333
+        },
+        {
+          "threshold": 0.31577338223,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.7933333333333333
+        },
+        {
+          "threshold": 0.316502642566,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8
+        },
+        {
+          "threshold": 0.319608948561,
+          "false_answer_rate": 0.14,
+          "answerable_coverage": 0.8066666666666666
+        },
+        {
+          "threshold": 0.326057581061,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8066666666666666
+        },
+        {
+          "threshold": 0.349953916489,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8133333333333334
+        },
+        {
+          "threshold": 0.352246849203,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.82
+        },
+        {
+          "threshold": 0.354129043579,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8266666666666667
+        },
+        {
+          "threshold": 0.360590567394,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8333333333333334
+        },
+        {
+          "threshold": 0.36222134938,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.84
+        },
+        {
+          "threshold": 0.366565008683,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8466666666666667
+        },
+        {
+          "threshold": 0.37255116833,
+          "false_answer_rate": 0.16,
+          "answerable_coverage": 0.8533333333333334
+        },
+        {
+          "threshold": 0.374257091576,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.8533333333333334
+        },
+        {
+          "threshold": 0.378860325789,
+          "false_answer_rate": 0.18,
+          "answerable_coverage": 0.86
+        },
+        {
+          "threshold": 0.386380948439,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.86
+        },
+        {
+          "threshold": 0.393118609918,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8666666666666667
+        },
+        {
+          "threshold": 0.394524723493,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.8733333333333333
+        },
+        {
+          "threshold": 0.421844057654,
+          "false_answer_rate": 0.2,
+          "answerable_coverage": 0.88
+        },
+        {
+          "threshold": 0.423096075211,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.88
+        },
+        {
+          "threshold": 0.455153304857,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8866666666666667
+        },
+        {
+          "threshold": 0.464274101707,
+          "false_answer_rate": 0.22,
+          "answerable_coverage": 0.8933333333333333
+        },
+        {
+          "threshold": 0.466294387826,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.8933333333333333
+        },
+        {
+          "threshold": 0.473368605263,
+          "false_answer_rate": 0.24,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.489389097601,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.9
+        },
+        {
+          "threshold": 0.505299407391,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.9066666666666666
+        },
+        {
+          "threshold": 0.509334191326,
+          "false_answer_rate": 0.26,
+          "answerable_coverage": 0.9133333333333333
+        },
+        {
+          "threshold": 0.515562721849,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.9133333333333333
+        },
+        {
+          "threshold": 0.51815032278,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.92
+        },
+        {
+          "threshold": 0.520185959543,
+          "false_answer_rate": 0.28,
+          "answerable_coverage": 0.9266666666666666
+        },
+        {
+          "threshold": 0.538751905675,
+          "false_answer_rate": 0.3,
+          "answerable_coverage": 0.9266666666666666
+        },
+        {
+          "threshold": 0.541534648009,
+          "false_answer_rate": 0.32,
+          "answerable_coverage": 0.9266666666666666
+        },
+        {
+          "threshold": 0.554839798009,
+          "false_answer_rate": 0.32,
+          "answerable_coverage": 0.9333333333333333
+        },
+        {
+          "threshold": 0.558135548675,
+          "false_answer_rate": 0.32,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.563410660652,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.94
+        },
+        {
+          "threshold": 0.569223194954,
+          "false_answer_rate": 0.34,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.570409744569,
+          "false_answer_rate": 0.36,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.581921406053,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.9466666666666667
+        },
+        {
+          "threshold": 0.585192336453,
+          "false_answer_rate": 0.38,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.589532008107,
+          "false_answer_rate": 0.4,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.593044616849,
+          "false_answer_rate": 0.42,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.594883364253,
+          "false_answer_rate": 0.44,
+          "answerable_coverage": 0.9533333333333334
+        },
+        {
+          "threshold": 0.608608547974,
+          "false_answer_rate": 0.44,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.610621963827,
+          "false_answer_rate": 0.46,
+          "answerable_coverage": 0.96
+        },
+        {
+          "threshold": 0.615003120799,
+          "false_answer_rate": 0.46,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.616534564117,
+          "false_answer_rate": 0.48,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.619575704282,
+          "false_answer_rate": 0.5,
+          "answerable_coverage": 0.9666666666666667
+        },
+        {
+          "threshold": 0.63421136475,
+          "false_answer_rate": 0.5,
+          "answerable_coverage": 0.9733333333333334
+        },
+        {
+          "threshold": 0.642685804608,
+          "false_answer_rate": 0.52,
+          "answerable_coverage": 0.9733333333333334
+        },
+        {
+          "threshold": 0.646336274124,
+          "false_answer_rate": 0.52,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.65595334881,
+          "false_answer_rate": 0.54,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.657439537515,
+          "false_answer_rate": 0.56,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.659045987885,
+          "false_answer_rate": 0.58,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.66309701886,
+          "false_answer_rate": 0.6,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.666094668263,
+          "false_answer_rate": 0.62,
+          "answerable_coverage": 0.98
+        },
+        {
+          "threshold": 0.670040985561,
+          "false_answer_rate": 0.62,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.675885727284,
+          "false_answer_rate": 0.64,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.677642643891,
+          "false_answer_rate": 0.66,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.680277145386,
+          "false_answer_rate": 0.68,
+          "answerable_coverage": 0.9866666666666667
+        },
+        {
+          "threshold": 0.684202222357,
+          "false_answer_rate": 0.68,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.684850838671,
+          "false_answer_rate": 0.7,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.684966238051,
+          "false_answer_rate": 0.72,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.693255270394,
+          "false_answer_rate": 0.74,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.694024825619,
+          "false_answer_rate": 0.76,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.699032563554,
+          "false_answer_rate": 0.78,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.713282205361,
+          "false_answer_rate": 0.8,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.72419855991,
+          "false_answer_rate": 0.82,
+          "answerable_coverage": 0.9933333333333333
+        },
+        {
+          "threshold": 0.74013895538,
+          "false_answer_rate": 0.82,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.743114795955,
+          "false_answer_rate": 0.84,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.749422796703,
+          "false_answer_rate": 0.86,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.761510170609,
+          "false_answer_rate": 0.88,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.763046497065,
+          "false_answer_rate": 0.9,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.781675960284,
+          "false_answer_rate": 0.92,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.794279714189,
+          "false_answer_rate": 0.94,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.795865545047,
+          "false_answer_rate": 0.96,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.799177683761,
+          "false_answer_rate": 0.98,
+          "answerable_coverage": 1.0
+        },
+        {
+          "threshold": 0.799177683761,
+          "false_answer_rate": 1.0,
+          "answerable_coverage": 1.0
+        }
+      ]
+    }
+  }
+}

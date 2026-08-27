@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from math import log
 from typing import Literal
 
 from app.retrieval.hybrid_search import SearchResult
@@ -20,6 +21,54 @@ AnswerabilityReason = Literal[
     "EMPTY_RERANK_RESULT",
     "FEATURES_AVAILABLE",
 ]
+
+
+@dataclass(frozen=True)
+class StructuralAnswerabilityFeatures:
+    """Relative and source-level signals derived from authorized top-five hits."""
+
+    score_decay_1_2: float | None
+    score_decay_1_3: float | None
+    score_decay_1_5: float | None
+    top1_to_mean_top5_ratio: float | None
+    top1_to_median_top5_ratio: float | None
+    top2_to_mean_top5_ratio: float | None
+    score_range_top5: float | None
+    score_iqr_top5: float | None
+    unique_source_ratio_top5: float | None
+    duplicate_source_ratio_top5: float | None
+    max_chunks_from_same_source: int | None
+    top_source_chunk_share: float | None
+    source_rank_entropy: float | None
+    source_score_entropy: float | None
+    source_top1_score: float | None
+    source_top2_score: float | None
+    source_margin: float | None
+    source_mean_score: float | None
+    source_count: int | None
+
+    def as_dict(self) -> dict:
+        return {
+            "score_decay_1_2": self.score_decay_1_2,
+            "score_decay_1_3": self.score_decay_1_3,
+            "score_decay_1_5": self.score_decay_1_5,
+            "top1_to_mean_top5_ratio": self.top1_to_mean_top5_ratio,
+            "top1_to_median_top5_ratio": self.top1_to_median_top5_ratio,
+            "top2_to_mean_top5_ratio": self.top2_to_mean_top5_ratio,
+            "score_range_top5": self.score_range_top5,
+            "score_iqr_top5": self.score_iqr_top5,
+            "unique_source_ratio_top5": self.unique_source_ratio_top5,
+            "duplicate_source_ratio_top5": self.duplicate_source_ratio_top5,
+            "max_chunks_from_same_source": self.max_chunks_from_same_source,
+            "top_source_chunk_share": self.top_source_chunk_share,
+            "source_rank_entropy": self.source_rank_entropy,
+            "source_score_entropy": self.source_score_entropy,
+            "source_top1_score": self.source_top1_score,
+            "source_top2_score": self.source_top2_score,
+            "source_margin": self.source_margin,
+            "source_mean_score": self.source_mean_score,
+            "source_count": self.source_count,
+        }
 
 
 @dataclass(frozen=True)
@@ -54,10 +103,11 @@ class AnswerabilityFeatures:
     fused_rerank_agreement: float | None
     source_score_concentration: float | None
     duplicate_source_chunk_count_top5: int | None
+    structural: StructuralAnswerabilityFeatures
     feature_latency_ms: float
 
     def as_dict(self) -> dict:
-        return {
+        output = {
             "pre_acl_candidate_count": self.pre_acl_candidate_count,
             "authorized_candidate_count": self.authorized_candidate_count,
             "reranked_count": self.reranked_count,
@@ -82,6 +132,8 @@ class AnswerabilityFeatures:
             "duplicate_source_chunk_count_top5": self.duplicate_source_chunk_count_top5,
             "feature_latency_ms": round(self.feature_latency_ms, 3),
         }
+        output.update(self.structural.as_dict())
+        return output
 
 
 @dataclass(frozen=True)
@@ -102,6 +154,116 @@ class AnswerabilityObservation:
 
 def _rounded(value: float | None) -> float | None:
     return round(value, 6) if value is not None else None
+
+
+def _relative_gap(first: float, second: float) -> float:
+    denominator = max(abs(first), abs(second), 1e-12)
+    return (first - second) / denominator
+
+
+def _safe_ratio(numerator: float, denominator: float) -> float | None:
+    return numerator / denominator if abs(denominator) > 1e-12 else None
+
+
+def _normalized_entropy(values: list[float]) -> float | None:
+    total = sum(values)
+    if not values or total <= 1e-12:
+        return 0.0 if values else None
+    probabilities = [value / total for value in values if value > 0]
+    entropy = -sum(probability * log(probability) for probability in probabilities)
+    return entropy / log(len(values)) if len(values) > 1 else 0.0
+
+
+def _percentile(values: list[float], fraction: float) -> float:
+    position = (len(values) - 1) * fraction
+    lower = int(position)
+    upper = min(lower + 1, len(values) - 1)
+    weight = position - lower
+    return values[lower] + (values[upper] - values[lower]) * weight
+
+
+def extract_structural_features(
+    scores: list[float], source_ids: list[str | None]
+) -> StructuralAnswerabilityFeatures:
+    """Compute finite, authorized top-five structural signals only."""
+    if not scores:
+        return StructuralAnswerabilityFeatures(*(None for _ in range(19)))
+
+    sorted_scores = sorted(scores)
+    median_score = sorted_scores[len(sorted_scores) // 2]
+    if len(sorted_scores) % 2 == 0:
+        median_score = (sorted_scores[len(sorted_scores) // 2 - 1] + median_score) / 2
+    q1 = _percentile(sorted_scores, 0.25)
+    q3 = _percentile(sorted_scores, 0.75)
+    source_counts: dict[str, int] = {}
+    source_scores: dict[str, list[float]] = {}
+    for source_id, score in zip(source_ids, scores):
+        if source_id:
+            source_counts[source_id] = source_counts.get(source_id, 0) + 1
+            source_scores.setdefault(source_id, []).append(score)
+    source_max_scores = sorted(
+        (max(values) for values in source_scores.values()), reverse=True
+    )
+    source_top1 = source_max_scores[0] if source_max_scores else None
+    source_top2 = source_max_scores[1] if len(source_max_scores) > 1 else None
+    absolute_scores = [abs(score) for score in scores]
+    source_absolute_scores = [
+        sum(abs(score) for score in values) for values in source_scores.values()
+    ]
+    max_source_count = max(source_counts.values()) if source_counts else None
+    unique_count = len(source_counts) if source_counts else None
+    count = len(scores)
+    return StructuralAnswerabilityFeatures(
+        score_decay_1_2=_rounded(
+            _relative_gap(scores[0], scores[1]) if len(scores) >= 2 else None
+        ),
+        score_decay_1_3=_rounded(
+            _relative_gap(scores[0], scores[2]) if len(scores) >= 3 else None
+        ),
+        score_decay_1_5=_rounded(
+            _relative_gap(scores[0], scores[4]) if len(scores) >= 5 else None
+        ),
+        top1_to_mean_top5_ratio=_rounded(
+            _safe_ratio(abs(scores[0]), sum(absolute_scores) / count)
+        ),
+        top1_to_median_top5_ratio=_rounded(
+            _safe_ratio(abs(scores[0]), abs(median_score))
+        ),
+        top2_to_mean_top5_ratio=(
+            _rounded(_safe_ratio(abs(scores[1]), sum(absolute_scores) / count))
+            if len(scores) >= 2
+            else None
+        ),
+        score_range_top5=_rounded(max(scores) - min(scores)),
+        score_iqr_top5=_rounded(q3 - q1),
+        unique_source_ratio_top5=_rounded(
+            unique_count / count if unique_count is not None else None
+        ),
+        duplicate_source_ratio_top5=_rounded(
+            (count - unique_count) / count if unique_count is not None else None
+        ),
+        max_chunks_from_same_source=max_source_count,
+        top_source_chunk_share=_rounded(
+            max_source_count / count if max_source_count is not None else None
+        ),
+        source_rank_entropy=_rounded(
+            _normalized_entropy([float(value) for value in source_counts.values()])
+        ),
+        source_score_entropy=_rounded(_normalized_entropy(source_absolute_scores)),
+        source_top1_score=_rounded(source_top1),
+        source_top2_score=_rounded(source_top2),
+        source_margin=(
+            _rounded(source_top1 - source_top2)
+            if source_top1 is not None and source_top2 is not None
+            else None
+        ),
+        source_mean_score=(
+            _rounded(sum(source_max_scores) / len(source_max_scores))
+            if source_max_scores
+            else None
+        ),
+        source_count=unique_count,
+    )
 
 
 def extract_answerability_observation(
@@ -180,6 +342,7 @@ def extract_answerability_observation(
             if valid_source_ids
             else None
         ),
+        structural=extract_structural_features(scores, source_ids),
         feature_latency_ms=(time.perf_counter() - started) * 1000,
     )
     return AnswerabilityObservation(

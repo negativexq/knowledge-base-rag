@@ -1,0 +1,4401 @@
+{
+  "metadata": {
+    "git_sha": "06b33184d08d8e3a7566b134db64fc1806f1a324",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "frozen_test_used": false,
+    "generation_invoked": false
+  },
+  "development": [
+    {
+      "query_id": "cross-00-0",
+      "case_family": "fact-00",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "marketplace-returns",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-00-1",
+      "case_family": "fact-00",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "marketplace-returns",
+        "standard-returns-2026",
+        "refund-policy-2025"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-01-1",
+      "case_family": "fact-01",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "premium-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "premium-returns-2026",
+        "standard-returns-2026",
+        "marketplace-returns"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-06-0",
+      "case_family": "fact-06",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "subscription-billing",
+        "long-policy-tr",
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-06-1",
+      "case_family": "fact-06",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "subscription-billing",
+        "long-policy-tr",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-07-0",
+      "case_family": "fact-07",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "subscription-billing",
+        "long-policy-tr",
+        "support-playbook",
+        "employee-handbook-en",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-07-1",
+      "case_family": "fact-07",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "subscription-billing",
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-10-1",
+      "case_family": "fact-10",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "employee-handbook-en",
+        "support-playbook",
+        "long-policy-tr",
+        "support-escalation"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-12-0",
+      "case_family": "fact-12",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "refund-policy-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-12-1",
+      "case_family": "fact-12",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "long-policy-tr",
+        "long-policy-tr",
+        "refund-policy-2026",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-16-0",
+      "case_family": "fact-16",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-escalation",
+        "support-playbook",
+        "long-policy-tr",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-16-1",
+      "case_family": "fact-16",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-escalation",
+        "long-policy-tr",
+        "long-policy-tr",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-20-0",
+      "case_family": "fact-20",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-20-1",
+      "case_family": "fact-20",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr"
+      ],
+      "top_authorized_source_ids": [
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-eu",
+        "regional-returns-eu",
+        "regional-returns-eu"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-24-0",
+      "case_family": "fact-24",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "enterprise-contract-guide",
+        "regional-returns-tr",
+        "enterprise-contract-guide",
+        "returns-manual-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-24-1",
+      "case_family": "fact-24",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "enterprise-contract-guide",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-29-0",
+      "case_family": "fact-29",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-playbook",
+        "long-policy-tr",
+        "long-policy-tr",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-30-0",
+      "case_family": "fact-30",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "long-policy-tr",
+        "refund-policy-2026",
+        "marketplace-returns",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-30-1",
+      "case_family": "fact-30",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "marketplace-returns",
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-32-0",
+      "case_family": "fact-32",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-32-1",
+      "case_family": "fact-32",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-33-0",
+      "case_family": "fact-33",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-33-1",
+      "case_family": "fact-33",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-playbook",
+        "support-playbook",
+        "long-policy-tr",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-34-0",
+      "case_family": "fact-34",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-34-1",
+      "case_family": "fact-34",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-37-0",
+      "case_family": "fact-37",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "product-guide-en",
+        "product-guide-en",
+        "returns-manual-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-37-1",
+      "case_family": "fact-37",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "returns-manual-tr",
+        "product-guide-en",
+        "returns-manual-tr",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-38-0",
+      "case_family": "fact-38",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-eu",
+        "returns-manual-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-38-1",
+      "case_family": "fact-38",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-eu",
+        "returns-manual-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "case_family": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "subscription-billing",
+        "long-policy-tr",
+        "long-policy-tr",
+        "subscription-billing",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-api-version",
+      "case_family": "hard-api-version",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "product-guide-en",
+        "tenant-b-api-limits",
+        "enterprise-contract-guide",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-marketplace-channel",
+      "case_family": "hard-marketplace-channel",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "marketplace-returns"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "premium-returns-2026",
+        "long-policy-tr",
+        "employee-handbook-en",
+        "refund-policy-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "hard-order-channel",
+      "case_family": "hard-order-channel",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "standard-returns-2026",
+        "long-policy-tr",
+        "long-policy-tr",
+        "marketplace-returns"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-policy-language",
+      "case_family": "hard-policy-language",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-eu"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-retention-contract",
+      "case_family": "hard-retention-contract",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "product-guide-en",
+        "product-guide-en",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-sandbox",
+      "case_family": "hard-sandbox",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "product-guide-en",
+        "product-guide-en",
+        "tenant-b-api-limits"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-standard-vs-premium",
+      "case_family": "hard-standard-vs-premium",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "refund-policy-2026",
+        "standard-returns-2026",
+        "long-policy-tr",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-version-history",
+      "case_family": "hard-version-history",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "long-policy-tr",
+        "long-policy-tr",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-03-0",
+      "case_family": "injection-03",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "injection-bearing-policy",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-03-1",
+      "case_family": "injection-03",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "injection-bearing-policy",
+        "account-security",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-03-2",
+      "case_family": "injection-03",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "injection-bearing-policy",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-04-0",
+      "case_family": "injection-04",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "standard-returns-2026",
+        "refund-policy-2026",
+        "premium-returns-2026",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-04-1",
+      "case_family": "injection-04",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "standard-returns-2026",
+        "support-playbook",
+        "refund-policy-2026",
+        "premium-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-04-2",
+      "case_family": "injection-04",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-04-3",
+      "case_family": "injection-04",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "standard-returns-2026",
+        "premium-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-00-0",
+      "case_family": "multi-00",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "premium-returns-2026",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": false,
+      "cause": "multi_document_partial_evidence"
+    },
+    {
+      "query_id": "multi-00-1",
+      "case_family": "multi-00",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-00-2",
+      "case_family": "multi-00",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": false,
+      "cause": "multi_document_partial_evidence"
+    },
+    {
+      "query_id": "multi-00-3",
+      "case_family": "multi-00",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "premium-returns-2026",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-03-0",
+      "case_family": "multi-03",
+      "category": "multi_document",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-03-1",
+      "case_family": "multi-03",
+      "category": "multi_document",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-03-2",
+      "case_family": "multi-03",
+      "category": "multi_document",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-03-3",
+      "case_family": "multi-03",
+      "category": "multi_document",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-00-0",
+      "case_family": "fact-00",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "standard-returns-2026",
+        "long-policy-tr",
+        "injection-bearing-policy"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-00-1",
+      "case_family": "fact-00",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "standard-returns-2026",
+        "refund-policy-2026",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-00-2",
+      "case_family": "fact-00",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "standard-returns-2026",
+        "injection-bearing-policy",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-00-3",
+      "case_family": "fact-00",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "standard-returns-2026",
+        "refund-policy-2025",
+        "injection-bearing-policy",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-01-0",
+      "case_family": "fact-01",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "premium-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "premium-returns-2026",
+        "standard-returns-2026",
+        "long-policy-tr",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-01-1",
+      "case_family": "fact-01",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "premium-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook",
+        "standard-returns-2026",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-01-2",
+      "case_family": "fact-01",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "premium-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "standard-returns-2026",
+        "long-policy-tr",
+        "premium-returns-2026",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-01-3",
+      "case_family": "fact-01",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "premium-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "premium-returns-2026",
+        "standard-returns-2026",
+        "standard-returns-2026",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-06-1",
+      "case_family": "fact-06",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "subscription-billing",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-07-0",
+      "case_family": "fact-07",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "subscription-billing",
+        "subscription-billing",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-07-1",
+      "case_family": "fact-07",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "subscription-billing",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-07-2",
+      "case_family": "fact-07",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "subscription-billing",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-07-3",
+      "case_family": "fact-07",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "subscription-billing"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "subscription-billing",
+        "long-policy-tr",
+        "long-policy-tr",
+        "subscription-billing"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-08-3",
+      "case_family": "fact-08",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "account-security",
+        "support-playbook",
+        "employee-handbook-en",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-10-0",
+      "case_family": "fact-10",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-escalation",
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-10-1",
+      "case_family": "fact-10",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "long-policy-tr",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-10-2",
+      "case_family": "fact-10",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "long-policy-tr",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-10-3",
+      "case_family": "fact-10",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-escalation",
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-12-0",
+      "case_family": "fact-12",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "support-playbook",
+        "standard-returns-2026",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-12-1",
+      "case_family": "fact-12",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook",
+        "refund-policy-2026",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-12-2",
+      "case_family": "fact-12",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "support-playbook",
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-12-3",
+      "case_family": "fact-12",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "standard-returns-2026",
+        "support-playbook",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-16-0",
+      "case_family": "fact-16",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-16-1",
+      "case_family": "fact-16",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-escalation",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-16-2",
+      "case_family": "fact-16",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-16-3",
+      "case_family": "fact-16",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-18-1",
+      "case_family": "fact-18",
+      "category": "standard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "tenant-b-api-limits"
+      ],
+      "top_authorized_source_ids": [
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "product-guide-en",
+        "product-guide-en",
+        "tenant-b-api-limits"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-20-1",
+      "case_family": "fact-20",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-20-2",
+      "case_family": "fact-20",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-20-3",
+      "case_family": "fact-20",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "regional-returns-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-24-1",
+      "case_family": "fact-24",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "enterprise-contract-guide",
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "product-guide-en",
+        "enterprise-contract-guide"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-29-0",
+      "case_family": "fact-29",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-escalation",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-29-1",
+      "case_family": "fact-29",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-29-2",
+      "case_family": "fact-29",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "long-policy-tr",
+        "support-playbook",
+        "support-playbook",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-29-3",
+      "case_family": "fact-29",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-escalation",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-30-1",
+      "case_family": "fact-30",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "standard-returns-2026",
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-32-0",
+      "case_family": "fact-32",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-32-1",
+      "case_family": "fact-32",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-32-2",
+      "case_family": "fact-32",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "support-playbook",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-32-3",
+      "case_family": "fact-32",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-33-3",
+      "case_family": "fact-33",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "support-playbook"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "long-policy-tr",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-34-0",
+      "case_family": "fact-34",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "injection-bearing-policy"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-34-1",
+      "case_family": "fact-34",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-34-2",
+      "case_family": "fact-34",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-34-3",
+      "case_family": "fact-34",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "injection-bearing-policy"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-37-1",
+      "case_family": "fact-37",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "product-guide-en",
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-38-0",
+      "case_family": "fact-38",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-38-1",
+      "case_family": "fact-38",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "tenant-b-api-limits"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-38-2",
+      "case_family": "fact-38",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-38-3",
+      "case_family": "fact-38",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "returns-manual-tr"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-01-0",
+      "case_family": "version-01",
+      "category": "version_conflict",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "long-policy-tr",
+        "standard-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-01-1",
+      "case_family": "version-01",
+      "category": "version_conflict",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "shipping-and-delivery",
+        "refund-policy-2025",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-01-2",
+      "case_family": "version-01",
+      "category": "version_conflict",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "long-policy-tr",
+        "shipping-and-delivery"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-01-3",
+      "case_family": "version-01",
+      "category": "version_conflict",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "long-policy-tr",
+        "refund-policy-2025",
+        "shipping-and-delivery"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-04-0",
+      "case_family": "version-04",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "regional-returns-tr",
+        "regional-returns-eu",
+        "regional-returns-eu"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-04-1",
+      "case_family": "version-04",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "enterprise-contract-guide"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-04-2",
+      "case_family": "version-04",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-tr",
+        "regional-returns-eu"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-04-3",
+      "case_family": "version-04",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-eu",
+        "enterprise-contract-guide"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    }
+  ],
+  "calibration": [
+    {
+      "query_id": "cross-04-0",
+      "case_family": "fact-04",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "shipping-and-delivery"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "shipping-and-delivery",
+        "refund-policy-2026",
+        "long-policy-tr",
+        "refund-policy-2025"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-04-1",
+      "case_family": "fact-04",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "shipping-and-delivery"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "shipping-and-delivery",
+        "refund-policy-2025",
+        "support-playbook",
+        "refund-policy-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-09-0",
+      "case_family": "fact-09",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "account-security",
+        "support-playbook",
+        "long-policy-tr",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-09-1",
+      "case_family": "fact-09",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "long-policy-tr",
+        "account-security",
+        "employee-handbook-en",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-13-0",
+      "case_family": "fact-13",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "long-policy-tr",
+        "refund-policy-2025",
+        "long-policy-tr",
+        "marketplace-returns"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-13-1",
+      "case_family": "fact-13",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "long-policy-tr",
+        "long-policy-tr",
+        "marketplace-returns"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-14-0",
+      "case_family": "fact-14",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "premium-returns-2026",
+        "employee-handbook-en",
+        "support-playbook",
+        "standard-returns-2026",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-14-1",
+      "case_family": "fact-14",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "employee-handbook-en",
+        "premium-returns-2026",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-19-0",
+      "case_family": "fact-19",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-19-1",
+      "case_family": "fact-19",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-22-0",
+      "case_family": "fact-22",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "tenant-b-api-limits",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-22-1",
+      "case_family": "fact-22",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "tenant-b-api-limits",
+        "enterprise-contract-guide",
+        "returns-manual-tr",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-25-0",
+      "case_family": "fact-25",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "marketplace-returns",
+        "long-policy-tr",
+        "standard-returns-2026",
+        "refund-policy-2025"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-25-1",
+      "case_family": "fact-25",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "marketplace-returns",
+        "refund-policy-2025",
+        "standard-returns-2026",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "cross-28-0",
+      "case_family": "fact-28",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en",
+        "long-policy-tr",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-28-1",
+      "case_family": "fact-28",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-31-0",
+      "case_family": "fact-31",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-31-1",
+      "case_family": "fact-31",
+      "category": "cross_lingual",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "tr",
+      "language_pair": "en->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "cross-35-1",
+      "case_family": "fact-35",
+      "category": "cross_lingual",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "hard-activation-evidence",
+      "case_family": "hard-activation-evidence",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "digital-goods-policy"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "digital-goods-policy"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "hard-api-public",
+      "case_family": "hard-api-public",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "enterprise-contract-guide",
+        "tenant-b-api-limits",
+        "product-guide-en",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-00-0",
+      "case_family": "injection-00",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "support-playbook",
+        "employee-handbook-en",
+        "premium-returns-2026",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-00-1",
+      "case_family": "injection-00",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "employee-handbook-en",
+        "support-playbook",
+        "employee-handbook-en",
+        "premium-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-00-2",
+      "case_family": "injection-00",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "employee-handbook-en",
+        "support-playbook",
+        "support-playbook",
+        "premium-returns-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "injection-00-3",
+      "case_family": "injection-00",
+      "category": "injection_bearing",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "injection-bearing-policy"
+      ],
+      "top_authorized_source_ids": [
+        "injection-bearing-policy",
+        "support-playbook",
+        "premium-returns-2026",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-04-0",
+      "case_family": "multi-04",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en",
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "support-playbook",
+        "long-policy-tr",
+        "employee-handbook-en",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-04-1",
+      "case_family": "multi-04",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en",
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "support-playbook",
+        "employee-handbook-en",
+        "long-policy-tr",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-04-2",
+      "case_family": "multi-04",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en",
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "support-playbook",
+        "support-playbook",
+        "long-policy-tr",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "multi-04-3",
+      "case_family": "multi-04",
+      "category": "multi_document",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "employee-handbook-en",
+        "support-escalation"
+      ],
+      "top_authorized_source_ids": [
+        "support-escalation",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-04-1",
+      "case_family": "fact-04",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "shipping-and-delivery"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "shipping-and-delivery",
+        "marketplace-returns",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-04-2",
+      "case_family": "fact-04",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "shipping-and-delivery"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "shipping-and-delivery",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-04-3",
+      "case_family": "fact-04",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "shipping-and-delivery"
+      ],
+      "top_authorized_source_ids": [
+        "shipping-and-delivery",
+        "long-policy-tr",
+        "shipping-and-delivery",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-09-0",
+      "case_family": "fact-09",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "account-security",
+        "long-policy-tr",
+        "support-playbook",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-09-1",
+      "case_family": "fact-09",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "support-playbook",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-09-2",
+      "case_family": "fact-09",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "account-security",
+        "long-policy-tr",
+        "support-playbook",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-09-3",
+      "case_family": "fact-09",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "account-security",
+        "support-playbook",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-13-1",
+      "case_family": "fact-13",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "employee-handbook-en",
+        "refund-policy-2025",
+        "employee-handbook-en",
+        "refund-policy-2026"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-14-0",
+      "case_family": "fact-14",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-14-1",
+      "case_family": "fact-14",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-14-2",
+      "case_family": "fact-14",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-14-3",
+      "case_family": "fact-14",
+      "category": "standard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-19-1",
+      "case_family": "fact-19",
+      "category": "standard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-eu"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-19-2",
+      "case_family": "fact-19",
+      "category": "standard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-eu",
+        "regional-returns-eu"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-19-3",
+      "case_family": "fact-19",
+      "category": "standard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "enterprise-contract-guide",
+        "regional-returns-eu",
+        "regional-returns-eu",
+        "regional-returns-eu"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-22-1",
+      "case_family": "fact-22",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "product-guide-en"
+      ],
+      "top_authorized_source_ids": [
+        "product-guide-en",
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "tenant-b-api-limits",
+        "product-guide-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-25-0",
+      "case_family": "fact-25",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "standard-returns-2026",
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "injection-bearing-policy",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-25-1",
+      "case_family": "fact-25",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "support-playbook",
+        "standard-returns-2026",
+        "support-playbook",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-25-2",
+      "case_family": "fact-25",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "standard-returns-2026",
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "injection-bearing-policy",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-25-3",
+      "case_family": "fact-25",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "standard-returns-2026"
+      ],
+      "top_authorized_source_ids": [
+        "standard-returns-2026",
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "long-policy-tr",
+        "injection-bearing-policy"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-28-0",
+      "case_family": "fact-28",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "account-security",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-28-1",
+      "case_family": "fact-28",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "employee-handbook-en",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-28-2",
+      "case_family": "fact-28",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": false,
+      "all_required_present": false,
+      "cause": "retrieval_failure"
+    },
+    {
+      "query_id": "native-28-3",
+      "case_family": "fact-28",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "account-security"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "account-security",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-31-0",
+      "case_family": "fact-31",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-31-1",
+      "case_family": "fact-31",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-31-3",
+      "case_family": "fact-31",
+      "category": "hard_answerable",
+      "tenant": "tenant-a",
+      "query_language": "tr",
+      "evidence_language": "tr",
+      "language_pair": "tr->tr",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "long-policy-tr"
+      ],
+      "top_authorized_source_ids": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr",
+        "long-policy-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "native-35-1",
+      "case_family": "fact-35",
+      "category": "hard_answerable",
+      "tenant": "tenant-b",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "regional-returns-eu"
+      ],
+      "top_authorized_source_ids": [
+        "regional-returns-eu",
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-02-0",
+      "case_family": "version-02",
+      "category": "version_conflict",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "refund-policy-2026",
+        "standard-returns-2026",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-02-1",
+      "case_family": "version-02",
+      "category": "version_conflict",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "standard-returns-2026",
+        "employee-handbook-en",
+        "support-playbook"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-02-3",
+      "case_family": "version-02",
+      "category": "version_conflict",
+      "tenant": "tenant-a",
+      "query_language": "en",
+      "evidence_language": "en",
+      "language_pair": "en->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "refund-policy-2025"
+      ],
+      "top_authorized_source_ids": [
+        "refund-policy-2025",
+        "support-playbook",
+        "refund-policy-2026",
+        "employee-handbook-en",
+        "support-escalation"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-05-0",
+      "case_family": "version-05",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "enterprise-contract-guide",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-05-1",
+      "case_family": "version-05",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "enterprise-contract-guide",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-05-2",
+      "case_family": "version-05",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "enterprise-contract-guide"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    },
+    {
+      "query_id": "version-05-3",
+      "case_family": "version-05",
+      "category": "version_conflict",
+      "tenant": "tenant-b",
+      "query_language": "tr",
+      "evidence_language": "en",
+      "language_pair": "tr->en",
+      "answerability_label": "answerable",
+      "required_source_ids": [
+        "enterprise-contract-guide"
+      ],
+      "top_authorized_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "enterprise-contract-guide",
+        "regional-returns-tr"
+      ],
+      "deterministic_reason": "FEATURES_AVAILABLE",
+      "predicted_outcome": "ABSTAIN",
+      "any_required_present": true,
+      "all_required_present": true,
+      "cause": "gate_failure_with_gold_present"
+    }
+  ]
+}

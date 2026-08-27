@@ -1,0 +1,46 @@
+{
+  "policy_version": "phase-6b-answerability-v1",
+  "status": "INCONCLUSIVE",
+  "status_reason": "Zero answerable coverage in critical slices: multi_document, injection_bearing.",
+  "method": null,
+  "features": [],
+  "threshold": null,
+  "predictor_kind": null,
+  "positive_class": "ABSTAIN",
+  "deterministic_abstain_reasons": [
+    "NO_RETRIEVAL_CANDIDATES",
+    "NO_AUTHORIZED_EVIDENCE",
+    "EMPTY_RERANK_RESULT"
+  ],
+  "training_split": "development",
+  "confirmation_split": "calibration",
+  "family_leakage": {
+    "development_family_count": 51,
+    "calibration_family_count": 28,
+    "overlap_count": 0
+  },
+  "frozen_test_used": false,
+  "automatic_runtime_promotion": false,
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "collection": "kb_eval_phase55_0175aa4a2f9b",
+  "candidate_k": 20,
+  "top_n": 5,
+  "feature_schema_version": "phase-6a-answerability-v1",
+  "config_snapshot": {
+    "runtime_profile": "BENCHMARK_REFERENCE",
+    "embedding_model": "qwen3-embedding:4b",
+    "embedding_dimension": 1024,
+    "retrieval_method": "BM25 + dense + RRF",
+    "rrf_prefetch_limit_per_branch": 20,
+    "reranker_model": "BAAI/bge-reranker-v2-m3",
+    "reranker_backend": "sentence-transformers",
+    "candidate_k": 20,
+    "top_n": 5,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generation_invoked": false
+  },
+  "git_sha": "06b33184d08d8e3a7566b134db64fc1806f1a324"
+}

@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "git_sha": "06b33184d08d8e3a7566b134db64fc1806f1a324",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "frozen_test_used": false,
+    "generation_invoked": false
+  },
+  "development": {
+    "total_records": 200,
+    "answerable_count": 150,
+    "deterministic_abstain_count": 0,
+    "statistical_gate_eligible_count": 200,
+    "false_abstain_count": 111,
+    "false_abstain_given_gold_present": 95,
+    "gold_present_answerable_count": 129,
+    "gold_present_answerable_coverage": 0.26356589147286824,
+    "answer_when_gold_absent": 6
+  },
+  "calibration": {
+    "total_records": 112,
+    "answerable_count": 83,
+    "deterministic_abstain_count": 0,
+    "statistical_gate_eligible_count": 112,
+    "false_abstain_count": 64,
+    "false_abstain_given_gold_present": 52,
+    "gold_present_answerable_count": 70,
+    "gold_present_answerable_coverage": 0.2571428571428571,
+    "answer_when_gold_absent": 1
+  },
+  "statistical_only": {
+    "development": {
+      "correct_answer": 39,
+      "false_answer": 1,
+      "correct_abstain": 49,
+      "false_abstain": 111,
+      "true_abstain": 50,
+      "answerable_count": 150,
+      "predicted_abstain": 160,
+      "false_answer_rate": 0.02,
+      "false_abstention_rate": 0.74,
+      "answerable_coverage": 0.26,
+      "abstention_precision": 0.30625,
+      "abstention_recall": 0.98,
+      "abstention_f1": 0.46666666666666673,
+      "accuracy": 0.44,
+      "balanced_accuracy": 0.62,
+      "tp": 49,
+      "fp": 111,
+      "tn": 39,
+      "fn": 1,
+      "auroc": null,
+      "auprc": null
+    },
+    "calibration": {
+      "correct_answer": 19,
+      "false_answer": 0,
+      "correct_abstain": 29,
+      "false_abstain": 64,
+      "true_abstain": 29,
+      "answerable_count": 83,
+      "predicted_abstain": 93,
+      "false_answer_rate": 0.0,
+      "false_abstention_rate": 0.7710843373493976,
+      "answerable_coverage": 0.2289156626506024,
+      "abstention_precision": 0.3118279569892473,
+      "abstention_recall": 1.0,
+      "abstention_f1": 0.4754098360655738,
+      "accuracy": 0.42857142857142855,
+      "balanced_accuracy": 0.6144578313253012,
+      "tp": 29,
+      "fp": 64,
+      "tn": 19,
+      "fn": 0,
+      "auroc": null,
+      "auprc": null
+    }
+  }
+}

@@ -19,6 +19,12 @@ BM25 + dense + RRF, BAAI/bge-reranker-v2-m3, and `top_n=5`. `DEV_FAST` remains
 the interactive profile with `candidate_k=15`; it is not used to create the
 Phase 6 reference observations.
 
+The additive feature schema also includes finite structural signals derived
+from the authorized top-five list: relative score decay/ratios, score range
+and IQR, unique/duplicate source ratios, source chunk concentration, stable
+rank/score entropy, and source-level top scores/margin. These are descriptive
+signals only; they do not make an answerability decision.
+
 ## Export
 
 The development split is the default and the export contains no query text or

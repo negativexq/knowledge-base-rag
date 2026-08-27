@@ -47,6 +47,25 @@ FEATURE_FIELDS = (
     "distinct_source_count_top5",
     "dense_sparse_agreement",
     "authorized_candidate_count",
+    "score_decay_1_2",
+    "score_decay_1_3",
+    "score_decay_1_5",
+    "top1_to_mean_top5_ratio",
+    "top1_to_median_top5_ratio",
+    "top2_to_mean_top5_ratio",
+    "score_range_top5",
+    "score_iqr_top5",
+    "unique_source_ratio_top5",
+    "duplicate_source_ratio_top5",
+    "max_chunks_from_same_source",
+    "top_source_chunk_share",
+    "source_rank_entropy",
+    "source_score_entropy",
+    "source_top1_score",
+    "source_top2_score",
+    "source_margin",
+    "source_mean_score",
+    "source_count",
 )
 
 
@@ -202,7 +221,7 @@ def build_summary(
         "pre_acl_candidate_count",
     ]
     return {
-        "schema_version": "phase-6a-answerability-shadow-v1",
+        "schema_version": "phase-6a-answerability-shadow-v2",
         "timestamp": datetime.now(UTC).isoformat(),
         "git_sha": _git_sha(),
         "split": questions[0]["split"],

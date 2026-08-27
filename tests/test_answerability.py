@@ -1,4 +1,9 @@
-from app.evaluation.answerability import extract_answerability_observation
+import math
+
+from app.evaluation.answerability import (
+    extract_answerability_observation,
+    extract_structural_features,
+)
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import Settings
 from scripts.export_answerability_features import _config_snapshot, load_questions
@@ -75,6 +80,37 @@ def test_empty_top_five_has_nullable_numeric_features():
     assert features.top1_top2_margin is None
     assert features.mean_top5_score is None
     assert features.distinct_source_count_top5 is None
+
+
+def test_structural_features_use_source_level_deduplication():
+    structural = extract_structural_features(
+        [0.9, 0.8, 0.7, 0.6, 0.5],
+        ["source-a", "source-a", "source-b", "source-b", "source-b"],
+    )
+
+    assert structural.source_count == 2
+    assert structural.max_chunks_from_same_source == 3
+    assert structural.top_source_chunk_share == 0.6
+    assert structural.unique_source_ratio_top5 == 0.4
+    assert structural.duplicate_source_ratio_top5 == 0.6
+    assert structural.source_top1_score == 0.9
+    assert structural.source_top2_score == 0.7
+    assert structural.source_margin == 0.2
+
+
+def test_structural_features_are_finite_for_zero_and_negative_scores():
+    structural = extract_structural_features(
+        [0.0, -0.1, -0.2, -0.3, -0.4],
+        ["source-a", "source-b", "source-b", "source-c", "source-c"],
+    )
+    values = structural.as_dict().values()
+    assert all(value is None or math.isfinite(value) for value in values)
+    assert structural.top1_to_median_top5_ratio == 0.0
+
+
+def test_empty_structural_features_are_nullable():
+    structural = extract_structural_features([], [])
+    assert all(value is None for value in structural.as_dict().values())
 
 
 def test_reference_export_profile_uses_candidate_k_20_even_when_dev_fast_is_15():
