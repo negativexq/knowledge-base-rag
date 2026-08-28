@@ -1,0 +1,119 @@
+{
+  "status": "COMPLETED",
+  "identity": {
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "generator": "qwen3.5:4b",
+    "prompt": "v3",
+    "think": false,
+    "status": "PASS"
+  },
+  "query_count": 3,
+  "calls": {
+    "a_generation": 0,
+    "b_generation": 3,
+    "retrieval": 0,
+    "embedding": 0,
+    "reranker": 0,
+    "semantic_evaluator": 0
+  },
+  "a": {
+    "fully_correct_complete": 0,
+    "planning_failures": 2,
+    "synthesis_failures": 1,
+    "citation_identity": 2,
+    "citation_occurrences": 5,
+    "validator_rejects": 1,
+    "latency_ms": {
+      "p50": 22332.363,
+      "max": 42810.946
+    }
+  },
+  "b": {
+    "fully_correct_complete": 0,
+    "planning_failures": 2,
+    "synthesis_failures": 1,
+    "citation_identity": 2,
+    "citation_occurrences": 10,
+    "raw_observable": 3,
+    "validator_rejects": 2,
+    "latency_ms": {
+      "p50": 23062.388,
+      "max": 29628.789
+    }
+  },
+  "component_coverage": {
+    "a": [
+      0.5,
+      0.5,
+      0.0
+    ],
+    "b": [
+      0.5,
+      0.5,
+      0.0
+    ]
+  },
+  "fact_coverage": {
+    "a": [
+      0.5,
+      0.5,
+      0.0
+    ],
+    "b": [
+      0.5,
+      0.5,
+      0.0
+    ]
+  },
+  "citation_classes": {
+    "a": {
+      "SUPPORTED": 3,
+      "CORRECT_FACT_WRONG_SOURCE": 1,
+      "UNKNOWN_ID": 1
+    },
+    "b": {
+      "SUPPORTED": 9,
+      "UNKNOWN_ID": 1
+    }
+  },
+  "content_outcomes": {
+    "UNCHANGED": 3
+  },
+  "prompt_regressions": {
+    "verbosity": 2,
+    "repetition": 0,
+    "citation": 1,
+    "unsupported_synthesis": 0
+  },
+  "evidence_changed": false,
+  "context_changed": false,
+  "generator_changed": false,
+  "validator_changed": false,
+  "retrieval_changed": false,
+  "full_development": false,
+  "calibration": false,
+  "frozen_test_touched": false,
+  "decision": "MULTIDOC_COMPLETENESS_NO_GAIN",
+  "output_lengths": {
+    "a": {
+      "multi-03-0": 186,
+      "multi-00-3": 1769,
+      "multi-00-1": 613
+    },
+    "b": {
+      "multi-00-1": 1098,
+      "multi-00-3": 1297,
+      "multi-03-0": 1329
+    }
+  },
+  "latency": {
+    "a_p50": 22332.363,
+    "b_p50": 23062.388,
+    "b_max": 29628.789
+  }
+}

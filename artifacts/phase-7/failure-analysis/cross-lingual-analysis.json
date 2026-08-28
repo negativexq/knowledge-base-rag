@@ -1,0 +1,501 @@
+[
+  {
+    "query_id": "cross-00-1",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "query": "Müşteri doğrudan satış iade penceresi hakkında soruyor; 2026 standart iade politikası kapsamında nasıl yanıt verilir?",
+    "expected_facts": [
+      "standard-returns-2026"
+    ],
+    "authorized_top5_sources": [
+      "long-policy-tr",
+      "refund-policy-2026",
+      "marketplace-returns",
+      "standard-returns-2026",
+      "refund-policy-2025"
+    ],
+    "gold_source_positions": {
+      "standard-returns-2026": [
+        4
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "marketplace-returns",
+        "standard-returns-2026",
+        "refund-policy-2025"
+      ],
+      "required_source_positions": {
+        "standard-returns-2026": [
+          4
+        ]
+      },
+      "top1_is_required": false,
+      "distinct_source_count": 5,
+      "duplicate_source_chunk_count": 0,
+      "distractor_source_count": 4,
+      "context_characters": 2943
+    },
+    "generated_answer": "Müşterinin doğrudan satıştan gelen standart planlı fiziksel ürün iadesi için uygulanacak politika, siparişin teslim tarihine bakılmaksızın **14 takvim günlük** olan yeni 2026 standard iade politikası kapsamındadır [s.filesystem:standard-returns-2026/Standard Returns — 2026].\n\nEğer müşterinin Premium planı varsa veya sipariş pazar yerinden gelmişse, doğrudan satış için geçerli olan bu standart süreye tabi değildir; bunlar kendi özel politikalarıyla yönetilir.",
+    "citations": {
+      "completeness": 1.0,
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ]
+      ],
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "support_correct": true,
+      "unknown_or_unauthorized": [],
+      "valid": true
+    },
+    "citation_classification": [
+      {
+        "citation": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      }
+    ],
+    "deterministic_correctness": {
+      "components": [
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 1
+    },
+    "output_validation": {
+      "error": null,
+      "passed": true,
+      "violations": []
+    },
+    "reviewed_outcome": "MATERIALLY_INCORRECT",
+    "support_status": "PARTIALLY_SUPPORTED",
+    "primary_failure_cause": "CROSS_LINGUAL_REASONING_FAILURE",
+    "secondary_causes": [
+      "UNSUPPORTED_CLAIM_FAILURE"
+    ],
+    "fixability": "UNCLEAR",
+    "review_note": "Correct 14-day fact is paired with the materially wrong claim that delivery date does not matter."
+  },
+  {
+    "query_id": "cross-01-0",
+    "category": "cross_lingual",
+    "language_pair": "tr->en",
+    "query": "2026 premium iade politikası için premium iade penceresi nasıl uygulanıyor?",
+    "expected_facts": [
+      "premium-returns-2026"
+    ],
+    "authorized_top5_sources": [
+      "long-policy-tr",
+      "long-policy-tr",
+      "premium-returns-2026",
+      "marketplace-returns",
+      "standard-returns-2026"
+    ],
+    "gold_source_positions": {
+      "premium-returns-2026": [
+        3
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "long-policy-tr",
+        "long-policy-tr",
+        "premium-returns-2026",
+        "marketplace-returns",
+        "standard-returns-2026"
+      ],
+      "required_source_positions": {
+        "premium-returns-2026": [
+          3
+        ]
+      },
+      "top1_is_required": false,
+      "distinct_source_count": 4,
+      "duplicate_source_chunk_count": 1,
+      "distractor_source_count": 3,
+      "context_characters": 2347
+    },
+    "generated_answer": "2026 premium iade politikası için uygulanma yöntemi aşağıdaki kriterlere göre belirlenir:\n\n1. **Doğrudan Satış (Direct Sales):**  \n   - Premium planı doğrudan satın alınırsa, 30 takvim günü içinde bir iade talebi sunulabilir [s.filesystem:premium-returns-2026/Premium Returns — 2026].\n   \n2. **Pazar Yeri Satışları (Marketplace Orders):**  \n   - Eğer müşteri pazar yerinden sipariş vermişse, Premium plan avantajı bu durumu etkilemez; iade süresi sadece 7 takvim günüdür ve talep pazaryerinin \"vaka kanalı\" üzerinden açılır [s.filesystem:marketplace-returns/Pazar Yeri Siparişleri için İade Politikası].\n\n3. **Dijital Ürünler İçin Eknotlar:**  \n   - Dijital lisanslarda indirme olayı ile etkinleştirme olayından farklı olarak, iade uygunluğu etkinleştirilemeden indirilmişse kapatılmaz; ancak ürün zaten etkinleştirilirse genel kural olarak iade yapılmaz [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması].\n\n4. **Plan Yükseltmesi Durumu:**  \n   - Teslimattan sonra yapılan plan yükseltmeleri (Standart'dan Premium'e geçiş), otomatik olarak 30 günlük pencereyi tetikler; eski bir doğrudan satış için de yeni değil, sadece sipariş anında geçerli olan koşullar uygulanır [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri].\n\nÖzetle, 2026 yılında Premium iade politikasında **planlı sipariş türü** (doğrudan vs pazar yeri) ve **sipariş kanalı** belirleyici faktörlerdir; her iki kanal için farklı süreye göre iade başvurusu değerlendirilir.",
+    "citations": {
+      "completeness": 1.0,
+      "found": [
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ],
+        [
+          "filesystem",
+          "marketplace-returns",
+          "Pazar Yeri Siparişleri için İade Politikası"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+        ]
+      ],
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "support_correct": false,
+      "unknown_or_unauthorized": [],
+      "valid": true
+    },
+    "citation_classification": [
+      {
+        "citation": [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "marketplace-returns",
+          "Pazar Yeri Siparişleri için İade Politikası"
+        ],
+        "classification": "RELATED_WRONG_CLAIM"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        "classification": "RELATED_WRONG_CLAIM"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+        ],
+        "classification": "RELATED_WRONG_CLAIM"
+      }
+    ],
+    "deterministic_correctness": {
+      "components": [
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 1
+    },
+    "output_validation": {
+      "error": null,
+      "passed": true,
+      "violations": []
+    },
+    "reviewed_outcome": "DEFINITELY_CORRECT",
+    "support_status": "FULLY_SUPPORTED",
+    "primary_failure_cause": "DETERMINISTIC_EVALUATOR_FALSE_NEGATIVE",
+    "secondary_causes": [],
+    "fixability": "LIKELY_PROMPT_OR_FORMAT_FIXABLE",
+    "review_note": "30-day premium rule is stated; matcher missed the Turkish paraphrase and added contextual rules."
+  },
+  {
+    "query_id": "cross-06-0",
+    "category": "cross_lingual",
+    "language_pair": "en->tr",
+    "query": "What does the subscription cancellation policy say about preventing the next renewal charge?",
+    "expected_facts": [
+      "subscription-billing"
+    ],
+    "authorized_top5_sources": [
+      "long-policy-tr",
+      "subscription-billing",
+      "long-policy-tr",
+      "standard-returns-2026",
+      "support-playbook"
+    ],
+    "gold_source_positions": {
+      "subscription-billing": [
+        2
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "long-policy-tr",
+        "subscription-billing",
+        "long-policy-tr",
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "required_source_positions": {
+        "subscription-billing": [
+          2
+        ]
+      },
+      "top1_is_required": false,
+      "distinct_source_count": 4,
+      "duplicate_source_chunk_count": 1,
+      "distractor_source_count": 3,
+      "context_characters": 2443
+    },
+    "generated_answer": "",
+    "citations": {
+      "completeness": 1.0,
+      "found": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+        ]
+      ],
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "support_correct": false,
+      "unknown_or_unauthorized": [
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+        ]
+      ],
+      "valid": false
+    },
+    "citation_classification": [
+      {
+        "citation": [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+        ],
+        "classification": "UNKNOWN_ID"
+      }
+    ],
+    "deterministic_correctness": {
+      "components": [
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 1
+    },
+    "output_validation": {
+      "error": {
+        "message": "The answer was withheld because output policy validation failed.",
+        "type": "error"
+      },
+      "passed": false,
+      "violations": [
+        "unauthorized_citation"
+      ]
+    },
+    "reviewed_outcome": "CANNOT_DETERMINE",
+    "support_status": "CANNOT_DETERMINE",
+    "primary_failure_cause": "CITATION_FORMAT_FAILURE",
+    "secondary_causes": [
+      "CANNOT_DETERMINE"
+    ],
+    "fixability": "LIKELY_PROMPT_OR_FORMAT_FIXABLE",
+    "review_note": "Strict validation withheld the answer after a malformed/unauthorized citation; answer text is unavailable."
+  },
+  {
+    "query_id": "cross-06-1",
+    "category": "cross_lingual",
+    "language_pair": "en->tr",
+    "query": "A customer is asking about preventing the next renewal charge. How does the subscription cancellation policy handle it?",
+    "expected_facts": [
+      "subscription-billing"
+    ],
+    "authorized_top5_sources": [
+      "long-policy-tr",
+      "subscription-billing",
+      "long-policy-tr",
+      "support-playbook",
+      "employee-handbook-en"
+    ],
+    "gold_source_positions": {
+      "subscription-billing": [
+        2
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "long-policy-tr",
+        "subscription-billing",
+        "long-policy-tr",
+        "support-playbook",
+        "employee-handbook-en"
+      ],
+      "required_source_positions": {
+        "subscription-billing": [
+          2
+        ]
+      },
+      "top1_is_required": false,
+      "distinct_source_count": 4,
+      "duplicate_source_chunk_count": 1,
+      "distractor_source_count": 3,
+      "context_characters": 2459
+    },
+    "generated_answer": "To prevent the next renewal charge, a cancellation request must be recorded at least **48 hours before** the renewal date. Cancellation does not shorten the paid period; access continues until the end of the current billing cycle [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası][1].\n\n[2]",
+    "citations": {
+      "completeness": 1.0,
+      "found": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ]
+      ],
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "support_correct": true,
+      "unknown_or_unauthorized": [],
+      "valid": true
+    },
+    "citation_classification": [
+      {
+        "citation": [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      }
+    ],
+    "deterministic_correctness": {
+      "components": [
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 1
+    },
+    "output_validation": {
+      "error": null,
+      "passed": true,
+      "violations": []
+    },
+    "reviewed_outcome": "DEFINITELY_CORRECT",
+    "support_status": "FULLY_SUPPORTED",
+    "primary_failure_cause": "DETERMINISTIC_EVALUATOR_FALSE_NEGATIVE",
+    "secondary_causes": [
+      "CITATION_FORMAT_FAILURE"
+    ],
+    "fixability": "LIKELY_PROMPT_OR_FORMAT_FIXABLE",
+    "review_note": "The 48-hour rule and paid-period behavior are correctly paraphrased in English."
+  },
+  {
+    "query_id": "cross-07-0",
+    "category": "cross_lingual",
+    "language_pair": "en->tr",
+    "query": "What does the annual billing policy say about the annual-plan discount?",
+    "expected_facts": [
+      "subscription-billing"
+    ],
+    "authorized_top5_sources": [
+      "subscription-billing",
+      "long-policy-tr",
+      "support-playbook",
+      "employee-handbook-en",
+      "employee-handbook-en"
+    ],
+    "gold_source_positions": {
+      "subscription-billing": [
+        1
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "subscription-billing",
+        "long-policy-tr",
+        "support-playbook",
+        "employee-handbook-en",
+        "employee-handbook-en"
+      ],
+      "required_source_positions": {
+        "subscription-billing": [
+          1
+        ]
+      },
+      "top1_is_required": true,
+      "distinct_source_count": 4,
+      "duplicate_source_chunk_count": 1,
+      "distractor_source_count": 3,
+      "context_characters": 2029
+    },
+    "generated_answer": "The annual billing policy states that a yearly plan is priced at **15 percent off** compared to the equivalent payment for twelve months, but it does not constitute a return window. This information can be found in document [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası].",
+    "citations": {
+      "completeness": 1.0,
+      "found": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ]
+      ],
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "support_correct": true,
+      "unknown_or_unauthorized": [],
+      "valid": true
+    },
+    "citation_classification": [
+      {
+        "citation": [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      }
+    ],
+    "deterministic_correctness": {
+      "components": [
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 1
+    },
+    "output_validation": {
+      "error": null,
+      "passed": true,
+      "violations": []
+    },
+    "reviewed_outcome": "DEFINITELY_CORRECT",
+    "support_status": "FULLY_SUPPORTED",
+    "primary_failure_cause": "DETERMINISTIC_EVALUATOR_FALSE_NEGATIVE",
+    "secondary_causes": [],
+    "fixability": "LIKELY_PROMPT_OR_FORMAT_FIXABLE",
+    "review_note": "15 percent annual discount is correctly stated; matcher expected Turkish wording."
+  }
+]

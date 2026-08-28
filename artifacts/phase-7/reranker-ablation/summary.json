@@ -1,0 +1,52 @@
+{
+  "status": "QWEN3_RERANKER_QUALITY_REGRESSION",
+  "identity": {
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "generator": "qwen3.5:4b",
+    "prompt": "v3",
+    "think": false,
+    "status": "PASS"
+  },
+  "calls": {
+    "generation": 0,
+    "embedding": 6,
+    "initial_retrieval": 6,
+    "reranker": 12,
+    "reranker_preflight": 1
+  },
+  "forensic": {
+    "bge": {
+      "fact_passage_recall": {
+        "at1": 0.14285714285714285,
+        "at3": 0.5714285714285714,
+        "at5": 0.7142857142857143
+      },
+      "all_required_facts_present": {
+        "at1": 0,
+        "at3": 0,
+        "at5": 1
+      },
+      "source_recall_at5": 1.0
+    },
+    "qwen3": {
+      "fact_passage_recall": {
+        "at1": 0.14285714285714285,
+        "at3": 0.5714285714285714,
+        "at5": 0.5714285714285714
+      },
+      "all_required_facts_present": {
+        "at1": 0,
+        "at3": 0,
+        "at5": 0
+      },
+      "source_recall_at5": 1.0
+    }
+  },
+  "development_benchmark_status": "SKIPPED",
+  "recommended_next_experiment": "BGE_KEEP_AND_SECTION_AWARE_EXPERIMENT"
+}

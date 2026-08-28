@@ -1,9 +1,10 @@
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 
 from opentelemetry import trace
 
 from app.llm.grounding import check_grounding
+from app.llm.observability import GenerationObservation
 from app.llm.output_policy import check_output_policy
 from app.llm.prompt import build_messages, load_system_prompt
 from app.llm.provider import ChatProvider
@@ -26,6 +27,9 @@ async def stream_answer(
     validation_mode: SecurityValidationMode = "strict",
     injection_eval_category: str | None = None,
     tracer: trace.Tracer | None = None,
+    evaluation_observation: GenerationObservation | None = None,
+    context_serializer: Callable[[list[SearchResult]], str] | None = None,
+    system_prompt_suffix: str | None = None,
 ) -> AsyncIterator[dict]:
     """Stream a grounded answer as a sequence of events:
     {"type": "metadata", "prompt_version": str} first (so the caller knows
@@ -70,7 +74,13 @@ async def stream_answer(
             "security_validation_mode": validation_mode,
         }
 
-        messages = build_messages(query, chunks, version=prompt_version)
+        messages = build_messages(
+            query,
+            chunks,
+            version=prompt_version,
+            context_serializer=context_serializer,
+            system_prompt_suffix=system_prompt_suffix,
+        )
         answer_parts = []
         token_count = 0
 
@@ -96,6 +106,14 @@ async def stream_answer(
             if validation_mode == "strict" and output_policy.passed:
                 for token in answer_parts:
                     yield {"type": "token", "content": token}
+        if evaluation_observation is not None:
+            evaluation_observation.record(
+                answer,
+                grounding,
+                output_policy,
+                prompt_version=prompt_version,
+                validation_mode=validation_mode,
+            )
         span.set_attribute("generate.token_count", token_count)
         span.set_attribute("generate.grounded", grounding.grounded)
         span.set_attribute("generate.citation_count", len(grounding.citations_found))

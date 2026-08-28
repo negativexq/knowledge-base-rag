@@ -1,0 +1,106 @@
+{
+  "rows": 32,
+  "successful_rows": 30,
+  "timeout_rows": 2,
+  "successful_stats": {
+    "context_tokens": {
+      "count": 30,
+      "p50": 517.5,
+      "p95": 804.0,
+      "max": 804.0
+    },
+    "context_bytes": {
+      "count": 30,
+      "p50": 5522.0,
+      "p95": 7219.0,
+      "max": 7219.0
+    },
+    "support_unit_count": {
+      "count": 30,
+      "p50": 12.0,
+      "p95": 22.0,
+      "max": 22.0
+    },
+    "support_id_enum_count": {
+      "count": 30,
+      "p50": 12.0,
+      "p95": 22.0,
+      "max": 22.0
+    },
+    "schema_bytes": {
+      "count": 30,
+      "p50": 451.0,
+      "p95": 535.0,
+      "max": 535.0
+    },
+    "prompt_bytes": {
+      "count": 30,
+      "p50": 7377.5,
+      "p95": 9075.0,
+      "max": 9075.0
+    },
+    "request_bytes": {
+      "count": 30,
+      "p50": 8151.5,
+      "p95": 9999.0,
+      "max": 9999.0
+    },
+    "latency_ms": {
+      "count": 30,
+      "p50": 42155.644,
+      "p95": 72301.44214999999,
+      "max": 81063.069
+    }
+  },
+  "timeout_values": {
+    "query_id": [
+      "multi-01-0",
+      "multi-01-0"
+    ],
+    "seed": [
+      41,
+      42
+    ],
+    "context_tokens": [
+      584,
+      584
+    ],
+    "support_unit_count": [
+      14,
+      14
+    ],
+    "support_id_enum_count": [
+      14,
+      14
+    ],
+    "schema_bytes": [
+      467,
+      467
+    ],
+    "request_bytes": [
+      8591,
+      8591
+    ],
+    "latency_ms": [
+      180008.056,
+      180011.971
+    ],
+    "headers_received": [
+      false,
+      false
+    ],
+    "first_byte_received": [
+      false,
+      false
+    ],
+    "response_bytes": [
+      0,
+      0
+    ],
+    "timeout_type": [
+      "READ",
+      "READ"
+    ]
+  },
+  "schema_observation": "The timeout query uses a small 14-member enum; schema size is not an obvious outlier in this partial batch."
+}

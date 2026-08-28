@@ -1,0 +1,271 @@
+[
+  {
+    "query_id": "multi-00-1",
+    "required_components": 2,
+    "fact_score": {
+      "status": "CORRECT_BUT_INCOMPLETE",
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "required_fact_count": 2,
+      "matched_fact_ids": [
+        "fact_2"
+      ],
+      "missing_fact_ids": [
+        "fact_1"
+      ],
+      "fact_coverage": 0.5,
+      "matches": [
+        {
+          "matched": false,
+          "reason": "duration",
+          "expected": [
+            14.0,
+            "day"
+          ],
+          "answer": null
+        },
+        {
+          "matched": true,
+          "reason": "explicit_authored_aliases"
+        }
+      ],
+      "expected_components": [
+        "14 calendar days",
+        "record plan, channel, delivery date, and remedy."
+      ],
+      "flags": [],
+      "observable": true
+    },
+    "sources": [
+      "support-playbook",
+      "support-playbook",
+      "support-playbook",
+      "employee-handbook-en",
+      "standard-returns-2026"
+    ],
+    "citations": [
+      {
+        "citation_id": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "RELATED_BUT_INSUFFICIENT"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/26. Closure examples"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      }
+    ],
+    "validator_pass": true
+  },
+  {
+    "query_id": "multi-00-3",
+    "required_components": 2,
+    "fact_score": {
+      "status": "CORRECT_BUT_INCOMPLETE",
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "required_fact_count": 2,
+      "matched_fact_ids": [],
+      "missing_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "fact_coverage": 0.0,
+      "matches": [
+        {
+          "matched": false,
+          "reason": "duration",
+          "expected": [
+            14.0,
+            "day"
+          ],
+          "answer": [
+            7.0,
+            "day"
+          ]
+        },
+        {
+          "matched": false,
+          "reason": "partial_authored_overlap"
+        }
+      ],
+      "expected_components": [
+        "14 calendar days",
+        "record plan, channel, delivery date, and remedy."
+      ],
+      "flags": [],
+      "observable": true
+    },
+    "sources": [
+      "support-playbook",
+      "support-playbook",
+      "support-playbook",
+      "premium-returns-2026",
+      "standard-returns-2026"
+    ],
+    "citations": [
+      {
+        "citation_id": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "RELATED_BUT_INSUFFICIENT"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "RELATED_BUT_INSUFFICIENT"
+      },
+      {
+        "citation_id": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "syntax_valid": true,
+        "identity_valid": true,
+        "authorized": true,
+        "support_status": "SUPPORTED"
+      }
+    ],
+    "validator_pass": true
+  },
+  {
+    "query_id": "multi-03-0",
+    "required_components": 1,
+    "fact_score": {
+      "status": "UNOBSERVABLE",
+      "required_fact_ids": [],
+      "required_fact_count": 1,
+      "matched_fact_ids": [],
+      "missing_fact_ids": [],
+      "fact_coverage": null,
+      "matches": [],
+      "flags": [],
+      "observable": false
+    },
+    "sources": [
+      "returns-manual-tr",
+      "regional-returns-tr",
+      "returns-manual-tr",
+      "returns-manual-tr",
+      "regional-returns-tr"
+    ],
+    "citations": [],
+    "validator_pass": false
+  }
+]

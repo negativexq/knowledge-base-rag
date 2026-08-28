@@ -1,0 +1,107 @@
+{
+  "acl_hard_reject": "any seed unauthorized leakage >0 or visible unsupported answer >0",
+  "acl_query_ids": [
+    "acl-02-0",
+    "acl-02-1",
+    "acl-02-2"
+  ],
+  "allowed_changes": [
+    "support-unit selection contract",
+    "deterministic quote/value validation",
+    "application forced abstention",
+    "evaluation-only observability"
+  ],
+  "baseline_version": "pipeline_v2_2_evidence_backed/output_contract_v2_2",
+  "challenger_version": "pipeline_v2_3_support_units/output_contract_v2_3",
+  "clear_better": "v2.3 success and v2.2 not success in >=3 of 5 paired seeds",
+  "clear_regression": "ACL hard fail or v2.3 clearly worse >=3/8",
+  "clear_win": "ACL hard safety pass, v2.3 clearly worse <=1/8, clearly better >=3/8",
+  "clear_worse": "v2.2 success and v2.3 not success in >=3 of 5 paired seeds",
+  "debug_set_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ],
+  "evidence_snapshot_hashes": {
+    "acl-02-0": "6edb321513586bb23f9a7600cb2e35cc8bddccc4a9a47969554226ec8ae3063a",
+    "acl-02-1": "aa78479c42a836fd81b48575c1b956929834078fedefc2cdc6a23037be8cba33",
+    "acl-02-2": "68bc2e3c1aac05b0879a24b0fb30539d8b14481b46a08109c7c5be02d868efe2",
+    "cross-06-0": "66f537d2111e7110e3c881303d1c8e7dd1c178c0edb8d767efd191184cf1f7da",
+    "multi-00-0": "db654478de7c705add5872f6502e7ce12a60aa44e43796496805c29ccfa6dd1f",
+    "multi-00-1": "e1e20da33f74bb11261c1ab96014f8f99a3821c34ade222dfed2182644bb3d8d",
+    "multi-00-2": "c72aaad1b620d55979b7e3f2e2b0d1f228952393c39c61f5ace635060b717b27",
+    "multi-01-0": "2a036a28ff26c8a4eff8a3b9b45c1ae131a834efb55ef52de7316cdfe91ac41d",
+    "multi-01-1": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+    "multi-01-2": "eae1881ede2d6a0a00eddf27bc88ee33acd15941e33e9b91ac8efe4092acfb90",
+    "multi-01-3": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+    "multi-03-1": "ea428cd20999cee37fa3dc8a329133bbe7c1c35eb7e88683c1fc956f8bbb7a35",
+    "multi-03-2": "ea428cd20999cee37fa3dc8a329133bbe7c1c35eb7e88683c1fc956f8bbb7a35",
+    "native-00-0": "9640171e21e9ebe82a153f2d566fdb736609ef24b8569609ab6227353d9e46e6",
+    "version-01-0": "ac6bd9f4a78c65acc45390d511f89954fc4da1ae5dcf8eb89e3cc8b99ade7b19"
+  },
+  "fact_ground_truth_hash": "ebab01262ffd89ddc9cfa1f672985c1d3e6e83c23a186824304111d2b799f764",
+  "forbidden_changes": [
+    "retrieval",
+    "reranker",
+    "embedding",
+    "generator",
+    "num_ctx",
+    "top_n",
+    "prompt micro-tuning",
+    "LLM judge",
+    "query selection after results"
+  ],
+  "holdout_query_ids": [
+    "multi-01-1",
+    "multi-03-1",
+    "multi-00-0",
+    "multi-01-2",
+    "multi-00-2",
+    "multi-01-3",
+    "multi-01-0",
+    "multi-03-2"
+  ],
+  "identity": {
+    "cache_schema": "phase-7-generation-input-cache-v1",
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "inconclusive_expansion": "one extension of +8 unseen development multi-document queries, maximum 16",
+  "manual_rubric": [
+    "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+    "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+    "VISIBLE_INCORRECT",
+    "VISIBLE_SAFE_ABSTENTION",
+    "VISIBLE_FALSE_ABSTENTION"
+  ],
+  "max_holdout_expansion": 8,
+  "primary_metric": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+  "schema_version": "measurement-lock-m0-preregistration-v1",
+  "seeds": [
+    41,
+    42,
+    43,
+    44,
+    45
+  ],
+  "selection_rule": {
+    "algorithm": "stable_sha256_query_id_sort",
+    "count": 8,
+    "development_category": "multi_document",
+    "excluded_debug_ids": [
+      "multi-00-1",
+      "multi-00-3",
+      "multi-03-0"
+    ]
+  },
+  "temperature": 0.0
+}

@@ -1,0 +1,9 @@
+{
+  "promotion_eligible": false,
+  "purpose": "debug/reproduction only",
+  "query_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ]
+}

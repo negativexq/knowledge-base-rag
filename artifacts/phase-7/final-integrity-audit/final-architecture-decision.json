@@ -1,0 +1,42 @@
+{
+  "acl_hard_gate": {
+    "reused_frozen_result": true,
+    "status": "PASS",
+    "unauthorized_leakage": 0,
+    "visible_unsupported": 0
+  },
+  "architecture_decision": "V2_3_REJECT",
+  "calibration_touched": false,
+  "development200_run": false,
+  "execution_status": "COMPLETE",
+  "extension": {
+    "eligible_pool": 1,
+    "required": 8,
+    "status": "EXTENSION_BLOCKED_INSUFFICIENT_ELIGIBLE_POOL",
+    "used": false
+  },
+  "formal_gate_verdict": "CLEAR_REGRESSION",
+  "frozen_touched": false,
+  "historical_result_invalid_for_final_decision_due_execution_asymmetry": true,
+  "initial_holdout": {
+    "better": 0,
+    "equivalent": 5,
+    "worse": 3
+  },
+  "multi_01_0_truncation_resolution": "INDETERMINATE",
+  "prior_exposure_limitation": "Corrected-rerun manual scoring was blinded by pipeline/variant identity, but the grader had prior exposure to the initial-run outcomes; prior-result contamination cannot be fully excluded.",
+  "quality_superiority_established": false,
+  "rationale": "Corrected execution symmetry was required and completed. The corrected paired result has three clearly-worse queries and no clearly-better queries; the preregistered clear-regression rule therefore rejects V2.3. No further holdout expansion is permitted.",
+  "schema_version": "final-integrity-architecture-decision-v1",
+  "selected_for_closure": "pipeline_v2_2_evidence_backed",
+  "selected_pipeline": "pipeline_v2_2_evidence_backed",
+  "selected_v2_2_known_limitations": [
+    "semantic_attribution_alignment_unresolved"
+  ],
+  "smoke36_run": false,
+  "v2_3_adopted": false,
+  "v2_3_contract_disproven": false,
+  "v2_3_empirical_quality_superiority_established": false,
+  "v2_3_implementation_vs_contract_root_cause": "UNRESOLVED",
+  "v2_3_rejected": true
+}

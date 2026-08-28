@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "checked_before_inference": true,
+  "json_round_trip": true,
+  "structures": [
+    "prompt_messages",
+    "context_builder",
+    "generation_result",
+    "checkpoint"
+  ]
+}

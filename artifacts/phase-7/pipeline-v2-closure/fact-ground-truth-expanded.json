@@ -1,0 +1,355 @@
+{
+  "checks": [
+    {
+      "required_fact_id": "standard_return_window_14_days",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "support_return_case_fields",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "standard_return_window_14_days",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "support_return_case_fields",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "digital_activation_boundary",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "regional_withdrawal_framework_14_days",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "joint_exception_routing",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "annual_cancel_48_hours",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "paid_period_not_shortened",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "api_v3_current",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "turkish_regional_context",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "turkish_order_context",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "version_2026_return_window",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "version_2026_return_window_2",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "cross_standard_return_window",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "required_fact_id": "cross_renewal_cancellation",
+      "source_exists": true,
+      "span_exists": true
+    }
+  ],
+  "facts": [
+    {
+      "authoritative_source_id": "standard-returns-2026",
+      "required_component_id": "standard_return_window",
+      "required_fact_id": "standard_return_window_14_days",
+      "section_heading": "Standard Returns — 2026",
+      "source_path": "data/evaluation/evaluation-corpus-v2/standard-returns-2026.md",
+      "supporting_text_anchor": "14 calendar days",
+      "supporting_text_span": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window."
+    },
+    {
+      "authoritative_source_id": "support-playbook",
+      "required_component_id": "support_case_fields",
+      "required_fact_id": "support_return_case_fields",
+      "section_heading": "5. Returns and billing routing",
+      "source_path": "data/evaluation/evaluation-corpus-v2/support-playbook.md",
+      "supporting_text_anchor": "Use this sequence for a return request:",
+      "supporting_text_span": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval."
+    },
+    {
+      "authoritative_source_id": "standard-returns-2026",
+      "required_component_id": "standard_return_window",
+      "required_fact_id": "standard_return_window_14_days",
+      "section_heading": "Standard Returns — 2026",
+      "source_path": "data/evaluation/evaluation-corpus-v2/standard-returns-2026.md",
+      "supporting_text_anchor": "14 calendar days",
+      "supporting_text_span": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window."
+    },
+    {
+      "authoritative_source_id": "support-playbook",
+      "required_component_id": "support_case_fields",
+      "required_fact_id": "support_return_case_fields",
+      "section_heading": "5. Returns and billing routing",
+      "source_path": "data/evaluation/evaluation-corpus-v2/support-playbook.md",
+      "supporting_text_anchor": "Use this sequence for a return request:",
+      "supporting_text_span": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval."
+    },
+    {
+      "authoritative_source_id": "regional-returns-tr",
+      "required_component_id": "activated_digital_exception",
+      "required_fact_id": "digital_activation_boundary",
+      "section_heading": "Dijital içerik",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/regional-returns-tr.md",
+      "supporting_text_anchor": "Dijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır.",
+      "supporting_text_span": "Dijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir."
+    },
+    {
+      "authoritative_source_id": "regional-returns-tr",
+      "required_component_id": "regional_withdrawal_right",
+      "required_fact_id": "regional_withdrawal_framework_14_days",
+      "section_heading": "Genel değerlendirme",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/regional-returns-tr.md",
+      "supporting_text_anchor": "14 günlük cayma çerçevesi",
+      "supporting_text_span": "Belirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez."
+    },
+    {
+      "authoritative_source_id": "returns-manual-tr",
+      "required_component_id": "activated_digital_exception",
+      "required_fact_id": "joint_exception_routing",
+      "section_heading": "İstisna ve onay",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/returns-manual-tr.md",
+      "supporting_text_anchor": "aktive edilmiş dijital ürünler, bölgesel istisnalar",
+      "supporting_text_span": "Süresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir."
+    },
+    {
+      "authoritative_source_id": "subscription-billing",
+      "required_component_id": "renewal_prevention",
+      "required_fact_id": "annual_cancel_48_hours",
+      "source_path": "data/evaluation/evaluation-corpus-v2/subscription-billing.md",
+      "supporting_text_anchor": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48",
+      "supporting_text_span": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır."
+    },
+    {
+      "authoritative_source_id": "subscription-billing",
+      "required_component_id": "paid_period",
+      "required_fact_id": "paid_period_not_shortened",
+      "source_path": "data/evaluation/evaluation-corpus-v2/subscription-billing.md",
+      "supporting_text_anchor": "İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam ede",
+      "supporting_text_span": "İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder."
+    },
+    {
+      "authoritative_source_id": "product-guide-en",
+      "required_component_id": "api_version",
+      "required_fact_id": "api_v3_current",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/product-guide-en.md",
+      "supporting_text_anchor": "API v3 is current. API v2 remains available for compatibility while clients migr",
+      "supporting_text_span": "API v3 is current. API v2 remains available for compatibility while clients migrate, but it is deprecated and should not be selected for new integrations."
+    },
+    {
+      "authoritative_source_id": "regional-returns-tr",
+      "required_component_id": "regional_policy_context",
+      "required_fact_id": "turkish_regional_context",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/regional-returns-tr.md",
+      "supporting_text_anchor": "Bu kurmaca belge Türkiye kapsamındaki siparişlerin operasyonel değerlendirmesini",
+      "supporting_text_span": "Bu kurmaca belge Türkiye kapsamındaki siparişlerin operasyonel değerlendirmesini anlatır; hukuki görüş değildir."
+    },
+    {
+      "authoritative_source_id": "regional-returns-tr",
+      "required_component_id": "order_contract_context",
+      "required_fact_id": "turkish_order_context",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/regional-returns-tr.md",
+      "supporting_text_anchor": "Vaka açılırken müşteri konumu, sipariş kanalı, ürün türü ve ilgili olay tarihi k",
+      "supporting_text_span": "Vaka açılırken müşteri konumu, sipariş kanalı, ürün türü ve ilgili olay tarihi kaydedilir."
+    },
+    {
+      "authoritative_source_id": "refund-policy-2026",
+      "required_component_id": "canonical_return_rule",
+      "required_fact_id": "version_2026_return_window",
+      "source_path": "data/evaluation/evaluation-corpus-v2/refund-policy-2026.md",
+      "supporting_text_anchor": "deliveries governed by the new policy use 14 calendar days from delivery.",
+      "supporting_text_span": "deliveries governed by the new policy use 14 calendar days from delivery."
+    },
+    {
+      "authoritative_source_id": "refund-policy-2026",
+      "required_component_id": "canonical_return_rule",
+      "required_fact_id": "version_2026_return_window_2",
+      "source_path": "data/evaluation/evaluation-corpus-v2/refund-policy-2026.md",
+      "supporting_text_anchor": "deliveries governed by the new policy use 14 calendar days from delivery.",
+      "supporting_text_span": "deliveries governed by the new policy use 14 calendar days from delivery."
+    },
+    {
+      "authoritative_source_id": "standard-returns-2026",
+      "required_component_id": "standard_return_window",
+      "required_fact_id": "cross_standard_return_window",
+      "source_path": "data/evaluation/evaluation-corpus-v2/standard-returns-2026.md",
+      "supporting_text_anchor": "Standard-plan customers may request a refund within 14 calendar days of delivery",
+      "supporting_text_span": "Standard-plan customers may request a refund within 14 calendar days of delivery."
+    },
+    {
+      "authoritative_source_id": "subscription-billing",
+      "required_component_id": "renewal_prevention",
+      "required_fact_id": "cross_renewal_cancellation",
+      "source_path": "data/evaluation/evaluation-corpus-v2/subscription-billing.md",
+      "supporting_text_anchor": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48",
+      "supporting_text_span": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır."
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "multi-00-1",
+      "required_components": [
+        {
+          "required_component_id": "standard_return_window",
+          "required_fact_ids": [
+            "standard_return_window_14_days"
+          ]
+        },
+        {
+          "required_component_id": "support_case_fields",
+          "required_fact_ids": [
+            "support_return_case_fields"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_components": [
+        {
+          "required_component_id": "standard_return_window",
+          "required_fact_ids": [
+            "standard_return_window_14_days"
+          ]
+        },
+        {
+          "required_component_id": "support_case_fields",
+          "required_fact_ids": [
+            "support_return_case_fields"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_components": [
+        {
+          "required_component_id": "regional_withdrawal_right",
+          "required_fact_ids": [
+            "regional_withdrawal_framework_14_days"
+          ]
+        },
+        {
+          "required_component_id": "activated_digital_exception",
+          "required_fact_ids": [
+            "digital_activation_boundary",
+            "joint_exception_routing"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "required_components": [
+        {
+          "required_component_id": "renewal_prevention",
+          "required_fact_ids": [
+            "annual_cancel_48_hours",
+            "paid_period_not_shortened"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "hard-api-version",
+      "required_components": [
+        {
+          "required_component_id": "api_version",
+          "required_fact_ids": [
+            "api_v3_current"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "hard-policy-language",
+      "required_components": [
+        {
+          "required_component_id": "regional_policy_context",
+          "required_fact_ids": [
+            "turkish_regional_context",
+            "turkish_order_context"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "version-01-0",
+      "required_components": [
+        {
+          "required_component_id": "canonical_return_rule",
+          "required_fact_ids": [
+            "version_2026_return_window"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "version-01-1",
+      "required_components": [
+        {
+          "required_component_id": "canonical_return_rule",
+          "required_fact_ids": [
+            "version_2026_return_window_2"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "cross-00-0",
+      "required_components": [
+        {
+          "required_component_id": "standard_return_window",
+          "required_fact_ids": [
+            "cross_standard_return_window"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "cross-06-0",
+      "required_components": [
+        {
+          "required_component_id": "renewal_prevention",
+          "required_fact_ids": [
+            "cross_renewal_cancellation"
+          ]
+        }
+      ]
+    }
+  ],
+  "schema_version": "pipeline-v2-authored-facts-v1"
+}

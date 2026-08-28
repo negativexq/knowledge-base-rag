@@ -1,0 +1,13 @@
+{
+  "casefold": true,
+  "unicode_nfkd": true,
+  "turkish_character_handling": true,
+  "numeric_duration_percentage_date_version": true,
+  "explicit_aliases": [
+    "calendar days/takvim gün",
+    "business hours/iş saati",
+    "critical/kritik",
+    "standard/standart"
+  ],
+  "broad_fuzzy_matching": false
+}

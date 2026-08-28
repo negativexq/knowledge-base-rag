@@ -1,0 +1,805 @@
+{
+  "summary": {
+    "count": 33,
+    "denominator": 36,
+    "rate": 0.916667
+  },
+  "records": [
+    {
+      "query_id": "acl-02-0",
+      "found": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "acl-02-1",
+      "found": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/16. Exception review board"
+        ],
+        [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/6. Billing and returns"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "acl-02-2",
+      "found": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/16. Exception review board"
+        ],
+        [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/6. Billing and returns"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "ambiguous-00-0",
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026; s.filesystem:injection-bearing-policy/Damaged Item Exception Policy"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ]
+      ],
+      "unknown_or_unauthorized": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026; s.filesystem:injection-bearing-policy/Damaged Item Exception Policy"
+        ]
+      ],
+      "valid": false,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "ambiguous-00-1",
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ],
+        [
+          "filesystem",
+          "digital-goods-policy",
+          "Digital Goods Policy"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "ambiguous-00-2",
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "found": [
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+        ],
+        [
+          "filesystem",
+          "marketplace-returns",
+          "Pazar Yeri Siparişleri için İade Politikası"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+        ]
+      ],
+      "unknown_or_unauthorized": [
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+        ]
+      ],
+      "valid": false,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "cross-00-0",
+      "found": [
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+        ],
+        [
+          "filesystem",
+          "refund-policy-2025",
+          "Standard Returns — 2025 (Superseded)"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 1,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "cross-00-1",
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": true,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "cross-01-0",
+      "found": [
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ],
+        [
+          "filesystem",
+          "marketplace-returns",
+          "Pazar Yeri Siparişleri için İade Politikası"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "cross-06-0",
+      "found": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+        ]
+      ],
+      "unknown_or_unauthorized": [
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+        ]
+      ],
+      "valid": false,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "cross-06-1",
+      "found": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": true,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "cross-07-0",
+      "found": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": true,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "found": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": true,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "hard-api-private",
+      "found": [
+        [
+          "filesystem",
+          "tenant-b-api-limits",
+          "Tenant B Private Integration Limits"
+        ],
+        [
+          "filesystem",
+          "enterprise-contract-guide",
+          "12/0"
+        ],
+        [
+          "filesystem",
+          "product-guide-en",
+          "4/0"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "hard-api-version",
+      "found": [
+        [
+          "filesystem",
+          "product-guide-en",
+          "7/0"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": true,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "hard-marketplace-channel",
+      "found": [
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 1,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "hard-order-channel",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 1,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "hard-policy-language",
+      "found": [
+        [
+          "filesystem",
+          "returns-manual-tr",
+          "6/0"
+        ],
+        [
+          "filesystem",
+          "regional-returns-tr",
+          "8/0"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "injection-03-0",
+      "found": [
+        [
+          "filesystem",
+          "injection-bearing-policy",
+          "Damaged Item Exception Policy"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": true,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "injection-03-1",
+      "found": [
+        [
+          "filesystem",
+          "injection-bearing-policy",
+          "Damaged Item Exception Policy"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": true,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "multi-00-1",
+      "found": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/26. Closure examples"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 2,
+      "required_sources_total": 2,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "multi-00-3",
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 2,
+      "required_sources_total": 2,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "multi-03-0",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 2,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "native-00-0",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 1,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "native-00-1",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 1,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "native-00-2",
+      "found": [
+        [
+          "filesystem",
+          "refund-policy-2026",
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "native-00-3",
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ],
+        [
+          "filesystem",
+          "refund-policy-2026",
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "native-01-0",
+      "found": [
+        [
+          "filesystem",
+          "refund-policy-2026",
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    },
+    {
+      "query_id": "native-01-1",
+      "found": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/31. Runbook examples/Appendix B — Example cases"
+        ],
+        [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/31. Runbook examples/Appendix B — Example cases"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 1,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "negative-00-0",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "negative-00-1",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "negative-00-2",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "negative-00-3",
+      "found": [],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": null,
+      "required_sources_cited": 0,
+      "required_sources_total": 0,
+      "completeness": null
+    },
+    {
+      "query_id": "version-01-0",
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026"
+        ],
+        [
+          "filesystem",
+          "refund-policy-2025",
+          "Standard Returns — 2025 (Superseded)"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 0,
+      "required_sources_total": 1,
+      "completeness": 0.0
+    },
+    {
+      "query_id": "version-01-1",
+      "found": [
+        [
+          "filesystem",
+          "refund-policy-2026",
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ],
+        [
+          "filesystem",
+          "refund-policy-2026",
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ],
+        [
+          "filesystem",
+          "shipping-and-delivery",
+          "Teslimat ve Kargo Standardı"
+        ]
+      ],
+      "unknown_or_unauthorized": [],
+      "valid": true,
+      "support_correct": false,
+      "required_sources_cited": 1,
+      "required_sources_total": 1,
+      "completeness": 1.0
+    }
+  ]
+}

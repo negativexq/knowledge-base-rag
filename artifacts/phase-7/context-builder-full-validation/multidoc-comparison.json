@@ -1,0 +1,23 @@
+{
+  "query_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ],
+  "a": {
+    "n": 3,
+    "full": 0,
+    "incomplete": 2,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 1
+  },
+  "b": {
+    "n": 3,
+    "full": 0,
+    "incomplete": 2,
+    "partial": 0,
+    "incorrect": 1,
+    "validator_reject": 1
+  }
+}

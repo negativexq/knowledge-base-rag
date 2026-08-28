@@ -1,0 +1,6 @@
+{
+  "default_enabled": false,
+  "historical_v1_preserved": true,
+  "output_contract_version": "output_contract_v2",
+  "pipeline_version": "pipeline_v2_section_claims"
+}

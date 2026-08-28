@@ -1,0 +1,5 @@
+{
+  "decision": "ORACLE_CONTEXT_DIAGNOSTIC_INCONCLUSIVE",
+  "recommended_next_experiment": "STRUCTURE_AWARE_CHUNKING_DIAGNOSTIC",
+  "reason": "Two records lack the explicit authored 14-day fact in Top-5; all three lack authored chunk-level gold mappings."
+}

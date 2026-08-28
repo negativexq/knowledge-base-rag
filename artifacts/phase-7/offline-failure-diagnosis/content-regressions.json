@@ -1,0 +1,33 @@
+{
+  "count": 2,
+  "records": [
+    {
+      "query_id": "cross-07-0",
+      "a_status": "FULLY_CORRECT_COMPLETE",
+      "b_status": "INCORRECT",
+      "a_answer": "The annual billing policy states that a yearly plan is priced at **15 percent off** compared to the equivalent payment for twelve months, but it does not constitute a return window. This information can be found in document [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası].",
+      "b_answer": "The annual billing policy states that a yearly plan is priced at **15 percent off** compared to twelve equivalent monthly payments (a commercial price comparison, not a return window). [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası]",
+      "a_context_tokens": 491,
+      "b_context_tokens": 478,
+      "same_chunk_membership": true,
+      "same_order": true,
+      "cause": "DETERMINISTIC_EVALUATOR_FALSE_NEGATIVE",
+      "causal_linkage": "NOT_LINKED",
+      "explanation": "B visibly states 15 percent, but the duration-first matcher extracted 12 months from the Turkish expected phrase."
+    },
+    {
+      "query_id": "hard-api-private",
+      "a_status": "FULLY_CORRECT_COMPLETE",
+      "b_status": "PARTIALLY_CORRECT",
+      "a_answer": "Based on the retrieved context, a **tenant-b private integration key** belongs to rate limits that differ materially from the public API. Specifically: * The tenant-b plan permits **600 requests per minute per API key**, with a burst of up to 40 [s.filesystem:tenant-b-api-limits/Tenant B Private Integration Limits]. * These are private contract terms negotiated for specific tenants (e.g., tenant-b) and cannot be applied to other tenants like tenant-a or generalized as product-wide limits [s.filesystem:enterprise-contract-guide/12/0], **[s.filesystem:product-guide-en/4/0]**.",
+      "b_answer": "Based on the provided reference data: - The public API permits **120 requests per minute** (per source [s.filesystem:product-guide-en/4/0]). - A private integration for tenant-b specifically is described as allowing **600 requests per minute**, with a burst of up to 40, according to the contract term documented in **[s.filesystem:tenant-b-api-limits/Tenant B Private Integration Limits]**. Thus, while exact values depend on specific agreements, the rate limit explicitly associated with private integration (in this case) is **600 requests per minute**, which differs materially from the public API's 120 requests per minute.",
+      "a_context_tokens": 358,
+      "b_context_tokens": 374,
+      "same_chunk_membership": true,
+      "same_order": true,
+      "cause": "ANSWER_LENGTH_VARIANCE",
+      "causal_linkage": "PLAUSIBLY_LINKED",
+      "explanation": "B states both 120 and 600, but omits the authored 'per API key' qualifier; evidence/order remained identical."
+    }
+  ]
+}

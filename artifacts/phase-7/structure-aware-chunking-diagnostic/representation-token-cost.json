@@ -1,0 +1,105 @@
+{
+  "thresholds": {
+    "low_max_ratio": 1.25,
+    "moderate_max_ratio": 2.0,
+    "high": ">2.0"
+  },
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "representation": "CURRENT_CHUNK",
+      "context_tokens": 538,
+      "context_chars": 5937,
+      "current_ratio": 1.0,
+      "inflation": "LOW_INFLATION"
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "PARENT_SECTION",
+      "context_tokens": 5432,
+      "context_chars": 39565,
+      "current_ratio": 10.096654275092936,
+      "inflation": "HIGH_INFLATION"
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "context_tokens": 538,
+      "context_chars": 5937,
+      "current_ratio": 1.0,
+      "inflation": "LOW_INFLATION"
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "SECTION_AWARE_MERGED",
+      "context_tokens": 626,
+      "context_chars": 6577,
+      "current_ratio": 1.1635687732342008,
+      "inflation": "LOW_INFLATION"
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "CURRENT_CHUNK",
+      "context_tokens": 522,
+      "context_chars": 5834,
+      "current_ratio": 1.0,
+      "inflation": "LOW_INFLATION"
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "PARENT_SECTION",
+      "context_tokens": 2910,
+      "context_chars": 21781,
+      "current_ratio": 5.574712643678161,
+      "inflation": "HIGH_INFLATION"
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "context_tokens": 522,
+      "context_chars": 5834,
+      "current_ratio": 1.0,
+      "inflation": "LOW_INFLATION"
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "SECTION_AWARE_MERGED",
+      "context_tokens": 654,
+      "context_chars": 6806,
+      "current_ratio": 1.2528735632183907,
+      "inflation": "MODERATE_INFLATION"
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "CURRENT_CHUNK",
+      "context_tokens": 299,
+      "context_chars": 4206,
+      "current_ratio": 1.0,
+      "inflation": "LOW_INFLATION"
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "PARENT_SECTION",
+      "context_tokens": 725,
+      "context_chars": 6821,
+      "current_ratio": 2.4247491638795986,
+      "inflation": "HIGH_INFLATION"
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "context_tokens": 299,
+      "context_chars": 4206,
+      "current_ratio": 1.0,
+      "inflation": "LOW_INFLATION"
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "SECTION_AWARE_MERGED",
+      "context_tokens": 486,
+      "context_chars": 5472,
+      "current_ratio": 1.625418060200669,
+      "inflation": "MODERATE_INFLATION"
+    }
+  ]
+}

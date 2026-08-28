@@ -1,0 +1,32 @@
+{
+  "abstention": [
+    "lost_forced_abstain_no_valid_parts",
+    "lost_model_self_abstain",
+    "safe_abstain_insufficient_evidence",
+    "false_abstain_fact_complete"
+  ],
+  "evidence": [
+    "lost_support_id_missing",
+    "lost_support_id_unknown",
+    "lost_support_id_unauthorized",
+    "lost_support_id_not_visible",
+    "lost_critical_value_absent",
+    "lost_critical_value_conflict"
+  ],
+  "raw": [
+    "raw_correct",
+    "raw_incomplete",
+    "raw_partial",
+    "raw_incorrect",
+    "raw_unsupported"
+  ],
+  "visible": [
+    "visible_correct_correctly_attributed",
+    "visible_correct_misattributed",
+    "visible_incorrect",
+    "visible_safe_abstain",
+    "visible_false_abstain",
+    "visible_unsupported",
+    "visible_security_violation"
+  ]
+}

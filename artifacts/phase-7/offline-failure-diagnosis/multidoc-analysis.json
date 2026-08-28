@@ -1,0 +1,142 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "question": "Which combination explains both the standard return window and the evidence fields support must record? Include the other relevant detail.",
+      "required_facts": [
+        "14 calendar days",
+        "record plan, channel, delivery date, and remedy."
+      ],
+      "required_sources": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top5_source_order": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "standard-returns-2026"
+      ],
+      "context_chunk_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "a429ec1b-1808-5d00-bc24-0136fec79326",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "raw_candidate_excerpt": "The combination that explains both the standard return window and evidence fields is found in **[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]**, which states before approving a request you must \"record [the plan], order channel, delivery date, product type, requested remedy\" while keeping the case pending if any of those fields are unknown. Additional relevant detail is in **[s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes]**, which clarifies that \"a campaign label does not replace the Standard or Premium return policy.\"",
+      "matched_facts": [
+        "fact_2"
+      ],
+      "missing_facts": [
+        "fact_1"
+      ],
+      "citations": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+        ]
+      ],
+      "validator_pass": true,
+      "primary_failure": "IDENTIFIED_BUT_OMITTED_COMPONENT",
+      "planning_or_synthesis": "OBLIGATION_PLANNING_FAILURE"
+    },
+    {
+      "query_id": "multi-00-3",
+      "question": "Which combination explains both the standard return window and the evidence fields support must record? What should happen next?",
+      "required_facts": [
+        "14 calendar days",
+        "record plan, channel, delivery date, and remedy."
+      ],
+      "required_sources": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top5_source_order": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "premium-returns-2026",
+        "standard-returns-2026"
+      ],
+      "context_chunk_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "raw_candidate_excerpt": "Based on the provided documents, here is how to handle your return request: **Standard Return Window vs. Evidence Fields:** * **Return Window Source**: For Standard orders (direct sale), the window is controlled by a single canonical policy ([s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]), which cannot be superseded unless replaced for future effective dates [Source Block 1][SUPPORT_BLOCK_5]. * **Evidence Field Source**: To support any return, you must record: plan (premium status matters only within its direct-sale scope), order channel (direct sale vs. marketplace; marketplace cases follow their own procedure including a seven-day window and separate case channel), delivery date/activation event, product type, requested remedy, applicable contract or regional scope, approval details, and the customer message ([SUPPORT_BLOCK_5][SOURCE_BLOCK 3]). * **Key Distinction**: A plan badge is not enough to select this policy. Orders placed through a marketplace are subject to the Marketplace Returns procedure [PREMIUM_RETURN_2026]. If any of these fields (e.g., order channel) are unknown, keep the case pending rather than quoting a generic return period ([SUPPORT_BLOCK_5]). **What Should Happen Next:** 1. Identify whether it is a direct sale or marketplace order and locate delivery/activation evidence [SUPPORT_PLAYBOOK]. 2. Record all req…",
+      "matched_facts": [
+        "fact_2"
+      ],
+      "missing_facts": [
+        "fact_1"
+      ],
+      "citations": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ]
+      ],
+      "validator_pass": true,
+      "primary_failure": "IDENTIFIED_BUT_OMITTED_COMPONENT",
+      "planning_or_synthesis": "OBLIGATION_PLANNING_FAILURE"
+    },
+    {
+      "query_id": "multi-03-0",
+      "question": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını hangi iki kaynak birlikte açıklar?",
+      "required_facts": [
+        "Regional exceptions and the activation boundary must both be checked."
+      ],
+      "required_sources": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "top5_source_order": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "context_chunk_ids": [
+        "a813c829-a9db-5cee-80fc-ff7c677187a9",
+        "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+        "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+        "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+        "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+      ],
+      "raw_candidate_excerpt": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını birlikte açıklayan iki kaynak şunlardır: [s.filesystem:regional-returns-tr/3/0], [s.filesystem:digital-goods-policy/5/1].",
+      "matched_facts": [],
+      "missing_facts": [
+        "fact_1"
+      ],
+      "citations": [
+        [
+          "filesystem",
+          "regional-returns-tr",
+          "3/0"
+        ],
+        [
+          "filesystem",
+          "digital-goods-policy",
+          "5/1"
+        ]
+      ],
+      "validator_pass": false,
+      "primary_failure": "WRONG_RELATION_SYNTHESIZED",
+      "planning_or_synthesis": "EVIDENCE_SYNTHESIS_FAILURE"
+    }
+  ],
+  "complete": 0,
+  "dominant": "OBLIGATION_PLANNING_FAILURE"
+}

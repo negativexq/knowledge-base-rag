@@ -1,0 +1,14 @@
+{
+  "bge": {
+    "p50_ms": 6144.331,
+    "p95_ms": 6144.331,
+    "max_ms": 6342.372
+  },
+  "qwen3": {
+    "p50_ms": 103901.339,
+    "p95_ms": 103901.339,
+    "max_ms": 108902.667
+  },
+  "median_ratio": 16.910114217479496,
+  "measurement": "three-query forensic run; no development latency"
+}

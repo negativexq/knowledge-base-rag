@@ -1,0 +1,363 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "required_fact_id": "standard_return_window_14_days",
+      "source_id": "standard-returns-2026",
+      "candidates": [
+        {
+          "candidate_rank": 5,
+          "chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 13,
+          "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+          "contains_required_fact": true
+        }
+      ],
+      "arms": [
+        {
+          "model": "bge",
+          "fact_final_rank": null
+        },
+        {
+          "model": "qwen3",
+          "fact_final_rank": null
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-1",
+      "required_fact_id": "support_return_case_fields",
+      "source_id": "support-playbook",
+      "candidates": [
+        {
+          "candidate_rank": 1,
+          "chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 2,
+          "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "contains_required_fact": true
+        },
+        {
+          "candidate_rank": 4,
+          "chunk_id": "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 8,
+          "chunk_id": "7f71ca40-865b-5ee5-a026-6855df81dba9",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 11,
+          "chunk_id": "0fcfcec7-41fe-5175-8ea6-f95fb6b9c2a3",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 14,
+          "chunk_id": "b482b2a0-2b68-59d7-8236-5fd112507367",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 18,
+          "chunk_id": "145acb3b-6bab-54e6-a5b6-c4cd5194446c",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 20,
+          "chunk_id": "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+          "contains_required_fact": false
+        }
+      ],
+      "arms": [
+        {
+          "model": "bge",
+          "fact_final_rank": 2
+        },
+        {
+          "model": "qwen3",
+          "fact_final_rank": 3
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_fact_id": "standard_return_window_14_days",
+      "source_id": "standard-returns-2026",
+      "candidates": [
+        {
+          "candidate_rank": 5,
+          "chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 10,
+          "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+          "contains_required_fact": true
+        }
+      ],
+      "arms": [
+        {
+          "model": "bge",
+          "fact_final_rank": null
+        },
+        {
+          "model": "qwen3",
+          "fact_final_rank": null
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_fact_id": "support_return_case_fields",
+      "source_id": "support-playbook",
+      "candidates": [
+        {
+          "candidate_rank": 1,
+          "chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 2,
+          "chunk_id": "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 3,
+          "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "contains_required_fact": true
+        },
+        {
+          "candidate_rank": 6,
+          "chunk_id": "0fcfcec7-41fe-5175-8ea6-f95fb6b9c2a3",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 8,
+          "chunk_id": "7f71ca40-865b-5ee5-a026-6855df81dba9",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 12,
+          "chunk_id": "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 15,
+          "chunk_id": "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 17,
+          "chunk_id": "9de576c8-a661-52cf-b6ce-e1344a694971",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 18,
+          "chunk_id": "b482b2a0-2b68-59d7-8236-5fd112507367",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 19,
+          "chunk_id": "ae31600e-a9f8-5940-b02d-8ec22294f1cc",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 20,
+          "chunk_id": "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2",
+          "contains_required_fact": false
+        }
+      ],
+      "arms": [
+        {
+          "model": "bge",
+          "fact_final_rank": 2
+        },
+        {
+          "model": "qwen3",
+          "fact_final_rank": 3
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_fact_id": "digital_activation_boundary",
+      "source_id": "regional-returns-tr",
+      "candidates": [
+        {
+          "candidate_rank": 1,
+          "chunk_id": "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 5,
+          "chunk_id": "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 6,
+          "chunk_id": "5e6b4ea1-552c-59d5-8422-09de13cb6bf2",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 9,
+          "chunk_id": "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 12,
+          "chunk_id": "27285d29-3497-5460-8ad5-0f23a3c03703",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 14,
+          "chunk_id": "2775a577-0cb6-5fda-910c-59eeae8aabef",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 16,
+          "chunk_id": "fbe2fbb2-1edb-5ca6-b3d4-d82bf0f995e2",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 18,
+          "chunk_id": "b80a3597-b5bb-514f-a052-d14259e342b6",
+          "contains_required_fact": false
+        }
+      ],
+      "arms": [
+        {
+          "model": "bge",
+          "fact_final_rank": 2
+        },
+        {
+          "model": "qwen3",
+          "fact_final_rank": 2
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_fact_id": "joint_exception_routing",
+      "source_id": "returns-manual-tr",
+      "candidates": [
+        {
+          "candidate_rank": 2,
+          "chunk_id": "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 3,
+          "chunk_id": "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 4,
+          "chunk_id": "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 8,
+          "chunk_id": "2e97b417-5c99-5c92-acbf-0a5d8ea14c62",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 11,
+          "chunk_id": "a6663bd3-c4f7-5f12-adf0-24605393b90b",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 13,
+          "chunk_id": "a942fb98-9b1d-5289-87d9-526e1bf815f5",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 15,
+          "chunk_id": "e5e21eb6-f7b6-5f22-a6ef-4e67798b6873",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 17,
+          "chunk_id": "8a47b219-01c3-54e0-8619-0c13593fc5b6",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 20,
+          "chunk_id": "1efbe6b4-d3fb-54b5-82ad-c3fcbac4836f",
+          "contains_required_fact": false
+        }
+      ],
+      "arms": [
+        {
+          "model": "bge",
+          "fact_final_rank": 1
+        },
+        {
+          "model": "qwen3",
+          "fact_final_rank": 1
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_fact_id": "regional_withdrawal_framework_14_days",
+      "source_id": "regional-returns-tr",
+      "candidates": [
+        {
+          "candidate_rank": 1,
+          "chunk_id": "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 5,
+          "chunk_id": "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 6,
+          "chunk_id": "5e6b4ea1-552c-59d5-8422-09de13cb6bf2",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 9,
+          "chunk_id": "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 12,
+          "chunk_id": "27285d29-3497-5460-8ad5-0f23a3c03703",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 14,
+          "chunk_id": "2775a577-0cb6-5fda-910c-59eeae8aabef",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 16,
+          "chunk_id": "fbe2fbb2-1edb-5ca6-b3d4-d82bf0f995e2",
+          "contains_required_fact": false
+        },
+        {
+          "candidate_rank": 18,
+          "chunk_id": "b80a3597-b5bb-514f-a052-d14259e342b6",
+          "contains_required_fact": false
+        }
+      ],
+      "arms": [
+        {
+          "model": "bge",
+          "fact_final_rank": 5
+        },
+        {
+          "model": "qwen3",
+          "fact_final_rank": null
+        }
+      ]
+    }
+  ]
+}

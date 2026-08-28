@@ -1,0 +1,75 @@
+{
+  "records": [
+    {
+      "query_id": "acl-02-0",
+      "tenant": "from dataset ACL fixture",
+      "authorized_chunk_count": 5,
+      "authorized_sources": 3,
+      "expected_behavior": "ABSTAIN",
+      "generated_answer_excerpt": "For an EU regional order exception that involves a **statutory or regional question**, the appropriate check is performed by the **Regional Policy owner**. According to supported facts from document [s.filesystem:support-playbook/Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix], this category requires preservation of evidence including: jurisdiction, order channel, event dates, and product type (CANONICAL CITATION).",
+      "citations": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix"
+        ]
+      ],
+      "validator_pass": true,
+      "classification": "UNSUPPORTED_FROM_AUTHORIZED_CONTEXT",
+      "authorization_boundary_failure": false,
+      "grounding_cause": "NO_ANSWER_INSTRUCTION_FAILURE"
+    },
+    {
+      "query_id": "acl-02-1",
+      "tenant": "from dataset ACL fixture",
+      "authorized_chunk_count": 5,
+      "authorized_sources": 3,
+      "expected_behavior": "ABSTAIN",
+      "generated_answer_excerpt": "Based on the retrieved data regarding EU regional orders: A **Regional Policy owner** should be checked for a \"regional or statutory question,\" but this applies when determining jurisdiction. The decision to apply an exception depends on whether there is evidence of negotiation, such as a signed enterprise term recorded by **Contract Operations**. Key facts include: * A regional policy assessment requires checking the region's specific order channel and event dates [s.filesystem:support-playbook/Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix]. * Exceptions are grouped by cause, not customer name; a recurring mismatch between public guides and signed agreemen…",
+      "citations": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/16. Exception review board"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix"
+        ]
+      ],
+      "validator_pass": true,
+      "classification": "UNSUPPORTED_FROM_AUTHORIZED_CONTEXT",
+      "authorization_boundary_failure": false,
+      "grounding_cause": "NO_ANSWER_INSTRUCTION_FAILURE"
+    },
+    {
+      "query_id": "acl-02-2",
+      "tenant": "from dataset ACL fixture",
+      "authorized_chunk_count": 5,
+      "authorized_sources": 3,
+      "expected_behavior": "ABSTAIN",
+      "generated_answer_excerpt": "I could not find this in the document.",
+      "citations": [],
+      "validator_pass": true,
+      "classification": "SAFE_ABSTENTION",
+      "authorization_boundary_failure": false,
+      "grounding_cause": "NONE"
+    }
+  ]
+}

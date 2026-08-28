@@ -49,7 +49,7 @@ class CrossEncoderReranker:
 
         reranked = sorted(zip(candidates, scores), key=lambda pair: -pair[1])
         return [
-            SearchResult(score=float(score), payload=candidate.payload)
+            SearchResult(score=float(score), payload=candidate.payload, id=candidate.id)
             for candidate, score in reranked[:top_n]
         ]
 
@@ -120,7 +120,7 @@ class CrossEncoderReranker:
             scored.sort(key=lambda pair: -pair[1])
             ranked.append(
                 [
-                    SearchResult(score=float(score), payload=candidate.payload)
+                    SearchResult(score=float(score), payload=candidate.payload, id=candidate.id)
                     for candidate, score in scored[:top_n]
                 ]
             )

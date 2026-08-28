@@ -1,0 +1,116 @@
+{
+  "record_count": 36,
+  "generated_record_count": 36,
+  "answerable_count": 25,
+  "gold_present_answerable_count": 22,
+  "correct_answer": {
+    "count": 3,
+    "denominator": 22,
+    "rate": 0.136364
+  },
+  "fully_complete_answer": {
+    "count": 3,
+    "denominator": 22,
+    "rate": 0.136364
+  },
+  "gold_present_answer_success": {
+    "count": null,
+    "denominator": 22,
+    "rate": null,
+    "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+  },
+  "unsupported_claims": {
+    "answer_count": null,
+    "denominator": 22,
+    "rate": null,
+    "manual_review_count": 22,
+    "status": "REQUIRES_REVIEW"
+  },
+  "citation_validity": {
+    "count": 33,
+    "denominator": 36,
+    "rate": 0.916667
+  },
+  "citation_support_correctness": {
+    "count": 7,
+    "denominator": 25,
+    "rate": 0.28
+  },
+  "citation_completeness": {
+    "measured": [
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  },
+  "output_validation": {
+    "count": 29,
+    "denominator": 36,
+    "rate": 0.805556
+  },
+  "failure_counts": {
+    "ANSWER_INCORRECT": 17,
+    "OUTPUT_VALIDATION_FAILURE": 7
+  },
+  "manual_review_count": 22,
+  "status": "MEASURED_SMOKE",
+  "generation_model": "qwen3.5:4b",
+  "generation_model_available": true,
+  "generation_prompt_version": "v3",
+  "think": false,
+  "semantic_answerability_invoked": false,
+  "calibration_run": false,
+  "frozen_test_touched": false,
+  "generation_calls": 36,
+  "retrieval_calls_during_generation_evaluation": 0,
+  "embedding_calls_during_generation_evaluation": 0,
+  "reranker_calls_during_generation_evaluation": 0,
+  "semantic_answerability_calls_during_generation_evaluation": 0,
+  "deterministic_safety_skips": 0,
+  "smoke_query_count": 36,
+  "cache_category_counts": {
+    "acl_negative": 3,
+    "ambiguous": 4,
+    "cross_lingual": 6,
+    "hard_answerable": 6,
+    "injection_bearing": 2,
+    "multi_document": 3,
+    "standard_answerable": 6,
+    "unanswerable": 4,
+    "version_conflict": 2
+  },
+  "cache_language_pair_counts": {
+    "en->none": 10,
+    "tr->none": 1,
+    "tr->en": 9,
+    "en->tr": 6,
+    "en->en": 9,
+    "tr->tr": 1
+  },
+  "cache_answerable_count": 25,
+  "cache_gold_present_answerable_count": 22,
+  "cache_deterministic_safety_reasons": {},
+  "generation_provider_failures": 0
+}

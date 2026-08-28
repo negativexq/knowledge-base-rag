@@ -1,0 +1,472 @@
+{
+  "authorized_top5": [
+    {
+      "chunk_id": "a813c829-a9db-5cee-80fc-ff7c677187a9",
+      "content": "İade Operasyonları Kılavuzu\n\n11. İstisna ve onay\n\nSüresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir.",
+      "metadata": {
+        "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 11,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 0.4725314676761627,
+      "source_id": "returns-manual-tr"
+    },
+    {
+      "chunk_id": "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+      "content": "Bölgesel İadeler — Türkiye\n\n5. Dijital içerik\n\nDijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir.",
+      "metadata": {
+        "document_version": "835b162578e9a3c617b081540c3f053ec8a213e837f18d49efcb760bdd959607",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.16306129097938538,
+      "source_id": "regional-returns-tr"
+    },
+    {
+      "chunk_id": "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+      "content": "İade Operasyonları Kılavuzu\n\n5. Karar tablosu\n\n| Sipariş durumu | İlk başvurulacak kaynak | |­­­|­­­| | Doğrudan + Standard | Standard Returns — 2026 | | Doğrudan + Premium | Premium Returns — 2026 | | Pazar yeri | Marketplace Returns | | Aktive edilmiş dijital ürün | Digital Goods Policy | | Bölgesel kapsam | Bölgesel İadeler — Türkiye | | Müzakere edilmiş kurumsal hüküm | Enterprise Contract Guide |",
+      "metadata": {
+        "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.14509905874729156,
+      "source_id": "returns-manual-tr"
+    },
+    {
+      "chunk_id": "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+      "content": "İade Operasyonları Kılavuzu\n\n6. Bölgesel kapsam\n\nTürkiye’deki siparişlerde teslim tarihi, müşteri konumu, ürün niteliği ve sipariş kanalı birlikte değerlendirilir. Cayma hakkı kamuya açık plan avantajından ayrı kaydedilir. Belirsiz kapsam Uyum veya Bölgesel Politika sahibine taşınır.",
+      "metadata": {
+        "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 6,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.09095355123281479,
+      "source_id": "returns-manual-tr"
+    },
+    {
+      "chunk_id": "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+      "content": "Bölgesel İadeler — Türkiye\n\n3. Genel değerlendirme\n\nBelirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez.",
+      "metadata": {
+        "document_version": "835b162578e9a3c617b081540c3f053ec8a213e837f18d49efcb760bdd959607",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 3,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.07515992969274521,
+      "source_id": "regional-returns-tr"
+    }
+  ],
+  "candidate_top20": [
+    {
+      "chunk_id": "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+      "content": "Bölgesel İadeler — Türkiye\n\n5. Dijital içerik\n\nDijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir.",
+      "metadata": {
+        "document_version": "835b162578e9a3c617b081540c3f053ec8a213e837f18d49efcb760bdd959607",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 0.625,
+      "source_id": "regional-returns-tr"
+    },
+    {
+      "chunk_id": "a813c829-a9db-5cee-80fc-ff7c677187a9",
+      "content": "İade Operasyonları Kılavuzu\n\n11. İstisna ve onay\n\nSüresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir.",
+      "metadata": {
+        "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 11,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.39285713,
+      "source_id": "returns-manual-tr"
+    },
+    {
+      "chunk_id": "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+      "content": "İade Operasyonları Kılavuzu\n\n5. Karar tablosu\n\n| Sipariş durumu | İlk başvurulacak kaynak | |­­­|­­­| | Doğrudan + Standard | Standard Returns — 2026 | | Doğrudan + Premium | Premium Returns — 2026 | | Pazar yeri | Marketplace Returns | | Aktive edilmiş dijital ürün | Digital Goods Policy | | Bölgesel kapsam | Bölgesel İadeler — Türkiye | | Müzakere edilmiş kurumsal hüküm | Enterprise Contract Guide |",
+      "metadata": {
+        "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.3809524,
+      "source_id": "returns-manual-tr"
+    },
+    {
+      "chunk_id": "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+      "content": "İade Operasyonları Kılavuzu\n\n6. Bölgesel kapsam\n\nTürkiye’deki siparişlerde teslim tarihi, müşteri konumu, ürün niteliği ve sipariş kanalı birlikte değerlendirilir. Cayma hakkı kamuya açık plan avantajından ayrı kaydedilir. Belirsiz kapsam Uyum veya Bölgesel Politika sahibine taşınır.",
+      "metadata": {
+        "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 6,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.27142859,
+      "source_id": "returns-manual-tr"
+    },
+    {
+      "chunk_id": "f51fb173-c7c8-5cfc-ab6a-c4212e017c45",
+      "content": "Regional Returns — European Union\n\n5. Digital entitlements\n\nA downloadable entitlement is assessed with the Digital Goods Policy. Download and activation are different events. If a license was activated, record the activation timestamp and check whether a signed enterprise term changes the result.",
+      "metadata": {
+        "document_version": "e56049df5d335ac5a52aa06d03154a025d9922ed0bb7d2cd6a5c876e145faf58",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.2,
+      "source_id": "regional-returns-eu"
+    },
+    {
+      "chunk_id": "31b94306-9751-59cf-ad24-33554611e4ba",
+      "content": "Enterprise Contract Guide\n\n8. Digital goods\n\nA negotiated enterprise term may permit a remedy for an activated digital entitlement where the public Digital Goods Policy normally does not. Retain the entitlement ID, activation timestamp, contract clause, and approval. Enterprise status alone is insufficient.",
+      "metadata": {
+        "document_version": "62d0a2ad85cffd166d748f0c7a6d89fc26562961d345a06474688f82981c1571",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 8,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 6,
+      "score": 0.14285715,
+      "source_id": "enterprise-contract-guide"
+    },
+    {
+      "chunk_id": "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+      "content": "Bölgesel İadeler — Türkiye\n\n3. Genel değerlendirme\n\nBelirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez.",
+      "metadata": {
+        "document_version": "835b162578e9a3c617b081540c3f053ec8a213e837f18d49efcb760bdd959607",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 3,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 7,
+      "score": 0.12222223,
+      "source_id": "regional-returns-tr"
+    },
+    {
+      "chunk_id": "2e97b417-5c99-5c92-acbf-0a5d8ea14c62",
+      "content": "İade Operasyonları Kılavuzu\n\n4. Teslim veya etkinleştirme olayı\n\nFiziksel üründe teslim tarihi temel olaydır. Dijital üründe aktivasyon zaman damgası belirleyicidir; indirme aktivasyon anlamına gelmez. Parçalı teslimatta ilgili kalemin teslim kaydı ayrı tutulur.",
+      "metadata": {
+        "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 4,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 8,
+      "score": 0.1,
+      "source_id": "returns-manual-tr"
+    },
+    {
+      "chunk_id": "5e6b4ea1-552c-59d5-8422-09de13cb6bf2",
+      "content": "Bölgesel İadeler — Türkiye\n\n2. Teslimat ve cayma başlangıcı\n\nMesafeli satış kapsamındaki bir siparişte cayma süresinin başlangıcı teslimat olayıdır. Kargo hareketi, parçalı teslimat ve teslim alan kişinin bilgisi birlikte kontrol edilir. Müşterinin destek ekibine yazdığı tarih teslim kaydının yerine geçirilmez.",
+      "metadata": {
+        "document_version": "835b162578e9a3c617b081540c3f053ec8a213e837f18d49efcb760bdd959607",
+        "heading_occurrence": 0,
+        "heading_path": [],
+        "page_number": 2,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 9,
+      "score": 0.1,
+      "source_id": "regional-returns-tr"
+    }
+  ],
+  "candidate_top20_ids": [
+    "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+    "a813c829-a9db-5cee-80fc-ff7c677187a9",
+    "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+    "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+    "f51fb173-c7c8-5cfc-ab6a-c4212e017c45",
+    "31b94306-9751-59cf-ad24-33554611e4ba",
+    "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+    "2e97b417-5c99-5c92-acbf-0a5d8ea14c62",
+    "5e6b4ea1-552c-59d5-8422-09de13cb6bf2"
+  ],
+  "context_hash": "ea428cd20999cee37fa3dc8a329133bbe7c1c35eb7e88683c1fc956f8bbb7a35",
+  "context_tokens": 804,
+  "evidence_blocks": [
+    {
+      "anchor_chunk_id": "a813c829-a9db-5cee-80fc-ff7c677187a9",
+      "chunk_id": "evidence-f9753698b392f7d61f256c48",
+      "citation_aliases": [
+        {
+          "chunk_id": "f5b74bd4-004d-59ef-a232-bf744c038228",
+          "location": "İade Operasyonları Kılavuzu",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "07abe411-bc66-50ae-bd1d-274a8cade77a",
+          "location": "İade Operasyonları Kılavuzu/Görev ve başlangıç",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "fc07f100-a149-5a0b-a8e8-a0acd27b4fac",
+          "location": "İade Operasyonları Kılavuzu/Sipariş kanalını belirle",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "bb866adf-bfa8-56ba-9b3f-a3ac1436aeb8",
+          "location": "İade Operasyonları Kılavuzu/Plan ve ürün türü",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "23f5226d-bb7f-5f40-8fad-d6e035218d7e",
+          "location": "İade Operasyonları Kılavuzu/Teslim veya etkinleştirme olayı",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "3ceb5cb6-4a6e-5d3a-bedb-907bae31feaa",
+          "location": "İade Operasyonları Kılavuzu/Karar tablosu",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "14da7342-1cb4-570b-9462-98c85c183bcc",
+          "location": "İade Operasyonları Kılavuzu/Bölgesel kapsam",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "f580aa58-b773-5cf3-aa16-2b5ba415eeae",
+          "location": "İade Operasyonları Kılavuzu/Hasar iddiası",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "b83348e2-7a24-56ae-b216-bbc071e329aa",
+          "location": "İade Operasyonları Kılavuzu/Enterprise kontrolü",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "0f919466-a3cd-5d3c-b433-9ae4018bf3bc",
+          "location": "İade Operasyonları Kılavuzu/Kanıt listesi",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "c0b4f052-cba3-58dd-8edd-aba02d336386",
+          "location": "İade Operasyonları Kılavuzu/Müşteri iletişimi",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "a80ab643-31a1-5b00-9580-d8792488a858",
+          "location": "İade Operasyonları Kılavuzu/İstisna ve onay",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "ddc9cd02-5a34-5807-a006-0334891f9713",
+          "location": "İade Operasyonları Kılavuzu/Kapanış",
+          "source_id": "returns-manual-tr",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "f5b74bd4-004d-59ef-a232-bf744c038228",
+        "07abe411-bc66-50ae-bd1d-274a8cade77a",
+        "fc07f100-a149-5a0b-a8e8-a0acd27b4fac",
+        "bb866adf-bfa8-56ba-9b3f-a3ac1436aeb8",
+        "23f5226d-bb7f-5f40-8fad-d6e035218d7e",
+        "3ceb5cb6-4a6e-5d3a-bedb-907bae31feaa",
+        "14da7342-1cb4-570b-9462-98c85c183bcc",
+        "f580aa58-b773-5cf3-aa16-2b5ba415eeae",
+        "b83348e2-7a24-56ae-b216-bbc071e329aa",
+        "0f919466-a3cd-5d3c-b433-9ae4018bf3bc",
+        "c0b4f052-cba3-58dd-8edd-aba02d336386",
+        "a80ab643-31a1-5b00-9580-d8792488a858",
+        "ddc9cd02-5a34-5807-a006-0334891f9713"
+      ],
+      "document_version": "e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7",
+      "evidence_block_id": "evidence-f9753698b392f7d61f256c48",
+      "heading_occurrence": 0,
+      "heading_path": [],
+      "page_number": 11,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "page",
+        11
+      ],
+      "source_id": "returns-manual-tr",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Belge sahibi: Customer Operations\nYürürlük: 2026-01-15\nHedef kitle: Tier 1 ve Tier 2 destek ekipleri\n\nBu kılavuz iade talebini ilk temastan kapanışa kadar işler. Amaç benzer kelimelerden hızlı sonuç çıkarmak değil, doğru sipariş bağlamını ve yetkili kaynağı belgelemektir.\n\nSipariş doğrudan Negativex’den mi, yoksa pazar yerinden mi verilmiş? Fatura, sipariş kaynağı ve pazar yeri vaka numarası kontrol edilir. Pazar yeri siparişleri, müşteri Premium plana sahip olsa bile pazar yeri politikasına yönlendirilir.\n\nDoğrudan satışta Standard ve Premium plan pencereleri ayrılır. Fiziksel ürün, dijital lisans ve kişiye özel ürün farklı kanıt ister. Ürün adındaki tek kelimeye güvenmek yerine sipariş satırı ve entitlement kaydı kullanılır.\n\nFiziksel üründe teslim tarihi temel olaydır. Dijital üründe aktivasyon zaman damgası belirleyicidir; indirme aktivasyon anlamına gelmez. Parçalı teslimatta ilgili kalemin teslim kaydı ayrı tutulur.\n\n| Sipariş durumu | İlk başvurulacak kaynak |\n|---|---|\n| Doğrudan + Standard | Standard Returns — 2026 |\n| Doğrudan + Premium | Premium Returns — 2026 |\n| Pazar yeri | Marketplace Returns |\n| Aktive edilmiş dijital ürün | Digital Goods Policy |\n| Bölgesel kapsam | Bölgesel İadeler — Türkiye |\n| Müzakere edilmiş kurumsal hüküm | Enterprise Contract Guide |\n\nTürkiye’deki siparişlerde teslim tarihi, müşteri konumu, ürün niteliği ve sipariş kanalı birlikte değerlendirilir. Cayma hakkı kamuya açık plan avantajından ayrı kaydedilir. Belirsiz kapsam Uyum veya Bölgesel Politika sahibine taşınır.\n\nHasarlı ürün için teslim kaydı, hasarın açıklaması ve sipariş referansı toplanır. Fotoğraf yardımcı kanıttır; teslim kaydının yerini tutmaz. Görevli, doğrudan satış kapsamını ve onay seviyesini kontrol etmeden çözüm sözü vermez.\n\nKurumsal istisna iddiasında sözleşme kimliği, değişiklik numarası ve yürürlük tarihi doğrulanır. İmzalı hüküm siparişe uygulanmıyorsa genel politika kullanılır. Sözleşme incelemesi sürerken “onaylandı” ifadesi kullanılmaz.\n\nVaka kaydı tenant, hesap rolü, plan, kanal, ürün türü, teslim veya aktivasyon olayı, bölge, istenen çözüm, kaynak sürümü ve onayı içermelidir. Parola veya kurtarma kodu kayda kopyalanmaz. Eksik alan varsa işlem beklemeye alınır.\n\nYanıt, hangi kuralın uygulandığını ve bunun hangi olayla belirlendiğini açıklar. Süre hesabı bilinmiyorsa eksik tarih istenir. Pazar yeri veya kurumsal inceleme bekleniyorsa sonraki adım belirtilir.\n\nSüresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir.\n\nKapanış notu belirlenen olguları, kullanılan kaynakları, yapılan işlemi, müşteri mesajını ve çözülemeyen noktaları içerir. Müşteri yanıt vermedi diye eksik kanıt tamamlanmış sayılmaz. Güvenlik veya sözleşme incelemesi varsa bağlantılı vaka kimliği yazılır.",
+      "token_count": 389
+    },
+    {
+      "anchor_chunk_id": "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+      "chunk_id": "evidence-9502682ef8506f05f99845d4",
+      "citation_aliases": [
+        {
+          "chunk_id": "3e287c2a-a3d8-525a-8a5c-d2b16f8f2ce1",
+          "location": "Bölgesel İadeler — Türkiye",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "01924888-602e-562a-bb85-6c0cb6a870ad",
+          "location": "Bölgesel İadeler — Türkiye/Kapsam ve sorumluluk",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "19945ecd-a8d0-50ee-832e-d9dbe3f07bcc",
+          "location": "Bölgesel İadeler — Türkiye/Teslimat ve cayma başlangıcı",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "e8be4efe-682e-5f44-a6cd-2d8e0eeee345",
+          "location": "Bölgesel İadeler — Türkiye/Genel değerlendirme",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "e16e2078-8d41-54ea-94a7-90d82df3e120",
+          "location": "Bölgesel İadeler — Türkiye/Kişiye özel ürünler",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "44990d0c-3af0-5974-ac3e-cd6beb9178ef",
+          "location": "Bölgesel İadeler — Türkiye/Dijital içerik",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "f3db0783-6b01-52b8-bf61-ddd31008f974",
+          "location": "Bölgesel İadeler — Türkiye/Sipariş kanalı ve plan",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "370dc6d1-ec09-5006-ab4d-f8fe6ff6dd53",
+          "location": "Bölgesel İadeler — Türkiye/Kurumsal sözleşme",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "56908b81-faa2-5308-bd04-3f24dcc34069",
+          "location": "Bölgesel İadeler — Türkiye/Kayıt ve yönlendirme",
+          "source_id": "regional-returns-tr",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "3e287c2a-a3d8-525a-8a5c-d2b16f8f2ce1",
+        "01924888-602e-562a-bb85-6c0cb6a870ad",
+        "19945ecd-a8d0-50ee-832e-d9dbe3f07bcc",
+        "e8be4efe-682e-5f44-a6cd-2d8e0eeee345",
+        "e16e2078-8d41-54ea-94a7-90d82df3e120",
+        "44990d0c-3af0-5974-ac3e-cd6beb9178ef",
+        "f3db0783-6b01-52b8-bf61-ddd31008f974",
+        "370dc6d1-ec09-5006-ab4d-f8fe6ff6dd53",
+        "56908b81-faa2-5308-bd04-3f24dcc34069"
+      ],
+      "document_version": "835b162578e9a3c617b081540c3f053ec8a213e837f18d49efcb760bdd959607",
+      "evidence_block_id": "evidence-9502682ef8506f05f99845d4",
+      "heading_occurrence": 0,
+      "heading_path": [],
+      "page_number": 5,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "page",
+        5
+      ],
+      "source_id": "regional-returns-tr",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Belge sahibi: Bölgesel Müşteri Politikaları\nYürürlük: 2026-01-15\nKapsam: Negativex Türkiye sipariş operasyonları\n\nBu kurmaca belge Türkiye kapsamındaki siparişlerin operasyonel değerlendirmesini anlatır; hukuki görüş değildir. Vaka açılırken müşteri konumu, sipariş kanalı, ürün türü ve ilgili olay tarihi kaydedilir.\n\nMesafeli satış kapsamındaki bir siparişte cayma süresinin başlangıcı teslimat olayıdır. Kargo hareketi, parçalı teslimat ve teslim alan kişinin bilgisi birlikte kontrol edilir. Müşterinin destek ekibine yazdığı tarih teslim kaydının yerine geçirilmez.\n\nBelirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez.\n\nKişiye özel hazırlanmış ürünler için sıradan iade akışı dışında değerlendirme gerekebilir. Görevli ürünün müşterinin talebine göre değiştirildiğini gösteren sipariş notunu arar. Ürün adında “özel” yazması tek başına kanıt değildir.\n\nDijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir.\n\nDoğrudan satış ile pazar yeri siparişi aynı destek kuyruğunda görünse bile yetkili kaynakları farklıdır. Premium hesap bilgisi pazar yeri kanalının kendi süresini değiştirmez. Pazar yeri vaka numarası yoksa görevli süre veya sonuç sözü vermez.\n\nKurumsal müşterinin sözleşmesinde farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır. Kamuya açık politika sözleşme kapsamı belirlenmeden kurumsal istisnanın kanıtı sayılamaz.\n\nTeslim tarihi, sipariş kanalı, ürünün kişiselleştirme durumu, etkinleştirme bilgisi, istenen çözüm ve kullanılan kaynak vaka kaydında tutulur. Bölgesel kapsam belirsizse Uyum veya Bölgesel Politika sahibine eskale edilir.",
+      "token_count": 254
+    }
+  ],
+  "metrics": {
+    "context_chars": 12426,
+    "context_tokens": 804,
+    "expanded": true,
+    "input_chunk_ids": [
+      "a813c829-a9db-5cee-80fc-ff7c677187a9",
+      "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+      "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+      "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+      "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+    ],
+    "output_block_ids": [
+      "evidence-f9753698b392f7d61f256c48",
+      "evidence-9502682ef8506f05f99845d4"
+    ]
+  },
+  "model_visible_context": "<section_aware_evidence trust=\"untrusted\" blocks=\"2\">\n[evidence_block 1 json_chars=7040]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E1\",\"evidence_block_id\":\"evidence-f9753698b392f7d61f256c48\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"11/0\",\"section_key\":[\"page\",11],\"document_version\":\"e03958ad338544e0924bb187813041f8f784df9660df78e669005d2c34b70da7\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"f5b74bd4-004d-59ef-a232-bf744c038228\",\"07abe411-bc66-50ae-bd1d-274a8cade77a\",\"fc07f100-a149-5a0b-a8e8-a0acd27b4fac\",\"bb866adf-bfa8-56ba-9b3f-a3ac1436aeb8\",\"23f5226d-bb7f-5f40-8fad-d6e035218d7e\",\"3ceb5cb6-4a6e-5d3a-bedb-907bae31feaa\",\"14da7342-1cb4-570b-9462-98c85c183bcc\",\"f580aa58-b773-5cf3-aa16-2b5ba415eeae\",\"b83348e2-7a24-56ae-b216-bbc071e329aa\",\"0f919466-a3cd-5d3c-b433-9ae4018bf3bc\",\"c0b4f052-cba3-58dd-8edd-aba02d336386\",\"a80ab643-31a1-5b00-9580-d8792488a858\",\"ddc9cd02-5a34-5807-a006-0334891f9713\"],\"citation_aliases\":[{\"chunk_id\":\"f5b74bd4-004d-59ef-a232-bf744c038228\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu\"},{\"chunk_id\":\"07abe411-bc66-50ae-bd1d-274a8cade77a\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Görev ve başlangıç\"},{\"chunk_id\":\"fc07f100-a149-5a0b-a8e8-a0acd27b4fac\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Sipariş kanalını belirle\"},{\"chunk_id\":\"bb866adf-bfa8-56ba-9b3f-a3ac1436aeb8\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Plan ve ürün türü\"},{\"chunk_id\":\"23f5226d-bb7f-5f40-8fad-d6e035218d7e\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Teslim veya etkinleştirme olayı\"},{\"chunk_id\":\"3ceb5cb6-4a6e-5d3a-bedb-907bae31feaa\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Karar tablosu\"},{\"chunk_id\":\"14da7342-1cb4-570b-9462-98c85c183bcc\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Bölgesel kapsam\"},{\"chunk_id\":\"f580aa58-b773-5cf3-aa16-2b5ba415eeae\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Hasar iddiası\"},{\"chunk_id\":\"b83348e2-7a24-56ae-b216-bbc071e329aa\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Enterprise kontrolü\"},{\"chunk_id\":\"0f919466-a3cd-5d3c-b433-9ae4018bf3bc\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Kanıt listesi\"},{\"chunk_id\":\"c0b4f052-cba3-58dd-8edd-aba02d336386\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Müşteri iletişimi\"},{\"chunk_id\":\"a80ab643-31a1-5b00-9580-d8792488a858\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/İstisna ve onay\"},{\"chunk_id\":\"ddc9cd02-5a34-5807-a006-0334891f9713\",\"source_type\":\"filesystem\",\"source_id\":\"returns-manual-tr\",\"location\":\"İade Operasyonları Kılavuzu/Kapanış\"}],\"canonical_citations\":[\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Görev ve başlangıç]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Sipariş kanalını belirle]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Plan ve ürün türü]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Teslim veya etkinleştirme olayı]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Karar tablosu]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Bölgesel kapsam]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Hasar iddiası]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Enterprise kontrolü]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Kanıt listesi]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Müşteri iletişimi]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/İstisna ve onay]\",\"[s.filesystem:returns-manual-tr/İade Operasyonları Kılavuzu/Kapanış]\"]},\"content\":\"Belge sahibi: Customer Operations\\nYürürlük: 2026-01-15\\nHedef kitle: Tier 1 ve Tier 2 destek ekipleri\\n\\nBu kılavuz iade talebini ilk temastan kapanışa kadar işler. Amaç benzer kelimelerden hızlı sonuç çıkarmak değil, doğru sipariş bağlamını ve yetkili kaynağı belgelemektir.\\n\\nSipariş doğrudan Negativex’den mi, yoksa pazar yerinden mi verilmiş? Fatura, sipariş kaynağı ve pazar yeri vaka numarası kontrol edilir. Pazar yeri siparişleri, müşteri Premium plana sahip olsa bile pazar yeri politikasına yönlendirilir.\\n\\nDoğrudan satışta Standard ve Premium plan pencereleri ayrılır. Fiziksel ürün, dijital lisans ve kişiye özel ürün farklı kanıt ister. Ürün adındaki tek kelimeye güvenmek yerine sipariş satırı ve entitlement kaydı kullanılır.\\n\\nFiziksel üründe teslim tarihi temel olaydır. Dijital üründe aktivasyon zaman damgası belirleyicidir; indirme aktivasyon anlamına gelmez. Parçalı teslimatta ilgili kalemin teslim kaydı ayrı tutulur.\\n\\n| Sipariş durumu | İlk başvurulacak kaynak |\\n|---|---|\\n| Doğrudan + Standard | Standard Returns — 2026 |\\n| Doğrudan + Premium | Premium Returns — 2026 |\\n| Pazar yeri | Marketplace Returns |\\n| Aktive edilmiş dijital ürün | Digital Goods Policy |\\n| Bölgesel kapsam | Bölgesel İadeler — Türkiye |\\n| Müzakere edilmiş kurumsal hüküm | Enterprise Contract Guide |\\n\\nTürkiye’deki siparişlerde teslim tarihi, müşteri konumu, ürün niteliği ve sipariş kanalı birlikte değerlendirilir. Cayma hakkı kamuya açık plan avantajından ayrı kaydedilir. Belirsiz kapsam Uyum veya Bölgesel Politika sahibine taşınır.\\n\\nHasarlı ürün için teslim kaydı, hasarın açıklaması ve sipariş referansı toplanır. Fotoğraf yardımcı kanıttır; teslim kaydının yerini tutmaz. Görevli, doğrudan satış kapsamını ve onay seviyesini kontrol etmeden çözüm sözü vermez.\\n\\nKurumsal istisna iddiasında sözleşme kimliği, değişiklik numarası ve yürürlük tarihi doğrulanır. İmzalı hüküm siparişe uygulanmıyorsa genel politika kullanılır. Sözleşme incelemesi sürerken “onaylandı” ifadesi kullanılmaz.\\n\\nVaka kaydı tenant, hesap rolü, plan, kanal, ürün türü, teslim veya aktivasyon olayı, bölge, istenen çözüm, kaynak sürümü ve onayı içermelidir. Parola veya kurtarma kodu kayda kopyalanmaz. Eksik alan varsa işlem beklemeye alınır.\\n\\nYanıt, hangi kuralın uygulandığını ve bunun hangi olayla belirlendiğini açıklar. Süre hesabı bilinmiyorsa eksik tarih istenir. Pazar yeri veya kurumsal inceleme bekleniyorsa sonraki adım belirtilir.\\n\\nSüresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir.\\n\\nKapanış notu belirlenen olguları, kullanılan kaynakları, yapılan işlemi, müşteri mesajını ve çözülemeyen noktaları içerir. Müşteri yanıt vermedi diye eksik kanıt tamamlanmış sayılmaz. Güvenlik veya sözleşme incelemesi varsa bağlantılı vaka kimliği yazılır.\"}\n[/evidence_block 1]\n[evidence_block 2 json_chars=5119]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E2\",\"evidence_block_id\":\"evidence-9502682ef8506f05f99845d4\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"5/0\",\"section_key\":[\"page\",5],\"document_version\":\"835b162578e9a3c617b081540c3f053ec8a213e837f18d49efcb760bdd959607\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"3e287c2a-a3d8-525a-8a5c-d2b16f8f2ce1\",\"01924888-602e-562a-bb85-6c0cb6a870ad\",\"19945ecd-a8d0-50ee-832e-d9dbe3f07bcc\",\"e8be4efe-682e-5f44-a6cd-2d8e0eeee345\",\"e16e2078-8d41-54ea-94a7-90d82df3e120\",\"44990d0c-3af0-5974-ac3e-cd6beb9178ef\",\"f3db0783-6b01-52b8-bf61-ddd31008f974\",\"370dc6d1-ec09-5006-ab4d-f8fe6ff6dd53\",\"56908b81-faa2-5308-bd04-3f24dcc34069\"],\"citation_aliases\":[{\"chunk_id\":\"3e287c2a-a3d8-525a-8a5c-d2b16f8f2ce1\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye\"},{\"chunk_id\":\"01924888-602e-562a-bb85-6c0cb6a870ad\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Kapsam ve sorumluluk\"},{\"chunk_id\":\"19945ecd-a8d0-50ee-832e-d9dbe3f07bcc\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Teslimat ve cayma başlangıcı\"},{\"chunk_id\":\"e8be4efe-682e-5f44-a6cd-2d8e0eeee345\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Genel değerlendirme\"},{\"chunk_id\":\"e16e2078-8d41-54ea-94a7-90d82df3e120\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Kişiye özel ürünler\"},{\"chunk_id\":\"44990d0c-3af0-5974-ac3e-cd6beb9178ef\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Dijital içerik\"},{\"chunk_id\":\"f3db0783-6b01-52b8-bf61-ddd31008f974\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Sipariş kanalı ve plan\"},{\"chunk_id\":\"370dc6d1-ec09-5006-ab4d-f8fe6ff6dd53\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Kurumsal sözleşme\"},{\"chunk_id\":\"56908b81-faa2-5308-bd04-3f24dcc34069\",\"source_type\":\"filesystem\",\"source_id\":\"regional-returns-tr\",\"location\":\"Bölgesel İadeler — Türkiye/Kayıt ve yönlendirme\"}],\"canonical_citations\":[\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Kapsam ve sorumluluk]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Teslimat ve cayma başlangıcı]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Genel değerlendirme]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Kişiye özel ürünler]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Dijital içerik]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Sipariş kanalı ve plan]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Kurumsal sözleşme]\",\"[s.filesystem:regional-returns-tr/Bölgesel İadeler — Türkiye/Kayıt ve yönlendirme]\"]},\"content\":\"Belge sahibi: Bölgesel Müşteri Politikaları\\nYürürlük: 2026-01-15\\nKapsam: Negativex Türkiye sipariş operasyonları\\n\\nBu kurmaca belge Türkiye kapsamındaki siparişlerin operasyonel değerlendirmesini anlatır; hukuki görüş değildir. Vaka açılırken müşteri konumu, sipariş kanalı, ürün türü ve ilgili olay tarihi kaydedilir.\\n\\nMesafeli satış kapsamındaki bir siparişte cayma süresinin başlangıcı teslimat olayıdır. Kargo hareketi, parçalı teslimat ve teslim alan kişinin bilgisi birlikte kontrol edilir. Müşterinin destek ekibine yazdığı tarih teslim kaydının yerine geçirilmez.\\n\\nBelirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez.\\n\\nKişiye özel hazırlanmış ürünler için sıradan iade akışı dışında değerlendirme gerekebilir. Görevli ürünün müşterinin talebine göre değiştirildiğini gösteren sipariş notunu arar. Ürün adında “özel” yazması tek başına kanıt değildir.\\n\\nDijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir.\\n\\nDoğrudan satış ile pazar yeri siparişi aynı destek kuyruğunda görünse bile yetkili kaynakları farklıdır. Premium hesap bilgisi pazar yeri kanalının kendi süresini değiştirmez. Pazar yeri vaka numarası yoksa görevli süre veya sonuç sözü vermez.\\n\\nKurumsal müşterinin sözleşmesinde farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır. Kamuya açık politika sözleşme kapsamı belirlenmeden kurumsal istisnanın kanıtı sayılamaz.\\n\\nTeslim tarihi, sipariş kanalı, ürünün kişiselleştirme durumu, etkinleştirme bilgisi, istenen çözüm ve kullanılan kaynak vaka kaydında tutulur. Bölgesel kapsam belirsizse Uyum veya Bölgesel Politika sahibine eskale edilir.\"}\n[/evidence_block 2]\n</section_aware_evidence>",
+  "pipeline_identity": {
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "query_id": "multi-03-1",
+  "tenant_id": "tenant-b",
+  "top5_ids": [
+    "a813c829-a9db-5cee-80fc-ff7c677187a9",
+    "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+    "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+    "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+    "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "architecture_decision": "V2_3_INCONCLUSIVE_EXPAND_ONCE",
+  "eligible_pool_size": 1,
+  "execution_status": "EXTENSION_BLOCKED_INSUFFICIENT_ELIGIBLE_POOL",
+  "generation_calls": 0,
+  "historical_initial_holdout_preserved": true,
+  "identity": {
+    "acl_results_sha256": "ccb1cceaaf8454fc9f6f51e45360c411a44b09f9dba53f8841f474d784829243",
+    "challenger_freeze_sha256": "eac18c8a381f138a9106a28a00cb5419210aae654c3e9791527d1833aada3e02",
+    "initial_v23_results_sha256": "3739212121d45810eee31ff66cb595a75c18c3a4e3288c81a11981c179e0dc69",
+    "preregistration_recorded_sha256": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c",
+    "preregistration_sha256": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c",
+    "v2_2_baseline_sha256": "efac4d8e5dba527e3ad410218e1e3ce3319bb9a24853514e3fb45c30d7ca942b"
+  },
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "selected_count": 1
+}

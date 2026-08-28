@@ -1,0 +1,26 @@
+{
+  "gold_source_rank_distribution": {
+    "4": 3,
+    "3": 9,
+    "2": 13,
+    "1": 6,
+    "5": 4
+  },
+  "top1_non_gold": 16,
+  "rows_with_duplicate_source_chunks": 18,
+  "duplicate_source_chunks_total": 28,
+  "context_characters": {
+    "n": 22,
+    "mean": 2477.136,
+    "median": 2489.0,
+    "min": 1570,
+    "max": 3274
+  },
+  "generation_characters": {
+    "n": 22,
+    "mean": 664.364,
+    "median": 480.5,
+    "min": 0,
+    "max": 2614
+  }
+}

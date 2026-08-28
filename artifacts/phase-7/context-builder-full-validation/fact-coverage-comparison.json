@@ -1,0 +1,186 @@
+{
+  "records": [
+    {
+      "query_id": "acl-02-0",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "acl-02-1",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "acl-02-2",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "ambiguous-00-0",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "ambiguous-00-1",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "ambiguous-00-2",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "cross-00-0",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "cross-00-1",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "cross-01-0",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "cross-06-0",
+      "a": null,
+      "b": 1.0
+    },
+    {
+      "query_id": "cross-06-1",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "cross-07-0",
+      "a": 1.0,
+      "b": 0.0
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "hard-api-private",
+      "a": 1.0,
+      "b": 0.0
+    },
+    {
+      "query_id": "hard-api-version",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "hard-marketplace-channel",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "hard-order-channel",
+      "a": null,
+      "b": 0.0
+    },
+    {
+      "query_id": "hard-policy-language",
+      "a": 0.0,
+      "b": 0.0
+    },
+    {
+      "query_id": "injection-03-0",
+      "a": 0.0,
+      "b": 0.5
+    },
+    {
+      "query_id": "injection-03-1",
+      "a": 0.5,
+      "b": 0.0
+    },
+    {
+      "query_id": "multi-00-1",
+      "a": 0.5,
+      "b": 0.5
+    },
+    {
+      "query_id": "multi-00-3",
+      "a": 0.0,
+      "b": 0.5
+    },
+    {
+      "query_id": "multi-03-0",
+      "a": null,
+      "b": 0.0
+    },
+    {
+      "query_id": "native-00-0",
+      "a": null,
+      "b": 1.0
+    },
+    {
+      "query_id": "native-00-1",
+      "a": null,
+      "b": 1.0
+    },
+    {
+      "query_id": "native-00-2",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "native-00-3",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "native-01-0",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "native-01-1",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "negative-00-0",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "negative-00-1",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "negative-00-2",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "negative-00-3",
+      "a": null,
+      "b": null
+    },
+    {
+      "query_id": "version-01-0",
+      "a": 1.0,
+      "b": 1.0
+    },
+    {
+      "query_id": "version-01-1",
+      "a": 1.0,
+      "b": 1.0
+    }
+  ],
+  "mean_a": 0.8,
+  "mean_b": 0.7
+}

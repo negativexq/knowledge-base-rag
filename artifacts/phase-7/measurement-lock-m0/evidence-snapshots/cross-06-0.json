@@ -1,0 +1,298 @@
+{
+  "authorized_top5": [
+    {
+      "chunk_id": "9480a8e7-7666-576d-98df-4a6aea426780",
+      "content": "Abonelik iptali gelecekteki yenilemeyi durdurur; fiziksel ürün iadesi teslim edilmiş bir siparişin bedeliyle ilgilidir. Bir müşteri her iki işlemi birlikte istediğinde iki ayrı talep numarası kullanılabilir. İptal tarihi, ürün teslim tarihi veya dijital etkinleştirme zaman damgasının yerine geçirilemez.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "30. İptal ve iade ayrımı"
+        ],
+        "page_number": 30,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+      "content": "Belge sahibi: Billing Operations\nYürürlük: 2026-01-15\nKapsam: Negativex aylık ve yıllık çalışma alanı abonelikleri\n\nBir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder. Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.",
+      "metadata": {
+        "document_version": "b7858973a6e04945972813b0fd805edc86f60087bb901ed3694be7db2b7448b4",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "subscription-billing"
+    },
+    {
+      "chunk_id": "9542a73b-1a30-54dd-999c-bff89dc70f59",
+      "content": "Yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce alınmalıdır. Bu işlem ödenmiş dönemi kısaltmaz. Yıllık planın yüzde 15 indirimi, on iki aylık eşdeğer fiyatla kıyaslanan ticari bir fiyat bilgisidir; iade penceresi değildir.\n\nBaşarısız ödeme için yedi günlük sürede üç yeniden deneme yapılır. Tüm denemeler başarısız olursa çalışma alanı salt-okunur korumaya geçer. Görevli ödeme olayı ile iade talebini aynı olay gibi kaydetmez; müşteri iletişiminde hangi işlemin erişimi, hangisinin tahsilatı etkilediği açıkça belirtilir.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "5. Faturalandırma ve abonelik"
+        ],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+      "content": "Document owner: Customer Policy Operations\nEffective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\n\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\n\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.",
+      "metadata": {
+        "document_version": "eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Standard Returns — 2026"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "standard-returns-2026"
+    },
+    {
+      "chunk_id": "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2",
+      "content": "After a service incident, the queue owner reconciles cases opened during the impact window. Related cases are linked to the incident record, customer-specific commitments are reviewed, and duplicate credits or refunds are prevented. The incident timeline remains the authority for what the service knew at each point in time.\n\nPost-incident follow-up captures action, owner, due date, and verification method. A retrospective may recommend a policy change but does not itself change the policy. The source owner publishes any new rule with an effective date before agents are asked to use it.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "19. Recovery after an incident"
+        ],
+        "page_number": 19,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "support-playbook"
+    }
+  ],
+  "candidate_top20": [],
+  "candidate_top20_ids": [],
+  "context_hash": "66f537d2111e7110e3c881303d1c8e7dd1c178c0edb8d767efd191184cf1f7da",
+  "context_tokens": 609,
+  "evidence_blocks": [
+    {
+      "anchor_chunk_id": "9480a8e7-7666-576d-98df-4a6aea426780",
+      "chunk_id": "evidence-eab199f8162d3b73b1047b46",
+      "citation_aliases": [
+        {
+          "chunk_id": "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası/5. Faturalandırma ve abonelik",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "9480a8e7-7666-576d-98df-4a6aea426780",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası/30. İptal ve iade ayrımı",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "9542a73b-1a30-54dd-999c-bff89dc70f59",
+        "9480a8e7-7666-576d-98df-4a6aea426780"
+      ],
+      "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+      "evidence_block_id": "evidence-eab199f8162d3b73b1047b46",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+        "30. İptal ve iade ayrımı"
+      ],
+      "page_number": 30,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "30. İptal ve iade ayrımı"
+        ],
+        0
+      ],
+      "source_id": "long-policy-tr",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce alınmalıdır. Bu işlem ödenmiş dönemi kısaltmaz. Yıllık planın yüzde 15 indirimi, on iki aylık eşdeğer fiyatla kıyaslanan ticari bir fiyat bilgisidir; iade penceresi değildir.\n\nBaşarısız ödeme için yedi günlük sürede üç yeniden deneme yapılır. Tüm denemeler başarısız olursa çalışma alanı salt-okunur korumaya geçer. Görevli ödeme olayı ile iade talebini aynı olay gibi kaydetmez; müşteri iletişiminde hangi işlemin erişimi, hangisinin tahsilatı etkilediği açıkça belirtilir.\n\nAbonelik iptali gelecekteki yenilemeyi durdurur; fiziksel ürün iadesi teslim edilmiş bir siparişin bedeliyle ilgilidir. Bir müşteri her iki işlemi birlikte istediğinde iki ayrı talep numarası kullanılabilir. İptal tarihi, ürün teslim tarihi veya dijital etkinleştirme zaman damgasının yerine geçirilemez.",
+      "token_count": 113
+    },
+    {
+      "anchor_chunk_id": "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+      "chunk_id": "evidence-3d04a9bebea2f18595af951b",
+      "citation_aliases": [
+        {
+          "chunk_id": "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "location": "Abonelik ve Faturalandırma İşletim Politikası",
+          "source_id": "subscription-billing",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+          "location": "Abonelik ve Faturalandırma İşletim Politikası/Başarısız ödeme",
+          "source_id": "subscription-billing",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+        "ee147c44-8bc0-578b-8a91-4b0c7008ee6e"
+      ],
+      "document_version": "b7858973a6e04945972813b0fd805edc86f60087bb901ed3694be7db2b7448b4",
+      "evidence_block_id": "evidence-3d04a9bebea2f18595af951b",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Abonelik ve Faturalandırma İşletim Politikası"
+      ],
+      "page_number": 0,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        0
+      ],
+      "source_id": "subscription-billing",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Belge sahibi: Billing Operations\nYürürlük: 2026-01-15\nKapsam: Negativex aylık ve yıllık çalışma alanı abonelikleri\n\nBir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder. Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.\n\nÖdeme sağlayıcısı başarısız bir tahsilattan sonra yedi gün içinde üç yeniden deneme yapar. Üç deneme de başarısız olursa çalışma alanı salt-okunur korumaya alınır. Yeni ödeme doğrulandığında faturalandırma durumu düzeltilir; bu işlem geçmişteki iptal zamanını değiştirmez.\n\nGörevli yenileme tarihi, plan türü, ödeme sağlayıcısı olay kimliği ve müşteriye verilen taahhüdü kaydeder. Kurumsal faturalandırma şartları imzalı sözleşmede farklı olabilir.",
+      "token_count": 109
+    },
+    {
+      "anchor_chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+      "chunk_id": "evidence-c3e56011af0b7007b88d893a",
+      "citation_aliases": [
+        {
+          "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+          "location": "Standard Returns — 2026",
+          "source_id": "standard-returns-2026",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+          "location": "Standard Returns — 2026/Case record",
+          "source_id": "standard-returns-2026",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "5bd2643d-4837-5733-9717-c88c37860274",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "document_version": "eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2",
+      "evidence_block_id": "evidence-c3e56011af0b7007b88d893a",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Standard Returns — 2026"
+      ],
+      "page_number": 0,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Standard Returns — 2026"
+        ],
+        0
+      ],
+      "source_id": "standard-returns-2026",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Document owner: Customer Policy Operations\nEffective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\n\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\n\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.\n\nBefore approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. If one of those fields is unknown, keep the case pending rather than quote a generic return period.\n\nRelated: Premium Returns — 2026; Marketplace Returns; Digital Goods Policy. The 2026 policy bulletin explains the change from the superseded 2025 rule.",
+      "token_count": 152
+    },
+    {
+      "anchor_chunk_id": "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2",
+      "chunk_id": "evidence-619406a6b03791dcafabcf44",
+      "citation_aliases": [
+        {
+          "chunk_id": "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2",
+          "location": "Support Operations Playbook/19. Recovery after an incident",
+          "source_id": "support-playbook",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+      ],
+      "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+      "evidence_block_id": "evidence-619406a6b03791dcafabcf44",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Support Operations Playbook",
+        "19. Recovery after an incident"
+      ],
+      "page_number": 19,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Support Operations Playbook",
+          "19. Recovery after an incident"
+        ],
+        0
+      ],
+      "source_id": "support-playbook",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "After a service incident, the queue owner reconciles cases opened during the impact window. Related cases are linked to the incident record, customer-specific commitments are reviewed, and duplicate credits or refunds are prevented. The incident timeline remains the authority for what the service knew at each point in time.\n\nPost-incident follow-up captures action, owner, due date, and verification method. A retrospective may recommend a policy change but does not itself change the policy. The source owner publishes any new rule with an effective date before agents are asked to use it.",
+      "token_count": 91
+    }
+  ],
+  "metrics": {
+    "context_chars": 7915,
+    "context_tokens": 609,
+    "expanded": true,
+    "input_chunk_ids": [
+      "9480a8e7-7666-576d-98df-4a6aea426780",
+      "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+      "9542a73b-1a30-54dd-999c-bff89dc70f59",
+      "5bd2643d-4837-5733-9717-c88c37860274",
+      "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+    ],
+    "output_block_ids": [
+      "evidence-eab199f8162d3b73b1047b46",
+      "evidence-3d04a9bebea2f18595af951b",
+      "evidence-c3e56011af0b7007b88d893a",
+      "evidence-619406a6b03791dcafabcf44"
+    ]
+  },
+  "model_visible_context": "<section_aware_evidence trust=\"untrusted\" blocks=\"4\">\n[evidence_block 1 json_chars=2099]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E1\",\"evidence_block_id\":\"evidence-eab199f8162d3b73b1047b46\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/30. İptal ve iade ayrımı\",\"section_key\":[\"heading\",[\"Negativex Bölgesel Operasyon ve Müşteri Politikası\",\"30. İptal ve iade ayrımı\"],0],\"document_version\":\"bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"9542a73b-1a30-54dd-999c-bff89dc70f59\",\"9480a8e7-7666-576d-98df-4a6aea426780\"],\"citation_aliases\":[{\"chunk_id\":\"9542a73b-1a30-54dd-999c-bff89dc70f59\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/5. Faturalandırma ve abonelik\"},{\"chunk_id\":\"9480a8e7-7666-576d-98df-4a6aea426780\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/30. İptal ve iade ayrımı\"}],\"canonical_citations\":[\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/5. Faturalandırma ve abonelik]\",\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/30. İptal ve iade ayrımı]\"]},\"content\":\"Yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce alınmalıdır. Bu işlem ödenmiş dönemi kısaltmaz. Yıllık planın yüzde 15 indirimi, on iki aylık eşdeğer fiyatla kıyaslanan ticari bir fiyat bilgisidir; iade penceresi değildir.\\n\\nBaşarısız ödeme için yedi günlük sürede üç yeniden deneme yapılır. Tüm denemeler başarısız olursa çalışma alanı salt-okunur korumaya geçer. Görevli ödeme olayı ile iade talebini aynı olay gibi kaydetmez; müşteri iletişiminde hangi işlemin erişimi, hangisinin tahsilatı etkilediği açıkça belirtilir.\\n\\nAbonelik iptali gelecekteki yenilemeyi durdurur; fiziksel ürün iadesi teslim edilmiş bir siparişin bedeliyle ilgilidir. Bir müşteri her iki işlemi birlikte istediğinde iki ayrı talep numarası kullanılabilir. İptal tarihi, ürün teslim tarihi veya dijital etkinleştirme zaman damgasının yerine geçirilemez.\"}\n[/evidence_block 1]\n[evidence_block 2 json_chars=1950]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E2\",\"evidence_block_id\":\"evidence-3d04a9bebea2f18595af951b\",\"source_type\":\"filesystem\",\"source_id\":\"subscription-billing\",\"location\":\"Abonelik ve Faturalandırma İşletim Politikası\",\"section_key\":[\"heading\",[\"Abonelik ve Faturalandırma İşletim Politikası\"],0],\"document_version\":\"b7858973a6e04945972813b0fd805edc86f60087bb901ed3694be7db2b7448b4\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"519ca8a5-72f4-52b6-8c10-a2a4552919eb\",\"ee147c44-8bc0-578b-8a91-4b0c7008ee6e\"],\"citation_aliases\":[{\"chunk_id\":\"519ca8a5-72f4-52b6-8c10-a2a4552919eb\",\"source_type\":\"filesystem\",\"source_id\":\"subscription-billing\",\"location\":\"Abonelik ve Faturalandırma İşletim Politikası\"},{\"chunk_id\":\"ee147c44-8bc0-578b-8a91-4b0c7008ee6e\",\"source_type\":\"filesystem\",\"source_id\":\"subscription-billing\",\"location\":\"Abonelik ve Faturalandırma İşletim Politikası/Başarısız ödeme\"}],\"canonical_citations\":[\"[s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası]\",\"[s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası/Başarısız ödeme]\"]},\"content\":\"Belge sahibi: Billing Operations\\nYürürlük: 2026-01-15\\nKapsam: Negativex aylık ve yıllık çalışma alanı abonelikleri\\n\\nBir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder. Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.\\n\\nÖdeme sağlayıcısı başarısız bir tahsilattan sonra yedi gün içinde üç yeniden deneme yapar. Üç deneme de başarısız olursa çalışma alanı salt-okunur korumaya alınır. Yeni ödeme doğrulandığında faturalandırma durumu düzeltilir; bu işlem geçmişteki iptal zamanını değiştirmez.\\n\\nGörevli yenileme tarihi, plan türü, ödeme sağlayıcısı olay kimliği ve müşteriye verilen taahhüdü kaydeder. Kurumsal faturalandırma şartları imzalı sözleşmede farklı olabilir.\"}\n[/evidence_block 2]\n[evidence_block 3 json_chars=1997]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E3\",\"evidence_block_id\":\"evidence-c3e56011af0b7007b88d893a\",\"source_type\":\"filesystem\",\"source_id\":\"standard-returns-2026\",\"location\":\"Standard Returns — 2026\",\"section_key\":[\"heading\",[\"Standard Returns — 2026\"],0],\"document_version\":\"eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"5bd2643d-4837-5733-9717-c88c37860274\",\"1b50ae39-8364-5172-a719-f2090efce26e\"],\"citation_aliases\":[{\"chunk_id\":\"5bd2643d-4837-5733-9717-c88c37860274\",\"source_type\":\"filesystem\",\"source_id\":\"standard-returns-2026\",\"location\":\"Standard Returns — 2026\"},{\"chunk_id\":\"1b50ae39-8364-5172-a719-f2090efce26e\",\"source_type\":\"filesystem\",\"source_id\":\"standard-returns-2026\",\"location\":\"Standard Returns — 2026/Case record\"}],\"canonical_citations\":[\"[s.filesystem:standard-returns-2026/Standard Returns — 2026]\",\"[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]\"]},\"content\":\"Document owner: Customer Policy Operations\\nEffective date: 2026-01-15\\nScope: Negativex direct-sale physical goods on the Standard plan\\n\\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\\n\\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.\\n\\nBefore approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. If one of those fields is unknown, keep the case pending rather than quote a generic return period.\\n\\nRelated: Premium Returns — 2026; Marketplace Returns; Digital Goods Policy. The 2026 policy bulletin explains the change from the superseded 2025 rule.\"}\n[/evidence_block 3]\n[evidence_block 4 json_chars=1414]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E4\",\"evidence_block_id\":\"evidence-619406a6b03791dcafabcf44\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/19. Recovery after an incident\",\"section_key\":[\"heading\",[\"Support Operations Playbook\",\"19. Recovery after an incident\"],0],\"document_version\":\"700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2\"],\"citation_aliases\":[{\"chunk_id\":\"f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/19. Recovery after an incident\"}],\"canonical_citations\":[\"[s.filesystem:support-playbook/Support Operations Playbook/19. Recovery after an incident]\"]},\"content\":\"After a service incident, the queue owner reconciles cases opened during the impact window. Related cases are linked to the incident record, customer-specific commitments are reviewed, and duplicate credits or refunds are prevented. The incident timeline remains the authority for what the service knew at each point in time.\\n\\nPost-incident follow-up captures action, owner, due date, and verification method. A retrospective may recommend a policy change but does not itself change the policy. The source owner publishes any new rule with an effective date before agents are asked to use it.\"}\n[/evidence_block 4]\n</section_aware_evidence>",
+  "pipeline_identity": {
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "query_id": "cross-06-0",
+  "tenant_id": "tenant-a",
+  "top5_ids": [
+    "9480a8e7-7666-576d-98df-4a6aea426780",
+    "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+    "9542a73b-1a30-54dd-999c-bff89dc70f59",
+    "5bd2643d-4837-5733-9717-c88c37860274",
+    "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+  ]
+}

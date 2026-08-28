@@ -1,0 +1,26 @@
+{
+  "query_ids": [
+    "cross-00-0",
+    "cross-00-1",
+    "cross-01-0",
+    "cross-06-0",
+    "cross-06-1",
+    "cross-07-0"
+  ],
+  "a": {
+    "n": 6,
+    "full": 4,
+    "incomplete": 0,
+    "partial": 1,
+    "incorrect": 0,
+    "validator_reject": 1
+  },
+  "b": {
+    "n": 6,
+    "full": 5,
+    "incomplete": 0,
+    "partial": 0,
+    "incorrect": 1,
+    "validator_reject": 1
+  }
+}

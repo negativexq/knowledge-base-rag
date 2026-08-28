@@ -1,0 +1,29 @@
+{
+  "overall": {
+    "n": 5,
+    "fully_correct_complete": 3,
+    "correct_but_incomplete": 0,
+    "partial": 1,
+    "incorrect": 0,
+    "unobservable": 1,
+    "citation_failures": 1
+  },
+  "tr_to_en": {
+    "n": 2,
+    "fully_correct_complete": 1,
+    "correct_but_incomplete": 0,
+    "partial": 1,
+    "incorrect": 0,
+    "unobservable": 0,
+    "citation_failures": 0
+  },
+  "en_to_tr": {
+    "n": 3,
+    "fully_correct_complete": 2,
+    "correct_but_incomplete": 0,
+    "partial": 0,
+    "incorrect": 0,
+    "unobservable": 1,
+    "citation_failures": 1
+  }
+}

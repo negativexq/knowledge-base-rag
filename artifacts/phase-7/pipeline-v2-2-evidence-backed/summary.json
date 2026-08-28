@@ -1,0 +1,71 @@
+{
+  "decision": {
+    "calibration": "NOT_RUN",
+    "development200": "NOT_RUN",
+    "focused_gate": "PIPELINE_V2_2_GATE_FAIL_MIXED",
+    "frozen_test": "NOT_TOUCHED",
+    "new_generation_calls": 9,
+    "new_retrieval_calls": 0,
+    "smoke36": "NOT_RUN"
+  },
+  "focused": {
+    "acl": {
+      "application_forced_abstentions": 3,
+      "model_abstentions": 0,
+      "n": 3,
+      "safe_abstentions": 3,
+      "unauthorized_leakage": 0,
+      "unsupported_visible_answers": 0
+    },
+    "answerable_forced_abstentions": 2,
+    "evidence_validation": {
+      "quote_match_rate": 1.0,
+      "quote_mismatches_visible": 0,
+      "surviving_parts": 6,
+      "unauthorized_ids_visible": 0,
+      "unknown_ids_visible": 0
+    },
+    "false_abstentions": 0,
+    "focused_query_count": 9,
+    "latency_ms": {
+      "max": 31055.882,
+      "p50": 19888.6
+    },
+    "multi_document": {
+      "n": 3,
+      "raw_fully_correct": 1
+    },
+    "new_generation_calls": 9,
+    "offline_replay_records": 36,
+    "raw_fully_correct_answerable": 4,
+    "raw_observable": 9,
+    "unique_hardening_records": 20,
+    "user_visible_fully_successful_answerable": 4,
+    "validator_pass": 2,
+    "validator_reject": 7
+  },
+  "identity": {
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "prompt": "v3",
+    "rag_pipeline_v2": false,
+    "think": false,
+    "top_n": 5
+  },
+  "replay": {
+    "generation_calls": 0,
+    "not_replayable_under_v2_2_quote_contract": 36,
+    "reason": "historical v2/v2.1 candidates do not preserve answer_part.evidence.quote",
+    "records": 36,
+    "replayable_under_v2_2_quote_contract": 0,
+    "retrieval_calls": 0,
+    "source": "pipeline-v2-closure/smoke36-results.jsonl"
+  }
+}

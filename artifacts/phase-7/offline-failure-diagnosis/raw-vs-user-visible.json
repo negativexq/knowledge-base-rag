@@ -1,0 +1,14 @@
+{
+  "record_count": 36,
+  "raw_candidate_observable": 36,
+  "validator_pass": 28,
+  "user_visible_output": 28,
+  "gold_present_answerable": {
+    "FULLY_CORRECT_COMPLETE": 13,
+    "INCORRECT": 3,
+    "PARTIALLY_CORRECT": 2,
+    "CORRECT_BUT_INCOMPLETE": 4
+  },
+  "raw_content_success": 13,
+  "user_visible_full_success": 11
+}

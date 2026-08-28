@@ -1,0 +1,108 @@
+{
+  "status": "RERANKER_SELECTION_PROBLEM",
+  "required_facts_unique": 5,
+  "required_query_fact_occurrences": 7,
+  "valid_authored_support_spans": 5,
+  "source_vs_fact_recall": {
+    "required_query_fact_occurrences": 7,
+    "source_recall_complete_at20": 3,
+    "source_recall_complete_at5": 3,
+    "fact_passage_recall_at20": 1.0,
+    "fact_passage_recall_at5": 0.7142857142857143,
+    "all_required_facts_present_at20": 3,
+    "all_required_facts_present_at5": 1
+  },
+  "scorecard": [
+    {
+      "representation": "CURRENT_CHUNK",
+      "fact_passage_recall": 0.7142857142857143,
+      "all_required_facts_present_queries": 1,
+      "context_tokens_per_query": [
+        538,
+        522,
+        299
+      ],
+      "context_tokens_p50": 522,
+      "context_tokens_max": 538,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 30,
+      "citation_traceability": "PRESERVED"
+    },
+    {
+      "representation": "PARENT_SECTION",
+      "fact_passage_recall": 1.0,
+      "all_required_facts_present_queries": 3,
+      "context_tokens_per_query": [
+        5432,
+        2910,
+        725
+      ],
+      "context_tokens_p50": 2910,
+      "context_tokens_max": 5432,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 342,
+      "citation_traceability": "PRESERVED"
+    },
+    {
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "fact_passage_recall": 0.7142857142857143,
+      "all_required_facts_present_queries": 1,
+      "context_tokens_per_query": [
+        538,
+        522,
+        299
+      ],
+      "context_tokens_p50": 522,
+      "context_tokens_max": 538,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 30,
+      "citation_traceability": "PRESERVED"
+    },
+    {
+      "representation": "SECTION_AWARE_MERGED",
+      "fact_passage_recall": 1.0,
+      "all_required_facts_present_queries": 3,
+      "context_tokens_per_query": [
+        626,
+        654,
+        486
+      ],
+      "context_tokens_p50": 626,
+      "context_tokens_max": 654,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 54,
+      "citation_traceability": "PRESERVED"
+    }
+  ],
+  "winner": {
+    "winner": "SECTION_AWARE_MERGED",
+    "generation_probe_eligible": true,
+    "eligible_queries": 3,
+    "reason": "Highest query-level fact completeness, then lowest median token cost and irrelevant-paragraph expansion.",
+    "promotion": false
+  },
+  "generation_probe": {
+    "eligible": true,
+    "ran": true,
+    "calls": 3
+  },
+  "conclusions": {
+    "source_level_recall_sufficient": false,
+    "fact_level_annotation_reliable": true,
+    "chunk_boundary_contributor": false,
+    "representation_contributor": "PARTIAL",
+    "reranker_contributor": true,
+    "generation_failure_cleanly_measurable": true
+  },
+  "calls": {
+    "retrieval": 0,
+    "embedding": 0,
+    "reranker": 0,
+    "semantic_evaluator": 0,
+    "generation": 3
+  },
+  "runtime_changed": false,
+  "frozen_test_touched": false,
+  "calibration_touched": false,
+  "recommended_next_experiment": "RERANKER_ABLATION_NEXT"
+}

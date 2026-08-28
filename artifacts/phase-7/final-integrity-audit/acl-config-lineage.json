@@ -1,0 +1,49 @@
+{
+  "ACL_EXECUTION_CONFIG_MATCHES_FINAL": "YES",
+  "acl_rerun_calls": 0,
+  "acl_rerun_required": false,
+  "acl_result_sha256": "ccb1cceaaf8454fc9f6f51e45360c411a44b09f9dba53f8841f474d784829243",
+  "acl_rows": 15,
+  "final_challenger_config": {
+    "generator": "qwen3.5:4b",
+    "num_ctx": 4096,
+    "num_predict": 1024,
+    "output_contract_version": "output_contract_v2_3_2",
+    "pipeline_version": "pipeline_v2_3_2_support_units_bounded_output",
+    "preregistration_sha256": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c",
+    "prompt": "v3",
+    "reranker_calls": 0,
+    "retrieval_calls": 0,
+    "schema_strategy": "dynamic exact support-unit enum",
+    "snapshot_reuse": true,
+    "temperature": 0.0,
+    "think": false
+  },
+  "final_challenger_freeze_sha256": "eac18c8a381f138a9106a28a00cb5419210aae654c3e9791527d1833aada3e02",
+  "hard_gate": {
+    "status": "PASS",
+    "unauthorized_leakage": 0,
+    "visible_unsupported": 0
+  },
+  "observed_acl_config": {
+    "contract_versions": [
+      "output_contract_v2_3_2"
+    ],
+    "num_predict": [
+      1024
+    ],
+    "pipeline_versions": [
+      "pipeline_v2_3_2_support_units_bounded_output"
+    ],
+    "prompt_versions": [
+      "v3"
+    ],
+    "snapshot_hashes": [
+      "68bc2e3c1aac05b0879a24b0fb30539d8b14481b46a08109c7c5be02d868efe2",
+      "6edb321513586bb23f9a7600cb2e35cc8bddccc4a9a47969554226ec8ae3063a",
+      "aa78479c42a836fd81b48575c1b956929834078fedefc2cdc6a23037be8cba33"
+    ]
+  },
+  "reused_frozen_acl_result": true,
+  "schema_version": "final-integrity-acl-config-lineage-v1"
+}

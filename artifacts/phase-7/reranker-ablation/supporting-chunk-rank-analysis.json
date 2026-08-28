@@ -1,0 +1,136 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "bge_fact_rank": {
+        "facts": [
+          {
+            "required_fact_id": "standard_return_window_14_days",
+            "source_id": "standard-returns-2026",
+            "final_rank": null,
+            "top5": false
+          },
+          {
+            "required_fact_id": "support_return_case_fields",
+            "source_id": "support-playbook",
+            "final_rank": 2,
+            "top5": true
+          }
+        ],
+        "complete": false
+      },
+      "qwen3_fact_rank": {
+        "facts": [
+          {
+            "required_fact_id": "standard_return_window_14_days",
+            "source_id": "standard-returns-2026",
+            "final_rank": null,
+            "top5": false
+          },
+          {
+            "required_fact_id": "support_return_case_fields",
+            "source_id": "support-playbook",
+            "final_rank": 3,
+            "top5": true
+          }
+        ],
+        "complete": false
+      },
+      "improved": false,
+      "unchanged": true,
+      "regressed": false
+    },
+    {
+      "query_id": "multi-00-3",
+      "bge_fact_rank": {
+        "facts": [
+          {
+            "required_fact_id": "standard_return_window_14_days",
+            "source_id": "standard-returns-2026",
+            "final_rank": null,
+            "top5": false
+          },
+          {
+            "required_fact_id": "support_return_case_fields",
+            "source_id": "support-playbook",
+            "final_rank": 2,
+            "top5": true
+          }
+        ],
+        "complete": false
+      },
+      "qwen3_fact_rank": {
+        "facts": [
+          {
+            "required_fact_id": "standard_return_window_14_days",
+            "source_id": "standard-returns-2026",
+            "final_rank": null,
+            "top5": false
+          },
+          {
+            "required_fact_id": "support_return_case_fields",
+            "source_id": "support-playbook",
+            "final_rank": 3,
+            "top5": true
+          }
+        ],
+        "complete": false
+      },
+      "improved": false,
+      "unchanged": true,
+      "regressed": false
+    },
+    {
+      "query_id": "multi-03-0",
+      "bge_fact_rank": {
+        "facts": [
+          {
+            "required_fact_id": "digital_activation_boundary",
+            "source_id": "regional-returns-tr",
+            "final_rank": 2,
+            "top5": true
+          },
+          {
+            "required_fact_id": "joint_exception_routing",
+            "source_id": "returns-manual-tr",
+            "final_rank": 1,
+            "top5": true
+          },
+          {
+            "required_fact_id": "regional_withdrawal_framework_14_days",
+            "source_id": "regional-returns-tr",
+            "final_rank": 5,
+            "top5": true
+          }
+        ],
+        "complete": true
+      },
+      "qwen3_fact_rank": {
+        "facts": [
+          {
+            "required_fact_id": "digital_activation_boundary",
+            "source_id": "regional-returns-tr",
+            "final_rank": 2,
+            "top5": true
+          },
+          {
+            "required_fact_id": "joint_exception_routing",
+            "source_id": "returns-manual-tr",
+            "final_rank": 1,
+            "top5": true
+          },
+          {
+            "required_fact_id": "regional_withdrawal_framework_14_days",
+            "source_id": "regional-returns-tr",
+            "final_rank": null,
+            "top5": false
+          }
+        ],
+        "complete": false
+      },
+      "improved": false,
+      "unchanged": false,
+      "regressed": true
+    }
+  ]
+}

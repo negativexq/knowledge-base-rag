@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "checked_before_inference": true,
+  "structures": [
+    "context_builder",
+    "generation_result",
+    "checkpoint",
+    "jsonl"
+  ],
+  "json_round_trip": true,
+  "atomic_checkpoint": true,
+  "inference_started_after_pass": true
+}

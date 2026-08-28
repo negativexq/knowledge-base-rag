@@ -1,0 +1,69 @@
+{
+  "status": "ORACLE_PRECONDITION_FAILED",
+  "decision": "ORACLE_CONTEXT_DIAGNOSTIC_INCONCLUSIVE",
+  "identity": {
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "generator": "qwen3.5:4b",
+    "prompt": "v3",
+    "think": false,
+    "status": "PASS"
+  },
+  "oracle_precondition_validation": "FAIL",
+  "oracle_eligible_queries": 0,
+  "calls": {
+    "a_generation": 0,
+    "b_oracle_generation": 0,
+    "planned_b_generation": 3,
+    "retrieval": 0,
+    "embedding": 0,
+    "reranker": 0,
+    "semantic_evaluator": 0
+  },
+  "a": {
+    "fully_correct_complete": 0,
+    "component_coverage": [
+      0.5,
+      0.5,
+      0.0
+    ],
+    "fact_coverage": [
+      0.5,
+      0.5,
+      0.0
+    ],
+    "obligation_failures": 2,
+    "synthesis_failures": 1,
+    "citation_identity": 2,
+    "validator_pass": 2,
+    "validator_reject": 1,
+    "output_lengths": [
+      613,
+      1769,
+      186
+    ],
+    "latency_ms": [
+      22332.363,
+      42810.946,
+      18111.657
+    ]
+  },
+  "b": {
+    "not_run": true,
+    "reason": "Strict dataset-derived chunk-level oracle could not be constructed without fabricating gold mappings."
+  },
+  "runtime_changed": false,
+  "prompt_changed": false,
+  "generator_changed": false,
+  "retrieval_changed": false,
+  "reranker_changed": false,
+  "validator_changed": false,
+  "phase6_gate": "OFF",
+  "full_development": false,
+  "calibration": false,
+  "frozen_test_touched": false
+}

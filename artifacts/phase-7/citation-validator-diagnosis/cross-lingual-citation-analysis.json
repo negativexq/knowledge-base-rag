@@ -1,0 +1,54 @@
+{
+  "records": [
+    {
+      "query_id": "cross-00-1",
+      "language_pair": "tr->en",
+      "fact_status": "PARTIALLY_CORRECT",
+      "citation_identity_valid": true,
+      "citation_support_reference": "REQUIRES_CLAIM_REVIEW",
+      "validator_pass": true,
+      "primary_failure_cause": "CROSS_LINGUAL_REASONING_FAILURE"
+    },
+    {
+      "query_id": "cross-01-0",
+      "language_pair": "tr->en",
+      "fact_status": "FULLY_CORRECT_COMPLETE",
+      "citation_identity_valid": true,
+      "citation_support_reference": "DETERMINISTICALLY_SUPPORTED",
+      "validator_pass": true,
+      "primary_failure_cause": "DETERMINISTIC_EVALUATOR_FALSE_NEGATIVE"
+    },
+    {
+      "query_id": "cross-06-0",
+      "language_pair": "en->tr",
+      "fact_status": "UNOBSERVABLE",
+      "citation_identity_valid": false,
+      "citation_support_reference": "UNOBSERVABLE",
+      "validator_pass": false,
+      "primary_failure_cause": "CITATION_FORMAT_FAILURE"
+    },
+    {
+      "query_id": "cross-06-1",
+      "language_pair": "en->tr",
+      "fact_status": "FULLY_CORRECT_COMPLETE",
+      "citation_identity_valid": true,
+      "citation_support_reference": "DETERMINISTICALLY_SUPPORTED",
+      "validator_pass": true,
+      "primary_failure_cause": "DETERMINISTIC_EVALUATOR_FALSE_NEGATIVE"
+    },
+    {
+      "query_id": "cross-07-0",
+      "language_pair": "en->tr",
+      "fact_status": "FULLY_CORRECT_COMPLETE",
+      "citation_identity_valid": true,
+      "citation_support_reference": "DETERMINISTICALLY_SUPPORTED",
+      "validator_pass": true,
+      "primary_failure_cause": "DETERMINISTIC_EVALUATOR_FALSE_NEGATIVE"
+    }
+  ],
+  "pair_counts": {
+    "tr->en": 2,
+    "en->tr": 3
+  },
+  "conclusion": "Cross-lingual failures are mixed: valid citations can accompany content/authority issues, while one EN-to-TR case is unobservable after invalid citation rejection."
+}

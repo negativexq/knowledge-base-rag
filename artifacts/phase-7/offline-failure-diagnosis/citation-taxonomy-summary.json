@@ -1,0 +1,17 @@
+{
+  "citation_occurrences_total": 54,
+  "citation_identity_failure_occurrences": 2,
+  "citation_support_failure_occurrences": 23,
+  "review_required_occurrences": 23,
+  "affected_records": 15,
+  "classification_counts": {
+    "CORRECT_FACT_WRONG_SOURCE": 18,
+    "RELATED_BUT_INSUFFICIENT": 2,
+    "WRONG_FACT_WRONG_SOURCE": 1,
+    "UNKNOWN_ID": 2
+  },
+  "root_cause_counts": {
+    "CITATION_SELECTION": 21,
+    "CITATION_IDENTITY": 2
+  }
+}

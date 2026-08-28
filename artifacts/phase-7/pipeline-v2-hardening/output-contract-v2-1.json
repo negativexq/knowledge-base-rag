@@ -1,0 +1,11 @@
+{
+  "fields": [
+    "answer_parts.text",
+    "answer_parts.evidence_ids",
+    "abstain",
+    "reason_code"
+  ],
+  "no_chain_of_thought": true,
+  "pipeline_version": "pipeline_v2_1_hardened",
+  "version": "output_contract_v2_1"
+}

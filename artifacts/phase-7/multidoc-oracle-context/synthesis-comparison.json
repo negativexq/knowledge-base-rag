@@ -1,0 +1,31 @@
+{
+  "a_obligation_failures": 2,
+  "a_synthesis_failures": 1,
+  "b": "NOT_RUN",
+  "skipped": [
+    {
+      "query_id": "multi-00-1",
+      "status": "ORACLE_PRECONDITION_FAILED",
+      "reasons": [
+        "NO_AUTHORED_CHUNK_LEVEL_GOLD_MAPPING",
+        "REQUIRED_FACT_NOT_EXPLICIT_IN_TOP5_SOURCE_CANDIDATES"
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "status": "ORACLE_PRECONDITION_FAILED",
+      "reasons": [
+        "NO_AUTHORED_CHUNK_LEVEL_GOLD_MAPPING",
+        "REQUIRED_FACT_NOT_EXPLICIT_IN_TOP5_SOURCE_CANDIDATES"
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "status": "ORACLE_PRECONDITION_FAILED",
+      "reasons": [
+        "NO_AUTHORED_CHUNK_LEVEL_GOLD_MAPPING",
+        "REQUIRED_FACT_SUPPORT_NOT_DETERMINISTICALLY_VERIFIABLE"
+      ]
+    }
+  ]
+}

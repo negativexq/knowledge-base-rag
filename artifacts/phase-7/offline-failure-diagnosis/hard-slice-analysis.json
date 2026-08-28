@@ -1,0 +1,44 @@
+{
+  "n": 5,
+  "status_counts": {
+    "FULLY_CORRECT_COMPLETE": 2,
+    "PARTIALLY_CORRECT": 2,
+    "INCORRECT": 1
+  },
+  "gold_rank_positions": [
+    {
+      "query_id": "hard-annual-cancel",
+      "positions": [
+        1,
+        4
+      ]
+    },
+    {
+      "query_id": "hard-api-private",
+      "positions": [
+        3
+      ]
+    },
+    {
+      "query_id": "hard-api-version",
+      "positions": [
+        1,
+        2,
+        5
+      ]
+    },
+    {
+      "query_id": "hard-order-channel",
+      "positions": [
+        2
+      ]
+    },
+    {
+      "query_id": "hard-policy-language",
+      "positions": [
+        2
+      ]
+    }
+  ],
+  "interpretation": "Small sample; B failures are consistent with answer selection/reasoning variance, not a changed evidence set."
+}

@@ -1,0 +1,233 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "a": {
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "fact_coverage": 0.5,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ]
+        ],
+        "validator_pass": true
+      },
+      "b": {
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "fact_coverage": 0.5,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ]
+        ],
+        "validator_pass": true
+      },
+      "a_planning": "COMPONENT_OMITTED",
+      "b_planning": "COMPONENT_OMITTED",
+      "a_synthesis": "SYNTHESIS_CORRECT",
+      "b_synthesis": "SYNTHESIS_CORRECT",
+      "a_citation_classes": [
+        "SUPPORTED",
+        "CORRECT_FACT_WRONG_SOURCE"
+      ],
+      "b_citation_classes": [
+        "SUPPORTED",
+        "SUPPORTED",
+        "SUPPORTED"
+      ],
+      "content_outcome": "UNCHANGED",
+      "context_ids_identical": true,
+      "source_order_identical": true,
+      "a_output_chars": 613,
+      "b_output_chars": 1098,
+      "a_latency_ms": 22332.363,
+      "b_latency_ms": 23062.388
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "a": {
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "fact_coverage": 0.5,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ]
+        ],
+        "validator_pass": true
+      },
+      "b": {
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "fact_coverage": 0.5,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [],
+        "validator_pass": false
+      },
+      "a_planning": "COMPONENT_OMITTED",
+      "b_planning": "COMPONENT_OMITTED",
+      "a_synthesis": "SYNTHESIS_CORRECT",
+      "b_synthesis": "SYNTHESIS_CORRECT",
+      "a_citation_classes": [
+        "SUPPORTED"
+      ],
+      "b_citation_classes": [],
+      "content_outcome": "UNCHANGED",
+      "context_ids_identical": true,
+      "source_order_identical": true,
+      "a_output_chars": 1769,
+      "b_output_chars": 1297,
+      "a_latency_ms": 42810.946,
+      "b_latency_ms": 21071.012
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_fact_ids": [
+        "fact_1"
+      ],
+      "a": {
+        "status": "INCORRECT",
+        "fact_coverage": 0.0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "3/0"
+          ],
+          [
+            "filesystem",
+            "digital-goods-policy",
+            "5/1"
+          ]
+        ],
+        "validator_pass": false
+      },
+      "b": {
+        "status": "INCORRECT",
+        "fact_coverage": 0.0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "returns-manual-tr",
+            "5/0"
+          ],
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "3/0"
+          ],
+          [
+            "filesystem",
+            "returns-manual-tr",
+            "5/0"
+          ],
+          [
+            "filesystem",
+            "returns-manual-tr",
+            "3/0"
+          ],
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "5/0"
+          ],
+          [
+            "filesystem",
+            "returns-manual-tr",
+            "5/0"
+          ],
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "3/0"
+          ]
+        ],
+        "validator_pass": false
+      },
+      "a_planning": "ALL_COMPONENTS_ADDRESSED",
+      "b_planning": "ALL_COMPONENTS_ADDRESSED",
+      "a_synthesis": "SYNTHESIS_INCORRECT",
+      "b_synthesis": "SYNTHESIS_INCORRECT",
+      "a_citation_classes": [
+        "SUPPORTED",
+        "UNKNOWN_ID"
+      ],
+      "b_citation_classes": [
+        "SUPPORTED",
+        "SUPPORTED",
+        "SUPPORTED",
+        "UNKNOWN_ID",
+        "SUPPORTED",
+        "SUPPORTED",
+        "SUPPORTED"
+      ],
+      "content_outcome": "UNCHANGED",
+      "context_ids_identical": true,
+      "source_order_identical": true,
+      "a_output_chars": 186,
+      "b_output_chars": 1329,
+      "a_latency_ms": 18111.657,
+      "b_latency_ms": 29628.789
+    }
+  ],
+  "mean_a": 0.3333333333333333,
+  "mean_b": 0.3333333333333333
+}

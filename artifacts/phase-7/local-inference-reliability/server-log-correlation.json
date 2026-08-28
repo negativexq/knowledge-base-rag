@@ -1,0 +1,23 @@
+{
+  "correlation_confidence": "SUPPORTED_BUT_NOT_EXHAUSTIVE",
+  "generation_started": true,
+  "historical_server_events": [
+    "POST /api/chat reached server and was later cancelled after prolonged processing",
+    "client connection closed before llama-server finished loading; load failed with context canceled",
+    "fresh llama-server started and model loaded on Apple M2 Metal",
+    "post-recovery direct POST /api/chat returned HTTP 200"
+  ],
+  "original_probe_a": {
+    "client_timeout_ms": 120010,
+    "first_body_byte": false,
+    "headers_received": false,
+    "response_bytes": 0
+  },
+  "probe_id": "original-probe-a-and-recovery",
+  "prompt_eval_started": true,
+  "response_started": true,
+  "runner_error": false,
+  "runner_exit": "NOT_OBSERVED",
+  "runner_started": true,
+  "server_received_request": true
+}

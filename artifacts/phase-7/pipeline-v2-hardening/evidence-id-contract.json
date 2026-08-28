@@ -1,0 +1,7 @@
+{
+  "id_format": "E<number>",
+  "provenance_resolved_server_side": true,
+  "scope": "one model response",
+  "unauthorized_fail_closed": true,
+  "unknown_rejected": true
+}

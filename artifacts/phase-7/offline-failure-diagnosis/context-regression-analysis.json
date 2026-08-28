@@ -1,0 +1,7 @@
+{
+  "same_top5_for_regressions": true,
+  "same_order_for_regressions": true,
+  "causally_linked": 0,
+  "plausibly_linked": 1,
+  "stochastic_or_inconclusive": 1
+}

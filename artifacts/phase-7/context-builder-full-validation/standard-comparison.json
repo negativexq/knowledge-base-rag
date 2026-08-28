@@ -1,0 +1,26 @@
+{
+  "query_ids": [
+    "native-00-0",
+    "native-00-1",
+    "native-00-2",
+    "native-00-3",
+    "native-01-0",
+    "native-01-1"
+  ],
+  "a": {
+    "n": 6,
+    "full": 4,
+    "incomplete": 0,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 2
+  },
+  "b": {
+    "n": 6,
+    "full": 6,
+    "incomplete": 0,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 0
+  }
+}

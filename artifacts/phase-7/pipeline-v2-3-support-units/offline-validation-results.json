@@ -1,0 +1,9 @@
+{
+  "application_abstention_contract": "PASS",
+  "critical_value_contract": "PASS",
+  "note": "Implementation tests are separate; no historical generation result was fabricated.",
+  "provider_calls": 0,
+  "schema_serialization": "PASS",
+  "status": "PASS",
+  "support_unit_contract": "PASS"
+}

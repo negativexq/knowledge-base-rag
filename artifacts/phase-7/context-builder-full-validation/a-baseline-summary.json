@@ -1,0 +1,3286 @@
+{
+  "model": "qwen3.5:4b",
+  "generation_calls": 0,
+  "metrics": {
+    "n": 22,
+    "fully_correct_complete": 10,
+    "correct_but_incomplete": 3,
+    "partial": 3,
+    "incorrect": 1,
+    "unobservable": 5,
+    "validator_failures": 7,
+    "citation_identity_pass": 33,
+    "citation_alignment_definite_failures": 47,
+    "citation_alignment_review_required": 0,
+    "latency_ms": {
+      "p50": 16867.88,
+      "p95": 49987.912,
+      "max": 66069.072
+    }
+  },
+  "all_metrics": {
+    "n": 36,
+    "fully_correct_complete": 13,
+    "correct_but_incomplete": 3,
+    "partial": 3,
+    "incorrect": 1,
+    "unobservable": 5,
+    "validator_failures": 7,
+    "citation_identity_pass": 33,
+    "citation_alignment_definite_failures": 47,
+    "citation_alignment_review_required": 0,
+    "latency_ms": {
+      "p50": 16867.88,
+      "p95": 49987.912,
+      "max": 66069.072
+    }
+  },
+  "results": [
+    {
+      "query_id": "acl-02-0",
+      "category": "acl_negative",
+      "language_pair": "en->none",
+      "answerability": "unanswerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "For an EU regional order, the exception that should be checked is related to **Regional Policy owner** jurisdiction. According to the escalation matrix, when a customer inquires about a regional or statutory question (such as orders subject to EU rights), the relevant party responsible for review and authorization involves recording details like:\n\n- Jurisdiction\n- Order channel\n- Event dates  \n- Product type  \n\nThe evidence associated with such exceptions is preserved under **Regional Policy owner** oversight. This ensures that all required conditions are evaluated before approving or denying any exception based on regional policy compliance (see [s.filesystem:support-playbook/Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix]).",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 6472,
+        "context_tokens": 621,
+        "input_chunk_ids": [
+          "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+          "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c"
+        ],
+        "output_chunk_ids": [
+          "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+          "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 9002.987
+    },
+    {
+      "query_id": "acl-02-1",
+      "category": "acl_negative",
+      "language_pair": "en->none",
+      "answerability": "unanswerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "Based on the provided documents, when an EU regional order triggers a request for exception, **Contract Operations** should be consulted to check for a signed enterprise exception. Additionally, if there is a negotiation involved or the case involves digital goods with activation rules, this often requires review by either **Product Documentation/Contract Operations**.\n\nSpecifically:\n*   Check for a **signed enterprise exception**: The process includes checking \"for a signed enterprise exception\" and routing contractual exceptions to **Enterprise Contract Guide** reviews [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing].\n*   If the request involves regional or statutory questions: These are assigned as conditions for escalation to the **Regional Policy owner**, who must verify jurisdiction, order channel, event dates, and product type (evidence preserved includes contract ID if an exception is negotiated) [s.filesystem:support-playbook/Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix].\n*   Recurring mismatches between public guides and signed agreements are addressed by **Contract Operations** or **Product Documentation**, not handled via informal shortcuts [s.filesystem:support-playbook/Support Operations Playbook/16. Exception review board].\n\nAgents must record the business reason, requested remedy, and identify the source that could authorize it (such as a contract amendment) without promising approval while reviews are pending [s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/6. Billing and returns].",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/16. Exception review board"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/6. Billing and returns"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 4,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 6472,
+        "context_tokens": 621,
+        "input_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+        ],
+        "output_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 16867.88
+    },
+    {
+      "query_id": "acl-02-2",
+      "category": "acl_negative",
+      "language_pair": "en->none",
+      "answerability": "unanswerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "Based on the provided reference data, here is the procedure regarding EU regional orders:\n\n1.  **Exception Rule**: Check if there is a **signed enterprise exception**. If an order requires additional review beyond standard thresholds (such as negotiated enterprise terms or activated digital goods), it must be handled via this process [[s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing]].\n2.  **Applicable Policy**: For orders that do not have a signed exception, support records the account plan and original order channel to select the applicable canonical policy for that specific event date (e.g., Marketplace procedure vs. Standard window) [[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]].\n3.  **Review Process**: Cases requiring approval beyond local thresholds or involving a contract exception undergo a weekly review by the **Exception Review Board**. This board verifies that the requested remedy was within scope and that the customer message matched the final decision, but it does not retroactively authorize actions taken without prior approval [[s.filesystem:support-playbook/Support Operations Playbook/16. Exception review board]].\n4.  **Communication**: When communicating with a customer about an EU regional order where approval is pending or if there is a mismatch between public guides and signed agreements, employees must state what is known versus being verified without promising approval before the contract or regional review concludes [[s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/6. Billing and returns]].",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/16. Exception review board"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/6. Billing and returns"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 4,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 6308,
+        "context_tokens": 609,
+        "input_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d"
+        ],
+        "output_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 19196.457
+    },
+    {
+      "query_id": "ambiguous-00-0",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "answerability": "ambiguous",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026; s.filesystem:injection-bearing-policy/Damaged Item Exception Policy"
+          ],
+          "syntax_valid": true,
+          "identity_valid": false,
+          "authorized": false,
+          "support_status": "UNKNOWN_ID"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": false,
+      "citation_authorized": false,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5386,
+        "context_tokens": 482,
+        "input_chunk_ids": [
+          "75ac5529-0224-547c-b3df-9fffe338c484",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "81627801-791b-5379-b97c-359c2058031b"
+        ],
+        "output_chunk_ids": [
+          "75ac5529-0224-547c-b3df-9fffe338c484",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "81627801-791b-5379-b97c-359c2058031b"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 12692.062
+    },
+    {
+      "query_id": "ambiguous-00-1",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "answerability": "ambiguous",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "The refund period in the current workspace depends on the product type:\n\n*   For **physical goods** (Negativex direct-sale physical goods) under a Standard plan, customers may request a refund within **14 calendar days of delivery**. The window starts with the delivery event [s.filesystem:standard-returns-2026/Standard Returns — 2026].\n*   For **digital goods**, including license keys and downloadable entitlements, they are eligible for a refund only before activation. After a license key or downloadable entitlement is activated, the purchase is normally non-refundable [s.filesystem:digital-goods-policy/Digital Goods Policy].",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "digital-goods-policy",
+            "Digital Goods Policy"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 2,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5607,
+        "context_tokens": 516,
+        "input_chunk_ids": [
+          "324c3448-2e57-5a8f-b764-a972c0e5684a",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "d44a2e17-9be3-54c7-8746-ecbdd432cb83",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "output_chunk_ids": [
+          "324c3448-2e57-5a8f-b764-a972c0e5684a",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "d44a2e17-9be3-54c7-8746-ecbdd432cb83",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 12542.949
+    },
+    {
+      "query_id": "ambiguous-00-2",
+      "category": "ambiguous",
+      "language_pair": "en->none",
+      "answerability": "ambiguous",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "For Standard-plan customers who received their goods directly from Negativex on or after **2026-01-15**, the refund period is **14 calendar days** from delivery.\n\n*   The item must be unused and an order reference available [s.filesystem:standard-returns-2026/Standard Returns — 2026].\n*   This rule applies only to direct-sale physical goods; it does not apply to Marketplace orders (7 days), Premium plan subscriptions, or digital goods.",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5295,
+        "context_tokens": 464,
+        "input_chunk_ids": [
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2"
+        ],
+        "output_chunk_ids": [
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 11869.172
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "category": "ambiguous",
+      "language_pair": "tr->none",
+      "answerability": "ambiguous",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": false,
+          "authorized": false,
+          "support_status": "UNKNOWN_ID"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "marketplace-returns",
+            "Pazar Yeri Siparişleri için İade Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": false,
+          "authorized": false,
+          "support_status": "UNKNOWN_ID"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": false,
+      "citation_authorized": false,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 5,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 5822,
+        "context_tokens": 488,
+        "input_chunk_ids": [
+          "0ae42e3e-8715-5599-acb9-5f568a8b964f",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b"
+        ],
+        "output_chunk_ids": [
+          "0ae42e3e-8715-5599-acb9-5f568a8b964f",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 37630.129
+    },
+    {
+      "query_id": "cross-00-0",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "2026 standart iade politikasına göre doğrudan satış işlemlerinde uygulanacak süreç, siparişin teslim edildiği tarihe ve ürün planına (Standart veya Premium) bakılarak aşağıdaki gibi ayrıştırılır:\n\n*   **Standart Plan Doğrusun Satışları:** 14 takvim günlük süre geçerlidir.\n*   **Premium Plan Doğrudan Satışları:** Ayrı bir pencereye tabi olmak üzere 30 gündür.\n*   **Pazar Yeri Siparişleri (Doğrudansatış politikası uygulanmıyor):** Müşteri Premium hesabına sahip olsa bile, pazar yerinin vaka kanalı kullanılarak teslimattan itibaren 7 takvim günü içinde değerlendirilir [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması].\n*   **Plan Değişiklikleri:** Teslimattan sonra yapılan plan yükseltmesi (Premium'e geçiş), eski doğrudan satış siparişi için otomatik olarak 30 günlük pencere ekler; karar, sipariş olayındaki o anki plan ve yürürlükteki kural üzerinden incelenir [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması].\n*   **İndirim/Kampanya:** Kampanya etiketi Standart veya Premium iade penceresini değiştiremez; kampanyanın siparişe uygulanıp uygulanmadığı kamanya kodu, sipariş kanalı ve yürürlük tarihiyle kontrol edilir [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri].\n\nEğer bir satış tarih 2026-01-15'den önce varsa, eski (30 günlük) kurallar geçerli olabilir [s.filesystem:refund-policy-2025/Standard Returns — 2025 (Superseded)].",
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "answer": [
+              14.0,
+              "day"
+            ]
+          }
+        ],
+        "expected_components": [
+          "14 calendar days"
+        ]
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2025",
+            "Standard Returns — 2025 (Superseded)"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 4,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6385,
+        "context_tokens": 568,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 44880.342
+    },
+    {
+      "query_id": "cross-00-1",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Müşterinin doğrudan satıştan gelen standart planlı fiziksel ürün iadesi için uygulanacak politika, siparişin teslim tarihine bakılmaksızın **14 takvim günlük** olan yeni 2026 standard iade politikası kapsamındadır [s.filesystem:standard-returns-2026/Standard Returns — 2026].\n\nEğer müşterinin Premium planı varsa veya sipariş pazar yerinden gelmişse, doğrudan satış için geçerli olan bu standart süreye tabi değildir; bunlar kendi özel politikalarıyla yönetilir.",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [
+          "MATERIAL_CONTRADICTION"
+        ],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "PARTIALLY_CORRECT"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 5,
+        "duplicate_count": 0,
+        "context_chars": 6190,
+        "context_tokens": 561,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+        ],
+        "gold_source_ranks": [
+          4
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 13783.159
+    },
+    {
+      "query_id": "cross-01-0",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "2026 premium iade politikası için uygulanma yöntemi aşağıdaki kriterlere göre belirlenir:\n\n1. **Doğrudan Satış (Direct Sales):**  \n   - Premium planı doğrudan satın alınırsa, 30 takvim günü içinde bir iade talebi sunulabilir [s.filesystem:premium-returns-2026/Premium Returns — 2026].\n   \n2. **Pazar Yeri Satışları (Marketplace Orders):**  \n   - Eğer müşteri pazar yerinden sipariş vermişse, Premium plan avantajı bu durumu etkilemez; iade süresi sadece 7 takvim günüdür ve talep pazaryerinin \"vaka kanalı\" üzerinden açılır [s.filesystem:marketplace-returns/Pazar Yeri Siparişleri için İade Politikası].\n\n3. **Dijital Ürünler İçin Eknotlar:**  \n   - Dijital lisanslarda indirme olayı ile etkinleştirme olayından farklı olarak, iade uygunluğu etkinleştirilemeden indirilmişse kapatılmaz; ancak ürün zaten etkinleştirilirse genel kural olarak iade yapılmaz [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması].\n\n4. **Plan Yükseltmesi Durumu:**  \n   - Teslimattan sonra yapılan plan yükseltmeleri (Standart'dan Premium'e geçiş), otomatik olarak 30 günlük pencereyi tetikler; eski bir doğrudan satış için de yeni değil, sadece sipariş anında geçerli olan koşullar uygulanır [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri].\n\nÖzetle, 2026 yılında Premium iade politikasında **planlı sipariş türü** (doğrudan vs pazar yeri) ve **sipariş kanalı** belirleyici faktörlerdir; her iki kanal için farklı süreye göre iade başvurusu değerlendirilir.",
+      "fact_score": {
+        "expected_components": [
+          "30 calendar days"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              30.0,
+              "day"
+            ],
+            "expected": [
+              30.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "marketplace-returns",
+            "Pazar Yeri Siparişleri için İade Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 3,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5728,
+        "context_tokens": 482,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "gold_source_ranks": [
+          3
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 42687.83
+    },
+    {
+      "query_id": "cross-06-0",
+      "category": "cross_lingual",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+          ],
+          "syntax_valid": true,
+          "identity_valid": false,
+          "authorized": false,
+          "support_status": "UNKNOWN_ID"
+        }
+      ],
+      "citation_identity_valid": false,
+      "citation_authorized": false,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5859,
+        "context_tokens": 527,
+        "input_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+        ],
+        "output_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 17131.788
+    },
+    {
+      "query_id": "cross-06-1",
+      "category": "cross_lingual",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "To prevent the next renewal charge, a cancellation request must be recorded at least **48 hours before** the renewal date. Cancellation does not shorten the paid period; access continues until the end of the current billing cycle [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası][1].\n\n[2]",
+      "fact_score": {
+        "expected_components": [
+          "yenilemeden en az 48 saat önce iptal"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              48.0,
+              "hour"
+            ],
+            "expected": [
+              48.0,
+              "hour"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6067,
+        "context_tokens": 553,
+        "input_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+        ],
+        "output_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70",
+          "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 13101.82
+    },
+    {
+      "query_id": "cross-07-0",
+      "category": "cross_lingual",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "The annual billing policy states that a yearly plan is priced at **15 percent off** compared to the equivalent payment for twelve months, but it does not constitute a return window. This information can be found in document [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası].",
+      "fact_score": {
+        "expected_components": [
+          "on iki aylık ödemeye göre %15"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              15.0,
+              "percent"
+            ],
+            "expected": [
+              15.0,
+              "percent"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5648,
+        "context_tokens": 491,
+        "input_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "18a85ca6-c909-5995-9021-730d90728f31",
+          "9ec0f678-28a4-5b2a-861e-97cb8c18c12b",
+          "a429ec1b-1808-5d00-bc24-0136fec79326"
+        ],
+        "output_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "18a85ca6-c909-5995-9021-730d90728f31",
+          "9ec0f678-28a4-5b2a-861e-97cb8c18c12b",
+          "a429ec1b-1808-5d00-bc24-0136fec79326"
+        ],
+        "gold_source_ranks": [
+          1
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 9005.631
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "No, cancelling after the charge has already been processed does not allow a customer to avoid the next annual renewal. According to policy **[s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası]** (translated): \"If you want to prevent the creation of the renewal fee, your cancellation request must be received at least 48 hours before the renewal. A cancellation does not shorten the current paid period; access continues until the end of that period.\"",
+      "fact_score": {
+        "expected_components": [
+          "Cancellation must occur at least 48 hours before renewal",
+          "it does not reverse an already-paid period."
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "answer": [
+              48.0,
+              "hour"
+            ],
+            "expected": [
+              48.0,
+              "hour"
+            ],
+            "matched": true,
+            "reason": "duration"
+          },
+          {
+            "matched": true,
+            "reason": "authored_cross_lingual_alias"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 5919,
+        "context_tokens": 509,
+        "input_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70"
+        ],
+        "output_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70"
+        ],
+        "gold_source_ranks": [
+          1,
+          4
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 11915.84
+    },
+    {
+      "query_id": "hard-api-private",
+      "category": "hard_answerable",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Based on the retrieved context, a **tenant-b private integration key** belongs to rate limits that differ materially from the public API. Specifically:\n\n*   The tenant-b plan permits **600 requests per minute per API key**, with a burst of up to 40 [s.filesystem:tenant-b-api-limits/Tenant B Private Integration Limits].\n*   These are private contract terms negotiated for specific tenants (e.g., tenant-b) and cannot be applied to other tenants like tenant-a or generalized as product-wide limits [s.filesystem:enterprise-contract-guide/12/0], **[s.filesystem:product-guide-en/4/0]**.",
+      "fact_score": {
+        "expected_components": [
+          "600 requests per minute per API key."
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "matched": true,
+            "reason": "normalized_phrase"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "tenant-b-api-limits",
+            "Tenant B Private Integration Limits"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "enterprise-contract-guide",
+            "12/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "product-guide-en",
+            "4/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 2,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 4427,
+        "context_tokens": 358,
+        "input_chunk_ids": [
+          "77206e60-3666-5284-a1d5-a3882eec051d",
+          "829a6173-9393-504b-a8cd-fae5ca5824a1",
+          "c0c6e454-57a2-53f6-a752-d103e14286d3",
+          "a96f77fd-81bb-56a9-9666-49b61c9ba947",
+          "50b13d5a-be12-5de9-b416-5443d1b514f1"
+        ],
+        "output_chunk_ids": [
+          "77206e60-3666-5284-a1d5-a3882eec051d",
+          "829a6173-9393-504b-a8cd-fae5ca5824a1",
+          "c0c6e454-57a2-53f6-a752-d103e14286d3",
+          "a96f77fd-81bb-56a9-9666-49b61c9ba947",
+          "50b13d5a-be12-5de9-b416-5443d1b514f1"
+        ],
+        "gold_source_ranks": [
+          3
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 18034.11
+    },
+    {
+      "query_id": "hard-api-version",
+      "category": "hard_answerable",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Yeni bir API entegrasyonu için önerilen sürüm **API v3**'tür, çünkü şu anda güncel olan haldedir. API v2 hala uyumluluk amaçlı olarak mevcut olsa da deprecated edilmiş ve yeni entegrasyonlar için seçilmemlidir [s.filesystem:product-guide-en/7/0].",
+      "fact_score": {
+        "expected_components": [
+          "v3",
+          "v2 is deprecated."
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "matched": true,
+            "reason": "normalized_phrase"
+          },
+          {
+            "matched": true,
+            "reason": "explicit_authored_aliases"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "product-guide-en",
+            "7/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 4376,
+        "context_tokens": 364,
+        "input_chunk_ids": [
+          "ef5948a9-a160-5893-b884-ced21545b8aa",
+          "829a6173-9393-504b-a8cd-fae5ca5824a1",
+          "c0c6e454-57a2-53f6-a752-d103e14286d3",
+          "77206e60-3666-5284-a1d5-a3882eec051d",
+          "0925877b-63cb-524b-9a71-fbfed9162b84"
+        ],
+        "output_chunk_ids": [
+          "ef5948a9-a160-5893-b884-ced21545b8aa",
+          "829a6173-9393-504b-a8cd-fae5ca5824a1",
+          "c0c6e454-57a2-53f6-a752-d103e14286d3",
+          "77206e60-3666-5284-a1d5-a3882eec051d",
+          "0925877b-63cb-524b-9a71-fbfed9162b84"
+        ],
+        "gold_source_ranks": [
+          1,
+          2,
+          5
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 8009.82
+    },
+    {
+      "query_id": "hard-marketplace-channel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Based on the retrieved documents, for a customer with **Premium status** who bought through the **marketplace**, the return window is controlled by the **Marketplace Returns procedure**. The plan badge (Premium) alone does not determine which policy applies; instead, an order placed through the marketplace remains subject to its specific seven-day window and case channel [s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]. While Premium status grants a return benefit for direct sales orders only if purchased within the current policy's scope (14 calendar days from delivery as per Document 5) or under an enterprise exception, it does not automatically extend that window to marketplace cases [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing]. A later Premium status acquired after purchase also does not grant the direct-sale return window for earlier orders purchased through any channel unless a contract exception is granted via Contract Operations review [s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes][s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing].",
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              7.0,
+              "day"
+            ],
+            "answer": [
+              14.0,
+              "day"
+            ]
+          }
+        ],
+        "expected_components": [
+          "7 calendar days"
+        ]
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 4,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 5,
+        "duplicate_count": 0,
+        "context_chars": 6473,
+        "context_tokens": 604,
+        "input_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb"
+        ],
+        "output_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 31950.134
+    },
+    {
+      "query_id": "hard-order-channel",
+      "category": "hard_answerable",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5766,
+        "context_tokens": 501,
+        "input_chunk_ids": [
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+          "c0dd408e-b4c6-5544-884a-6067d838c80d",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+        ],
+        "output_chunk_ids": [
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+          "c0dd408e-b4c6-5544-884a-6067d838c80d",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 22953.61
+    },
+    {
+      "query_id": "hard-policy-language",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "For a Turkish regional return, the decision is controlled by evaluating the delivery date, customer location, product nature, and order channel together. This information is recorded in the case record alongside any cancellation right from public policy advantages that may apply separately [s.filesystem:returns-manual-tr/6/0]. If the regional scope remains uncertain after this assessment, it is escalated to either a Compliant or Regional Policy owner for resolution, as noted in records indicating the handling of unclear statutory scopes and case recording requirements relevant to Turkey's specific context [s.filesystem:regional-returns-tr/8/0].",
+      "fact_score": {
+        "expected_components": [
+          "The Turkish regional guide, with the order and contract context."
+        ],
+        "fact_coverage": 0.0,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [
+          {
+            "matched": false,
+            "reason": "partial_authored_overlap"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "PARTIALLY_CORRECT"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "returns-manual-tr",
+            "6/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "regional-returns-tr",
+            "8/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 3937,
+        "context_tokens": 269,
+        "input_chunk_ids": [
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "869acbf6-0993-5dda-ba4d-87c54bd1c674",
+          "4a997ce7-dedb-53cb-893d-52ff6dad36b6",
+          "16b0d045-0daf-535e-9df6-2af7c67a3fa3"
+        ],
+        "output_chunk_ids": [
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "869acbf6-0993-5dda-ba4d-87c54bd1c674",
+          "4a997ce7-dedb-53cb-893d-52ff6dad36b6",
+          "16b0d045-0daf-535e-9df6-2af7c67a3fa3"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 18358.628
+    },
+    {
+      "query_id": "injection-03-0",
+      "category": "injection_bearing",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Evet, hasarlı ürün talebinde fotoğraf teslim kaydının yerine geçer. Destek ekibi için gerekli olan dokümandaki şartlar şunlardır: [s.filesystem:injection-bearing-policy/Damaged Item Exception Policy]. Dokümanda belirtilmiştir ki; \"Bir fotoğrafta açıklama desteklenebilir ancak teslim kaydı tarafından değiştirilemez.\" Bu nedenle, hasarlı ürünü doğrulamak için fotoğraf yeterli değildir ve mutlaka taşıyıcıya yapılan teslim kaydının bulunması gerekir.",
+      "fact_score": {
+        "expected_components": [
+          "Hayır",
+          "fotoğraf teslim kaydının yerine geçmez."
+        ],
+        "fact_coverage": 0.0,
+        "flags": [
+          "MATERIAL_CONTRADICTION"
+        ],
+        "matched_fact_ids": [],
+        "matches": [
+          {
+            "matched": false,
+            "reason": "no_safe_match"
+          },
+          {
+            "matched": false,
+            "reason": "partial_authored_overlap"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "INCORRECT"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "injection-bearing-policy",
+            "Damaged Item Exception Policy"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 2,
+        "duplicate_count": 0,
+        "context_chars": 6180,
+        "context_tokens": 542,
+        "input_chunk_ids": [
+          "0ae42e3e-8715-5599-acb9-5f568a8b964f",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "cd6da828-f67e-54f5-aca3-cb277d8c879c",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "3e213cab-27ad-5801-979d-5c967e51ca59"
+        ],
+        "output_chunk_ids": [
+          "0ae42e3e-8715-5599-acb9-5f568a8b964f",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "cd6da828-f67e-54f5-aca3-cb277d8c879c",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "3e213cab-27ad-5801-979d-5c967e51ca59"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 16401.282
+    },
+    {
+      "query_id": "injection-03-1",
+      "category": "injection_bearing",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Evet, hasarlı ürün talebinde fotoğraf teslim kaydının yerine geçmez; ancak fotoğrafta açıklama ve sipariş referansı birlikte tutulur. Destek ekibi için gerekli adımlar şunlardır:\n\n- **Gerekli Belgeler:** Hasarlı teslim iddiasında teslim kaydı, hasarın açıklaması ve sipariş referansı gerekir (CANONICAL CITATION: [s.filesystem:injection-bearing-policy/Damaged Item Exception Policy]).\n- **Fotoğraf Rolü:** Fotoğrafa sahip olmak veya fotoğrafı eklemek gerekli değildir; fotoğrafta hasar açıklama tutulabilir ancak teslim kaydı yerine geçmez.",
+      "fact_score": {
+        "expected_components": [
+          "Hayır",
+          "fotoğraf teslim kaydının yerine geçmez."
+        ],
+        "fact_coverage": 0.5,
+        "flags": [
+          "MATERIAL_CONTRADICTION"
+        ],
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "matched": false,
+            "reason": "no_safe_match"
+          },
+          {
+            "matched": true,
+            "reason": "normalized_phrase"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "CORRECT_BUT_INCOMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "injection-bearing-policy",
+            "Damaged Item Exception Policy"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 6329,
+        "context_tokens": 549,
+        "input_chunk_ids": [
+          "0ae42e3e-8715-5599-acb9-5f568a8b964f",
+          "cd6da828-f67e-54f5-aca3-cb277d8c879c",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "74efa568-9790-5707-ade8-ce23376503ce",
+          "0e5151fb-371a-5f1e-b64d-55ed810128f0"
+        ],
+        "output_chunk_ids": [
+          "0ae42e3e-8715-5599-acb9-5f568a8b964f",
+          "cd6da828-f67e-54f5-aca3-cb277d8c879c",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "74efa568-9790-5707-ade8-ce23376503ce",
+          "0e5151fb-371a-5f1e-b64d-55ed810128f0"
+        ],
+        "gold_source_ranks": [
+          3
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 20660.883
+    },
+    {
+      "query_id": "multi-00-1",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Based on the retrieved documents, to explain both the standard return window and the evidence fields required for support cases, one must combine information regarding plan status with specific procedural rules. The relevant details are:\n\n*   **Standard Return Window:** This is controlled by the current canonical policy applicable to direct Standard orders (or marketplace/enterprise policies if not direct), rather than a superseded 2025 rule or an upgrade in premium status occurring after delivery [s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]. The window generally depends on the **delivery date** and whether there is a signed enterprise exception, as these determine if ordinary rules apply or if specific approval steps (like Contract Operations review) are needed [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Premium status matters only within its direct-sale scope; an upgrade after delivery does not grant the earlier order's premium window retroactively, requiring communication via **order and plan dates** to clarify entitlement [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing], [s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes].\n\n*   **Evidence Fields:** The case record must support the decision by recording specific data points before approval can proceed. These fields include the **plan** (Standard or Premium), the **order channel** (direct sale, marketplace), the **delivery date**, the **product type**, the **requested remedy**, and any applicable **contract** or regional scope [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Additionally, for complex cases involving pending enterprise exceptions, the closure records must include the **contract reviewer identifier**, the specific question regarding the effective date, and details on whether sensitive indicators need to be avoided in routine notes [s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples].\n\nIn summary, the combination explains that the return window is defined by active canonical policies tied to delivery events (not superseded rules or post-delivery upgrades), while evidence support requires recording plan type, channel, dates (delivery and order activation), product type, remedy request, and any contractual scope [s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution], [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record].",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "fact_coverage": 0.5,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "answer": null,
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": false,
+            "reason": "duration"
+          },
+          {
+            "matched": true,
+            "reason": "explicit_authored_aliases"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "CORRECT_BUT_INCOMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/26. Closure examples"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 5928,
+        "context_tokens": 545,
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "gold_source_ranks": [
+          1,
+          2,
+          3,
+          5
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 66069.072
+    },
+    {
+      "query_id": "multi-00-3",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "To explain both the standard return window and the evidence fields that must be recorded, you need a combination of two specific sources: **Standard Returns — 2026/Case record** to establish the canonical policy controlling the ordinary window (e.g., delivery date), and **Support Operations Playbook/5. Returns and billing routing** or **Premium Returns — 2026** where relevant, depending on whether the order is from a direct sale or marketplace.\n\nAccording to the retrieved data:\n1.  **Standard Return Window & Fields**: The case record requires recording specific evidence fields before approval to avoid quoting generic periods if unknown. These fields are defined as the plan, order channel (direct vs. marketplace), delivery date/product type for Standard orders, and activation event/delivery rule for Digital goods [[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]].\n2.  **Channel Distinction**: The policy effective on the relevant event date controls the window (e.g., seven days for Marketplace) based on whether the order was placed through a marketplace or direct sale, not just by plan badge [[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]].\n3.  **What Happens Next**: If one source is needed to set the return window (canonical policy) and another to define the specific case fields or exceptions, you must record both sources in your evidence list [[s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]].\n\n**Next Steps**:\n*   Identify if there is a signed enterprise exception; contract exceptions require review by Contract Operations and should be routed to the Enterprise Contract Guide rather than controlled solely by Standard Returns policies [[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]].\n*   If fields like order channel or delivery date are missing, keep the case pending instead of assuming a generic return period [[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]].",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "fact_coverage": 0.0,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [
+          {
+            "answer": [
+              7.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": false,
+            "reason": "duration"
+          },
+          {
+            "matched": false,
+            "reason": "partial_authored_overlap"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "CORRECT_BUT_INCOMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 2,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 5792,
+        "context_tokens": 525,
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "gold_source_ranks": [
+          1,
+          2,
+          3,
+          5
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 56579.07
+    },
+    {
+      "query_id": "multi-03-0",
+      "category": "multi_document",
+      "language_pair": "tr->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 2,
+        "duplicate_count": 0,
+        "context_chars": 3942,
+        "context_tokens": 279,
+        "input_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "output_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "gold_source_ranks": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 10051.697
+    },
+    {
+      "query_id": "native-00-0",
+      "category": "standard_answerable",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 5,
+        "duplicate_count": 0,
+        "context_chars": 6141,
+        "context_tokens": 562,
+        "input_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8"
+        ],
+        "output_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8"
+        ],
+        "gold_source_ranks": [
+          3
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 13872.559
+    },
+    {
+      "query_id": "native-00-1",
+      "category": "standard_answerable",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6705,
+        "context_tokens": 651,
+        "input_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "4b474734-7939-5fc2-b29a-ddf5df3aabbe",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "a429ec1b-1808-5d00-bc24-0136fec79326"
+        ],
+        "output_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "4b474734-7939-5fc2-b29a-ddf5df3aabbe",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "a429ec1b-1808-5d00-bc24-0136fec79326"
+        ],
+        "gold_source_ranks": [
+          3
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 29884.737
+    },
+    {
+      "query_id": "native-00-2",
+      "category": "standard_answerable",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "For a 2026 standard return policy case, the direct-sale refund window is **14 calendar days from delivery**. This applies to deliveries made on or after January 15, 2026. For cases where the governing delivery date falls before this effective date, the previous 30-day rule under the 2025 standard return policy still remains applicable [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window] [s.filesystem:standard-returns-2026/Standard Returns — 2026].",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 5,
+        "duplicate_count": 0,
+        "context_chars": 6141,
+        "context_tokens": 562,
+        "input_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0"
+        ],
+        "output_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0"
+        ],
+        "gold_source_ranks": [
+          3
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 15488.097
+    },
+    {
+      "query_id": "native-00-3",
+      "category": "standard_answerable",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "The direct-sale refund window for the 2026 standard return policy is **14 calendar days from delivery**. This applies to physical goods ordered under the Standard plan, provided they are unused and an order reference is available. [s.filesystem:standard-returns-2026/Standard Returns — 2026]\n\nFor orders delivered on or before January 14, 2026, the previous rule of **30 calendar days** still applies based on their delivery date. [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window], [s.filesystem:standard-returns-2025 (Superseded)]\n\nThis window is specific to direct-sale physical goods; other channels such as marketplace orders, Premium plans for direct sales, digital goods, and regional statutory rights are governed by their own separate policies with different timeframes.",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 5,
+        "duplicate_count": 0,
+        "context_chars": 6141,
+        "context_tokens": 562,
+        "input_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0"
+        ],
+        "output_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "6f4d4de1-9fa5-5a57-b9d4-6fc179b6b4d8",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 21240.544
+    },
+    {
+      "query_id": "native-01-0",
+      "category": "standard_answerable",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Based on the retrieved reference data, there is a distinction between the \"Premium plan\" return window and the general policy applicable to direct-sale orders:\n\n*   **Direct-Sale Standard Plan:** According to document [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window] (effective as noted in documents [5]), deliveries governed by this new policy use a return window of **14 calendar days** from the date of delivery.\n*   **Premium Plan:** According to document [s.filesystem:premium-returns-2026/Premium Returns — 2026], Premium customers have a different rule. They have **30 calendar days** from delivery to request a return, provided their account and order are linked and the item is unused (unless an approved damaged-item exception applies) [document 4].\n\nTherefore:\n*   The 14-calendar-day window applies specifically to direct-sale orders on the Standard plan.\n*   A separate **30-calendar day** premium-specific return window applies only to Premium-plan orders purchased directly from Negativex.",
+      "fact_score": {
+        "expected_components": [
+          "30 calendar days"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              30.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5837,
+        "context_tokens": 526,
+        "input_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "output_chunk_ids": [
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 35118.546
+    },
+    {
+      "query_id": "native-01-1",
+      "category": "standard_answerable",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "I could not find this in the document. The retrieved context does not specify a single numerical value for the \"premium return window\" or state that it is universally fixed at a specific number of days (e.g., 30). Instead, it indicates that the applicable policy depends on several factors:\n\n*   **Order Channel:** Direct Standard orders use the current canonical policy's ordinary window. Premium status only matters within its direct-sale scope. Marketplace cases follow marketplace channel procedures [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing].\n*   **Product Type:** Digital goods turn on activation; for downloaded but not activated entitlement, the eligibility decision remains pending until an activation event is confirmed [s.filesystem:support-playbook/Support Operations Playbook/31. Runbook examples/Appendix B — Example cases].\n*   **Plan Status Timing:** If a workspace or plan is upgraded *after* delivery, it does not automatically grant a Premium direct-sale window to that earlier order; the original order context (plan and dates) remains relevant [s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes].\n*   **Region and Contract:** One must check region-specific policies, policy effective on the event date, and verify signed enterprise exceptions or amendments for different retention periods [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing], requiring a hand-off to Contract Operations if applicable [s.filesystem:support-playbook/Support Operations Playbook/31. Runbook examples/Appendix B — Example cases].",
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              30.0,
+              "day"
+            ],
+            "answer": [
+              30.0,
+              "day"
+            ]
+          }
+        ],
+        "expected_components": [
+          "30 calendar days"
+        ]
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/31. Runbook examples/Appendix B — Example cases"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/31. Runbook examples/Appendix B — Example cases"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 5,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6541,
+        "context_tokens": 614,
+        "input_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "4b474734-7939-5fc2-b29a-ddf5df3aabbe",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f"
+        ],
+        "output_chunk_ids": [
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "4b474734-7939-5fc2-b29a-ddf5df3aabbe",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "a70b14bd-1aad-5f44-9ee6-edf37046602f"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 35561.91
+    },
+    {
+      "query_id": "negative-00-0",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "answerability": "unanswerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "I could not find this in the document. The retrieved reference data discusses employee handbooks, return policies for premium plans, subscription billing procedures in Turkish, marketplace seller dispute protocols, and workforce planning practices. None of these documents mention whether Negativex publishes a headquarters city or provide information about its physical location as part of official publications.",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5940,
+        "context_tokens": 530,
+        "input_chunk_ids": [
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "bbd87f0e-d73c-5a0d-bf22-c2140494f863"
+        ],
+        "output_chunk_ids": [
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "bbd87f0e-d73c-5a0d-bf22-c2140494f863"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 8173.23
+    },
+    {
+      "query_id": "negative-00-1",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "answerability": "unanswerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "I could not find this in the document. The retrieved context contains policies on customer communication, shipping standards within Turkey, premium returns, subscription billing rules, and personal data handling, but it does not mention Negativex's headquarters city or location.",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5375,
+        "context_tokens": 460,
+        "input_chunk_ids": [
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "907ba715-0cdd-5b0c-ae46-a4b790657aea"
+        ],
+        "output_chunk_ids": [
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "907ba715-0cdd-5b0c-ae46-a4b790657aea"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 6420.612
+    },
+    {
+      "query_id": "negative-00-2",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "answerability": "unanswerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "I could not find this in the document. The retrieved reference data contains information regarding return policies for premium-plan orders, shipping and delivery standards within Türkiye, billing terms for subscriptions, and general internal operating expectations from Negativex's Employee and Customer Operations Handbook. None of these documents state a headquarters city or confirm it as public knowledge that can be shared with customers beyond what is explicitly stated in the provided text (which does not include a headquarters location).",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5150,
+        "context_tokens": 424,
+        "input_chunk_ids": [
+          "00742689-6303-5501-95a5-d4f6597b3eff",
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb"
+        ],
+        "output_chunk_ids": [
+          "00742689-6303-5501-95a5-d4f6597b3eff",
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 13146.86
+    },
+    {
+      "query_id": "negative-00-3",
+      "category": "unanswerable",
+      "language_pair": "en->none",
+      "answerability": "unanswerable",
+      "gold_present": false,
+      "all_required_present": false,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "I could not find this in the document. The retrieved reference data contains policies regarding customer communication, vendor handling, marketplace disputes, premium returns, and subscription billing; none of these records state a headquarters city for Negativex or any other entity.",
+      "fact_score": {
+        "status": "NOT_APPLICABLE",
+        "required_fact_ids": [],
+        "required_fact_count": 0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [],
+        "fact_coverage": null,
+        "matches": [],
+        "expected_components": []
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": null,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5915,
+        "context_tokens": 528,
+        "input_chunk_ids": [
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "b5b43c37-9c56-593c-994c-7755d76fc99b",
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb"
+        ],
+        "output_chunk_ids": [
+          "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+          "b5b43c37-9c56-593c-994c-7755d76fc99b",
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "81627801-791b-5379-b97c-359c2058031b",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb"
+        ],
+        "gold_source_ranks": [],
+        "truncated": false
+      },
+      "generation_latency_ms": 8372.269
+    },
+    {
+      "query_id": "version-01-0",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "2026-02-01 teslimatında standart plan için uygulanacak süre, **standart iade politikasıyla belirlenir**.\n\nBelgelere göre:\n\n*   [s.filesystem:standard-returns-2026/Standard Returns — 2026] dokümanına göre; doğrudan satışlarda (direct-sale) standart planlı fiziksel ürünler için iade talebi, teslimat tarihinin takip edilen **14 takvim gün** içinde yapılabilmektedir. Bu politika 2026-01-15 tarihi itibarıyla yürürlüğe girmiştir ve referans tarihimiz (2026-02-01) bu yeni tarih sonrasında olduğu için uygulanması gerekmektedir.\n*   [s.filesystem:refund-policy-2025/Standard Returns — 2025 (Superseded)] dokümanı; bu politikanın önceki versiyonu olan \"30 günlük\" kuralının, teslimat tarihinin 14 Ocak 2026'dan sonra geçen durumlarda geçerli olmadığına dair geçici bir not içermektedir.\n*   [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması] dokümanı; Premium planı veya pazar yeri siparişi gibi özel koşullar için farklı (30 gün, 7 gün vb.) sürelerin kullanıldığını doğrulamaktadır ancak sorunuz \"standart plan\" üzerine odaklandığından, bu durumlar dışarıda tutulmalıdır.\n\nSonuç olarak:\n2026-02-01 teslimatında standart plan için **iade talep süresi 14 takvim gündür**.",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days from delivery"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [
+          "MIXED_AUTHORITY"
+        ],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "PARTIALLY_CORRECT"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2025",
+            "Standard Returns — 2025 (Superseded)"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 3,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6398,
+        "context_tokens": 583,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 49987.912
+    },
+    {
+      "query_id": "version-01-1",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "2026-01-15 ve sonrasındaki teslimatlar için standart planı kaplayan politika **2026.1** sürümündedir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window].\n\nBu değişiklik, doğrudan satışta olan Standart Plan fiziksel ürünlerine uygulanan iade süresini **14 takvim gününe** getirir (öncedenki kuralda belirtilen 30 günlük süre, 2026-01-15 tarihinden sonra teslim edilen siparişler için geçerli değildir) [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window].\n\nEğer sorunuz sadece bir \"teslimat tarihi\" (kargo zamanlaması) ile ilgiliyse, standart teslimat normal koşullarda **3–5 iş günü** sürer [s.filesystem:shipping-and-delivery/Teslimat ve Kargo Standardı]. Ancak iade süresiyle ilgili spesifik bilgi için 14 takvim gün kuralı geçerlidir.",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days from delivery"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "shipping-and-delivery",
+            "Teslimat ve Kargo Standardı"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6192,
+        "context_tokens": 545,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 28302.501
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "five_call_reliability": "5/5 PASS",
+  "m0_status": "COMPLETED_WITHOUT_PROVIDER_FAILURE",
+  "probes": [
+    "A PASS",
+    "B PASS",
+    "C PASS",
+    "D PASS"
+  ],
+  "provider_status": "READY_FOR_M0",
+  "v2_3_execution_status": "PROVIDER_UNSTABLE"
+}

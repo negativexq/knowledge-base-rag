@@ -1,0 +1,18 @@
+{
+  "historical_raw_candidate_observable": 29,
+  "historical_raw_candidate_unobservable": 7,
+  "historical_primary_raw_candidate_observable": 17,
+  "historical_primary_raw_candidate_unobservable": 5,
+  "rejected_raw_candidate_observable": 0,
+  "rejected_content_unassessable": 7,
+  "future_contract_fields": [
+    "raw_candidate_output",
+    "validator_input",
+    "validator_result",
+    "validator_failure_codes",
+    "validated_output",
+    "user_visible_output"
+  ],
+  "default_raw_persistence": false,
+  "evaluation_capture_boundary": "explicit in-memory GenerationObservation; caller controls artifact persistence"
+}

@@ -1,0 +1,11 @@
+{
+  "recommendation": "EVALUATOR_REFINEMENT_FIRST",
+  "why": "Seven clear paraphrase/language matcher misses and five validator-rejected answers make 3/22 an unreliable lower-bound for generator quality; establish a reviewed deterministic scorer before changing runtime generation.",
+  "do_not_change_yet": [
+    "generation prompt v3",
+    "qwen3.5:4b",
+    "retrieval/cache identity",
+    "citation validator behavior",
+    "semantic Phase 6 gate"
+  ]
+}

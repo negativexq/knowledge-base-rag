@@ -1,0 +1,10 @@
+Baseline: v3
+Candidate: v3_multidoc_completeness
+
++EXPERIMENTAL COMPLETENESS CONTRACT:
+- Answer every distinct component requested by the user's question.
+- Before producing the final answer, ensure that no requested component is omitted.
+- Use only the provided retrieved evidence.
+- If evidence for a requested component is missing or insufficient, explicitly say so instead of guessing.
+- Cite each material factual component with the source that actually supports it.
+Do not reveal internal reasoning or planning; output only the final answer.

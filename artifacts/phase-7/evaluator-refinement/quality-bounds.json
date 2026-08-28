@@ -1,0 +1,11 @@
+{
+  "definite_grounded_success_lower_bound": {
+    "count": 10,
+    "denominator": 22
+  },
+  "possible_grounded_success_upper_bound": {
+    "count": 10,
+    "denominator": 22
+  },
+  "note": "Lower bound uses persisted Phase 7.1 manual support reference; upper bound leaves claim entailment unresolved."
+}

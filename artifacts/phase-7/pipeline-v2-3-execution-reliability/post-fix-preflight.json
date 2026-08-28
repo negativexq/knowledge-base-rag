@@ -1,0 +1,27 @@
+{
+  "probes": {
+    "A": {
+      "result": "PASS",
+      "elapsed_ms": 2043.699
+    },
+    "B": {
+      "result": "PASS",
+      "elapsed_ms": 1530.346
+    },
+    "C": {
+      "result": "PASS",
+      "elapsed_ms": 7653.7
+    },
+    "D": {
+      "result": "PASS",
+      "elapsed_ms": 5067.147
+    }
+  },
+  "former_timeout_replay": "2/2 PASS with num_predict=1024",
+  "five_call": {
+    "completed": 5,
+    "success": 5,
+    "timeouts": 0
+  },
+  "provider_status": "READY_FOR_OFFICIAL_PAIRED_RUN"
+}

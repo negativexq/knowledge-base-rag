@@ -1,0 +1,83 @@
+{
+  "failure_count": 7,
+  "potentially_correct_but_rejected_count": 7,
+  "records": [
+    {
+      "query_id": "ambiguous-00-0",
+      "violations": [
+        "unauthorized_citation"
+      ],
+      "exact_reason": [
+        "unauthorized source ID / malformed citation identity"
+      ],
+      "potentially_correct_but_rejected": true,
+      "content_determinable": false
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "violations": [
+        "unauthorized_citation"
+      ],
+      "exact_reason": [
+        "unauthorized source ID / malformed citation identity"
+      ],
+      "potentially_correct_but_rejected": true,
+      "content_determinable": false
+    },
+    {
+      "query_id": "cross-06-0",
+      "violations": [
+        "unauthorized_citation"
+      ],
+      "exact_reason": [
+        "unauthorized source ID / malformed citation identity"
+      ],
+      "potentially_correct_but_rejected": true,
+      "content_determinable": false
+    },
+    {
+      "query_id": "hard-order-channel",
+      "violations": [
+        "citation_suppression"
+      ],
+      "exact_reason": [
+        "missing citations caused strict citation suppression"
+      ],
+      "potentially_correct_but_rejected": true,
+      "content_determinable": false
+    },
+    {
+      "query_id": "multi-03-0",
+      "violations": [
+        "citation_suppression"
+      ],
+      "exact_reason": [
+        "missing citations caused strict citation suppression"
+      ],
+      "potentially_correct_but_rejected": true,
+      "content_determinable": false
+    },
+    {
+      "query_id": "native-00-0",
+      "violations": [
+        "citation_suppression"
+      ],
+      "exact_reason": [
+        "missing citations caused strict citation suppression"
+      ],
+      "potentially_correct_but_rejected": true,
+      "content_determinable": false
+    },
+    {
+      "query_id": "native-00-1",
+      "violations": [
+        "citation_suppression"
+      ],
+      "exact_reason": [
+        "missing citations caused strict citation suppression"
+      ],
+      "potentially_correct_but_rejected": true,
+      "content_determinable": false
+    }
+  ]
+}

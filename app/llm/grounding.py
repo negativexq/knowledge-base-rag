@@ -11,6 +11,66 @@ from app.retrieval.hybrid_search import SearchResult
 _CITATION_RE = re.compile(r"\[s\.([\w\-]+):([^/\]]+)/([^\]]+)\]")
 
 
+def extract_citations(answer: str) -> list[tuple[str, str, str]]:
+    """Return server-contract citation identities found in candidate text."""
+    return list(_CITATION_RE.findall(answer))
+
+
+def _valid_citation_identities(chunks: list[SearchResult]) -> set[tuple[str, str, str]]:
+    identities: set[tuple[str, str, str]] = set()
+    for chunk in chunks:
+        payload = chunk.payload
+        identities.add(
+            (
+                payload.get("source_type", "doc"),
+                payload.get("source_id", "doc"),
+                location_for(payload),
+            )
+        )
+        for alias in payload.get("citation_aliases", []):
+            if isinstance(alias, dict) and alias.get("location") is not None:
+                identities.add(
+                    (
+                        str(alias.get("source_type", "doc")),
+                        str(alias.get("source_id", "doc")),
+                        str(alias["location"]),
+                    )
+                )
+    return identities
+
+
+def citation_identity_status(
+    citation: str, chunks: list[SearchResult]
+) -> str:
+    """Classify one citation without broadening the authorized boundary.
+
+    Exact identity is preferred.  A case-insensitive match is accepted only
+    when it resolves to one and only one identity already present in the
+    authorized context.  This handles models copying human-readable heading
+    labels with different casing while never accepting a new source/location.
+    """
+    found = extract_citations(citation)
+    if len(found) != 1 or not found[0][0]:
+        return "MALFORMED_CITATION_SYNTAX"
+    identities = _valid_citation_identities(chunks)
+    if found[0] in identities:
+        return "VALID"
+    folded = found[0]
+    matches = {
+        identity
+        for identity in identities
+        if tuple(part.casefold() for part in identity)
+        == tuple(part.casefold() for part in folded)
+    }
+    if len(matches) == 1:
+        return "VALID"
+    # The validator only receives the authorized context, not the whole
+    # corpus/tenant registry.  An absent identity is therefore safely
+    # classified as unknown here; authorization-specific callers can promote
+    # it to UNAUTHORIZED when they have a registry-backed tenant fact.
+    return "UNKNOWN_CITATION_ID"
+
+
 @dataclass(frozen=True)
 class GroundingResult:
     has_citations: bool
@@ -47,17 +107,13 @@ def check_grounding(answer: str, chunks: list[SearchResult]) -> GroundingResult:
     must be validated against the exact source it claims, not just any
     chunk with a matching location anywhere in context.
     """
-    valid_locations = {
-        (
-            c.payload.get("source_type", "doc"),
-            c.payload.get("source_id", "doc"),
-            location_for(c.payload),
-        )
-        for c in chunks
-    }
-
-    citations_found = list(_CITATION_RE.findall(answer))
-    ungrounded_citations = [c for c in citations_found if c not in valid_locations]
+    citations_found = extract_citations(answer)
+    ungrounded_citations = [
+        c for c in citations_found
+        if citation_identity_status(
+            f"[s.{c[0]}:{c[1]}/{c[2]}]", chunks
+        ) != "VALID"
+    ]
 
     has_citations = len(citations_found) > 0
     citations_valid = len(ungrounded_citations) == 0

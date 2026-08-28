@@ -51,3 +51,20 @@ def test_reranker_results_are_sorted_descending_by_score(reranker):
 
     scores = [r.score for r in results]
     assert scores == sorted(scores, reverse=True)
+
+
+def test_reranker_preserves_candidate_ids_for_citation_and_cache_identity():
+    class _FakeModel:
+        def predict(self, pairs):
+            return [0.2, 0.9]
+
+    reranker = CrossEncoderReranker.__new__(CrossEncoderReranker)
+    reranker._model = _FakeModel()
+    candidates = [
+        SearchResult(score=0.5, id="chunk-a", payload={"text": "first"}),
+        SearchResult(score=0.5, id="chunk-b", payload={"text": "second"}),
+    ]
+
+    results = reranker.rerank("query", candidates, top_n=2)
+
+    assert [result.id for result in results] == ["chunk-b", "chunk-a"]

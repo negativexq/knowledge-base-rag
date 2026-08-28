@@ -1,0 +1,26 @@
+{
+  "acl": {
+    "abstentions": 0,
+    "n": 3,
+    "unauthorized_leakage": 0,
+    "unsupported_answers": 3
+  },
+  "generation_calls": 9,
+  "latency_ms": {
+    "max": 69856.224,
+    "p50": 25338.775
+  },
+  "multi_document": {
+    "n": 3,
+    "raw_full": 1,
+    "validator_pass": 3
+  },
+  "query_count": 9,
+  "raw_fully_correct_complete": 4,
+  "raw_observable": 9,
+  "replayed_records": 16,
+  "unique_hardening_records": 20,
+  "user_visible_full_success": 4,
+  "validator_pass": 9,
+  "validator_reject": 0
+}

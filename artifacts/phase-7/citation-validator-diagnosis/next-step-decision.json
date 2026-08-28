@@ -1,0 +1,13 @@
+{
+  "status": "OBSERVABILITY_READY_CONTEXT_BUILDER_NEXT",
+  "why": "Validator and citation identity failures are separable, raw/validated/user-visible boundaries are instrumentable, and remaining source-alignment/context issues can be tested without weakening strict validation.",
+  "do_not_change": [
+    "qwen3.5:4b",
+    "prompt v3",
+    "retrieval/reranker/cache",
+    "strict validator enforcement",
+    "ACL",
+    "Phase 6 semantic gate",
+    "qwen3.5:9b branch"
+  ]
+}

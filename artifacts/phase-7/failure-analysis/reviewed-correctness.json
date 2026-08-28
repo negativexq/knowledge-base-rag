@@ -1,0 +1,22 @@
+{
+  "gold_present_answerable": 22,
+  "deterministic_correct": 3,
+  "reviewed_definitely_correct": 10,
+  "reviewed_correct_or_plausibly_correct": {
+    "count": 20,
+    "denominator": 22,
+    "definition": "all records not manually judged materially incorrect; includes incomplete/partial/cannot-determine range",
+    "lower_bound_definitely_correct": 10,
+    "upper_bound": 20
+  },
+  "reviewed_correct_but_incomplete": 2,
+  "reviewed_partially_correct": 3,
+  "reviewed_materially_incorrect": 2,
+  "cannot_determine": 5,
+  "deterministic_evaluator_false_negatives": 7,
+  "support_status_counts": {
+    "PARTIALLY_SUPPORTED": 7,
+    "FULLY_SUPPORTED": 10,
+    "CANNOT_DETERMINE": 5
+  }
+}

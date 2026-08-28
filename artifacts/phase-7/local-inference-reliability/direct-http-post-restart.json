@@ -1,0 +1,16 @@
+{
+  "captured_at": "2026-08-28T13:30:38.779117+00:00",
+  "connection_success": true,
+  "headers_received": true,
+  "http_status": 200,
+  "model": "qwen3.5:4b",
+  "probe_id": "direct-http-post-restart",
+  "response_bytes": 295,
+  "response_content": "OK",
+  "result": "DIRECT_HTTP_PASS",
+  "stream": false,
+  "time_to_first_byte_ms": 4728.502,
+  "time_to_headers_ms": 4728.502,
+  "total_latency_ms": 4729.24,
+  "valid_json": true
+}

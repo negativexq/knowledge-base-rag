@@ -1,0 +1,17 @@
+{
+  "captured_at": "2026-08-28T13:30:38.779117+00:00",
+  "connection_success": true,
+  "headers_received": true,
+  "http_status": 200,
+  "model": "qwen3.5:4b",
+  "note": "Direct curl passed after the earlier Python timeout but before the controlled restart; model had already recovered/reloaded by this point.",
+  "probe_id": "direct-http-pre-restart",
+  "response_bytes": 295,
+  "response_content": "OK",
+  "result": "DIRECT_HTTP_PASS",
+  "stream": false,
+  "time_to_first_byte_ms": 4703.947,
+  "time_to_headers_ms": 4703.947,
+  "total_latency_ms": 4704.513,
+  "valid_json": true
+}

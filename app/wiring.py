@@ -8,6 +8,7 @@ from app.connectors.base import Connector
 from app.connectors.filesystem import LocalFilesystemConnector
 from app.connectors.notion import NotionConnector
 from app.evaluation.semantic_answerability import OllamaSemanticEvaluator
+from app.evidence.section_aware import SectionAwareEvidenceBuilder, serialize_section_aware_context
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.ingestion.qdrant_store import QdrantStore
 from app.llm.embedding_models import active_embedding_config
@@ -19,6 +20,7 @@ from app.llm.provider import (
     default_embed_model,
     get_chat_provider,
 )
+from app.llm.structured_output import stream_evidence_backed_answer, stream_support_unit_answer
 from app.main import create_app
 from app.migration.aliasing import resolve_active_collection_name
 from app.migration.readiness import check_readiness
@@ -115,6 +117,16 @@ def build_chat_dependencies(
             retries=settings.answerability_eval_retries,
         )
 
+    evidence_builder = (
+        SectionAwareEvidenceBuilder(
+            qdrant_client,
+            collection_name,
+            token_budget=settings.pipeline_v2_context_token_budget,
+        )
+        if settings.rag_pipeline_v2 or settings.rag_pipeline_v2_3
+        else None
+    )
+
     async def search_fn(
         question: str, context: RetrievalContext, report: RetrievalReport
     ) -> list[SearchResult]:
@@ -134,20 +146,75 @@ def build_chat_dependencies(
             report=report,
         )
 
-    return (
-        ChatDependencies(
-            search_fn=search_fn,
-            stream_fn=lambda question, chunks: stream_answer(
+    async def evidence_fn(
+        chunks: list[SearchResult], context: RetrievalContext
+    ) -> list[SearchResult]:
+        if evidence_builder is None:
+            return chunks
+        result = await evidence_builder.build(chunks, context)
+        return result.blocks
+
+    async def stream_fn(question: str, chunks: list[SearchResult]):
+        if settings.rag_pipeline_v2_3:
+            async for event in stream_support_unit_answer(
+                question,
+                chunks,
+                chat_provider,
+                model=default_chat_model(settings),
+                prompt_version=settings.active_prompt_version,
+                think=settings.ollama_thinking,
+                num_ctx=settings.ollama_num_ctx,
+            ):
+                yield event
+            return
+        if settings.rag_pipeline_v2:
+            async for event in stream_evidence_backed_answer(
                 question,
                 chunks,
                 chat_provider,
                 model=default_chat_model(settings),
                 prompt_version=settings.active_prompt_version,
                 validation_mode=settings.security_validation_mode,
-            ),
+                context_serializer=serialize_section_aware_context,
+                think=settings.ollama_thinking,
+                num_ctx=settings.ollama_num_ctx,
+            ):
+                yield event
+            return
+        async for event in stream_answer(
+            question,
+            chunks,
+            chat_provider,
+            model=default_chat_model(settings),
+            prompt_version=settings.active_prompt_version,
+            validation_mode=settings.security_validation_mode,
+        ):
+            yield event
+
+    return (
+        ChatDependencies(
+            search_fn=search_fn,
+            stream_fn=stream_fn,
             prompt_version=settings.active_prompt_version,
             security_validation_mode=settings.security_validation_mode,
             semantic_evaluator=semantic_evaluator,
+            evidence_fn=evidence_fn
+            if settings.rag_pipeline_v2 or settings.rag_pipeline_v2_3
+            else None,
+            pipeline_version=(
+                "pipeline_v2_3_support_units"
+                if settings.rag_pipeline_v2_3
+                else "pipeline_v2_2_evidence_backed"
+                if settings.rag_pipeline_v2
+                else "pipeline_v1"
+            ),
+            output_contract_version=(
+                "output_contract_v2_3"
+                if settings.rag_pipeline_v2_3
+                else "output_contract_v2_2"
+                if settings.rag_pipeline_v2
+                else "legacy"
+            ),
         ),
         chat_provider,
     )
@@ -162,7 +229,12 @@ def build_app(settings: Settings) -> FastAPI:
     """
     setup_tracing(endpoint=settings.otel_exporter_otlp_endpoint)
 
-    ollama = OllamaClient(base_url=settings.ollama_base_url)
+    ollama = OllamaClient(
+        base_url=settings.ollama_base_url,
+        connect_timeout=settings.ollama_connect_timeout_seconds,
+        timeout=settings.ollama_read_timeout_seconds,
+        overall_timeout=settings.ollama_overall_timeout_seconds,
+    )
     qdrant_client = QdrantClient(url=settings.qdrant_url)
 
     # Fail fast if the configured embedding dimension doesn't

@@ -1,0 +1,65 @@
+{
+  "acl_negative": {
+    "n": 3,
+    "mean": 15022.441,
+    "median": 16867.88,
+    "min": 9002.987,
+    "max": 19196.457
+  },
+  "ambiguous": {
+    "n": 4,
+    "mean": 18683.578,
+    "median": 12617.505,
+    "min": 11869.172,
+    "max": 37630.129
+  },
+  "cross_lingual": {
+    "n": 6,
+    "mean": 23431.762,
+    "median": 15457.474,
+    "min": 9005.631,
+    "max": 44880.342
+  },
+  "hard_answerable": {
+    "n": 6,
+    "mean": 18537.024,
+    "median": 18196.369,
+    "min": 8009.82,
+    "max": 31950.134
+  },
+  "injection_bearing": {
+    "n": 2,
+    "mean": 18531.083,
+    "median": 18531.083,
+    "min": 16401.282,
+    "max": 20660.883
+  },
+  "multi_document": {
+    "n": 3,
+    "mean": 44233.28,
+    "median": 56579.07,
+    "min": 10051.697,
+    "max": 66069.072
+  },
+  "standard_answerable": {
+    "n": 6,
+    "mean": 25194.399,
+    "median": 25562.641,
+    "min": 13872.559,
+    "max": 35561.91
+  },
+  "unanswerable": {
+    "n": 4,
+    "mean": 9028.243,
+    "median": 8272.749,
+    "min": 6420.612,
+    "max": 13146.86
+  },
+  "version_conflict": {
+    "n": 2,
+    "mean": 39145.207,
+    "median": 39145.207,
+    "min": 28302.501,
+    "max": 49987.912
+  }
+}

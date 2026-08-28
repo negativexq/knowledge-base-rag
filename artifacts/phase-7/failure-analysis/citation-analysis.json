@@ -1,0 +1,459 @@
+{
+  "records": [
+    {
+      "query_id": "cross-00-1",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-01-0",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "marketplace-returns",
+            "Pazar Yeri Siparişleri için İade Politikası"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-06-0",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+          ],
+          "classification": "UNKNOWN_ID"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-06-1",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-07-0",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-api-private",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "tenant-b-api-limits",
+            "Tenant B Private Integration Limits"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "enterprise-contract-guide",
+            "12/0"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "product-guide-en",
+            "4/0"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-api-version",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "product-guide-en",
+            "7/0"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-order-channel",
+      "classifications": []
+    },
+    {
+      "query_id": "hard-policy-language",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "returns-manual-tr",
+            "6/0"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "regional-returns-tr",
+            "8/0"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "injection-03-0",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "injection-bearing-policy",
+            "Damaged Item Exception Policy"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "injection-03-1",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "injection-bearing-policy",
+            "Damaged Item Exception Policy"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-1",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/26. Closure examples"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "classifications": []
+    },
+    {
+      "query_id": "native-00-0",
+      "classifications": []
+    },
+    {
+      "query_id": "native-00-1",
+      "classifications": []
+    },
+    {
+      "query_id": "native-00-2",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "native-00-3",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        }
+      ]
+    },
+    {
+      "query_id": "native-01-0",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        }
+      ]
+    },
+    {
+      "query_id": "version-01-0",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "refund-policy-2025",
+            "Standard Returns — 2025 (Superseded)"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        }
+      ]
+    },
+    {
+      "query_id": "version-01-1",
+      "classifications": [
+        {
+          "citation": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "classification": "CORRECT_SUPPORT"
+        },
+        {
+          "citation": [
+            "filesystem",
+            "shipping-and-delivery",
+            "Teslimat ve Kargo Standardı"
+          ],
+          "classification": "RELATED_WRONG_CLAIM"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "CORRECT_SUPPORT": 26,
+    "RELATED_WRONG_CLAIM": 16,
+    "UNKNOWN_ID": 1
+  }
+}

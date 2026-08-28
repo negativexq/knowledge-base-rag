@@ -1,0 +1,5 @@
+{
+  "decision": "QWEN25_7B_NO_MEANINGFUL_GAIN",
+  "runtime_default_changed": false,
+  "reason": "Three-query generator-only capacity comparison with identical cached contexts and prompt v3."
+}

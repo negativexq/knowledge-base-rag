@@ -1,0 +1,13 @@
+{
+  "status": "EVALUATOR_REFINEMENT_SUFFICIENT_CONTINUE_DIAGNOSIS",
+  "next_experiment": "EVALUATOR_REFINEMENT_SUFFICIENT_CONTINUE_DIAGNOSIS",
+  "why": "The refined authored-fact scorer recovers known matcher misses without a material false-positive signal, but multi-document synthesis and citation/validator observability remain separate blockers.",
+  "do_not_change": [
+    "generation prompt v3",
+    "qwen3.5:4b",
+    "retrieval/cache",
+    "citation validator",
+    "ACL",
+    "Phase 6 gate state"
+  ]
+}

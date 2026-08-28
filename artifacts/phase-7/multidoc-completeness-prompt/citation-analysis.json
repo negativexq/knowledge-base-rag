@@ -1,0 +1,13 @@
+{
+  "a_classes": {
+    "SUPPORTED": 3,
+    "CORRECT_FACT_WRONG_SOURCE": 1,
+    "UNKNOWN_ID": 1
+  },
+  "b_classes": {
+    "SUPPORTED": 9,
+    "UNKNOWN_ID": 1
+  },
+  "a_source_alignment_failures": 2,
+  "b_source_alignment_failures": 1
+}

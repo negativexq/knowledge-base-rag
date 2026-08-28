@@ -1,0 +1,211 @@
+{
+  "rejection_count": 7,
+  "failure_code_counts": {
+    "CITATION_SUPPRESSION": 4,
+    "UNAUTHORIZED_CITATION_ID": 3
+  },
+  "malformed_citation_syntax_observed": 0,
+  "invalid_identity_or_unauthorized_records": 3,
+  "raw_candidate_observable_among_rejected": 0,
+  "raw_candidate_unobservable_among_rejected": 7,
+  "content_correct_rejected": 0,
+  "content_correct_incomplete_rejected": 0,
+  "content_partial_rejected": 0,
+  "content_incorrect_rejected": 0,
+  "content_unassessable_rejected": 7,
+  "historical_manual_potential_count": 7,
+  "records": [
+    {
+      "query_id": "ambiguous-00-0",
+      "category": "ambiguous",
+      "gold_present": false,
+      "raw_candidate_available": false,
+      "raw_candidate_storage": "historical_answer_field_only",
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "legacy_violations": [
+        "unauthorized_citation"
+      ],
+      "citation_ids_if_known": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026; s.filesystem:injection-bearing-policy/Damaged Item Exception Policy"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ]
+      ],
+      "validated_output_available": false,
+      "user_visible_output_available": false,
+      "content_assessable": false,
+      "content_status": "CONTENT_UNASSESSABLE",
+      "historical_manual_potential": true
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "category": "ambiguous",
+      "gold_present": false,
+      "raw_candidate_available": false,
+      "raw_candidate_storage": "historical_answer_field_only",
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "legacy_violations": [
+        "unauthorized_citation"
+      ],
+      "citation_ids_if_known": [
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+        ],
+        [
+          "filesystem",
+          "marketplace-returns",
+          "Pazar Yeri Siparişleri için İade Politikası"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırması"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+        ]
+      ],
+      "validated_output_available": false,
+      "user_visible_output_available": false,
+      "content_assessable": false,
+      "content_status": "CONTENT_UNASSESSABLE",
+      "historical_manual_potential": true
+    },
+    {
+      "query_id": "cross-06-0",
+      "category": "cross_lingual",
+      "gold_present": true,
+      "raw_candidate_available": false,
+      "raw_candidate_storage": "historical_answer_field_only",
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "legacy_violations": [
+        "unauthorized_citation"
+      ],
+      "citation_ids_if_known": [
+        [
+          "filesystem",
+          "subscription-billing",
+          "Abonelik ve Faturalandırma İşletim Politikası"
+        ],
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+        ]
+      ],
+      "validated_output_available": false,
+      "user_visible_output_available": false,
+      "content_assessable": false,
+      "content_status": "CONTENT_UNASSESSABLE",
+      "historical_manual_potential": true
+    },
+    {
+      "query_id": "hard-order-channel",
+      "category": "hard_answerable",
+      "gold_present": true,
+      "raw_candidate_available": false,
+      "raw_candidate_storage": "historical_answer_field_only",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "legacy_violations": [
+        "citation_suppression"
+      ],
+      "citation_ids_if_known": [],
+      "validated_output_available": false,
+      "user_visible_output_available": false,
+      "content_assessable": false,
+      "content_status": "CONTENT_UNASSESSABLE",
+      "historical_manual_potential": true
+    },
+    {
+      "query_id": "multi-03-0",
+      "category": "multi_document",
+      "gold_present": true,
+      "raw_candidate_available": false,
+      "raw_candidate_storage": "historical_answer_field_only",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "legacy_violations": [
+        "citation_suppression"
+      ],
+      "citation_ids_if_known": [],
+      "validated_output_available": false,
+      "user_visible_output_available": false,
+      "content_assessable": false,
+      "content_status": "CONTENT_UNASSESSABLE",
+      "historical_manual_potential": true
+    },
+    {
+      "query_id": "native-00-0",
+      "category": "standard_answerable",
+      "gold_present": true,
+      "raw_candidate_available": false,
+      "raw_candidate_storage": "historical_answer_field_only",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "legacy_violations": [
+        "citation_suppression"
+      ],
+      "citation_ids_if_known": [],
+      "validated_output_available": false,
+      "user_visible_output_available": false,
+      "content_assessable": false,
+      "content_status": "CONTENT_UNASSESSABLE",
+      "historical_manual_potential": true
+    },
+    {
+      "query_id": "native-00-1",
+      "category": "standard_answerable",
+      "gold_present": true,
+      "raw_candidate_available": false,
+      "raw_candidate_storage": "historical_answer_field_only",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "legacy_violations": [
+        "citation_suppression"
+      ],
+      "citation_ids_if_known": [],
+      "validated_output_available": false,
+      "user_visible_output_available": false,
+      "content_assessable": false,
+      "content_status": "CONTENT_UNASSESSABLE",
+      "historical_manual_potential": true
+    }
+  ],
+  "note": "Historical results store the validated answer field, not the raw candidate; rejected content is not inferred from the old manual potential flag."
+}

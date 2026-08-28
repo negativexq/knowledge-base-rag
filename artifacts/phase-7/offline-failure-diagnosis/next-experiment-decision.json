@@ -1,0 +1,15 @@
+{
+  "decision": "MULTIDOC_COMPLETENESS_PROMPT_EXPERIMENT",
+  "why": "All three complete multi-document records remain incomplete/incorrect, while citation issues are measurable but mostly secondary review/alignment issues.",
+  "must_remain_unchanged": [
+    "qwen3.5:4b",
+    "prompt v3",
+    "think=false",
+    "retrieval",
+    "reranker",
+    "Context Builder v1",
+    "validator",
+    "ACL",
+    "Phase 6 gate"
+  ]
+}

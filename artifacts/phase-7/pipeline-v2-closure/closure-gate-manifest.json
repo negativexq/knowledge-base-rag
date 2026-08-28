@@ -1,0 +1,28 @@
+{
+  "composition": {
+    "cross_lingual": 2,
+    "hard": 3,
+    "multi_document": 3,
+    "version": 2
+  },
+  "historical_a_generation_calls": 0,
+  "preflight": {
+    "authorized_expansion": "same tenant/source/version only",
+    "fact_count": 16,
+    "query_count": 10,
+    "status": "PASS"
+  },
+  "query_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0",
+    "hard-annual-cancel",
+    "hard-api-version",
+    "hard-policy-language",
+    "version-01-0",
+    "version-01-1",
+    "cross-00-0",
+    "cross-06-0"
+  ],
+  "run_tag": "budgeted-v1"
+}

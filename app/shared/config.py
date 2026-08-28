@@ -42,9 +42,20 @@ class Settings(BaseSettings):
     # DEV_FAST is the local interactive profile. Benchmark retrieval never
     # calls the chat provider, so changing this does not change retrieval
     # semantics or the embedding model.
-    ollama_model: str = "qwen3:4b"
+    ollama_model: str = "qwen3.5:4b"
     ollama_thinking: bool = False
+    ollama_num_ctx: int = Field(default=4096, gt=0)
+    ollama_connect_timeout_seconds: float = Field(default=10.0, gt=0)
+    ollama_read_timeout_seconds: float = Field(default=180.0, gt=0)
+    ollama_overall_timeout_seconds: float = Field(default=240.0, gt=0)
     ollama_embed_model: str = "nomic-embed-text"
+
+    # Pipeline v2 is deliberately opt-in.  Keeping the switch next to the
+    # generation settings makes the runtime boundary explicit and leaves the
+    # historical v1 path untouched until a separate promotion decision.
+    rag_pipeline_v2: bool = False
+    rag_pipeline_v2_3: bool = False
+    pipeline_v2_context_token_budget: int = Field(default=1200, gt=0)
 
     # Phase 6C is opt-in shadow telemetry. It never suppresses generation.
     semantic_answerability_enabled: bool = False
@@ -245,7 +256,7 @@ class Settings(BaseSettings):
         """Return the documented local interactive profile."""
         values = {
             "runtime_profile": "DEV_FAST",
-            "ollama_model": "qwen3:4b",
+            "ollama_model": "qwen3.5:4b",
             "ollama_thinking": False,
             "reranker_candidate_k": 15,
             "reranker_top_n": 5,

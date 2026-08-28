@@ -1,0 +1,12 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "eligible_extension_pool": 1,
+  "extension_status": "EXTENSION_BLOCKED_INSUFFICIENT_ELIGIBLE_POOL",
+  "formal_gate_verdict": "CLEAR_REGRESSION",
+  "generation_calls_before_smoke": 0,
+  "git_head_before_closure_commit": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+  "retrieval_calls_before_smoke": 0,
+  "schema_version": "phase7-closure-summary-v1",
+  "selected_for_closure": "pipeline_v2_2_evidence_backed",
+  "smoke36_status": "PENDING_POST_COMMIT"
+}

@@ -1,0 +1,115 @@
+{
+  "actual_sha256": {
+    "acl": "ccb1cceaaf8454fc9f6f51e45360c411a44b09f9dba53f8841f474d784829243",
+    "challenger_freeze": "eac18c8a381f138a9106a28a00cb5419210aae654c3e9791527d1833aada3e02",
+    "preregistration": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c",
+    "v2_2_baseline": "efac4d8e5dba527e3ad410218e1e3ce3319bb9a24853514e3fb45c30d7ca942b",
+    "v2_3_initial": "3739212121d45810eee31ff66cb595a75c18c3a4e3288c81a11981c179e0dc69"
+  },
+  "checked_at": "2026-08-28T16:09:53.514709+00:00",
+  "expected_sha256": {
+    "preregistration": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c",
+    "v2_2_baseline": "efac4d8e5dba527e3ad410218e1e3ce3319bb9a24853514e3fb45c30d7ca942b",
+    "v2_3_initial": "3739212121d45810eee31ff66cb595a75c18c3a4e3288c81a11981c179e0dc69"
+  },
+  "integrity_status": "PASS",
+  "matches": {
+    "evidence_snapshots": true,
+    "preregistration": true,
+    "v2_2_baseline": true,
+    "v2_3_initial": true
+  },
+  "schema_version": "final-integrity-historical-check-v1",
+  "snapshot_checks": [
+    {
+      "actual_context_hash": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+      "expected_context_hash": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+      "match": true,
+      "query_id": "multi-01-1"
+    },
+    {
+      "actual_context_hash": "ea428cd20999cee37fa3dc8a329133bbe7c1c35eb7e88683c1fc956f8bbb7a35",
+      "expected_context_hash": "ea428cd20999cee37fa3dc8a329133bbe7c1c35eb7e88683c1fc956f8bbb7a35",
+      "match": true,
+      "query_id": "multi-03-1"
+    },
+    {
+      "actual_context_hash": "db654478de7c705add5872f6502e7ce12a60aa44e43796496805c29ccfa6dd1f",
+      "expected_context_hash": "db654478de7c705add5872f6502e7ce12a60aa44e43796496805c29ccfa6dd1f",
+      "match": true,
+      "query_id": "multi-00-0"
+    },
+    {
+      "actual_context_hash": "eae1881ede2d6a0a00eddf27bc88ee33acd15941e33e9b91ac8efe4092acfb90",
+      "expected_context_hash": "eae1881ede2d6a0a00eddf27bc88ee33acd15941e33e9b91ac8efe4092acfb90",
+      "match": true,
+      "query_id": "multi-01-2"
+    },
+    {
+      "actual_context_hash": "c72aaad1b620d55979b7e3f2e2b0d1f228952393c39c61f5ace635060b717b27",
+      "expected_context_hash": "c72aaad1b620d55979b7e3f2e2b0d1f228952393c39c61f5ace635060b717b27",
+      "match": true,
+      "query_id": "multi-00-2"
+    },
+    {
+      "actual_context_hash": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+      "expected_context_hash": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+      "match": true,
+      "query_id": "multi-01-3"
+    },
+    {
+      "actual_context_hash": "2a036a28ff26c8a4eff8a3b9b45c1ae131a834efb55ef52de7316cdfe91ac41d",
+      "expected_context_hash": "2a036a28ff26c8a4eff8a3b9b45c1ae131a834efb55ef52de7316cdfe91ac41d",
+      "match": true,
+      "query_id": "multi-01-0"
+    },
+    {
+      "actual_context_hash": "ea428cd20999cee37fa3dc8a329133bbe7c1c35eb7e88683c1fc956f8bbb7a35",
+      "expected_context_hash": "ea428cd20999cee37fa3dc8a329133bbe7c1c35eb7e88683c1fc956f8bbb7a35",
+      "match": true,
+      "query_id": "multi-03-2"
+    },
+    {
+      "actual_context_hash": "6edb321513586bb23f9a7600cb2e35cc8bddccc4a9a47969554226ec8ae3063a",
+      "expected_context_hash": "6edb321513586bb23f9a7600cb2e35cc8bddccc4a9a47969554226ec8ae3063a",
+      "match": true,
+      "query_id": "acl-02-0"
+    },
+    {
+      "actual_context_hash": "aa78479c42a836fd81b48575c1b956929834078fedefc2cdc6a23037be8cba33",
+      "expected_context_hash": "aa78479c42a836fd81b48575c1b956929834078fedefc2cdc6a23037be8cba33",
+      "match": true,
+      "query_id": "acl-02-1"
+    },
+    {
+      "actual_context_hash": "68bc2e3c1aac05b0879a24b0fb30539d8b14481b46a08109c7c5be02d868efe2",
+      "expected_context_hash": "68bc2e3c1aac05b0879a24b0fb30539d8b14481b46a08109c7c5be02d868efe2",
+      "match": true,
+      "query_id": "acl-02-2"
+    },
+    {
+      "actual_context_hash": "e1e20da33f74bb11261c1ab96014f8f99a3821c34ade222dfed2182644bb3d8d",
+      "expected_context_hash": "e1e20da33f74bb11261c1ab96014f8f99a3821c34ade222dfed2182644bb3d8d",
+      "match": true,
+      "query_id": "multi-00-1"
+    },
+    {
+      "actual_context_hash": "9640171e21e9ebe82a153f2d566fdb736609ef24b8569609ab6227353d9e46e6",
+      "expected_context_hash": "9640171e21e9ebe82a153f2d566fdb736609ef24b8569609ab6227353d9e46e6",
+      "match": true,
+      "query_id": "native-00-0"
+    },
+    {
+      "actual_context_hash": "66f537d2111e7110e3c881303d1c8e7dd1c178c0edb8d767efd191184cf1f7da",
+      "expected_context_hash": "66f537d2111e7110e3c881303d1c8e7dd1c178c0edb8d767efd191184cf1f7da",
+      "match": true,
+      "query_id": "cross-06-0"
+    },
+    {
+      "actual_context_hash": "ac6bd9f4a78c65acc45390d511f89954fc4da1ae5dcf8eb89e3cc8b99ade7b19",
+      "expected_context_hash": "ac6bd9f4a78c65acc45390d511f89954fc4da1ae5dcf8eb89e3cc8b99ade7b19",
+      "match": true,
+      "query_id": "version-01-0"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "status": "PROVIDER_UNSTABLE",
+  "query_id": "multi-01-1",
+  "seed": 42,
+  "failure": {
+    "query_id": "multi-01-1",
+    "seed": 42,
+    "pipeline_version": "pipeline_v2_3_support_units",
+    "output_contract_version": "output_contract_v2_3_1",
+    "result": "TIMEOUT",
+    "error": {
+      "type": "OllamaRequestTimeout",
+      "message": "Ollama read timeout after 180003.5ms",
+      "timeout_type": "READ"
+    },
+    "generation_latency_ms": 180004.621,
+    "raw_output": "",
+    "raw_output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw_candidate_available": false,
+    "validator_pass": null,
+    "validator_failure_codes": [],
+    "model_abstention": null,
+    "application_forced_abstention": false,
+    "user_visible_output": null,
+    "user_visible_output_available": false,
+    "provider_observation": {
+      "request_id": "3d9ee175323748fd9d0823654cff28b7",
+      "model": "qwen3.5:4b",
+      "seed": 42,
+      "request_hash": "8a2c88ddcd93a09aaba17f81a5ba2be3a898b695288e37f58b634f90f8e32c55",
+      "prompt_hash": "cd3a5d9c8e8873a729cc11aa8d936a79e53e91f5cdfd3ddace892334707248ab",
+      "context_hash": "a57d98be47b3a5748db970e55dac70dd4f04b6b867bcb01e45a3fe8eb300dd14",
+      "schema_hash": "229b7f016b11b1c258351a98d069e8763560024dee7f2c7665b7fe079fae2b7e",
+      "request_started_at": "2026-08-28T13:52:25.281821+00:00",
+      "connection_established_at": null,
+      "headers_received_at": null,
+      "first_body_byte_at": null,
+      "completed_at": "2026-08-28T13:55:25.285239+00:00",
+      "elapsed_ms": 180003.55,
+      "streaming": false,
+      "status_code": null,
+      "response_bytes": 0,
+      "status": "TIMEOUT",
+      "timeout_type": "READ",
+      "attempt": 1
+    },
+    "events": [
+      {
+        "type": "metadata",
+        "prompt_version": "v3",
+        "pipeline_version": "pipeline_v2_3_1_support_units_pattern",
+        "output_contract_version": "output_contract_v2_3_1"
+      }
+    ],
+    "run_key": "6399b382f7fb1fbd77dc96d2cbb4b0702334bd18db96e5d90c09d2db8d58be63",
+    "snapshot_hash": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+    "top5_hash": "d13d45fb9757db6a3185f8e84d55e1ba1ce474de79be69e33b0befc9188a38d7",
+    "retrieval_calls": 0,
+    "reranker_calls": 0
+  },
+  "completed_rows": 2,
+  "retrieval_calls": 0,
+  "reranker_calls": 0
+}

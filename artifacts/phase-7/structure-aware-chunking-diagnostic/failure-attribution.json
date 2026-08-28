@@ -1,0 +1,23 @@
+{
+  "facts_absent_top20": 0,
+  "facts_in_top20_absent_top5": 2,
+  "chunk_boundary_failures": 0,
+  "chunk_representation_failures": 0,
+  "initial_retrieval_failures": 0,
+  "reranker_top5_failures": 2,
+  "source_present_fact_absent": 2,
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "required_fact_id": "standard_return_window_14_days",
+      "classification": "RERANKER_TOP5_FAILURE",
+      "secondary": "SOURCE_PRESENT_FACT_ABSENT"
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_fact_id": "standard_return_window_14_days",
+      "classification": "RERANKER_TOP5_FAILURE",
+      "secondary": "SOURCE_PRESENT_FACT_ABSENT"
+    }
+  ]
+}

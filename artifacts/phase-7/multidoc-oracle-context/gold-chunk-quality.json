@@ -1,0 +1,126 @@
+{
+  "scope": "source-derived candidate chunks; not authored gold chunks",
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "source_id": "support-playbook",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-00-1",
+      "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "source_id": "support-playbook",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-00-1",
+      "chunk_id": "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+      "source_id": "support-playbook",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-00-1",
+      "chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+      "source_id": "standard-returns-2026",
+      "classification": "CRITICAL_CONTEXT_MISSING",
+      "reasons": [
+        "The source is required, but this cached chunk omits the authored 14-day return-window fact."
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "source_id": "support-playbook",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "source_id": "support-playbook",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "chunk_id": "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+      "source_id": "support-playbook",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+      "source_id": "standard-returns-2026",
+      "classification": "CRITICAL_CONTEXT_MISSING",
+      "reasons": [
+        "The source is required, but this cached chunk omits the authored 14-day return-window fact."
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "chunk_id": "a813c829-a9db-5cee-80fc-ff7c677187a9",
+      "source_id": "returns-manual-tr",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "chunk_id": "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+      "source_id": "regional-returns-tr",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "chunk_id": "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+      "source_id": "returns-manual-tr",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "chunk_id": "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+      "source_id": "returns-manual-tr",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "chunk_id": "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+      "source_id": "regional-returns-tr",
+      "classification": "PARTIAL_FRAGMENT",
+      "reasons": [
+        "No authored fact-to-chunk mapping proves this chunk is complete evidence."
+      ]
+    }
+  ],
+  "counts": {
+    "PARTIAL_FRAGMENT": 11,
+    "CRITICAL_CONTEXT_MISSING": 2
+  }
+}

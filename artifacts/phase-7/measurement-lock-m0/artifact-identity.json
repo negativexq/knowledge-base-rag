@@ -1,0 +1,14 @@
+{
+  "cache_schema": "phase-7-generation-input-cache-v1",
+  "candidate_k": 20,
+  "collection": "kb_eval_phase55_0175aa4a2f9b",
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "generator": "qwen3.5:4b",
+  "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+  "num_ctx": 4096,
+  "prompt": "v3",
+  "temperature": 0.0,
+  "think": false,
+  "top_n": 5
+}

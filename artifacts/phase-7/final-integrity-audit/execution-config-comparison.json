@@ -1,0 +1,70 @@
+{
+  "fields": {
+    "model": {
+      "match": true,
+      "v2_2": [
+        "qwen3.5:4b"
+      ],
+      "v2_3": [
+        "qwen3.5:4b"
+      ]
+    },
+    "num_ctx": {
+      "match": true,
+      "v2_2": [
+        null
+      ],
+      "v2_3": [
+        null
+      ]
+    },
+    "num_predict": {
+      "match": false,
+      "v2_2": "UNSET",
+      "v2_3": 1024
+    },
+    "stream": {
+      "match": true,
+      "v2_2": [
+        false
+      ],
+      "v2_3": [
+        false
+      ]
+    },
+    "temperature": {
+      "match": true,
+      "v2_2": [
+        null
+      ],
+      "v2_3": [
+        null
+      ]
+    },
+    "think": {
+      "match": true,
+      "v2_2": [
+        null
+      ],
+      "v2_3": [
+        null
+      ]
+    }
+  },
+  "intervention_fields_allowed_to_differ": [
+    "prompt",
+    "schema",
+    "output_contract"
+  ],
+  "notes": [
+    "V2.2 historical rows do not record num_predict, num_ctx, temperature, think, or timeout policy.",
+    "V2.3 bounded rows record num_predict=1024 through the challenger freeze/run identity.",
+    "Both recorded provider rows use stream=false and the frozen snapshot identities match where present."
+  ],
+  "paired_execution_integrity": "FAIL",
+  "reason": "NON_COMPARABLE_EXECUTION_CONFIG",
+  "schema_version": "final-integrity-execution-config-comparison-v1",
+  "trigger_corrected_rerun": true,
+  "v2_2_rows": 55,
+  "v2_3_rows": 40
+}

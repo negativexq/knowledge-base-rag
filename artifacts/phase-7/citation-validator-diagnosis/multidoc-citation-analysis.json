@@ -1,0 +1,95 @@
+{
+  "n": 3,
+  "phase6_semantic_gate_answer": "0/3",
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "required_sources": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top5_source_order": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "standard-returns-2026"
+      ],
+      "cited_sources": [
+        "employee-handbook-en",
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "required_fact_count": 2,
+      "matched_fact_count": 1,
+      "missing_fact_ids": [
+        "fact_1"
+      ],
+      "citation_support": {
+        "CORRECT_SUPPORT": 7,
+        "RELATED_WRONG_CLAIM": 1
+      },
+      "validator_pass": true,
+      "raw_candidate_available": true,
+      "reviewed_outcome": "CORRECT_BUT_INCOMPLETE",
+      "primary_failure_cause": "MULTIPART_COMPLETENESS_FAILURE"
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_sources": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "top5_source_order": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "premium-returns-2026",
+        "standard-returns-2026"
+      ],
+      "cited_sources": [
+        "premium-returns-2026",
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "required_fact_count": 2,
+      "matched_fact_count": 0,
+      "missing_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "citation_support": {
+        "CORRECT_SUPPORT": 3,
+        "RELATED_WRONG_CLAIM": 2
+      },
+      "validator_pass": true,
+      "raw_candidate_available": true,
+      "reviewed_outcome": "CORRECT_BUT_INCOMPLETE",
+      "primary_failure_cause": "MULTIPART_COMPLETENESS_FAILURE"
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_sources": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "top5_source_order": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "cited_sources": [],
+      "required_fact_count": 1,
+      "matched_fact_count": 0,
+      "missing_fact_ids": [],
+      "citation_support": {},
+      "validator_pass": false,
+      "raw_candidate_available": false,
+      "reviewed_outcome": "CANNOT_DETERMINE",
+      "primary_failure_cause": "CITATION_FORMAT_FAILURE"
+    }
+  ],
+  "conclusion": "All required evidence was cached; synthesis/citation remained unreliable, with one record unobservable after strict suppression."
+}

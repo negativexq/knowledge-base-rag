@@ -1,0 +1,438 @@
+[
+  {
+    "query_id": "multi-00-1",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "query": "Which combination explains both the standard return window and the evidence fields support must record? Include the other relevant detail.",
+    "expected_facts": [
+      "standard-returns-2026",
+      "support-playbook"
+    ],
+    "authorized_top5_sources": [
+      "support-playbook",
+      "support-playbook",
+      "support-playbook",
+      "employee-handbook-en",
+      "standard-returns-2026"
+    ],
+    "gold_source_positions": {
+      "standard-returns-2026": [
+        5
+      ],
+      "support-playbook": [
+        1,
+        2,
+        3
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "standard-returns-2026"
+      ],
+      "required_source_positions": {
+        "standard-returns-2026": [
+          5
+        ],
+        "support-playbook": [
+          1,
+          2,
+          3
+        ]
+      },
+      "top1_is_required": true,
+      "distinct_source_count": 3,
+      "duplicate_source_chunk_count": 2,
+      "distractor_source_count": 1,
+      "context_characters": 2522
+    },
+    "generated_answer": "Based on the retrieved documents, to explain both the standard return window and the evidence fields required for support cases, one must combine information regarding plan status with specific procedural rules. The relevant details are:\n\n*   **Standard Return Window:** This is controlled by the current canonical policy applicable to direct Standard orders (or marketplace/enterprise policies if not direct), rather than a superseded 2025 rule or an upgrade in premium status occurring after delivery [s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]. The window generally depends on the **delivery date** and whether there is a signed enterprise exception, as these determine if ordinary rules apply or if specific approval steps (like Contract Operations review) are needed [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Premium status matters only within its direct-sale scope; an upgrade after delivery does not grant the earlier order's premium window retroactively, requiring communication via **order and plan dates** to clarify entitlement [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing], [s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes].\n\n*   **Evidence Fields:** The case record must support the decision by recording specific data points before approval can proceed. These fields include the **plan** (Standard or Premium), the **order channel** (direct sale, marketplace), the **delivery date**, the **product type**, the **requested remedy**, and any applicable **contract** or regional scope [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Additionally, for complex cases involving pending enterprise exceptions, the closure records must include the **contract reviewer identifier**, the specific question regarding the effective date, and details on whether sensitive indicators need to be avoided in routine notes [s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples].\n\nIn summary, the combination explains that the return window is defined by active canonical policies tied to delivery events (not superseded rules or post-delivery upgrades), while evidence support requires recording plan type, channel, dates (delivery and order activation), product type, remedy request, and any contractual scope [s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution], [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record].",
+    "citations": {
+      "completeness": 1.0,
+      "found": [
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/26. Closure examples"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ]
+      ],
+      "required_sources_cited": 2,
+      "required_sources_total": 2,
+      "support_correct": false,
+      "unknown_or_unauthorized": [],
+      "valid": true
+    },
+    "citation_classification": [
+      {
+        "citation": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/5. Returns and billing routing"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "employee-handbook-en",
+          "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+        ],
+        "classification": "RELATED_WRONG_CLAIM"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/26. Closure examples"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      }
+    ],
+    "deterministic_correctness": {
+      "components": [
+        false,
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 2
+    },
+    "output_validation": {
+      "error": null,
+      "passed": true,
+      "violations": []
+    },
+    "reviewed_outcome": "CORRECT_BUT_INCOMPLETE",
+    "support_status": "PARTIALLY_SUPPORTED",
+    "primary_failure_cause": "MULTIPART_COMPLETENESS_FAILURE",
+    "secondary_causes": [
+      "EVIDENCE_SYNTHESIS_FAILURE",
+      "CONTEXT_FORMATTING_FAILURE"
+    ],
+    "fixability": "LIKELY_MODEL_CAPACITY_LIMIT",
+    "review_note": "Evidence fields are enumerated, but the explicit 14-day component is not clearly answered."
+  },
+  {
+    "query_id": "multi-00-3",
+    "category": "multi_document",
+    "language_pair": "en->en",
+    "query": "Which combination explains both the standard return window and the evidence fields support must record? What should happen next?",
+    "expected_facts": [
+      "standard-returns-2026",
+      "support-playbook"
+    ],
+    "authorized_top5_sources": [
+      "support-playbook",
+      "support-playbook",
+      "support-playbook",
+      "premium-returns-2026",
+      "standard-returns-2026"
+    ],
+    "gold_source_positions": {
+      "standard-returns-2026": [
+        5
+      ],
+      "support-playbook": [
+        1,
+        2,
+        3
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "premium-returns-2026",
+        "standard-returns-2026"
+      ],
+      "required_source_positions": {
+        "standard-returns-2026": [
+          5
+        ],
+        "support-playbook": [
+          1,
+          2,
+          3
+        ]
+      },
+      "top1_is_required": true,
+      "distinct_source_count": 3,
+      "duplicate_source_chunk_count": 2,
+      "distractor_source_count": 1,
+      "context_characters": 2519
+    },
+    "generated_answer": "To explain both the standard return window and the evidence fields that must be recorded, you need a combination of two specific sources: **Standard Returns — 2026/Case record** to establish the canonical policy controlling the ordinary window (e.g., delivery date), and **Support Operations Playbook/5. Returns and billing routing** or **Premium Returns — 2026** where relevant, depending on whether the order is from a direct sale or marketplace.\n\nAccording to the retrieved data:\n1.  **Standard Return Window & Fields**: The case record requires recording specific evidence fields before approval to avoid quoting generic periods if unknown. These fields are defined as the plan, order channel (direct vs. marketplace), delivery date/product type for Standard orders, and activation event/delivery rule for Digital goods [[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]].\n2.  **Channel Distinction**: The policy effective on the relevant event date controls the window (e.g., seven days for Marketplace) based on whether the order was placed through a marketplace or direct sale, not just by plan badge [[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]].\n3.  **What Happens Next**: If one source is needed to set the return window (canonical policy) and another to define the specific case fields or exceptions, you must record both sources in your evidence list [[s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]].\n\n**Next Steps**:\n*   Identify if there is a signed enterprise exception; contract exceptions require review by Contract Operations and should be routed to the Enterprise Contract Guide rather than controlled solely by Standard Returns policies [[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]].\n*   If fields like order channel or delivery date are missing, keep the case pending instead of assuming a generic return period [[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]].",
+    "citations": {
+      "completeness": 1.0,
+      "found": [
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ]
+      ],
+      "required_sources_cited": 2,
+      "required_sources_total": 2,
+      "support_correct": false,
+      "unknown_or_unauthorized": [],
+      "valid": true
+    },
+    "citation_classification": [
+      {
+        "citation": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        "classification": "RELATED_WRONG_CLAIM"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "support-playbook",
+          "Support Operations Playbook/8. Multi-source policy resolution"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "premium-returns-2026",
+          "Premium Returns — 2026/Channel boundary"
+        ],
+        "classification": "RELATED_WRONG_CLAIM"
+      },
+      {
+        "citation": [
+          "filesystem",
+          "standard-returns-2026",
+          "Standard Returns — 2026/Case record"
+        ],
+        "classification": "CORRECT_SUPPORT"
+      }
+    ],
+    "deterministic_correctness": {
+      "components": [
+        false,
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 2
+    },
+    "output_validation": {
+      "error": null,
+      "passed": true,
+      "violations": []
+    },
+    "reviewed_outcome": "CORRECT_BUT_INCOMPLETE",
+    "support_status": "PARTIALLY_SUPPORTED",
+    "primary_failure_cause": "MULTIPART_COMPLETENESS_FAILURE",
+    "secondary_causes": [
+      "EVIDENCE_SYNTHESIS_FAILURE",
+      "CONTEXT_FORMATTING_FAILURE"
+    ],
+    "fixability": "LIKELY_MODEL_CAPACITY_LIMIT",
+    "review_note": "Sources and case fields are discussed, but the requested 14-day answer component is omitted."
+  },
+  {
+    "query_id": "multi-03-0",
+    "category": "multi_document",
+    "language_pair": "tr->tr",
+    "query": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını hangi iki kaynak birlikte açıklar?",
+    "expected_facts": [
+      "regional-returns-tr",
+      "returns-manual-tr"
+    ],
+    "authorized_top5_sources": [
+      "returns-manual-tr",
+      "regional-returns-tr",
+      "returns-manual-tr",
+      "returns-manual-tr",
+      "regional-returns-tr"
+    ],
+    "gold_source_positions": {
+      "returns-manual-tr": [
+        1,
+        3,
+        4
+      ],
+      "regional-returns-tr": [
+        2,
+        5
+      ]
+    },
+    "context_usability": {
+      "top5_source_order": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "required_source_positions": {
+        "returns-manual-tr": [
+          1,
+          3,
+          4
+        ],
+        "regional-returns-tr": [
+          2,
+          5
+        ]
+      },
+      "top1_is_required": true,
+      "distinct_source_count": 2,
+      "duplicate_source_chunk_count": 3,
+      "distractor_source_count": 0,
+      "context_characters": 1602
+    },
+    "generated_answer": "",
+    "citations": {
+      "completeness": 0.0,
+      "found": [],
+      "required_sources_cited": 0,
+      "required_sources_total": 2,
+      "support_correct": false,
+      "unknown_or_unauthorized": [],
+      "valid": true
+    },
+    "citation_classification": [],
+    "deterministic_correctness": {
+      "components": [
+        false
+      ],
+      "covered": 0,
+      "method": "normalized_expected_answer_components",
+      "status": "FAIL",
+      "total": 1
+    },
+    "output_validation": {
+      "error": {
+        "message": "The answer was withheld because output policy validation failed.",
+        "type": "error"
+      },
+      "passed": false,
+      "violations": [
+        "citation_suppression"
+      ]
+    },
+    "reviewed_outcome": "CANNOT_DETERMINE",
+    "support_status": "CANNOT_DETERMINE",
+    "primary_failure_cause": "CITATION_FORMAT_FAILURE",
+    "secondary_causes": [
+      "MULTIPART_COMPLETENESS_FAILURE"
+    ],
+    "fixability": "LIKELY_PROMPT_OR_FORMAT_FIXABLE",
+    "review_note": "Answer was withheld by citation-suppression validation."
+  }
+]

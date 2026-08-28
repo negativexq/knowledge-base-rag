@@ -1,0 +1,6 @@
+{
+  "expansion": "deterministic",
+  "neighbor_fetch": false,
+  "strategy": "same source/version tenant structured sections",
+  "token_budget": 1200
+}

@@ -1,0 +1,156 @@
+{
+  "schema_version": "phase-7.3-model-capacity-selection-v1",
+  "probe_count": 12,
+  "query_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0",
+    "hard-policy-language",
+    "hard-order-channel",
+    "hard-annual-cancel",
+    "cross-00-1",
+    "cross-06-0",
+    "version-01-0",
+    "version-01-1",
+    "native-00-2",
+    "injection-03-0"
+  ],
+  "composition": {
+    "multi_document": 3,
+    "hard_answerable": 3,
+    "cross_lingual": 2,
+    "version_conflict": 2,
+    "standard_answerable": 1,
+    "injection_bearing": 1
+  },
+  "identity": {
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "retrieval_config_fingerprint": "4210b5315b906c5b9b01db126dc1ff7a3aca69a78a8a943c93cbd2e7e276849f"
+  },
+  "fixed_inputs": {
+    "prompt_version": "v3",
+    "think": false,
+    "candidate_k": 20,
+    "top_n": 5,
+    "retrieval_reused": true
+  },
+  "models": {
+    "baseline": "qwen3.5:4b",
+    "probe": "qwen3.5:9b"
+  },
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "multi_document",
+      "rationale": "complete multi-document synthesis"
+    },
+    {
+      "query_id": "multi-00-3",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "multi_document",
+      "rationale": "complete multi-document synthesis with next-step request"
+    },
+    {
+      "query_id": "multi-03-0",
+      "category": "multi_document",
+      "language_pair": "tr->tr",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "multi_document",
+      "rationale": "complete Turkish multi-document evidence; validator stress"
+    },
+    {
+      "query_id": "hard-policy-language",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "hard_answerable",
+      "rationale": "gold-present cross-language/context reasoning failure"
+    },
+    {
+      "query_id": "hard-order-channel",
+      "category": "hard_answerable",
+      "language_pair": "tr->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "hard_answerable",
+      "rationale": "gold-present citation-suppression failure"
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "hard_answerable",
+      "rationale": "multi-constraint control; not only matcher failure"
+    },
+    {
+      "query_id": "cross-00-1",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "cross_lingual",
+      "rationale": "TR to EN substantive contradictory-answer case"
+    },
+    {
+      "query_id": "cross-06-0",
+      "category": "cross_lingual",
+      "language_pair": "en->tr",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "cross_lingual",
+      "rationale": "EN to TR citation/translation failure"
+    },
+    {
+      "query_id": "version-01-0",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "version_conflict",
+      "rationale": "mixed authority/current-rule case"
+    },
+    {
+      "query_id": "version-01-1",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "version_conflict",
+      "rationale": "current version control case"
+    },
+    {
+      "query_id": "native-00-2",
+      "category": "standard_answerable",
+      "language_pair": "en->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "standard_answerable",
+      "rationale": "known successful standard regression control"
+    },
+    {
+      "query_id": "injection-03-0",
+      "category": "injection_bearing",
+      "language_pair": "tr->en",
+      "gold_present": true,
+      "all_required_present": true,
+      "probe_slice": "injection_bearing",
+      "rationale": "retrieved-instruction control case"
+    }
+  ]
+}

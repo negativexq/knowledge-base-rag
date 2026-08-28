@@ -1,0 +1,21 @@
+{
+  "schema_version": "phase-7.5-context-builder-full-v1",
+  "identity": {
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5,
+    "retrieval_config_fingerprint": "4210b5315b906c5b9b01db126dc1ff7a3aca69a78a8a943c93cbd2e7e276849f"
+  },
+  "model": "qwen3.5:4b",
+  "prompt_version": "v3",
+  "think": false,
+  "num_ctx": 4096,
+  "top_n": 5,
+  "candidate_k": 20,
+  "context_builder": "context_builder_v1",
+  "retrieval_reused": true,
+  "validator": "strict"
+}

@@ -1,0 +1,9 @@
+{
+  "generation_calls": 0,
+  "not_replayable_under_v2_2_quote_contract": 36,
+  "reason": "historical v2/v2.1 candidates do not preserve answer_part.evidence.quote",
+  "records": 36,
+  "replayable_under_v2_2_quote_contract": 0,
+  "retrieval_calls": 0,
+  "source": "pipeline-v2-closure/smoke36-results.jsonl"
+}

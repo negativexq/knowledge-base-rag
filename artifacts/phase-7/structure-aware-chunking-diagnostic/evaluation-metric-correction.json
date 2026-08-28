@@ -1,0 +1,11 @@
+{
+  "schema_version": "phase-7.10-evidence-metric-correction-v1",
+  "old_metric": "required source present",
+  "new_metrics": [
+    "source_recall_complete",
+    "fact_evidence_recall",
+    "all_required_fact_evidence_present"
+  ],
+  "correction": "Source presence must not be interpreted as fact-level evidence availability.",
+  "historical_artifacts_modified": false
+}

@@ -1,0 +1,11 @@
+{
+  "algorithm": "stable_sha256_query_id_sort",
+  "category": "multi_document",
+  "count": 8,
+  "excluded": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ],
+  "input_split": "development"
+}

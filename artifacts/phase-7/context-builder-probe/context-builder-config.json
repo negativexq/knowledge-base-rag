@@ -1,0 +1,11 @@
+{
+  "version": "context_builder_v1",
+  "model": "qwen3.5:4b",
+  "prompt_version": "v3",
+  "think": false,
+  "max_context_tokens": 2600,
+  "dedupe": "exact normalized content + same citation identity only",
+  "ordering": "stable original reranker order",
+  "neighbor_expansion": false,
+  "top5_membership_changed": false
+}

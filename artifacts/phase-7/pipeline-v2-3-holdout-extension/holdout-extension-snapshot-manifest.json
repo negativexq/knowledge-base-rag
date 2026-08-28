@@ -1,0 +1,8 @@
+{
+  "query_ids": [],
+  "reason": "selection precondition failed",
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "snapshot_hashes": {},
+  "status": "NOT_CREATED"
+}

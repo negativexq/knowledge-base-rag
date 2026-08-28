@@ -1,0 +1,134 @@
+{
+  "client_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T14:45:09.841955+00:00",
+    "connection_established_at": "2026-08-28T14:45:09.841308+00:00",
+    "context_hash": "f571166eacc7231a6b95177384d05b7f2c2bd17a4fa4df42cb9ad3afae8aff8c",
+    "elapsed_ms": 7649.235,
+    "first_body_byte_at": "2026-08-28T14:45:09.841518+00:00",
+    "headers_received_at": "2026-08-28T14:45:09.841308+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "220857a15b05256ee25d6a3851640e43d0251472087602cc3d35756e97e2c0a3",
+    "request_id": "8bf415d768154a7f9edaf2c99049c575",
+    "request_started_at": "2026-08-28T14:45:02.193043+00:00",
+    "response_bytes": 964,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "elapsed_ms": 7653.7,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "model": "qwen3.5:4b",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"For Standard-plan customers on direct-sale physical goods, the return window is within 14 calendar days of delivery. The required fields to record a case are: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.\",\"evidence\":[\n  {\"evidence_id\":\"E3\",\"quote\":\"Standard-plan customers may request a refund within 14 calendar days of delivery.\"},\n  {\"evidence_id\":\"E3\",\"quote\":\"Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E3",
+              "quote": "Standard-plan customers may request a refund within 14 calendar days of delivery."
+            },
+            {
+              "evidence_id": "E3",
+              "quote": "Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope."
+            }
+          ],
+          "text": "For Standard-plan customers on direct-sale physical goods, the return window is within 14 calendar days of delivery. The required fields to record a case are: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "Standard-plan customers may request a refund within 14 calendar days of delivery."
+          },
+          {
+            "evidence_id": "E3",
+            "quote": "Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "5bd2643d-4837-5733-9717-c88c37860274",
+              "1b50ae39-8364-5172-a719-f2090efce26e"
+            ],
+            "evidence_block_id": "evidence-a5be740e0ffb51f76dc60a19",
+            "evidence_id": "E3",
+            "matched_span": [
+              135,
+              216
+            ],
+            "normalized_quote": "Standard-plan customers may request a refund within 14 calendar days of delivery.",
+            "quote_match": true,
+            "raw_quote": "Standard-plan customers may request a refund within 14 calendar days of delivery.",
+            "source_id": "standard-returns-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "5bd2643d-4837-5733-9717-c88c37860274",
+              "1b50ae39-8364-5172-a719-f2090efce26e"
+            ],
+            "evidence_block_id": "evidence-a5be740e0ffb51f76dc60a19",
+            "evidence_id": "E3",
+            "matched_span": [
+              607,
+              760
+            ],
+            "normalized_quote": "Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.",
+            "quote_match": true,
+            "raw_quote": "Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.",
+            "source_id": "standard-returns-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "For Standard-plan customers on direct-sale physical goods, the return window is within 14 calendar days of delivery. The required fields to record a case are: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "For Standard-plan customers on direct-sale physical goods, the return window is within 14 calendar days of delivery. The required fields to record a case are: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. [E3] [E3]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "probe": "C",
+  "result": "PASS"
+}

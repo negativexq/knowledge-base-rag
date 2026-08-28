@@ -1,0 +1,195 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "a": {
+        "model": "qwen3.5:4b",
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "fact_coverage": 0.5,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ]
+        ],
+        "validator_pass": true
+      },
+      "b": {
+        "model": "qwen2.5:7b-instruct",
+        "status": "INCORRECT",
+        "fact_coverage": 0.0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "citations": [],
+        "validator_pass": true
+      },
+      "a_citation_classes": [
+        "SUPPORTED",
+        "CORRECT_FACT_WRONG_SOURCE"
+      ],
+      "b_citation_classes": [],
+      "content_outcome": "REGRESSED",
+      "same_context_ids": true,
+      "same_context_order": true,
+      "same_context_serialization": true,
+      "a_output_chars": 613,
+      "b_output_chars": 38,
+      "a_latency_ms": 22332.363,
+      "b_latency_ms": 19560.407
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "a": {
+        "model": "qwen3.5:4b",
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "fact_coverage": 0.5,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ]
+        ],
+        "validator_pass": true
+      },
+      "b": {
+        "model": "qwen2.5:7b-instruct",
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "fact_coverage": 0.5,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ]
+        ],
+        "validator_pass": true
+      },
+      "a_citation_classes": [
+        "SUPPORTED"
+      ],
+      "b_citation_classes": [
+        "SUPPORTED",
+        "SUPPORTED",
+        "SUPPORTED"
+      ],
+      "content_outcome": "UNCHANGED",
+      "same_context_ids": true,
+      "same_context_order": true,
+      "same_context_serialization": true,
+      "a_output_chars": 1769,
+      "b_output_chars": 1072,
+      "a_latency_ms": 42810.946,
+      "b_latency_ms": 25990.566
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_fact_ids": [
+        "fact_1"
+      ],
+      "a": {
+        "model": "qwen3.5:4b",
+        "status": "INCORRECT",
+        "fact_coverage": 0.0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "3/0"
+          ],
+          [
+            "filesystem",
+            "digital-goods-policy",
+            "5/1"
+          ]
+        ],
+        "validator_pass": false
+      },
+      "b": {
+        "model": "qwen2.5:7b-instruct",
+        "status": "INCORRECT",
+        "fact_coverage": 0.0,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "citations": [
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "5/0, s.filesystem:returns-manual-tr/5/0"
+          ]
+        ],
+        "validator_pass": false
+      },
+      "a_citation_classes": [
+        "SUPPORTED",
+        "UNKNOWN_ID"
+      ],
+      "b_citation_classes": [
+        "UNKNOWN_ID"
+      ],
+      "content_outcome": "UNCHANGED",
+      "same_context_ids": true,
+      "same_context_order": true,
+      "same_context_serialization": true,
+      "a_output_chars": 186,
+      "b_output_chars": 239,
+      "a_latency_ms": 18111.657,
+      "b_latency_ms": 18668.95
+    }
+  ],
+  "a_planning_failures": 2,
+  "b_planning_failures": 2,
+  "a_synthesis_failures": 1,
+  "b_synthesis_failures": 1
+}

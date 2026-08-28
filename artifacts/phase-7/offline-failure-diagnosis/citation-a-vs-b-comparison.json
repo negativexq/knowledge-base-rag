@@ -1,0 +1,15 @@
+{
+  "a_vs_b_outcome_counts": {
+    "UNCHANGED": 31,
+    "IMPROVED": 3,
+    "REGRESSED": 2,
+    "NOT_COMPARABLE": 0
+  },
+  "a_identity": 33,
+  "b_identity": 34,
+  "b_review_required_occurrences": 23,
+  "citation_improved": 3,
+  "citation_unchanged": 31,
+  "citation_regressed": 2,
+  "note": "B observability and occurrence composition differ from historical A; review-required claims are not treated as proven regressions."
+}

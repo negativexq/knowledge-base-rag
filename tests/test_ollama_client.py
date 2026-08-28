@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 import httpx
@@ -7,6 +8,7 @@ from app.llm.ollama_client import (
     DEFAULT_KEEP_ALIVE,
     DEFAULT_TIMEOUT_SECONDS,
     OllamaClient,
+    OllamaRequestTimeout,
     OllamaUnreachableError,
 )
 
@@ -202,6 +204,39 @@ async def test_stream_chat_raises_when_unreachable():
 
 
 @pytest.mark.asyncio
+async def test_stream_chat_overall_timeout_is_bounded_and_classified():
+    class SlowStream:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        status_code = 200
+
+        def raise_for_status(self):
+            return None
+
+        async def aiter_lines(self):
+            await asyncio.sleep(0.01)
+            yield json.dumps({"message": {"content": "late"}})
+
+    class SlowClient:
+        def stream(self, *args, **kwargs):
+            return SlowStream()
+
+    client = OllamaClient(http_client=SlowClient(), overall_timeout=0.001)
+
+    with pytest.raises(OllamaRequestTimeout) as error:
+        async for _ in client.stream_chat([], model="qwen3.5:4b"):
+            pass
+
+    assert error.value.timeout_type == "OVERALL"
+    assert client.last_call_observation["status"] == "TIMEOUT"
+    assert client.last_call_observation["streaming"] is True
+
+
+@pytest.mark.asyncio
 async def test_chat_json_is_non_streaming_deterministic_and_thinking_disabled():
     captured = {}
 
@@ -229,6 +264,20 @@ async def test_chat_json_is_non_streaming_deterministic_and_thinking_disabled():
 
 
 @pytest.mark.asyncio
+async def test_chat_json_forwards_bounded_output_option_when_requested():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.update(json.loads(request.content))
+        return httpx.Response(200, json={"message": {"content": '{"answer":"ok"}'}})
+
+    client = OllamaClient(http_client=_mock_client(handler))
+    await client.chat_json([], model="qwen3.5:4b", num_predict=1024)
+
+    assert captured["options"]["num_predict"] == 1024
+
+
+@pytest.mark.asyncio
 async def test_chat_json_raises_when_unreachable():
     def handler(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectError("connection refused", request=request)
@@ -237,6 +286,55 @@ async def test_chat_json_raises_when_unreachable():
 
     with pytest.raises(OllamaUnreachableError):
         await client.chat_json([], model="qwen3:4b")
+
+
+@pytest.mark.asyncio
+async def test_chat_json_records_stage_observability():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"message": {"content": '{"answer":"ok"}'}})
+
+    client = OllamaClient(http_client=_mock_client(handler))
+    assert await client.chat_json([], model="qwen3:4b", seed=42) == '{"answer":"ok"}'
+    observation = client.last_call_observation
+    assert observation is not None
+    assert observation["status"] == "COMPLETE"
+    assert observation["seed"] == 42
+    assert observation["headers_received_at"] is not None
+    assert observation["first_body_byte_at"] is not None
+    assert observation["response_bytes"] > 0
+    assert observation["elapsed_ms"] >= 0
+
+
+@pytest.mark.asyncio
+async def test_chat_json_overall_timeout_is_bounded_and_classified():
+    class SlowStream:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        status_code = 200
+
+        def raise_for_status(self):
+            return None
+
+        async def aiter_bytes(self):
+            await asyncio.sleep(0.01)
+            yield b"{}"
+
+    class SlowClient:
+        def stream(self, *args, **kwargs):
+            return SlowStream()
+
+    client = OllamaClient(http_client=SlowClient(), overall_timeout=0.001)
+
+    with pytest.raises(OllamaRequestTimeout) as error:
+        await client.chat_json([], model="qwen3:4b")
+
+    assert error.value.timeout_type == "OVERALL"
+    assert client.last_call_observation["status"] == "TIMEOUT"
+    assert client.last_call_observation["timeout_type"] == "OVERALL"
 
 
 def test_default_timeout_is_generous_enough_for_slow_local_generation():

@@ -1,0 +1,18 @@
+{
+  "semantic_entailment_claimed": false,
+  "statuses": [
+    "CRITICAL_VALUE_SUPPORTED",
+    "CRITICAL_VALUE_ABSENT",
+    "CRITICAL_VALUE_CONFLICT"
+  ],
+  "supported_types": [
+    "INTEGER",
+    "DECIMAL",
+    "PERCENTAGE",
+    "CURRENCY",
+    "DURATION",
+    "DATE",
+    "VERSION",
+    "BOOLEAN"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "query_ids": [
+    "acl-02-0",
+    "acl-02-1",
+    "acl-02-2"
+  ],
+  "a": {
+    "n": 3,
+    "full": 0,
+    "incomplete": 0,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 0
+  },
+  "b": {
+    "n": 3,
+    "full": 0,
+    "incomplete": 0,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 0
+  }
+}

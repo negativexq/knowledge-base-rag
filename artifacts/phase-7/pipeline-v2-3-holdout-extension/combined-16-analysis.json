@@ -1,0 +1,10 @@
+{
+  "architecture_decision": "V2_3_INCONCLUSIVE_EXPAND_ONCE",
+  "combined_query_count": 8,
+  "extension_query_count": 0,
+  "initial_clearly_better": 2,
+  "initial_clearly_worse": 2,
+  "initial_holdout_query_count": 8,
+  "reason": "the preregistered +8 extension cannot be selected from development",
+  "status": "NOT_FINALIZED"
+}

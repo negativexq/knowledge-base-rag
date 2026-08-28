@@ -1,0 +1,139 @@
+{
+  "count": 7,
+  "recovered": 7,
+  "unresolved": 0,
+  "records": [
+    {
+      "query_id": "cross-01-0",
+      "old": "FAIL",
+      "review": "DEFINITELY_CORRECT",
+      "new": "FULLY_CORRECT_COMPLETE",
+      "reason": [
+        {
+          "matched": true,
+          "reason": "duration",
+          "expected": [
+            30.0,
+            "day"
+          ],
+          "answer": [
+            30.0,
+            "day"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "cross-06-1",
+      "old": "FAIL",
+      "review": "DEFINITELY_CORRECT",
+      "new": "FULLY_CORRECT_COMPLETE",
+      "reason": [
+        {
+          "matched": true,
+          "reason": "duration",
+          "expected": [
+            48.0,
+            "hour"
+          ],
+          "answer": [
+            48.0,
+            "hour"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "cross-07-0",
+      "old": "FAIL",
+      "review": "DEFINITELY_CORRECT",
+      "new": "FULLY_CORRECT_COMPLETE",
+      "reason": [
+        {
+          "matched": true,
+          "reason": "duration",
+          "expected": [
+            15.0,
+            "percent"
+          ],
+          "answer": [
+            15.0,
+            "percent"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "old": "FAIL",
+      "review": "DEFINITELY_CORRECT",
+      "new": "FULLY_CORRECT_COMPLETE",
+      "reason": [
+        {
+          "matched": true,
+          "reason": "duration",
+          "expected": [
+            48.0,
+            "hour"
+          ],
+          "answer": [
+            48.0,
+            "hour"
+          ]
+        },
+        {
+          "matched": true,
+          "reason": "authored_cross_lingual_alias"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-api-private",
+      "old": "FAIL",
+      "review": "DEFINITELY_CORRECT",
+      "new": "FULLY_CORRECT_COMPLETE",
+      "reason": [
+        {
+          "matched": true,
+          "reason": "normalized_phrase"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-api-version",
+      "old": "FAIL",
+      "review": "DEFINITELY_CORRECT",
+      "new": "FULLY_CORRECT_COMPLETE",
+      "reason": [
+        {
+          "matched": true,
+          "reason": "normalized_phrase"
+        },
+        {
+          "matched": true,
+          "reason": "explicit_authored_aliases"
+        }
+      ]
+    },
+    {
+      "query_id": "version-01-1",
+      "old": "FAIL",
+      "review": "DEFINITELY_CORRECT",
+      "new": "FULLY_CORRECT_COMPLETE",
+      "reason": [
+        {
+          "matched": true,
+          "reason": "duration",
+          "expected": [
+            14.0,
+            "day"
+          ],
+          "answer": [
+            14.0,
+            "day"
+          ]
+        }
+      ]
+    }
+  ]
+}

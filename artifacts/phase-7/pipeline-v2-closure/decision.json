@@ -1,0 +1,15 @@
+{
+  "calibration": "NOT_RUN",
+  "closure_gate": "PIPELINE_V2_GATE_FAIL_MIXED",
+  "closure_gate_reason": [
+    "annotated evidence completeness passes for the 10-query set",
+    "multi-document remains incomplete for 1/3 queries",
+    "ACL/no-evidence unsupported answers remain in the 36-query smoke",
+    "citation identity/strict validation remains non-perfect"
+  ],
+  "development200": "NOT_RUN",
+  "frozen_test": "NOT_TOUCHED",
+  "next_action": "stop tuning; classify remaining issues as citation model behavior, grounding limitation, and generator quality ceiling before any separately approved hardening task",
+  "ready_for_calibration": false,
+  "smoke36": "SMOKE36_FAIL"
+}

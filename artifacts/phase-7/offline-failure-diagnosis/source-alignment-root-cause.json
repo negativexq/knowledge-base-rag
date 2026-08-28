@@ -1,0 +1,17 @@
+{
+  "root_cause_counts": {
+    "CITATION_SELECTION": 21,
+    "CITATION_IDENTITY": 2
+  },
+  "alignment_mechanism_counts": {
+    "A_CORRECT_EVIDENCE_PRESENT_IN_ANOTHER_TOP5_CHUNK": 17,
+    "B_RELATED_BUT_NOT_SUPPORTING": 1,
+    "F_GENERATED_CLAIM_OR_SOURCE_NOT_PROVABLY_SUPPORTED": 3,
+    "D_IDENTITY_FAILURE": 2
+  },
+  "dominant": [
+    "CITATION_SELECTION",
+    21
+  ],
+  "interpretation": "The B review set is dominated by citation selection/alignment: in most reviewed occurrences the required evidence exists elsewhere in the same authorized Top-5. No deterministic evidence links this to changed ordering or membership."
+}

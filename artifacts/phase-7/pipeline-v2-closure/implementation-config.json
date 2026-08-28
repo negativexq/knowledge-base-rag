@@ -1,0 +1,18 @@
+{
+  "candidate_k": 20,
+  "collection": "kb_eval_phase55_0175aa4a2f9b",
+  "context_builder": "section_aware",
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "default_enabled": false,
+  "generator": "qwen3.5:4b",
+  "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+  "num_ctx": 4096,
+  "output_contract_version": "output_contract_v2",
+  "pipeline_version": "pipeline_v2_section_claims",
+  "prompt": "v3",
+  "rag_pipeline_v2": false,
+  "think": false,
+  "top_n": 5,
+  "validator": "claim_level_strict"
+}

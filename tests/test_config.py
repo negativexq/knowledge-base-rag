@@ -119,11 +119,18 @@ def test_generation_provider_defaults_to_ollama_local_first():
     assert Settings().generation_provider == "ollama"
 
 
-def test_dev_fast_profile_selects_qwen3_without_thinking():
+def test_generation_default_uses_qwen35_without_thinking():
+    settings = Settings()
+
+    assert settings.ollama_model == "qwen3.5:4b"
+    assert settings.ollama_thinking is False
+
+
+def test_dev_fast_profile_selects_qwen35_without_thinking():
     settings = Settings.dev_fast()
 
     assert settings.runtime_profile == "DEV_FAST"
-    assert settings.ollama_model == "qwen3:4b"
+    assert settings.ollama_model == "qwen3.5:4b"
     assert settings.ollama_thinking is False
     assert settings.embedding_model_key == "qwen3-4b"
     assert settings.embedding_output_dimension == 1024

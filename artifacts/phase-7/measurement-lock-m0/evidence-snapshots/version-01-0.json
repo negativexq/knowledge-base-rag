@@ -1,0 +1,289 @@
+{
+  "authorized_top5": [
+    {
+      "chunk_id": "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "content": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır. Premium planın doğrudan satışları 30 günlük ayrı pencereye tabidir. Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\n\nDijital lisanslarda indirme olayı ile etkinleştirme olayı birbirinden ayrılır. Anahtar indirilmiş fakat etkinleştirilmemişse uygunluk, etkinleştirme zaman damgası görülene kadar kapanmış sayılmaz. Etkinleştirilmiş dijital ürün için kamuya açık kural normalde iade yapılmamasıdır; imzalı sözleşme bu sonucu değiştirebilir.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "2. İade kapsamının ayrıştırılması"
+        ],
+        "page_number": 2,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "content": "Owner: Customer Policy Operations\nPublished: 2026-01-10\nEffective: 2026-01-15\n\nThis bulletin announces the change to the direct-sale Standard-plan return window: deliveries governed by the new policy use 14 calendar days from delivery. The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.\n\nThis bulletin is a change notice, not a replacement for the canonical Standard Returns — 2026 policy. It does not alter Premium, marketplace, digital-goods, regional statutory, or signed enterprise terms. When the case is version-sensitive, cite both the effective date and the canonical policy.\n\nRelated: Standard Returns — 2026; Standard Returns — 2025 (superseded).",
+      "metadata": {
+        "document_version": "5cf8cdaae8b1c941fda218f178aafd18ab8e7474f872cffdc6198bec92285c2f",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "refund-policy-2026"
+    },
+    {
+      "chunk_id": "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "content": "Policy owner: Customer Policy Operations\nEffective: 2025-01-01 through 2026-01-14\nStatus: superseded historical policy\n\nFor direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery. The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15.\n\nThe 2026 policy bulletin records the transition. A citation for a historical case must include the delivery date and this version, not merely the current return page.",
+      "metadata": {
+        "document_version": "fab544cd16a16ce489c6baf67ddbf9c4d1b3b2f330314e7b59678e2cc1094d64",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Standard Returns — 2025 (Superseded)"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "refund-policy-2025"
+    },
+    {
+      "chunk_id": "cb46d001-1e2e-5872-9478-58e344b447fa",
+      "content": "| Sürüm | Tarih | Değişiklik |\n|---|---|---|\n| 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı |\n| 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi |\n| 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |\n\nİlgili belgeler: Marketplace Returns; Digital Goods Policy; Support Escalation Standard; Enterprise Contract Guide.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "35. İş ortağı kanıtlarının doğrulanması",
+          "Revizyon geçmişi"
+        ],
+        "page_number": 36,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+      "content": "Document owner: Customer Policy Operations\nEffective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\n\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\n\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.",
+      "metadata": {
+        "document_version": "eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Standard Returns — 2026"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "source_id": "standard-returns-2026"
+    }
+  ],
+  "candidate_top20": [],
+  "candidate_top20_ids": [],
+  "context_hash": "ac6bd9f4a78c65acc45390d511f89954fc4da1ae5dcf8eb89e3cc8b99ade7b19",
+  "context_tokens": 597,
+  "evidence_blocks": [
+    {
+      "anchor_chunk_id": "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "chunk_id": "evidence-f72215516d7672d92b0f6733",
+      "citation_aliases": [
+        {
+          "chunk_id": "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "cb46d001-1e2e-5872-9478-58e344b447fa",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+        "cb46d001-1e2e-5872-9478-58e344b447fa"
+      ],
+      "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+      "evidence_block_id": "evidence-f72215516d7672d92b0f6733",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+        "2. İade kapsamının ayrıştırılması"
+      ],
+      "page_number": 2,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "2. İade kapsamının ayrıştırılması"
+        ],
+        0
+      ],
+      "source_id": "long-policy-tr",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır. Premium planın doğrudan satışları 30 günlük ayrı pencereye tabidir. Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\n\nDijital lisanslarda indirme olayı ile etkinleştirme olayı birbirinden ayrılır. Anahtar indirilmiş fakat etkinleştirilmemişse uygunluk, etkinleştirme zaman damgası görülene kadar kapanmış sayılmaz. Etkinleştirilmiş dijital ürün için kamuya açık kural normalde iade yapılmamasıdır; imzalı sözleşme bu sonucu değiştirebilir.\n\n| Sürüm | Tarih | Değişiklik |\n|---|---|---|\n| 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı |\n| 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi |\n| 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |\n\nİlgili belgeler: Marketplace Returns; Digital Goods Policy; Support Escalation Standard; Enterprise Contract Guide.",
+      "token_count": 133
+    },
+    {
+      "anchor_chunk_id": "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "chunk_id": "evidence-8fea465773fe4e1d004015a6",
+      "citation_aliases": [
+        {
+          "chunk_id": "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "location": "Policy Bulletin 2026.1 — Standard Return Window",
+          "source_id": "refund-policy-2026",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb"
+      ],
+      "document_version": "5cf8cdaae8b1c941fda218f178aafd18ab8e7474f872cffdc6198bec92285c2f",
+      "evidence_block_id": "evidence-8fea465773fe4e1d004015a6",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Policy Bulletin 2026.1 — Standard Return Window"
+      ],
+      "page_number": 0,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ],
+        0
+      ],
+      "source_id": "refund-policy-2026",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Owner: Customer Policy Operations\nPublished: 2026-01-10\nEffective: 2026-01-15\n\nThis bulletin announces the change to the direct-sale Standard-plan return window: deliveries governed by the new policy use 14 calendar days from delivery. The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.\n\nThis bulletin is a change notice, not a replacement for the canonical Standard Returns — 2026 policy. It does not alter Premium, marketplace, digital-goods, regional statutory, or signed enterprise terms. When the case is version-sensitive, cite both the effective date and the canonical policy.\n\nRelated: Standard Returns — 2026; Standard Returns — 2025 (superseded).",
+      "token_count": 102
+    },
+    {
+      "anchor_chunk_id": "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "chunk_id": "evidence-18dff0edf106c3883371702d",
+      "citation_aliases": [
+        {
+          "chunk_id": "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "location": "Standard Returns — 2025 (Superseded)",
+          "source_id": "refund-policy-2025",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+      ],
+      "document_version": "fab544cd16a16ce489c6baf67ddbf9c4d1b3b2f330314e7b59678e2cc1094d64",
+      "evidence_block_id": "evidence-18dff0edf106c3883371702d",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Standard Returns — 2025 (Superseded)"
+      ],
+      "page_number": 0,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Standard Returns — 2025 (Superseded)"
+        ],
+        0
+      ],
+      "source_id": "refund-policy-2025",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Policy owner: Customer Policy Operations\nEffective: 2025-01-01 through 2026-01-14\nStatus: superseded historical policy\n\nFor direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery. The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15.\n\nThe 2026 policy bulletin records the transition. A citation for a historical case must include the delivery date and this version, not merely the current return page.",
+      "token_count": 84
+    },
+    {
+      "anchor_chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+      "chunk_id": "evidence-c3e56011af0b7007b88d893a",
+      "citation_aliases": [
+        {
+          "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+          "location": "Standard Returns — 2026",
+          "source_id": "standard-returns-2026",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+          "location": "Standard Returns — 2026/Case record",
+          "source_id": "standard-returns-2026",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "5bd2643d-4837-5733-9717-c88c37860274",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "document_version": "eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2",
+      "evidence_block_id": "evidence-c3e56011af0b7007b88d893a",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Standard Returns — 2026"
+      ],
+      "page_number": 0,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Standard Returns — 2026"
+        ],
+        0
+      ],
+      "source_id": "standard-returns-2026",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Document owner: Customer Policy Operations\nEffective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\n\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\n\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.\n\nBefore approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. If one of those fields is unknown, keep the case pending rather than quote a generic return period.\n\nRelated: Premium Returns — 2026; Marketplace Returns; Digital Goods Policy. The 2026 policy bulletin explains the change from the superseded 2025 rule.",
+      "token_count": 152
+    }
+  ],
+  "metrics": {
+    "context_chars": 7615,
+    "context_tokens": 597,
+    "expanded": true,
+    "input_chunk_ids": [
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "cb46d001-1e2e-5872-9478-58e344b447fa",
+      "5bd2643d-4837-5733-9717-c88c37860274"
+    ],
+    "output_block_ids": [
+      "evidence-f72215516d7672d92b0f6733",
+      "evidence-8fea465773fe4e1d004015a6",
+      "evidence-18dff0edf106c3883371702d",
+      "evidence-c3e56011af0b7007b88d893a"
+    ]
+  },
+  "model_visible_context": "<section_aware_evidence trust=\"untrusted\" blocks=\"4\">\n[evidence_block 1 json_chars=2352]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E1\",\"evidence_block_id\":\"evidence-f72215516d7672d92b0f6733\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması\",\"section_key\":[\"heading\",[\"Negativex Bölgesel Operasyon ve Müşteri Politikası\",\"2. İade kapsamının ayrıştırılması\"],0],\"document_version\":\"bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"49df1fbd-e41f-5702-b1f6-903e0e17c8d0\",\"cb46d001-1e2e-5872-9478-58e344b447fa\"],\"citation_aliases\":[{\"chunk_id\":\"49df1fbd-e41f-5702-b1f6-903e0e17c8d0\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması\"},{\"chunk_id\":\"cb46d001-1e2e-5872-9478-58e344b447fa\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi\"}],\"canonical_citations\":[\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması]\",\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi]\"]},\"content\":\"Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır. Premium planın doğrudan satışları 30 günlük ayrı pencereye tabidir. Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\\n\\nDijital lisanslarda indirme olayı ile etkinleştirme olayı birbirinden ayrılır. Anahtar indirilmiş fakat etkinleştirilmemişse uygunluk, etkinleştirme zaman damgası görülene kadar kapanmış sayılmaz. Etkinleştirilmiş dijital ürün için kamuya açık kural normalde iade yapılmamasıdır; imzalı sözleşme bu sonucu değiştirebilir.\\n\\n| Sürüm | Tarih | Değişiklik |\\n|---|---|---|\\n| 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı |\\n| 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi |\\n| 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |\\n\\nİlgili belgeler: Marketplace Returns; Digital Goods Policy; Support Escalation Standard; Enterprise Contract Guide.\"}\n[/evidence_block 1]\n[evidence_block 2 json_chars=1509]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E2\",\"evidence_block_id\":\"evidence-8fea465773fe4e1d004015a6\",\"source_type\":\"filesystem\",\"source_id\":\"refund-policy-2026\",\"location\":\"Policy Bulletin 2026.1 — Standard Return Window\",\"section_key\":[\"heading\",[\"Policy Bulletin 2026.1 — Standard Return Window\"],0],\"document_version\":\"5cf8cdaae8b1c941fda218f178aafd18ab8e7474f872cffdc6198bec92285c2f\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb\"],\"citation_aliases\":[{\"chunk_id\":\"e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb\",\"source_type\":\"filesystem\",\"source_id\":\"refund-policy-2026\",\"location\":\"Policy Bulletin 2026.1 — Standard Return Window\"}],\"canonical_citations\":[\"[s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window]\"]},\"content\":\"Owner: Customer Policy Operations\\nPublished: 2026-01-10\\nEffective: 2026-01-15\\n\\nThis bulletin announces the change to the direct-sale Standard-plan return window: deliveries governed by the new policy use 14 calendar days from delivery. The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.\\n\\nThis bulletin is a change notice, not a replacement for the canonical Standard Returns — 2026 policy. It does not alter Premium, marketplace, digital-goods, regional statutory, or signed enterprise terms. When the case is version-sensitive, cite both the effective date and the canonical policy.\\n\\nRelated: Standard Returns — 2026; Standard Returns — 2025 (superseded).\"}\n[/evidence_block 2]\n[evidence_block 3 json_chars=1302]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E3\",\"evidence_block_id\":\"evidence-18dff0edf106c3883371702d\",\"source_type\":\"filesystem\",\"source_id\":\"refund-policy-2025\",\"location\":\"Standard Returns — 2025 (Superseded)\",\"section_key\":[\"heading\",[\"Standard Returns — 2025 (Superseded)\"],0],\"document_version\":\"fab544cd16a16ce489c6baf67ddbf9c4d1b3b2f330314e7b59678e2cc1094d64\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"81c42719-5b0b-5c64-897a-a8a0ae51b5d8\"],\"citation_aliases\":[{\"chunk_id\":\"81c42719-5b0b-5c64-897a-a8a0ae51b5d8\",\"source_type\":\"filesystem\",\"source_id\":\"refund-policy-2025\",\"location\":\"Standard Returns — 2025 (Superseded)\"}],\"canonical_citations\":[\"[s.filesystem:refund-policy-2025/Standard Returns — 2025 (Superseded)]\"]},\"content\":\"Policy owner: Customer Policy Operations\\nEffective: 2025-01-01 through 2026-01-14\\nStatus: superseded historical policy\\n\\nFor direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery. The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15.\\n\\nThe 2026 policy bulletin records the transition. A citation for a historical case must include the delivery date and this version, not merely the current return page.\"}\n[/evidence_block 3]\n[evidence_block 4 json_chars=1997]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E4\",\"evidence_block_id\":\"evidence-c3e56011af0b7007b88d893a\",\"source_type\":\"filesystem\",\"source_id\":\"standard-returns-2026\",\"location\":\"Standard Returns — 2026\",\"section_key\":[\"heading\",[\"Standard Returns — 2026\"],0],\"document_version\":\"eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"5bd2643d-4837-5733-9717-c88c37860274\",\"1b50ae39-8364-5172-a719-f2090efce26e\"],\"citation_aliases\":[{\"chunk_id\":\"5bd2643d-4837-5733-9717-c88c37860274\",\"source_type\":\"filesystem\",\"source_id\":\"standard-returns-2026\",\"location\":\"Standard Returns — 2026\"},{\"chunk_id\":\"1b50ae39-8364-5172-a719-f2090efce26e\",\"source_type\":\"filesystem\",\"source_id\":\"standard-returns-2026\",\"location\":\"Standard Returns — 2026/Case record\"}],\"canonical_citations\":[\"[s.filesystem:standard-returns-2026/Standard Returns — 2026]\",\"[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]\"]},\"content\":\"Document owner: Customer Policy Operations\\nEffective date: 2026-01-15\\nScope: Negativex direct-sale physical goods on the Standard plan\\n\\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\\n\\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.\\n\\nBefore approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. If one of those fields is unknown, keep the case pending rather than quote a generic return period.\\n\\nRelated: Premium Returns — 2026; Marketplace Returns; Digital Goods Policy. The 2026 policy bulletin explains the change from the superseded 2025 rule.\"}\n[/evidence_block 4]\n</section_aware_evidence>",
+  "pipeline_identity": {
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "query_id": "version-01-0",
+  "tenant_id": "tenant-a",
+  "top5_ids": [
+    "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+    "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+    "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+    "cb46d001-1e2e-5872-9478-58e344b447fa",
+    "5bd2643d-4837-5733-9717-c88c37860274"
+  ]
+}

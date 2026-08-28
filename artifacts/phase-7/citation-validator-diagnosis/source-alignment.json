@@ -1,0 +1,59 @@
+{
+  "source_alignment_failure_records": 10,
+  "source_alignment_failure_occurrences": 16,
+  "correct_fact_wrong_source_occurrences": 12,
+  "wrong_fact_wrong_source_occurrences": 4,
+  "records": [
+    {
+      "query_id": "cross-01-0",
+      "related_wrong_claim_occurrences": 3,
+      "content_status": "FULLY_CORRECT_COMPLETE"
+    },
+    {
+      "query_id": "hard-api-private",
+      "related_wrong_claim_occurrences": 2,
+      "content_status": "FULLY_CORRECT_COMPLETE"
+    },
+    {
+      "query_id": "hard-policy-language",
+      "related_wrong_claim_occurrences": 1,
+      "content_status": "PARTIALLY_CORRECT"
+    },
+    {
+      "query_id": "multi-00-1",
+      "related_wrong_claim_occurrences": 1,
+      "content_status": "CORRECT_BUT_INCOMPLETE"
+    },
+    {
+      "query_id": "multi-00-3",
+      "related_wrong_claim_occurrences": 2,
+      "content_status": "CORRECT_BUT_INCOMPLETE"
+    },
+    {
+      "query_id": "native-00-2",
+      "related_wrong_claim_occurrences": 1,
+      "content_status": "FULLY_CORRECT_COMPLETE"
+    },
+    {
+      "query_id": "native-00-3",
+      "related_wrong_claim_occurrences": 1,
+      "content_status": "FULLY_CORRECT_COMPLETE"
+    },
+    {
+      "query_id": "native-01-0",
+      "related_wrong_claim_occurrences": 1,
+      "content_status": "FULLY_CORRECT_COMPLETE"
+    },
+    {
+      "query_id": "version-01-0",
+      "related_wrong_claim_occurrences": 3,
+      "content_status": "PARTIALLY_CORRECT"
+    },
+    {
+      "query_id": "version-01-1",
+      "related_wrong_claim_occurrences": 1,
+      "content_status": "FULLY_CORRECT_COMPLETE"
+    }
+  ],
+  "note": "RELATED_WRONG_CLAIM is the persisted proxy; no claim extractor was introduced."
+}

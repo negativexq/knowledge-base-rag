@@ -1,0 +1,22 @@
+{
+  "query_ids": [
+    "injection-03-0",
+    "injection-03-1"
+  ],
+  "a": {
+    "n": 2,
+    "full": 0,
+    "incomplete": 1,
+    "partial": 0,
+    "incorrect": 1,
+    "validator_reject": 0
+  },
+  "b": {
+    "n": 2,
+    "full": 0,
+    "incomplete": 2,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 1
+  }
+}

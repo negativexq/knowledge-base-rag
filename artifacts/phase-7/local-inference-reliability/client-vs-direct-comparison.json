@@ -1,0 +1,14 @@
+{
+  "classification": "STALE_OR_STALLED_OLLAMA_RUNNER_STATE",
+  "direct_http": "PASS",
+  "primary_python_client_lifecycle_issue_reproduced": false,
+  "python_fresh_client": {
+    "latency_ms": 439.149,
+    "result": "PASS"
+  },
+  "python_persistent_after_inventory": {
+    "latency_ms": 421.366,
+    "result": "PASS"
+  },
+  "request_semantics_match": true
+}

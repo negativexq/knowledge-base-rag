@@ -1,0 +1,9 @@
+{
+  "winner": "SECTION_AWARE_MERGED",
+  "generation_probe_eligible": true,
+  "eligible_queries": 3,
+  "reason": "Highest query-level fact completeness, then lowest median token cost and irrelevant-paragraph expansion.",
+  "promotion": false,
+  "primary_result": "RERANKER_SELECTION_PROBLEM",
+  "recommended_next_experiment": "RERANKER_ABLATION_NEXT"
+}

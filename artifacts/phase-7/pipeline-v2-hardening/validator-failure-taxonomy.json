@@ -1,0 +1,14 @@
+{
+  "affected_records": 16,
+  "hardened_replay_occurrence_counts": {
+    "TOP_LEVEL_SCHEMA_INVALID": 1,
+    "UNKNOWN_EVIDENCE_ID": 15
+  },
+  "old_occurrence_counts": {
+    "CITATION_SUPPRESSION": 1,
+    "MALFORMED_CITATION_SYNTAX": 4,
+    "OUTPUT_SCHEMA_FAILURE": 1,
+    "UNKNOWN_CITATION_ID": 14
+  },
+  "security_invalid_newly_exposed": 0
+}

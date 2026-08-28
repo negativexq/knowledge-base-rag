@@ -1,0 +1,6 @@
+{
+  "acl_expansion": "same tenant/source/version only",
+  "closure_acl_cases": "not included in the 10-query annotated closure set; evaluated in smoke36",
+  "phase6_semantic_gate": "OFF",
+  "raw_rejected_output_user_visible": false
+}

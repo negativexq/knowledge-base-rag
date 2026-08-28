@@ -1,0 +1,266 @@
+{
+  "checks": [
+    {
+      "fact_id": "premium_return_window_30_days",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "fact_id": "marketplace_return_window_7_days",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "fact_id": "marketplace_channel_required",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "fact_id": "regional_withdrawal_framework_14_days",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "fact_id": "digital_activation_boundary",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "fact_id": "joint_exception_routing",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "fact_id": "standard_return_window_14_days",
+      "source_exists": true,
+      "span_exists": true
+    },
+    {
+      "fact_id": "support_return_case_fields",
+      "source_exists": true,
+      "span_exists": true
+    }
+  ],
+  "facts": [
+    {
+      "authoritative_source_id": "premium-returns-2026",
+      "component_id": "premium_window",
+      "fact_id": "premium_return_window_30_days",
+      "required_component_id": "premium_window",
+      "required_fact_id": "premium_return_window_30_days",
+      "source_path": "data/evaluation/evaluation-corpus-v2/premium-returns-2026.md",
+      "supporting_text_anchor": "Premium customers have 30 calendar days from delivery to request a return.",
+      "supporting_text_span": "Premium customers have 30 calendar days from delivery to request a return."
+    },
+    {
+      "authoritative_source_id": "marketplace-returns",
+      "component_id": "marketplace_window",
+      "fact_id": "marketplace_return_window_7_days",
+      "required_component_id": "marketplace_window",
+      "required_fact_id": "marketplace_return_window_7_days",
+      "source_path": "data/evaluation/evaluation-corpus-v2/marketplace-returns.md",
+      "supporting_text_anchor": "Pazar yeri siparişlerinde iade talebi teslimattan itibaren 7 takvim günü içinde, pazar yerinin vaka ",
+      "supporting_text_span": "Pazar yeri siparişlerinde iade talebi teslimattan itibaren 7 takvim günü içinde, pazar yerinin vaka kanalı kullanılarak açılır."
+    },
+    {
+      "authoritative_source_id": "marketplace-returns",
+      "component_id": "marketplace_window",
+      "fact_id": "marketplace_channel_required",
+      "required_component_id": "marketplace_window",
+      "required_fact_id": "marketplace_channel_required",
+      "source_path": "data/evaluation/evaluation-corpus-v2/marketplace-returns.md",
+      "supporting_text_anchor": "Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.",
+      "supporting_text_span": "Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister."
+    },
+    {
+      "authoritative_source_id": "regional-returns-tr",
+      "required_component_id": "regional_withdrawal_right",
+      "required_fact_id": "regional_withdrawal_framework_14_days",
+      "section_heading": "Genel değerlendirme",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/regional-returns-tr.md",
+      "supporting_text_anchor": "14 günlük cayma çerçevesi",
+      "supporting_text_span": "Belirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez."
+    },
+    {
+      "authoritative_source_id": "regional-returns-tr",
+      "required_component_id": "activated_digital_exception",
+      "required_fact_id": "digital_activation_boundary",
+      "section_heading": "Dijital içerik",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/regional-returns-tr.md",
+      "supporting_text_anchor": "Dijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır.",
+      "supporting_text_span": "Dijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir."
+    },
+    {
+      "authoritative_source_id": "returns-manual-tr",
+      "required_component_id": "activated_digital_exception",
+      "required_fact_id": "joint_exception_routing",
+      "section_heading": "İstisna ve onay",
+      "source_path": "data/evaluation/evaluation-corpus-v2/pdf-sources/returns-manual-tr.md",
+      "supporting_text_anchor": "aktive edilmiş dijital ürünler, bölgesel istisnalar",
+      "supporting_text_span": "Süresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir."
+    },
+    {
+      "authoritative_source_id": "standard-returns-2026",
+      "required_component_id": "standard_return_window",
+      "required_fact_id": "standard_return_window_14_days",
+      "section_heading": "Standard Returns — 2026",
+      "source_path": "data/evaluation/evaluation-corpus-v2/standard-returns-2026.md",
+      "supporting_text_anchor": "14 calendar days",
+      "supporting_text_span": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window."
+    },
+    {
+      "authoritative_source_id": "support-playbook",
+      "required_component_id": "support_case_fields",
+      "required_fact_id": "support_return_case_fields",
+      "section_heading": "5. Returns and billing routing",
+      "source_path": "data/evaluation/evaluation-corpus-v2/support-playbook.md",
+      "supporting_text_anchor": "Use this sequence for a return request:",
+      "supporting_text_span": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval."
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "multi-01-1",
+      "required_components": [
+        {
+          "required_component_id": "premium_window",
+          "required_fact_ids": [
+            "premium_return_window_30_days"
+          ]
+        },
+        {
+          "required_component_id": "marketplace_window",
+          "required_fact_ids": [
+            "marketplace_return_window_7_days",
+            "marketplace_channel_required"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-1",
+      "required_components": [
+        {
+          "required_component_id": "regional_withdrawal_right",
+          "required_fact_ids": [
+            "regional_withdrawal_framework_14_days"
+          ]
+        },
+        {
+          "required_component_id": "activated_digital_exception",
+          "required_fact_ids": [
+            "digital_activation_boundary",
+            "joint_exception_routing"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-0",
+      "required_components": [
+        {
+          "required_component_id": "standard_return_window",
+          "required_fact_ids": [
+            "standard_return_window_14_days"
+          ]
+        },
+        {
+          "required_component_id": "support_case_fields",
+          "required_fact_ids": [
+            "support_return_case_fields"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-01-2",
+      "required_components": [
+        {
+          "required_component_id": "premium_window",
+          "required_fact_ids": [
+            "premium_return_window_30_days"
+          ]
+        },
+        {
+          "required_component_id": "marketplace_window",
+          "required_fact_ids": [
+            "marketplace_return_window_7_days",
+            "marketplace_channel_required"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-2",
+      "required_components": [
+        {
+          "required_component_id": "standard_return_window",
+          "required_fact_ids": [
+            "standard_return_window_14_days"
+          ]
+        },
+        {
+          "required_component_id": "support_case_fields",
+          "required_fact_ids": [
+            "support_return_case_fields"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-01-3",
+      "required_components": [
+        {
+          "required_component_id": "premium_window",
+          "required_fact_ids": [
+            "premium_return_window_30_days"
+          ]
+        },
+        {
+          "required_component_id": "marketplace_window",
+          "required_fact_ids": [
+            "marketplace_return_window_7_days",
+            "marketplace_channel_required"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-01-0",
+      "required_components": [
+        {
+          "required_component_id": "premium_window",
+          "required_fact_ids": [
+            "premium_return_window_30_days"
+          ]
+        },
+        {
+          "required_component_id": "marketplace_window",
+          "required_fact_ids": [
+            "marketplace_return_window_7_days",
+            "marketplace_channel_required"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-2",
+      "required_components": [
+        {
+          "required_component_id": "regional_withdrawal_right",
+          "required_fact_ids": [
+            "regional_withdrawal_framework_14_days"
+          ]
+        },
+        {
+          "required_component_id": "activated_digital_exception",
+          "required_fact_ids": [
+            "digital_activation_boundary",
+            "joint_exception_routing"
+          ]
+        }
+      ]
+    }
+  ],
+  "schema_version": "measurement-lock-fact-ground-truth-v1"
+}

@@ -1,0 +1,14 @@
+{
+  "before_inference": {
+    "available": true,
+    "raw": "NAME                       ID              SIZE      PROCESSOR    CONTEXT    UNTIL               \nnomic-embed-text:latest    0a109f422b47    370 MB    100% GPU     2048       25 minutes from now    \nqwen2.5:7b-instruct        845dbda0ea48    4.7 GB    100% GPU     4096       2 minutes from now",
+    "stderr": ""
+  },
+  "after_inference": {
+    "available": true,
+    "raw": "NAME                       ID              SIZE      PROCESSOR    CONTEXT    UNTIL               \nnomic-embed-text:latest    0a109f422b47    370 MB    100% GPU     2048       25 minutes from now    \nqwen2.5:7b-instruct        845dbda0ea48    4.7 GB    100% GPU     4096       2 minutes from now",
+    "stderr": ""
+  },
+  "required_model": "qwen2.5:7b-instruct",
+  "inventory_verified": true
+}

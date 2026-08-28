@@ -1,0 +1,500 @@
+[
+  {
+    "query_id": "version-01-0",
+    "a": {
+      "query_id": "version-01-0",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "2026-02-01 teslimatında standart plan için uygulanacak süre, **standart iade politikasıyla belirlenir**.\n\nBelgelere göre:\n\n*   [s.filesystem:standard-returns-2026/Standard Returns — 2026] dokümanına göre; doğrudan satışlarda (direct-sale) standart planlı fiziksel ürünler için iade talebi, teslimat tarihinin takip edilen **14 takvim gün** içinde yapılabilmektedir. Bu politika 2026-01-15 tarihi itibarıyla yürürlüğe girmiştir ve referans tarihimiz (2026-02-01) bu yeni tarih sonrasında olduğu için uygulanması gerekmektedir.\n*   [s.filesystem:refund-policy-2025/Standard Returns — 2025 (Superseded)] dokümanı; bu politikanın önceki versiyonu olan \"30 günlük\" kuralının, teslimat tarihinin 14 Ocak 2026'dan sonra geçen durumlarda geçerli olmadığına dair geçici bir not içermektedir.\n*   [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması] dokümanı; Premium planı veya pazar yeri siparişi gibi özel koşullar için farklı (30 gün, 7 gün vb.) sürelerin kullanıldığını doğrulamaktadır ancak sorunuz \"standart plan\" üzerine odaklandığından, bu durumlar dışarıda tutulmalıdır.\n\nSonuç olarak:\n2026-02-01 teslimatında standart plan için **iade talep süresi 14 takvim gündür**.",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days from delivery"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [
+          "MIXED_AUTHORITY"
+        ],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "PARTIALLY_CORRECT"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2025",
+            "Standard Returns — 2025 (Superseded)"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 3,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6398,
+        "context_tokens": 583,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 49987.912
+    },
+    "b": {
+      "query_id": "version-01-0",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 11972.575,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "2026-02-01 teslimatında standart plan için **14 takvim günlük** süre kullanılır [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması]. Bu tarih, yeni politikanın 2026-01-15'te yürürlüğe girmesiyle birlikte geçerli olan eski 30 günlük kuraldan sonradır [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window].",
+      "validated_output": "2026-02-01 teslimatında standart plan için **14 takvim günlük** süre kullanılır [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması]. Bu tarih, yeni politikanın 2026-01-15'te yürürlüğe girmesiyle birlikte geçerli olan eski 30 günlük kuraldan sonradır [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window].",
+      "user_visible_output": "2026-02-01 teslimatında standart plan için **14 takvim günlük** süre kullanılır [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması]. Bu tarih, yeni politikanın 2026-01-15'te yürürlüğe girmesiyle birlikte geçerli olan eski 30 günlük kuraldan sonradır [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window].",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "answer": [
+              14.0,
+              "day"
+            ]
+          }
+        ],
+        "expected_components": [
+          "14 calendar days from delivery"
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 1
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "long-policy-tr",
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+            ],
+            [
+              "filesystem",
+              "refund-policy-2026",
+              "Policy Bulletin 2026.1 — Standard Return Window"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa",
+          "5bd2643d-4837-5733-9717-c88c37860274"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 6135,
+        "context_tokens": 572,
+        "metadata_tokens": 103,
+        "content_tokens": 390,
+        "truncated": false,
+        "unique_source_count": 4,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "IMPROVED",
+    "fact_coverage": {
+      "a": 1.0,
+      "b": 1.0
+    },
+    "context_token_ratio": 0.9811320754716981,
+    "latency_ratio": 0.23950940379346114
+  },
+  {
+    "query_id": "version-01-1",
+    "a": {
+      "query_id": "version-01-1",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "2026-01-15 ve sonrasındaki teslimatlar için standart planı kaplayan politika **2026.1** sürümündedir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window].\n\nBu değişiklik, doğrudan satışta olan Standart Plan fiziksel ürünlerine uygulanan iade süresini **14 takvim gününe** getirir (öncedenki kuralda belirtilen 30 günlük süre, 2026-01-15 tarihinden sonra teslim edilen siparişler için geçerli değildir) [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window].\n\nEğer sorunuz sadece bir \"teslimat tarihi\" (kargo zamanlaması) ile ilgiliyse, standart teslimat normal koşullarda **3–5 iş günü** sürer [s.filesystem:shipping-and-delivery/Teslimat ve Kargo Standardı]. Ancak iade süresiyle ilgili spesifik bilgi için 14 takvim gün kuralı geçerlidir.",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days from delivery"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "shipping-and-delivery",
+            "Teslimat ve Kargo Standardı"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 6192,
+        "context_tokens": 545,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 28302.501
+    },
+    "b": {
+      "query_id": "version-01-1",
+      "category": "version_conflict",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 13487.899,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "2026-02-01 teslimatında standart plan için **14 takvim gün** kullanılır. Bu güncelleme **2026-01-15** tarihinden itibaren yürürlüğe girmiştir ve 2026-01-15 sonrası gelen tüm gönderiler bu kuralla değerlendirilir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window][s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi].",
+      "validated_output": "2026-02-01 teslimatında standart plan için **14 takvim gün** kullanılır. Bu güncelleme **2026-01-15** tarihinden itibaren yürürlüğe girmiştir ve 2026-01-15 sonrası gelen tüm gönderiler bu kuralla değerlendirilir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window][s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi].",
+      "user_visible_output": "2026-02-01 teslimatında standart plan için **14 takvim gün** kullanılır. Bu güncelleme **2026-01-15** tarihinden itibaren yürürlüğe girmiştir ve 2026-01-15 sonrası gelen tüm gönderiler bu kuralla değerlendirilir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window][s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi].",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "answer": [
+              14.0,
+              "day"
+            ]
+          }
+        ],
+        "expected_components": [
+          "14 calendar days from delivery"
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 1
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "refund-policy-2026",
+              "Policy Bulletin 2026.1 — Standard Return Window"
+            ],
+            [
+              "filesystem",
+              "long-policy-tr",
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortağı kanıtlarının doğrulanması/Revizyon geçmişi"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+          "cb46d001-1e2e-5872-9478-58e344b447fa"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 5925,
+        "context_tokens": 534,
+        "metadata_tokens": 103,
+        "content_tokens": 352,
+        "truncated": false,
+        "unique_source_count": 4,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "UNCHANGED",
+    "fact_coverage": {
+      "a": 1.0,
+      "b": 1.0
+    },
+    "context_token_ratio": 0.9798165137614679,
+    "latency_ratio": 0.4765620889828782
+  }
+]

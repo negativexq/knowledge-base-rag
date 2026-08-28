@@ -1,0 +1,11 @@
+{
+  "execution_truncation_artifacts": 5,
+  "invalid_json_after_truncation": 5,
+  "known_limitations": [
+    "No finish_reason/eval_count was recorded in the historical provider observations."
+  ],
+  "rows": 80,
+  "schema_version": "final-integrity-truncation-audit-v1",
+  "v2_2_ceiling_hit_records": 0,
+  "v2_3_ceiling_hit_records": 0
+}

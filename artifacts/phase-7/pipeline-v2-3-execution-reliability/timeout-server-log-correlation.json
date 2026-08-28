@@ -1,0 +1,42 @@
+{
+  "timeout_runs": [
+    {
+      "query_id": "multi-01-0",
+      "seed": 41,
+      "request_started_at_utc": "2026-08-28T13:21:24.298105+00:00",
+      "client_timeout_at_utc": "2026-08-28T13:24:24.306000+00:00",
+      "timeline": {
+        "server_received_request": true,
+        "runner_started": true,
+        "prompt_eval_started": true,
+        "generation_started": true,
+        "response_started": false,
+        "headers_received": false,
+        "first_body_byte": false,
+        "client_cancelled": true,
+        "runner_exit": "NOT_OBSERVED"
+      },
+      "server_observation": "llama-server decoded approximately 1719 tokens before the 3m HTTP 500/cancel; no Metal or memory error observed."
+    },
+    {
+      "query_id": "multi-01-0",
+      "seed": 42,
+      "request_started_at_utc": "2026-08-28T13:24:24.305728+00:00",
+      "client_timeout_at_utc": "2026-08-28T13:27:24.306000+00:00",
+      "timeline": {
+        "server_received_request": true,
+        "runner_started": true,
+        "prompt_eval_started": true,
+        "generation_started": true,
+        "response_started": false,
+        "headers_received": false,
+        "first_body_byte": false,
+        "client_cancelled": true,
+        "runner_exit": "NOT_OBSERVED"
+      },
+      "server_observation": "llama-server decoded approximately 1719 tokens before the 3m HTTP 500/cancel; no Metal or memory error observed."
+    }
+  ],
+  "correlation": "server received and generated; the client observed a pre-header read timeout. This is consistent with runaway constrained JSON/output termination, not a client-only connection stall.",
+  "log_source": "~/.ollama/logs/server.log"
+}

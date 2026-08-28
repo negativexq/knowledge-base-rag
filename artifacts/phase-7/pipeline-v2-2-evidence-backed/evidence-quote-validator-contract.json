@@ -1,0 +1,17 @@
+{
+  "quote_normalization": [
+    "unicode_nfkc",
+    "whitespace_collapse",
+    "line_break_normalization",
+    "trim"
+  ],
+  "semantic_entailment_claimed": false,
+  "statuses": [
+    "VALID_EVIDENCE_QUOTE",
+    "UNKNOWN_EVIDENCE_ID",
+    "UNAUTHORIZED_EVIDENCE_ID",
+    "QUOTE_NOT_FOUND",
+    "EMPTY_QUOTE",
+    "MALFORMED_EVIDENCE_REFERENCE"
+  ]
+}

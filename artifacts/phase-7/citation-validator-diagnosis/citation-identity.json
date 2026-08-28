@@ -1,0 +1,303 @@
+{
+  "answers_with_citations": 28,
+  "answers_without_citations": 8,
+  "citation_occurrences": 77,
+  "identity_valid_occurrences": 73,
+  "unknown_or_unauthorized_occurrences": 4,
+  "record_identity_pass": 33,
+  "record_identity_denominator": 36,
+  "duplicate_citation_records": 7,
+  "duplicate_citation_excess_occurrences": 12,
+  "malformed_citation_ids_observed": 0,
+  "records": [
+    {
+      "query_id": "acl-02-0",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "acl-02-1",
+      "citation_occurrences": 4,
+      "identity_valid_occurrences": 4,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "acl-02-2",
+      "citation_occurrences": 4,
+      "identity_valid_occurrences": 4,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "ambiguous-00-0",
+      "citation_occurrences": 2,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 1,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": false
+    },
+    {
+      "query_id": "ambiguous-00-1",
+      "citation_occurrences": 2,
+      "identity_valid_occurrences": 2,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "ambiguous-00-2",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "citation_occurrences": 7,
+      "identity_valid_occurrences": 5,
+      "unknown_or_unauthorized_occurrences": 2,
+      "duplicate_citation_excess": 2,
+      "record_identity_valid": false
+    },
+    {
+      "query_id": "cross-00-0",
+      "citation_occurrences": 4,
+      "identity_valid_occurrences": 4,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 1,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "cross-00-1",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "cross-01-0",
+      "citation_occurrences": 4,
+      "identity_valid_occurrences": 4,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "cross-06-0",
+      "citation_occurrences": 2,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 1,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": false
+    },
+    {
+      "query_id": "cross-06-1",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "cross-07-0",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "hard-api-private",
+      "citation_occurrences": 3,
+      "identity_valid_occurrences": 3,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "hard-api-version",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "hard-marketplace-channel",
+      "citation_occurrences": 4,
+      "identity_valid_occurrences": 4,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 1,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "hard-order-channel",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "hard-policy-language",
+      "citation_occurrences": 2,
+      "identity_valid_occurrences": 2,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "injection-03-0",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "injection-03-1",
+      "citation_occurrences": 1,
+      "identity_valid_occurrences": 1,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "multi-00-1",
+      "citation_occurrences": 8,
+      "identity_valid_occurrences": 8,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 3,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "multi-00-3",
+      "citation_occurrences": 5,
+      "identity_valid_occurrences": 5,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 2,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "multi-03-0",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "native-00-0",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "native-00-1",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "native-00-2",
+      "citation_occurrences": 2,
+      "identity_valid_occurrences": 2,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "native-00-3",
+      "citation_occurrences": 2,
+      "identity_valid_occurrences": 2,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "native-01-0",
+      "citation_occurrences": 2,
+      "identity_valid_occurrences": 2,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "native-01-1",
+      "citation_occurrences": 5,
+      "identity_valid_occurrences": 5,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 2,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "negative-00-0",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "negative-00-1",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "negative-00-2",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "negative-00-3",
+      "citation_occurrences": 0,
+      "identity_valid_occurrences": 0,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "version-01-0",
+      "citation_occurrences": 3,
+      "identity_valid_occurrences": 3,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 0,
+      "record_identity_valid": true
+    },
+    {
+      "query_id": "version-01-1",
+      "citation_occurrences": 3,
+      "identity_valid_occurrences": 3,
+      "unknown_or_unauthorized_occurrences": 0,
+      "duplicate_citation_excess": 1,
+      "record_identity_valid": true
+    }
+  ],
+  "note": "The historical parser persisted invalid identity as unknown_or_unauthorized; no separate syntax-error code is available."
+}

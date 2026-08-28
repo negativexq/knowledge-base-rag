@@ -1,0 +1,36 @@
+{
+  "acl": {
+    "application_forced_abstentions": 3,
+    "model_abstentions": 0,
+    "n": 3,
+    "safe_abstentions": 3,
+    "unauthorized_leakage": 0,
+    "unsupported_visible_answers": 0
+  },
+  "answerable_forced_abstentions": 2,
+  "evidence_validation": {
+    "quote_match_rate": 1.0,
+    "quote_mismatches_visible": 0,
+    "surviving_parts": 6,
+    "unauthorized_ids_visible": 0,
+    "unknown_ids_visible": 0
+  },
+  "false_abstentions": 0,
+  "focused_query_count": 9,
+  "latency_ms": {
+    "max": 31055.882,
+    "p50": 19888.6
+  },
+  "multi_document": {
+    "n": 3,
+    "raw_fully_correct": 1
+  },
+  "new_generation_calls": 9,
+  "offline_replay_records": 36,
+  "raw_fully_correct_answerable": 4,
+  "raw_observable": 9,
+  "unique_hardening_records": 20,
+  "user_visible_fully_successful_answerable": 4,
+  "validator_pass": 2,
+  "validator_reject": 7
+}

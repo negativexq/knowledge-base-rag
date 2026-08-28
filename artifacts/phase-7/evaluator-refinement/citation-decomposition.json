@@ -1,0 +1,591 @@
+{
+  "records": [
+    {
+      "query_id": "cross-00-1",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-01-0",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "marketplace-returns",
+            "Pazar Yeri Siparişleri için İade Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-06-0",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+          ],
+          "syntax_valid": true,
+          "identity_valid": false,
+          "authorized": false,
+          "support_status": "UNKNOWN_ID"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-06-1",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "cross-07-0",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-api-private",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "tenant-b-api-limits",
+            "Tenant B Private Integration Limits"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "enterprise-contract-guide",
+            "12/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "product-guide-en",
+            "4/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-api-version",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "product-guide-en",
+            "7/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "hard-order-channel",
+      "citations": []
+    },
+    {
+      "query_id": "hard-policy-language",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "returns-manual-tr",
+            "6/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "regional-returns-tr",
+            "8/0"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "injection-03-0",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "injection-bearing-policy",
+            "Damaged Item Exception Policy"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "injection-03-1",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "injection-bearing-policy",
+            "Damaged Item Exception Policy"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-1",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/26. Closure examples"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "citations": []
+    },
+    {
+      "query_id": "native-00-0",
+      "citations": []
+    },
+    {
+      "query_id": "native-00-1",
+      "citations": []
+    },
+    {
+      "query_id": "native-00-2",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "native-00-3",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ]
+    },
+    {
+      "query_id": "native-01-0",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "query_id": "version-01-0",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2025",
+            "Standard Returns — 2025 (Superseded)"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ]
+    },
+    {
+      "query_id": "version-01-1",
+      "citations": [
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "SUPPORTED"
+        },
+        {
+          "citation_id": [
+            "filesystem",
+            "shipping-and-delivery",
+            "Teslimat ve Kargo Standardı"
+          ],
+          "syntax_valid": true,
+          "identity_valid": true,
+          "authorized": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "SUPPORTED": 26,
+    "RELATED_BUT_INSUFFICIENT": 16,
+    "UNKNOWN_ID": 1
+  },
+  "identity_pass": 17,
+  "authorization_pass": 17,
+  "definite_support": 10
+}

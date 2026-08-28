@@ -1,0 +1,115 @@
+{
+  "direct_ceiling_hits": 0,
+  "indeterminate_records": 5,
+  "interpretation": "The available metadata does not prove or strongly support output-limit termination; the original corrected query verdict is retained.",
+  "not_truncation_records": 0,
+  "per_seed": [
+    {
+      "basis": [
+        "Provider completed HTTP response with status 200.",
+        "No finish/done reason or eval_count was persisted.",
+        "Malformed structured output is observable, but output-limit termination is not directly established."
+      ],
+      "classification": "INDETERMINATE",
+      "done_reason": null,
+      "finish_reason": null,
+      "first_body_byte_received": true,
+      "generated_token_count": null,
+      "headers_received": true,
+      "http_status": 200,
+      "json_parse_failed": true,
+      "num_predict": 1024,
+      "provider_status": "COMPLETE",
+      "response_bytes": 4338,
+      "seed": 41
+    },
+    {
+      "basis": [
+        "Provider completed HTTP response with status 200.",
+        "No finish/done reason or eval_count was persisted.",
+        "Malformed structured output is observable, but output-limit termination is not directly established."
+      ],
+      "classification": "INDETERMINATE",
+      "done_reason": null,
+      "finish_reason": null,
+      "first_body_byte_received": true,
+      "generated_token_count": null,
+      "headers_received": true,
+      "http_status": 200,
+      "json_parse_failed": true,
+      "num_predict": 1024,
+      "provider_status": "COMPLETE",
+      "response_bytes": 4335,
+      "seed": 42
+    },
+    {
+      "basis": [
+        "Provider completed HTTP response with status 200.",
+        "No finish/done reason or eval_count was persisted.",
+        "Malformed structured output is observable, but output-limit termination is not directly established."
+      ],
+      "classification": "INDETERMINATE",
+      "done_reason": null,
+      "finish_reason": null,
+      "first_body_byte_received": true,
+      "generated_token_count": null,
+      "headers_received": true,
+      "http_status": 200,
+      "json_parse_failed": true,
+      "num_predict": 1024,
+      "provider_status": "COMPLETE",
+      "response_bytes": 4335,
+      "seed": 43
+    },
+    {
+      "basis": [
+        "Provider completed HTTP response with status 200.",
+        "No finish/done reason or eval_count was persisted.",
+        "Malformed structured output is observable, but output-limit termination is not directly established."
+      ],
+      "classification": "INDETERMINATE",
+      "done_reason": null,
+      "finish_reason": null,
+      "first_body_byte_received": true,
+      "generated_token_count": null,
+      "headers_received": true,
+      "http_status": 200,
+      "json_parse_failed": true,
+      "num_predict": 1024,
+      "provider_status": "COMPLETE",
+      "response_bytes": 4335,
+      "seed": 44
+    },
+    {
+      "basis": [
+        "Provider completed HTTP response with status 200.",
+        "No finish/done reason or eval_count was persisted.",
+        "Malformed structured output is observable, but output-limit termination is not directly established."
+      ],
+      "classification": "INDETERMINATE",
+      "done_reason": null,
+      "finish_reason": null,
+      "first_body_byte_received": true,
+      "generated_token_count": null,
+      "headers_received": true,
+      "http_status": 200,
+      "json_parse_failed": true,
+      "num_predict": 1024,
+      "provider_status": "COMPLETE",
+      "response_bytes": 4335,
+      "seed": 45
+    }
+  ],
+  "query_id": "multi-01-0",
+  "query_level_classification": "INDETERMINATE",
+  "query_verdict_changed": false,
+  "schema_version": "phase7-multi-01-0-truncation-resolution-v1",
+  "seeds_inspected": [
+    41,
+    42,
+    43,
+    44,
+    45
+  ],
+  "supported_truncation_artifacts": 0
+}

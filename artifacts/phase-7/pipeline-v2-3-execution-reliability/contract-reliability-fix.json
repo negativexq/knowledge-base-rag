@@ -1,0 +1,18 @@
+{
+  "status": "APPLIED",
+  "fix": "bounded_output_budget",
+  "before": {
+    "schema": "request-scoped support ID enum",
+    "num_predict": "unset"
+  },
+  "after": {
+    "schema": "same request-scoped support ID enum",
+    "num_predict": 1024
+  },
+  "quality_semantics_changed": "NO",
+  "application_membership_validation": "UNCHANGED_FAIL_CLOSED",
+  "diagnostic_evidence": {
+    "pattern_replay": "removed original timeout but did not prevent a later tail timeout",
+    "full_enum_reduced_output": "completed original timeout pair and later timeout case"
+  }
+}

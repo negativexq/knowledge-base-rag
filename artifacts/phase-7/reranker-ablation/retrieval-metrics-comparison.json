@@ -1,0 +1,12 @@
+{
+  "status": "FORENSIC_ONLY",
+  "bge": {
+    "fact_passage_recall_at5": 0.7142857142857143,
+    "source_recall_at5": 1.0
+  },
+  "qwen3": {
+    "fact_passage_recall_at5": 0.5714285714285714,
+    "source_recall_at5": 1.0
+  },
+  "development_benchmark": "SKIPPED"
+}

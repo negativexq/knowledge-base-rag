@@ -1,0 +1,5 @@
+{
+  "model": "qwen3.5:9b",
+  "status": "INTERRUPTED_BEFORE_FIRST_COMPLETED_CALL",
+  "completed_calls": 0
+}

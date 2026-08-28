@@ -1,0 +1,14 @@
+{
+  "fixes": [
+    "centralized connect/read/overall timeout",
+    "explicit response body consumption and closing",
+    "streaming path overall timeout and observations",
+    "checkpointed provider results",
+    "controlled model unload and service restart"
+  ],
+  "model_changed": false,
+  "prompt_changed": false,
+  "rag_quality_logic_changed": false,
+  "reranker_changed": false,
+  "retrieval_changed": false
+}

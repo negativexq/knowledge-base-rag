@@ -1,0 +1,362 @@
+{
+  "blind_review": {
+    "completed": true,
+    "prior_exposure_limitation_disclosed": true,
+    "seed_42_queries": 8
+  },
+  "clearly_better_count": 0,
+  "clearly_better_queries": [],
+  "clearly_worse_count": 3,
+  "clearly_worse_queries": [
+    "multi-01-2",
+    "multi-01-3",
+    "multi-01-0"
+  ],
+  "equivalent_or_unstable_count": 5,
+  "equivalent_or_unstable_queries": [
+    "multi-01-1",
+    "multi-03-1",
+    "multi-00-0",
+    "multi-00-2",
+    "multi-03-2"
+  ],
+  "holdout_query_count": 8,
+  "preregistration_sha256": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c",
+  "provider_failures": {
+    "v2_2": 0,
+    "v2_3": 0
+  },
+  "query_results": [
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-01-1",
+      "verdict": "EQUIVALENT_OR_UNSTABLE"
+    },
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-03-1",
+      "verdict": "EQUIVALENT_OR_UNSTABLE"
+    },
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-00-0",
+      "verdict": "EQUIVALENT_OR_UNSTABLE"
+    },
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-01-2",
+      "verdict": "CLEARLY_WORSE"
+    },
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_INCORRECT",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-00-2",
+      "verdict": "EQUIVALENT_OR_UNSTABLE"
+    },
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_INCORRECT",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-01-3",
+      "verdict": "CLEARLY_WORSE"
+    },
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_CORRECT_AND_CORRECTLY_ATTRIBUTED",
+          "v2_2_success": true,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-01-0",
+      "verdict": "CLEARLY_WORSE"
+    },
+    {
+      "pairs": [
+        {
+          "seed": 41,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 42,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 43,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 44,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        },
+        {
+          "seed": 45,
+          "v2_2_label": "VISIBLE_CORRECT_BUT_MISATTRIBUTED",
+          "v2_2_success": false,
+          "v2_3_label": "VISIBLE_FALSE_ABSTENTION",
+          "v2_3_success": false
+        }
+      ],
+      "query_id": "multi-03-2",
+      "verdict": "EQUIVALENT_OR_UNSTABLE"
+    }
+  ],
+  "rows_per_arm": 40,
+  "schema_version": "final-integrity-corrected-paired-analysis-v1",
+  "status": "COMPLETE"
+}

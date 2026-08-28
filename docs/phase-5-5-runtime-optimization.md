@@ -7,9 +7,14 @@ reference configuration.
 
 ## Profiles
 
+Historical note: the Phase 5.5 measurements recorded `qwen3:4b` as the
+local generation model. The current Phase 7 local generation baseline is
+`qwen3.5:4b`; retrieval measurements and the reference retrieval profile are
+unchanged.
+
 `DEV_FAST` is the local interactive profile:
 
-- Ollama generation model: `qwen3:4b`
+- Ollama generation model: `qwen3.5:4b` (current baseline)
 - Ollama thinking: `false`
 - Qwen3-Embedding-4B at 1024 dimensions
 - BGE reranking with `top_n=5`

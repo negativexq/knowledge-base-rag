@@ -1,0 +1,29 @@
+{
+  "captured_at": "2026-08-28T13:30:38.779117+00:00",
+  "control_endpoints": "responsive",
+  "model": "qwen3.5:4b",
+  "post_restart_model_state": {
+    "captured_at": "2026-08-28T12:14:27.709373+00:00",
+    "model_loaded_visible": true,
+    "model_processor_visible": true,
+    "ollama_ps": {
+      "elapsed_ms": 27.422,
+      "output": "NAME          ID              SIZE      PROCESSOR    CONTEXT    UNTIL               \nqwen3.5:4b    2a654d98e6fb    3.1 GB    100% GPU     4096       27 minutes from now    \n",
+      "return_code": 0
+    },
+    "processes": {
+      "elapsed_ms": 22.678,
+      "lines": [
+        "99821 66751       03:05 S    /Applications/Ollama.app/Contents/Resources/ollama serve",
+        "99842 99821       02:51 S    /Applications/Ollama.app/Contents/Resources/llama-server --model /Users/ofk/.ollama/models/blobs/sha256-81fb60c7daa80fc1123380b98970b320ae233409f0f71a72ed7b9b0d62f40490 --port 57921 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --mmproj /Users/ofk/.ollama/models/blobs/sha256-81fb60c7daa80fc1123380b98970b320ae233409f0f71a72ed7b9b0d62f40490 --flash-attn auto -b 512 -ub 512 --context-shift --keep 4"
+      ],
+      "return_code": 0
+    }
+  },
+  "pre_restart_model_unload": "PASS",
+  "restart": {
+    "method": "SIGTERM ollama serve + open -a Ollama",
+    "new_pid": 99821,
+    "old_pid": 89513
+  }
+}

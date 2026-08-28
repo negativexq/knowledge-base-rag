@@ -1,0 +1,17 @@
+{
+  "holdout": {
+    "rows": 40,
+    "provider_complete": 40,
+    "provider_failures": 0,
+    "validator_pass": 20,
+    "visible_output": 30,
+    "raw_observable": 40
+  },
+  "latency_ms": {
+    "p50": 32899.882,
+    "p95": 87897.6402,
+    "max": 104346.703
+  },
+  "schema_contract": "output_contract_v2_3_2",
+  "num_predict": 1024
+}

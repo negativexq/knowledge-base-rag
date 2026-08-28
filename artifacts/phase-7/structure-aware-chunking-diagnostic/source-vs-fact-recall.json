@@ -1,0 +1,104 @@
+{
+  "schema_version": "fact-evidence-recall-v1",
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "required_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "source_recall_complete_at20": true,
+      "source_recall_complete_at5": true,
+      "fact_ids_present_at20": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "fact_ids_present_at5": [
+        "support_return_case_fields"
+      ],
+      "fact_ids_missing_at20": [],
+      "fact_ids_missing_at5": [
+        "standard_return_window_14_days"
+      ],
+      "fact_passage_recall_at20": 1.0,
+      "fact_passage_recall_at5": 0.5,
+      "all_required_facts_present_at20": true,
+      "all_required_facts_present_at5": false,
+      "candidate_at20_evidence_method": {
+        "standard_return_window_14_days": "inferred from complete source-chunk enumeration: candidate source count 2 >= current source chunk count 2; candidate artifact omits chunk IDs",
+        "support_return_case_fields": "explicit supporting span in cached Top-5"
+      },
+      "candidate_artifact_limitation": "candidate-sweep stores ordered source IDs but not candidate chunk IDs/content"
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "source_recall_complete_at20": true,
+      "source_recall_complete_at5": true,
+      "fact_ids_present_at20": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "fact_ids_present_at5": [
+        "support_return_case_fields"
+      ],
+      "fact_ids_missing_at20": [],
+      "fact_ids_missing_at5": [
+        "standard_return_window_14_days"
+      ],
+      "fact_passage_recall_at20": 1.0,
+      "fact_passage_recall_at5": 0.5,
+      "all_required_facts_present_at20": true,
+      "all_required_facts_present_at5": false,
+      "candidate_at20_evidence_method": {
+        "standard_return_window_14_days": "inferred from complete source-chunk enumeration: candidate source count 2 >= current source chunk count 2; candidate artifact omits chunk IDs",
+        "support_return_case_fields": "explicit supporting span in cached Top-5"
+      },
+      "candidate_artifact_limitation": "candidate-sweep stores ordered source IDs but not candidate chunk IDs/content"
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_fact_ids": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "source_recall_complete_at20": true,
+      "source_recall_complete_at5": true,
+      "fact_ids_present_at20": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "fact_ids_present_at5": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "fact_ids_missing_at20": [],
+      "fact_ids_missing_at5": [],
+      "fact_passage_recall_at20": 1.0,
+      "fact_passage_recall_at5": 1.0,
+      "all_required_facts_present_at20": true,
+      "all_required_facts_present_at5": true,
+      "candidate_at20_evidence_method": {
+        "digital_activation_boundary": "explicit supporting span in cached Top-5",
+        "joint_exception_routing": "explicit supporting span in cached Top-5",
+        "regional_withdrawal_framework_14_days": "explicit supporting span in cached Top-5"
+      },
+      "candidate_artifact_limitation": "candidate-sweep stores ordered source IDs but not candidate chunk IDs/content"
+    }
+  ],
+  "aggregate": {
+    "required_query_fact_occurrences": 7,
+    "source_recall_complete_at20": 3,
+    "source_recall_complete_at5": 3,
+    "fact_passage_recall_at20": 1.0,
+    "fact_passage_recall_at5": 0.7142857142857143,
+    "all_required_facts_present_at20": 3,
+    "all_required_facts_present_at5": 1
+  }
+}

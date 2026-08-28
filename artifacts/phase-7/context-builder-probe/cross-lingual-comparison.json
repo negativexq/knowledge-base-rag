@@ -1,0 +1,469 @@
+[
+  {
+    "query_id": "cross-00-1",
+    "a": {
+      "query_id": "cross-00-1",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Müşterinin doğrudan satıştan gelen standart planlı fiziksel ürün iadesi için uygulanacak politika, siparişin teslim tarihine bakılmaksızın **14 takvim günlük** olan yeni 2026 standard iade politikası kapsamındadır [s.filesystem:standard-returns-2026/Standard Returns — 2026].\n\nEğer müşterinin Premium planı varsa veya sipariş pazar yerinden gelmişse, doğrudan satış için geçerli olan bu standart süreye tabi değildir; bunlar kendi özel politikalarıyla yönetilir.",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days"
+        ],
+        "fact_coverage": 1.0,
+        "flags": [
+          "MATERIAL_CONTRADICTION"
+        ],
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "matches": [
+          {
+            "answer": [
+              14.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": true,
+            "reason": "duration"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "PARTIALLY_CORRECT"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 5,
+        "duplicate_count": 0,
+        "context_chars": 6190,
+        "context_tokens": 561,
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+        ],
+        "gold_source_ranks": [
+          4
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 13783.159
+    },
+    "b": {
+      "query_id": "cross-00-1",
+      "category": "cross_lingual",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 20638.755,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "Müşterinin doğrudan satış iade penceresi sorusuna, ürünün teslim edildiği tarihe göre iki senaryo uygulanır: Teslim tarihinden önceki siparişler için **30 günlük**, teslim tarihi ve sonrası olanlar için ise **14 günlük** standart iade süresi geçerlidir [s.filesystem:refund-policy-2025/Standard Returns — 2025 (Superseded)], [s.filesymfs:/dev/shm/return-docs/std-refunds-std/standard-redeem-policies/3.1]. Ayrıca, bu yeni politikayı açıklayan bildirgede belirtilmiştir ki değişiklik **2026-01-15** tarihinde etkinleştirilmiştir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window], bu yüzden teslim tarihi 2026-01-15'den önceyse eski kurallar uygulanır, sonrası ise yeni kuralları kapsar.",
+      "validated_output": "Müşterinin doğrudan satış iade penceresi sorusuna, ürünün teslim edildiği tarihe göre iki senaryo uygulanır: Teslim tarihinden önceki siparişler için **30 günlük**, teslim tarihi ve sonrası olanlar için ise **14 günlük** standart iade süresi geçerlidir [s.filesystem:refund-policy-2025/Standard Returns — 2025 (Superseded)], [s.filesymfs:/dev/shm/return-docs/std-refunds-std/standard-redeem-policies/3.1]. Ayrıca, bu yeni politikayı açıklayan bildirgede belirtilmiştir ki değişiklik **2026-01-15** tarihinde etkinleştirilmiştir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window], bu yüzden teslim tarihi 2026-01-15'den önceyse eski kurallar uygulanır, sonrası ise yeni kuralları kapsar.",
+      "user_visible_output": "Müşterinin doğrudan satış iade penceresi sorusuna, ürünün teslim edildiği tarihe göre iki senaryo uygulanır: Teslim tarihinden önceki siparişler için **30 günlük**, teslim tarihi ve sonrası olanlar için ise **14 günlük** standart iade süresi geçerlidir [s.filesystem:refund-policy-2025/Standard Returns — 2025 (Superseded)], [s.filesymfs:/dev/shm/return-docs/std-refunds-std/standard-redeem-policies/3.1]. Ayrıca, bu yeni politikayı açıklayan bildirgede belirtilmiştir ki değişiklik **2026-01-15** tarihinde etkinleştirilmiştir [s.filesystem:refund-policy-2026/Policy Bulletin 2026.1 — Standard Return Window], bu yüzden teslim tarihi 2026-01-15'den önceyse eski kurallar uygulanır, sonrası ise yeni kuralları kapsar.",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "answer": [
+              30.0,
+              "day"
+            ]
+          }
+        ],
+        "expected_components": [
+          "14 calendar days"
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "refund-policy-2025",
+            "Standard Returns — 2025 (Superseded)"
+          ],
+          [
+            "filesystem",
+            "refund-policy-2026",
+            "Policy Bulletin 2026.1 — Standard Return Window"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 2
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "refund-policy-2025",
+              "Standard Returns — 2025 (Superseded)"
+            ],
+            [
+              "filesystem",
+              "refund-policy-2026",
+              "Policy Bulletin 2026.1 — Standard Return Window"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+        ],
+        "output_chunk_ids": [
+          "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+          "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 5986,
+        "context_tokens": 555,
+        "metadata_tokens": 88,
+        "content_tokens": 388,
+        "truncated": false,
+        "unique_source_count": 5,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "IMPROVED",
+    "fact_coverage": {
+      "a": 1.0,
+      "b": 1.0
+    },
+    "context_token_ratio": 0.9893048128342246,
+    "latency_ratio": 1.4973893140172003
+  },
+  {
+    "query_id": "cross-06-0",
+    "a": {
+      "query_id": "cross-06-0",
+      "category": "cross_lingual",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": false,
+          "citation_id": [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikasısı/5. Faturalandırma ve abonelik"
+          ],
+          "identity_valid": false,
+          "support_status": "UNKNOWN_ID",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": false,
+      "citation_authorized": false,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5859,
+        "context_tokens": 527,
+        "input_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+        ],
+        "output_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 17131.788
+    },
+    "b": {
+      "query_id": "cross-06-0",
+      "category": "cross_lingual",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 32862.465,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "According to the subscription billing and cancellation policies, **no next renewal charge** will be applied if a valid cancellation request is submitted. The specific requirement for this outcome depends on whether you are canceling via an account-based policy or through direct physical product return rules; however, both relevant sections confirm that proper cancellation stops future charges while preserving access until the end of the paid period.\n\n### Subscription-Based Cancellation\nTo prevent a renewal charge under Negativex's standard subscription plans:\n*   The cancellation request must be submitted **at least 48 hours before** the upcoming renewal date [s.filesystem:support-playbook/Support Operations Playbook/19. Recovery after an incident].\n    *Note: This requirement is explicitly stated in two separate sections, confirming its consistency across policy documents.* [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası]\n*   The cancellation **does not shorten** the prepaid period; access continues until the end of the current billing cycle. [s.filesystem:support-playbook/Support Operations Playbook/19. Recovery after an incident]\n\n### Physical Product Return (Standard Plan Only)\nIf you are a Standard-plan customer returning physical goods:\n*   A refund may be requested within **14 calendar days** of delivery for unused items. However, this policy specifically addresses refunds based on return eligibility rather than automatic cancellation prevention. [s.filesystem:standard-returns-2026/Standard Returns — 2026]\n\nIn summary, to avoid a next renewal charge under your subscription agreement, you must submit an account-based cancellation request **48 hours before the scheduled renewal**.",
+      "validated_output": "According to the subscription billing and cancellation policies, **no next renewal charge** will be applied if a valid cancellation request is submitted. The specific requirement for this outcome depends on whether you are canceling via an account-based policy or through direct physical product return rules; however, both relevant sections confirm that proper cancellation stops future charges while preserving access until the end of the paid period.\n\n### Subscription-Based Cancellation\nTo prevent a renewal charge under Negativex's standard subscription plans:\n*   The cancellation request must be submitted **at least 48 hours before** the upcoming renewal date [s.filesystem:support-playbook/Support Operations Playbook/19. Recovery after an incident].\n    *Note: This requirement is explicitly stated in two separate sections, confirming its consistency across policy documents.* [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası]\n*   The cancellation **does not shorten** the prepaid period; access continues until the end of the current billing cycle. [s.filesystem:support-playbook/Support Operations Playbook/19. Recovery after an incident]\n\n### Physical Product Return (Standard Plan Only)\nIf you are a Standard-plan customer returning physical goods:\n*   A refund may be requested within **14 calendar days** of delivery for unused items. However, this policy specifically addresses refunds based on return eligibility rather than automatic cancellation prevention. [s.filesystem:standard-returns-2026/Standard Returns — 2026]\n\nIn summary, to avoid a next renewal charge under your subscription agreement, you must submit an account-based cancellation request **48 hours before the scheduled renewal**.",
+      "user_visible_output": "According to the subscription billing and cancellation policies, **no next renewal charge** will be applied if a valid cancellation request is submitted. The specific requirement for this outcome depends on whether you are canceling via an account-based policy or through direct physical product return rules; however, both relevant sections confirm that proper cancellation stops future charges while preserving access until the end of the paid period.\n\n### Subscription-Based Cancellation\nTo prevent a renewal charge under Negativex's standard subscription plans:\n*   The cancellation request must be submitted **at least 48 hours before** the upcoming renewal date [s.filesystem:support-playbook/Support Operations Playbook/19. Recovery after an incident].\n    *Note: This requirement is explicitly stated in two separate sections, confirming its consistency across policy documents.* [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası]\n*   The cancellation **does not shorten** the prepaid period; access continues until the end of the current billing cycle. [s.filesystem:support-playbook/Support Operations Playbook/19. Recovery after an incident]\n\n### Physical Product Return (Standard Plan Only)\nIf you are a Standard-plan customer returning physical goods:\n*   A refund may be requested within **14 calendar days** of delivery for unused items. However, this policy specifically addresses refunds based on return eligibility rather than automatic cancellation prevention. [s.filesystem:standard-returns-2026/Standard Returns — 2026]\n\nIn summary, to avoid a next renewal charge under your subscription agreement, you must submit an account-based cancellation request **48 hours before the scheduled renewal**.",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              48.0,
+              "hour"
+            ],
+            "answer": [
+              14.0,
+              "day"
+            ]
+          }
+        ],
+        "expected_components": [
+          "yenilemeden en az 48 saat önce iptal"
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/19. Recovery after an incident"
+          ],
+          [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/19. Recovery after an incident"
+          ],
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 3
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "support-playbook",
+              "Support Operations Playbook/19. Recovery after an incident"
+            ],
+            [
+              "filesystem",
+              "subscription-billing",
+              "Abonelik ve Faturalandırma İşletim Politikası"
+            ],
+            [
+              "filesystem",
+              "support-playbook",
+              "Support Operations Playbook/19. Recovery after an incident"
+            ],
+            [
+              "filesystem",
+              "standard-returns-2026",
+              "Standard Returns — 2026"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+        ],
+        "output_chunk_ids": [
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "5bd2643d-4837-5733-9717-c88c37860274",
+          "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 5614,
+        "context_tokens": 517,
+        "metadata_tokens": 100,
+        "content_tokens": 338,
+        "truncated": false,
+        "unique_source_count": 4,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "IMPROVED",
+    "fact_coverage": {
+      "a": null,
+      "b": 1.0
+    },
+    "context_token_ratio": 0.9810246679316889,
+    "latency_ratio": 1.9182157168883947
+  }
+]

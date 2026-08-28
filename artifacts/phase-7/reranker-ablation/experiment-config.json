@@ -1,0 +1,23 @@
+{
+  "schema_version": "phase-7.11-reranker-ablation-v1",
+  "identity": {
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "candidate_k": 20,
+    "top_n": 5
+  },
+  "candidate_k": 20,
+  "top_n": 5,
+  "retrieval_rebuilt": true,
+  "acl_before_rerank": true,
+  "generation_calls": 0,
+  "embedding_calls": 6,
+  "initial_retrieval_calls": 6,
+  "reranker_calls": 12,
+  "preflight_reranker_calls": 1,
+  "execution_note": "One initial forensic run completed before a fact-GT aggregation bug was corrected; the canonical artifacts are from the corrected rerun.",
+  "frozen_test": false,
+  "calibration": false
+}

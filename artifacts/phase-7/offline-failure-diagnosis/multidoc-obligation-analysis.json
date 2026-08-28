@@ -1,0 +1,31 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "required_components": 2,
+      "matched_components": 1,
+      "missing_components": [
+        "fact_1"
+      ],
+      "classification": "OBLIGATION_PLANNING_FAILURE"
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_components": 2,
+      "matched_components": 1,
+      "missing_components": [
+        "fact_1"
+      ],
+      "classification": "OBLIGATION_PLANNING_FAILURE"
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_components": 1,
+      "matched_components": 0,
+      "missing_components": [
+        "fact_1"
+      ],
+      "classification": "EVIDENCE_SYNTHESIS_FAILURE"
+    }
+  ]
+}

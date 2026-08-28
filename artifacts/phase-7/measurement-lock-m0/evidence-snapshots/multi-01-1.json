@@ -1,0 +1,509 @@
+{
+  "authorized_top5": [
+    {
+      "chunk_id": "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "content": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır. Premium planın doğrudan satışları 30 günlük ayrı pencereye tabidir. Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\n\nDijital lisanslarda indirme olayı ile etkinleştirme olayı birbirinden ayrılır. Anahtar indirilmiş fakat etkinleştirilmemişse uygunluk, etkinleştirme zaman damgası görülene kadar kapanmış sayılmaz. Etkinleştirilmiş dijital ürün için kamuya açık kural normalde iade yapılmamasıdır; imzalı sözleşme bu sonucu değiştirebilir.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "2. İade kapsamının ayrıştırılması"
+        ],
+        "page_number": 2,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 0.9890045523643494,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+      "content": "Pazar yeri satıcısı ürünün iade alınamayacağını bildirirse görevli bu mesajı Negativex kuralı gibi sunmaz; satıcı kaydını vaka kanıtı olarak ekler ve kanalın uyuşmazlık akışını izler. Teslim tarihi, başvurunun pazar yeri üzerinden açıldığı tarih ve satıcının gerekçesi ayrı alanlardır.\n\nSatıcıya ait ek telafi doğrudan Negativex hesabına uygulanmaz. Müşteri aynı anda Premium plan avantajından söz ederse, görevli kanal kuralını ve plan kuralını ayrı ayrı açıklar. Yetki belirsizliği varsa müşteri beklemede bırakılmaz; hangi ekibin inceleme yaptığı ve sonraki kontrol tarihi yazılır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "19. Pazar yeri satıcı uyuşmazlıkları"
+        ],
+        "page_number": 19,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.9138468503952026,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+      "content": "Kampanya etiketi, Standart veya Premium iade penceresinin yerine geçmez. Kampanyanın siparişe uygulanıp uygulanmadığı kampanya kodu, sipariş kanalı ve yürürlük tarihiyle kontrol edilir. Bir kampanya yalnızca fiyatı değiştiriyorsa, ürünün iade veya cayma kapsamı ayrıca değerlendirilir.\n\nPlan yükseltmesi teslimattan sonra yapılmışsa iade kararı, sipariş olayındaki plan ve yürürlükteki kural üzerinden incelenir. Sonradan kazanılan Premium statüsü eski bir doğrudan satış siparişine otomatik olarak 30 günlük pencere vermez. Bu ayrım müşteri iletişiminde örnekle açıklanır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "34. Kampanya ve plan değişiklikleri"
+        ],
+        "page_number": 34,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.7200498580932617,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "c0dd408e-b4c6-5544-884a-6067d838c80d",
+      "content": "Görevli sipariş kanalını, teslim tarihini, satıcı kimliğini ve müşterinin istediği çözümü kaydeder. Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.\n\nBölgesel tüketici hakkı veya kurumsal sözleşme farklı bir sonuç doğurabilecekse Bölgesel İadeler ve Enterprise Contract Guide belgelerine başvurulur.",
+      "metadata": {
+        "document_version": "8a051d5137652907145c3d0977e6868f039dbf68f86498871f83603e810b447c",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Pazar Yeri Siparişleri için İade Politikası",
+          "Vaka kaydı"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.4311314821243286,
+      "source_id": "marketplace-returns"
+    },
+    {
+      "chunk_id": "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+      "content": "Belge sahibi: Müşteri Politikaları ve Bölgesel Operasyonlar\nYürürlük tarihi: 2026-01-15\nSon gözden geçirme: 2026-02-03\nKapsam: Türkiye'deki doğrudan satışlar, pazar yeri siparişleri ve bu siparişlere destek veren operasyon ekipleri\n\nBu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir “iade süresi” söylemi kullanılmaz. Görevli, önce olayı tanımlar; sonra yürürlükteki ve daha özel kaynağı seçer.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.3109113276004791,
+      "source_id": "long-policy-tr"
+    }
+  ],
+  "candidate_top20": [
+    {
+      "chunk_id": "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "content": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır. Premium planın doğrudan satışları 30 günlük ayrı pencereye tabidir. Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\n\nDijital lisanslarda indirme olayı ile etkinleştirme olayı birbirinden ayrılır. Anahtar indirilmiş fakat etkinleştirilmemişse uygunluk, etkinleştirme zaman damgası görülene kadar kapanmış sayılmaz. Etkinleştirilmiş dijital ürün için kamuya açık kural normalde iade yapılmamasıdır; imzalı sözleşme bu sonucu değiştirebilir.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "2. İade kapsamının ayrıştırılması"
+        ],
+        "page_number": 2,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 0.625,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "dab2029c-14e8-54a9-89c6-1282098596bd",
+      "content": "Pazar yeri veya taşıyıcıdan gelen kayıtların siparişle eşleşen referansı olmalıdır. Eşleşmeyen bir ekran görüntüsü yardımcı not olarak saklanır, fakat teslim veya kanal kanıtı sayılmaz. Görevli eksik eşleşmeyi ilgili iş ortağı kuyruğuna yönlendirir.\n\nKurumsal müşterinin kendi sisteminden gönderdiği rapor, sözleşme hükmünü değiştirmez. Raporun kapsamı, üretim zamanı ve raporu hazırlayan hesap kayda alınır; sözleşme istisnası için imzalı kaynak yine aranır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "35. İş ortağı kanıtlarının doğrulanması"
+        ],
+        "page_number": 35,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.33333334,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "c0dd408e-b4c6-5544-884a-6067d838c80d",
+      "content": "Görevli sipariş kanalını, teslim tarihini, satıcı kimliğini ve müşterinin istediği çözümü kaydeder. Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.\n\nBölgesel tüketici hakkı veya kurumsal sözleşme farklı bir sonuç doğurabilecekse Bölgesel İadeler ve Enterprise Contract Guide belgelerine başvurulur.",
+      "metadata": {
+        "document_version": "8a051d5137652907145c3d0977e6868f039dbf68f86498871f83603e810b447c",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Pazar Yeri Siparişleri için İade Politikası",
+          "Vaka kaydı"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.25757575,
+      "source_id": "marketplace-returns"
+    },
+    {
+      "chunk_id": "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+      "content": "Kampanya etiketi, Standart veya Premium iade penceresinin yerine geçmez. Kampanyanın siparişe uygulanıp uygulanmadığı kampanya kodu, sipariş kanalı ve yürürlük tarihiyle kontrol edilir. Bir kampanya yalnızca fiyatı değiştiriyorsa, ürünün iade veya cayma kapsamı ayrıca değerlendirilir.\n\nPlan yükseltmesi teslimattan sonra yapılmışsa iade kararı, sipariş olayındaki plan ve yürürlükteki kural üzerinden incelenir. Sonradan kazanılan Premium statüsü eski bir doğrudan satış siparişine otomatik olarak 30 günlük pencere vermez. Bu ayrım müşteri iletişiminde örnekle açıklanır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "34. Kampanya ve plan değişiklikleri"
+        ],
+        "page_number": 34,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.20168068,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "0a49c153-e055-5a4a-b324-903f5847dcbb",
+      "content": "Mesafeli satışa ilişkin bölgesel haklar, olay Türkiye kapsamındaysa ilgili bölgesel rehberdeki koşullarla birlikte incelenir. Kişiye özel ürün, mühürlü yazılım veya aktive edilmiş dijital içerik gibi istisnalar ürün niteliği ve teslim/etkinleştirme kanıtıyla ilişkilendirilir. Yalnız ürün adındaki “dijital” veya “özel” kelimesi yeterli değildir.\n\nPlan avantajı ile bölgesel hak aynı soruda geçtiğinde görevli iki ayrı sonucu birbirine karıştırmaz: plan, ticari pencereyi; bölgesel kaynak ise kapsamındaki yasal koşulu açıklar. İki metin arasında görünür bir çelişki varsa vaka, politika sahibine veya uyum sorumlusuna taşınır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "4. Bölgesel haklar ve istisnalar"
+        ],
+        "page_number": 4,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.18333334,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "043dc7bb-373f-5b14-8f30-94362ce35553",
+      "content": "Taşıyıcı paketi teslim almadıysa görevli takip numarasının oluşmasını teslimat kanıtı saymaz. Son kabul taraması, dağıtım merkezinin istisna kodu ve müşterinin teslim adresi birlikte incelenir. Uzak bölge veya resmî tatil etkisi varsa, bu durum teslimat hedefi ile iade süresini birbirine karıştırmadan müşteriye açıklanır.\n\nTeslimat gecikmesi iade talebinden ayrı bir operasyon kaydıdır. Müşteri hem gecikme hem iade istiyorsa iki istek ilişkilendirilir; birinin durumu diğerinin uygunluğunu otomatik olarak değiştirmez. Gecikme telafisi sözleşmede tanımlıysa sözleşme kimliği ve yetkili onay ayrıca tutulur.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "18. Taşıyıcı ve teslimat istisnaları"
+        ],
+        "page_number": 18,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 6,
+      "score": 0.16666667,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+      "content": "Pazar yeri satıcısı ürünün iade alınamayacağını bildirirse görevli bu mesajı Negativex kuralı gibi sunmaz; satıcı kaydını vaka kanıtı olarak ekler ve kanalın uyuşmazlık akışını izler. Teslim tarihi, başvurunun pazar yeri üzerinden açıldığı tarih ve satıcının gerekçesi ayrı alanlardır.\n\nSatıcıya ait ek telafi doğrudan Negativex hesabına uygulanmaz. Müşteri aynı anda Premium plan avantajından söz ederse, görevli kanal kuralını ve plan kuralını ayrı ayrı açıklar. Yetki belirsizliği varsa müşteri beklemede bırakılmaz; hangi ekibin inceleme yaptığı ve sonraki kontrol tarihi yazılır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "19. Pazar yeri satıcı uyuşmazlıkları"
+        ],
+        "page_number": 19,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 7,
+      "score": 0.16233766,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "dfec59b8-9f54-5875-b03c-626ff6930e91",
+      "content": "| Durum | İlk kontrol | Sonraki kaynak |\n|---|---|---|\n| Standart, doğrudan satış, fiziksel ürün | teslim tarihi ve kullanılmamışlık | Standard Returns — 2026 |\n| Premium hesap, pazar yeri siparişi | kanal ve pazar yeri vaka numarası | Marketplace Returns |\n| Dijital anahtar indirildi, etkinleşmedi | etkinleştirme zaman damgası | Digital Goods Policy |\n| Türkiye kapsamındaki istisna | bölge ve ürün niteliği | Bölgesel İadeler — Türkiye |\n| Müzakere edilmiş kurumsal hüküm | sözleşme ve değişiklik tarihi | Enterprise Contract Guide |\n\nBu tablo bir arama kısayoludur; eksik vaka alanları varsa görevli sonucu varsaymaz.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "11. Örnek kararlar"
+        ],
+        "page_number": 11,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 8,
+      "score": 0.125,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "content": "The plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\n\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.",
+      "metadata": {
+        "document_version": "a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Premium Returns — 2026",
+          "Channel boundary"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 9,
+      "score": 0.11111111,
+      "source_id": "premium-returns-2026"
+    },
+    {
+      "chunk_id": "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5",
+      "content": "Vaka kaydı, karar için gerekli alanları içerir: tenant, plan, kanal, bölge, tarih, kanıt bağlantıları, onaylayan kişi ve müşteriye gönderilen son mesaj. Parola, erişim anahtarı ve kurtarma kodu kanıta kopyalanmaz. İmha veya dışa aktarma talebi sözleşme ve güvenlik sınıflandırmasına göre değerlendirilir.\n\nBir kanıt başka bir kaynağa atıf yapıyorsa kaynak başlığı, sürüm veya yürürlük tarihi korunur. Özet, kaynakta olmayan bir istisna ekleyemez. Denetimde kararın hangi kayda dayandığı anlaşılmıyorsa vaka yeniden incelenir.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "8. Veri saklama ve kanıt"
+        ],
+        "page_number": 8,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 10,
+      "score": 0.11111111,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "0448af81-d379-508d-a0c4-30e7122f7365",
+      "content": "Taşıyıcının paketi teslim aldığı an takip numarası üretilebilir. Takip bilgisinin gecikmesi tek başına kayıp kanıtı değildir; görevli son tarama, teslimat adresi ve taşıyıcı istisna kodunu kontrol eder. Resmî tatil veya uzak bölge ek süre doğurabilir ve müşteriye açıkça bildirilir.\n\nBu belge teslimat hedefini tanımlar; iade başlangıç tarihi için ilgili siparişin teslim kaydı kullanılır.",
+      "metadata": {
+        "document_version": "b017f55079694b0cab2479dc8e6d8614a7c2610f32799bec3706554d31e55ca5",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Teslimat ve Kargo Standardı",
+          "Olay kaydı"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 11,
+      "score": 0.1,
+      "source_id": "shipping-and-delivery"
+    },
+    {
+      "chunk_id": "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+      "content": "Belge sahibi: Müşteri Politikaları ve Bölgesel Operasyonlar\nYürürlük tarihi: 2026-01-15\nSon gözden geçirme: 2026-02-03\nKapsam: Türkiye'deki doğrudan satışlar, pazar yeri siparişleri ve bu siparişlere destek veren operasyon ekipleri\n\nBu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir “iade süresi” söylemi kullanılmaz. Görevli, önce olayı tanımlar; sonra yürürlükteki ve daha özel kaynağı seçer.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 12,
+      "score": 0.083333336,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "82041833-bb91-57a9-816b-59e65c35be9b",
+      "content": "Entitlement servisi lisans oluşturma, indirme, etkinleştirme, iptal ve devre dışı bırakma olaylarını ayrı zaman damgalarıyla tutar. İade uygunluğu için yalnız etkinleştirme olayı belirleyicidir; indirme sayısı veya müşterinin uygulamayı açtığını söylemesi tek başına yeterli değildir.\n\nBir lisans yanlış çalışma alanında etkinleştirildiyse görevli lisansı başka alana taşımadan önce güvenlik ve ürün ekiplerine danışır. Etkinleştirme düzeltmesi, ilk olayın silinmesi yerine düzeltme kaydı olarak tutulur. Sözleşme istisnası iddiası varsa ilgili madde ve onaylayan rol görünür olmalıdır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "20. Dijital lisans yaşam döngüsü"
+        ],
+        "page_number": 20,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 13,
+      "score": 0.07692308,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "a429ec1b-1808-5d00-bc24-0136fec79326",
+      "content": "A campaign label does not replace the Standard or Premium return policy. The campaign code, order channel, and effective dates establish whether a price benefit applies. A pricing benefit and a return entitlement are recorded as separate decisions.\n\nIf a workspace is upgraded after delivery, the original order context remains relevant. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. Customer communication explains this with the order and plan dates.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "32. Campaigns and plan changes"
+        ],
+        "page_number": 32,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 14,
+      "score": 0.07692308,
+      "source_id": "employee-handbook-en"
+    }
+  ],
+  "candidate_top20_ids": [
+    "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+    "dab2029c-14e8-54a9-89c6-1282098596bd",
+    "c0dd408e-b4c6-5544-884a-6067d838c80d",
+    "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+    "0a49c153-e055-5a4a-b324-903f5847dcbb",
+    "043dc7bb-373f-5b14-8f30-94362ce35553",
+    "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+    "dfec59b8-9f54-5875-b03c-626ff6930e91",
+    "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+    "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5",
+    "0448af81-d379-508d-a0c4-30e7122f7365",
+    "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+    "82041833-bb91-57a9-816b-59e65c35be9b",
+    "a429ec1b-1808-5d00-bc24-0136fec79326"
+  ],
+  "context_hash": "470458401003fbe9868cdb522f44b633ad5d8ca550bd10392b59bd57ff98cbcb",
+  "context_tokens": 509,
+  "evidence_blocks": [
+    {
+      "anchor_chunk_id": "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "chunk_id": "evidence-f72215516d7672d92b0f6733",
+      "citation_aliases": [
+        {
+          "chunk_id": "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası/19. Pazar yeri satıcı uyuşmazlıkları",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+          "location": "Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri",
+          "source_id": "long-policy-tr",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+        "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+        "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+        "a70b14bd-1aad-5f44-9ee6-edf37046602f"
+      ],
+      "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+      "evidence_block_id": "evidence-f72215516d7672d92b0f6733",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+        "2. İade kapsamının ayrıştırılması"
+      ],
+      "page_number": 2,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "2. İade kapsamının ayrıştırılması"
+        ],
+        0
+      ],
+      "source_id": "long-policy-tr",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Belge sahibi: Müşteri Politikaları ve Bölgesel Operasyonlar\nYürürlük tarihi: 2026-01-15\nSon gözden geçirme: 2026-02-03\nKapsam: Türkiye'deki doğrudan satışlar, pazar yeri siparişleri ve bu siparişlere destek veren operasyon ekipleri\n\nBu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir “iade süresi” söylemi kullanılmaz. Görevli, önce olayı tanımlar; sonra yürürlükteki ve daha özel kaynağı seçer.\n\nDoğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır. Premium planın doğrudan satışları 30 günlük ayrı pencereye tabidir. Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\n\nDijital lisanslarda indirme olayı ile etkinleştirme olayı birbirinden ayrılır. Anahtar indirilmiş fakat etkinleştirilmemişse uygunluk, etkinleştirme zaman damgası görülene kadar kapanmış sayılmaz. Etkinleştirilmiş dijital ürün için kamuya açık kural normalde iade yapılmamasıdır; imzalı sözleşme bu sonucu değiştirebilir.\n\nPazar yeri satıcısı ürünün iade alınamayacağını bildirirse görevli bu mesajı Negativex kuralı gibi sunmaz; satıcı kaydını vaka kanıtı olarak ekler ve kanalın uyuşmazlık akışını izler. Teslim tarihi, başvurunun pazar yeri üzerinden açıldığı tarih ve satıcının gerekçesi ayrı alanlardır.\n\nSatıcıya ait ek telafi doğrudan Negativex hesabına uygulanmaz. Müşteri aynı anda Premium plan avantajından söz ederse, görevli kanal kuralını ve plan kuralını ayrı ayrı açıklar. Yetki belirsizliği varsa müşteri beklemede bırakılmaz; hangi ekibin inceleme yaptığı ve sonraki kontrol tarihi yazılır.\n\nKampanya etiketi, Standart veya Premium iade penceresinin yerine geçmez. Kampanyanın siparişe uygulanıp uygulanmadığı kampanya kodu, sipariş kanalı ve yürürlük tarihiyle kontrol edilir. Bir kampanya yalnızca fiyatı değiştiriyorsa, ürünün iade veya cayma kapsamı ayrıca değerlendirilir.\n\nPlan yükseltmesi teslimattan sonra yapılmışsa iade kararı, sipariş olayındaki plan ve yürürlükteki kural üzerinden incelenir. Sonradan kazanılan Premium statüsü eski bir doğrudan satış siparişine otomatik olarak 30 günlük pencere vermez. Bu ayrım müşteri iletişiminde örnekle açıklanır.",
+      "token_count": 287
+    },
+    {
+      "anchor_chunk_id": "c0dd408e-b4c6-5544-884a-6067d838c80d",
+      "chunk_id": "evidence-48f334cd3c7e7f080cce97a8",
+      "citation_aliases": [
+        {
+          "chunk_id": "955d96b7-9420-5d68-a59e-5879e373c9c2",
+          "location": "Pazar Yeri Siparişleri için İade Politikası",
+          "source_id": "marketplace-returns",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "c0dd408e-b4c6-5544-884a-6067d838c80d",
+          "location": "Pazar Yeri Siparişleri için İade Politikası/Vaka kaydı",
+          "source_id": "marketplace-returns",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "955d96b7-9420-5d68-a59e-5879e373c9c2",
+        "c0dd408e-b4c6-5544-884a-6067d838c80d"
+      ],
+      "document_version": "8a051d5137652907145c3d0977e6868f039dbf68f86498871f83603e810b447c",
+      "evidence_block_id": "evidence-48f334cd3c7e7f080cce97a8",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Pazar Yeri Siparişleri için İade Politikası",
+        "Vaka kaydı"
+      ],
+      "page_number": 1,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Pazar Yeri Siparişleri için İade Politikası",
+          "Vaka kaydı"
+        ],
+        0
+      ],
+      "source_id": "marketplace-returns",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Belge sahibi: Müşteri Politikaları Operasyonları\nYürürlük: 2026-01-15\nKapsam: Negativex pazar yeri üzerinden verilen siparişler\n\nPazar yeri siparişlerinde iade talebi teslimattan itibaren 7 takvim günü içinde, pazar yerinin vaka kanalı kullanılarak açılır. Doğrudan satış politikasındaki plan avantajları bu süreyi kendiliğinden uzatmaz. Satıcının ayrıca tanımladığı bir telafi varsa, bu telafi pazar yeri kaydında açıkça görülmelidir.\n\nGörevli sipariş kanalını, teslim tarihini, satıcı kimliğini ve müşterinin istediği çözümü kaydeder. Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.\n\nBölgesel tüketici hakkı veya kurumsal sözleşme farklı bir sonuç doğurabilecekse Bölgesel İadeler ve Enterprise Contract Guide belgelerine başvurulur.",
+      "token_count": 105
+    }
+  ],
+  "metrics": {
+    "context_chars": 6469,
+    "context_tokens": 509,
+    "expanded": true,
+    "input_chunk_ids": [
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+      "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+      "c0dd408e-b4c6-5544-884a-6067d838c80d",
+      "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b"
+    ],
+    "output_block_ids": [
+      "evidence-f72215516d7672d92b0f6733",
+      "evidence-48f334cd3c7e7f080cce97a8"
+    ]
+  },
+  "model_visible_context": "<section_aware_evidence trust=\"untrusted\" blocks=\"2\">\n[evidence_block 1 json_chars=4248]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E1\",\"evidence_block_id\":\"evidence-f72215516d7672d92b0f6733\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması\",\"section_key\":[\"heading\",[\"Negativex Bölgesel Operasyon ve Müşteri Politikası\",\"2. İade kapsamının ayrıştırılması\"],0],\"document_version\":\"bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b\",\"49df1fbd-e41f-5702-b1f6-903e0e17c8d0\",\"cc91ddbd-29f4-51f1-bbd7-8b636c9bae86\",\"a70b14bd-1aad-5f44-9ee6-edf37046602f\"],\"citation_aliases\":[{\"chunk_id\":\"90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası\"},{\"chunk_id\":\"49df1fbd-e41f-5702-b1f6-903e0e17c8d0\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması\"},{\"chunk_id\":\"cc91ddbd-29f4-51f1-bbd7-8b636c9bae86\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/19. Pazar yeri satıcı uyuşmazlıkları\"},{\"chunk_id\":\"a70b14bd-1aad-5f44-9ee6-edf37046602f\",\"source_type\":\"filesystem\",\"source_id\":\"long-policy-tr\",\"location\":\"Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri\"}],\"canonical_citations\":[\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası]\",\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/2. İade kapsamının ayrıştırılması]\",\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/19. Pazar yeri satıcı uyuşmazlıkları]\",\"[s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası/34. Kampanya ve plan değişiklikleri]\"]},\"content\":\"Belge sahibi: Müşteri Politikaları ve Bölgesel Operasyonlar\\nYürürlük tarihi: 2026-01-15\\nSon gözden geçirme: 2026-02-03\\nKapsam: Türkiye'deki doğrudan satışlar, pazar yeri siparişleri ve bu siparişlere destek veren operasyon ekipleri\\n\\nBu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir “iade süresi” söylemi kullanılmaz. Görevli, önce olayı tanımlar; sonra yürürlükteki ve daha özel kaynağı seçer.\\n\\nDoğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır. Premium planın doğrudan satışları 30 günlük ayrı pencereye tabidir. Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\\n\\nDijital lisanslarda indirme olayı ile etkinleştirme olayı birbirinden ayrılır. Anahtar indirilmiş fakat etkinleştirilmemişse uygunluk, etkinleştirme zaman damgası görülene kadar kapanmış sayılmaz. Etkinleştirilmiş dijital ürün için kamuya açık kural normalde iade yapılmamasıdır; imzalı sözleşme bu sonucu değiştirebilir.\\n\\nPazar yeri satıcısı ürünün iade alınamayacağını bildirirse görevli bu mesajı Negativex kuralı gibi sunmaz; satıcı kaydını vaka kanıtı olarak ekler ve kanalın uyuşmazlık akışını izler. Teslim tarihi, başvurunun pazar yeri üzerinden açıldığı tarih ve satıcının gerekçesi ayrı alanlardır.\\n\\nSatıcıya ait ek telafi doğrudan Negativex hesabına uygulanmaz. Müşteri aynı anda Premium plan avantajından söz ederse, görevli kanal kuralını ve plan kuralını ayrı ayrı açıklar. Yetki belirsizliği varsa müşteri beklemede bırakılmaz; hangi ekibin inceleme yaptığı ve sonraki kontrol tarihi yazılır.\\n\\nKampanya etiketi, Standart veya Premium iade penceresinin yerine geçmez. Kampanyanın siparişe uygulanıp uygulanmadığı kampanya kodu, sipariş kanalı ve yürürlük tarihiyle kontrol edilir. Bir kampanya yalnızca fiyatı değiştiriyorsa, ürünün iade veya cayma kapsamı ayrıca değerlendirilir.\\n\\nPlan yükseltmesi teslimattan sonra yapılmışsa iade kararı, sipariş olayındaki plan ve yürürlükteki kural üzerinden incelenir. Sonradan kazanılan Premium statüsü eski bir doğrudan satış siparişine otomatik olarak 30 günlük pencere vermez. Bu ayrım müşteri iletişiminde örnekle açıklanır.\"}\n[/evidence_block 1]\n[evidence_block 2 json_chars=1954]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E2\",\"evidence_block_id\":\"evidence-48f334cd3c7e7f080cce97a8\",\"source_type\":\"filesystem\",\"source_id\":\"marketplace-returns\",\"location\":\"Pazar Yeri Siparişleri için İade Politikası/Vaka kaydı\",\"section_key\":[\"heading\",[\"Pazar Yeri Siparişleri için İade Politikası\",\"Vaka kaydı\"],0],\"document_version\":\"8a051d5137652907145c3d0977e6868f039dbf68f86498871f83603e810b447c\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"955d96b7-9420-5d68-a59e-5879e373c9c2\",\"c0dd408e-b4c6-5544-884a-6067d838c80d\"],\"citation_aliases\":[{\"chunk_id\":\"955d96b7-9420-5d68-a59e-5879e373c9c2\",\"source_type\":\"filesystem\",\"source_id\":\"marketplace-returns\",\"location\":\"Pazar Yeri Siparişleri için İade Politikası\"},{\"chunk_id\":\"c0dd408e-b4c6-5544-884a-6067d838c80d\",\"source_type\":\"filesystem\",\"source_id\":\"marketplace-returns\",\"location\":\"Pazar Yeri Siparişleri için İade Politikası/Vaka kaydı\"}],\"canonical_citations\":[\"[s.filesystem:marketplace-returns/Pazar Yeri Siparişleri için İade Politikası]\",\"[s.filesystem:marketplace-returns/Pazar Yeri Siparişleri için İade Politikası/Vaka kaydı]\"]},\"content\":\"Belge sahibi: Müşteri Politikaları Operasyonları\\nYürürlük: 2026-01-15\\nKapsam: Negativex pazar yeri üzerinden verilen siparişler\\n\\nPazar yeri siparişlerinde iade talebi teslimattan itibaren 7 takvim günü içinde, pazar yerinin vaka kanalı kullanılarak açılır. Doğrudan satış politikasındaki plan avantajları bu süreyi kendiliğinden uzatmaz. Satıcının ayrıca tanımladığı bir telafi varsa, bu telafi pazar yeri kaydında açıkça görülmelidir.\\n\\nGörevli sipariş kanalını, teslim tarihini, satıcı kimliğini ve müşterinin istediği çözümü kaydeder. Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.\\n\\nBölgesel tüketici hakkı veya kurumsal sözleşme farklı bir sonuç doğurabilecekse Bölgesel İadeler ve Enterprise Contract Guide belgelerine başvurulur.\"}\n[/evidence_block 2]\n</section_aware_evidence>",
+  "pipeline_identity": {
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "query_id": "multi-01-1",
+  "tenant_id": "tenant-a",
+  "top5_ids": [
+    "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+    "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+    "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+    "c0dd408e-b4c6-5544-884a-6067d838c80d",
+    "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b"
+  ]
+}

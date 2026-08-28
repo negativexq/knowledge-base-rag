@@ -1,0 +1,22 @@
+{
+  "composition": {
+    "acl": 3,
+    "authority": 1,
+    "cross_lingual": 1,
+    "multi_document": 3,
+    "standard": 1
+  },
+  "new_generation_calls_authorized": 9,
+  "preflight": "PASS",
+  "query_ids": [
+    "acl-02-0",
+    "acl-02-1",
+    "acl-02-2",
+    "cross-06-0",
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0",
+    "native-00-0",
+    "version-01-0"
+  ]
+}

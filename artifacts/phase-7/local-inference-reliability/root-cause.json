@@ -1,0 +1,15 @@
+{
+  "confidence": "SUPPORTED_BUT_NOT_EXHAUSTIVE",
+  "direct_http": "passed before and after controlled restart",
+  "evidence": [
+    "server log recorded an aborted model load after a client connection closed",
+    "historical long request was cancelled only after prolonged runner execution",
+    "controlled unload and service restart produced a new server PID",
+    "all A/B/C/D bounded probes passed after recovery"
+  ],
+  "primary": "STALE_MODEL_RUNNER_STATE",
+  "python_client": "passed with fresh and persistent clients after recovery",
+  "quality_decision": "NOT_EVALUATED",
+  "secondary": "PROVIDER_SERVER_RESPONSE_STALL",
+  "server_process_health": "control endpoints remained responsive"
+}

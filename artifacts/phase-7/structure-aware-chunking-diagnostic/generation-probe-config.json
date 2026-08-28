@@ -1,0 +1,126 @@
+{
+  "model": "qwen3.5:4b",
+  "prompt": "v3",
+  "think": false,
+  "num_ctx": 4096,
+  "representation": "SECTION_AWARE_MERGED",
+  "query_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ],
+  "preconditions": [
+    {
+      "query_id": "multi-00-1",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true,
+      "supporting_spans": [
+        {
+          "required_fact_id": "standard_return_window_14_days",
+          "source_id": "standard-returns-2026",
+          "supporting_text_span": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.",
+          "supporting_block_ids": [
+            "diag:section_aware_merged:standard-returns-2026"
+          ]
+        },
+        {
+          "required_fact_id": "support_return_case_fields",
+          "source_id": "support-playbook",
+          "supporting_text_span": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.",
+          "supporting_block_ids": [
+            "b3b30141-6504-54bb-a9dc-de95e27dca22"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-00-3",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true,
+      "supporting_spans": [
+        {
+          "required_fact_id": "standard_return_window_14_days",
+          "source_id": "standard-returns-2026",
+          "supporting_text_span": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.",
+          "supporting_block_ids": [
+            "diag:section_aware_merged:standard-returns-2026"
+          ]
+        },
+        {
+          "required_fact_id": "support_return_case_fields",
+          "source_id": "support-playbook",
+          "supporting_text_span": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.",
+          "supporting_block_ids": [
+            "b3b30141-6504-54bb-a9dc-de95e27dca22"
+          ]
+        }
+      ]
+    },
+    {
+      "query_id": "multi-03-0",
+      "required_sources_present": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true,
+      "supporting_spans": [
+        {
+          "required_fact_id": "digital_activation_boundary",
+          "source_id": "regional-returns-tr",
+          "supporting_text_span": "Dijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir.",
+          "supporting_block_ids": [
+            "diag:section_aware_merged:regional-returns-tr"
+          ]
+        },
+        {
+          "required_fact_id": "joint_exception_routing",
+          "source_id": "returns-manual-tr",
+          "supporting_text_span": "Süresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir.",
+          "supporting_block_ids": [
+            "a813c829-a9db-5cee-80fc-ff7c677187a9"
+          ]
+        },
+        {
+          "required_fact_id": "regional_withdrawal_framework_14_days",
+          "source_id": "regional-returns-tr",
+          "supporting_text_span": "Belirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez.",
+          "supporting_block_ids": [
+            "diag:section_aware_merged:regional-returns-tr"
+          ]
+        }
+      ]
+    }
+  ],
+  "max_generation_calls": 3
+}

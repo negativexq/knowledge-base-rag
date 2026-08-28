@@ -1,0 +1,19 @@
+{
+  "complete_success_count": 25,
+  "evidence_snapshots_reused": true,
+  "generation_calls": 55,
+  "latency_ms": {
+    "max": 76976.769,
+    "p50": 26468.176
+  },
+  "pipeline_version": "pipeline_v2_2_evidence_backed",
+  "query_count": 11,
+  "retrieval_calls": 0,
+  "seeds": [
+    41,
+    42,
+    43,
+    44,
+    45
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "attempts": 1,
+  "connect_timeout_seconds": 10.0,
+  "default_connect_timeout_seconds": 10.0,
+  "default_overall_timeout_seconds": 240.0,
+  "default_read_timeout_seconds": 180.0,
+  "overall_timeout_seconds": 240.0,
+  "read_timeout_seconds": 180.0
+}

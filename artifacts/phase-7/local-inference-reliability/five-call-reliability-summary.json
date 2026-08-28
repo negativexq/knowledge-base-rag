@@ -1,0 +1,14 @@
+{
+  "all_pass": true,
+  "all_terminated": true,
+  "completed_calls": 5,
+  "failure_count": 0,
+  "max_latency_ms": 7711.525,
+  "query_id": "multi-00-1",
+  "required_calls": 5,
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "snapshot_hash": "e1e20da33f74bb11261c1ab96014f8f99a3821c34ade222dfed2182644bb3d8d",
+  "success_count": 5,
+  "timeout_count": 0
+}

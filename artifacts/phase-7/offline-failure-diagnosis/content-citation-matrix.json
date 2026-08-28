@@ -1,0 +1,12 @@
+{
+  "rows": {
+    "FULLY_CORRECT_COMPLETE|citation_review_or_wrong": 9,
+    "FULLY_CORRECT_COMPLETE|citation_supported_or_unresolved": 4,
+    "INCORRECT|citation_supported_or_unresolved": 2,
+    "PARTIALLY_CORRECT|citation_review_or_wrong": 2,
+    "CORRECT_BUT_INCOMPLETE|citation_supported_or_unresolved": 3,
+    "CORRECT_BUT_INCOMPLETE|citation_review_or_wrong": 1,
+    "INCORRECT|citation_review_or_wrong": 1
+  },
+  "note": "Citation support remains review-required where claim segmentation is not deterministic."
+}

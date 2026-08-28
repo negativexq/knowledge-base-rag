@@ -1,0 +1,28 @@
+{
+  "source_id": "standard-returns-2026",
+  "source_path": "data/evaluation/evaluation-corpus-v2/standard-returns-2026.md",
+  "observed_structure": [
+    {
+      "section": "Standard Returns — 2026 (root)",
+      "lines": "3-9",
+      "fact": "14-calendar-day return window",
+      "current_chunk_id": "5bd2643d-4837-5733-9717-c88c37860274"
+    },
+    {
+      "boundary": "H2 starts a new logical section and therefore a separate current chunk"
+    },
+    {
+      "section": "Case record",
+      "lines": "13-15",
+      "fact": "case fields and related links",
+      "current_chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e"
+    }
+  ],
+  "supporting_chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+  "retrieved_chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+  "retrieved_chunk_heading": [
+    "Standard Returns — 2026",
+    "Case record"
+  ],
+  "why_fact_absent": "The reranker retained the same-source Case record section but dropped the root-section chunk containing the 14-day rule. The span itself is fully contained and not split."
+}

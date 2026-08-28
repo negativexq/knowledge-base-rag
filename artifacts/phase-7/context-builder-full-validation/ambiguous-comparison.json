@@ -1,0 +1,24 @@
+{
+  "query_ids": [
+    "ambiguous-00-0",
+    "ambiguous-00-1",
+    "ambiguous-00-2",
+    "ambiguous-01-0"
+  ],
+  "a": {
+    "n": 4,
+    "full": 0,
+    "incomplete": 0,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 2
+  },
+  "b": {
+    "n": 4,
+    "full": 0,
+    "incomplete": 0,
+    "partial": 0,
+    "incorrect": 0,
+    "validator_reject": 2
+  }
+}

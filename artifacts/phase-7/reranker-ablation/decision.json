@@ -1,0 +1,7 @@
+{
+  "status": "QWEN3_RERANKER_QUALITY_REGRESSION",
+  "development_benchmark_status": "SKIPPED",
+  "reason": "Qwen3 fact-passage recall@5 is lower (4/7 vs 5/7), complete queries are lower (0/3 vs 1/3), and local latency is materially higher.",
+  "recommended_next_experiment": "BGE_KEEP_AND_SECTION_AWARE_EXPERIMENT",
+  "runtime_promotion": false
+}

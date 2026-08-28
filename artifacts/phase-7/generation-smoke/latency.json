@@ -1,0 +1,23 @@
+{
+  "retrieval": {
+    "count": 36,
+    "p50_ms": 1601.507,
+    "p95_ms": 2168.744,
+    "max_ms": 2879.742
+  },
+  "generation": {
+    "count": 36,
+    "p50_ms": 17131.788,
+    "p95_ms": 49987.912,
+    "max_ms": 66069.072
+  },
+  "validation": {
+    "status": "not separately instrumented by current stream_answer"
+  },
+  "end_to_end": {
+    "count": 36,
+    "p50_ms": 19262.255,
+    "p95_ms": 51647.193,
+    "max_ms": 67690.02
+  }
+}

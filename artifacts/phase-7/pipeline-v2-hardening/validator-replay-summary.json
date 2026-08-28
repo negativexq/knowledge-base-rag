@@ -1,0 +1,9 @@
+{
+  "generation_calls": 0,
+  "invalid_parts_not_rendered": true,
+  "raw_candidate_observable": 16,
+  "records": 16,
+  "retrieval_calls": 0,
+  "security_invalid_newly_exposed": false,
+  "valid_parts_can_survive": true
+}

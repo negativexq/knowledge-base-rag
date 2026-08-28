@@ -1,0 +1,5 @@
+{
+  "decision": "MULTIDOC_COMPLETENESS_NO_GAIN",
+  "reason": "Prompt-only completeness framing was evaluated on the three existing multi-document records.",
+  "runtime_promotion": false
+}

@@ -1,0 +1,170 @@
+[
+  {
+    "query_id": "ambiguous-00-0",
+    "category": "ambiguous",
+    "failures": [
+      "OUTPUT_VALIDATION_FAILURE"
+    ]
+  },
+  {
+    "query_id": "ambiguous-01-0",
+    "category": "ambiguous",
+    "failures": [
+      "OUTPUT_VALIDATION_FAILURE"
+    ]
+  },
+  {
+    "query_id": "cross-00-0",
+    "category": "cross_lingual",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "cross-00-1",
+    "category": "cross_lingual",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "cross-01-0",
+    "category": "cross_lingual",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "cross-06-0",
+    "category": "cross_lingual",
+    "failures": [
+      "OUTPUT_VALIDATION_FAILURE"
+    ]
+  },
+  {
+    "query_id": "cross-06-1",
+    "category": "cross_lingual",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "cross-07-0",
+    "category": "cross_lingual",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "hard-annual-cancel",
+    "category": "hard_answerable",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "hard-api-private",
+    "category": "hard_answerable",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "hard-api-version",
+    "category": "hard_answerable",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "hard-marketplace-channel",
+    "category": "hard_answerable",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "hard-order-channel",
+    "category": "hard_answerable",
+    "failures": [
+      "OUTPUT_VALIDATION_FAILURE"
+    ]
+  },
+  {
+    "query_id": "hard-policy-language",
+    "category": "hard_answerable",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "injection-03-0",
+    "category": "injection_bearing",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "injection-03-1",
+    "category": "injection_bearing",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "multi-00-1",
+    "category": "multi_document",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "multi-00-3",
+    "category": "multi_document",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "multi-03-0",
+    "category": "multi_document",
+    "failures": [
+      "OUTPUT_VALIDATION_FAILURE"
+    ]
+  },
+  {
+    "query_id": "native-00-0",
+    "category": "standard_answerable",
+    "failures": [
+      "OUTPUT_VALIDATION_FAILURE"
+    ]
+  },
+  {
+    "query_id": "native-00-1",
+    "category": "standard_answerable",
+    "failures": [
+      "OUTPUT_VALIDATION_FAILURE"
+    ]
+  },
+  {
+    "query_id": "native-01-1",
+    "category": "standard_answerable",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "version-01-0",
+    "category": "version_conflict",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  },
+  {
+    "query_id": "version-01-1",
+    "category": "version_conflict",
+    "failures": [
+      "ANSWER_INCORRECT"
+    ]
+  }
+]

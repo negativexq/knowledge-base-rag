@@ -1,0 +1,15 @@
+{
+  "citation_identity_deterministic": true,
+  "corrected_holdout": {
+    "correctly_attributed_visible": 15,
+    "false_abstention": 5,
+    "misattributed_visible": 10
+  },
+  "limitation": "Claim-to-evidence semantic alignment remains unresolved; deterministic citation identity does not guarantee semantic attribution correctness.",
+  "misattribution_ratio_among_attributed_or_misattributed": 0.4,
+  "schema_version": "phase7-selected-v2-2-limitations-v1",
+  "selected_pipeline": "pipeline_v2_2_evidence_backed",
+  "semantic_attribution_guaranteed": false,
+  "tenant_acl_enforced": true,
+  "v2_3_limitation": "The evaluated V2.3 implementation produced no correctly-attributed visible answers across the corrected 40-run paired holdout execution, with higher false-abstention and latency. Debug-set reproduction was not executed, so implementation-vs-contract causality remains unresolved."
+}

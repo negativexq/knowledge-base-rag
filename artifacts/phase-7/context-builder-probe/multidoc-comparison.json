@@ -1,0 +1,804 @@
+[
+  {
+    "query_id": "multi-00-1",
+    "a": {
+      "query_id": "multi-00-1",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "Based on the retrieved documents, to explain both the standard return window and the evidence fields required for support cases, one must combine information regarding plan status with specific procedural rules. The relevant details are:\n\n*   **Standard Return Window:** This is controlled by the current canonical policy applicable to direct Standard orders (or marketplace/enterprise policies if not direct), rather than a superseded 2025 rule or an upgrade in premium status occurring after delivery [s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]. The window generally depends on the **delivery date** and whether there is a signed enterprise exception, as these determine if ordinary rules apply or if specific approval steps (like Contract Operations review) are needed [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Premium status matters only within its direct-sale scope; an upgrade after delivery does not grant the earlier order's premium window retroactively, requiring communication via **order and plan dates** to clarify entitlement [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing], [s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes].\n\n*   **Evidence Fields:** The case record must support the decision by recording specific data points before approval can proceed. These fields include the **plan** (Standard or Premium), the **order channel** (direct sale, marketplace), the **delivery date**, the **product type**, the **requested remedy**, and any applicable **contract** or regional scope [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Additionally, for complex cases involving pending enterprise exceptions, the closure records must include the **contract reviewer identifier**, the specific question regarding the effective date, and details on whether sensitive indicators need to be avoided in routine notes [s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples].\n\nIn summary, the combination explains that the return window is defined by active canonical policies tied to delivery events (not superseded rules or post-delivery upgrades), while evidence support requires recording plan type, channel, dates (delivery and order activation), product type, remedy request, and any contractual scope [s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution], [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record].",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "fact_coverage": 0.5,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "answer": null,
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": false,
+            "reason": "duration"
+          },
+          {
+            "matched": true,
+            "reason": "explicit_authored_aliases"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "CORRECT_BUT_INCOMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/26. Closure examples"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 5928,
+        "context_tokens": 545,
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "gold_source_ranks": [
+          1,
+          2,
+          3,
+          5
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 66069.072
+    },
+    "b": {
+      "query_id": "multi-00-1",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 14680.041,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "Based on the authorized reference data, a combination of sources is required to establish both the standard return window and the evidence fields support must record. Source Block 2 ([s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing]) specifies that for direct Standard orders, \"the current canonical policy controls the ordinary window.\" Additionally, it outlines the sequence of identifying order channels and product types as part of the process.\n\nSource Block 3 ([s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples]) defines the evidence fields to be recorded for a resolved Standard return: \"the closure records the order channel, delivery event, canonical policy, approval, and customer message.\" It further notes that pending enterprise exceptions require recording specific fields like contract reviewer details and effective-date questions. Source Block 5 ([s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]) reinforces the need to record plan order channel information before approving a request, stating if one field is unknown, \"keep the case pending rather than quote a generic return period.\"\n\nTogether, these records indicate that determining the standard window relies on identifying the specific order channel (direct vs. marketplace) and applying the current canonical policy for Standard orders, while evidence fields must record details such as delivery event, approval status, and customer message context alongside the applicable policy. Relevant detail includes the requirement to keep a case pending if critical fields are unknown rather than assigning a generic return period.",
+      "validated_output": "Based on the authorized reference data, a combination of sources is required to establish both the standard return window and the evidence fields support must record. Source Block 2 ([s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing]) specifies that for direct Standard orders, \"the current canonical policy controls the ordinary window.\" Additionally, it outlines the sequence of identifying order channels and product types as part of the process.\n\nSource Block 3 ([s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples]) defines the evidence fields to be recorded for a resolved Standard return: \"the closure records the order channel, delivery event, canonical policy, approval, and customer message.\" It further notes that pending enterprise exceptions require recording specific fields like contract reviewer details and effective-date questions. Source Block 5 ([s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]) reinforces the need to record plan order channel information before approving a request, stating if one field is unknown, \"keep the case pending rather than quote a generic return period.\"\n\nTogether, these records indicate that determining the standard window relies on identifying the specific order channel (direct vs. marketplace) and applying the current canonical policy for Standard orders, while evidence fields must record details such as delivery event, approval status, and customer message context alongside the applicable policy. Relevant detail includes the requirement to keep a case pending if critical fields are unknown rather than assigning a generic return period.",
+      "user_visible_output": "Based on the authorized reference data, a combination of sources is required to establish both the standard return window and the evidence fields support must record. Source Block 2 ([s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing]) specifies that for direct Standard orders, \"the current canonical policy controls the ordinary window.\" Additionally, it outlines the sequence of identifying order channels and product types as part of the process.\n\nSource Block 3 ([s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples]) defines the evidence fields to be recorded for a resolved Standard return: \"the closure records the order channel, delivery event, canonical policy, approval, and customer message.\" It further notes that pending enterprise exceptions require recording specific fields like contract reviewer details and effective-date questions. Source Block 5 ([s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]) reinforces the need to record plan order channel information before approving a request, stating if one field is unknown, \"keep the case pending rather than quote a generic return period.\"\n\nTogether, these records indicate that determining the standard window relies on identifying the specific order channel (direct vs. marketplace) and applying the current canonical policy for Standard orders, while evidence fields must record details such as delivery event, approval status, and customer message context alongside the applicable policy. Relevant detail includes the requirement to keep a case pending if critical fields are unknown rather than assigning a generic return period.",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "required_fact_count": 2,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "fact_coverage": 0.0,
+        "matches": [
+          {
+            "matched": false,
+            "reason": "duration",
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "answer": null
+          },
+          {
+            "matched": false,
+            "reason": "partial_authored_overlap"
+          }
+        ],
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/26. Closure examples"
+          ],
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 0
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "support-playbook",
+              "Support Operations Playbook/5. Returns and billing routing"
+            ],
+            [
+              "filesystem",
+              "support-playbook",
+              "Support Operations Playbook/26. Closure examples"
+            ],
+            [
+              "filesystem",
+              "standard-returns-2026",
+              "Standard Returns — 2026/Case record"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 5685,
+        "context_tokens": 538,
+        "metadata_tokens": 91,
+        "content_tokens": 368,
+        "truncated": false,
+        "unique_source_count": 3,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "UNCHANGED",
+    "fact_coverage": {
+      "a": 0.5,
+      "b": 0.0
+    },
+    "context_token_ratio": 0.9871559633027523,
+    "latency_ratio": 0.22219232926413737
+  },
+  {
+    "query_id": "multi-00-3",
+    "a": {
+      "query_id": "multi-00-3",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "To explain both the standard return window and the evidence fields that must be recorded, you need a combination of two specific sources: **Standard Returns — 2026/Case record** to establish the canonical policy controlling the ordinary window (e.g., delivery date), and **Support Operations Playbook/5. Returns and billing routing** or **Premium Returns — 2026** where relevant, depending on whether the order is from a direct sale or marketplace.\n\nAccording to the retrieved data:\n1.  **Standard Return Window & Fields**: The case record requires recording specific evidence fields before approval to avoid quoting generic periods if unknown. These fields are defined as the plan, order channel (direct vs. marketplace), delivery date/product type for Standard orders, and activation event/delivery rule for Digital goods [[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]].\n2.  **Channel Distinction**: The policy effective on the relevant event date controls the window (e.g., seven days for Marketplace) based on whether the order was placed through a marketplace or direct sale, not just by plan badge [[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]].\n3.  **What Happens Next**: If one source is needed to set the return window (canonical policy) and another to define the specific case fields or exceptions, you must record both sources in your evidence list [[s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]].\n\n**Next Steps**:\n*   Identify if there is a signed enterprise exception; contract exceptions require review by Contract Operations and should be routed to the Enterprise Contract Guide rather than controlled solely by Standard Returns policies [[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]].\n*   If fields like order channel or delivery date are missing, keep the case pending instead of assuming a generic return period [[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]].",
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "fact_coverage": 0.0,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [
+          {
+            "answer": [
+              7.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": false,
+            "reason": "duration"
+          },
+          {
+            "matched": false,
+            "reason": "partial_authored_overlap"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "CORRECT_BUT_INCOMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026/Channel boundary"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 2,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 5792,
+        "context_tokens": 525,
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "gold_source_ranks": [
+          1,
+          2,
+          3,
+          5
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 56579.07
+    },
+    "b": {
+      "query_id": "multi-00-3",
+      "category": "multi_document",
+      "language_pair": "en->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 14586.812,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "Based on the retrieved context, when two documents are both needed to explain a standard return window and evidence fields support must record (such as for direct Standard orders), the combination involves recording:\n\n*   **The Return Window:** Established by the relevant product policy specific to the channel (e.g., the current canonical policy controls the ordinary window).\n    *   Relevant Source Block Metadata: [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing] or [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Content from BLOCK_1, BLOCK_4, and BLOCK_5 supports the necessity of identifying specific policies rather than using a general plan badge.\n*   **The Evidence Fields:** Required evidence includes order channel (direct sale or marketplace), delivery date/evidence event, product type, requested remedy, applicable regional scope/enterprise exceptions, and approval records.\n    *   Relevant Source Block Metadata: [s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples]. Content from BLOCK_3 explicitly lists the fields to record for a resolved Standard return as \"the order channel, delivery event, canonical policy, approval, and customer message.\"\n\n**What should happen next?**\nIf one of those required evidence fields (plan, order channel, delivery date, product type, requested remedy) is unknown, you must **keep the case pending**; otherwise, do not quote a generic return period.",
+      "validated_output": "Based on the retrieved context, when two documents are both needed to explain a standard return window and evidence fields support must record (such as for direct Standard orders), the combination involves recording:\n\n*   **The Return Window:** Established by the relevant product policy specific to the channel (e.g., the current canonical policy controls the ordinary window).\n    *   Relevant Source Block Metadata: [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing] or [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Content from BLOCK_1, BLOCK_4, and BLOCK_5 supports the necessity of identifying specific policies rather than using a general plan badge.\n*   **The Evidence Fields:** Required evidence includes order channel (direct sale or marketplace), delivery date/evidence event, product type, requested remedy, applicable regional scope/enterprise exceptions, and approval records.\n    *   Relevant Source Block Metadata: [s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples]. Content from BLOCK_3 explicitly lists the fields to record for a resolved Standard return as \"the order channel, delivery event, canonical policy, approval, and customer message.\"\n\n**What should happen next?**\nIf one of those required evidence fields (plan, order channel, delivery date, product type, requested remedy) is unknown, you must **keep the case pending**; otherwise, do not quote a generic return period.",
+      "user_visible_output": "Based on the retrieved context, when two documents are both needed to explain a standard return window and evidence fields support must record (such as for direct Standard orders), the combination involves recording:\n\n*   **The Return Window:** Established by the relevant product policy specific to the channel (e.g., the current canonical policy controls the ordinary window).\n    *   Relevant Source Block Metadata: [s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing] or [s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]. Content from BLOCK_1, BLOCK_4, and BLOCK_5 supports the necessity of identifying specific policies rather than using a general plan badge.\n*   **The Evidence Fields:** Required evidence includes order channel (direct sale or marketplace), delivery date/evidence event, product type, requested remedy, applicable regional scope/enterprise exceptions, and approval records.\n    *   Relevant Source Block Metadata: [s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples]. Content from BLOCK_3 explicitly lists the fields to record for a resolved Standard return as \"the order channel, delivery event, canonical policy, approval, and customer message.\"\n\n**What should happen next?**\nIf one of those required evidence fields (plan, order channel, delivery date, product type, requested remedy) is unknown, you must **keep the case pending**; otherwise, do not quote a generic return period.",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "CORRECT_BUT_INCOMPLETE",
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "required_fact_count": 2,
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "fact_coverage": 0.5,
+        "matches": [
+          {
+            "matched": false,
+            "reason": "duration",
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "answer": null
+          },
+          {
+            "matched": true,
+            "reason": "explicit_authored_aliases"
+          }
+        ],
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/5. Returns and billing routing"
+          ],
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/26. Closure examples"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 0
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "support-playbook",
+              "Support Operations Playbook/5. Returns and billing routing"
+            ],
+            [
+              "filesystem",
+              "standard-returns-2026",
+              "Standard Returns — 2026/Case record"
+            ],
+            [
+              "filesystem",
+              "support-playbook",
+              "Support Operations Playbook/26. Closure examples"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 5582,
+        "context_tokens": 522,
+        "metadata_tokens": 79,
+        "content_tokens": 364,
+        "truncated": false,
+        "unique_source_count": 3,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "UNCHANGED",
+    "fact_coverage": {
+      "a": 0.0,
+      "b": 0.5
+    },
+    "context_token_ratio": 0.9942857142857143,
+    "latency_ratio": 0.25781286260095826
+  },
+  {
+    "query_id": "multi-03-0",
+    "a": {
+      "query_id": "multi-03-0",
+      "category": "multi_document",
+      "language_pair": "tr->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "citation_identity_valid": false,
+      "citation_authorized": false,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 2,
+        "duplicate_count": 0,
+        "context_chars": 3942,
+        "context_tokens": 279,
+        "input_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "output_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "gold_source_ranks": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 10051.697
+    },
+    "b": {
+      "query_id": "multi-03-0",
+      "category": "multi_document",
+      "language_pair": "tr->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 3513.732,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını **Digital Goods Policy** ve **Enterprise Contract Guide** birlikte açıklar. Bu bilgi, aktif edilmiş dijital ürünlere uygulanan politika için belirtilmiştir [s.filesystem:regional-returns-tr/5/0].",
+      "validated_output": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını **Digital Goods Policy** ve **Enterprise Contract Guide** birlikte açıklar. Bu bilgi, aktif edilmiş dijital ürünlere uygulanan politika için belirtilmiştir [s.filesystem:regional-returns-tr/5/0].",
+      "user_visible_output": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını **Digital Goods Policy** ve **Enterprise Contract Guide** birlikte açıklar. Bu bilgi, aktif edilmiş dijital ürünlere uygulanan politika için belirtilmiştir [s.filesystem:regional-returns-tr/5/0].",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "INCORRECT",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "fact_coverage": 0.0,
+        "matches": [
+          {
+            "matched": false,
+            "reason": "no_safe_match"
+          }
+        ],
+        "expected_components": [
+          "Regional exceptions and the activation boundary must both be checked."
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "5/0"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 0
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "regional-returns-tr",
+              "5/0"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "output_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 3959,
+        "context_tokens": 299,
+        "metadata_tokens": 10,
+        "content_tokens": 210,
+        "truncated": false,
+        "unique_source_count": 2,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "IMPROVED",
+    "fact_coverage": {
+      "a": null,
+      "b": 0.0
+    },
+    "context_token_ratio": 1.07168458781362,
+    "latency_ratio": 0.34956604839958866
+  }
+]

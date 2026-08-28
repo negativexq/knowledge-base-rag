@@ -1,0 +1,16 @@
+{
+  "primary_root_cause": "OUTPUT_LENGTH_PATHOLOGY",
+  "secondary_root_cause": "CONSTRAINED_DECODING_TAIL_LATENCY",
+  "confidence": "SUPPORTED",
+  "evidence": [
+    "Both historical timeouts were pre-header at 180s with server-side decoding in progress.",
+    "The timeout query had only 14 support IDs and a 467-byte enum, below successful-batch maxima.",
+    "Full enum plus num_predict=1024 completed both historical timeout pairs; the original dynamic enum without a bound did not.",
+    "Streaming full-enum diagnostic received headers immediately but emitted 2078 lines/approximately 262KB, demonstrating non-terminating output behavior."
+  ],
+  "not_supported": [
+    "OLLAMA_SERVER_PROCESS_STALL",
+    "METAL_MEMORY_FAILURE",
+    "retrieval/reranker failure"
+  ]
+}

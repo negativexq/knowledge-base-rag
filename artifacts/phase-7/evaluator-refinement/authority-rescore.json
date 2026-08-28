@@ -1,0 +1,96 @@
+[
+  {
+    "query_id": "version-01-0",
+    "fact_score": {
+      "status": "PARTIALLY_CORRECT",
+      "required_fact_ids": [
+        "fact_1"
+      ],
+      "required_fact_count": 1,
+      "matched_fact_ids": [
+        "fact_1"
+      ],
+      "missing_fact_ids": [],
+      "fact_coverage": 1.0,
+      "matches": [
+        {
+          "matched": true,
+          "reason": "duration",
+          "expected": [
+            14.0,
+            "day"
+          ],
+          "answer": [
+            14.0,
+            "day"
+          ]
+        }
+      ],
+      "expected_components": [
+        "14 calendar days from delivery"
+      ],
+      "flags": [
+        "MIXED_AUTHORITY"
+      ],
+      "observable": true
+    },
+    "gold_sources": [
+      "refund-policy-2026"
+    ],
+    "top5_sources": [
+      "long-policy-tr",
+      "refund-policy-2026",
+      "refund-policy-2025",
+      "long-policy-tr",
+      "standard-returns-2026"
+    ],
+    "stale_material_used": true,
+    "mixed_authority": true
+  },
+  {
+    "query_id": "version-01-1",
+    "fact_score": {
+      "status": "FULLY_CORRECT_COMPLETE",
+      "required_fact_ids": [
+        "fact_1"
+      ],
+      "required_fact_count": 1,
+      "matched_fact_ids": [
+        "fact_1"
+      ],
+      "missing_fact_ids": [],
+      "fact_coverage": 1.0,
+      "matches": [
+        {
+          "matched": true,
+          "reason": "duration",
+          "expected": [
+            14.0,
+            "day"
+          ],
+          "answer": [
+            14.0,
+            "day"
+          ]
+        }
+      ],
+      "expected_components": [
+        "14 calendar days from delivery"
+      ],
+      "flags": [],
+      "observable": true
+    },
+    "gold_sources": [
+      "refund-policy-2026"
+    ],
+    "top5_sources": [
+      "long-policy-tr",
+      "refund-policy-2026",
+      "shipping-and-delivery",
+      "refund-policy-2025",
+      "long-policy-tr"
+    ],
+    "stale_material_used": false,
+    "mixed_authority": false
+  }
+]

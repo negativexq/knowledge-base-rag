@@ -1,0 +1,14 @@
+{
+  "source": "ollama ps/list",
+  "model": "qwen3.5:4b",
+  "model_id": "2a654d98e6fb",
+  "size": "3.1 GB",
+  "processor": "100% GPU",
+  "context": 4096,
+  "available_exact_model": true,
+  "other_model_branches_observed_but_not_used": [
+    "qwen3.5:9b",
+    "qwen2.5:7b-instruct"
+  ],
+  "captured_without_generation": true
+}

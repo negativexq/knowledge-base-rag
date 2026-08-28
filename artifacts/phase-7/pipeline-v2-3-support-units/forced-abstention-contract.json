@@ -1,0 +1,6 @@
+{
+  "model_abstain_true": "final abstain",
+  "one_or_more_valid_parts": "render surviving parts",
+  "reason_code": "NO_VALID_SUPPORT_BACKED_CLAIMS",
+  "zero_valid_parts": "final abstain"
+}

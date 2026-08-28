@@ -223,7 +223,7 @@ cp .env.example .env
 
 # Ollama runs natively on the host.
 ollama pull qwen3-embedding:4b
-ollama pull qwen3:4b
+ollama pull qwen3.5:4b
 
 # Qdrant, Jaeger, and the FastAPI service.
 docker compose up -d --build
@@ -255,7 +255,7 @@ The most important server-owned settings are:
 | Retrieval | Qdrant `kb_active`, BM25 sparse, RRF |
 | Reranking | `DEV_FAST`: `15 → 5`; global/reference: `20 → 5`, `BAAI/bge-reranker-v2-m3` |
 | Chunking | `CHUNKING_MODE=baseline`, legacy 500/50 production baseline |
-| Generation | `DEV_FAST`: Ollama `qwen3:4b`, `think=false` |
+| Generation | `DEV_FAST`: Ollama `qwen3.5:4b`, `think=false` |
 | Prompt/security | `ACTIVE_PROMPT_VERSION=v3`, `SECURITY_VALIDATION_MODE=strict` |
 | Auth/CORS | `APP_ENV=development`, `AUTH_ENABLED=true`, explicit `CORS_ORIGINS` allow-list |
 
@@ -319,6 +319,44 @@ artifacts/    Machine-readable benchmark and evaluation evidence
   fingerprinting, activation, and rollback.
 - [Architecture decisions](docs/adr/README.md) — focused design records.
 - [Engineering history](docs/PLANNING.md) — development log and roadmap.
+
+## Phase 7 closure
+
+Phase 7 corrected the original source-level evidence metric: source presence
+was not treated as fact presence. Fact-level annotations showed that BGE Top-5
+could omit a fact-bearing passage even when the source was present, while the
+section-aware evidence representation restored the authored facts with modest
+context growth. Pipeline v2 then moved safety to deterministic
+evidence-backed validation; its exact-quote binding remained brittle.
+
+Pipeline v2.3 replaced copied quotes with support-unit IDs. Its initial paired
+result looked mixed, but the final integrity audit found asymmetric execution
+settings (`num_predict` was unset for historical V2.2 and 1024 for V2.3).
+Under corrected symmetric execution, the evaluated V2.3 implementation was
+not adopted: it produced no correctly attributed visible answers in the
+corrected 40-run holdout and had higher false-abstention and latency. The
+debug-set reproduction step was not run, so this does not disprove the
+support-unit contract itself or resolve implementation-versus-contract
+causality. No holdout-driven fix or additional architecture experiment was
+opened.
+
+The selected closure candidate is the corrected symmetric
+`pipeline_v2_2_evidence_backed` configuration. Citation identity is
+deterministic and tenant ACLs remain enforced, but semantic claim-to-evidence
+alignment is not guaranteed: on the corrected holdout V2.2 had 15/40 correctly
+attributed and 10/40 misattributed visible answers (40% of the
+attributed/misattributed set).
+
+The development split contained 12 multi-document queries. After the initial
+eight holdout queries and three debug queries, only one eligible unseen query
+remained, so the preregistered +8 extension was impossible without violating
+the split policy. Calibration and frozen test were untouched.
+
+Operationally, a stale Ollama llama-server runner state caused requests to
+stall; model unload plus a controlled service restart restored inference
+health. Constrained structured generation also showed output-length pathology
+and severe V2.3 tail latency; bounding generation with `num_predict=1024`
+stabilized execution without changing retrieval.
 
 ## Current limitations
 

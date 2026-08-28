@@ -1,0 +1,732 @@
+[
+  {
+    "query_id": "hard-policy-language",
+    "a": {
+      "query_id": "hard-policy-language",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "For a Turkish regional return, the decision is controlled by evaluating the delivery date, customer location, product nature, and order channel together. This information is recorded in the case record alongside any cancellation right from public policy advantages that may apply separately [s.filesystem:returns-manual-tr/6/0]. If the regional scope remains uncertain after this assessment, it is escalated to either a Compliant or Regional Policy owner for resolution, as noted in records indicating the handling of unclear statutory scopes and case recording requirements relevant to Turkey's specific context [s.filesystem:regional-returns-tr/8/0].",
+      "fact_score": {
+        "expected_components": [
+          "The Turkish regional guide, with the order and contract context."
+        ],
+        "fact_coverage": 0.0,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [
+          {
+            "matched": false,
+            "reason": "partial_authored_overlap"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "observable": true,
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "PARTIALLY_CORRECT"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "returns-manual-tr",
+            "6/0"
+          ],
+          "identity_valid": true,
+          "support_status": "RELATED_BUT_INSUFFICIENT",
+          "syntax_valid": true
+        },
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "regional-returns-tr",
+            "8/0"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 1,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 3937,
+        "context_tokens": 269,
+        "input_chunk_ids": [
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "869acbf6-0993-5dda-ba4d-87c54bd1c674",
+          "4a997ce7-dedb-53cb-893d-52ff6dad36b6",
+          "16b0d045-0daf-535e-9df6-2af7c67a3fa3"
+        ],
+        "output_chunk_ids": [
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "869acbf6-0993-5dda-ba4d-87c54bd1c674",
+          "4a997ce7-dedb-53cb-893d-52ff6dad36b6",
+          "16b0d045-0daf-535e-9df6-2af7c67a3fa3"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 18358.628
+    },
+    "b": {
+      "query_id": "hard-policy-language",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 38091.582,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "For a Turkish regional return:\n- The **Returns Operations Manual** states that for Turkey, the delivery date, customer location, product type, and order channel are evaluated together (Source Block 1). It further notes that if there is uncertain scope, it passes to either the Compliance or Regional Policy owner ([s.filesystem:returns-manual-tr/6/0]).\n- The **Regional Returns — Turkey** document also records delivery date, order channel, customization status, activation information, requested solution, and used resources in case data (Source Block 2). It specifies that if regional scope is uncertain, it escalates to either the Compliance or Regional Policy owner ([s.filesystem:regional-returns-tr/8/0]).\n- Additionally, **Enterprise Contract Guide** indicates that while enterprise orders may have a special return period clause identifying order/product scope, statutory requirements are assessed based on transaction jurisdiction. In cases of overlapping rules involving Contract Operations and the regional policy owner, support does not automatically choose the more generous rule ([s.filesystem:enterprise-contract-guide/9/0]).\n- Finally, under **Regional Returns — European Union**, evidence such as order confirmation, delivery event, product condition, customer request, and jurisdictional rationale must be kept. Uncertain statutory scope is escalated to the regional policy owner, with related references pointing back to both Enterprise Contract Guide and Returns Operations Manual ([s.filesystem:regional-returns-eu/8/0]). Public policies serve only as context until contract scope is established via an enterprise agreement or amendment verified by Contract Operations ([s.filesystem:enterprise-contract-guide/9/0], [s.filesystem:regional-returns-eu/7/0]).\n\nIn summary, decisions for Turkish regional returns are influenced by factors including delivery date and customer location per the Returns Operations Manual (source 1), order specifics like customization status in Regional Returns — Turkey document (source 2), enterprise contract terms if applicable as outlined in Enterprise Contract Guide (source 3 & source 5) ,and jurisdictional rationales requiring escalation when scopes are uncertain according to regional policy owners under both EU context and Turkish local scope guidelines documented across sources.",
+      "validated_output": "For a Turkish regional return:\n- The **Returns Operations Manual** states that for Turkey, the delivery date, customer location, product type, and order channel are evaluated together (Source Block 1). It further notes that if there is uncertain scope, it passes to either the Compliance or Regional Policy owner ([s.filesystem:returns-manual-tr/6/0]).\n- The **Regional Returns — Turkey** document also records delivery date, order channel, customization status, activation information, requested solution, and used resources in case data (Source Block 2). It specifies that if regional scope is uncertain, it escalates to either the Compliance or Regional Policy owner ([s.filesystem:regional-returns-tr/8/0]).\n- Additionally, **Enterprise Contract Guide** indicates that while enterprise orders may have a special return period clause identifying order/product scope, statutory requirements are assessed based on transaction jurisdiction. In cases of overlapping rules involving Contract Operations and the regional policy owner, support does not automatically choose the more generous rule ([s.filesystem:enterprise-contract-guide/9/0]).\n- Finally, under **Regional Returns — European Union**, evidence such as order confirmation, delivery event, product condition, customer request, and jurisdictional rationale must be kept. Uncertain statutory scope is escalated to the regional policy owner, with related references pointing back to both Enterprise Contract Guide and Returns Operations Manual ([s.filesystem:regional-returns-eu/8/0]). Public policies serve only as context until contract scope is established via an enterprise agreement or amendment verified by Contract Operations ([s.filesystem:enterprise-contract-guide/9/0], [s.filesystem:regional-returns-eu/7/0]).\n\nIn summary, decisions for Turkish regional returns are influenced by factors including delivery date and customer location per the Returns Operations Manual (source 1), order specifics like customization status in Regional Returns — Turkey document (source 2), enterprise contract terms if applicable as outlined in Enterprise Contract Guide (source 3 & source 5) ,and jurisdictional rationales requiring escalation when scopes are uncertain according to regional policy owners under both EU context and Turkish local scope guidelines documented across sources.",
+      "user_visible_output": "For a Turkish regional return:\n- The **Returns Operations Manual** states that for Turkey, the delivery date, customer location, product type, and order channel are evaluated together (Source Block 1). It further notes that if there is uncertain scope, it passes to either the Compliance or Regional Policy owner ([s.filesystem:returns-manual-tr/6/0]).\n- The **Regional Returns — Turkey** document also records delivery date, order channel, customization status, activation information, requested solution, and used resources in case data (Source Block 2). It specifies that if regional scope is uncertain, it escalates to either the Compliance or Regional Policy owner ([s.filesystem:regional-returns-tr/8/0]).\n- Additionally, **Enterprise Contract Guide** indicates that while enterprise orders may have a special return period clause identifying order/product scope, statutory requirements are assessed based on transaction jurisdiction. In cases of overlapping rules involving Contract Operations and the regional policy owner, support does not automatically choose the more generous rule ([s.filesystem:enterprise-contract-guide/9/0]).\n- Finally, under **Regional Returns — European Union**, evidence such as order confirmation, delivery event, product condition, customer request, and jurisdictional rationale must be kept. Uncertain statutory scope is escalated to the regional policy owner, with related references pointing back to both Enterprise Contract Guide and Returns Operations Manual ([s.filesystem:regional-returns-eu/8/0]). Public policies serve only as context until contract scope is established via an enterprise agreement or amendment verified by Contract Operations ([s.filesystem:enterprise-contract-guide/9/0], [s.filesystem:regional-returns-eu/7/0]).\n\nIn summary, decisions for Turkish regional returns are influenced by factors including delivery date and customer location per the Returns Operations Manual (source 1), order specifics like customization status in Regional Returns — Turkey document (source 2), enterprise contract terms if applicable as outlined in Enterprise Contract Guide (source 3 & source 5) ,and jurisdictional rationales requiring escalation when scopes are uncertain according to regional policy owners under both EU context and Turkish local scope guidelines documented across sources.",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [
+          "fact_1"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "explicit_authored_aliases"
+          }
+        ],
+        "expected_components": [
+          "The Turkish regional guide, with the order and contract context."
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "returns-manual-tr",
+            "6/0"
+          ],
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "8/0"
+          ],
+          [
+            "filesystem",
+            "enterprise-contract-guide",
+            "9/0"
+          ],
+          [
+            "filesystem",
+            "regional-returns-eu",
+            "8/0"
+          ],
+          [
+            "filesystem",
+            "enterprise-contract-guide",
+            "9/0"
+          ],
+          [
+            "filesystem",
+            "regional-returns-eu",
+            "7/0"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 5
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "returns-manual-tr",
+              "6/0"
+            ],
+            [
+              "filesystem",
+              "regional-returns-tr",
+              "8/0"
+            ],
+            [
+              "filesystem",
+              "enterprise-contract-guide",
+              "9/0"
+            ],
+            [
+              "filesystem",
+              "regional-returns-eu",
+              "8/0"
+            ],
+            [
+              "filesystem",
+              "enterprise-contract-guide",
+              "9/0"
+            ],
+            [
+              "filesystem",
+              "regional-returns-eu",
+              "7/0"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "869acbf6-0993-5dda-ba4d-87c54bd1c674",
+          "4a997ce7-dedb-53cb-893d-52ff6dad36b6",
+          "16b0d045-0daf-535e-9df6-2af7c67a3fa3"
+        ],
+        "output_chunk_ids": [
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+          "869acbf6-0993-5dda-ba4d-87c54bd1c674",
+          "4a997ce7-dedb-53cb-893d-52ff6dad36b6",
+          "16b0d045-0daf-535e-9df6-2af7c67a3fa3"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 3944,
+        "context_tokens": 289,
+        "metadata_tokens": 10,
+        "content_tokens": 200,
+        "truncated": false,
+        "unique_source_count": 4,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "IMPROVED",
+    "fact_coverage": {
+      "a": 0.0,
+      "b": 1.0
+    },
+    "context_token_ratio": 1.0743494423791822,
+    "latency_ratio": 2.0748599514081336
+  },
+  {
+    "query_id": "hard-order-channel",
+    "a": {
+      "query_id": "hard-order-channel",
+      "category": "hard_answerable",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": false,
+      "answer": "",
+      "fact_score": {
+        "fact_coverage": null,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [],
+        "missing_fact_ids": [],
+        "observable": false,
+        "required_fact_count": 1,
+        "required_fact_ids": [],
+        "status": "UNOBSERVABLE"
+      },
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "citation_identity_valid": false,
+      "citation_authorized": false,
+      "citation_completeness": 0.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 4,
+        "duplicate_count": 0,
+        "context_chars": 5766,
+        "context_tokens": 501,
+        "input_chunk_ids": [
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+          "c0dd408e-b4c6-5544-884a-6067d838c80d",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+        ],
+        "output_chunk_ids": [
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+          "c0dd408e-b4c6-5544-884a-6067d838c80d",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+        ],
+        "gold_source_ranks": [
+          2
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 22953.61
+    },
+    "b": {
+      "query_id": "hard-order-channel",
+      "category": "hard_answerable",
+      "language_pair": "tr->en",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 47158.592,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "İade süresi sorusunda \"order\" kanalı ve \"plan\" alanının ayrı tutulmasının nedeni, farklı plan ve pazar yeri siparişi ile ilişkili durumların birlikte değerlendirilmesi durumunda her iki faktörün de sonuçları belirlemesi yönündeki belirsizliği önlemektedir. Bu ayrım sayesinde görevli öncelikle olayı tanımlar ve ardından yürürlükteki en spesifik kaynağı seçer; genel bir \"iade süresi\" söylemi kullanılmaz [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası].\n\nEğer müşteri aynı anda Premium plan avantajından söz ederse, görevli kanal kuralını ve plan kuralını ayrı ayrı açıklar; bu durum destek belirsizliğini azaltmak için önemlidir [s.filesystem:long-policy-tr/Negativex Bölgesel Operasyon ve Müşteri Politikası]. Ayrıca premium hesap bilgisi tek başına yeterli kanıt olamaz; pazar yeri kaydı bulunmadığı takdirde görevli doğrudan bir süre sözü veremez, bunun yerine ilgili kanalın vaka numarasını talep etmelidir [s.filesystem:marketplace-returns/Pazar Yeri Siparişleri için İade Politikası].\n\nBu yaklaşım, özel kurallar (örneğin pazar yedi işlemlerinin 7 günlük süresi) ve genel plan kuralları arasındaki hiyerarşik ilişkileri korurken, müşteriyi yanlış bir iade sürecine yönlendirmeyi engeller. Plan badge'i tek başına politika seçimi için yeterli değildir; sipariş pazar yerinden yapılmışsa Pazar Yeri İadeleri prosedürü uygulanır ve bu süreç kendi vaka kanalıyla yönetilir [s.filesystem:premium-returns-2026/Premium Returns — 2026].",
+      "validated_output": "",
+      "user_visible_output": "",
+      "validator_pass": false,
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "fact_score": {
+        "status": "INCORRECT",
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "matched_fact_ids": [],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "fact_coverage": 0.0,
+        "matches": [
+          {
+            "matched": false,
+            "reason": "no_safe_match"
+          }
+        ],
+        "expected_components": [
+          "Because marketplace and direct-sale rules differ even for similar plans."
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+          ],
+          [
+            "filesystem",
+            "long-policy-tr",
+            "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+          ],
+          [
+            "filesystem",
+            "marketplace-returns",
+            "Pazar Yeri Siparişleri için İade Politikası"
+          ],
+          [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ]
+        ],
+        "unknown_or_unauthorized": [
+          [
+            "filesystem",
+            "marketplace-returns",
+            "Pazar Yeri Siparişleri için İade Politikası"
+          ],
+          [
+            "filesystem",
+            "premium-returns-2026",
+            "Premium Returns — 2026"
+          ]
+        ],
+        "identity_valid": false,
+        "authorized": false,
+        "source_alignment_failures": 0,
+        "support_status": "UNOBSERVABLE",
+        "source_alignment_review_required": 4
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": false,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "long-policy-tr",
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+            ],
+            [
+              "filesystem",
+              "long-policy-tr",
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+            ],
+            [
+              "filesystem",
+              "marketplace-returns",
+              "Pazar Yeri Siparişleri için İade Politikası"
+            ],
+            [
+              "filesystem",
+              "premium-returns-2026",
+              "Premium Returns — 2026"
+            ]
+          ],
+          "ungrounded_citations": [
+            [
+              "filesystem",
+              "marketplace-returns",
+              "Pazar Yeri Siparişleri için İade Politikası"
+            ],
+            [
+              "filesystem",
+              "premium-returns-2026",
+              "Premium Returns — 2026"
+            ]
+          ]
+        },
+        {
+          "type": "security_validation",
+          "passed": false,
+          "violations": [
+            "unauthorized_citation"
+          ],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        },
+        {
+          "type": "error",
+          "message": "The answer was withheld because output policy validation failed."
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+          "c0dd408e-b4c6-5544-884a-6067d838c80d",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+        ],
+        "output_chunk_ids": [
+          "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+          "1b50ae39-8364-5172-a719-f2090efce26e",
+          "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+          "c0dd408e-b4c6-5544-884a-6067d838c80d",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 5534,
+        "context_tokens": 493,
+        "metadata_tokens": 94,
+        "content_tokens": 320,
+        "truncated": false,
+        "unique_source_count": 4,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "IMPROVED",
+    "fact_coverage": {
+      "a": null,
+      "b": 0.0
+    },
+    "context_token_ratio": 0.9840319361277445,
+    "latency_ratio": 2.054517437562109
+  },
+  {
+    "query_id": "hard-annual-cancel",
+    "a": {
+      "query_id": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 0,
+      "raw_candidate_observable": true,
+      "answer": "No, cancelling after the charge has already been processed does not allow a customer to avoid the next annual renewal. According to policy **[s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası]** (translated): \"If you want to prevent the creation of the renewal fee, your cancellation request must be received at least 48 hours before the renewal. A cancellation does not shorten the current paid period; access continues until the end of that period.\"",
+      "fact_score": {
+        "expected_components": [
+          "Cancellation must occur at least 48 hours before renewal",
+          "it does not reverse an already-paid period."
+        ],
+        "fact_coverage": 1.0,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "answer": [
+              48.0,
+              "hour"
+            ],
+            "expected": [
+              48.0,
+              "hour"
+            ],
+            "matched": true,
+            "reason": "duration"
+          },
+          {
+            "matched": true,
+            "reason": "authored_cross_lingual_alias"
+          }
+        ],
+        "missing_fact_ids": [],
+        "observable": true,
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "FULLY_CORRECT_COMPLETE"
+      },
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "citations": [
+        {
+          "authorized": true,
+          "citation_id": [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ],
+          "identity_valid": true,
+          "support_status": "SUPPORTED",
+          "syntax_valid": true
+        }
+      ],
+      "citation_identity_valid": true,
+      "citation_authorized": true,
+      "citation_completeness": 1.0,
+      "citation_source_alignment_failures": 0,
+      "context": {
+        "chunk_count": 5,
+        "unique_source_count": 3,
+        "duplicate_count": 0,
+        "context_chars": 5919,
+        "context_tokens": 509,
+        "input_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70"
+        ],
+        "output_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70"
+        ],
+        "gold_source_ranks": [
+          1,
+          4
+        ],
+        "truncated": false
+      },
+      "generation_latency_ms": 11915.84
+    },
+    "b": {
+      "query_id": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "language_pair": "en->tr",
+      "answerability": "answerable",
+      "gold_present": true,
+      "all_required_present": true,
+      "generation_calls": 1,
+      "provider_status": "COMPLETED",
+      "provider_error": null,
+      "generation_latency_ms": 7352.203,
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "I could not find this in the document. The provided reference data does not contain information regarding avoiding a renewal by cancelling after a charge has already been processed, although it mentions that cancellation requests must be received at least 48 hours before renewal to prevent charges from forming [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası].",
+      "validated_output": "I could not find this in the document. The provided reference data does not contain information regarding avoiding a renewal by cancelling after a charge has already been processed, although it mentions that cancellation requests must be received at least 48 hours before renewal to prevent charges from forming [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası].",
+      "user_visible_output": "I could not find this in the document. The provided reference data does not contain information regarding avoiding a renewal by cancelling after a charge has already been processed, although it mentions that cancellation requests must be received at least 48 hours before renewal to prevent charges from forming [s.filesystem:subscription-billing/Abonelik ve Faturalandırma İşletim Politikası].",
+      "validator_pass": true,
+      "validator_failure_codes": [],
+      "fact_score": {
+        "status": "FULLY_CORRECT_COMPLETE",
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "required_fact_count": 2,
+        "matched_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "missing_fact_ids": [],
+        "fact_coverage": 1.0,
+        "matches": [
+          {
+            "matched": true,
+            "reason": "duration",
+            "expected": [
+              48.0,
+              "hour"
+            ],
+            "answer": [
+              48.0,
+              "hour"
+            ]
+          },
+          {
+            "matched": true,
+            "reason": "authored_cross_lingual_alias"
+          }
+        ],
+        "expected_components": [
+          "Cancellation must occur at least 48 hours before renewal",
+          "it does not reverse an already-paid period."
+        ],
+        "flags": []
+      },
+      "citations": {
+        "found": [
+          [
+            "filesystem",
+            "subscription-billing",
+            "Abonelik ve Faturalandırma İşletim Politikası"
+          ]
+        ],
+        "unknown_or_unauthorized": [],
+        "identity_valid": true,
+        "authorized": true,
+        "source_alignment_failures": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "source_alignment_review_required": 0
+      },
+      "events": [
+        {
+          "type": "metadata",
+          "prompt_version": "v3",
+          "trace_id": "00000000000000000000000000000000",
+          "untrusted_context_enabled": true,
+          "security_validation_mode": "strict"
+        },
+        {
+          "type": "grounding",
+          "grounded": true,
+          "has_citations": true,
+          "citations_found": [
+            [
+              "filesystem",
+              "subscription-billing",
+              "Abonelik ve Faturalandırma İşletim Politikası"
+            ]
+          ],
+          "ungrounded_citations": []
+        },
+        {
+          "type": "security_validation",
+          "passed": true,
+          "violations": [],
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false
+        }
+      ],
+      "context_builder": {
+        "input_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70"
+        ],
+        "output_chunk_ids": [
+          "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+          "9480a8e7-7666-576d-98df-4a6aea426780",
+          "9542a73b-1a30-54dd-999c-bff89dc70f59",
+          "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+          "deccdc7b-3c7d-5020-9d65-1a08b8e7ca70"
+        ],
+        "removed_chunk_ids": [],
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "ordering_changes": 0,
+        "context_chars": 5629,
+        "context_tokens": 497,
+        "metadata_tokens": 106,
+        "content_tokens": 312,
+        "truncated": false,
+        "unique_source_count": 3,
+        "chunk_count": 5
+      }
+    },
+    "outcome": "UNCHANGED",
+    "fact_coverage": {
+      "a": 1.0,
+      "b": 1.0
+    },
+    "context_token_ratio": 0.9764243614931237,
+    "latency_ratio": 0.6170108863495986
+  }
+]

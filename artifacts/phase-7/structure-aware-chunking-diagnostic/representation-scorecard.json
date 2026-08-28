@@ -1,0 +1,65 @@
+{
+  "scorecard": [
+    {
+      "representation": "CURRENT_CHUNK",
+      "fact_passage_recall": 0.7142857142857143,
+      "all_required_facts_present_queries": 1,
+      "context_tokens_per_query": [
+        538,
+        522,
+        299
+      ],
+      "context_tokens_p50": 522,
+      "context_tokens_max": 538,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 30,
+      "citation_traceability": "PRESERVED"
+    },
+    {
+      "representation": "PARENT_SECTION",
+      "fact_passage_recall": 1.0,
+      "all_required_facts_present_queries": 3,
+      "context_tokens_per_query": [
+        5432,
+        2910,
+        725
+      ],
+      "context_tokens_p50": 2910,
+      "context_tokens_max": 5432,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 342,
+      "citation_traceability": "PRESERVED"
+    },
+    {
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "fact_passage_recall": 0.7142857142857143,
+      "all_required_facts_present_queries": 1,
+      "context_tokens_per_query": [
+        538,
+        522,
+        299
+      ],
+      "context_tokens_p50": 522,
+      "context_tokens_max": 538,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 30,
+      "citation_traceability": "PRESERVED"
+    },
+    {
+      "representation": "SECTION_AWARE_MERGED",
+      "fact_passage_recall": 1.0,
+      "all_required_facts_present_queries": 3,
+      "context_tokens_per_query": [
+        626,
+        654,
+        486
+      ],
+      "context_tokens_p50": 626,
+      "context_tokens_max": 654,
+      "duplicate_blocks": 0,
+      "irrelevant_paragraphs": 54,
+      "citation_traceability": "PRESERVED"
+    }
+  ],
+  "no_opaque_combined_score": true
+}

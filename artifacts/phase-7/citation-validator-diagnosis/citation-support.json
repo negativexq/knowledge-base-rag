@@ -1,0 +1,170 @@
+{
+  "citation_occurrence_support_counts": {
+    "SUPPORTED": 26,
+    "RELATED_BUT_INSUFFICIENT": 16,
+    "UNKNOWN_ID": 1
+  },
+  "definitely_supported_occurrences": 26,
+  "review_required_occurrences": 17,
+  "definitely_supported_records": 7,
+  "record_denominator": 22,
+  "records": [
+    {
+      "query_id": "cross-00-1",
+      "citation_count": 1,
+      "support_status_counts": {
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "cross-01-0",
+      "citation_count": 4,
+      "support_status_counts": {
+        "SUPPORTED": 1,
+        "RELATED_BUT_INSUFFICIENT": 3
+      }
+    },
+    {
+      "query_id": "cross-06-0",
+      "citation_count": 2,
+      "support_status_counts": {
+        "SUPPORTED": 1,
+        "UNKNOWN_ID": 1
+      }
+    },
+    {
+      "query_id": "cross-06-1",
+      "citation_count": 1,
+      "support_status_counts": {
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "cross-07-0",
+      "citation_count": 1,
+      "support_status_counts": {
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "citation_count": 1,
+      "support_status_counts": {
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "hard-api-private",
+      "citation_count": 3,
+      "support_status_counts": {
+        "SUPPORTED": 1,
+        "RELATED_BUT_INSUFFICIENT": 2
+      }
+    },
+    {
+      "query_id": "hard-api-version",
+      "citation_count": 1,
+      "support_status_counts": {
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "hard-order-channel",
+      "citation_count": 0,
+      "support_status_counts": {}
+    },
+    {
+      "query_id": "hard-policy-language",
+      "citation_count": 2,
+      "support_status_counts": {
+        "RELATED_BUT_INSUFFICIENT": 1,
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "injection-03-0",
+      "citation_count": 1,
+      "support_status_counts": {
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "injection-03-1",
+      "citation_count": 1,
+      "support_status_counts": {
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "multi-00-1",
+      "citation_count": 8,
+      "support_status_counts": {
+        "SUPPORTED": 7,
+        "RELATED_BUT_INSUFFICIENT": 1
+      }
+    },
+    {
+      "query_id": "multi-00-3",
+      "citation_count": 5,
+      "support_status_counts": {
+        "SUPPORTED": 3,
+        "RELATED_BUT_INSUFFICIENT": 2
+      }
+    },
+    {
+      "query_id": "multi-03-0",
+      "citation_count": 0,
+      "support_status_counts": {}
+    },
+    {
+      "query_id": "native-00-0",
+      "citation_count": 0,
+      "support_status_counts": {}
+    },
+    {
+      "query_id": "native-00-1",
+      "citation_count": 0,
+      "support_status_counts": {}
+    },
+    {
+      "query_id": "native-00-2",
+      "citation_count": 2,
+      "support_status_counts": {
+        "RELATED_BUT_INSUFFICIENT": 1,
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "native-00-3",
+      "citation_count": 2,
+      "support_status_counts": {
+        "SUPPORTED": 1,
+        "RELATED_BUT_INSUFFICIENT": 1
+      }
+    },
+    {
+      "query_id": "native-01-0",
+      "citation_count": 2,
+      "support_status_counts": {
+        "RELATED_BUT_INSUFFICIENT": 1,
+        "SUPPORTED": 1
+      }
+    },
+    {
+      "query_id": "version-01-0",
+      "citation_count": 3,
+      "support_status_counts": {
+        "RELATED_BUT_INSUFFICIENT": 3
+      }
+    },
+    {
+      "query_id": "version-01-1",
+      "citation_count": 3,
+      "support_status_counts": {
+        "SUPPORTED": 2,
+        "RELATED_BUT_INSUFFICIENT": 1
+      }
+    }
+  ],
+  "source": "Phase 7.2 deterministic/manual citation decomposition"
+}

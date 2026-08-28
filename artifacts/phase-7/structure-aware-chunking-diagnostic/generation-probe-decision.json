@@ -1,0 +1,31 @@
+{
+  "precondition": "PASS",
+  "classification": [
+    {
+      "query_id": "multi-00-1",
+      "result": "ANSWERABLE_AND_GENERATION_SUCCEEDED",
+      "content_class": "FULLY_CORRECT_COMPLETE",
+      "material_unsupported_claims": 0,
+      "source_alignment_failures": 2,
+      "reason": "Both required facts are correct; material claims use noncanonical Source Block references and validator suppresses the output."
+    },
+    {
+      "query_id": "multi-00-3",
+      "result": "ANSWERABLE_BUT_GENERATION_FAILED",
+      "content_class": "PARTIALLY_CORRECT",
+      "material_unsupported_claims": 1,
+      "source_alignment_failures": 2,
+      "reason": "Required facts appear, but the answer mixes the irrelevant Premium 30-day rule and points evidence-field claims at Closure examples."
+    },
+    {
+      "query_id": "multi-03-0",
+      "result": "ANSWERABLE_BUT_GENERATION_FAILED",
+      "content_class": "PARTIALLY_CORRECT",
+      "material_unsupported_claims": 1,
+      "source_alignment_failures": 1,
+      "reason": "The two requested source families are named, but Digital Goods Policy is conflated with the cited returns-manual source and the authored regional framework is incomplete."
+    }
+  ],
+  "generation_failure_cleanly_measurable": true,
+  "qwen35_4b_synthesizes_fact_complete_context": "PARTIAL"
+}

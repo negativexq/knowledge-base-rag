@@ -1,0 +1,94 @@
+{
+  "records": [
+    {
+      "required_fact_id": "standard_return_window_14_days",
+      "source_id": "standard-returns-2026",
+      "supporting_current_chunk_ids": [
+        "5bd2643d-4837-5733-9717-c88c37860274"
+      ],
+      "mappings": [
+        {
+          "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+          "text": "Document owner: Customer Policy Operations\nEffective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\n\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\n\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.",
+          "heading_path": [
+            "Standard Returns — 2026"
+          ],
+          "classification": "FULLY_CONTAINED"
+        }
+      ],
+      "mapping_classification": "FULLY_CONTAINED",
+      "derived_not_ground_truth": true
+    },
+    {
+      "required_fact_id": "support_return_case_fields",
+      "source_id": "support-playbook",
+      "supporting_current_chunk_ids": [
+        "b3b30141-6504-54bb-a9dc-de95e27dca22"
+      ],
+      "mappings": [
+        {
+          "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "text": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.\n\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.",
+          "heading_path": [
+            "Support Operations Playbook",
+            "5. Returns and billing routing"
+          ],
+          "classification": "FULLY_CONTAINED"
+        }
+      ],
+      "mapping_classification": "FULLY_CONTAINED",
+      "derived_not_ground_truth": true
+    },
+    {
+      "required_fact_id": "regional_withdrawal_framework_14_days",
+      "source_id": "regional-returns-tr",
+      "supporting_current_chunk_ids": [
+        "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+      ],
+      "mappings": [
+        {
+          "chunk_id": "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+          "text": "Bölgesel İadeler — Türkiye\n\n3. Genel değerlendirme\n\nBelirli istisnalar saklı kalmak üzere 14 günlük cayma çerçevesi kullanılır. Ürünün kullanılıp kullanılmadığı, siparişin hangi kanaldan geçtiği ve iade talebinin nasıl açıldığı kayda alınır. Standard, Premium ve pazar yeri kuralları tek bir plan avantajı olarak birleştirilmez.",
+          "heading_path": [],
+          "classification": "FULLY_CONTAINED"
+        }
+      ],
+      "mapping_classification": "FULLY_CONTAINED",
+      "derived_not_ground_truth": true
+    },
+    {
+      "required_fact_id": "digital_activation_boundary",
+      "source_id": "regional-returns-tr",
+      "supporting_current_chunk_ids": [
+        "f7b1d3c6-5f0f-50d5-a804-664815af4da7"
+      ],
+      "mappings": [
+        {
+          "chunk_id": "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "text": "Bölgesel İadeler — Türkiye\n\n5. Dijital içerik\n\nDijital lisansın indirilmesi ile etkinleştirilmesi farklı olaylardır. Etkinleştirme zaman damgası bulunmadan etkinleştirilmiş kabul yapılmaz. Etkinleştirilmiş lisans için Digital Goods Policy, kurumsal istisna iddiası varsa Enterprise Contract Guide ile birlikte incelenir.",
+          "heading_path": [],
+          "classification": "FULLY_CONTAINED"
+        }
+      ],
+      "mapping_classification": "FULLY_CONTAINED",
+      "derived_not_ground_truth": true
+    },
+    {
+      "required_fact_id": "joint_exception_routing",
+      "source_id": "returns-manual-tr",
+      "supporting_current_chunk_ids": [
+        "a813c829-a9db-5cee-80fc-ff7c677187a9"
+      ],
+      "mappings": [
+        {
+          "chunk_id": "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "text": "İade Operasyonları Kılavuzu\n\n11. İstisna ve onay\n\nSüresi geçmiş talepler, aktive edilmiş dijital ürünler, bölgesel istisnalar ve sözleşme iddiaları yetkili role yönlendirilir. Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir.",
+          "heading_path": [],
+          "classification": "FULLY_CONTAINED"
+        }
+      ],
+      "mapping_classification": "FULLY_CONTAINED",
+      "derived_not_ground_truth": true
+    }
+  ]
+}

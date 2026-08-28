@@ -1,0 +1,28 @@
+{
+  "bge": {
+    "fact_passage_recall": {
+      "at1": 0.14285714285714285,
+      "at3": 0.5714285714285714,
+      "at5": 0.7142857142857143
+    },
+    "all_required_facts_present": {
+      "at1": 0,
+      "at3": 0,
+      "at5": 1
+    },
+    "source_recall_at5": 1.0
+  },
+  "qwen3": {
+    "fact_passage_recall": {
+      "at1": 0.14285714285714285,
+      "at3": 0.5714285714285714,
+      "at5": 0.5714285714285714
+    },
+    "all_required_facts_present": {
+      "at1": 0,
+      "at3": 0,
+      "at5": 0
+    },
+    "source_recall_at5": 1.0
+  }
+}

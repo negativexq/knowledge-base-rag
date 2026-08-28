@@ -1,0 +1,10 @@
+{
+  "attempted": false,
+  "debug_set_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ],
+  "reason": "The audit found execution symmetry/truncation evidence, not a deterministic implementation defect.",
+  "result": "NOT_NEEDED_NO_REPRODUCIBLE_IMPLEMENTATION_DEFECT_INDICATED"
+}

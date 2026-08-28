@@ -1,0 +1,223 @@
+{
+  "preflight": {
+    "status": "PASS",
+    "artifact_identity": "PASS",
+    "query_ids": [
+      "multi-00-1",
+      "multi-00-3",
+      "multi-03-0"
+    ],
+    "serialization_round_trip": true,
+    "raw_observability_contract_present": true,
+    "checkpoint_writer_validated": true,
+    "provider_constructed": false
+  },
+  "all_preconditions_pass": false,
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "query": "Which combination explains both the standard return window and the evidence fields support must record? Include the other relevant detail.",
+      "required_source_ids": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "required_components": [
+        "14 calendar days",
+        "record plan, channel, delivery date, and remedy."
+      ],
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "original_top5_chunk_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "a429ec1b-1808-5d00-bc24-0136fec79326",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "original_top5_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "employee-handbook-en",
+        "standard-returns-2026"
+      ],
+      "source_derived_candidate_chunk_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "source_derived_candidate_positions": {
+        "standard-returns-2026": [
+          5
+        ],
+        "support-playbook": [
+          1,
+          2,
+          3
+        ]
+      },
+      "authored_gold_chunk_ids": [],
+      "oracle_context_chunk_ids": [],
+      "removed_distractor_chunk_ids": [],
+      "fact_explicit_checks": [
+        {
+          "fact_id": "fact_1",
+          "component": "14 calendar days",
+          "explicit_support": false
+        },
+        {
+          "fact_id": "fact_2",
+          "component": "record plan, channel, delivery date, and remedy.",
+          "explicit_support": true
+        }
+      ],
+      "source_level_all_required_present": true,
+      "all_required_gold_present_in_top5": false,
+      "oracle_eligible": false,
+      "precondition_failure_reasons": [
+        "NO_AUTHORED_CHUNK_LEVEL_GOLD_MAPPING",
+        "REQUIRED_FACT_NOT_EXPLICIT_IN_TOP5_SOURCE_CANDIDATES"
+      ],
+      "subset_invariant": true,
+      "planned_generation": false
+    },
+    {
+      "query_id": "multi-00-3",
+      "query": "Which combination explains both the standard return window and the evidence fields support must record? What should happen next?",
+      "required_source_ids": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "required_components": [
+        "14 calendar days",
+        "record plan, channel, delivery date, and remedy."
+      ],
+      "required_fact_ids": [
+        "fact_1",
+        "fact_2"
+      ],
+      "original_top5_chunk_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "original_top5_source_ids": [
+        "support-playbook",
+        "support-playbook",
+        "support-playbook",
+        "premium-returns-2026",
+        "standard-returns-2026"
+      ],
+      "source_derived_candidate_chunk_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "1b50ae39-8364-5172-a719-f2090efce26e"
+      ],
+      "source_derived_candidate_positions": {
+        "standard-returns-2026": [
+          5
+        ],
+        "support-playbook": [
+          1,
+          2,
+          3
+        ]
+      },
+      "authored_gold_chunk_ids": [],
+      "oracle_context_chunk_ids": [],
+      "removed_distractor_chunk_ids": [],
+      "fact_explicit_checks": [
+        {
+          "fact_id": "fact_1",
+          "component": "14 calendar days",
+          "explicit_support": false
+        },
+        {
+          "fact_id": "fact_2",
+          "component": "record plan, channel, delivery date, and remedy.",
+          "explicit_support": true
+        }
+      ],
+      "source_level_all_required_present": true,
+      "all_required_gold_present_in_top5": false,
+      "oracle_eligible": false,
+      "precondition_failure_reasons": [
+        "NO_AUTHORED_CHUNK_LEVEL_GOLD_MAPPING",
+        "REQUIRED_FACT_NOT_EXPLICIT_IN_TOP5_SOURCE_CANDIDATES"
+      ],
+      "subset_invariant": true,
+      "planned_generation": false
+    },
+    {
+      "query_id": "multi-03-0",
+      "query": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını hangi iki kaynak birlikte açıklar?",
+      "required_source_ids": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "required_components": [
+        "Regional exceptions and the activation boundary must both be checked."
+      ],
+      "required_fact_ids": [
+        "fact_1"
+      ],
+      "original_top5_chunk_ids": [
+        "a813c829-a9db-5cee-80fc-ff7c677187a9",
+        "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+        "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+        "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+        "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+      ],
+      "original_top5_source_ids": [
+        "returns-manual-tr",
+        "regional-returns-tr",
+        "returns-manual-tr",
+        "returns-manual-tr",
+        "regional-returns-tr"
+      ],
+      "source_derived_candidate_chunk_ids": [
+        "a813c829-a9db-5cee-80fc-ff7c677187a9",
+        "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+        "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+        "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+        "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+      ],
+      "source_derived_candidate_positions": {
+        "regional-returns-tr": [
+          2,
+          5
+        ],
+        "returns-manual-tr": [
+          1,
+          3,
+          4
+        ]
+      },
+      "authored_gold_chunk_ids": [],
+      "oracle_context_chunk_ids": [],
+      "removed_distractor_chunk_ids": [],
+      "fact_explicit_checks": [
+        {
+          "fact_id": "fact_1",
+          "component": "Regional exceptions and the activation boundary must both be checked.",
+          "explicit_support": null
+        }
+      ],
+      "source_level_all_required_present": true,
+      "all_required_gold_present_in_top5": false,
+      "oracle_eligible": false,
+      "precondition_failure_reasons": [
+        "NO_AUTHORED_CHUNK_LEVEL_GOLD_MAPPING",
+        "REQUIRED_FACT_SUPPORT_NOT_DETERMINISTICALLY_VERIFIABLE"
+      ],
+      "subset_invariant": true,
+      "planned_generation": false
+    }
+  ]
+}

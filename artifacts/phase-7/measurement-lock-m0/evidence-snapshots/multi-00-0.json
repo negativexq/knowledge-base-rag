@@ -1,0 +1,577 @@
+{
+  "authorized_top5": [
+    {
+      "chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "content": "A retrieval result is not automatically an authority. Resolve conflicts using context: applicable regional rule, signed enterprise term, current product policy, operational procedure, and general guidance. A superseded policy can explain a historical case but cannot be used for a later effective date.\n\nWhen two documents are both needed, record each required source and explain the join. For example, one source may establish the return window while another defines the case fields. If one source is a near miss—same plan but a different channel—keep it out of the controlling evidence list.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "8. Multi-source policy resolution"
+        ],
+        "page_number": 8,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 0.5633488297462463,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "content": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.\n\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "5. Returns and billing routing"
+        ],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.20432917773723602,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+      "content": "For a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review. For a security case, it links the security incident and avoids copying sensitive indicators into routine notes.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "26. Closure examples"
+        ],
+        "page_number": 26,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.07088662683963776,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "content": "The plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\n\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.",
+      "metadata": {
+        "document_version": "a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Premium Returns — 2026",
+          "Channel boundary"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.04588022828102112,
+      "source_id": "premium-returns-2026"
+    },
+    {
+      "chunk_id": "a429ec1b-1808-5d00-bc24-0136fec79326",
+      "content": "A campaign label does not replace the Standard or Premium return policy. The campaign code, order channel, and effective dates establish whether a price benefit applies. A pricing benefit and a return entitlement are recorded as separate decisions.\n\nIf a workspace is upgraded after delivery, the original order context remains relevant. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. Customer communication explains this with the order and plan dates.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "32. Campaigns and plan changes"
+        ],
+        "page_number": 32,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.045395005494356155,
+      "source_id": "employee-handbook-en"
+    }
+  ],
+  "candidate_top20": [
+    {
+      "chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "content": "A retrieval result is not automatically an authority. Resolve conflicts using context: applicable regional rule, signed enterprise term, current product policy, operational procedure, and general guidance. A superseded policy can explain a historical case but cannot be used for a later effective date.\n\nWhen two documents are both needed, record each required source and explain the join. For example, one source may establish the return window while another defines the case fields. If one source is a near miss—same plan but a different channel—keep it out of the controlling evidence list.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "8. Multi-source policy resolution"
+        ],
+        "page_number": 8,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 1.0,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "content": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.\n\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "5. Returns and billing routing"
+        ],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.39285713,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+      "content": "For a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review. For a security case, it links the security incident and avoids copying sensitive indicators into routine notes.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "26. Closure examples"
+        ],
+        "page_number": 26,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.33333334,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "c8dcd27c-c441-5bff-b6d7-93ecae0481a5",
+      "content": "An enterprise exception is valid only when the contract identifier, amendment number, signer or approval record, and effective date are available. The Enterprise Contract Guide explains how to interpret those fields; Contract Operations owns the authoritative agreement.\n\nA public product limit or return rule may be a useful default but cannot override a signed term in its scope. Conversely, a private tenant term must not be generalized to another customer. Agents record the tenant and contract scope in the case rather than copying a confidential clause into a broad knowledge article.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "7. Enterprise exceptions"
+        ],
+        "page_number": 7,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.33333334,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "1b50ae39-8364-5172-a719-f2090efce26e",
+      "content": "Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. If one of those fields is unknown, keep the case pending rather than quote a generic return period.\n\nRelated: Premium Returns — 2026; Marketplace Returns; Digital Goods Policy. The 2026 policy bulletin explains the change from the superseded 2025 rule.",
+      "metadata": {
+        "document_version": "eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Standard Returns — 2026",
+          "Case record"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.2909091,
+      "source_id": "standard-returns-2026"
+    },
+    {
+      "chunk_id": "a429ec1b-1808-5d00-bc24-0136fec79326",
+      "content": "A campaign label does not replace the Standard or Premium return policy. The campaign code, order channel, and effective dates establish whether a price benefit applies. A pricing benefit and a return entitlement are recorded as separate decisions.\n\nIf a workspace is upgraded after delivery, the original order context remains relevant. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. Customer communication explains this with the order and plan dates.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "32. Campaigns and plan changes"
+        ],
+        "page_number": 32,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 6,
+      "score": 0.25,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "75ac5529-0224-547c-b3df-9fffe338c484",
+      "content": "Every customer-facing commitment has a scope. An acknowledgement or response target describes when the team will communicate; it is not a promise that the underlying issue will be resolved by the same time. The Support Escalation Standard owns the numeric targets, while the Support Operations Playbook owns the triage sequence.\n\nBefore quoting a return period, an agent confirms plan, channel, product type, delivery event, and region. A Premium account does not turn a marketplace order into a direct sale. A contract exception is never inferred from a customer’s account tier.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "1. Customer commitments"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 7,
+      "score": 0.175,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "5bd2643d-4837-5733-9717-c88c37860274",
+      "content": "Document owner: Customer Policy Operations\nEffective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\n\nStandard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window.\n\nThis is the canonical direct-sale rule. Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies. A Premium subscription does not change the channel of an order.",
+      "metadata": {
+        "document_version": "eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Standard Returns — 2026"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 8,
+      "score": 0.16666667,
+      "source_id": "standard-returns-2026"
+    },
+    {
+      "chunk_id": "7f71ca40-865b-5ee5-a026-6855df81dba9",
+      "content": "Evidence is strong when it identifies the relevant object, event, scope, and source version. A keyword hit without the associated channel or date is a lead, not a decision. If two documents share a number, the operator verifies whether it describes the same metric and population.\n\nWhen a document refers to another source, follow the reference only within the authorized tenant context. Record the source actually used. Do not attach the entire document to a customer case when a page or section reference is sufficient.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "17. Evidence quality checks"
+        ],
+        "page_number": 17,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 9,
+      "score": 0.16666667,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "0fcfcec7-41fe-5175-8ea6-f95fb6b9c2a3",
+      "content": "For broad incidents, the incident commander supplies the approved update. For an individual policy case, the assigned agent explains the applicable rule and missing evidence. Messages avoid internal severity labels unless the customer communication plan calls for them, and never expose another tenant’s case or private contract term.\n\nIf the customer asks for a deadline, distinguish the next communication target from the final resolution. If a return or credit needs approval, state that review is required. If the request cannot be established from the available records, ask for the exact order, date, or contract reference rather than inventing a value.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "18. Customer-impact communications"
+        ],
+        "page_number": 18,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 10,
+      "score": 0.15263158,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "content": "Policy owner: Customer Policy Operations\nEffective: 2025-01-01 through 2026-01-14\nStatus: superseded historical policy\n\nFor direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery. The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15.\n\nThe 2026 policy bulletin records the transition. A citation for a historical case must include the delivery date and this version, not merely the current return page.",
+      "metadata": {
+        "document_version": "fab544cd16a16ce489c6baf67ddbf9c4d1b3b2f330314e7b59678e2cc1094d64",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Standard Returns — 2025 (Superseded)"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 11,
+      "score": 0.14646465,
+      "source_id": "refund-policy-2025"
+    },
+    {
+      "chunk_id": "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5",
+      "content": "Vaka kaydı, karar için gerekli alanları içerir: tenant, plan, kanal, bölge, tarih, kanıt bağlantıları, onaylayan kişi ve müşteriye gönderilen son mesaj. Parola, erişim anahtarı ve kurtarma kodu kanıta kopyalanmaz. İmha veya dışa aktarma talebi sözleşme ve güvenlik sınıflandırmasına göre değerlendirilir.\n\nBir kanıt başka bir kaynağa atıf yapıyorsa kaynak başlığı, sürüm veya yürürlük tarihi korunur. Özet, kaynakta olmayan bir istisna ekleyemez. Denetimde kararın hangi kayda dayandığı anlaşılmıyorsa vaka yeniden incelenir.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "8. Veri saklama ve kanıt"
+        ],
+        "page_number": 8,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 12,
+      "score": 0.14285715,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "content": "The plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\n\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.",
+      "metadata": {
+        "document_version": "a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Premium Returns — 2026",
+          "Channel boundary"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 13,
+      "score": 0.11111111,
+      "source_id": "premium-returns-2026"
+    },
+    {
+      "chunk_id": "b482b2a0-2b68-59d7-8236-5fd112507367",
+      "content": "Carrier and marketplace records must contain an order reference that matches the case. An unmatched screenshot is context only. The agent requests a traceable record from the partner queue and records when that request was made.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "30. Partner evidence"
+        ],
+        "page_number": 30,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 14,
+      "score": 0.083333336,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "content": "Owner: Customer Policy Operations\nPublished: 2026-01-10\nEffective: 2026-01-15\n\nThis bulletin announces the change to the direct-sale Standard-plan return window: deliveries governed by the new policy use 14 calendar days from delivery. The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.\n\nThis bulletin is a change notice, not a replacement for the canonical Standard Returns — 2026 policy. It does not alter Premium, marketplace, digital-goods, regional statutory, or signed enterprise terms. When the case is version-sensitive, cite both the effective date and the canonical policy.\n\nRelated: Standard Returns — 2026; Standard Returns — 2025 (superseded).",
+      "metadata": {
+        "document_version": "5cf8cdaae8b1c941fda218f178aafd18ab8e7474f872cffdc6198bec92285c2f",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Policy Bulletin 2026.1 — Standard Return Window"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 15,
+      "score": 0.083333336,
+      "source_id": "refund-policy-2026"
+    },
+    {
+      "chunk_id": "5ebff933-3912-54cf-9358-31c4ecce877d",
+      "content": "Document owner: Customer Support Operations\nEffective date: 2026-01-15\nAudience: Tier 1, Tier 2, incident coordinators, and support leads\n\nThis playbook describes how an operator moves a case from intake to closure. The Support Escalation Standard is authoritative for numeric acknowledgement and response targets. This document explains the operational sequence and does not silently redefine those values.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 16,
+      "score": 0.07692308,
+      "source_id": "support-playbook"
+    }
+  ],
+  "candidate_top20_ids": [
+    "27816f01-3236-59fa-ace9-3e5ff651bf91",
+    "b3b30141-6504-54bb-a9dc-de95e27dca22",
+    "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+    "c8dcd27c-c441-5bff-b6d7-93ecae0481a5",
+    "1b50ae39-8364-5172-a719-f2090efce26e",
+    "a429ec1b-1808-5d00-bc24-0136fec79326",
+    "75ac5529-0224-547c-b3df-9fffe338c484",
+    "5bd2643d-4837-5733-9717-c88c37860274",
+    "7f71ca40-865b-5ee5-a026-6855df81dba9",
+    "0fcfcec7-41fe-5175-8ea6-f95fb6b9c2a3",
+    "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+    "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5",
+    "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+    "b482b2a0-2b68-59d7-8236-5fd112507367",
+    "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+    "5ebff933-3912-54cf-9358-31c4ecce877d"
+  ],
+  "context_hash": "db654478de7c705add5872f6502e7ce12a60aa44e43796496805c29ccfa6dd1f",
+  "context_tokens": 540,
+  "evidence_blocks": [
+    {
+      "anchor_chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "chunk_id": "evidence-5484e69bfe8a560bb2648412",
+      "citation_aliases": [
+        {
+          "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "location": "Support Operations Playbook/5. Returns and billing routing",
+          "source_id": "support-playbook",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "location": "Support Operations Playbook/8. Multi-source policy resolution",
+          "source_id": "support-playbook",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "location": "Support Operations Playbook/26. Closure examples",
+          "source_id": "support-playbook",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918"
+      ],
+      "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+      "evidence_block_id": "evidence-5484e69bfe8a560bb2648412",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Support Operations Playbook",
+        "8. Multi-source policy resolution"
+      ],
+      "page_number": 8,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Support Operations Playbook",
+          "8. Multi-source policy resolution"
+        ],
+        0
+      ],
+      "source_id": "support-playbook",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.\n\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.\n\nA retrieval result is not automatically an authority. Resolve conflicts using context: applicable regional rule, signed enterprise term, current product policy, operational procedure, and general guidance. A superseded policy can explain a historical case but cannot be used for a later effective date.\n\nWhen two documents are both needed, record each required source and explain the join. For example, one source may establish the return window while another defines the case fields. If one source is a near miss—same plan but a different channel—keep it out of the controlling evidence list.\n\nFor a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review. For a security case, it links the security incident and avoids copying sensitive indicators into routine notes.",
+      "token_count": 239
+    },
+    {
+      "anchor_chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "chunk_id": "evidence-a41a91598b59026cd04a0e13",
+      "citation_aliases": [
+        {
+          "chunk_id": "81627801-791b-5379-b97c-359c2058031b",
+          "location": "Premium Returns — 2026",
+          "source_id": "premium-returns-2026",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "location": "Premium Returns — 2026/Channel boundary",
+          "source_id": "premium-returns-2026",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "81627801-791b-5379-b97c-359c2058031b",
+        "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+      ],
+      "document_version": "a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9",
+      "evidence_block_id": "evidence-a41a91598b59026cd04a0e13",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Premium Returns — 2026",
+        "Channel boundary"
+      ],
+      "page_number": 1,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Premium Returns — 2026",
+          "Channel boundary"
+        ],
+        0
+      ],
+      "source_id": "premium-returns-2026",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Owner: Customer Policy Operations\nEffective: 2026-01-15\nApplies to: Premium-plan orders purchased directly from Negativex\n\nPremium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies.\n\nThe plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\n\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.",
+      "token_count": 118
+    },
+    {
+      "anchor_chunk_id": "a429ec1b-1808-5d00-bc24-0136fec79326",
+      "chunk_id": "evidence-aab34e8c708da5410bb0e5b4",
+      "citation_aliases": [
+        {
+          "chunk_id": "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "location": "Employee and Customer Operations Handbook/32. Campaigns and plan changes",
+          "source_id": "employee-handbook-en",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "a429ec1b-1808-5d00-bc24-0136fec79326"
+      ],
+      "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+      "evidence_block_id": "evidence-aab34e8c708da5410bb0e5b4",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Employee and Customer Operations Handbook",
+        "32. Campaigns and plan changes"
+      ],
+      "page_number": 32,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Employee and Customer Operations Handbook",
+          "32. Campaigns and plan changes"
+        ],
+        0
+      ],
+      "source_id": "employee-handbook-en",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "A campaign label does not replace the Standard or Premium return policy. The campaign code, order channel, and effective dates establish whether a price benefit applies. A pricing benefit and a return entitlement are recorded as separate decisions.\n\nIf a workspace is upgraded after delivery, the original order context remains relevant. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. Customer communication explains this with the order and plan dates.",
+      "token_count": 77
+    }
+  ],
+  "metrics": {
+    "context_chars": 6662,
+    "context_tokens": 540,
+    "expanded": true,
+    "input_chunk_ids": [
+      "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+      "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "a429ec1b-1808-5d00-bc24-0136fec79326"
+    ],
+    "output_block_ids": [
+      "evidence-5484e69bfe8a560bb2648412",
+      "evidence-a41a91598b59026cd04a0e13",
+      "evidence-aab34e8c708da5410bb0e5b4"
+    ]
+  },
+  "model_visible_context": "<section_aware_evidence trust=\"untrusted\" blocks=\"3\">\n[evidence_block 1 json_chars=3066]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E1\",\"evidence_block_id\":\"evidence-5484e69bfe8a560bb2648412\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/8. Multi-source policy resolution\",\"section_key\":[\"heading\",[\"Support Operations Playbook\",\"8. Multi-source policy resolution\"],0],\"document_version\":\"700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"b3b30141-6504-54bb-a9dc-de95e27dca22\",\"27816f01-3236-59fa-ace9-3e5ff651bf91\",\"c525e9f2-2aac-53ad-adc4-ff87d6f10918\"],\"citation_aliases\":[{\"chunk_id\":\"b3b30141-6504-54bb-a9dc-de95e27dca22\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/5. Returns and billing routing\"},{\"chunk_id\":\"27816f01-3236-59fa-ace9-3e5ff651bf91\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/8. Multi-source policy resolution\"},{\"chunk_id\":\"c525e9f2-2aac-53ad-adc4-ff87d6f10918\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/26. Closure examples\"}],\"canonical_citations\":[\"[s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing]\",\"[s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]\",\"[s.filesystem:support-playbook/Support Operations Playbook/26. Closure examples]\"]},\"content\":\"Use this sequence for a return request:\\n\\n1. Identify the order channel: direct sale or marketplace.\\n2. Confirm plan and product type.\\n3. Locate delivery or activation evidence.\\n4. Check region and the policy effective on the relevant event date.\\n5. Check for a signed enterprise exception.\\n6. Record the requested remedy and required approval.\\n\\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.\\n\\nA retrieval result is not automatically an authority. Resolve conflicts using context: applicable regional rule, signed enterprise term, current product policy, operational procedure, and general guidance. A superseded policy can explain a historical case but cannot be used for a later effective date.\\n\\nWhen two documents are both needed, record each required source and explain the join. For example, one source may establish the return window while another defines the case fields. If one source is a near miss—same plan but a different channel—keep it out of the controlling evidence list.\\n\\nFor a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review. For a security case, it links the security incident and avoids copying sensitive indicators into routine notes.\"}\n[/evidence_block 1]\n[evidence_block 2 json_chars=1836]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E2\",\"evidence_block_id\":\"evidence-a41a91598b59026cd04a0e13\",\"source_type\":\"filesystem\",\"source_id\":\"premium-returns-2026\",\"location\":\"Premium Returns — 2026/Channel boundary\",\"section_key\":[\"heading\",[\"Premium Returns — 2026\",\"Channel boundary\"],0],\"document_version\":\"a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"81627801-791b-5379-b97c-359c2058031b\",\"a7c1e5ef-c917-572f-8a87-643c962b9a71\"],\"citation_aliases\":[{\"chunk_id\":\"81627801-791b-5379-b97c-359c2058031b\",\"source_type\":\"filesystem\",\"source_id\":\"premium-returns-2026\",\"location\":\"Premium Returns — 2026\"},{\"chunk_id\":\"a7c1e5ef-c917-572f-8a87-643c962b9a71\",\"source_type\":\"filesystem\",\"source_id\":\"premium-returns-2026\",\"location\":\"Premium Returns — 2026/Channel boundary\"}],\"canonical_citations\":[\"[s.filesystem:premium-returns-2026/Premium Returns — 2026]\",\"[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]\"]},\"content\":\"Owner: Customer Policy Operations\\nEffective: 2026-01-15\\nApplies to: Premium-plan orders purchased directly from Negativex\\n\\nPremium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies.\\n\\nThe plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\\n\\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.\"}\n[/evidence_block 2]\n[evidence_block 3 json_chars=1399]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E3\",\"evidence_block_id\":\"evidence-aab34e8c708da5410bb0e5b4\",\"source_type\":\"filesystem\",\"source_id\":\"employee-handbook-en\",\"location\":\"Employee and Customer Operations Handbook/32. Campaigns and plan changes\",\"section_key\":[\"heading\",[\"Employee and Customer Operations Handbook\",\"32. Campaigns and plan changes\"],0],\"document_version\":\"240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"a429ec1b-1808-5d00-bc24-0136fec79326\"],\"citation_aliases\":[{\"chunk_id\":\"a429ec1b-1808-5d00-bc24-0136fec79326\",\"source_type\":\"filesystem\",\"source_id\":\"employee-handbook-en\",\"location\":\"Employee and Customer Operations Handbook/32. Campaigns and plan changes\"}],\"canonical_citations\":[\"[s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes]\"]},\"content\":\"A campaign label does not replace the Standard or Premium return policy. The campaign code, order channel, and effective dates establish whether a price benefit applies. A pricing benefit and a return entitlement are recorded as separate decisions.\\n\\nIf a workspace is upgraded after delivery, the original order context remains relevant. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. Customer communication explains this with the order and plan dates.\"}\n[/evidence_block 3]\n</section_aware_evidence>",
+  "pipeline_identity": {
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "query_id": "multi-00-0",
+  "tenant_id": "tenant-a",
+  "top5_ids": [
+    "27816f01-3236-59fa-ace9-3e5ff651bf91",
+    "b3b30141-6504-54bb-a9dc-de95e27dca22",
+    "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+    "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+    "a429ec1b-1808-5d00-bc24-0136fec79326"
+  ]
+}

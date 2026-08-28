@@ -1,0 +1,216 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "representation": "CURRENT_CHUNK",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [
+        "standard_return_window_14_days"
+      ],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 0.5,
+      "all_required_fact_evidence_present": false
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "PARENT_SECTION",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [
+        "standard_return_window_14_days"
+      ],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 0.5,
+      "all_required_fact_evidence_present": false
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "SECTION_AWARE_MERGED",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "CURRENT_CHUNK",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [
+        "standard_return_window_14_days"
+      ],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 0.5,
+      "all_required_fact_evidence_present": false
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "PARENT_SECTION",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [
+        "standard_return_window_14_days"
+      ],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 0.5,
+      "all_required_fact_evidence_present": false
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "SECTION_AWARE_MERGED",
+      "required_sources_present": [
+        "standard-returns-2026",
+        "support-playbook"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "standard_return_window_14_days",
+        "support_return_case_fields"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "CURRENT_CHUNK",
+      "required_sources_present": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "PARENT_SECTION",
+      "required_sources_present": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "required_sources_present": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "SECTION_AWARE_MERGED",
+      "required_sources_present": [
+        "regional-returns-tr",
+        "returns-manual-tr"
+      ],
+      "missing_sources": [],
+      "present_fact_ids": [
+        "digital_activation_boundary",
+        "joint_exception_routing",
+        "regional_withdrawal_framework_14_days"
+      ],
+      "missing_fact_ids": [],
+      "source_recall_complete": true,
+      "fact_evidence_recall": 1.0,
+      "all_required_fact_evidence_present": true
+    }
+  ]
+}

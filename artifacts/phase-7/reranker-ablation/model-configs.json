@@ -1,0 +1,17 @@
+{
+  "bge": {
+    "model": "BAAI/bge-reranker-v2-m3",
+    "backend": "sentence-transformers",
+    "device": "cpu"
+  },
+  "qwen3": {
+    "model": "Qwen/Qwen3-Reranker-0.6B",
+    "backend": "sentence-transformers",
+    "device": "cpu",
+    "cache_root": "/Users/ofk/.cache/huggingface/hub/models--Qwen--Qwen3-Reranker-0.6B",
+    "snapshot": "/Users/ofk/.cache/huggingface/hub/models--Qwen--Qwen3-Reranker-0.6B/snapshots/e61197ed45024b0ed8a2d74b80b4d909f1255473",
+    "tokenizer_load": true,
+    "model_load": true,
+    "score_extraction": true
+  }
+}

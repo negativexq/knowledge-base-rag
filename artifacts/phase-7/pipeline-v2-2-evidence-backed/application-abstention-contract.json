@@ -1,0 +1,6 @@
+{
+  "model_abstain_true": "final_abstain",
+  "reason_code": "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+  "valid_parts_survive_independently": true,
+  "zero_valid_parts": "final_abstain"
+}

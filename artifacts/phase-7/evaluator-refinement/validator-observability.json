@@ -1,0 +1,11 @@
+{
+  "rejection_count": 7,
+  "failure_codes": {
+    "UNAUTHORIZED_CITATION_ID": 3,
+    "CITATION_SUPPRESSION": 4
+  },
+  "raw_candidate_observable": 29,
+  "raw_candidate_unobservable": 7,
+  "potentially_correct_but_rejected": 7,
+  "content_unassessable_rejected": 7
+}

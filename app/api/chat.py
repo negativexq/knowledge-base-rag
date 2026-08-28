@@ -40,6 +40,7 @@ class ChatRequest(BaseModel):
 # type. See app/retrieval/report.py.
 SearchFn = Callable[[str, RetrievalContext, RetrievalReport], Awaitable[list[SearchResult]]]
 StreamFn = Callable[[str, list[SearchResult]], AsyncIterator[dict]]
+EvidenceFn = Callable[[list[SearchResult], RetrievalContext], Awaitable[list[SearchResult]]]
 
 
 def _snippet(text: str) -> str:
@@ -105,6 +106,9 @@ class ChatDependencies:
     prompt_version: str = "unknown"
     security_validation_mode: SecurityValidationMode = "strict"
     semantic_evaluator: SemanticEvaluator | None = None
+    evidence_fn: EvidenceFn | None = None
+    pipeline_version: str = "pipeline_v1"
+    output_contract_version: str = "legacy"
 
 
 async def _sse_event_stream(
@@ -128,6 +132,7 @@ async def _sse_event_stream(
         report.untrusted_context_enabled = deps.prompt_version == "v3"
         report.security_validation_mode = deps.security_validation_mode
         chunks = await deps.search_fn(question, context, report)
+        anchor_chunks = chunks
         authorized_candidate_count = report.authorized_candidate_count
         if authorized_candidate_count is None:
             authorized_candidate_count = len(chunks)
@@ -189,6 +194,9 @@ async def _sse_event_stream(
                 "semantic_answerability.support_count",
                 len(sufficiency.get("supporting_chunk_ids", [])),
             )
+        if deps.evidence_fn is not None:
+            chunks = await deps.evidence_fn(anchor_chunks, context)
+            span.set_attribute("pipeline.evidence_block_count", len(chunks))
         token_counts = [chunk.payload.get("token_count") for chunk in chunks]
         report.context = {
             "retrieved_chunk_count": len(chunks),

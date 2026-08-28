@@ -1,0 +1,13 @@
+{
+  "a": {
+    "pass": 2,
+    "reject": 1
+  },
+  "b": {
+    "pass": 2,
+    "reject": 1
+  },
+  "b_failure_codes": {
+    "UNAUTHORIZED_CITATION_ID": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "checked_before_inference": true,
+  "prompt_suffix_contains_no_chain_of_thought_request": true,
+  "structures": [
+    "prompt_messages",
+    "context_builder",
+    "generation_result",
+    "jsonl"
+  ],
+  "json_round_trip": true
+}

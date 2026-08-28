@@ -1,0 +1,7 @@
+{
+  "raw_rejected_user_visible": false,
+  "security_invalid_fail_closed": true,
+  "top_level_fail_closed": true,
+  "valid_parts_survive": true,
+  "version": "claim_level_strict_v2_1"
+}

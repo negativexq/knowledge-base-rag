@@ -1,0 +1,15 @@
+{
+  "count": 8,
+  "query_ids": [
+    "multi-01-1",
+    "multi-03-1",
+    "multi-00-0",
+    "multi-01-2",
+    "multi-00-2",
+    "multi-01-3",
+    "multi-01-0",
+    "multi-03-2"
+  ],
+  "selection_rule": "holdout-selection-rule.json",
+  "unseen_against_phase7_debug": true
+}

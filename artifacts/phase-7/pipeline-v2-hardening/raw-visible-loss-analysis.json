@@ -1,0 +1,10 @@
+{
+  "historical_gold_present_raw_fully_correct": "15/22",
+  "historical_gold_present_user_visible_fully_successful": "11/22",
+  "potentially_correct_rejected": 8,
+  "raw_to_visible_loss_records": 4,
+  "validator_rejected_content_classes": {
+    "CONTENT_INCORRECT": 8,
+    "FULLY_CORRECT_COMPLETE": 8
+  }
+}

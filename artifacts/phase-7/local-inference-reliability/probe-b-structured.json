@@ -1,0 +1,28 @@
+{
+  "client_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T14:45:02.187812+00:00",
+    "connection_established_at": "2026-08-28T14:45:02.187482+00:00",
+    "context_hash": "139cfa46a9bdf0a04adef1519b454ddb6a9c4a7c1cb98ff7fb3c622023f962ba",
+    "elapsed_ms": 1530.256,
+    "first_body_byte_at": "2026-08-28T14:45:02.187567+00:00",
+    "headers_received_at": "2026-08-28T14:45:02.187482+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "request_hash": "141d0fe505069877da499666a63cb467adee41f4e13dda7b4d791160717f561b",
+    "request_id": "4303df1d11d948d0a3fbd87f67d4ce0d",
+    "request_started_at": "2026-08-28T14:45:00.657799+00:00",
+    "response_bytes": 320,
+    "schema_hash": "b9c62f6f1b3d843482109e48e44e89ad4ebfff58c59664200ce3200faddcb6e4",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "elapsed_ms": 1530.346,
+  "model": "qwen3.5:4b",
+  "probe": "B",
+  "response": "{\n  \"answer\": \"OK\"\n}",
+  "result": "PASS"
+}

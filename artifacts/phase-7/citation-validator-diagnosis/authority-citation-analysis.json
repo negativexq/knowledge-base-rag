@@ -1,0 +1,187 @@
+{
+  "records": [
+    {
+      "query_id": "version-01-0",
+      "expected_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top5_sources": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "refund-policy-2025",
+        "long-policy-tr",
+        "standard-returns-2026"
+      ],
+      "available_versions": [
+        {
+          "source_id": "long-policy-tr",
+          "metadata": {
+            "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+              "2. İade kapsamının ayrıştırılması"
+            ],
+            "page_number": 2,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "refund-policy-2026",
+          "metadata": {
+            "document_version": "5cf8cdaae8b1c941fda218f178aafd18ab8e7474f872cffdc6198bec92285c2f",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Policy Bulletin 2026.1 — Standard Return Window"
+            ],
+            "page_number": 0,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "refund-policy-2025",
+          "metadata": {
+            "document_version": "fab544cd16a16ce489c6baf67ddbf9c4d1b3b2f330314e7b59678e2cc1094d64",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Standard Returns — 2025 (Superseded)"
+            ],
+            "page_number": 0,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "long-policy-tr",
+          "metadata": {
+            "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+              "35. İş ortağı kanıtlarının doğrulanması",
+              "Revizyon geçmişi"
+            ],
+            "page_number": 36,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "standard-returns-2026",
+          "metadata": {
+            "document_version": "eb2ebf70f39647953b1b79a45ec72e7d18049a59563c126e6467ab181ca7c0a2",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Standard Returns — 2026"
+            ],
+            "page_number": 0,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        }
+      ],
+      "cited_sources": [
+        "long-policy-tr",
+        "refund-policy-2025",
+        "standard-returns-2026"
+      ],
+      "assessment": "Final date rule is right, but the answer foregrounds a non-canonical source and mixes superseded material.",
+      "classification": "STALE_OR_NONCANONICAL_SOURCE_MIXED"
+    },
+    {
+      "query_id": "version-01-1",
+      "expected_source_ids": [
+        "refund-policy-2026"
+      ],
+      "top5_sources": [
+        "long-policy-tr",
+        "refund-policy-2026",
+        "shipping-and-delivery",
+        "refund-policy-2025",
+        "long-policy-tr"
+      ],
+      "available_versions": [
+        {
+          "source_id": "long-policy-tr",
+          "metadata": {
+            "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+              "2. İade kapsamının ayrıştırılması"
+            ],
+            "page_number": 2,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "refund-policy-2026",
+          "metadata": {
+            "document_version": "5cf8cdaae8b1c941fda218f178aafd18ab8e7474f872cffdc6198bec92285c2f",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Policy Bulletin 2026.1 — Standard Return Window"
+            ],
+            "page_number": 0,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "shipping-and-delivery",
+          "metadata": {
+            "document_version": "b017f55079694b0cab2479dc8e6d8614a7c2610f32799bec3706554d31e55ca5",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Teslimat ve Kargo Standardı"
+            ],
+            "page_number": 0,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "refund-policy-2025",
+          "metadata": {
+            "document_version": "fab544cd16a16ce489c6baf67ddbf9c4d1b3b2f330314e7b59678e2cc1094d64",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Standard Returns — 2025 (Superseded)"
+            ],
+            "page_number": 0,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        },
+        {
+          "source_id": "long-policy-tr",
+          "metadata": {
+            "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+            "heading_occurrence": 0,
+            "heading_path": [
+              "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+              "35. İş ortağı kanıtlarının doğrulanması",
+              "Revizyon geçmişi"
+            ],
+            "page_number": 36,
+            "paragraph_index": 0,
+            "source_type": "filesystem"
+          }
+        }
+      ],
+      "cited_sources": [
+        "refund-policy-2026",
+        "shipping-and-delivery"
+      ],
+      "assessment": "2026.1 and the 14-day rule are correctly stated; matcher missed the Turkish paraphrase.",
+      "classification": "CURRENT_RULE_SELECTED"
+    }
+  ],
+  "summary": {
+    "current_rule_selected": 1,
+    "stale_or_noncanonical_mixed": 1
+  }
+}

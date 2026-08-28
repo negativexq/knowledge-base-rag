@@ -1,0 +1,64 @@
+{
+  "generation_ms": {
+    "p50": 16999.834000000003,
+    "p95": 49987.912,
+    "max": 66069.072
+  },
+  "by_category_ms": {
+    "acl_negative": {
+      "n": 3,
+      "p50": 16867.88,
+      "max": 19196.457
+    },
+    "ambiguous": {
+      "n": 4,
+      "p50": 12617.5055,
+      "max": 37630.129
+    },
+    "cross_lingual": {
+      "n": 6,
+      "p50": 15457.4735,
+      "max": 44880.342
+    },
+    "hard_answerable": {
+      "n": 6,
+      "p50": 18196.369,
+      "max": 31950.134
+    },
+    "injection_bearing": {
+      "n": 2,
+      "p50": 18531.0825,
+      "max": 20660.883
+    },
+    "multi_document": {
+      "n": 3,
+      "p50": 56579.07,
+      "max": 66069.072
+    },
+    "standard_answerable": {
+      "n": 6,
+      "p50": 25562.6405,
+      "max": 35561.91
+    },
+    "unanswerable": {
+      "n": 4,
+      "p50": 8272.7495,
+      "max": 13146.86
+    },
+    "version_conflict": {
+      "n": 2,
+      "p50": 39145.2065,
+      "max": 49987.912
+    }
+  },
+  "lengths": {
+    "successful_full": {
+      "n": 10,
+      "median": 533.0
+    },
+    "not_full": {
+      "n": 12,
+      "median": 456.0
+    }
+  }
+}

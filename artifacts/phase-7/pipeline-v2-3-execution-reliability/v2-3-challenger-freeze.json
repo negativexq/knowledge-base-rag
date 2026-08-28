@@ -1,0 +1,15 @@
+{
+  "pipeline_version": "pipeline_v2_3_2_support_units_bounded_output",
+  "output_contract_version": "output_contract_v2_3_2",
+  "generator": "qwen3.5:4b",
+  "prompt": "v3",
+  "schema_strategy": "dynamic exact support-unit enum",
+  "num_predict": 1024,
+  "num_ctx": 4096,
+  "temperature": 0.0,
+  "think": false,
+  "snapshot_reuse": true,
+  "retrieval_calls": 0,
+  "reranker_calls": 0,
+  "preregistration_sha256": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c"
+}

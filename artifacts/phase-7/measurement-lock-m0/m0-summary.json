@@ -1,0 +1,174 @@
+{
+  "acl": [
+    "acl-02-0",
+    "acl-02-1",
+    "acl-02-2"
+  ],
+  "architecture_decision": "NOT_EVALUATED",
+  "architecture_decision_evaluated": false,
+  "cross_seed_audit_complete": true,
+  "current_status": "M0_COMPLETE_PROVIDER_READY",
+  "execution_status": "PROVIDER_READY",
+  "five_call_reliability": {
+    "all_pass": true,
+    "all_terminated": true,
+    "completed_calls": 5,
+    "failure_count": 0,
+    "max_latency_ms": 7711.525,
+    "query_id": "multi-00-1",
+    "required_calls": 5,
+    "reranker_calls": 0,
+    "retrieval_calls": 0,
+    "snapshot_hash": "e1e20da33f74bb11261c1ab96014f8f99a3821c34ade222dfed2182644bb3d8d",
+    "success_count": 5,
+    "timeout_count": 0
+  },
+  "holdout": [
+    "multi-01-1",
+    "multi-03-1",
+    "multi-00-0",
+    "multi-01-2",
+    "multi-00-2",
+    "multi-01-3",
+    "multi-01-0",
+    "multi-03-2"
+  ],
+  "identity": {
+    "cache_schema": "phase-7-generation-input-cache-v1",
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "preregistration_frozen": true,
+  "preregistration_sha256": "45176dd7b9be19a9d36e43a0d41f60fe269b78f6f736be6ef9d4295e7f06bb7c",
+  "previous_architecture_decision": "NOT_EVALUATED",
+  "previous_execution_status": "M0_PROVIDER_BLOCKED",
+  "provider_preflight": "PASS",
+  "same_seed_audit_complete": true,
+  "stability": {
+    "cross_seed_content_stability": {
+      "acl": 1,
+      "authority_version": 1,
+      "cross_lingual": 1,
+      "multi_document": 1,
+      "standard": 1
+    },
+    "cross_seed_query_count": 5,
+    "cross_seed_runs": 25,
+    "cross_seed_support_selection_stability": {
+      "acl": 1,
+      "authority_version": 1,
+      "cross_lingual": 1,
+      "multi_document": 1,
+      "standard": 1
+    },
+    "evidence_context_stable": true,
+    "generation_same_seed_stable": true,
+    "raw_output_hashes": {
+      "cross_seed:acl": [
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb"
+      ],
+      "cross_seed:authority_version": [
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b"
+      ],
+      "cross_seed:cross_lingual": [
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea"
+      ],
+      "cross_seed:multi_document": [
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5"
+      ],
+      "cross_seed:standard": [
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6"
+      ],
+      "same_seed:acl": [
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb",
+        "73245349d1d43a0325466bcf08bfc56c5be886c23f9a4b515c79be3ad797c3cb"
+      ],
+      "same_seed:authority_version": [
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b",
+        "e66f04d25a3bfdad697840afe34b2ddb5beaa51134507995dacbb2594c546e0b"
+      ],
+      "same_seed:cross_lingual": [
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea",
+        "3049bbcc53f0c8ef2b6aa00bf4d16a762f722bea0f62b4be690f2d4de05332ea"
+      ],
+      "same_seed:multi_document": [
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5",
+        "53185efdaef697ede5ceaf9f757cde67a6208a3f51934efe1f93ff368747c9e5"
+      ],
+      "same_seed:standard": [
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6",
+        "ca2bcd8786b047256e3faa2ca66285d8e9dd9702a9376b1b39b8a578a185eff6"
+      ]
+    },
+    "rerank_stable": true,
+    "retrieval_stable": true,
+    "same_seed_query_count": 5,
+    "same_seed_runs": 25
+  },
+  "v2_2_baseline": {
+    "complete_success_count": 25,
+    "evidence_snapshots_reused": true,
+    "generation_calls": 55,
+    "latency_ms": {
+      "max": 76976.769,
+      "p50": 26468.176
+    },
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "query_count": 11,
+    "retrieval_calls": 0,
+    "seeds": [
+      41,
+      42,
+      43,
+      44,
+      45
+    ]
+  },
+  "v2_2_baseline_frozen": true,
+  "v2_2_baseline_rows": 55,
+  "v2_3_implementation_started": false
+}

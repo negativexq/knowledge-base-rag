@@ -1,0 +1,113 @@
+{
+  "records": [
+    {
+      "query_id": "multi-00-1",
+      "representation": "CURRENT_CHUNK",
+      "evidence_blocks": 5,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 9
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "PARENT_SECTION",
+      "evidence_blocks": 3,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 197
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "evidence_blocks": 5,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 9
+    },
+    {
+      "query_id": "multi-00-1",
+      "representation": "SECTION_AWARE_MERGED",
+      "evidence_blocks": 5,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 13
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "CURRENT_CHUNK",
+      "evidence_blocks": 5,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 9
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "PARENT_SECTION",
+      "evidence_blocks": 3,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 104
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "evidence_blocks": 5,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 9
+    },
+    {
+      "query_id": "multi-00-3",
+      "representation": "SECTION_AWARE_MERGED",
+      "evidence_blocks": 5,
+      "unique_sources": 3,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 17
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "CURRENT_CHUNK",
+      "evidence_blocks": 5,
+      "unique_sources": 2,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 12
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "PARENT_SECTION",
+      "evidence_blocks": 2,
+      "unique_sources": 2,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 41
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "SAME_SECTION_NEIGHBORS",
+      "evidence_blocks": 5,
+      "unique_sources": 2,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 12
+    },
+    {
+      "query_id": "multi-03-0",
+      "representation": "SECTION_AWARE_MERGED",
+      "evidence_blocks": 4,
+      "unique_sources": 2,
+      "duplicate_blocks": 0,
+      "near_duplicate_blocks": 0,
+      "irrelevant_paragraphs_introduced": 24
+    }
+  ],
+  "near_duplicate_method": "not asserted without a conservative exact deterministic match"
+}

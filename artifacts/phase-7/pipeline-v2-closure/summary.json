@@ -1,0 +1,176 @@
+{
+  "annotated_fact_count": 16,
+  "calls": {
+    "embedding": 0,
+    "generation": 10,
+    "reranker": 0,
+    "retrieval": 0,
+    "semantic_evaluator": 0
+  },
+  "canonical_run": "budgeted-v1",
+  "fact_evidence_completeness": {
+    "annotated_fact_occurrences": 20,
+    "rows": [
+      {
+        "query_id": "multi-00-1",
+        "required_fact_id": "standard_return_window_14_days",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-00-1",
+        "required_fact_id": "support_return_case_fields",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-00-1",
+        "required_fact_id": "standard_return_window_14_days",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-00-1",
+        "required_fact_id": "support_return_case_fields",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-00-3",
+        "required_fact_id": "standard_return_window_14_days",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-00-3",
+        "required_fact_id": "support_return_case_fields",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-00-3",
+        "required_fact_id": "standard_return_window_14_days",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-00-3",
+        "required_fact_id": "support_return_case_fields",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-03-0",
+        "required_fact_id": "regional_withdrawal_framework_14_days",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-03-0",
+        "required_fact_id": "digital_activation_boundary",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "multi-03-0",
+        "required_fact_id": "joint_exception_routing",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "hard-annual-cancel",
+        "required_fact_id": "annual_cancel_48_hours",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "hard-annual-cancel",
+        "required_fact_id": "paid_period_not_shortened",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "hard-api-version",
+        "required_fact_id": "api_v3_current",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": false
+      },
+      {
+        "query_id": "hard-policy-language",
+        "required_fact_id": "turkish_regional_context",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": false
+      },
+      {
+        "query_id": "hard-policy-language",
+        "required_fact_id": "turkish_order_context",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": false
+      },
+      {
+        "query_id": "version-01-0",
+        "required_fact_id": "version_2026_return_window",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "version-01-1",
+        "required_fact_id": "version_2026_return_window_2",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      },
+      {
+        "query_id": "cross-00-0",
+        "required_fact_id": "cross_standard_return_window",
+        "v1_anchor_contains_span": false,
+        "v2_context_contains_span": false
+      },
+      {
+        "query_id": "cross-06-0",
+        "required_fact_id": "cross_renewal_cancellation",
+        "v1_anchor_contains_span": true,
+        "v2_context_contains_span": true
+      }
+    ],
+    "v1_fact_evidence_present": 9,
+    "v2_fact_evidence_present": 16
+  },
+  "generation_latency_ms": {
+    "max": 47043.896,
+    "p50": 25967.954
+  },
+  "mean_fact_coverage": 0.75,
+  "multi_document": {
+    "fact_coverages": [
+      1.0,
+      1.0,
+      0.0
+    ],
+    "fully_correct_complete": 2,
+    "n": 3
+  },
+  "query_count": 10,
+  "raw_fully_correct_complete": 7,
+  "raw_observable": 10,
+  "status": "CLOSURE_GATE_COMPLETED",
+  "status_counts": {
+    "CORRECT_BUT_INCOMPLETE": 1,
+    "FULLY_CORRECT_COMPLETE": 7,
+    "INCORRECT": 1,
+    "PARTIALLY_CORRECT": 1
+  },
+  "user_visible_full_success": 6,
+  "user_visible_status_counts": {
+    "CORRECT_BUT_INCOMPLETE": 1,
+    "FULLY_CORRECT_COMPLETE": 6,
+    "INCORRECT": 1,
+    "NOT_USER_VISIBLE": 1,
+    "PARTIALLY_CORRECT": 1
+  },
+  "validator_failure_codes": [
+    "CITATION_SUPPRESSION",
+    "OUTPUT_SCHEMA_FAILURE",
+    "UNKNOWN_CITATION_ID"
+  ],
+  "validator_pass": 8
+}

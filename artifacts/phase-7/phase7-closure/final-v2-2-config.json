@@ -1,0 +1,47 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "evidence": {
+    "builder": "SectionAwareEvidenceBuilder",
+    "builder_file_sha256": "843121084e742aeee49c14be46c334214389ca37938c33404cabb2484254a530",
+    "critical_value_rules": "current V2.2 evidence-backed validation",
+    "serialization": "serialize_section_aware_context",
+    "validation_schema_sha256": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1"
+  },
+  "execution": {
+    "connect_timeout_seconds": 10.0,
+    "num_ctx": 4096,
+    "num_predict": 1024,
+    "overall_timeout_seconds": 240.0,
+    "read_timeout_seconds": 180.0,
+    "stream": false,
+    "temperature": 0.0,
+    "think": false
+  },
+  "generator": {
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fb"
+  },
+  "output_contract_version": "output_contract_v2_2",
+  "pipeline_version": "pipeline_v2_2_evidence_backed",
+  "prompt_hash": "dc665466f81980a4f5d60765ebb88fef871e844470ef6ee6017b24507b1fead1",
+  "prompt_version": "v3",
+  "provenance": {
+    "challenger_freeze_sha256": "eac18c8a381f138a9106a28a00cb5419210aae654c3e9791527d1833aada3e02",
+    "corrected_v2_2_results_sha256": "af1446792fc38e84509ddd9ba1b04778c906ae6691e6a2c12869a07116028f23",
+    "snapshot_manifest_sha256": "5e94e0421a0c05e2fc6196f6ca6e5b578147716f400c6f9f08a77714225eff8f",
+    "source_of_truth": "corrected symmetric V2.2 initial-eight run"
+  },
+  "retrieval": {
+    "candidate_k": 20,
+    "embedding_dimension": 1024,
+    "embedding_model": "qwen3-embedding:4b",
+    "method": "Dense + BM25 + RRF",
+    "reranker": "BAAI/bge-reranker-v2-m3",
+    "top_n": 5
+  },
+  "schema_version": "phase7-final-v2-2-production-candidate-v1",
+  "security": {
+    "acl": "STRICT",
+    "phase6_semantic_answerability_gate": "OFF"
+  }
+}

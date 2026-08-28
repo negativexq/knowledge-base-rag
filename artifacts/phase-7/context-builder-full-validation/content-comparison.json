@@ -1,0 +1,41 @@
+{
+  "a": {
+    "n": 22,
+    "fully_correct_complete": 10,
+    "correct_but_incomplete": 3,
+    "partial": 3,
+    "incorrect": 1,
+    "unobservable": 5,
+    "validator_failures": 7,
+    "citation_identity_pass": 33,
+    "citation_alignment_definite_failures": 47,
+    "citation_alignment_review_required": 0,
+    "latency_ms": {
+      "p50": 16867.88,
+      "p95": 49987.912,
+      "max": 66069.072
+    }
+  },
+  "b": {
+    "n": 22,
+    "fully_correct_complete": 13,
+    "correct_but_incomplete": 4,
+    "partial": 2,
+    "incorrect": 3,
+    "unobservable": 0,
+    "validator_failures": 8,
+    "citation_identity_pass": 34,
+    "citation_alignment_definite_failures": 0,
+    "citation_alignment_review_required": 23,
+    "latency_ms": {
+      "p50": 22191.13,
+      "p95": 40207.7,
+      "max": 64036.066
+    }
+  },
+  "outcomes": {
+    "UNCHANGED": 26,
+    "IMPROVED": 8,
+    "REGRESSED": 2
+  }
+}

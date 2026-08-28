@@ -1,0 +1,10 @@
+{
+  "claim_semantic_support": "deterministic/manual review only; no external judge",
+  "identity_policy": "exact or unique case-insensitive authorized-context identity",
+  "raw_candidates_observable": 10,
+  "validator_failure_codes": [
+    "CITATION_SUPPRESSION",
+    "OUTPUT_SCHEMA_FAILURE",
+    "UNKNOWN_CITATION_ID"
+  ]
+}

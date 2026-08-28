@@ -1,0 +1,95 @@
+{
+  "client_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T14:45:14.910670+00:00",
+    "connection_established_at": "2026-08-28T14:45:14.909654+00:00",
+    "context_hash": "709bc396d2b0e6206a46b148e860c6bc12a456499684eda46b3d01933ea44ef3",
+    "elapsed_ms": 5064.585,
+    "first_body_byte_at": "2026-08-28T14:45:14.909820+00:00",
+    "headers_received_at": "2026-08-28T14:45:14.909654+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "cd3a5d9c8e8873a729cc11aa8d936a79e53e91f5cdfd3ddace892334707248ab",
+    "request_hash": "803c77d8c889e87b4d17889d787ac64ba0493d29f018c5ee20d1286cb80a52a1",
+    "request_id": "9789874e67a84f188576da0432c4bf30",
+    "request_started_at": "2026-08-28T14:45:09.846389+00:00",
+    "response_bytes": 701,
+    "schema_hash": "60d56822a6e943a5f569f520b06e16c36f4c8ea3a35ed83487c9ed6bcdc15786",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "elapsed_ms": 5067.147,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_3_2",
+      "pipeline_version": "pipeline_v2_3_2_support_units_bounded_output",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "model": "qwen3.5:4b",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_3_2",
+    "pipeline_version": "pipeline_v2_3_2_support_units_bounded_output",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"For Standard-plan direct-sale physical goods, customers may request a refund within 14 calendar days of delivery.\",\"support_ids\":[\"E3.U2\"]},{\"text\":\"Required fields to record before approval include: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.\",\"support_ids\":[\"E3.U4\"]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "support_ids": [
+            "E3.U2"
+          ],
+          "text": "For Standard-plan direct-sale physical goods, customers may request a refund within 14 calendar days of delivery."
+        },
+        {
+          "support_ids": [
+            "E3.U4"
+          ],
+          "text": "Required fields to record before approval include: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope."
+        }
+      ]
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "support_ids": [
+          "E3.U2"
+        ],
+        "survived": true,
+        "text": "For Standard-plan direct-sale physical goods, customers may request a refund within 14 calendar days of delivery."
+      },
+      {
+        "support_ids": [
+          "E3.U4"
+        ],
+        "survived": true,
+        "text": "Required fields to record before approval include: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope."
+      }
+    ],
+    "validated_output": "For Standard-plan direct-sale physical goods, customers may request a refund within 14 calendar days of delivery. [E3.U2]\n\nRequired fields to record before approval include: plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope. [E3.U4]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "probe": "D",
+  "result": "PASS"
+}

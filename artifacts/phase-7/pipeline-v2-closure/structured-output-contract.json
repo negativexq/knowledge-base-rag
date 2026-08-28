@@ -1,0 +1,16 @@
+{
+  "no_chain_of_thought": true,
+  "renderer": "deterministic; emits only validated answer parts",
+  "schema": {
+    "abstain": "boolean",
+    "answer_parts": [
+      {
+        "citations": [
+          "canonical citation"
+        ],
+        "text": "string"
+      }
+    ]
+  },
+  "version": "output_contract_v2"
+}

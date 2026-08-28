@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "records": {
+    "multi-00-1": {
+      "candidate_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "a429ec1b-1808-5d00-bc24-0136fec79326",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "1b50ae39-8364-5172-a719-f2090efce26e",
+        "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+        "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+        "7f71ca40-865b-5ee5-a026-6855df81dba9",
+        "c8dcd27c-c441-5bff-b6d7-93ecae0481a5",
+        "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5",
+        "0fcfcec7-41fe-5175-8ea6-f95fb6b9c2a3",
+        "75ac5529-0224-547c-b3df-9fffe338c484",
+        "5bd2643d-4837-5733-9717-c88c37860274",
+        "b482b2a0-2b68-59d7-8236-5fd112507367",
+        "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+        "69ef7766-c3b9-53b0-aa17-b9290ca74de7",
+        "dfec59b8-9f54-5875-b03c-626ff6930e91",
+        "145acb3b-6bab-54e6-a5b6-c4cd5194446c",
+        "196404b0-9614-5820-9277-277b4f19c78c",
+        "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c"
+      ],
+      "candidate_count": 20,
+      "retrieval_ms": 475.5877919960767,
+      "acl_applied": true
+    },
+    "multi-00-3": {
+      "candidate_ids": [
+        "27816f01-3236-59fa-ace9-3e5ff651bf91",
+        "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c8dcd27c-c441-5bff-b6d7-93ecae0481a5",
+        "1b50ae39-8364-5172-a719-f2090efce26e",
+        "0fcfcec7-41fe-5175-8ea6-f95fb6b9c2a3",
+        "a429ec1b-1808-5d00-bc24-0136fec79326",
+        "7f71ca40-865b-5ee5-a026-6855df81dba9",
+        "973b3344-acf6-5200-9f50-fcdc24f4f766",
+        "5bd2643d-4837-5733-9717-c88c37860274",
+        "75ac5529-0224-547c-b3df-9fffe338c484",
+        "c232662d-70f9-55cd-aad1-735ef0ca0784",
+        "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5",
+        "196404b0-9614-5820-9277-277b4f19c78c",
+        "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+        "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+        "9de576c8-a661-52cf-b6ce-e1344a694971",
+        "b482b2a0-2b68-59d7-8236-5fd112507367",
+        "ae31600e-a9f8-5940-b02d-8ec22294f1cc",
+        "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2"
+      ],
+      "candidate_count": 20,
+      "retrieval_ms": 280.62812495045364,
+      "acl_applied": true
+    },
+    "multi-03-0": {
+      "candidate_ids": [
+        "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+        "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+        "a813c829-a9db-5cee-80fc-ff7c677187a9",
+        "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+        "f7dd4371-2cc7-5c75-a255-d6df32d93211",
+        "5e6b4ea1-552c-59d5-8422-09de13cb6bf2",
+        "f51fb173-c7c8-5cfc-ab6a-c4212e017c45",
+        "2e97b417-5c99-5c92-acbf-0a5d8ea14c62",
+        "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+        "31b94306-9751-59cf-ad24-33554611e4ba",
+        "a6663bd3-c4f7-5f12-adf0-24605393b90b",
+        "27285d29-3497-5460-8ad5-0f23a3c03703",
+        "a942fb98-9b1d-5289-87d9-526e1bf815f5",
+        "2775a577-0cb6-5fda-910c-59eeae8aabef",
+        "e5e21eb6-f7b6-5f22-a6ef-4e67798b6873",
+        "fbe2fbb2-1edb-5ca6-b3d4-d82bf0f995e2",
+        "8a47b219-01c3-54e0-8619-0c13593fc5b6",
+        "b80a3597-b5bb-514f-a052-d14259e342b6",
+        "f5bba92a-eef2-5123-9df0-8bcded5ec1aa",
+        "1efbe6b4-d3fb-54b5-82ad-c3fcbac4836f"
+      ],
+      "candidate_count": 20,
+      "retrieval_ms": 418.82187500596046,
+      "acl_applied": true
+    }
+  },
+  "candidate_ids_same_across_arms": true
+}

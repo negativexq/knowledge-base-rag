@@ -1,0 +1,9 @@
+{
+  "calibration": "NOT_RUN",
+  "development200": "NOT_RUN",
+  "focused_gate": "PIPELINE_V2_2_GATE_FAIL_MIXED",
+  "frozen_test": "NOT_TOUCHED",
+  "new_generation_calls": 9,
+  "new_retrieval_calls": 0,
+  "smoke36": "NOT_RUN"
+}

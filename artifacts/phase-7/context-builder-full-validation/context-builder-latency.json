@@ -1,0 +1,6 @@
+{
+  "p50": 0.155,
+  "p95": 0.178,
+  "max": 0.196,
+  "measurement": "deterministic Context Builder v1 assembly measured during artifact post-processing; no inference"
+}

@@ -1,0 +1,9 @@
+{
+  "n": 5,
+  "fully_correct_complete": 3,
+  "correct_but_incomplete": 0,
+  "partial": 1,
+  "incorrect": 0,
+  "unobservable": 1,
+  "citation_failures": 1
+}

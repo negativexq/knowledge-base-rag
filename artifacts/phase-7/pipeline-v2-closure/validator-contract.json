@@ -1,0 +1,14 @@
+{
+  "part_codes": [
+    "MALFORMED_CITATION_SYNTAX",
+    "UNKNOWN_CITATION_ID",
+    "UNAUTHORIZED_CITATION_ID",
+    "MISSING_REQUIRED_CITATION",
+    "OUTPUT_SCHEMA_FAILURE"
+  ],
+  "raw_rejected_output_user_visible": false,
+  "top_level_fail_closed": true,
+  "unauthorized_fail_closed": true,
+  "valid_parts_survive_independent_part_failure": true,
+  "version": "claim_level_strict"
+}

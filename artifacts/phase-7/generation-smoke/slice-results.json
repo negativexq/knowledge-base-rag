@@ -1,0 +1,258 @@
+{
+  "acl_negative": {
+    "n": 3,
+    "answerable_n": 0,
+    "correct": {
+      "count": 0,
+      "denominator": 0
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 0,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "all": {
+    "n": 36,
+    "answerable_n": 25,
+    "correct": {
+      "count": 3,
+      "denominator": 25
+    },
+    "complete": 3,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 3,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 22,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "ambiguous": {
+    "n": 4,
+    "answerable_n": 0,
+    "correct": {
+      "count": 0,
+      "denominator": 0
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 2,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 0,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "cross_lingual": {
+    "n": 6,
+    "answerable_n": 6,
+    "correct": {
+      "count": 0,
+      "denominator": 6
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 1,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 5,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "en->en": {
+    "n": 9,
+    "answerable_n": 9,
+    "correct": {
+      "count": 3,
+      "denominator": 9
+    },
+    "complete": 3,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 8,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "en->none": {
+    "n": 10,
+    "answerable_n": 0,
+    "correct": {
+      "count": 0,
+      "denominator": 0
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 1,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 0,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "en->tr": {
+    "n": 6,
+    "answerable_n": 6,
+    "correct": {
+      "count": 0,
+      "denominator": 6
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 1,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 5,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "hard_answerable": {
+    "n": 6,
+    "answerable_n": 6,
+    "correct": {
+      "count": 0,
+      "denominator": 6
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 5,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "injection_bearing": {
+    "n": 2,
+    "answerable_n": 2,
+    "correct": {
+      "count": 0,
+      "denominator": 2
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 2,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "multi_document": {
+    "n": 3,
+    "answerable_n": 3,
+    "correct": {
+      "count": 0,
+      "denominator": 3
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 3,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "standard_answerable": {
+    "n": 6,
+    "answerable_n": 6,
+    "correct": {
+      "count": 3,
+      "denominator": 6
+    },
+    "complete": 3,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 5,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "tr->en": {
+    "n": 9,
+    "answerable_n": 9,
+    "correct": {
+      "count": 0,
+      "denominator": 9
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 8,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "tr->none": {
+    "n": 1,
+    "answerable_n": 0,
+    "correct": {
+      "count": 0,
+      "denominator": 0
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 1,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 0,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "tr->tr": {
+    "n": 1,
+    "answerable_n": 1,
+    "correct": {
+      "count": 0,
+      "denominator": 1
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 1,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "unanswerable": {
+    "n": 4,
+    "answerable_n": 0,
+    "correct": {
+      "count": 0,
+      "denominator": 0
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 0,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  },
+  "version_conflict": {
+    "n": 2,
+    "answerable_n": 2,
+    "correct": {
+      "count": 0,
+      "denominator": 2
+    },
+    "complete": 0,
+    "unsupported_claim_failures": 0,
+    "citation_failures": 0,
+    "gold_present_success": {
+      "count": null,
+      "denominator": 2,
+      "status": "REQUIRES_REVIEW_FOR_CLAIM_SUPPORT"
+    }
+  }
+}

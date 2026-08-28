@@ -1,0 +1,15 @@
+{
+  "available": true,
+  "model": "qwen3.5:4b",
+  "models": [
+    "qwen3-embedding:0.6b",
+    "qwen3-embedding:4b",
+    "qwen3.5:4b",
+    "qwen3.5:9b",
+    "qwen2.5:7b-instruct",
+    "nomic-embed-text:latest",
+    "qwen2.5:3b-instruct",
+    "gemma2:2b"
+  ],
+  "reachable": true
+}

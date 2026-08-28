@@ -1,0 +1,24 @@
+{
+  "bug_fix_allowed": false,
+  "bug_fix_applied": false,
+  "debug_reproduction_attempted": false,
+  "debug_reproduction_result": "NOT_NEEDED_NO_REPRODUCIBLE_IMPLEMENTATION_DEFECT_INDICATED",
+  "records": [
+    {
+      "classification": "EXECUTION_TRUNCATION_ARTIFACT",
+      "implementation_defect": "NOT_ESTABLISHED",
+      "query_id": "multi-01-0",
+      "v2_2_primary_failure_class": "none_success",
+      "v2_3_primary_failure_class": "truncation_artifact"
+    },
+    {
+      "classification": "GENUINE_OBSERVED_BEHAVIOR",
+      "implementation_defect": "NOT_ESTABLISHED",
+      "query_id": "multi-01-2",
+      "v2_2_primary_failure_class": "none_success",
+      "v2_3_primary_failure_class": "critical_value_conflict"
+    }
+  ],
+  "schema_version": "final-integrity-regression-taxonomy-audit-v1",
+  "suspected_implementation_defect": false
+}

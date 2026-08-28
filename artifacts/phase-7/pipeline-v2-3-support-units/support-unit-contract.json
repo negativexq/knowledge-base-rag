@@ -1,0 +1,12 @@
+{
+  "id_format": "E<evidence_index>.U<unit_index>",
+  "multi_support": true,
+  "provenance": [
+    "parent_evidence_block_id",
+    "source_id",
+    "contributing_chunk_ids",
+    "section_id",
+    "tenant_id"
+  ],
+  "source_text_only": true
+}

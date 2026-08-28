@@ -1,0 +1,103 @@
+{
+  "historical_current_v23": {
+    "status": "TIMEOUT",
+    "pairs": [
+      {
+        "query_id": "multi-01-0",
+        "seed": 41
+      },
+      {
+        "query_id": "multi-01-0",
+        "seed": 42
+      }
+    ],
+    "source": "timeout-run-manifest / prior official partial results"
+  },
+  "new_results": [
+    {
+      "variant": "reduced_output",
+      "query_id": "multi-01-0",
+      "seed": 41,
+      "status": "COMPLETE",
+      "error": null,
+      "elapsed_ms": 100529.184,
+      "raw_output_hash": "5868a3b18b63029ea38ccd76cf2c718a2ed15eb432f6e5399a85f7ad598bb250",
+      "raw_output_bytes": 4110,
+      "request_hash": "8a7c10feb8e1710b1cb0191df9c733286588479408122a5d7959d39edae2f5a7",
+      "schema_hash": "46d7449c300492fd0b9b777e9e96ef501a7387de6d47f81bdcaeaa4de077ca09",
+      "schema_bytes": 467,
+      "support_unit_count": 14,
+      "stream": false,
+      "provider_observation": {
+        "request_id": "c9a16f1ffdfd4938a0aaa74527c46738",
+        "model": "qwen3.5:4b",
+        "seed": 41,
+        "request_hash": "8a7c10feb8e1710b1cb0191df9c733286588479408122a5d7959d39edae2f5a7",
+        "prompt_hash": "cd3a5d9c8e8873a729cc11aa8d936a79e53e91f5cdfd3ddace892334707248ab",
+        "context_hash": "dfd81d18534d7e19796488904ef0c7fb1514ede6329444efd53a3d4e3ee217d3",
+        "schema_hash": "46d7449c300492fd0b9b777e9e96ef501a7387de6d47f81bdcaeaa4de077ca09",
+        "request_started_at": "2026-08-28T13:57:21.647869+00:00",
+        "connection_established_at": "2026-08-28T13:59:02.175349+00:00",
+        "headers_received_at": "2026-08-28T13:59:02.175349+00:00",
+        "first_body_byte_at": "2026-08-28T13:59:02.175670+00:00",
+        "completed_at": "2026-08-28T13:59:02.176442+00:00",
+        "elapsed_ms": 100528.624,
+        "streaming": false,
+        "status_code": 200,
+        "response_bytes": 4550,
+        "status": "COMPLETE",
+        "timeout_type": null,
+        "attempt": 1
+      },
+      "retrieval_calls": 0,
+      "reranker_calls": 0,
+      "diagnostic": true,
+      "recorded_at": "2026-08-28T13:59:02.177465+00:00"
+    },
+    {
+      "variant": "reduced_output",
+      "query_id": "multi-01-0",
+      "seed": 42,
+      "status": "COMPLETE",
+      "error": null,
+      "elapsed_ms": 104467.351,
+      "raw_output_hash": "5868a3b18b63029ea38ccd76cf2c718a2ed15eb432f6e5399a85f7ad598bb250",
+      "raw_output_bytes": 4110,
+      "request_hash": "078081a5ea5ec46aa56a3a7bf449dad1893d95b76fd843156a73390d50e3bbdc",
+      "schema_hash": "46d7449c300492fd0b9b777e9e96ef501a7387de6d47f81bdcaeaa4de077ca09",
+      "schema_bytes": 467,
+      "support_unit_count": 14,
+      "stream": false,
+      "provider_observation": {
+        "request_id": "21c0188e3c8347edb08763f341fcccec",
+        "model": "qwen3.5:4b",
+        "seed": 42,
+        "request_hash": "078081a5ea5ec46aa56a3a7bf449dad1893d95b76fd843156a73390d50e3bbdc",
+        "prompt_hash": "cd3a5d9c8e8873a729cc11aa8d936a79e53e91f5cdfd3ddace892334707248ab",
+        "context_hash": "dfd81d18534d7e19796488904ef0c7fb1514ede6329444efd53a3d4e3ee217d3",
+        "schema_hash": "46d7449c300492fd0b9b777e9e96ef501a7387de6d47f81bdcaeaa4de077ca09",
+        "request_started_at": "2026-08-28T13:59:02.190764+00:00",
+        "connection_established_at": "2026-08-28T14:00:46.656760+00:00",
+        "headers_received_at": "2026-08-28T14:00:46.656760+00:00",
+        "first_body_byte_at": "2026-08-28T14:00:46.656944+00:00",
+        "completed_at": "2026-08-28T14:00:46.657482+00:00",
+        "elapsed_ms": 104466.837,
+        "streaming": false,
+        "status_code": 200,
+        "response_bytes": 4550,
+        "status": "COMPLETE",
+        "timeout_type": null,
+        "attempt": 1
+      },
+      "retrieval_calls": 0,
+      "reranker_calls": 0,
+      "diagnostic": true,
+      "recorded_at": "2026-08-28T14:00:46.658706+00:00"
+    }
+  ],
+  "interpretation": {
+    "pattern_passes_quickly": true,
+    "reduced_output_passes_quickly": true,
+    "streaming_starts": true
+  }
+}

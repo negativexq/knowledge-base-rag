@@ -1,0 +1,36 @@
+{
+  "bge": [
+    {
+      "query_id": "multi-00-1",
+      "unique_sources": 3,
+      "duplicate_source_chunks": 2
+    },
+    {
+      "query_id": "multi-00-3",
+      "unique_sources": 3,
+      "duplicate_source_chunks": 2
+    },
+    {
+      "query_id": "multi-03-0",
+      "unique_sources": 2,
+      "duplicate_source_chunks": 3
+    }
+  ],
+  "qwen3": [
+    {
+      "query_id": "multi-00-1",
+      "unique_sources": 3,
+      "duplicate_source_chunks": 2
+    },
+    {
+      "query_id": "multi-00-3",
+      "unique_sources": 3,
+      "duplicate_source_chunks": 2
+    },
+    {
+      "query_id": "multi-03-0",
+      "unique_sources": 3,
+      "duplicate_source_chunks": 2
+    }
+  ]
+}

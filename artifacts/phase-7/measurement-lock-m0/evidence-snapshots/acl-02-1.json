@@ -1,0 +1,526 @@
+{
+  "authorized_top5": [
+    {
+      "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "content": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.\n\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "5. Returns and billing routing"
+        ],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 0.07411417365074158,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "c232662d-70f9-55cd-aad1-735ef0ca0784",
+      "content": "A weekly exception review examines cases that required regional, security, product, or contract approval. The board checks that the requested remedy was within scope, the approver had the right role, and the customer message matched the final decision. It does not retroactively authorize an action that happened without approval.\n\nExceptions are grouped by cause, not by customer name. A recurring mismatch between a public guide and signed agreements is sent to Product Documentation or Contract Operations. A recurring missing field is addressed in the intake form rather than handled by a new informal shortcut.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "16. Exception review board"
+        ],
+        "page_number": 16,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.04421141371130943,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "content": "The plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\n\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.",
+      "metadata": {
+        "document_version": "a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Premium Returns — 2026",
+          "Channel boundary"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.021430380642414093,
+      "source_id": "premium-returns-2026"
+    },
+    {
+      "chunk_id": "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+      "content": "| Condition | Primary owner | Evidence to preserve |\n|---|---|---|\n| Authentication outage across workspaces | Incident commander | start time, scope, auth error, status updates |\n| Suspected cross-tenant visibility | Security Operations | tenant IDs, request ID, observed response, access timeline |\n| Negotiated enterprise exception | Contract Operations | contract ID, amendment, effective date, requested remedy |\n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |\n| Repeated product failure | Product Support | reproduction, version, workspace, workaround result |",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "31. Runbook examples",
+          "Appendix A — Escalation matrix"
+        ],
+        "page_number": 32,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.014568058773875237,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+      "content": "Agents apply the canonical policy for the order’s channel and effective date. Requests above the local approval threshold, requests based on a negotiated enterprise term, and requests for an activated digital good require additional review. The threshold is an approval control, not evidence that a refund is owed.\n\nWhen a customer asks for an exception, the agent records the business reason, the requested remedy, and the source that could authorize it. Do not promise approval while the contract or regional review is pending. The customer receives a clear status and next action.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "6. Billing and returns"
+        ],
+        "page_number": 6,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.009783820249140263,
+      "source_id": "employee-handbook-en"
+    }
+  ],
+  "candidate_top20": [
+    {
+      "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "content": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.\n\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "5. Returns and billing routing"
+        ],
+        "page_number": 5,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 1,
+      "score": 0.5,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "c232662d-70f9-55cd-aad1-735ef0ca0784",
+      "content": "A weekly exception review examines cases that required regional, security, product, or contract approval. The board checks that the requested remedy was within scope, the approver had the right role, and the customer message matched the final decision. It does not retroactively authorize an action that happened without approval.\n\nExceptions are grouped by cause, not by customer name. A recurring mismatch between a public guide and signed agreements is sent to Product Documentation or Contract Operations. A recurring missing field is addressed in the intake form rather than handled by a new informal shortcut.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "16. Exception review board"
+        ],
+        "page_number": 16,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 2,
+      "score": 0.36666667,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "0183d997-4c6e-5da5-9664-b2d74ccc4d81",
+      "content": "| Version | Date | Change |\n|---|---|---|\n| 2025.3 | 2025-09-18 | Added separate access and contract-review roles |\n| 2026.1 | 2026-01-15 | Clarified regional authority and evidence handling |\n| 2026.1a | 2026-02-03 | Added imported-document and conflict-of-interest guidance |",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "34. Training scenario review",
+          "Appendix B — Revision history"
+        ],
+        "page_number": 36,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 3,
+      "score": 0.25,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "content": "The plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\n\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.",
+      "metadata": {
+        "document_version": "a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Premium Returns — 2026",
+          "Channel boundary"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 4,
+      "score": 0.22222222,
+      "source_id": "premium-returns-2026"
+    },
+    {
+      "chunk_id": "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+      "content": "Agents apply the canonical policy for the order’s channel and effective date. Requests above the local approval threshold, requests based on a negotiated enterprise term, and requests for an activated digital good require additional review. The threshold is an approval control, not evidence that a refund is owed.\n\nWhen a customer asks for an exception, the agent records the business reason, the requested remedy, and the source that could authorize it. Do not promise approval while the contract or regional review is pending. The customer receives a clear status and next action.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "6. Billing and returns"
+        ],
+        "page_number": 6,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 5,
+      "score": 0.1736111,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "0a49c153-e055-5a4a-b324-903f5847dcbb",
+      "content": "Mesafeli satışa ilişkin bölgesel haklar, olay Türkiye kapsamındaysa ilgili bölgesel rehberdeki koşullarla birlikte incelenir. Kişiye özel ürün, mühürlü yazılım veya aktive edilmiş dijital içerik gibi istisnalar ürün niteliği ve teslim/etkinleştirme kanıtıyla ilişkilendirilir. Yalnız ürün adındaki “dijital” veya “özel” kelimesi yeterli değildir.\n\nPlan avantajı ile bölgesel hak aynı soruda geçtiğinde görevli iki ayrı sonucu birbirine karıştırmaz: plan, ticari pencereyi; bölgesel kaynak ise kapsamındaki yasal koşulu açıklar. İki metin arasında görünür bir çelişki varsa vaka, politika sahibine veya uyum sorumlusuna taşınır.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası",
+          "4. Bölgesel haklar ve istisnalar"
+        ],
+        "page_number": 4,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 6,
+      "score": 0.14285715,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+      "content": "| Condition | Primary owner | Evidence to preserve |\n|---|---|---|\n| Authentication outage across workspaces | Incident commander | start time, scope, auth error, status updates |\n| Suspected cross-tenant visibility | Security Operations | tenant IDs, request ID, observed response, access timeline |\n| Negotiated enterprise exception | Contract Operations | contract ID, amendment, effective date, requested remedy |\n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |\n| Repeated product failure | Product Support | reproduction, version, workspace, workaround result |",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "31. Runbook examples",
+          "Appendix A — Escalation matrix"
+        ],
+        "page_number": 32,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 7,
+      "score": 0.14285715,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "75ac5529-0224-547c-b3df-9fffe338c484",
+      "content": "Every customer-facing commitment has a scope. An acknowledgement or response target describes when the team will communicate; it is not a promise that the underlying issue will be resolved by the same time. The Support Escalation Standard owns the numeric targets, while the Support Operations Playbook owns the triage sequence.\n\nBefore quoting a return period, an agent confirms plan, channel, product type, delivery event, and region. A Premium account does not turn a marketplace order into a direct sale. A contract exception is never inferred from a customer’s account tier.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "1. Customer commitments"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 8,
+      "score": 0.125,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "60ef6fd6-89a3-5657-a12e-10e8cf33c917",
+      "content": "Employees follow this contextual order of precedence: applicable statutory or regional rule, signed enterprise agreement or amendment, current product-specific policy, operational procedure, and general handbook guidance. The hierarchy does not authorize an employee to interpret law or amend a contract.\n\nTier 1 may approve a standard direct-sale request when all documented conditions are present. A request involving an expired window, an activated digital entitlement, a negotiated enterprise term, a security event, or a conflicting version is routed to the role named in the relevant procedure. The approval record names the decision maker and source.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "2. Authority and approvals"
+        ],
+        "page_number": 2,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 9,
+      "score": 0.11111111,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "c03c471c-5d68-5586-b88b-9819ec55300a",
+      "content": "An article proposal includes the customer question, source documents, owner, intended audience, and review date. The author does not copy a private enterprise clause into a general article. A regional rule is marked with its jurisdiction and a product limit with its metric and scope.\n\nReviewers check examples against the effective policy before publication. A changed rule creates a new revision or bulletin and marks the prior example historical. Searchability is useful, but a keyword match cannot make an obsolete article authoritative.",
+      "metadata": {
+        "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Employee and Customer Operations Handbook",
+          "19. Internal knowledge article lifecycle"
+        ],
+        "page_number": 19,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 10,
+      "score": 0.103174604,
+      "source_id": "employee-handbook-en"
+    },
+    {
+      "chunk_id": "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+      "content": "Belge sahibi: Müşteri Politikaları ve Bölgesel Operasyonlar\nYürürlük tarihi: 2026-01-15\nSon gözden geçirme: 2026-02-03\nKapsam: Türkiye'deki doğrudan satışlar, pazar yeri siparişleri ve bu siparişlere destek veren operasyon ekipleri\n\nBu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir “iade süresi” söylemi kullanılmaz. Görevli, önce olayı tanımlar; sonra yürürlükteki ve daha özel kaynağı seçer.",
+      "metadata": {
+        "document_version": "bede2db5a5d66f36f87e9c9dd447315cf0eb40bab204a88e88a331342637a11b",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası"
+        ],
+        "page_number": 0,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 11,
+      "score": 0.1,
+      "source_id": "long-policy-tr"
+    },
+    {
+      "chunk_id": "da55669a-14ab-5b25-939d-060bb2fca4c8",
+      "content": "The outgoing agent writes a short handoff before the shift ends. It names the customer impact, last verified event, controlling source, pending question, and next owner. The incoming agent acknowledges the handoff and rechecks time-sensitive conditions such as a renewal date or a newly effective amendment.\n\nHandoffs do not transfer authorization. A Tier 1 agent receiving a note from Contract Operations still checks the contract reference before quoting an exception. A customer’s request to “just use the previous answer” is recorded as context, not as permission to skip review.",
+      "metadata": {
+        "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Support Operations Playbook",
+          "14. Handoffs between shifts"
+        ],
+        "page_number": 14,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 12,
+      "score": 0.1,
+      "source_id": "support-playbook"
+    },
+    {
+      "chunk_id": "a7aeee85-25c7-5635-8034-4d50d4473afb",
+      "content": "An approved enterprise agreement may override the public post-activation rule. The case must identify the contract and amendment before an operator promises an exception. For a standard case, preserve the entitlement ID, activation timestamp, order channel, and requested remedy.\n\nRelated: Returns Operations Manual; Enterprise Contract Guide. Do not infer activation from a customer’s statement that a file was downloaded.",
+      "metadata": {
+        "document_version": "9e91fb47d920416f95c2c0f8119392db8350197fecbdd43d9cb508b9e18cee33",
+        "heading_occurrence": 0,
+        "heading_path": [
+          "Digital Goods Policy",
+          "Exceptions and evidence"
+        ],
+        "page_number": 1,
+        "paragraph_index": 0,
+        "source_type": "filesystem"
+      },
+      "rank": 13,
+      "score": 0.09761905,
+      "source_id": "digital-goods-policy"
+    }
+  ],
+  "candidate_top20_ids": [
+    "b3b30141-6504-54bb-a9dc-de95e27dca22",
+    "c232662d-70f9-55cd-aad1-735ef0ca0784",
+    "0183d997-4c6e-5da5-9664-b2d74ccc4d81",
+    "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+    "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+    "0a49c153-e055-5a4a-b324-903f5847dcbb",
+    "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+    "75ac5529-0224-547c-b3df-9fffe338c484",
+    "60ef6fd6-89a3-5657-a12e-10e8cf33c917",
+    "c03c471c-5d68-5586-b88b-9819ec55300a",
+    "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+    "da55669a-14ab-5b25-939d-060bb2fca4c8",
+    "a7aeee85-25c7-5635-8034-4d50d4473afb"
+  ],
+  "context_hash": "aa78479c42a836fd81b48575c1b956929834078fedefc2cdc6a23037be8cba33",
+  "context_tokens": 599,
+  "evidence_blocks": [
+    {
+      "anchor_chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "chunk_id": "evidence-6e9f74157629b826e5636c57",
+      "citation_aliases": [
+        {
+          "chunk_id": "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "location": "Support Operations Playbook/5. Returns and billing routing",
+          "source_id": "support-playbook",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "c232662d-70f9-55cd-aad1-735ef0ca0784",
+          "location": "Support Operations Playbook/16. Exception review board",
+          "source_id": "support-playbook",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+          "location": "Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix",
+          "source_id": "support-playbook",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "b3b30141-6504-54bb-a9dc-de95e27dca22",
+        "c232662d-70f9-55cd-aad1-735ef0ca0784",
+        "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c"
+      ],
+      "document_version": "700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75",
+      "evidence_block_id": "evidence-6e9f74157629b826e5636c57",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Support Operations Playbook",
+        "5. Returns and billing routing"
+      ],
+      "page_number": 5,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Support Operations Playbook",
+          "5. Returns and billing routing"
+        ],
+        0
+      ],
+      "source_id": "support-playbook",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Use this sequence for a return request:\n\n1. Identify the order channel: direct sale or marketplace.\n2. Confirm plan and product type.\n3. Locate delivery or activation evidence.\n4. Check region and the policy effective on the relevant event date.\n5. Check for a signed enterprise exception.\n6. Record the requested remedy and required approval.\n\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.\n\nA weekly exception review examines cases that required regional, security, product, or contract approval. The board checks that the requested remedy was within scope, the approver had the right role, and the customer message matched the final decision. It does not retroactively authorize an action that happened without approval.\n\nExceptions are grouped by cause, not by customer name. A recurring mismatch between a public guide and signed agreements is sent to Product Documentation or Contract Operations. A recurring missing field is addressed in the intake form rather than handled by a new informal shortcut.\n\n| Condition | Primary owner | Evidence to preserve |\n|---|---|---|\n| Authentication outage across workspaces | Incident commander | start time, scope, auth error, status updates |\n| Suspected cross-tenant visibility | Security Operations | tenant IDs, request ID, observed response, access timeline |\n| Negotiated enterprise exception | Contract Operations | contract ID, amendment, effective date, requested remedy |\n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |\n| Repeated product failure | Product Support | reproduction, version, workspace, workaround result |",
+      "token_count": 283
+    },
+    {
+      "anchor_chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "chunk_id": "evidence-a41a91598b59026cd04a0e13",
+      "citation_aliases": [
+        {
+          "chunk_id": "81627801-791b-5379-b97c-359c2058031b",
+          "location": "Premium Returns — 2026",
+          "source_id": "premium-returns-2026",
+          "source_type": "filesystem"
+        },
+        {
+          "chunk_id": "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "location": "Premium Returns — 2026/Channel boundary",
+          "source_id": "premium-returns-2026",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "81627801-791b-5379-b97c-359c2058031b",
+        "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+      ],
+      "document_version": "a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9",
+      "evidence_block_id": "evidence-a41a91598b59026cd04a0e13",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Premium Returns — 2026",
+        "Channel boundary"
+      ],
+      "page_number": 1,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Premium Returns — 2026",
+          "Channel boundary"
+        ],
+        0
+      ],
+      "source_id": "premium-returns-2026",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Owner: Customer Policy Operations\nEffective: 2026-01-15\nApplies to: Premium-plan orders purchased directly from Negativex\n\nPremium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies.\n\nThe plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\n\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.",
+      "token_count": 118
+    },
+    {
+      "anchor_chunk_id": "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+      "chunk_id": "evidence-06f5cbd2389798c4d01f4ca0",
+      "citation_aliases": [
+        {
+          "chunk_id": "05d2502c-02dd-5ed1-9d72-69975fdb2839",
+          "location": "Employee and Customer Operations Handbook/6. Billing and returns",
+          "source_id": "employee-handbook-en",
+          "source_type": "filesystem"
+        }
+      ],
+      "contributing_chunk_ids": [
+        "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+      ],
+      "document_version": "240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93",
+      "evidence_block_id": "evidence-06f5cbd2389798c4d01f4ca0",
+      "heading_occurrence": 0,
+      "heading_path": [
+        "Employee and Customer Operations Handbook",
+        "6. Billing and returns"
+      ],
+      "page_number": 6,
+      "paragraph_index": 0,
+      "section_aware": true,
+      "section_key": [
+        "heading",
+        [
+          "Employee and Customer Operations Handbook",
+          "6. Billing and returns"
+        ],
+        0
+      ],
+      "source_id": "employee-handbook-en",
+      "source_type": "filesystem",
+      "tenant_id": "tenant-a",
+      "text": "Agents apply the canonical policy for the order’s channel and effective date. Requests above the local approval threshold, requests based on a negotiated enterprise term, and requests for an activated digital good require additional review. The threshold is an approval control, not evidence that a refund is owed.\n\nWhen a customer asks for an exception, the agent records the business reason, the requested remedy, and the source that could authorize it. Do not promise approval while the contract or regional review is pending. The customer receives a clear status and next action.",
+      "token_count": 92
+    }
+  ],
+  "metrics": {
+    "context_chars": 7036,
+    "context_tokens": 599,
+    "expanded": true,
+    "input_chunk_ids": [
+      "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "c232662d-70f9-55cd-aad1-735ef0ca0784",
+      "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+      "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+    ],
+    "output_block_ids": [
+      "evidence-6e9f74157629b826e5636c57",
+      "evidence-a41a91598b59026cd04a0e13",
+      "evidence-06f5cbd2389798c4d01f4ca0"
+    ]
+  },
+  "model_visible_context": "<section_aware_evidence trust=\"untrusted\" blocks=\"3\">\n[evidence_block 1 json_chars=3398]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E1\",\"evidence_block_id\":\"evidence-6e9f74157629b826e5636c57\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/5. Returns and billing routing\",\"section_key\":[\"heading\",[\"Support Operations Playbook\",\"5. Returns and billing routing\"],0],\"document_version\":\"700eca721c537aa6cf60a16c3425bfc738a70d3f9f4c64b10a7c7ece280bbf75\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"b3b30141-6504-54bb-a9dc-de95e27dca22\",\"c232662d-70f9-55cd-aad1-735ef0ca0784\",\"3e411acf-fda5-56b1-bc5d-3e6b780b3b2c\"],\"citation_aliases\":[{\"chunk_id\":\"b3b30141-6504-54bb-a9dc-de95e27dca22\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/5. Returns and billing routing\"},{\"chunk_id\":\"c232662d-70f9-55cd-aad1-735ef0ca0784\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/16. Exception review board\"},{\"chunk_id\":\"3e411acf-fda5-56b1-bc5d-3e6b780b3b2c\",\"source_type\":\"filesystem\",\"source_id\":\"support-playbook\",\"location\":\"Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix\"}],\"canonical_citations\":[\"[s.filesystem:support-playbook/Support Operations Playbook/5. Returns and billing routing]\",\"[s.filesystem:support-playbook/Support Operations Playbook/16. Exception review board]\",\"[s.filesystem:support-playbook/Support Operations Playbook/31. Runbook examples/Appendix A — Escalation matrix]\"]},\"content\":\"Use this sequence for a return request:\\n\\n1. Identify the order channel: direct sale or marketplace.\\n2. Confirm plan and product type.\\n3. Locate delivery or activation evidence.\\n4. Check region and the policy effective on the relevant event date.\\n5. Check for a signed enterprise exception.\\n6. Record the requested remedy and required approval.\\n\\nFor direct Standard orders, the current canonical policy controls the ordinary window. Premium status matters only within its direct-sale scope. Marketplace cases use the marketplace channel. Digital goods turn on the activation event, and a contract exception requires Contract Operations review.\\n\\nA weekly exception review examines cases that required regional, security, product, or contract approval. The board checks that the requested remedy was within scope, the approver had the right role, and the customer message matched the final decision. It does not retroactively authorize an action that happened without approval.\\n\\nExceptions are grouped by cause, not by customer name. A recurring mismatch between a public guide and signed agreements is sent to Product Documentation or Contract Operations. A recurring missing field is addressed in the intake form rather than handled by a new informal shortcut.\\n\\n| Condition | Primary owner | Evidence to preserve |\\n|---|---|---|\\n| Authentication outage across workspaces | Incident commander | start time, scope, auth error, status updates |\\n| Suspected cross-tenant visibility | Security Operations | tenant IDs, request ID, observed response, access timeline |\\n| Negotiated enterprise exception | Contract Operations | contract ID, amendment, effective date, requested remedy |\\n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |\\n| Repeated product failure | Product Support | reproduction, version, workspace, workaround result |\"}\n[/evidence_block 1]\n[evidence_block 2 json_chars=1836]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E2\",\"evidence_block_id\":\"evidence-a41a91598b59026cd04a0e13\",\"source_type\":\"filesystem\",\"source_id\":\"premium-returns-2026\",\"location\":\"Premium Returns — 2026/Channel boundary\",\"section_key\":[\"heading\",[\"Premium Returns — 2026\",\"Channel boundary\"],0],\"document_version\":\"a7ad8fe93d9f8046833ef5b1cd7f38528fb49c1d51b81a991839107b3e6b7ee9\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"81627801-791b-5379-b97c-359c2058031b\",\"a7c1e5ef-c917-572f-8a87-643c962b9a71\"],\"citation_aliases\":[{\"chunk_id\":\"81627801-791b-5379-b97c-359c2058031b\",\"source_type\":\"filesystem\",\"source_id\":\"premium-returns-2026\",\"location\":\"Premium Returns — 2026\"},{\"chunk_id\":\"a7c1e5ef-c917-572f-8a87-643c962b9a71\",\"source_type\":\"filesystem\",\"source_id\":\"premium-returns-2026\",\"location\":\"Premium Returns — 2026/Channel boundary\"}],\"canonical_citations\":[\"[s.filesystem:premium-returns-2026/Premium Returns — 2026]\",\"[s.filesystem:premium-returns-2026/Premium Returns — 2026/Channel boundary]\"]},\"content\":\"Owner: Customer Policy Operations\\nEffective: 2026-01-15\\nApplies to: Premium-plan orders purchased directly from Negativex\\n\\nPremium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies.\\n\\nThe plan badge is not enough to select this policy. An order placed through the marketplace remains subject to the Marketplace Returns procedure, including its seven-day window and case channel. Digital entitlements follow the activation rule. A statutory regional right is assessed separately when the order falls within its jurisdiction.\\n\\nSupport records the account plan and original order channel before presenting the Premium window. Contractual exceptions are routed to the Enterprise Contract Guide.\"}\n[/evidence_block 2]\n[evidence_block 3 json_chars=1441]\nEVIDENCE METADATA (server-generated):\n{\"metadata\":{\"evidence_id\":\"E3\",\"evidence_block_id\":\"evidence-06f5cbd2389798c4d01f4ca0\",\"source_type\":\"filesystem\",\"source_id\":\"employee-handbook-en\",\"location\":\"Employee and Customer Operations Handbook/6. Billing and returns\",\"section_key\":[\"heading\",[\"Employee and Customer Operations Handbook\",\"6. Billing and returns\"],0],\"document_version\":\"240d9a6472324d511ddc7aa1f8f8e8283075ca7d5e19da57f85cda9cd6c1be93\",\"tenant_id\":\"tenant-a\",\"contributing_chunk_ids\":[\"05d2502c-02dd-5ed1-9d72-69975fdb2839\"],\"citation_aliases\":[{\"chunk_id\":\"05d2502c-02dd-5ed1-9d72-69975fdb2839\",\"source_type\":\"filesystem\",\"source_id\":\"employee-handbook-en\",\"location\":\"Employee and Customer Operations Handbook/6. Billing and returns\"}],\"canonical_citations\":[\"[s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/6. Billing and returns]\"]},\"content\":\"Agents apply the canonical policy for the order’s channel and effective date. Requests above the local approval threshold, requests based on a negotiated enterprise term, and requests for an activated digital good require additional review. The threshold is an approval control, not evidence that a refund is owed.\\n\\nWhen a customer asks for an exception, the agent records the business reason, the requested remedy, and the source that could authorize it. Do not promise approval while the contract or regional review is pending. The customer receives a clear status and next action.\"}\n[/evidence_block 3]\n</section_aware_evidence>",
+  "pipeline_identity": {
+    "candidate_k": 20,
+    "collection": "kb_eval_phase55_0175aa4a2f9b",
+    "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+    "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+    "generator": "qwen3.5:4b",
+    "git_sha": "63dbd8ed89a35c31f0968bc1ce93770fb8954602",
+    "num_ctx": 4096,
+    "prompt": "v3",
+    "temperature": 0.0,
+    "think": false,
+    "top_n": 5
+  },
+  "query_id": "acl-02-1",
+  "tenant_id": "tenant-a",
+  "top5_ids": [
+    "b3b30141-6504-54bb-a9dc-de95e27dca22",
+    "c232662d-70f9-55cd-aad1-735ef0ca0784",
+    "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+    "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+    "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+  ]
+}

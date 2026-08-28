@@ -1,0 +1,430 @@
+{
+  "prompt_version": "v3",
+  "context_builder": "context_builder_v1",
+  "generation_calls": 0,
+  "results": [
+    {
+      "all_required_present": true,
+      "answerability": "answerable",
+      "category": "multi_document",
+      "citation_authorized": false,
+      "citation_identity_valid": false,
+      "citations": {
+        "authorized": false,
+        "found": [
+          [
+            "filesystem",
+            "regional-returns-tr",
+            "3/0"
+          ],
+          [
+            "filesystem",
+            "digital-goods-policy",
+            "5/1"
+          ]
+        ],
+        "identity_valid": false,
+        "source_alignment_failures": 0,
+        "source_alignment_review_required": 1,
+        "support_status": "UNOBSERVABLE",
+        "unknown_or_unauthorized": [
+          [
+            "filesystem",
+            "digital-goods-policy",
+            "5/1"
+          ]
+        ]
+      },
+      "context_builder": {
+        "chunk_count": 5,
+        "content_tokens": 210,
+        "context_chars": 4209,
+        "context_tokens": 299,
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "input_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "metadata_tokens": 10,
+        "ordering_changes": 0,
+        "output_chunk_ids": [
+          "a813c829-a9db-5cee-80fc-ff7c677187a9",
+          "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+          "7a444794-caf0-5d9d-a699-274e1ee59ef2",
+          "d25845f0-5e9e-5abc-a37b-71c40c1df9f2",
+          "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+        ],
+        "removed_chunk_ids": [],
+        "truncated": false,
+        "unique_source_count": 2
+      },
+      "context_builder_latency_ms": 0.117,
+      "events": [
+        {
+          "prompt_version": "v3",
+          "security_validation_mode": "strict",
+          "trace_id": "00000000000000000000000000000000",
+          "type": "metadata",
+          "untrusted_context_enabled": true
+        },
+        {
+          "citations_found": [
+            [
+              "filesystem",
+              "regional-returns-tr",
+              "3/0"
+            ],
+            [
+              "filesystem",
+              "digital-goods-policy",
+              "5/1"
+            ]
+          ],
+          "grounded": false,
+          "has_citations": true,
+          "type": "grounding",
+          "ungrounded_citations": [
+            [
+              "filesystem",
+              "digital-goods-policy",
+              "5/1"
+            ]
+          ]
+        },
+        {
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false,
+          "passed": false,
+          "type": "security_validation",
+          "violations": [
+            "unauthorized_citation"
+          ]
+        },
+        {
+          "message": "The answer was withheld because output policy validation failed.",
+          "type": "error"
+        }
+      ],
+      "fact_score": {
+        "expected_components": [
+          "Regional exceptions and the activation boundary must both be checked."
+        ],
+        "fact_coverage": 0.0,
+        "flags": [],
+        "matched_fact_ids": [],
+        "matches": [
+          {
+            "matched": false,
+            "reason": "no_safe_match"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 1,
+        "required_fact_ids": [
+          "fact_1"
+        ],
+        "status": "INCORRECT"
+      },
+      "generation_calls": 1,
+      "generation_latency_ms": 18111.657,
+      "gold_present": true,
+      "language_pair": "tr->tr",
+      "provider_error": null,
+      "provider_status": "COMPLETED",
+      "query_id": "multi-03-0",
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "Bölgesel cayma hakkı ile aktive edilmiş dijital ürün istisnasını birlikte açıklayan iki kaynak şunlardır: [s.filesystem:regional-returns-tr/3/0], [s.filesystem:digital-goods-policy/5/1].",
+      "user_visible_output": "",
+      "validated_output": "",
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "validator_pass": false
+    },
+    {
+      "all_required_present": true,
+      "answerability": "answerable",
+      "category": "multi_document",
+      "citation_authorized": true,
+      "citation_identity_valid": true,
+      "citations": {
+        "authorized": true,
+        "found": [
+          [
+            "filesystem",
+            "support-playbook",
+            "Support Operations Playbook/8. Multi-source policy resolution"
+          ]
+        ],
+        "identity_valid": true,
+        "source_alignment_failures": 0,
+        "source_alignment_review_required": 0,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "unknown_or_unauthorized": []
+      },
+      "context_builder": {
+        "chunk_count": 5,
+        "content_tokens": 364,
+        "context_chars": 5832,
+        "context_tokens": 522,
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "metadata_tokens": 79,
+        "ordering_changes": 0,
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "removed_chunk_ids": [],
+        "truncated": false,
+        "unique_source_count": 3
+      },
+      "context_builder_latency_ms": 0.144,
+      "events": [
+        {
+          "prompt_version": "v3",
+          "security_validation_mode": "strict",
+          "trace_id": "00000000000000000000000000000000",
+          "type": "metadata",
+          "untrusted_context_enabled": true
+        },
+        {
+          "citations_found": [
+            [
+              "filesystem",
+              "support-playbook",
+              "Support Operations Playbook/8. Multi-source policy resolution"
+            ]
+          ],
+          "grounded": true,
+          "has_citations": true,
+          "type": "grounding",
+          "ungrounded_citations": []
+        },
+        {
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false,
+          "passed": true,
+          "type": "security_validation",
+          "violations": []
+        }
+      ],
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "fact_coverage": 0.5,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "answer": [
+              7.0,
+              "day"
+            ],
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": false,
+            "reason": "duration"
+          },
+          {
+            "matched": true,
+            "reason": "explicit_authored_aliases"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "CORRECT_BUT_INCOMPLETE"
+      },
+      "generation_calls": 1,
+      "generation_latency_ms": 42810.946,
+      "gold_present": true,
+      "language_pair": "en->en",
+      "provider_error": null,
+      "provider_status": "COMPLETED",
+      "query_id": "multi-00-3",
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "Based on the provided documents, here is how to handle your return request:\n\n**Standard Return Window vs. Evidence Fields:**\n*   **Return Window Source**: For Standard orders (direct sale), the window is controlled by a single canonical policy ([s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]), which cannot be superseded unless replaced for future effective dates [Source Block 1][SUPPORT_BLOCK_5].\n*   **Evidence Field Source**: To support any return, you must record: plan (premium status matters only within its direct-sale scope), order channel (direct sale vs. marketplace; marketplace cases follow their own procedure including a seven-day window and separate case channel), delivery date/activation event, product type, requested remedy, applicable contract or regional scope, approval details, and the customer message ([SUPPORT_BLOCK_5][SOURCE_BLOCK 3]).\n*   **Key Distinction**: A plan badge is not enough to select this policy. Orders placed through a marketplace are subject to the Marketplace Returns procedure [PREMIUM_RETURN_2026]. If any of these fields (e.g., order channel) are unknown, keep the case pending rather than quoting a generic return period ([SUPPORT_BLOCK_5]).\n\n**What Should Happen Next:**\n1.  Identify whether it is a direct sale or marketplace order and locate delivery/activation evidence [SUPPORT_PLAYBOOK].\n2.  Record all required fields: plan, channel, date/type/remedy, approval status, etc., to determine if the request qualifies for the Standard window ([SOURCE_BLOCK_5][PREMIUM_RETURN_2026]).\n3.  If an enterprise exception is involved or a statutory regional right applies (separate from local policies), consult Contract Operations and verify effective dates [SUPPORT_PLAYBOOK].",
+      "user_visible_output": "Based on the provided documents, here is how to handle your return request:\n\n**Standard Return Window vs. Evidence Fields:**\n*   **Return Window Source**: For Standard orders (direct sale), the window is controlled by a single canonical policy ([s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]), which cannot be superseded unless replaced for future effective dates [Source Block 1][SUPPORT_BLOCK_5].\n*   **Evidence Field Source**: To support any return, you must record: plan (premium status matters only within its direct-sale scope), order channel (direct sale vs. marketplace; marketplace cases follow their own procedure including a seven-day window and separate case channel), delivery date/activation event, product type, requested remedy, applicable contract or regional scope, approval details, and the customer message ([SUPPORT_BLOCK_5][SOURCE_BLOCK 3]).\n*   **Key Distinction**: A plan badge is not enough to select this policy. Orders placed through a marketplace are subject to the Marketplace Returns procedure [PREMIUM_RETURN_2026]. If any of these fields (e.g., order channel) are unknown, keep the case pending rather than quoting a generic return period ([SUPPORT_BLOCK_5]).\n\n**What Should Happen Next:**\n1.  Identify whether it is a direct sale or marketplace order and locate delivery/activation evidence [SUPPORT_PLAYBOOK].\n2.  Record all required fields: plan, channel, date/type/remedy, approval status, etc., to determine if the request qualifies for the Standard window ([SOURCE_BLOCK_5][PREMIUM_RETURN_2026]).\n3.  If an enterprise exception is involved or a statutory regional right applies (separate from local policies), consult Contract Operations and verify effective dates [SUPPORT_PLAYBOOK].",
+      "validated_output": "Based on the provided documents, here is how to handle your return request:\n\n**Standard Return Window vs. Evidence Fields:**\n*   **Return Window Source**: For Standard orders (direct sale), the window is controlled by a single canonical policy ([s.filesystem:support-playbook/Support Operations Playbook/8. Multi-source policy resolution]), which cannot be superseded unless replaced for future effective dates [Source Block 1][SUPPORT_BLOCK_5].\n*   **Evidence Field Source**: To support any return, you must record: plan (premium status matters only within its direct-sale scope), order channel (direct sale vs. marketplace; marketplace cases follow their own procedure including a seven-day window and separate case channel), delivery date/activation event, product type, requested remedy, applicable contract or regional scope, approval details, and the customer message ([SUPPORT_BLOCK_5][SOURCE_BLOCK 3]).\n*   **Key Distinction**: A plan badge is not enough to select this policy. Orders placed through a marketplace are subject to the Marketplace Returns procedure [PREMIUM_RETURN_2026]. If any of these fields (e.g., order channel) are unknown, keep the case pending rather than quoting a generic return period ([SUPPORT_BLOCK_5]).\n\n**What Should Happen Next:**\n1.  Identify whether it is a direct sale or marketplace order and locate delivery/activation evidence [SUPPORT_PLAYBOOK].\n2.  Record all required fields: plan, channel, date/type/remedy, approval status, etc., to determine if the request qualifies for the Standard window ([SOURCE_BLOCK_5][PREMIUM_RETURN_2026]).\n3.  If an enterprise exception is involved or a statutory regional right applies (separate from local policies), consult Contract Operations and verify effective dates [SUPPORT_PLAYBOOK].",
+      "validator_failure_codes": [],
+      "validator_pass": true
+    },
+    {
+      "all_required_present": true,
+      "answerability": "answerable",
+      "category": "multi_document",
+      "citation_authorized": true,
+      "citation_identity_valid": true,
+      "citations": {
+        "authorized": true,
+        "found": [
+          [
+            "filesystem",
+            "standard-returns-2026",
+            "Standard Returns — 2026/Case record"
+          ],
+          [
+            "filesystem",
+            "employee-handbook-en",
+            "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+          ]
+        ],
+        "identity_valid": true,
+        "source_alignment_failures": 0,
+        "source_alignment_review_required": 1,
+        "support_status": "REQUIRES_MANUAL_REVIEW",
+        "unknown_or_unauthorized": []
+      },
+      "context_builder": {
+        "chunk_count": 5,
+        "content_tokens": 368,
+        "context_chars": 5935,
+        "context_tokens": 538,
+        "dedupe_reason": {},
+        "dedupe_similarity": {},
+        "input_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "metadata_tokens": 91,
+        "ordering_changes": 0,
+        "output_chunk_ids": [
+          "27816f01-3236-59fa-ace9-3e5ff651bf91",
+          "b3b30141-6504-54bb-a9dc-de95e27dca22",
+          "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+          "a429ec1b-1808-5d00-bc24-0136fec79326",
+          "1b50ae39-8364-5172-a719-f2090efce26e"
+        ],
+        "removed_chunk_ids": [],
+        "truncated": false,
+        "unique_source_count": 3
+      },
+      "context_builder_latency_ms": 0.149,
+      "events": [
+        {
+          "prompt_version": "v3",
+          "security_validation_mode": "strict",
+          "trace_id": "00000000000000000000000000000000",
+          "type": "metadata",
+          "untrusted_context_enabled": true
+        },
+        {
+          "citations_found": [
+            [
+              "filesystem",
+              "standard-returns-2026",
+              "Standard Returns — 2026/Case record"
+            ],
+            [
+              "filesystem",
+              "employee-handbook-en",
+              "Employee and Customer Operations Handbook/32. Campaigns and plan changes"
+            ]
+          ],
+          "grounded": true,
+          "has_citations": true,
+          "type": "grounding",
+          "ungrounded_citations": []
+        },
+        {
+          "citation_suppressed": false,
+          "hidden_prompt_leaked": false,
+          "passed": true,
+          "type": "security_validation",
+          "violations": []
+        }
+      ],
+      "fact_score": {
+        "expected_components": [
+          "14 calendar days",
+          "record plan, channel, delivery date, and remedy."
+        ],
+        "fact_coverage": 0.5,
+        "flags": [],
+        "matched_fact_ids": [
+          "fact_2"
+        ],
+        "matches": [
+          {
+            "answer": null,
+            "expected": [
+              14.0,
+              "day"
+            ],
+            "matched": false,
+            "reason": "duration"
+          },
+          {
+            "matched": true,
+            "reason": "explicit_authored_aliases"
+          }
+        ],
+        "missing_fact_ids": [
+          "fact_1"
+        ],
+        "required_fact_count": 2,
+        "required_fact_ids": [
+          "fact_1",
+          "fact_2"
+        ],
+        "status": "CORRECT_BUT_INCOMPLETE"
+      },
+      "generation_calls": 1,
+      "generation_latency_ms": 22332.363,
+      "gold_present": true,
+      "language_pair": "en->en",
+      "provider_error": null,
+      "provider_status": "COMPLETED",
+      "query_id": "multi-00-1",
+      "raw_candidate_observable": true,
+      "raw_candidate_output": "The combination that explains both the standard return window and evidence fields is found in **[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]**, which states before approving a request you must \"record [the plan], order channel, delivery date, product type, requested remedy\" while keeping the case pending if any of those fields are unknown.\n\nAdditional relevant detail is in **[s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes]**, which clarifies that \"a campaign label does not replace the Standard or Premium return policy.\"",
+      "user_visible_output": "The combination that explains both the standard return window and evidence fields is found in **[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]**, which states before approving a request you must \"record [the plan], order channel, delivery date, product type, requested remedy\" while keeping the case pending if any of those fields are unknown.\n\nAdditional relevant detail is in **[s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes]**, which clarifies that \"a campaign label does not replace the Standard or Premium return policy.\"",
+      "validated_output": "The combination that explains both the standard return window and evidence fields is found in **[s.filesystem:standard-returns-2026/Standard Returns — 2026/Case record]**, which states before approving a request you must \"record [the plan], order channel, delivery date, product type, requested remedy\" while keeping the case pending if any of those fields are unknown.\n\nAdditional relevant detail is in **[s.filesystem:employee-handbook-en/Employee and Customer Operations Handbook/32. Campaigns and plan changes]**, which clarifies that \"a campaign label does not replace the Standard or Premium return policy.\"",
+      "validator_failure_codes": [],
+      "validator_pass": true
+    }
+  ],
+  "metrics": {
+    "fully_correct_complete": 0,
+    "planning_failures": 2,
+    "synthesis_failures": 1,
+    "citation_identity": 2,
+    "citation_occurrences": 5,
+    "validator_rejects": 1,
+    "latency_ms": {
+      "p50": 22332.363,
+      "max": 42810.946
+    }
+  }
+}

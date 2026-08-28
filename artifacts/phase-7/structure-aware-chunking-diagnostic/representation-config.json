@@ -1,0 +1,12 @@
+{
+  "schema_version": "phase-7.10-representation-v1",
+  "representations": [
+    "CURRENT_CHUNK",
+    "PARENT_SECTION",
+    "SAME_SECTION_NEIGHBORS",
+    "SECTION_AWARE_MERGED"
+  ],
+  "compact_source_token_limit": 320,
+  "source_text_only": true,
+  "runtime_promotion": false
+}

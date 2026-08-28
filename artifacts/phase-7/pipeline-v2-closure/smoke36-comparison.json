@@ -1,0 +1,134 @@
+{
+  "calls": {
+    "embedding": 0,
+    "generation": 36,
+    "reranker": 0,
+    "retrieval": 0,
+    "semantic_evaluator": 0
+  },
+  "canonical_query_count": 36,
+  "categories": {
+    "acl_negative": {
+      "content_status_counts": {},
+      "gold_present_answerable": 0,
+      "n": 3,
+      "raw_observable": 3,
+      "user_visible": 3,
+      "user_visible_full": 0,
+      "validator_pass": 0
+    },
+    "ambiguous": {
+      "content_status_counts": {},
+      "gold_present_answerable": 0,
+      "n": 4,
+      "raw_observable": 4,
+      "user_visible": 4,
+      "user_visible_full": 0,
+      "validator_pass": 2
+    },
+    "cross_lingual": {
+      "content_status_counts": {
+        "FULLY_CORRECT_COMPLETE": 4,
+        "INCORRECT": 1
+      },
+      "gold_present_answerable": 5,
+      "n": 6,
+      "raw_observable": 6,
+      "user_visible": 6,
+      "user_visible_full": 3,
+      "validator_pass": 4
+    },
+    "hard_answerable": {
+      "content_status_counts": {
+        "CORRECT_BUT_INCOMPLETE": 1,
+        "FULLY_CORRECT_COMPLETE": 2,
+        "INCORRECT": 1,
+        "PARTIALLY_CORRECT": 1
+      },
+      "gold_present_answerable": 5,
+      "n": 6,
+      "raw_observable": 6,
+      "user_visible": 6,
+      "user_visible_full": 2,
+      "validator_pass": 3
+    },
+    "injection_bearing": {
+      "content_status_counts": {
+        "CORRECT_BUT_INCOMPLETE": 2
+      },
+      "gold_present_answerable": 2,
+      "n": 2,
+      "raw_observable": 2,
+      "user_visible": 2,
+      "user_visible_full": 0,
+      "validator_pass": 2
+    },
+    "multi_document": {
+      "content_status_counts": {
+        "FULLY_CORRECT_COMPLETE": 2,
+        "INCORRECT": 1
+      },
+      "gold_present_answerable": 3,
+      "n": 3,
+      "raw_observable": 3,
+      "user_visible": 2,
+      "user_visible_full": 1,
+      "validator_pass": 1
+    },
+    "standard_answerable": {
+      "content_status_counts": {
+        "FULLY_CORRECT_COMPLETE": 5
+      },
+      "gold_present_answerable": 5,
+      "n": 6,
+      "raw_observable": 6,
+      "user_visible": 6,
+      "user_visible_full": 3,
+      "validator_pass": 2
+    },
+    "unanswerable": {
+      "content_status_counts": {},
+      "gold_present_answerable": 0,
+      "n": 4,
+      "raw_observable": 4,
+      "user_visible": 4,
+      "user_visible_full": 0,
+      "validator_pass": 4
+    },
+    "version_conflict": {
+      "content_status_counts": {
+        "FULLY_CORRECT_COMPLETE": 2
+      },
+      "gold_present_answerable": 2,
+      "n": 2,
+      "raw_observable": 2,
+      "user_visible": 2,
+      "user_visible_full": 2,
+      "validator_pass": 2
+    }
+  },
+  "content_status_counts": {
+    "CORRECT_BUT_INCOMPLETE": 3,
+    "FULLY_CORRECT_COMPLETE": 15,
+    "INCORRECT": 3,
+    "PARTIALLY_CORRECT": 1
+  },
+  "fully_correct_complete_gold_present": 15,
+  "gold_present_answerable": 22,
+  "latency_ms": {
+    "max": 61780.356,
+    "p50": 22978.679
+  },
+  "raw_observable": 36,
+  "status": "SMOKE36_COMPLETED",
+  "user_visible_full_gold_present": 11,
+  "user_visible_outputs": 35,
+  "user_visible_status_counts": {
+    "CORRECT_BUT_INCOMPLETE": 3,
+    "FULLY_CORRECT_COMPLETE": 11,
+    "INCORRECT": 6,
+    "NOT_USER_VISIBLE": 1,
+    "PARTIALLY_CORRECT": 1
+  },
+  "validator_pass": 20
+}

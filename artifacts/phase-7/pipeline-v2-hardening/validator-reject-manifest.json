@@ -1,0 +1,23 @@
+{
+  "count": 16,
+  "new_generation_calls": 0,
+  "query_ids": [
+    "acl-02-0",
+    "acl-02-1",
+    "acl-02-2",
+    "ambiguous-00-1",
+    "ambiguous-00-2",
+    "cross-00-1",
+    "cross-01-0",
+    "hard-api-private",
+    "hard-marketplace-channel",
+    "hard-order-channel",
+    "multi-00-1",
+    "multi-03-0",
+    "native-00-2",
+    "native-00-3",
+    "native-01-0",
+    "native-01-1"
+  ],
+  "source": "pipeline-v2-closure/smoke36-results.jsonl"
+}

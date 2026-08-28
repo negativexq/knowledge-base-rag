@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "facts": 16,
+    "queries": 10
+  },
+  "query_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0",
+    "hard-annual-cancel",
+    "hard-api-version",
+    "hard-policy-language",
+    "version-01-0",
+    "version-01-1",
+    "cross-00-0",
+    "cross-06-0"
+  ]
+}

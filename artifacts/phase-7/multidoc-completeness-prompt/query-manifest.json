@@ -1,0 +1,17 @@
+{
+  "query_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ],
+  "multi_document_ids": [
+    "multi-00-1",
+    "multi-00-3",
+    "multi-03-0"
+  ],
+  "count": 3,
+  "composition": {
+    "multi_document": 3
+  },
+  "selection_rationale": "All existing complete multi-document records; no resampling."
+}

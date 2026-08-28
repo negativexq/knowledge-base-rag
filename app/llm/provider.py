@@ -59,6 +59,10 @@ def get_chat_provider(settings: Settings) -> ChatProvider:
     return OllamaProvider(
         base_url=settings.ollama_base_url,
         think=settings.ollama_thinking,
+        num_ctx=settings.ollama_num_ctx,
+        connect_timeout=settings.ollama_connect_timeout_seconds,
+        timeout=settings.ollama_read_timeout_seconds,
+        overall_timeout=settings.ollama_overall_timeout_seconds,
     )
 
 
@@ -70,4 +74,9 @@ def get_embedding_provider(settings: Settings) -> EmbeddingProvider:
     # second embedding backend later won't require call-site changes.
     from app.llm.ollama_provider import OllamaProvider
 
-    return OllamaProvider(base_url=settings.ollama_base_url)
+    return OllamaProvider(
+        base_url=settings.ollama_base_url,
+        connect_timeout=settings.ollama_connect_timeout_seconds,
+        timeout=settings.ollama_read_timeout_seconds,
+        overall_timeout=settings.ollama_overall_timeout_seconds,
+    )

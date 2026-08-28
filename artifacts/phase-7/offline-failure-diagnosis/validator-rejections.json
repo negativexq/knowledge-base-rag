@@ -1,0 +1,126 @@
+{
+  "records": [
+    {
+      "query_id": "ambiguous-00-0",
+      "category": "ambiguous",
+      "gold_present": false,
+      "content_class": "AMBIGUOUS_CONDITIONAL",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "user_visible_output_available": false,
+      "disposition": "NEUTRAL_REJECTION"
+    },
+    {
+      "query_id": "ambiguous-01-0",
+      "category": "ambiguous",
+      "gold_present": false,
+      "content_class": "AMBIGUOUS_CONDITIONAL",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "user_visible_output_available": false,
+      "disposition": "NEUTRAL_REJECTION"
+    },
+    {
+      "query_id": "cross-00-0",
+      "category": "cross_lingual",
+      "gold_present": false,
+      "content_class": "CONTENT_FULLY_CORRECT_COMPLETE",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "user_visible_output_available": false,
+      "disposition": "COSTLY_REJECTION"
+    },
+    {
+      "query_id": "hard-annual-cancel",
+      "category": "hard_answerable",
+      "gold_present": true,
+      "content_class": "CONTENT_FULLY_CORRECT_COMPLETE",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "user_visible_output_available": false,
+      "disposition": "COSTLY_REJECTION"
+    },
+    {
+      "query_id": "hard-order-channel",
+      "category": "hard_answerable",
+      "gold_present": true,
+      "content_class": "CONTENT_INCORRECT",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "user_visible_output_available": false,
+      "disposition": "GOOD_REJECTION"
+    },
+    {
+      "query_id": "injection-03-0",
+      "category": "injection_bearing",
+      "gold_present": true,
+      "content_class": "CONTENT_CORRECT_INCOMPLETE",
+      "validator_failure_codes": [
+        "CITATION_SUPPRESSION"
+      ],
+      "citations": [],
+      "user_visible_output_available": false,
+      "disposition": "COSTLY_REJECTION"
+    },
+    {
+      "query_id": "multi-03-0",
+      "category": "multi_document",
+      "gold_present": true,
+      "content_class": "CONTENT_INCORRECT",
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "citations": [
+        [
+          "filesystem",
+          "regional-returns-tr",
+          "3/0"
+        ],
+        [
+          "filesystem",
+          "digital-goods-policy",
+          "5/1"
+        ]
+      ],
+      "user_visible_output_available": false,
+      "disposition": "GOOD_REJECTION"
+    },
+    {
+      "query_id": "version-01-1",
+      "category": "version_conflict",
+      "gold_present": true,
+      "content_class": "CONTENT_FULLY_CORRECT_COMPLETE",
+      "validator_failure_codes": [
+        "UNAUTHORIZED_CITATION_ID"
+      ],
+      "citations": [
+        [
+          "filesystem",
+          "long-policy-tr",
+          "Negativex Bölgesel Operasyon ve Müşteri Politikası/35. İş ortak..."
+        ]
+      ],
+      "user_visible_output_available": false,
+      "disposition": "COSTLY_REJECTION"
+    }
+  ],
+  "code_counts": {
+    "CITATION_SUPPRESSION": 6,
+    "UNAUTHORIZED_CITATION_ID": 2
+  },
+  "disposition_counts": {
+    "NEUTRAL_REJECTION": 2,
+    "COSTLY_REJECTION": 4,
+    "GOOD_REJECTION": 2
+  }
+}

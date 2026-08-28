@@ -1,0 +1,8 @@
+{
+  "cases": 3,
+  "unauthorized_leakage": 0,
+  "safe_abstentions": 1,
+  "unsupported_answers": 2,
+  "boundary_failures": 0,
+  "main_cause": "NO_ANSWER_INSTRUCTION_FAILURE"
+}
