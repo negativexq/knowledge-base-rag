@@ -1,0 +1,99 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 12424,
+    "context_hash": "267854b29f82c307bb194a7432b96888b6f90cf2239e7a338f94d30e26ebc602",
+    "context_tokens": 804,
+    "expanded": true,
+    "input_chunk_ids": [
+      "f7b1d3c6-5f0f-50d5-a804-664815af4da7",
+      "2e97b417-5c99-5c92-acbf-0a5d8ea14c62",
+      "8ad2c068-3e8b-50d7-badf-d3f5b4bf527e",
+      "a813c829-a9db-5cee-80fc-ff7c677187a9",
+      "f7dd4371-2cc7-5c75-a255-d6df32d93211"
+    ],
+    "output_block_ids": [
+      "evidence-9502682ef8506f05f99845d4",
+      "evidence-0b250c61da8e728cdfe8e4fc"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": true,
+      "citation_suppressed": true,
+      "hidden_prompt_leaked": false,
+      "passed": false,
+      "type": "security_validation",
+      "validator_failure_codes": [
+        "TOP_LEVEL_SCHEMA_INVALID",
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS"
+      ],
+      "violations": [
+        "TOP_LEVEL_SCHEMA_INVALID",
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS"
+      ]
+    },
+    {
+      "message": "The answer was withheld because structured output validation failed.",
+      "type": "error"
+    }
+  ],
+  "generation_latency_ms": 78521.667,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": true,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{ \"answer_parts\": [ { \"text\": \"Bu kılavuz, **İade Operasyonları Kılavuzu**'nda tanımlanmıştır ve geçerlilik tarihi **15 Ocak 2026** olarak belirtilmiştir.\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Belge sahibi: Customer Operations\\\\nYürürlük: 2026-01-15\\\"\" } ] }, { \"text\": \"İade taleplerinin işlenmesi süreci, siparişin kaynağı (Negativex veya pazar yeri), ürün türü ve teslim/aktivasyon olayının belirlenmesine dayanır.\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Sipariş doğrudan Negativex'den mi, yoksa pazar yerinden mi verilmiş? ... Fiziksel ürün, dijital lisans ve kişiye özel ürün farklı kanıt ister.\\\"\" }, { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Fiziksel üründe teslim tarihi temel olaydır. Dijital üründe aktivasyon zaman damgası belirleyicidir; indirme aktivasyon anlamına gelmez.\\\"\" } ] }, { \"text\": \"Sipariş durumuna göre ilk başvurulacak kaynaklar şunlardır:\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"| Sipariş durumu | İlk başvurulacak kaynak |\\n|---|---|\\n| Doğrudan + Standard | Standard Returns — 2026 |\\n| Doğrudan + Premium | Premium Returns — 2026 |\\n| Pazar yeri | Marketplace Returns |\\n| Aktive edilmiş dijital ürün | Digital Goods Policy |\\n| Bölgesel kapsam | Bölgesel İadeler — Türkiye |\\n| Müzakere edilmiş kurumsal hüküm | Enterprise Contract Guide |\" } ] }, { \"text\": \"Türkiye'deki siparişlerde teslim tarihi, müşteri konumu ve ürün niteliği birlikte değerlendirilir. Hasarlı ürünler için fotoğraf kanıtı gereklidir ancak teslim kaydı yeterli değildir.\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Türkiye'deki siparişlerde teslim tarihi, müşteri konumu, ürün niteliği ve sipariş kanalı birlikte değerlendirilir. ... Hasarlı ürün için teslim kaydı, hasarın açıklaması ve sipariş referansı toplanır. Fotoğraf yardımcı kanıttır; teslim kaydının yerini tutmaz.\\\"\" } ] }, { \"text\": \"Vaka kayıt sistemi tenant, hesap rolü, plan, kanal, ürün türü, teslim veya aktivasyon olayı gibi alanları içerir ancak parola ve kurtarma kodu kayda alınmaz.\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Vaka kaydı tenant, hesap rolü, plan, kanal, ürün türü, teslim veya aktivasyon olayı, bölge, istenen çözüm, kaynak sürümü ve onayı içermelidir. Parola veya kurtarma kodu kayda kopyalanmaz.\\\"\" } ] }, { \"text\": \"Tier 1 destek ekibi yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir; diğer durumlarda yetkili rolere yönlendirme yapılır.\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Tier 1 yalnızca tüm koşulları görünen standart talepleri kendi onay sınırında kapatabilir.\\\"\" } ] }, { \"text\": \"Kapanış notu, belirlenen olguları ve kullanılan kaynakları içermelidir; müşteri yanıt vermemesi eksik kanıt olarak kabul edilmez.\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Kapanış notu belirlenen olguları, kullanılan kaynakları, yapılan işlemi, müşteri mesajını ve çözülemeyen noktaları içerir. Müşteri yanıt vermedi diye eksik kanıt tamamlanmış sayılmaz.\\\"\" } ] }, { \"text\": \"Bu kılavuz Tier 1 ve Tier 2 destek ekipleri tarafından uygulanır.\", \"evidence\": [ { \"evidence_id\": \"f744c038228\", \"quote\": \"\\\"Hedef kitle:",
+    "rejected_answer_parts": [],
+    "structured_candidate": null,
+    "user_visible_output_available": false,
+    "validated_answer_parts": [],
+    "validated_output": null,
+    "validated_output_available": false,
+    "validator_failure_codes": [
+      "TOP_LEVEL_SCHEMA_INVALID",
+      "NO_VALID_EVIDENCE_BACKED_CLAIMS"
+    ],
+    "validator_input_available": true,
+    "validator_pass": false
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:22:34.091055+00:00",
+    "connection_established_at": "2026-08-28T20:22:34.090193+00:00",
+    "context_hash": "83afa5f751790a9a91999ea421b9778c1cd1c7e8b59a500ae5a3905b16675a25",
+    "elapsed_ms": 78519.931,
+    "first_body_byte_at": "2026-08-28T20:22:34.090422+00:00",
+    "headers_received_at": "2026-08-28T20:22:34.090193+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "cda9f6f90a0b0bf79af4896a91fcce9d0fee0741e3955538d32e7d85e5c8c9f3",
+    "request_id": "cdf7073d480c48a296085f76b3210732",
+    "request_started_at": "2026-08-28T20:21:15.572930+00:00",
+    "response_bytes": 3831,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "native-38-2",
+  "run_key": "a1a61cb56f63c53e8052a2b5174b304bca09da93ba669cc3902321ac3e03b246",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "85fefb95a3524c0d125729df12791daafe67af77ab8c2d34b33620d81a644908",
+  "state": "GENERATION_COMPLETE"
+}

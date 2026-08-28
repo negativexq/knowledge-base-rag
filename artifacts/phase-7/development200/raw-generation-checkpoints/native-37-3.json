@@ -1,0 +1,130 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 2065,
+    "context_hash": "c818a3441a0372398ddbc828f6a9998c4e8e5f2881ff8b930bcfabe350532d3c",
+    "context_tokens": 107,
+    "expanded": false,
+    "input_chunk_ids": [
+      "ef5948a9-a160-5893-b884-ced21545b8aa",
+      "0925877b-63cb-524b-9a71-fbfed9162b84",
+      "f09325f9-a5f4-52e7-ab35-a5b3e4c5198a",
+      "829a6173-9393-504b-a8cd-fae5ca5824a1",
+      "f38030bf-09fa-5b62-a7fd-615f2d98292b"
+    ],
+    "output_block_ids": [
+      "evidence-8f9945f17653a9930e0169d4",
+      "evidence-208f3c5186e06c2b5c115cbf"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 14633.351,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"The current API version is v3. Version information must be sent in the documented header or endpoint form; using only a product name does not select a specific version.\",\"evidence\":[\n  {\"evidence_id\":\"E1\",\"quote\":\"API v3 is current.\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "API v3 is current."
+            }
+          ],
+          "text": "The current API version is v3. Version information must be sent in the documented header or endpoint form; using only a product name does not select a specific version."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "API v3 is current."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "ef5948a9-a160-5893-b884-ced21545b8aa"
+            ],
+            "evidence_block_id": "evidence-8f9945f17653a9930e0169d4",
+            "evidence_id": "E1",
+            "matched_span": [
+              40,
+              58
+            ],
+            "normalized_quote": "API v3 is current.",
+            "quote_match": true,
+            "raw_quote": "API v3 is current.",
+            "source_id": "product-guide-en",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "The current API version is v3. Version information must be sent in the documented header or endpoint form; using only a product name does not select a specific version.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "The current API version is v3. Version information must be sent in the documented header or endpoint form; using only a product name does not select a specific version. [E1]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:18:34.774588+00:00",
+    "connection_established_at": "2026-08-28T20:18:34.772933+00:00",
+    "context_hash": "cc3f7fa24552c7db92e27ead0ea597ca4f3f41057a75ce73f5e3e3ea7a152d0d",
+    "elapsed_ms": 14631.775,
+    "first_body_byte_at": "2026-08-28T20:18:34.773373+00:00",
+    "headers_received_at": "2026-08-28T20:18:34.772933+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "29578d4c0b81ad4f69e2380462a4ed1af462f7384a6a80da5e84c40ffa8249af",
+    "request_id": "bac09d3a862543878414040e5b390f74",
+    "request_started_at": "2026-08-28T20:18:20.143227+00:00",
+    "response_bytes": 600,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "native-37-3",
+  "run_key": "951fc6474cf1befcc926559aabbf976a52f0a6d5b870905b74b9e545ce68a69b",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "854f9f0677b059b9840eb10c452115775224d333c47ac7f6785f6480360d38b0",
+  "state": "GENERATION_COMPLETE"
+}

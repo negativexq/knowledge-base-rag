@@ -1,0 +1,160 @@
+{
+  "all_required_present": true,
+  "answerability": "answerable",
+  "application_forced_abstention": false,
+  "category": "hard_answerable",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7089,
+    "context_hash": "684a49976ae85fa807bf6b733ce0a8f85610132a483f6d02c1ca66afed133b18",
+    "context_tokens": 554,
+    "expanded": true,
+    "input_chunk_ids": [
+      "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "1b50ae39-8364-5172-a719-f2090efce26e",
+      "81627801-791b-5379-b97c-359c2058031b",
+      "5bd2643d-4837-5733-9717-c88c37860274"
+    ],
+    "output_block_ids": [
+      "evidence-18dff0edf106c3883371702d",
+      "evidence-8fea465773fe4e1d004015a6",
+      "evidence-a5be740e0ffb51f76dc60a19",
+      "evidence-e6a520b2f92849de04750e53"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "fact_score": {
+    "expected_components": [
+      "refund-policy-2026, effective 2026-01-15."
+    ],
+    "fact_coverage": 0.0,
+    "matched_fact_ids": [],
+    "matches": [
+      {
+        "expected": [
+          "2026-01-15"
+        ],
+        "matched": false,
+        "reason": "date"
+      }
+    ],
+    "missing_fact_ids": [
+      "fact_1"
+    ],
+    "required_fact_count": 1,
+    "required_fact_ids": [
+      "fact_1"
+    ],
+    "status": "INCORRECT"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 29749.059,
+  "gold_present": true,
+  "language_pair": "en->en",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:29:56.158092+00:00",
+    "connection_established_at": "2026-08-28T19:29:56.155982+00:00",
+    "context_hash": "0fa794f4ec05e1d01e7b3fd8d262a9074cb8b365389ba42cc17542ddb1327baf",
+    "elapsed_ms": 29747.963,
+    "first_body_byte_at": "2026-08-28T19:29:56.157370+00:00",
+    "headers_received_at": "2026-08-28T19:29:56.155982+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "f785dbc46a6e02135e91f576e71667620faf2b484fecf51863b49e0b5fd55c62",
+    "request_id": "d7a3be2dadb34a549db681b6fea2fc19",
+    "request_started_at": "2026-08-28T19:29:26.410820+00:00",
+    "response_bytes": 778,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "hard-version-date",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"For a delivery dated 2026-01-20, the applicable return policy is governed by 'Standard Returns — 2026', which allows customers to request a refund within 14 calendar days of delivery.\",\"evidence\":[\n  {\"evidence_id\":\"E3\",\"quote\":\"Effective date: 2026-01-15\\nScope: Negativex direct-sale physical goods on the Standard plan\\nStandard-plan customers may request a refund within 14 calendar days of delivery.\"}\n]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "2567a0e3b6ee3b16aea2a50ecf33e0b50a889dddf3340797c745798c5515b96e",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "51b2a822e827705972fbd8596113241a115133ea9f4485530f1434cac3df7033",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "Effective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\nStandard-plan customers may request a refund within 14 calendar days of delivery."
+          }
+        ],
+        "text": "For a delivery dated 2026-01-20, the applicable return policy is governed by 'Standard Returns — 2026', which allows customers to request a refund within 14 calendar days of delivery."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "For a delivery dated 2026-01-20, the applicable return policy is governed by 'Standard Returns — 2026', which allows customers to request a refund within 14 calendar days of delivery. [E3]",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E3",
+          "quote": "Effective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\nStandard-plan customers may request a refund within 14 calendar days of delivery."
+        }
+      ],
+      "evidence_validation": [
+        {
+          "contributing_chunk_ids": [
+            "5bd2643d-4837-5733-9717-c88c37860274",
+            "1b50ae39-8364-5172-a719-f2090efce26e"
+          ],
+          "evidence_block_id": "evidence-a5be740e0ffb51f76dc60a19",
+          "evidence_id": "E3",
+          "matched_span": [
+            43,
+            216
+          ],
+          "normalized_quote": "Effective date: 2026-01-15 Scope: Negativex direct-sale physical goods on the Standard plan Standard-plan customers may request a refund within 14 calendar days of delivery.",
+          "quote_match": true,
+          "raw_quote": "Effective date: 2026-01-15\nScope: Negativex direct-sale physical goods on the Standard plan\nStandard-plan customers may request a refund within 14 calendar days of delivery.",
+          "source_id": "standard-returns-2026",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": true,
+      "text": "For a delivery dated 2026-01-20, the applicable return policy is governed by 'Standard Returns — 2026', which allows customers to request a refund within 14 calendar days of delivery.",
+      "validation_status": "VALID"
+    }
+  ],
+  "validator_failure_codes": [],
+  "validator_pass": true
+}

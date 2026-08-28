@@ -1,0 +1,139 @@
+{
+  "all_required_present": false,
+  "answerability": "unanswerable",
+  "application_forced_abstention": false,
+  "category": "unanswerable",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 8632,
+    "context_hash": "e5c17a0aaa456019a08303b89175d3dada6926343e8ecd25f3040f68992280ef",
+    "context_tokens": 624,
+    "expanded": true,
+    "input_chunk_ids": [
+      "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+      "955d96b7-9420-5d68-a59e-5879e373c9c2",
+      "bf00eee6-bfc2-5577-8c63-8a4c6d2bccaa",
+      "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+      "f0c8711f-5f21-5100-a3e2-09f85dbad5a7"
+    ],
+    "output_block_ids": [
+      "evidence-c2ae884572a6a39039ca7349",
+      "evidence-e26baa610e90e2546b98101f",
+      "evidence-3d04a9bebea2f18595af951b",
+      "evidence-591cb147cad304178240e01d"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "fact_score": {
+    "status": "NOT_APPLICABLE"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 31021.972,
+  "gold_present": false,
+  "language_pair": "tr->none",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:27:16.753529+00:00",
+    "connection_established_at": "2026-08-28T20:27:16.750884+00:00",
+    "context_hash": "d6fc5756c0bc2b169836bc98a01c36a631be7840d32c14a623d5dffda37e3829",
+    "elapsed_ms": 31020.197,
+    "first_body_byte_at": "2026-08-28T20:27:16.751374+00:00",
+    "headers_received_at": "2026-08-28T20:27:16.750884+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "8ac15df4babd5cddb8f33758fc58aa47fc860d3a9850888d6ec8ea8763de51c0",
+    "request_id": "c3320c875fc143769e5592078249072c",
+    "request_started_at": "2026-08-28T20:26:45.734191+00:00",
+    "response_bytes": 617,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "negative-01-2",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"Negativex'in fiyatlandırma hangi para birimlerinde yapıldığına dair bilgi, sunulan belgelerde bulunmamaktadır.\",\"evidence\":[\n  {\"evidence_id\":\"E3\",\"quote\":\"Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.\"}\n]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "a4343b438ccd31a220f0a9162867faf8e45cbf61dbf74e1d2dab41ff0870e5d4",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "894128f315d4506424f007e8cc67bec6614ab72f8e4246e53d3918ab6a041608",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır."
+          }
+        ],
+        "text": "Negativex'in fiyatlandırma hangi para birimlerinde yapıldığına dair bilgi, sunulan belgelerde bulunmamaktadır."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "Negativex'in fiyatlandırma hangi para birimlerinde yapıldığına dair bilgi, sunulan belgelerde bulunmamaktadır. [E3]",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E3",
+          "quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır."
+        }
+      ],
+      "evidence_validation": [
+        {
+          "contributing_chunk_ids": [
+            "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+            "ee147c44-8bc0-578b-8a91-4b0c7008ee6e"
+          ],
+          "evidence_block_id": "evidence-3d04a9bebea2f18595af951b",
+          "evidence_id": "E3",
+          "matched_span": [
+            308,
+            385
+          ],
+          "normalized_quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.",
+          "quote_match": true,
+          "raw_quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.",
+          "source_id": "subscription-billing",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": true,
+      "text": "Negativex'in fiyatlandırma hangi para birimlerinde yapıldığına dair bilgi, sunulan belgelerde bulunmamaktadır.",
+      "validation_status": "VALID"
+    }
+  ],
+  "validator_failure_codes": [],
+  "validator_pass": true
+}

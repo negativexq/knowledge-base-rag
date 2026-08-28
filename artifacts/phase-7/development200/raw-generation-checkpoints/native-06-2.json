@@ -1,0 +1,131 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 5539,
+    "context_hash": "8b27454ca79f95134ccb70c7e1713c6caf9590cb74bf4a5b29dea9dbb0cc00f3",
+    "context_tokens": 433,
+    "expanded": true,
+    "input_chunk_ids": [
+      "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+      "9542a73b-1a30-54dd-999c-bff89dc70f59",
+      "ee147c44-8bc0-578b-8a91-4b0c7008ee6e",
+      "9e3c93f4-d500-55b1-93cf-b42c6c1649a3",
+      "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86"
+    ],
+    "output_block_ids": [
+      "evidence-3d04a9bebea2f18595af951b",
+      "evidence-8eb8fbda72fdc70e402fbb85"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 29064.727,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"Bir sonraki yenileme ücretinin oluşmaması için iptal talebi, yenilenmeden en az 48 saat önce kayda alınmalıdır. Bu işlem mevcut ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder.\",\"evidence\":[{\"evidence_id\":\"E1\",\"quote\":\"Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder."
+            }
+          ],
+          "text": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi, yenilenmeden en az 48 saat önce kayda alınmalıdır. Bu işlem mevcut ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+              "ee147c44-8bc0-578b-8a91-4b0c7008ee6e"
+            ],
+            "evidence_block_id": "evidence-3d04a9bebea2f18595af951b",
+            "evidence_id": "E1",
+            "matched_span": [
+              115,
+              307
+            ],
+            "normalized_quote": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder.",
+            "quote_match": true,
+            "raw_quote": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi yenilemeden en az 48 saat önce kayda alınmalıdır. İptal, hâlihazırda ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder.",
+            "source_id": "subscription-billing",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi, yenilenmeden en az 48 saat önce kayda alınmalıdır. Bu işlem mevcut ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "Bir sonraki yenileme ücretinin oluşmaması için iptal talebi, yenilenmeden en az 48 saat önce kayda alınmalıdır. Bu işlem mevcut ödenmiş dönemi kısaltmaz; erişim dönem sonuna kadar devam eder. [E1]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:49:52.218072+00:00",
+    "connection_established_at": "2026-08-28T19:49:52.216719+00:00",
+    "context_hash": "f9a3e8e00b8e12fbf91f330568279e01a9f4c7114cad9f835a03fccbb6a591c4",
+    "elapsed_ms": 29063.164,
+    "first_body_byte_at": "2026-08-28T19:49:52.217057+00:00",
+    "headers_received_at": "2026-08-28T19:49:52.216719+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "2434d9b9d27a4e5a7cdbb21ca4e2a88a55254f89b800bfddd7731227822709ff",
+    "request_id": "215014d3bfa2430c8ee064a9c87b8b70",
+    "request_started_at": "2026-08-28T19:49:23.155861+00:00",
+    "response_bytes": 826,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "native-06-2",
+  "run_key": "c94bf563f1b2f5bcd6a38caf590d4842e841a1aefa489effc462e03943b253c1",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "a70e17fb4c39ced589ccf3079d183636361f0fbd52968147ff21d7ee0af8a56a",
+  "state": "GENERATION_COMPLETE"
+}

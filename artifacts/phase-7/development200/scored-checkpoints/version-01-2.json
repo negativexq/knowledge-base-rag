@@ -1,0 +1,190 @@
+{
+  "all_required_present": true,
+  "answerability": "answerable",
+  "application_forced_abstention": false,
+  "category": "version_conflict",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7398,
+    "context_hash": "f0c45ae80443532c7b93548732d73a7013d4f75b124c4cf3aaf2155bf2d72fd9",
+    "context_tokens": 550,
+    "expanded": true,
+    "input_chunk_ids": [
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "cb46d001-1e2e-5872-9478-58e344b447fa",
+      "f0c8711f-5f21-5100-a3e2-09f85dbad5a7"
+    ],
+    "output_block_ids": [
+      "evidence-f72215516d7672d92b0f6733",
+      "evidence-8fea465773fe4e1d004015a6",
+      "evidence-18dff0edf106c3883371702d",
+      "evidence-591cb147cad304178240e01d"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "fact_score": {
+    "expected_components": [
+      "14 calendar days from delivery"
+    ],
+    "fact_coverage": 0.0,
+    "matched_fact_ids": [],
+    "matches": [
+      {
+        "answer": [
+          30.0,
+          "day"
+        ],
+        "expected": [
+          14.0,
+          "day"
+        ],
+        "matched": false,
+        "reason": "duration"
+      }
+    ],
+    "missing_fact_ids": [
+      "fact_1"
+    ],
+    "required_fact_count": 1,
+    "required_fact_ids": [
+      "fact_1"
+    ],
+    "status": "INCORRECT"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 45454.832,
+  "gold_present": true,
+  "language_pair": "tr->en",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:39:00.658076+00:00",
+    "connection_established_at": "2026-08-28T20:39:00.656233+00:00",
+    "context_hash": "f60b478803edb0ce0311824d0f9ce8a1fe5c965c0a352967a13cf191528211f2",
+    "elapsed_ms": 45452.955,
+    "first_body_byte_at": "2026-08-28T20:39:00.656604+00:00",
+    "headers_received_at": "2026-08-28T20:39:00.656233+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "1cd1980371b103ef0cdf6626049f8ecd85fcce9e0f671743e1c26a17fd10d0ad",
+    "request_id": "c046410fd29f4d9197fae1deeb759b9d",
+    "request_started_at": "2026-08-28T20:38:15.205577+00:00",
+    "response_bytes": 1094,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "version-01-2",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"2026-02-01 teslimatında standart plan için kullanılan sürüm, yeni politika yürürlük tarihinden sonra geçerli olan **2026.1** sürümü'dür.\\n\\nGeçersiz kalan (eski) sürüm ise 30 günlük iade süresini öngören ve bu tarihten önceki teslimatlara uygulanması gereken **2025.4** sürümdür.\", \"evidence\":[{\"evidence_id\":\"E1\",\"quote\":\"| Sürüm | Tarih | Değişiklik |\\n|---|---|---|\\n| 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı |\\n| 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi |\\n| 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |\"},{\"evidence_id\":\"E4\",\"quote\":\"Yürürlük tarihi: 2026-01-15\"}]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "6885e072437c8aa5390fbfde0214c4979e4dc94a9e2a08eb002dd2d22d10a971",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "15e090666dcace4f51ad8cc961c15a50c40e76cfc6eaece7812f6c81d97194ff",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "| Sürüm | Tarih | Değişiklik |\n|---|---|---|\n| 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı |\n| 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi |\n| 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |"
+          },
+          {
+            "evidence_id": "E4",
+            "quote": "Yürürlük tarihi: 2026-01-15"
+          }
+        ],
+        "text": "2026-02-01 teslimatında standart plan için kullanılan sürüm, yeni politika yürürlük tarihinden sonra geçerli olan **2026.1** sürümü'dür.\n\nGeçersiz kalan (eski) sürüm ise 30 günlük iade süresini öngören ve bu tarihten önceki teslimatlara uygulanması gereken **2025.4** sürümdür."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "2026-02-01 teslimatında standart plan için kullanılan sürüm, yeni politika yürürlük tarihinden sonra geçerli olan **2026.1** sürümü'dür.\n\nGeçersiz kalan (eski) sürüm ise 30 günlük iade süresini öngören ve bu tarihten önceki teslimatlara uygulanması gereken **2025.4** sürümdür. [E1] [E4]",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E1",
+          "quote": "| Sürüm | Tarih | Değişiklik |\n|---|---|---|\n| 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı |\n| 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi |\n| 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |"
+        },
+        {
+          "evidence_id": "E4",
+          "quote": "Yürürlük tarihi: 2026-01-15"
+        }
+      ],
+      "evidence_validation": [
+        {
+          "contributing_chunk_ids": [
+            "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+            "cb46d001-1e2e-5872-9478-58e344b447fa"
+          ],
+          "evidence_block_id": "evidence-f72215516d7672d92b0f6733",
+          "evidence_id": "E1",
+          "matched_span": [
+            619,
+            897
+          ],
+          "normalized_quote": "| Sürüm | Tarih | Değişiklik | |---|---|---| | 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı | | 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi | | 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |",
+          "quote_match": true,
+          "raw_quote": "| Sürüm | Tarih | Değişiklik |\n|---|---|---|\n| 2025.4 | 2025-10-01 | Bölgesel vaka kayıt alanları ayrıştırıldı |\n| 2026.1 | 2026-01-15 | Plan, kanal ve etkinleştirme karar sınırları güncellendi |\n| 2026.1a | 2026-02-03 | Denetim ve kurumsal istisna yönlendirmesi netleştirildi |",
+          "source_id": "long-policy-tr",
+          "status": "VALID_EVIDENCE_QUOTE"
+        },
+        {
+          "contributing_chunk_ids": [
+            "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+            "0448af81-d379-508d-a0c4-30e7122f7365"
+          ],
+          "evidence_block_id": "evidence-591cb147cad304178240e01d",
+          "evidence_id": "E4",
+          "matched_span": [
+            36,
+            63
+          ],
+          "normalized_quote": "Yürürlük tarihi: 2026-01-15",
+          "quote_match": true,
+          "raw_quote": "Yürürlük tarihi: 2026-01-15",
+          "source_id": "shipping-and-delivery",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": true,
+      "text": "2026-02-01 teslimatında standart plan için kullanılan sürüm, yeni politika yürürlük tarihinden sonra geçerli olan **2026.1** sürümü'dür.\n\nGeçersiz kalan (eski) sürüm ise 30 günlük iade süresini öngören ve bu tarihten önceki teslimatlara uygulanması gereken **2025.4** sürümdür.",
+      "validation_status": "VALID"
+    }
+  ],
+  "validator_failure_codes": [],
+  "validator_pass": true
+}

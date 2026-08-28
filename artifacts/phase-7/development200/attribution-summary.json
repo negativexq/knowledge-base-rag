@@ -1,0 +1,19 @@
+{
+  "blind_before_unblind": true,
+  "correct_attribution_rate": 0.875,
+  "correctly_attributed": 21,
+  "labels_sha256": "e64f8d72ef5c52441d10c5b7792155d32c05f28ec2940d33b802ac9d4bfde393",
+  "misattributed": 3,
+  "misattribution_rate": 0.125,
+  "no_visible_factual_claim": 6,
+  "not_applicable": 0,
+  "rubric": [
+    "CORRECTLY_ATTRIBUTED",
+    "MISATTRIBUTED",
+    "NO_VISIBLE_FACTUAL_CLAIM",
+    "NOT_APPLICABLE"
+  ],
+  "sampled_queries": 30,
+  "schema_version": "development200-attribution-summary-v1",
+  "visible_factual_claim_queries": 24
+}

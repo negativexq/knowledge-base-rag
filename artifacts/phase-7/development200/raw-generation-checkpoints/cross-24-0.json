@@ -1,0 +1,131 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 3063,
+    "context_hash": "69fd6d98c3fe63547c63becdcde4241a3442372a0eee9b6d270355c2c4c596ab",
+    "context_tokens": 134,
+    "expanded": false,
+    "input_chunk_ids": [
+      "65f13a97-86a5-5120-a40c-43464fbc14ec",
+      "fbe2fbb2-1edb-5ca6-b3d4-d82bf0f995e2",
+      "8a47b219-01c3-54e0-8619-0c13593fc5b6",
+      "e5e21eb6-f7b6-5f22-a6ef-4e67798b6873",
+      "38f10ef5-7d8d-502f-9650-f2eafe445a0b"
+    ],
+    "output_block_ids": [
+      "evidence-9efec06296b8d5fd45a65a85",
+      "evidence-41fc655daeab4bff11a0b928",
+      "evidence-6ff1e31a100ee4f42950df40"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 20812.435,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"Kurumsal sözleşmede farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır.\",\"evidence\":[{\"evidence_id\":\"E2\",\"quote\":\"Kurumsal müşterinin sözleşmesinde farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E2",
+              "quote": "Kurumsal müşterinin sözleşmesinde farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır."
+            }
+          ],
+          "text": "Kurumsal sözleşmede farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E2",
+            "quote": "Kurumsal müşterinin sözleşmesinde farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "fbe2fbb2-1edb-5ca6-b3d4-d82bf0f995e2"
+            ],
+            "evidence_block_id": "evidence-41fc655daeab4bff11a0b928",
+            "evidence_id": "E2",
+            "matched_span": [
+              48,
+              209
+            ],
+            "normalized_quote": "Kurumsal müşterinin sözleşmesinde farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır.",
+            "quote_match": true,
+            "raw_quote": "Kurumsal müşterinin sözleşmesinde farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır.",
+            "source_id": "regional-returns-tr",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "Kurumsal sözleşmede farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "Kurumsal sözleşmede farklı süre veya telafi bulunabilir. Sözleşme kimliği, değişiklik numarası, imza veya onay kaydı ve yürürlük tarihi doğrulanır. [E2]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:13:06.122091+00:00",
+    "connection_established_at": "2026-08-28T19:13:06.121085+00:00",
+    "context_hash": "8c2dbf950695b4b3042b1278766cc7d594a2644b37c27eeb1b004718047134f0",
+    "elapsed_ms": 20811.095,
+    "first_body_byte_at": "2026-08-28T19:13:06.121375+00:00",
+    "headers_received_at": "2026-08-28T19:13:06.121085+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "4be3acf85e9f9826073d9821275ea587653dba7f5e08a76d617c6c58cfa18df0",
+    "request_id": "3532ebfc3e2343439450bac0ba1e6d0c",
+    "request_started_at": "2026-08-28T19:12:45.311621+00:00",
+    "response_bytes": 752,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "cross-24-0",
+  "run_key": "67202a10c7e2b596e87640fe04ea83aefca55c16d351d6b6d6e91ca68aa0f362",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "cb07b42234cca5bdbfa228ea12bb375736c83e58a986c55567ca9d51369f3e60",
+  "state": "GENERATION_COMPLETE"
+}

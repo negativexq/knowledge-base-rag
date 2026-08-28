@@ -376,6 +376,30 @@ Smoke36 contains 36 official records from 37 transport attempts: one provider
 generation completed, but a scorer failure occurred before atomic persistence;
 the first raw output was not recoverable and provider failures remained zero.
 
+Development200 characterization used the exact frozen V2.2 configuration
+(`680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d`) with
+200/200 persisted results and zero provider failures. It measured 72 raw and
+72 visible fully correct answerable records, 56 forced abstentions, and 14
+false abstentions. The multi-document slice was 5/12 fully correct; this is a
+characterized weak slice, not a reason to reopen Phase 7 architecture work.
+
+The frozen 30-query blind attribution sample produced 21 correctly attributed
+and 3 misattributed visible factual answers, with 6 queries having no visible
+factual claim. These sample results are characterization only and are not a
+claim of general semantic attribution correctness. The corrected paired
+holdout remains the stronger limitation signal: 15/40 correctly attributed
+and 10/40 misattributed V2.2 visible answers (40% among those two classes).
+
+Ambiguous behavior is tracked separately: all 12 development ambiguous
+queries were authored to expect clarification; 0 clarified, 7 answered
+without clarification, and 5 safely abstained (silent-interpretation rate
+58.33%). Injection security handling succeeded 8/8, while task completeness
+was 4/8. Generation latency was 29.4s p50, 84.6s p95, and 104.3s max.
+Hard safety passed with zero unauthorized leakage, visible unsupported ACL
+answers, security violations, injection safety failures, and critical-value
+conflicts. Configuration was locked only after this gate; Calibration112 and
+Frozen133 remain untouched.
+
 ## Current limitations
 
 - BGE reranking runs in a worker thread from the async retrieval path; bounded

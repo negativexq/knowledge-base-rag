@@ -1,0 +1,163 @@
+{
+  "all_required_present": false,
+  "answerability": "unanswerable",
+  "application_forced_abstention": true,
+  "category": "unanswerable",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7404,
+    "context_hash": "120ee9a20f017fc529babb75794b93b589695aedbd61d862728b1c494fdcb848",
+    "context_tokens": 597,
+    "expanded": true,
+    "input_chunk_ids": [
+      "eaa8d66b-6c13-54d9-84de-3711862814c7",
+      "bbd87f0e-d73c-5a0d-bf22-c2140494f863",
+      "4dbe4fb9-a497-5fb9-8060-dc16bbe5b377",
+      "f3ae9316-5d4c-5ff7-a911-ca2afb70e3f2",
+      "892ad7d3-7d3f-5721-9f17-712ac784451c"
+    ],
+    "output_block_ids": [
+      "evidence-ef595756c03d312c867ef0ae",
+      "evidence-c942730346f3b7134174696b",
+      "evidence-477e98ce21605b22576393ce",
+      "evidence-619406a6b03791dcafabcf44"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": true,
+      "citation_suppressed": true,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ],
+      "violations": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ]
+    }
+  ],
+  "fact_score": {
+    "status": "NOT_APPLICABLE"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 27650.239,
+  "gold_present": false,
+  "language_pair": "en->none",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:31:05.159028+00:00",
+    "connection_established_at": "2026-08-28T20:31:05.158719+00:00",
+    "context_hash": "607613fdba30e7f850403d0b98cbf7d465c5f148896284dc9ad7c538f5bf2717",
+    "elapsed_ms": 27649.354,
+    "first_body_byte_at": "2026-08-28T20:31:05.158790+00:00",
+    "headers_received_at": "2026-08-28T20:31:05.158719+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "4d4b4d21fffdd738e30c8672d4b1b48513013af9b5d0aaf54c800f8ec4280bb6",
+    "request_id": "801f1142ffeb49248476ce2bffb9e96d",
+    "request_started_at": "2026-08-28T20:30:37.510448+00:00",
+    "response_bytes": 986,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "negative-06-0",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"The provided documents do not specify a fixed number of support agents that must be on every critical incident. They describe processes such as acknowledging incidents within one hour, escalating to an incident commander for SEV-1 cases, and publishing rosters with primary, secondary, and incident-commander coverage when volume increases or capacity is at risk.\",\"evidence\":[{\"evidence_id\":\"E4\",\"quote\":\"When the severity model indicates SEV-1... identify an incident commander...\"},{\"evidence_id\":\"E2\",\"quote\":\"Support leads publish an on-call roster with primary, secondary, and incident-commander coverage.\"}]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E4",
+          "quote": "When the severity model indicates SEV-1... identify an incident commander..."
+        },
+        {
+          "evidence_id": "E2",
+          "quote": "Support leads publish an on-call roster with primary, secondary, and incident-commander coverage."
+        }
+      ],
+      "evidence_validation": [
+        {
+          "evidence_block_id": "evidence-619406a6b03791dcafabcf44",
+          "evidence_id": "E4",
+          "normalized_quote": "When the severity model indicates SEV-1... identify an incident commander...",
+          "quote_match": false,
+          "raw_quote": "When the severity model indicates SEV-1... identify an incident commander...",
+          "status": "QUOTE_NOT_FOUND"
+        },
+        {
+          "contributing_chunk_ids": [
+            "bbd87f0e-d73c-5a0d-bf22-c2140494f863"
+          ],
+          "evidence_block_id": "evidence-c942730346f3b7134174696b",
+          "evidence_id": "E2",
+          "matched_span": [
+            0,
+            97
+          ],
+          "normalized_quote": "Support leads publish an on-call roster with primary, secondary, and incident-commander coverage.",
+          "quote_match": true,
+          "raw_quote": "Support leads publish an on-call roster with primary, secondary, and incident-commander coverage.",
+          "source_id": "employee-handbook-en",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": false,
+      "text": "The provided documents do not specify a fixed number of support agents that must be on every critical incident. They describe processes such as acknowledging incidents within one hour, escalating to an incident commander for SEV-1 cases, and publishing rosters with primary, secondary, and incident-commander coverage when volume increases or capacity is at risk.",
+      "validation_status": "REJECTED"
+    }
+  ],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "b6b96d9ad5edc7c464a50bb83a4e9d7c122f61954e0729039a61f8b5defe27a0",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "c9cc79d34eef1ddb6aa7c91287c140106ad82fd164e657917ee423e65f0e73ec",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E4",
+            "quote": "When the severity model indicates SEV-1... identify an incident commander..."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "Support leads publish an on-call roster with primary, secondary, and incident-commander coverage."
+          }
+        ],
+        "text": "The provided documents do not specify a fixed number of support agents that must be on every critical incident. They describe processes such as acknowledging incidents within one hour, escalating to an incident commander for SEV-1 cases, and publishing rosters with primary, secondary, and incident-commander coverage when volume increases or capacity is at risk."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "I could not find this in the document.",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [],
+  "validator_failure_codes": [
+    "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+    "QUOTE_NOT_FOUND"
+  ],
+  "validator_pass": false
+}

@@ -1,0 +1,132 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7493,
+    "context_hash": "e15772143aaccd385574717e54529463ce8da4b19893c1186e11d82acddb0318",
+    "context_tokens": 564,
+    "expanded": true,
+    "input_chunk_ids": [
+      "0e5151fb-371a-5f1e-b64d-55ed810128f0",
+      "82b48b5c-ff4f-5891-bd3a-582367b0d01f",
+      "9542a73b-1a30-54dd-999c-bff89dc70f59",
+      "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+      "c0dd408e-b4c6-5544-884a-6067d838c80d"
+    ],
+    "output_block_ids": [
+      "evidence-de54a6a76cdb2e5a9814ac8d",
+      "evidence-3d04a9bebea2f18595af951b",
+      "evidence-48f334cd3c7e7f080cce97a8"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 29041.383,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"Kurumsal sözleşmede indirim oranı hakkında bilgi verilemez. Belirlenen kurallar arasında yıllık plan için yüzde 15'lik bir indirim öngörülmektedir, ancak bu durum genel faturalandırma politikasına aittir ve tüm müşterilere veya belirli bir müşteriye özel olarak uygulanıp uygulanmadığına dair ek detay bulunmamaktadır.\",\"evidence\":[{\"evidence_id\":\"E2\",\"quote\":\"Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E2",
+              "quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır."
+            }
+          ],
+          "text": "Kurumsal sözleşmede indirim oranı hakkında bilgi verilemez. Belirlenen kurallar arasında yıllık plan için yüzde 15'lik bir indirim öngörülmektedir, ancak bu durum genel faturalandırma politikasına aittir ve tüm müşterilere veya belirli bir müşteriye özel olarak uygulanıp uygulanmadığına dair ek detay bulunmamaktadır."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E2",
+            "quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "519ca8a5-72f4-52b6-8c10-a2a4552919eb",
+              "ee147c44-8bc0-578b-8a91-4b0c7008ee6e"
+            ],
+            "evidence_block_id": "evidence-3d04a9bebea2f18595af951b",
+            "evidence_id": "E2",
+            "matched_span": [
+              308,
+              385
+            ],
+            "normalized_quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.",
+            "quote_match": true,
+            "raw_quote": "Yıllık plan, on iki aylık eşdeğer ödemeye göre yüzde 15 indirimli fiyatlanır.",
+            "source_id": "subscription-billing",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "Kurumsal sözleşmede indirim oranı hakkında bilgi verilemez. Belirlenen kurallar arasında yıllık plan için yüzde 15'lik bir indirim öngörülmektedir, ancak bu durum genel faturalandırma politikasına aittir ve tüm müşterilere veya belirli bir müşteriye özel olarak uygulanıp uygulanmadığına dair ek detay bulunmamaktadır.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "Kurumsal sözleşmede indirim oranı hakkında bilgi verilemez. Belirlenen kurallar arasında yıllık plan için yüzde 15'lik bir indirim öngörülmektedir, ancak bu durum genel faturalandırma politikasına aittir ve tüm müşterilere veya belirli bir müşteriye özel olarak uygulanıp uygulanmadığına dair ek detay bulunmamaktadır. [E2]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:35:23.974155+00:00",
+    "connection_established_at": "2026-08-28T20:35:23.972978+00:00",
+    "context_hash": "fdfac4bcd3d7cd556f807d933be0b150ec1018dc8cb40ca6d74cdc398ef7af1c",
+    "elapsed_ms": 29040.22,
+    "first_body_byte_at": "2026-08-28T20:35:23.973298+00:00",
+    "headers_received_at": "2026-08-28T20:35:23.972978+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "b50fdc56ac6894e4e5956a7df8cc45347186f7c2e82b47f9fa9e00a5c386a231",
+    "request_id": "b733f5269a804138ae8cc064484fcee6",
+    "request_started_at": "2026-08-28T20:34:54.934281+00:00",
+    "response_bytes": 839,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "negative-09-4",
+  "run_key": "6e92b01599c590b45de346426778180ea0fe42ad344c7f1efc58670f36607746",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "4e1a893e6b817e9b55068d1a7202b89679b8017a40c6d51ea3772f3d4274966a",
+  "state": "GENERATION_COMPLETE"
+}

@@ -1,0 +1,158 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 6572,
+    "context_hash": "eae1881ede2d6a0a00eddf27bc88ee33acd15941e33e9b91ac8efe4092acfb90",
+    "context_tokens": 526,
+    "expanded": true,
+    "input_chunk_ids": [
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+      "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+      "c0dd408e-b4c6-5544-884a-6067d838c80d",
+      "0e5151fb-371a-5f1e-b64d-55ed810128f0"
+    ],
+    "output_block_ids": [
+      "evidence-f72215516d7672d92b0f6733",
+      "evidence-48f334cd3c7e7f080cce97a8"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 50730.784,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"Premium müşterinin pazar yerinden aldığı ürün için hem plan hem kanal birlikte değerlendirilirken, öncelikle siparişin hangi kanaldan geldiği ve teslim tarihi esas alınır. Pazar yeri üzerinden yapılan bir iade talebi, teslimattan itibaren 7 takvim günü içinde açılır; bu süre doğrudan satış politikasındaki Premium avantajını (30 gün) uzatmaz. Müşterinin Premium statüsü tek başına yeterli kanıt değildir ve plan kuralı pazar yerindeki vaka kanalının kurallarını değiştirmez.\\n\\nMüşteriye açıklarken şu noktalar vurgulanmalıdır:\\n1. **Kanal önceliği**: Siparişin pazar yeri üzerinden geldiği için, iade süreci 7 günlük pazar yeri süresine tabidir ve bu süre Premium plan avantajından bağımsızdır.\\n2. **Plan durumu**: Müşterinin sahip olduğu Premium statüsü veya kampanya etiketi, pazar yerindeki vaka kaydını değiştirmez; satıcının tanımladığı telafi varsa o da ayrıca değerlendirilir.\\n3. **Bekleme ve iletişim**: Eğer bir istisna beklemedeyse görevli kesin onay dili kullanmaz ve müşteri hangi ekibin inceleyeceğini ile sonraki kontrol tarihini bilgilendirir.\", \"evidence\":[{\"evidence_id\":\"E1\",\"quote\":\"Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.\"},{\"evidence_id\":\"E2\",\"quote\":\"Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir."
+            },
+            {
+              "evidence_id": "E2",
+              "quote": "Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister."
+            }
+          ],
+          "text": "Premium müşterinin pazar yerinden aldığı ürün için hem plan hem kanal birlikte değerlendirilirken, öncelikle siparişin hangi kanaldan geldiği ve teslim tarihi esas alınır. Pazar yeri üzerinden yapılan bir iade talebi, teslimattan itibaren 7 takvim günü içinde açılır; bu süre doğrudan satış politikasındaki Premium avantajını (30 gün) uzatmaz. Müşterinin Premium statüsü tek başına yeterli kanıt değildir ve plan kuralı pazar yerindeki vaka kanalının kurallarını değiştirmez.\n\nMüşteriye açıklarken şu noktalar vurgulanmalıdır:\n1. **Kanal önceliği**: Siparişin pazar yeri üzerinden geldiği için, iade süreci 7 günlük pazar yeri süresine tabidir ve bu süre Premium plan avantajından bağımsızdır.\n2. **Plan durumu**: Müşterinin sahip olduğu Premium statüsü veya kampanya etiketi, pazar yerindeki vaka kaydını değiştirmez; satıcının tanımladığı telafi varsa o da ayrıca değerlendirilir.\n3. **Bekleme ve iletişim**: Eğer bir istisna beklemedeyse görevli kesin onay dili kullanmaz ve müşteri hangi ekibin inceleyeceğini ile sonraki kontrol tarihini bilgilendirir."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+              "0e5151fb-371a-5f1e-b64d-55ed810128f0",
+              "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+              "a70b14bd-1aad-5f44-9ee6-edf37046602f"
+            ],
+            "evidence_block_id": "evidence-f72215516d7672d92b0f6733",
+            "evidence_id": "E1",
+            "matched_span": [
+              177,
+              296
+            ],
+            "normalized_quote": "Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.",
+            "quote_match": true,
+            "raw_quote": "Pazar yeri siparişi, müşterinin Premium hesabı olsa bile pazar yeri vaka kanalı ve yedi günlük süreyle değerlendirilir.",
+            "source_id": "long-policy-tr",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "955d96b7-9420-5d68-a59e-5879e373c9c2",
+              "c0dd408e-b4c6-5544-884a-6067d838c80d"
+            ],
+            "evidence_block_id": "evidence-48f334cd3c7e7f080cce97a8",
+            "evidence_id": "E2",
+            "matched_span": [
+              535,
+              690
+            ],
+            "normalized_quote": "Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.",
+            "quote_match": true,
+            "raw_quote": "Premium hesap bilgisi tek başına yeterli kanıt değildir. Pazar yeri kaydı bulunmuyorsa görevli süre sözü vermez; önce ilgili kanalın vaka numarasını ister.",
+            "source_id": "marketplace-returns",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "Premium müşterinin pazar yerinden aldığı ürün için hem plan hem kanal birlikte değerlendirilirken, öncelikle siparişin hangi kanaldan geldiği ve teslim tarihi esas alınır. Pazar yeri üzerinden yapılan bir iade talebi, teslimattan itibaren 7 takvim günü içinde açılır; bu süre doğrudan satış politikasındaki Premium avantajını (30 gün) uzatmaz. Müşterinin Premium statüsü tek başına yeterli kanıt değildir ve plan kuralı pazar yerindeki vaka kanalının kurallarını değiştirmez.\n\nMüşteriye açıklarken şu noktalar vurgulanmalıdır:\n1. **Kanal önceliği**: Siparişin pazar yeri üzerinden geldiği için, iade süreci 7 günlük pazar yeri süresine tabidir ve bu süre Premium plan avantajından bağımsızdır.\n2. **Plan durumu**: Müşterinin sahip olduğu Premium statüsü veya kampanya etiketi, pazar yerindeki vaka kaydını değiştirmez; satıcının tanımladığı telafi varsa o da ayrıca değerlendirilir.\n3. **Bekleme ve iletişim**: Eğer bir istisna beklemedeyse görevli kesin onay dili kullanmaz ve müşteri hangi ekibin inceleyeceğini ile sonraki kontrol tarihini bilgilendirir.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "Premium müşterinin pazar yerinden aldığı ürün için hem plan hem kanal birlikte değerlendirilirken, öncelikle siparişin hangi kanaldan geldiği ve teslim tarihi esas alınır. Pazar yeri üzerinden yapılan bir iade talebi, teslimattan itibaren 7 takvim günü içinde açılır; bu süre doğrudan satış politikasındaki Premium avantajını (30 gün) uzatmaz. Müşterinin Premium statüsü tek başına yeterli kanıt değildir ve plan kuralı pazar yerindeki vaka kanalının kurallarını değiştirmez.\n\nMüşteriye açıklarken şu noktalar vurgulanmalıdır:\n1. **Kanal önceliği**: Siparişin pazar yeri üzerinden geldiği için, iade süreci 7 günlük pazar yeri süresine tabidir ve bu süre Premium plan avantajından bağımsızdır.\n2. **Plan durumu**: Müşterinin sahip olduğu Premium statüsü veya kampanya etiketi, pazar yerindeki vaka kaydını değiştirmez; satıcının tanımladığı telafi varsa o da ayrıca değerlendirilir.\n3. **Bekleme ve iletişim**: Eğer bir istisna beklemedeyse görevli kesin onay dili kullanmaz ve müşteri hangi ekibin inceleyeceğini ile sonraki kontrol tarihini bilgilendirir. [E1] [E2]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:39:33.756052+00:00",
+    "connection_established_at": "2026-08-28T19:39:33.754119+00:00",
+    "context_hash": "77fa7334b2ac5571f57f7f52af2b99e5edf616b09b363ae32f807d15a776d9ae",
+    "elapsed_ms": 50729.48,
+    "first_body_byte_at": "2026-08-28T19:39:33.755660+00:00",
+    "headers_received_at": "2026-08-28T19:39:33.754119+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "e2554fb25d4bfe07a9024fb8ac3f71b257d707a654e18317acbc340505275cdd",
+    "request_id": "524a8e08c7574c9898882ce9dcbdf665",
+    "request_started_at": "2026-08-28T19:38:43.027936+00:00",
+    "response_bytes": 1907,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "multi-01-2",
+  "run_key": "7b87ab0b54b0e86803b5f74993aeaf3f809773dbd71b1ea791f1e4418473f62e",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "18b6a7ac0c792cdb9d37ac8775af06281f9801c7b3c5f352ab51852105f67c35",
+  "state": "GENERATION_COMPLETE"
+}

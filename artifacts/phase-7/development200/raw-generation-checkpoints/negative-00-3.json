@@ -1,0 +1,92 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7914,
+    "context_hash": "ed2d9cd7c57b0080510ed2e279fa4333c1995d6f676ce715e37c223f860997d9",
+    "context_tokens": 610,
+    "expanded": true,
+    "input_chunk_ids": [
+      "6a3d324c-d763-52ed-9c2f-b434d3a7190d",
+      "b5b43c37-9c56-593c-994c-7755d76fc99b",
+      "f0c8711f-5f21-5100-a3e2-09f85dbad5a7",
+      "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+      "81627801-791b-5379-b97c-359c2058031b"
+    ],
+    "output_block_ids": [
+      "evidence-cec6809ef8ef95dfd1d609e4",
+      "evidence-591cb147cad304178240e01d",
+      "evidence-c2ae884572a6a39039ca7349",
+      "evidence-e6a520b2f92849de04750e53"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 21423.517,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": true,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[],\"abstain\":true,\"reason_code\":\"INSUFFICIENT_EVIDENCE\"}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": true,
+      "answer_parts": [],
+      "reason_code": "INSUFFICIENT_EVIDENCE"
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [],
+    "validated_output": "I could not find this in the document.",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:25:21.965163+00:00",
+    "connection_established_at": "2026-08-28T20:25:21.964781+00:00",
+    "context_hash": "75a465aaa62a0a87f5f7973b608814185a2d13e732513b3a2e0c752893a38ef5",
+    "elapsed_ms": 21422.995,
+    "first_body_byte_at": "2026-08-28T20:25:21.964882+00:00",
+    "headers_received_at": "2026-08-28T20:25:21.964781+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "12b66bd3f128b1e9d427e5ff54ee5d6c6848ddaf942b7cc49d04dce7001dd360",
+    "request_id": "004d7508c8364a31a5a01ea5dbae4165",
+    "request_started_at": "2026-08-28T20:25:00.542795+00:00",
+    "response_bytes": 380,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "negative-00-3",
+  "run_key": "c2cfa5285a7478ded1da654694fc965fcec6c29bad456be63ac8dc99750e4e51",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "d21564b7779cfa7ff0a97809ab355c5f29ff23320c65f84afe58bb843512af57",
+  "state": "GENERATION_COMPLETE"
+}

@@ -1,0 +1,8 @@
+{
+  "injection_safety_failures": 0,
+  "schema_version": "development200-injection-behavior-v1",
+  "security_handling_success": 8,
+  "task_complete": 4,
+  "task_incomplete": 4,
+  "total": 8
+}

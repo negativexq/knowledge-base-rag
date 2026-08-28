@@ -1,0 +1,160 @@
+{
+  "all_required_present": true,
+  "answerability": "answerable",
+  "application_forced_abstention": false,
+  "category": "cross_lingual",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 3042,
+    "context_hash": "6f6d4b79516eade705229e494e56242491d624d945475556f5df49fd053aa776",
+    "context_tokens": 135,
+    "expanded": false,
+    "input_chunk_ids": [
+      "65f13a97-86a5-5120-a40c-43464fbc14ec",
+      "fbe2fbb2-1edb-5ca6-b3d4-d82bf0f995e2",
+      "e5e21eb6-f7b6-5f22-a6ef-4e67798b6873",
+      "8a47b219-01c3-54e0-8619-0c13593fc5b6",
+      "15e0b934-44cb-54a1-84e1-7d323c4af93b"
+    ],
+    "output_block_ids": [
+      "evidence-9efec06296b8d5fd45a65a85",
+      "evidence-41fc655daeab4bff11a0b928",
+      "evidence-eb51a40cd3838a7cf592a270"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "fact_score": {
+    "expected_components": [
+      "180 days, subject to the contract"
+    ],
+    "fact_coverage": 0.0,
+    "matched_fact_ids": [],
+    "matches": [
+      {
+        "answer": null,
+        "expected": [
+          180.0,
+          "day"
+        ],
+        "matched": false,
+        "reason": "duration"
+      }
+    ],
+    "missing_fact_ids": [
+      "fact_1"
+    ],
+    "required_fact_count": 1,
+    "required_fact_ids": [
+      "fact_1"
+    ],
+    "status": "INCORRECT"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 24150.81,
+  "gold_present": true,
+  "language_pair": "tr->en",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:13:30.296716+00:00",
+    "connection_established_at": "2026-08-28T19:13:30.294143+00:00",
+    "context_hash": "e406dd8832ca150f7a45fedcae41cc76e82fd17a66b722f162635893e66f051c",
+    "elapsed_ms": 24149.098,
+    "first_body_byte_at": "2026-08-28T19:13:30.294562+00:00",
+    "headers_received_at": "2026-08-28T19:13:30.294143+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "e3fc295a6d0e2ff60aeb0160614b943092bc5165dee10b700d824ba83579c480",
+    "request_id": "82b71a7242264c67b7b672e58e4e2e46",
+    "request_started_at": "2026-08-28T19:13:06.148240+00:00",
+    "response_bytes": 822,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "cross-24-1",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"Kurumsal sözleşme kılavuzu kapsamında, müşteri örnek kurumsal saklama süresinin nasıl yanıt verileceği için önceki adımların tamamlanması gerekir. Eğer süre hesaplanıyorsa, ilgili olay veya kayıt silinmişse bu durum açıklanır ve eksik tarih istenir.\", \"evidence\":[{\"evidence_id\":\"E3\",\"quote\":\"Yanıt, hangi kuralın uygulandığını ve bunun hangi olayla belirlendiğini açıklar. Süre hesabı bilinmiyorsa eksik tarih istenir.\"}]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "adf3d9fb064f0d607c2dc987fc968dc37980c5efc29369b0324f01eff1793238",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "11c5f6dee19c118c01cfe11ccf91d870138eff0f24a3ab93eb829bd7ee47d909",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "Yanıt, hangi kuralın uygulandığını ve bunun hangi olayla belirlendiğini açıklar. Süre hesabı bilinmiyorsa eksik tarih istenir."
+          }
+        ],
+        "text": "Kurumsal sözleşme kılavuzu kapsamında, müşteri örnek kurumsal saklama süresinin nasıl yanıt verileceği için önceki adımların tamamlanması gerekir. Eğer süre hesaplanıyorsa, ilgili olay veya kayıt silinmişse bu durum açıklanır ve eksik tarih istenir."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "Kurumsal sözleşme kılavuzu kapsamında, müşteri örnek kurumsal saklama süresinin nasıl yanıt verileceği için önceki adımların tamamlanması gerekir. Eğer süre hesaplanıyorsa, ilgili olay veya kayıt silinmişse bu durum açıklanır ve eksik tarih istenir. [E3]",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E3",
+          "quote": "Yanıt, hangi kuralın uygulandığını ve bunun hangi olayla belirlendiğini açıklar. Süre hesabı bilinmiyorsa eksik tarih istenir."
+        }
+      ],
+      "evidence_validation": [
+        {
+          "contributing_chunk_ids": [
+            "e5e21eb6-f7b6-5f22-a6ef-4e67798b6873"
+          ],
+          "evidence_block_id": "evidence-eb51a40cd3838a7cf592a270",
+          "evidence_id": "E3",
+          "matched_span": [
+            50,
+            176
+          ],
+          "normalized_quote": "Yanıt, hangi kuralın uygulandığını ve bunun hangi olayla belirlendiğini açıklar. Süre hesabı bilinmiyorsa eksik tarih istenir.",
+          "quote_match": true,
+          "raw_quote": "Yanıt, hangi kuralın uygulandığını ve bunun hangi olayla belirlendiğini açıklar. Süre hesabı bilinmiyorsa eksik tarih istenir.",
+          "source_id": "returns-manual-tr",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": true,
+      "text": "Kurumsal sözleşme kılavuzu kapsamında, müşteri örnek kurumsal saklama süresinin nasıl yanıt verileceği için önceki adımların tamamlanması gerekir. Eğer süre hesaplanıyorsa, ilgili olay veya kayıt silinmişse bu durum açıklanır ve eksik tarih istenir.",
+      "validation_status": "VALID"
+    }
+  ],
+  "validator_failure_codes": [],
+  "validator_pass": true
+}

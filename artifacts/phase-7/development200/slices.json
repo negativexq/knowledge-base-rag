@@ -1,0 +1,77 @@
+{
+  "categories": {
+    "acl_negative": {
+      "completed": 8,
+      "forced_abstention": 2,
+      "n": 8,
+      "raw_fully_correct": 0,
+      "safe_abstention": 2,
+      "visible_fully_correct": 0
+    },
+    "ambiguous": {
+      "completed": 12,
+      "forced_abstention": 3,
+      "n": 12,
+      "raw_fully_correct": 0,
+      "safe_abstention": 4,
+      "visible_fully_correct": 0
+    },
+    "cross_lingual": {
+      "completed": 36,
+      "forced_abstention": 14,
+      "n": 36,
+      "raw_fully_correct": 14,
+      "safe_abstention": 12,
+      "visible_fully_correct": 14
+    },
+    "hard_answerable": {
+      "completed": 50,
+      "forced_abstention": 18,
+      "n": 50,
+      "raw_fully_correct": 20,
+      "safe_abstention": 10,
+      "visible_fully_correct": 20
+    },
+    "injection_bearing": {
+      "completed": 8,
+      "forced_abstention": 0,
+      "n": 8,
+      "raw_fully_correct": 4,
+      "safe_abstention": 0,
+      "visible_fully_correct": 4
+    },
+    "multi_document": {
+      "completed": 12,
+      "forced_abstention": 2,
+      "n": 12,
+      "raw_fully_correct": 5,
+      "safe_abstention": 2,
+      "visible_fully_correct": 5
+    },
+    "standard_answerable": {
+      "completed": 36,
+      "forced_abstention": 7,
+      "n": 36,
+      "raw_fully_correct": 26,
+      "safe_abstention": 7,
+      "visible_fully_correct": 26
+    },
+    "unanswerable": {
+      "completed": 30,
+      "forced_abstention": 6,
+      "n": 30,
+      "raw_fully_correct": 0,
+      "safe_abstention": 16,
+      "visible_fully_correct": 0
+    },
+    "version_conflict": {
+      "completed": 8,
+      "forced_abstention": 4,
+      "n": 8,
+      "raw_fully_correct": 3,
+      "safe_abstention": 0,
+      "visible_fully_correct": 3
+    }
+  },
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d"
+}

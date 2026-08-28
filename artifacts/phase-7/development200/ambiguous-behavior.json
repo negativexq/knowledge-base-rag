@@ -1,0 +1,24 @@
+{
+  "actual_clarification": 0,
+  "direct_answer_without_clarification": 7,
+  "expected_clarification": 12,
+  "other": 0,
+  "query_ids": [
+    "ambiguous-00-0",
+    "ambiguous-00-1",
+    "ambiguous-00-2",
+    "ambiguous-01-0",
+    "ambiguous-01-1",
+    "ambiguous-01-2",
+    "ambiguous-02-0",
+    "ambiguous-02-1",
+    "ambiguous-02-2",
+    "ambiguous-04-0",
+    "ambiguous-04-1",
+    "ambiguous-04-2"
+  ],
+  "safe_abstention": 5,
+  "schema_version": "development200-ambiguous-behavior-v1",
+  "silent_interpretation_rate": 0.583333,
+  "total": 12
+}

@@ -1,0 +1,155 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 6573,
+    "context_hash": "99f1b5a2c47da9052f0bd0eaf3ba6bbd37b46197574bd910f8686edab91694c1",
+    "context_tokens": 529,
+    "expanded": true,
+    "input_chunk_ids": [
+      "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "9542a73b-1a30-54dd-999c-bff89dc70f59",
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb"
+    ],
+    "output_block_ids": [
+      "evidence-18dff0edf106c3883371702d",
+      "evidence-69d5a509e10038655c20a608",
+      "evidence-8fea465773fe4e1d004015a6"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 60283.48,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"Geçersiz 2025 iade politikası için tarihsel standart iade penceresi, teslimat tarihi bu politikanın yürürlük tarihinden önce olan durumlarda uygulanır. Doğrudan satış Standart planı siparişleri için 30 takvim günü kapsayan kural geçerlidir.\",\"evidence\":[{\"evidence_id\":\"E1\",\"quote\":\"For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery.\"},{\"evidence_id\":\"E3\",\"quote\":\"The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery."
+            },
+            {
+              "evidence_id": "E3",
+              "quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date."
+            }
+          ],
+          "text": "Geçersiz 2025 iade politikası için tarihsel standart iade penceresi, teslimat tarihi bu politikanın yürürlük tarihinden önce olan durumlarda uygulanır. Doğrudan satış Standart planı siparişleri için 30 takvim günü kapsayan kural geçerlidir."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery."
+          },
+          {
+            "evidence_id": "E3",
+            "quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+            ],
+            "evidence_block_id": "evidence-18dff0edf106c3883371702d",
+            "evidence_id": "E1",
+            "matched_span": [
+              119,
+              232
+            ],
+            "normalized_quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery.",
+            "quote_match": true,
+            "raw_quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery.",
+            "source_id": "refund-policy-2025",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb"
+            ],
+            "evidence_block_id": "evidence-8fea465773fe4e1d004015a6",
+            "evidence_id": "E3",
+            "matched_span": [
+              235,
+              350
+            ],
+            "normalized_quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.",
+            "quote_match": true,
+            "raw_quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.",
+            "source_id": "refund-policy-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "Geçersiz 2025 iade politikası için tarihsel standart iade penceresi, teslimat tarihi bu politikanın yürürlük tarihinden önce olan durumlarda uygulanır. Doğrudan satış Standart planı siparişleri için 30 takvim günü kapsayan kural geçerlidir.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "Geçersiz 2025 iade politikası için tarihsel standart iade penceresi, teslimat tarihi bu politikanın yürürlük tarihinden önce olan durumlarda uygulanır. Doğrudan satış Standart planı siparişleri için 30 takvim günü kapsayan kural geçerlidir. [E1] [E3]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:08:17.929867+00:00",
+    "connection_established_at": "2026-08-28T19:08:17.927588+00:00",
+    "context_hash": "3abfe0a313b41840bf3d218c27b2a8529dca14ca22faafb518f143886887db4a",
+    "elapsed_ms": 60280.642,
+    "first_body_byte_at": "2026-08-28T19:08:17.928135+00:00",
+    "headers_received_at": "2026-08-28T19:08:17.927588+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "73a9c0e9dbb59b79a521a7db69483c23b19b7add1f7d9b8c9e8d0335965d0ca6",
+    "request_id": "aed854f0146040b5a7957da486716cfe",
+    "request_started_at": "2026-08-28T19:07:17.649790+00:00",
+    "response_bytes": 937,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "cross-12-0",
+  "run_key": "3746d81d1e9da72ae797229babbb4cb32a5c651e4f69675d0db5d9a69f027a1e",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "8ee3a48b80701c0d65fef4aca6f4b7ef86b484474f751394588938240fce5979",
+  "state": "GENERATION_COMPLETE"
+}

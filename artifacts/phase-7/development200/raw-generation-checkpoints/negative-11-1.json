@@ -1,0 +1,90 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 6017,
+    "context_hash": "98dfa9ba4e61d3e707bc440de77f408aefe921701844c773d466b08af987a68f",
+    "context_tokens": 507,
+    "expanded": true,
+    "input_chunk_ids": [
+      "c1925666-6909-5b2b-a05f-77c72c526530",
+      "74efa568-9790-5707-ade8-ce23376503ce",
+      "4dbe4fb9-a497-5fb9-8060-dc16bbe5b377",
+      "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5",
+      "0e5151fb-371a-5f1e-b64d-55ed810128f0"
+    ],
+    "output_block_ids": [
+      "evidence-4458f1f50e106c9c083a6246",
+      "evidence-503a314f120fa68ad6b1a5ac"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 17956.678,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": true,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[],\"abstain\":true,\"reason_code\":\"INSUFFICIENT_EVIDENCE\"}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": true,
+      "answer_parts": [],
+      "reason_code": "INSUFFICIENT_EVIDENCE"
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [],
+    "validated_output": "I could not find this in the document.",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:36:00.989034+00:00",
+    "connection_established_at": "2026-08-28T20:36:00.988197+00:00",
+    "context_hash": "2ca684a8574172377204cd2aa333f91e9e58b7323a6b5be5f060edd26142afe5",
+    "elapsed_ms": 17955.537,
+    "first_body_byte_at": "2026-08-28T20:36:00.988418+00:00",
+    "headers_received_at": "2026-08-28T20:36:00.988197+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "9b31de2a1c22b5f12d69d82de255b751e0bb27d8b2f5f73ad5912a3049ac2578",
+    "request_id": "b002b0c7f83847cb81080c2c420819cf",
+    "request_started_at": "2026-08-28T20:35:43.033781+00:00",
+    "response_bytes": 380,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "negative-11-1",
+  "run_key": "f96c286fc5ef9db3b9a95f3c3fbd488319a14f80716a0046a82ac9ecb6824173",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "1503ab5e89a7906107886d658d02ca341990d9ff33d198d00ad96f7f77aad5f7",
+  "state": "GENERATION_COMPLETE"
+}

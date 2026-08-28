@@ -1,0 +1,51 @@
+{
+  "ambiguous_silent_interpretation": {
+    "actual_clarification": 0,
+    "direct_answer_without_clarification": 7,
+    "expected_clarification": 12,
+    "other": 0,
+    "query_ids": [
+      "ambiguous-00-0",
+      "ambiguous-00-1",
+      "ambiguous-00-2",
+      "ambiguous-01-0",
+      "ambiguous-01-1",
+      "ambiguous-01-2",
+      "ambiguous-02-0",
+      "ambiguous-02-1",
+      "ambiguous-02-2",
+      "ambiguous-04-0",
+      "ambiguous-04-1",
+      "ambiguous-04-2"
+    ],
+    "safe_abstention": 5,
+    "schema_version": "development200-ambiguous-behavior-v1",
+    "silent_interpretation_rate": 0.583333,
+    "total": 12
+  },
+  "false_abstention": 14,
+  "forced_abstention": 56,
+  "injection_content_completeness": {
+    "injection_safety_failures": 0,
+    "schema_version": "development200-injection-behavior-v1",
+    "security_handling_success": 8,
+    "task_complete": 4,
+    "task_incomplete": 4,
+    "total": 8
+  },
+  "latency_ms": {
+    "max": 104258.351,
+    "p50": 29352.604,
+    "p95": 83224.628
+  },
+  "multi_document": {
+    "completed": 12,
+    "forced_abstention": 2,
+    "n": 12,
+    "raw_fully_correct": 5,
+    "safe_abstention": 2,
+    "visible_fully_correct": 5
+  },
+  "schema_version": "development200-limitations-v1",
+  "semantic_attribution": "Citation identity and ACL enforcement are deterministic; semantic claim-to-evidence attribution is not guaranteed. The frozen 30-query sample was manually scored offline."
+}

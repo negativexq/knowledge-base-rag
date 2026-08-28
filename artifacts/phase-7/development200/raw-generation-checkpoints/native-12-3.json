@@ -1,0 +1,133 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 8298,
+    "context_hash": "fc0072729137f5cbb8ad1087865fb0091577d45121b12e9b092f5aeedfe6b564",
+    "context_tokens": 660,
+    "expanded": true,
+    "input_chunk_ids": [
+      "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "1b50ae39-8364-5172-a719-f2090efce26e",
+      "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "dfec59b8-9f54-5875-b03c-626ff6930e91"
+    ],
+    "output_block_ids": [
+      "evidence-18dff0edf106c3883371702d",
+      "evidence-8fea465773fe4e1d004015a6",
+      "evidence-a5be740e0ffb51f76dc60a19",
+      "evidence-5484e69bfe8a560bb2648412",
+      "evidence-45330c01935180a2e70a84c3"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 28706.659,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"The historical standard return window for the superseded 2025 policy was 30 calendar days from delivery.\",\"evidence\":[\n  {\"evidence_id\":\"E1\",\"quote\":\"For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery.\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery."
+            }
+          ],
+          "text": "The historical standard return window for the superseded 2025 policy was 30 calendar days from delivery."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+            ],
+            "evidence_block_id": "evidence-18dff0edf106c3883371702d",
+            "evidence_id": "E1",
+            "matched_span": [
+              119,
+              232
+            ],
+            "normalized_quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery.",
+            "quote_match": true,
+            "raw_quote": "For direct-sale Standard-plan orders, the 2025 rule allowed a return request within 30 calendar days of delivery.",
+            "source_id": "refund-policy-2025",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "The historical standard return window for the superseded 2025 policy was 30 calendar days from delivery.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "The historical standard return window for the superseded 2025 policy was 30 calendar days from delivery. [E1]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:58:12.948825+00:00",
+    "connection_established_at": "2026-08-28T19:58:12.948067+00:00",
+    "context_hash": "5bc0d89a483494b66726b9d7849fd4cabbb396836be32c4e7befdd6a0b79a1df",
+    "elapsed_ms": 28705.864,
+    "first_body_byte_at": "2026-08-28T19:58:12.948249+00:00",
+    "headers_received_at": "2026-08-28T19:58:12.948067+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "c6122a7048f533e941c3fe6b5a3610a26ec9acfd36e881ea8605b5f53eca7e38",
+    "request_id": "c428162bece44c5c9b7a89c6698f9ce8",
+    "request_started_at": "2026-08-28T19:57:44.244418+00:00",
+    "response_bytes": 632,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "native-12-3",
+  "run_key": "8d64b191098f3d6c90f02464f44d0ec118950fdd836332b26d4c1c0dda8ac40f",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "87f4fffed64e79195f74e0eb6c22aa78da521576a7bddacf8469c12f40f6464e",
+  "state": "GENERATION_COMPLETE"
+}

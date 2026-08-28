@@ -1,0 +1,158 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 8590,
+    "context_hash": "6a436ba98522d537aa9538d815d62f41e3e76665ac293afca7594aefbfcd4e7f",
+    "context_tokens": 654,
+    "expanded": true,
+    "input_chunk_ids": [
+      "cc91ddbd-29f4-51f1-bbd7-8b636c9bae86",
+      "1b50ae39-8364-5172-a719-f2090efce26e",
+      "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+      "c0dd408e-b4c6-5544-884a-6067d838c80d",
+      "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+    ],
+    "output_block_ids": [
+      "evidence-c2ae884572a6a39039ca7349",
+      "evidence-a5be740e0ffb51f76dc60a19",
+      "evidence-48f334cd3c7e7f080cce97a8",
+      "evidence-a41a91598b59026cd04a0e13"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": true,
+      "citation_suppressed": true,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ],
+      "violations": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ]
+    }
+  ],
+  "generation_latency_ms": 43189.314,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": true,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"İade süresi sorusunda 'order channel' alanının plan bilgisinden ayrı tutulmasının nedeni, aynı müşterinin farklı sipariş kanalları (örneğin doğrudan satış ve pazar yeri) veya Premium plan avantajı ile birlikte farklı iade süreçlerine tabi olabileceğidir. Belgeler genel bir \\\"iade süresi\\\" söylemi kullanmaz; görevli önce olayı tanımlar, ardından yürürlükteki ve daha özel kaynağı seçer.\", \"evidence\":[{\"evidence_id\":\"E1\",\"quote\":\"Bu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir \\\"iade süresi\\\" söylemi kullanılmaz.\"},{\"evidence_id\":\"E2\",\"quote\":\"Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "Bu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir \"iade süresi\" söylemi kullanılmaz."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "evidence_block_id": "evidence-c2ae884572a6a39039ca7349",
+            "evidence_id": "E1",
+            "normalized_quote": "Bu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir \"iade süresi\" söylemi kullanılmaz.",
+            "quote_match": false,
+            "raw_quote": "Bu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir \"iade süresi\" söylemi kullanılmaz.",
+            "status": "QUOTE_NOT_FOUND"
+          },
+          {
+            "contributing_chunk_ids": [
+              "5bd2643d-4837-5733-9717-c88c37860274",
+              "1b50ae39-8364-5172-a719-f2090efce26e"
+            ],
+            "evidence_block_id": "evidence-a5be740e0ffb51f76dc60a19",
+            "evidence_id": "E2",
+            "matched_span": [
+              414,
+              542
+            ],
+            "normalized_quote": "Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies.",
+            "quote_match": true,
+            "raw_quote": "Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies.",
+            "source_id": "standard-returns-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": false,
+        "text": "İade süresi sorusunda 'order channel' alanının plan bilgisinden ayrı tutulmasının nedeni, aynı müşterinin farklı sipariş kanalları (örneğin doğrudan satış ve pazar yeri) veya Premium plan avantajı ile birlikte farklı iade süreçlerine tabi olabileceğidir. Belgeler genel bir \"iade süresi\" söylemi kullanmaz; görevli önce olayı tanımlar, ardından yürürlükteki ve daha özel kaynağı seçer.",
+        "validation_status": "REJECTED"
+      }
+    ],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "Bu belge, aynı müşterinin plan, sipariş kanalı ve bölgesel hakkının farklı sonuçlar doğurabildiği durumlarda uygulanacak karar çerçevesini tanımlar. Genel bir \"iade süresi\" söylemi kullanılmaz."
+            },
+            {
+              "evidence_id": "E2",
+              "quote": "Marketplace orders, Premium orders, digital goods, and regional statutory rights are controlled by their more specific policies."
+            }
+          ],
+          "text": "İade süresi sorusunda 'order channel' alanının plan bilgisinden ayrı tutulmasının nedeni, aynı müşterinin farklı sipariş kanalları (örneğin doğrudan satış ve pazar yeri) veya Premium plan avantajı ile birlikte farklı iade süreçlerine tabi olabileceğidir. Belgeler genel bir \"iade süresi\" söylemi kullanmaz; görevli önce olayı tanımlar, ardından yürürlükteki ve daha özel kaynağı seçer."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [],
+    "validated_output": "I could not find this in the document.",
+    "validated_output_available": true,
+    "validator_failure_codes": [
+      "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+      "QUOTE_NOT_FOUND"
+    ],
+    "validator_input_available": true,
+    "validator_pass": false
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:26:21.416379+00:00",
+    "connection_established_at": "2026-08-28T19:26:21.415687+00:00",
+    "context_hash": "de8a4e6ff2a3d40a2b30163e9eab34ab6e1079a522b283397430941ea645cfd0",
+    "elapsed_ms": 43187.849,
+    "first_body_byte_at": "2026-08-28T19:26:21.415853+00:00",
+    "headers_received_at": "2026-08-28T19:26:21.415687+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "366ed215e3464ed49cea5b0ad02673489d2d024a38819b77b71fa10b00ac5c25",
+    "request_id": "230ddb1b8923445eb14a1f63c8271bff",
+    "request_started_at": "2026-08-28T19:25:38.229693+00:00",
+    "response_bytes": 1225,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "hard-order-channel",
+  "run_key": "09f0c35f7ed7efed35ff7b779beb9545baafdcf2c87faa0fc6b0ae509f76c351",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "2d479b35b8ee1a3fe52bbbd235cf3eb299576a4e896fc15c23f46f3323e94d85",
+  "state": "GENERATION_COMPLETE"
+}

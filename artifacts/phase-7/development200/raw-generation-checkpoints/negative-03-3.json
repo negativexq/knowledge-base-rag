@@ -1,0 +1,131 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 6503,
+    "context_hash": "384e39b5436c407e43fd91c0a0f4069a0b5f42661af7d876fb923c3a79f78a36",
+    "context_tokens": 533,
+    "expanded": true,
+    "input_chunk_ids": [
+      "0a49c153-e055-5a4a-b324-903f5847dcbb",
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "324c3448-2e57-5a8f-b764-a972c0e5684a",
+      "3e213cab-27ad-5801-979d-5c967e51ca59",
+      "0e5151fb-371a-5f1e-b64d-55ed810128f0"
+    ],
+    "output_block_ids": [
+      "evidence-3bf10f44390fb1881a6fec0c",
+      "evidence-1055bcfdbf2a6c2b27e41db2"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 24712.599,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"Aktive edilen dijital ürün için otomatik kredi tutarı hakkında bilgi verilemez. Belirlenen politikalar, aktif edilmiş dijital ürünlere ilişkin iade ve geri ödeme koşullarını düzenlemektedir ancak bu tür durumlarda otomatik bir kredi tutarı uygulanmadığını belirtmektedir.\",\"evidence\":[{\"evidence_id\":\"E2\",\"quote\":\"After a license key or downloadable entitlement is activated, the purchase is normally non-refundable.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E2",
+              "quote": "After a license key or downloadable entitlement is activated, the purchase is normally non-refundable."
+            }
+          ],
+          "text": "Aktive edilen dijital ürün için otomatik kredi tutarı hakkında bilgi verilemez. Belirlenen politikalar, aktif edilmiş dijital ürünlere ilişkin iade ve geri ödeme koşullarını düzenlemektedir ancak bu tür durumlarda otomatik bir kredi tutarı uygulanmadığını belirtmektedir."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E2",
+            "quote": "After a license key or downloadable entitlement is activated, the purchase is normally non-refundable."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "324c3448-2e57-5a8f-b764-a972c0e5684a",
+              "a7aeee85-25c7-5635-8034-4d50d4473afb"
+            ],
+            "evidence_block_id": "evidence-1055bcfdbf2a6c2b27e41db2",
+            "evidence_id": "E2",
+            "matched_span": [
+              197,
+              299
+            ],
+            "normalized_quote": "After a license key or downloadable entitlement is activated, the purchase is normally non-refundable.",
+            "quote_match": true,
+            "raw_quote": "After a license key or downloadable entitlement is activated, the purchase is normally non-refundable.",
+            "source_id": "digital-goods-policy",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "Aktive edilen dijital ürün için otomatik kredi tutarı hakkında bilgi verilemez. Belirlenen politikalar, aktif edilmiş dijital ürünlere ilişkin iade ve geri ödeme koşullarını düzenlemektedir ancak bu tür durumlarda otomatik bir kredi tutarı uygulanmadığını belirtmektedir.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "Aktive edilen dijital ürün için otomatik kredi tutarı hakkında bilgi verilemez. Belirlenen politikalar, aktif edilmiş dijital ürünlere ilişkin iade ve geri ödeme koşullarını düzenlemektedir ancak bu tür durumlarda otomatik bir kredi tutarı uygulanmadığını belirtmektedir. [E2]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:30:07.927789+00:00",
+    "connection_established_at": "2026-08-28T20:30:07.926719+00:00",
+    "context_hash": "83de148e31daabac280b9c96bc2f87f66e5a5761b53d393c4d1fadbed78c7f1c",
+    "elapsed_ms": 24711.752,
+    "first_body_byte_at": "2026-08-28T20:30:07.926921+00:00",
+    "headers_received_at": "2026-08-28T20:30:07.926719+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "46232efad4bbdc88d85ccd7d9757ad8bd1ac71cae2693850fc7b74bf8682be6c",
+    "request_id": "2a19675eba19488a9e312e4e68195b9b",
+    "request_started_at": "2026-08-28T20:29:43.216724+00:00",
+    "response_bytes": 803,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "negative-03-3",
+  "run_key": "b47599902338649d6d1904c7acc0f2ce1167047c4ac5955969538ac1caccec31",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "b83e538143966c9ef1acce607a78e8fcdc909d8885e88b578ac6bb0e14ea265c",
+  "state": "GENERATION_COMPLETE"
+}

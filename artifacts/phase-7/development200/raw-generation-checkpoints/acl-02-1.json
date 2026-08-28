@@ -1,0 +1,132 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7036,
+    "context_hash": "aa78479c42a836fd81b48575c1b956929834078fedefc2cdc6a23037be8cba33",
+    "context_tokens": 599,
+    "expanded": true,
+    "input_chunk_ids": [
+      "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "c232662d-70f9-55cd-aad1-735ef0ca0784",
+      "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "3e411acf-fda5-56b1-bc5d-3e6b780b3b2c",
+      "05d2502c-02dd-5ed1-9d72-69975fdb2839"
+    ],
+    "output_block_ids": [
+      "evidence-6e9f74157629b826e5636c57",
+      "evidence-a41a91598b59026cd04a0e13",
+      "evidence-06f5cbd2389798c4d01f4ca0"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": true,
+      "citation_suppressed": true,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ],
+      "violations": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ]
+    }
+  ],
+  "generation_latency_ms": 27265.845,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": true,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"For an EU regional order, check for exceptions related to 'Regional or statutory question' which are handled by the Regional Policy owner. The policy effective date and jurisdiction must be considered.\",\"evidence\":[\n  {\"evidence_id\":\"E1\",\"quote\":\"| Condition | Primary owner | Evidence to preserve |\\n|---|---|---|\\n| ... \\n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "| Condition | Primary owner | Evidence to preserve |\n|---|---|---|\n| ... \n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |"
+          }
+        ],
+        "evidence_validation": [
+          {
+            "evidence_block_id": "evidence-6e9f74157629b826e5636c57",
+            "evidence_id": "E1",
+            "normalized_quote": "| Condition | Primary owner | Evidence to preserve | |---|---|---| | ... | Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |",
+            "quote_match": false,
+            "raw_quote": "| Condition | Primary owner | Evidence to preserve |\n|---|---|---|\n| ... \n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |",
+            "status": "QUOTE_NOT_FOUND"
+          }
+        ],
+        "survived": false,
+        "text": "For an EU regional order, check for exceptions related to 'Regional or statutory question' which are handled by the Regional Policy owner. The policy effective date and jurisdiction must be considered.",
+        "validation_status": "REJECTED"
+      }
+    ],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "| Condition | Primary owner | Evidence to preserve |\n|---|---|---|\n| ... \n| Regional or statutory question | Regional Policy owner | jurisdiction, order channel, event dates, product type |"
+            }
+          ],
+          "text": "For an EU regional order, check for exceptions related to 'Regional or statutory question' which are handled by the Regional Policy owner. The policy effective date and jurisdiction must be considered."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [],
+    "validated_output": "I could not find this in the document.",
+    "validated_output_available": true,
+    "validator_failure_codes": [
+      "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+      "QUOTE_NOT_FOUND"
+    ],
+    "validator_input_available": true,
+    "validator_pass": false
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T18:47:07.469317+00:00",
+    "connection_established_at": "2026-08-28T18:47:07.467200+00:00",
+    "context_hash": "65bd7c22a7ca8d6e21c6981a12707a8bc96e1d3f029c1981a934a458f3c6a3d8",
+    "elapsed_ms": 27263.237,
+    "first_body_byte_at": "2026-08-28T18:47:07.467712+00:00",
+    "headers_received_at": "2026-08-28T18:47:07.467200+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "194798382f15a6aa15d21f77627bf5df52cc3396074a205b9c0bdad9ef2c28ea",
+    "request_id": "243f5b5fad90400bb4a7d2c9f8ecc263",
+    "request_started_at": "2026-08-28T18:46:40.206240+00:00",
+    "response_bytes": 812,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "acl-02-1",
+  "run_key": "8dc23d2f67438ead3d3c71808e09394dcf92b912dff36d3fe80f8285a4a573a2",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "f829296e3e56388712b80dc288f5fb033f18e67497413508bfe24ae9a0c31dbe",
+  "state": "GENERATION_COMPLETE"
+}

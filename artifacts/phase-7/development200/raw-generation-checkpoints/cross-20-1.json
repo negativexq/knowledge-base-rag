@@ -1,0 +1,179 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 15065,
+    "context_hash": "dffe55f3c0c6f1ba302a8238dfb0298a060bfac7bc7e4d76f0298b40a014d0d9",
+    "context_tokens": 1098,
+    "expanded": true,
+    "input_chunk_ids": [
+      "869acbf6-0993-5dda-ba4d-87c54bd1c674",
+      "77a8b1b7-1eb1-5b12-8486-b9e9be6ce0a1",
+      "212fa26b-1c43-5672-945b-b0ee8786a463",
+      "4a997ce7-dedb-53cb-893d-52ff6dad36b6",
+      "95548353-9585-5862-a6a8-ae47976484c9"
+    ],
+    "output_block_ids": [
+      "evidence-737028e4caee6b692df89e91",
+      "evidence-8dc202e8a9e2396f9d8bb1ec"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": true,
+      "citation_suppressed": true,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ],
+      "violations": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ]
+    }
+  ],
+  "generation_latency_ms": 97921.216,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": true,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\n\"answer_parts\": [\n{\n\"text\": \"Based on the provided evidence, here is the structured analysis for your enterprise order under EU jurisdiction:\\n\\n**1. Contractual Hierarchy & Entitlement Verification**\\nThe primary source of truth is the **signed Enterprise Agreement**, not public policy or regional guides alone.\\n*   **Contract Identifier:** [REDACTED - Retrieve from tenant workspace]\\n*   **Amendment Number:** [REDACTED - Verify if an amendment exists for this order/product scope]\\n*   **Effective Date of Amendment:** [REDACTED - Must be checked against the event date to determine applicability]\\n\\n**Action Required:** Before proceeding, confirm that a specific enterprise term or clause modifies the standard statutory rules. If no such signed agreement covers your product/service, fall back to regional statutes.\\n\\n---\\n\\n**2. Regional Statutory Baseline (EU Distance Sales)**\\nIn the absence of a superseding contract clause:\\n*   **Jurisdiction:** European Union (Distance Purchase)\\n*   **Standard Withdrawal Period:** 14 days from receipt by consumer or nominated third party.\\n    *   *Note:* The clock starts at delivery, not support contact date. Review carrier events and order confirmations to pinpoint the exact start time.\\n\\n**Exceptions & Conditions:**\\nThe regional baseline applies unless one of the following conditions is met:\\n*   **Personalized Goods:** If goods were customized per customer specification.\\n*   **Sealed Software/Digital Entitlements:** If a seal was broken or if activation constitutes delivery (assessed via Digital Goods Policy).\\n*   **Premium/Marketplace Orders:** These are processed through specific channels and may have distinct rules; do not conflate plan benefits with statutory rights unless explicitly stated in the contract.\\n\\n---\\n**3. Amendment & Clause Management Protocol**\\nIf your order contains a special return period or exception:\\n*   **Clause Identification:** The clause must clearly identify the **order ID**, **product scope**, and **effective date**. Regional requirements are secondary to this specific contractual term if both apply.\\n*   **Transition Logic:** Record the prior clause, replacement clause, affected service, and transition date. A current amendment only supersedes terms within its defined scope; historical cases use the effective term at the time of the event (e.g., delivery or request), not necessarily the latest document opened by an agent.\\n*   **Conflict Resolution:** If there is a discrepancy between your interpretation of a clause and that of the account owner:\\n    1.  **Pause** any customer commitment/exception approval immediately.\\n    2.  Request review from **Contract Operations** (not Support).\\n    3.  Record both interpretations, source documents, and designate a decision owner.\\n\\n---\\n**4. Approval & Audit Requirements**\\nTo approve an exception or modify terms:\\n*   **Required Data Points:** Contract ID, Workspace, Account Owner, Signed Date, Effective Date of Amendment, Clause Scope, Requested Remedy, Required Approver, Customer Communication Plan.\\n*   **Audit Trail:** Logs must allow reconstruction of who verified the contract and which version was effective. Do not store API keys or payment data in case logs; use references to confidential full text instead.\\n\\n**Next Steps for Support Agent:**\\n1.  Verify if a specific enterprise amendment applies to this order/product (Check Contract Operations records).\\n2.  If no amendment exists, apply the **EU 14-day withdrawal period** starting from delivery receipt.\\n3.  Document any deviations based on product condition (used vs. sealed) or digital activation timestamps as per regional guides.\",\"evidence\": [\n{\n\"evidence_id\":\"E1\",\"quote\":\"Contract Operations and the regional policy owner resolve overlap; support does not choose the more generous rule by default... For each amendment, record the prior clause, replacement clause, affected service, and transition date. A current amendment can supersede only terms within its scope.\"},\n{\n\"evidence_id\":\"E2\",\"quote\":\"The regional baseline is a 14-day withdrawal period... Personalized goods may fall outside the ordinary process when customization was made to the customer’s specification. Sealed software can have a separate exception after the seal is broken...\"},\n{\n\"evidence_id\":\"E2\",\"quote\":\"A signed enterprise agreement or amendment may contain a negotiated remedy. Contract Operations verifies the contract identifier, amendment number, approval record, and effective date.\"}\n]\n}\n],\n\"abstain\": false,\n\"reason_code\": \"INSUFFICIENT_EVIDENCE\"}",
+    "rejected_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "Contract Operations and the regional policy owner resolve overlap; support does not choose the more generous rule by default... For each amendment, record the prior clause, replacement clause, affected service, and transition date. A current amendment can supersede only terms within its scope."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "The regional baseline is a 14-day withdrawal period... Personalized goods may fall outside the ordinary process when customization was made to the customer’s specification. Sealed software can have a separate exception after the seal is broken..."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "A signed enterprise agreement or amendment may contain a negotiated remedy. Contract Operations verifies the contract identifier, amendment number, approval record, and effective date."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "evidence_block_id": "evidence-737028e4caee6b692df89e91",
+            "evidence_id": "E1",
+            "normalized_quote": "Contract Operations and the regional policy owner resolve overlap; support does not choose the more generous rule by default... For each amendment, record the prior clause, replacement clause, affected service, and transition date. A current amendment can supersede only terms within its scope.",
+            "quote_match": false,
+            "raw_quote": "Contract Operations and the regional policy owner resolve overlap; support does not choose the more generous rule by default... For each amendment, record the prior clause, replacement clause, affected service, and transition date. A current amendment can supersede only terms within its scope.",
+            "status": "QUOTE_NOT_FOUND"
+          },
+          {
+            "evidence_block_id": "evidence-8dc202e8a9e2396f9d8bb1ec",
+            "evidence_id": "E2",
+            "normalized_quote": "The regional baseline is a 14-day withdrawal period... Personalized goods may fall outside the ordinary process when customization was made to the customer’s specification. Sealed software can have a separate exception after the seal is broken...",
+            "quote_match": false,
+            "raw_quote": "The regional baseline is a 14-day withdrawal period... Personalized goods may fall outside the ordinary process when customization was made to the customer’s specification. Sealed software can have a separate exception after the seal is broken...",
+            "status": "QUOTE_NOT_FOUND"
+          },
+          {
+            "contributing_chunk_ids": [
+              "b81e3ccb-8993-5562-bbf9-3ba8a2264324",
+              "1fb1043f-8c1c-57df-82df-b5c4b2849da4",
+              "54962dde-3504-5d0a-8648-5a4fb87b7be5",
+              "a096d10c-3757-511f-9302-6bc4abbf84b5",
+              "960e9540-24e5-5bcf-ba13-60933eb0a9cf",
+              "3377d946-6d05-56d3-ac9e-057284913eea",
+              "7b3ea25c-3e0a-53c3-a570-194128929d02",
+              "bf352d8a-c59b-5784-9229-7cad4dd7f4e6",
+              "d91c48e0-c728-5892-84a4-0ab721e563e5"
+            ],
+            "evidence_block_id": "evidence-8dc202e8a9e2396f9d8bb1ec",
+            "evidence_id": "E2",
+            "matched_span": [
+              1692,
+              1876
+            ],
+            "normalized_quote": "A signed enterprise agreement or amendment may contain a negotiated remedy. Contract Operations verifies the contract identifier, amendment number, approval record, and effective date.",
+            "quote_match": true,
+            "raw_quote": "A signed enterprise agreement or amendment may contain a negotiated remedy. Contract Operations verifies the contract identifier, amendment number, approval record, and effective date.",
+            "source_id": "regional-returns-eu",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": false,
+        "text": "Based on the provided evidence, here is the structured analysis for your enterprise order under EU jurisdiction:\n\n**1. Contractual Hierarchy & Entitlement Verification**\nThe primary source of truth is the **signed Enterprise Agreement**, not public policy or regional guides alone.\n*   **Contract Identifier:** [REDACTED - Retrieve from tenant workspace]\n*   **Amendment Number:** [REDACTED - Verify if an amendment exists for this order/product scope]\n*   **Effective Date of Amendment:** [REDACTED - Must be checked against the event date to determine applicability]\n\n**Action Required:** Before proceeding, confirm that a specific enterprise term or clause modifies the standard statutory rules. If no such signed agreement covers your product/service, fall back to regional statutes.\n\n---\n\n**2. Regional Statutory Baseline (EU Distance Sales)**\nIn the absence of a superseding contract clause:\n*   **Jurisdiction:** European Union (Distance Purchase)\n*   **Standard Withdrawal Period:** 14 days from receipt by consumer or nominated third party.\n    *   *Note:* The clock starts at delivery, not support contact date. Review carrier events and order confirmations to pinpoint the exact start time.\n\n**Exceptions & Conditions:**\nThe regional baseline applies unless one of the following conditions is met:\n*   **Personalized Goods:** If goods were customized per customer specification.\n*   **Sealed Software/Digital Entitlements:** If a seal was broken or if activation constitutes delivery (assessed via Digital Goods Policy).\n*   **Premium/Marketplace Orders:** These are processed through specific channels and may have distinct rules; do not conflate plan benefits with statutory rights unless explicitly stated in the contract.\n\n---\n**3. Amendment & Clause Management Protocol**\nIf your order contains a special return period or exception:\n*   **Clause Identification:** The clause must clearly identify the **order ID**, **product scope**, and **effective date**. Regional requirements are secondary to this specific contractual term if both apply.\n*   **Transition Logic:** Record the prior clause, replacement clause, affected service, and transition date. A current amendment only supersedes terms within its defined scope; historical cases use the effective term at the time of the event (e.g., delivery or request), not necessarily the latest document opened by an agent.\n*   **Conflict Resolution:** If there is a discrepancy between your interpretation of a clause and that of the account owner:\n    1.  **Pause** any customer commitment/exception approval immediately.\n    2.  Request review from **Contract Operations** (not Support).\n    3.  Record both interpretations, source documents, and designate a decision owner.\n\n---\n**4. Approval & Audit Requirements**\nTo approve an exception or modify terms:\n*   **Required Data Points:** Contract ID, Workspace, Account Owner, Signed Date, Effective Date of Amendment, Clause Scope, Requested Remedy, Required Approver, Customer Communication Plan.\n*   **Audit Trail:** Logs must allow reconstruction of who verified the contract and which version was effective. Do not store API keys or payment data in case logs; use references to confidential full text instead.\n\n**Next Steps for Support Agent:**\n1.  Verify if a specific enterprise amendment applies to this order/product (Check Contract Operations records).\n2.  If no amendment exists, apply the **EU 14-day withdrawal period** starting from delivery receipt.\n3.  Document any deviations based on product condition (used vs. sealed) or digital activation timestamps as per regional guides.",
+        "validation_status": "REJECTED"
+      }
+    ],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "Contract Operations and the regional policy owner resolve overlap; support does not choose the more generous rule by default... For each amendment, record the prior clause, replacement clause, affected service, and transition date. A current amendment can supersede only terms within its scope."
+            },
+            {
+              "evidence_id": "E2",
+              "quote": "The regional baseline is a 14-day withdrawal period... Personalized goods may fall outside the ordinary process when customization was made to the customer’s specification. Sealed software can have a separate exception after the seal is broken..."
+            },
+            {
+              "evidence_id": "E2",
+              "quote": "A signed enterprise agreement or amendment may contain a negotiated remedy. Contract Operations verifies the contract identifier, amendment number, approval record, and effective date."
+            }
+          ],
+          "text": "Based on the provided evidence, here is the structured analysis for your enterprise order under EU jurisdiction:\n\n**1. Contractual Hierarchy & Entitlement Verification**\nThe primary source of truth is the **signed Enterprise Agreement**, not public policy or regional guides alone.\n*   **Contract Identifier:** [REDACTED - Retrieve from tenant workspace]\n*   **Amendment Number:** [REDACTED - Verify if an amendment exists for this order/product scope]\n*   **Effective Date of Amendment:** [REDACTED - Must be checked against the event date to determine applicability]\n\n**Action Required:** Before proceeding, confirm that a specific enterprise term or clause modifies the standard statutory rules. If no such signed agreement covers your product/service, fall back to regional statutes.\n\n---\n\n**2. Regional Statutory Baseline (EU Distance Sales)**\nIn the absence of a superseding contract clause:\n*   **Jurisdiction:** European Union (Distance Purchase)\n*   **Standard Withdrawal Period:** 14 days from receipt by consumer or nominated third party.\n    *   *Note:* The clock starts at delivery, not support contact date. Review carrier events and order confirmations to pinpoint the exact start time.\n\n**Exceptions & Conditions:**\nThe regional baseline applies unless one of the following conditions is met:\n*   **Personalized Goods:** If goods were customized per customer specification.\n*   **Sealed Software/Digital Entitlements:** If a seal was broken or if activation constitutes delivery (assessed via Digital Goods Policy).\n*   **Premium/Marketplace Orders:** These are processed through specific channels and may have distinct rules; do not conflate plan benefits with statutory rights unless explicitly stated in the contract.\n\n---\n**3. Amendment & Clause Management Protocol**\nIf your order contains a special return period or exception:\n*   **Clause Identification:** The clause must clearly identify the **order ID**, **product scope**, and **effective date**. Regional requirements are secondary to this specific contractual term if both apply.\n*   **Transition Logic:** Record the prior clause, replacement clause, affected service, and transition date. A current amendment only supersedes terms within its defined scope; historical cases use the effective term at the time of the event (e.g., delivery or request), not necessarily the latest document opened by an agent.\n*   **Conflict Resolution:** If there is a discrepancy between your interpretation of a clause and that of the account owner:\n    1.  **Pause** any customer commitment/exception approval immediately.\n    2.  Request review from **Contract Operations** (not Support).\n    3.  Record both interpretations, source documents, and designate a decision owner.\n\n---\n**4. Approval & Audit Requirements**\nTo approve an exception or modify terms:\n*   **Required Data Points:** Contract ID, Workspace, Account Owner, Signed Date, Effective Date of Amendment, Clause Scope, Requested Remedy, Required Approver, Customer Communication Plan.\n*   **Audit Trail:** Logs must allow reconstruction of who verified the contract and which version was effective. Do not store API keys or payment data in case logs; use references to confidential full text instead.\n\n**Next Steps for Support Agent:**\n1.  Verify if a specific enterprise amendment applies to this order/product (Check Contract Operations records).\n2.  If no amendment exists, apply the **EU 14-day withdrawal period** starting from delivery receipt.\n3.  Document any deviations based on product condition (used vs. sealed) or digital activation timestamps as per regional guides."
+        }
+      ],
+      "reason_code": "INSUFFICIENT_EVIDENCE"
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [],
+    "validated_output": "I could not find this in the document.",
+    "validated_output_available": true,
+    "validator_failure_codes": [
+      "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+      "QUOTE_NOT_FOUND"
+    ],
+    "validator_input_available": true,
+    "validator_pass": false
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:12:45.273951+00:00",
+    "connection_established_at": "2026-08-28T19:12:45.272365+00:00",
+    "context_hash": "5dc1fdcb5e6b1930008770005044cbd37f52e64db347861026f4ffdee4a1060e",
+    "elapsed_ms": 97919.169,
+    "first_body_byte_at": "2026-08-28T19:12:45.272766+00:00",
+    "headers_received_at": "2026-08-28T19:12:45.272365+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "6045a7ef6180d982683b3f9fe15b50fc1bbdd50b67e9d41c72798aa684eaf740",
+    "request_id": "1c8b27fe4d8943e6ad45e59924db54a3",
+    "request_started_at": "2026-08-28T19:11:07.447860+00:00",
+    "response_bytes": 5008,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "cross-20-1",
+  "run_key": "9356eb71099f8ab410e33760404b321631045572026eb514c10fe84c20f9ad8a",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "2e84afac42b5b0c77ab3ed4df571225499af9c45e069a757a69a2d4bbf2926c9",
+  "state": "GENERATION_COMPLETE"
+}

@@ -1,0 +1,41 @@
+{
+  "accounted_queries": 200,
+  "attribution_sample_hash": "d1f7262c2cd6ab6fb39c506c45f852bd19981600672cb382bfe4b81e14d31e78",
+  "branch": "main",
+  "checkpoint_schema_version": "development200-checkpoint-v1",
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "development_split_hash": "9d71f8c281a6240f492c07ecc7ab508d24461d2ae38ec420792b22c1f7a4d3e3",
+  "final_config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "git_sha": "0d1f08516c45141a1440812faed064c5320738d2",
+  "initial_status": "FROZEN_BEFORE_GENERATION",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "provider": {
+    "model": "qwen3.5:4b",
+    "model_digest": "2a654d98e6fb",
+    "num_ctx": 4096,
+    "num_predict": 1024,
+    "stream": false,
+    "temperature": 0.0,
+    "think": false,
+    "timeout": {
+      "connect": 10.0,
+      "overall": 240.0,
+      "read": 180.0
+    }
+  },
+  "provider_endpoint": "http://localhost:11434",
+  "provider_failures": 0,
+  "query_count": 200,
+  "retrieval": {
+    "cached_before_generation": true,
+    "candidate_k": 20,
+    "top_n": 5
+  },
+  "runner_sha256": "93b9ebb60a4e704dc1b0b3d7d3f13c2fb7bbdee5175fb5c16da75a7e3e718924",
+  "runner_sha256_at_inference": "30a48028a86122259723741f342a0ba34dd79b16761ab28c01faedd093eb2949",
+  "runner_version": "development200-resume-safe-v1",
+  "schema_version": "development200-run-manifest-v1",
+  "seed": 42,
+  "status": "COMPLETE"
+}

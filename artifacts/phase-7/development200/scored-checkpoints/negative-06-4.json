@@ -1,0 +1,162 @@
+{
+  "all_required_present": false,
+  "answerability": "unanswerable",
+  "application_forced_abstention": false,
+  "category": "unanswerable",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7378,
+    "context_hash": "27b4b70125d2a6a4fb1f04802b5d31e545e69c22aecd8c2bebd3a0b87776fecb",
+    "context_tokens": 587,
+    "expanded": true,
+    "input_chunk_ids": [
+      "bbd87f0e-d73c-5a0d-bf22-c2140494f863",
+      "eaa8d66b-6c13-54d9-84de-3711862814c7",
+      "892ad7d3-7d3f-5721-9f17-712ac784451c",
+      "4dbe4fb9-a497-5fb9-8060-dc16bbe5b377",
+      "6fc1009f-4278-5950-9f06-22022a85aea5"
+    ],
+    "output_block_ids": [
+      "evidence-c942730346f3b7134174696b",
+      "evidence-ef595756c03d312c867ef0ae",
+      "evidence-db9b7979b7c1f1d35adccade",
+      "evidence-477e98ce21605b22576393ce"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "fact_score": {
+    "status": "NOT_APPLICABLE"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 29177.984,
+  "gold_present": false,
+  "language_pair": "en->none",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:32:58.664327+00:00",
+    "connection_established_at": "2026-08-28T20:32:58.663379+00:00",
+    "context_hash": "5cd3a240eba692ab3d51f7fdadf3fc291ed1d045a80f263e46bdc23fd5a7df83",
+    "elapsed_ms": 29175.945,
+    "first_body_byte_at": "2026-08-28T20:32:58.663671+00:00",
+    "headers_received_at": "2026-08-28T20:32:58.663379+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "740951a9434114ef0d0a3dc6bff6ed618fc8a428db961a4a2ce194bde98181c8",
+    "request_id": "ef6c538cbedb4a289868d977c1d1784d",
+    "request_started_at": "2026-08-28T20:32:29.489072+00:00",
+    "response_bytes": 1072,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "negative-06-4",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"The provided documents do not specify a required number of support agents that must be on every critical incident. They define response time targets, escalation procedures involving an 'incident commander', and the roles of operators versus commanders, but they do not state how many people are needed to handle such incidents.\",\"evidence\":[\n  {\"evidence_id\":\"E2\",\"quote\":\"A critical security incident is acknowledged within 1 hour and is escalated to the incident commander.\"},\n  {\"evidence_id\":\"E3\",\"quote\":\"When the severity model indicates SEV-1, stop routine troubleshooting that could overwrite evidence. Notify the incident channel, identify an incident commander, and open a timeline.\"}\n]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "da1f1bd4fb0903c828ad7192cf2da900b49983d45823a2d5f755dd6e1e1fed34",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "035dd34947862d665dec20983a739d365578cff66690fd51a4496556eba2d15c",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E2",
+            "quote": "A critical security incident is acknowledged within 1 hour and is escalated to the incident commander."
+          },
+          {
+            "evidence_id": "E3",
+            "quote": "When the severity model indicates SEV-1, stop routine troubleshooting that could overwrite evidence. Notify the incident channel, identify an incident commander, and open a timeline."
+          }
+        ],
+        "text": "The provided documents do not specify a required number of support agents that must be on every critical incident. They define response time targets, escalation procedures involving an 'incident commander', and the roles of operators versus commanders, but they do not state how many people are needed to handle such incidents."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "The provided documents do not specify a required number of support agents that must be on every critical incident. They define response time targets, escalation procedures involving an 'incident commander', and the roles of operators versus commanders, but they do not state how many people are needed to handle such incidents. [E2] [E3]",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E2",
+          "quote": "A critical security incident is acknowledged within 1 hour and is escalated to the incident commander."
+        },
+        {
+          "evidence_id": "E3",
+          "quote": "When the severity model indicates SEV-1, stop routine troubleshooting that could overwrite evidence. Notify the incident channel, identify an incident commander, and open a timeline."
+        }
+      ],
+      "evidence_validation": [
+        {
+          "contributing_chunk_ids": [
+            "eaa8d66b-6c13-54d9-84de-3711862814c7"
+          ],
+          "evidence_block_id": "evidence-ef595756c03d312c867ef0ae",
+          "evidence_id": "E2",
+          "matched_span": [
+            279,
+            381
+          ],
+          "normalized_quote": "A critical security incident is acknowledged within 1 hour and is escalated to the incident commander.",
+          "quote_match": true,
+          "raw_quote": "A critical security incident is acknowledged within 1 hour and is escalated to the incident commander.",
+          "source_id": "support-escalation",
+          "status": "VALID_EVIDENCE_QUOTE"
+        },
+        {
+          "contributing_chunk_ids": [
+            "892ad7d3-7d3f-5721-9f17-712ac784451c"
+          ],
+          "evidence_block_id": "evidence-db9b7979b7c1f1d35adccade",
+          "evidence_id": "E3",
+          "matched_span": [
+            0,
+            182
+          ],
+          "normalized_quote": "When the severity model indicates SEV-1, stop routine troubleshooting that could overwrite evidence. Notify the incident channel, identify an incident commander, and open a timeline.",
+          "quote_match": true,
+          "raw_quote": "When the severity model indicates SEV-1, stop routine troubleshooting that could overwrite evidence. Notify the incident channel, identify an incident commander, and open a timeline.",
+          "source_id": "support-playbook",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": true,
+      "text": "The provided documents do not specify a required number of support agents that must be on every critical incident. They define response time targets, escalation procedures involving an 'incident commander', and the roles of operators versus commanders, but they do not state how many people are needed to handle such incidents.",
+      "validation_status": "VALID"
+    }
+  ],
+  "validator_failure_codes": [],
+  "validator_pass": true
+}

@@ -1,0 +1,156 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 6708,
+    "context_hash": "b2369e74258e2ac47cd103fdfb210146c95566b65940e6afd1b0a3641824927c",
+    "context_tokens": 494,
+    "expanded": true,
+    "input_chunk_ids": [
+      "75ac5529-0224-547c-b3df-9fffe338c484",
+      "eaa8d66b-6c13-54d9-84de-3711862814c7",
+      "145acb3b-6bab-54e6-a5b6-c4cd5194446c",
+      "4dbe4fb9-a497-5fb9-8060-dc16bbe5b377",
+      "5ebff933-3912-54cf-9358-31c4ecce877d"
+    ],
+    "output_block_ids": [
+      "evidence-10d8233f801bb07bcb7346cc",
+      "evidence-ef595756c03d312c867ef0ae",
+      "evidence-99a6dcf4b7de0fb8b1355f9a",
+      "evidence-477e98ce21605b22576393ce"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 34502.965,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"Destek playbook'u için triage (önceki aşama) bağlamının nasıl toplanması, Support Escalation Standard belgesinin sayısal otoritesine göre tanımlanır. Bu belge standart ve yüksek öncelikli destek hedefleri ile kritik güvenlik olayı kabul hedefini belirler.\\n\\nDestek playbook'u ise hangi bağlamların (context) toplanacağını ve ne zaman eskalasyon yapılacağını açıklar. Bir operatör, bir yanıt dönemi (return period) almadan önce plan, kanal, ürün tipi, teslim olayı ve bölgeyi doğrulamalıdır.\\n\\nOlay kaydında şu bilgiler bulunmalıdır:\\n- Etki alanı (impact)\\n- Başlangıç zamanı (start time)\\n- Etkilenen servis (affected service)\\n- Son müşteri görünen güncelleme (latest customer-visible update)\",\"evidence\":[{\"evidence_id\":\"E2\",\"quote\":\"The case record includes tenant, impact, affected service, severity rationale, and the latest customer-visible update.\"},{\"evidence_id\":\"E4\",\"quote\":\"Olay kaydında etki alanı, başlangıç zamanı, etkilenen servis ve son müşteri güncellemesi bulunur.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E2",
+              "quote": "The case record includes tenant, impact, affected service, severity rationale, and the latest customer-visible update."
+            },
+            {
+              "evidence_id": "E4",
+              "quote": "Olay kaydında etki alanı, başlangıç zamanı, etkilenen servis ve son müşteri güncellemesi bulunur."
+            }
+          ],
+          "text": "Destek playbook'u için triage (önceki aşama) bağlamının nasıl toplanması, Support Escalation Standard belgesinin sayısal otoritesine göre tanımlanır. Bu belge standart ve yüksek öncelikli destek hedefleri ile kritik güvenlik olayı kabul hedefini belirler.\n\nDestek playbook'u ise hangi bağlamların (context) toplanacağını ve ne zaman eskalasyon yapılacağını açıklar. Bir operatör, bir yanıt dönemi (return period) almadan önce plan, kanal, ürün tipi, teslim olayı ve bölgeyi doğrulamalıdır.\n\nOlay kaydında şu bilgiler bulunmalıdır:\n- Etki alanı (impact)\n- Başlangıç zamanı (start time)\n- Etkilenen servis (affected service)\n- Son müşteri görünen güncelleme (latest customer-visible update)"
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E2",
+            "quote": "The case record includes tenant, impact, affected service, severity rationale, and the latest customer-visible update."
+          },
+          {
+            "evidence_id": "E4",
+            "quote": "Olay kaydında etki alanı, başlangıç zamanı, etkilenen servis ve son müşteri güncellemesi bulunur."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "eaa8d66b-6c13-54d9-84de-3711862814c7"
+            ],
+            "evidence_block_id": "evidence-ef595756c03d312c867ef0ae",
+            "evidence_id": "E2",
+            "matched_span": [
+              433,
+              551
+            ],
+            "normalized_quote": "The case record includes tenant, impact, affected service, severity rationale, and the latest customer-visible update.",
+            "quote_match": true,
+            "raw_quote": "The case record includes tenant, impact, affected service, severity rationale, and the latest customer-visible update.",
+            "source_id": "support-escalation",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "4dbe4fb9-a497-5fb9-8060-dc16bbe5b377"
+            ],
+            "evidence_block_id": "evidence-477e98ce21605b22576393ce",
+            "evidence_id": "E4",
+            "matched_span": [
+              518,
+              615
+            ],
+            "normalized_quote": "Olay kaydında etki alanı, başlangıç zamanı, etkilenen servis ve son müşteri güncellemesi bulunur.",
+            "quote_match": true,
+            "raw_quote": "Olay kaydında etki alanı, başlangıç zamanı, etkilenen servis ve son müşteri güncellemesi bulunur.",
+            "source_id": "long-policy-tr",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "Destek playbook'u için triage (önceki aşama) bağlamının nasıl toplanması, Support Escalation Standard belgesinin sayısal otoritesine göre tanımlanır. Bu belge standart ve yüksek öncelikli destek hedefleri ile kritik güvenlik olayı kabul hedefini belirler.\n\nDestek playbook'u ise hangi bağlamların (context) toplanacağını ve ne zaman eskalasyon yapılacağını açıklar. Bir operatör, bir yanıt dönemi (return period) almadan önce plan, kanal, ürün tipi, teslim olayı ve bölgeyi doğrulamalıdır.\n\nOlay kaydında şu bilgiler bulunmalıdır:\n- Etki alanı (impact)\n- Başlangıç zamanı (start time)\n- Etkilenen servis (affected service)\n- Son müşteri görünen güncelleme (latest customer-visible update)",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "Destek playbook'u için triage (önceki aşama) bağlamının nasıl toplanması, Support Escalation Standard belgesinin sayısal otoritesine göre tanımlanır. Bu belge standart ve yüksek öncelikli destek hedefleri ile kritik güvenlik olayı kabul hedefini belirler.\n\nDestek playbook'u ise hangi bağlamların (context) toplanacağını ve ne zaman eskalasyon yapılacağını açıklar. Bir operatör, bir yanıt dönemi (return period) almadan önce plan, kanal, ürün tipi, teslim olayı ve bölgeyi doğrulamalıdır.\n\nOlay kaydında şu bilgiler bulunmalıdır:\n- Etki alanı (impact)\n- Başlangıç zamanı (start time)\n- Etkilenen servis (affected service)\n- Son müşteri görünen güncelleme (latest customer-visible update) [E2] [E4]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:09:17.625701+00:00",
+    "connection_established_at": "2026-08-28T19:09:17.623190+00:00",
+    "context_hash": "cf9d19cad2159839926191956a23c8f308ff7940507cf2730316fa814c35649d",
+    "elapsed_ms": 34500.67,
+    "first_body_byte_at": "2026-08-28T19:09:17.624006+00:00",
+    "headers_received_at": "2026-08-28T19:09:17.623190+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "698e1c1a7f9ac03220045307c226f5b8417a55a2be4717a2d4cdb20261cfc2c7",
+    "request_id": "1ad78f3a85d74973b863dc4c42f31f8a",
+    "request_started_at": "2026-08-28T19:08:43.125491+00:00",
+    "response_bytes": 1431,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "cross-16-0",
+  "run_key": "82a035e9759d0c88586cdc9ebffb9736095de14063b0cb73d958ecfe0f433a41",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "2e33b06ac69f5c9d338d20b85e19360c6a19e0a643c1670b868a2ce24b03a041",
+  "state": "GENERATION_COMPLETE"
+}

@@ -1,0 +1,197 @@
+{
+  "all_required_present": true,
+  "answerability": "answerable",
+  "application_forced_abstention": false,
+  "category": "hard_answerable",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7709,
+    "context_hash": "4b5b1ee2a9469b9d16315ea87383740d002c6fbd7f52da5d250a8106df0375ac",
+    "context_tokens": 609,
+    "expanded": true,
+    "input_chunk_ids": [
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "9e3c93f4-d500-55b1-93cf-b42c6c1649a3",
+      "5bd2643d-4837-5733-9717-c88c37860274"
+    ],
+    "output_block_ids": [
+      "evidence-8fea465773fe4e1d004015a6",
+      "evidence-18dff0edf106c3883371702d",
+      "evidence-f72215516d7672d92b0f6733",
+      "evidence-c3e56011af0b7007b88d893a"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "fact_score": {
+    "expected_components": [
+      "No",
+      "the effective policy at delivery is the historical 30-day version."
+    ],
+    "fact_coverage": 0.5,
+    "matched_fact_ids": [
+      "fact_2"
+    ],
+    "matches": [
+      {
+        "matched": false,
+        "reason": "no_safe_match"
+      },
+      {
+        "answer": [
+          10.0,
+          "day"
+        ],
+        "expected": [
+          30.0,
+          "day"
+        ],
+        "matched": true,
+        "reason": "duration"
+      }
+    ],
+    "missing_fact_ids": [
+      "fact_1"
+    ],
+    "required_fact_count": 2,
+    "required_fact_ids": [
+      "fact_1",
+      "fact_2"
+    ],
+    "status": "CORRECT_BUT_INCOMPLETE"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 34672.083,
+  "gold_present": true,
+  "language_pair": "tr->en",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:30:30.859625+00:00",
+    "connection_established_at": "2026-08-28T19:30:30.858613+00:00",
+    "context_hash": "50351286a81d1b5fd3741ece4052f6c9fa8b29505abb0851c5c7dd2f7bc7268a",
+    "elapsed_ms": 34670.689,
+    "first_body_byte_at": "2026-08-28T19:30:30.858881+00:00",
+    "headers_received_at": "2026-08-28T19:30:30.858613+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "8b0a24062ee221839d9c09886f156aec0e76f8ebf2e3ee4b09b646549045aaff",
+    "request_id": "c31eeb7ecd4548c1b4691af2c9f4692d",
+    "request_started_at": "2026-08-28T19:29:56.189821+00:00",
+    "response_bytes": 840,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "hard-version-history",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"2025-01-10 teslimatı için güncel 14 günlük kural geriye dönük uygulanmaz. Teslim tarihine göre eski (30 gün) iade politikası geçerlidir.\",\"evidence\":[\n  {\"evidence_id\":\"E3\",\"quote\":\"Sonradan yayımlanan bir istisna eski siparişe geriye dönük uygulanmaz.\"},\n  {\"evidence_id\":\"E2\",\"quote\":\"The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15.\"}\n]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "78756cd3f72193216c10642cd56e31d41911536ba5926b16b8594b8053c73470",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "46d9ae69d00b1f58d059ba1c0e10be141e43c4bda97d2ae92d8e707d5255181a",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "Sonradan yayımlanan bir istisna eski siparişe geriye dönük uygulanmaz."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15."
+          }
+        ],
+        "text": "2025-01-10 teslimatı için güncel 14 günlük kural geriye dönük uygulanmaz. Teslim tarihine göre eski (30 gün) iade politikası geçerlidir."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "2025-01-10 teslimatı için güncel 14 günlük kural geriye dönük uygulanmaz. Teslim tarihine göre eski (30 gün) iade politikası geçerlidir. [E3] [E2]",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E3",
+          "quote": "Sonradan yayımlanan bir istisna eski siparişe geriye dönük uygulanmaz."
+        },
+        {
+          "evidence_id": "E2",
+          "quote": "The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15."
+        }
+      ],
+      "evidence_validation": [
+        {
+          "contributing_chunk_ids": [
+            "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+            "9e3c93f4-d500-55b1-93cf-b42c6c1649a3"
+          ],
+          "evidence_block_id": "evidence-f72215516d7672d92b0f6733",
+          "evidence_id": "E3",
+          "matched_span": [
+            1093,
+            1163
+          ],
+          "normalized_quote": "Sonradan yayımlanan bir istisna eski siparişe geriye dönük uygulanmaz.",
+          "quote_match": true,
+          "raw_quote": "Sonradan yayımlanan bir istisna eski siparişe geriye dönük uygulanmaz.",
+          "source_id": "long-policy-tr",
+          "status": "VALID_EVIDENCE_QUOTE"
+        },
+        {
+          "contributing_chunk_ids": [
+            "81c42719-5b0b-5c64-897a-a8a0ae51b5d8"
+          ],
+          "evidence_block_id": "evidence-18dff0edf106c3883371702d",
+          "evidence_id": "E2",
+          "matched_span": [
+            233,
+            391
+          ],
+          "normalized_quote": "The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15.",
+          "quote_match": true,
+          "raw_quote": "The rule is retained so that cases are evaluated against the policy effective on the delivery date. It does not govern deliveries made on or after 2026-01-15.",
+          "source_id": "refund-policy-2025",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": true,
+      "text": "2025-01-10 teslimatı için güncel 14 günlük kural geriye dönük uygulanmaz. Teslim tarihine göre eski (30 gün) iade politikası geçerlidir.",
+      "validation_status": "VALID"
+    }
+  ],
+  "validator_failure_codes": [],
+  "validator_pass": true
+}

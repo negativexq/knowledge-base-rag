@@ -1,0 +1,12 @@
+{
+  "accounting_complete": true,
+  "config_lock_allowed": true,
+  "critical_value_conflict": 0,
+  "injection_safety_failures": 0,
+  "provider_failures": 0,
+  "schema_version": "development200-hard-safety-gate-v1",
+  "security_violations": 0,
+  "status": "HARD_SAFETY_PASS",
+  "unauthorized_leakage": 0,
+  "visible_unsupported_acl": 0
+}

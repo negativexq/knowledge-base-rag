@@ -1,0 +1,152 @@
+{
+  "accounted_queries": 200,
+  "accounting": {
+    "accounted": 200,
+    "duplicate_run_keys": 0,
+    "expected": 200,
+    "unique_query_ids": 200
+  },
+  "ambiguous": {
+    "actual_clarification": 0,
+    "direct_answer_without_clarification": 7,
+    "expected_clarification": 12,
+    "safe_abstention": 5,
+    "silent_interpretation_rate": 0.583333,
+    "total": 12
+  },
+  "attribution_labels_sha256": "e64f8d72ef5c52441d10c5b7792155d32c05f28ec2940d33b802ac9d4bfde393",
+  "attribution_sample": {
+    "input_created": true,
+    "labels_created": true,
+    "size": 30
+  },
+  "attribution_sample_hash_file": "d1f7262c2cd6ab6fb39c506c45f852bd19981600672cb382bfe4b81e14d31e78",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "config_lock": {
+    "created": true,
+    "path": "artifacts/phase-7/config-lock/config-lock.json",
+    "sha256": "6abeab461bb8d6d1be40b086e2728b3a116344c2dfaa07199a77b34aa433348a"
+  },
+  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "critical_value_absent": "NOT_DETERMINED_WITHOUT_FACT_ANNOTATIONS",
+  "critical_value_conflict": 0,
+  "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
+  "deterministically_evidence_valid_visible": 132,
+  "duplicate_run_keys": 0,
+  "false_abstention": 14,
+  "forced_abstention": 56,
+  "generation_latency_ms": {
+    "max": 104258.351,
+    "p50": 29352.604,
+    "p95": 83224.628
+  },
+  "hard_safety_gate": "HARD_SAFETY_PASS",
+  "injection": {
+    "injection_safety_failures": 0,
+    "security_handling_success": 8,
+    "task_complete": 4,
+    "task_incomplete": 4,
+    "total": 8
+  },
+  "latency_ms": {
+    "max": 104258.351,
+    "p50": 29394.996,
+    "p95": 84590.012
+  },
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "measurement_plan_hash_canonical": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "measurement_plan_hash_file": "fc4cc8fb9bb7f99df83ea7fb93e63e2bba2db4e5c88de8c741366377dd01f0d2",
+  "missing_queries": 0,
+  "official_completed_results": 200,
+  "provider_final_completion": 200,
+  "provider_first_attempt_failures": 0,
+  "provider_retries_or_recoveries": 0,
+  "raw_fully_correct": 72,
+  "required_queries": 200,
+  "results_canonical_sha256": "ebc65059473e1401a876dce98f1acd9cb55d12f239832f61ce0b6954e459b107",
+  "safe_abstention": 53,
+  "safety": {
+    "critical_value_conflict": 0,
+    "injection_safety_failures": 0,
+    "security_violations": 0,
+    "unauthorized_leakage": 0,
+    "visible_unsupported_acl": 0
+  },
+  "schema_version": "development200-summary-v1",
+  "slices": {
+    "acl_negative": {
+      "completed": 8,
+      "forced_abstention": 2,
+      "n": 8,
+      "raw_fully_correct": 0,
+      "safe_abstention": 2,
+      "visible_fully_correct": 0
+    },
+    "ambiguous": {
+      "completed": 12,
+      "forced_abstention": 3,
+      "n": 12,
+      "raw_fully_correct": 0,
+      "safe_abstention": 4,
+      "visible_fully_correct": 0
+    },
+    "cross_lingual": {
+      "completed": 36,
+      "forced_abstention": 14,
+      "n": 36,
+      "raw_fully_correct": 14,
+      "safe_abstention": 12,
+      "visible_fully_correct": 14
+    },
+    "hard_answerable": {
+      "completed": 50,
+      "forced_abstention": 18,
+      "n": 50,
+      "raw_fully_correct": 20,
+      "safe_abstention": 10,
+      "visible_fully_correct": 20
+    },
+    "injection_bearing": {
+      "completed": 8,
+      "forced_abstention": 0,
+      "n": 8,
+      "raw_fully_correct": 4,
+      "safe_abstention": 0,
+      "visible_fully_correct": 4
+    },
+    "multi_document": {
+      "completed": 12,
+      "forced_abstention": 2,
+      "n": 12,
+      "raw_fully_correct": 5,
+      "safe_abstention": 2,
+      "visible_fully_correct": 5
+    },
+    "standard_answerable": {
+      "completed": 36,
+      "forced_abstention": 7,
+      "n": 36,
+      "raw_fully_correct": 26,
+      "safe_abstention": 7,
+      "visible_fully_correct": 26
+    },
+    "unanswerable": {
+      "completed": 30,
+      "forced_abstention": 6,
+      "n": 30,
+      "raw_fully_correct": 0,
+      "safe_abstention": 16,
+      "visible_fully_correct": 0
+    },
+    "version_conflict": {
+      "completed": 8,
+      "forced_abstention": 4,
+      "n": 8,
+      "raw_fully_correct": 3,
+      "safe_abstention": 0,
+      "visible_fully_correct": 3
+    }
+  },
+  "status": "DEVELOPMENT200_COMPLETE",
+  "visible_fully_correct": 72
+}

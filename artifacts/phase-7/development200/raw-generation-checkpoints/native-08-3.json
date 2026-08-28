@@ -1,0 +1,157 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7227,
+    "context_hash": "b0b59399ac52a7a6230ff58932cde6845a1d9bf947b0575684c0bed9eddba900",
+    "context_tokens": 548,
+    "expanded": true,
+    "input_chunk_ids": [
+      "c1925666-6909-5b2b-a05f-77c72c526530",
+      "74efa568-9790-5707-ade8-ce23376503ce",
+      "5fb06011-67fe-599f-85e3-d418ba1fe5d8",
+      "6fc1009f-4278-5950-9f06-22022a85aea5",
+      "cd6da828-f67e-54f5-aca3-cb277d8c879c"
+    ],
+    "output_block_ids": [
+      "evidence-4458f1f50e106c9c083a6246",
+      "evidence-503a314f120fa68ad6b1a5ac",
+      "evidence-91b5cf49ebe1c87fb6a9fb01",
+      "evidence-0ce0bfa2b7dd775f2f1a6d70"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 29958.92,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"MFA kurtarma hedefi ayrıntısı doğrulanmıştır. Belirlenen normal MFA kurtarma hedefi, kimlik kontrollerinin başarıyla tamamlanmasından sonra 24 saattir.\",\"evidence\":[\n  {\"evidence_id\":\"E1\",\"quote\":\"Kimlik kontrolleri geçtikten sonra normal hedef 24 saattir.\"},\n  {\"evidence_id\":\"E2\",\"quote\":\"Kimlik kontrolleri başarıyla tamamlandıktan sonra MFA kurtarma normalde 24 saat içinde sonuçlandırılır.\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "Kimlik kontrolleri geçtikten sonra normal hedef 24 saattir."
+            },
+            {
+              "evidence_id": "E2",
+              "quote": "Kimlik kontrolleri başarıyla tamamlandıktan sonra MFA kurtarma normalde 24 saat içinde sonuçlandırılır."
+            }
+          ],
+          "text": "MFA kurtarma hedefi ayrıntısı doğrulanmıştır. Belirlenen normal MFA kurtarma hedefi, kimlik kontrollerinin başarıyla tamamlanmasından sonra 24 saattir."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "Kimlik kontrolleri geçtikten sonra normal hedef 24 saattir."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "Kimlik kontrolleri başarıyla tamamlandıktan sonra MFA kurtarma normalde 24 saat içinde sonuçlandırılır."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "c1925666-6909-5b2b-a05f-77c72c526530",
+              "cd6da828-f67e-54f5-aca3-cb277d8c879c"
+            ],
+            "evidence_block_id": "evidence-4458f1f50e106c9c083a6246",
+            "evidence_id": "E1",
+            "matched_span": [
+              88,
+              147
+            ],
+            "normalized_quote": "Kimlik kontrolleri geçtikten sonra normal hedef 24 saattir.",
+            "quote_match": true,
+            "raw_quote": "Kimlik kontrolleri geçtikten sonra normal hedef 24 saattir.",
+            "source_id": "long-policy-tr",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "74efa568-9790-5707-ade8-ce23376503ce"
+            ],
+            "evidence_block_id": "evidence-503a314f120fa68ad6b1a5ac",
+            "evidence_id": "E2",
+            "matched_span": [
+              218,
+              321
+            ],
+            "normalized_quote": "Kimlik kontrolleri başarıyla tamamlandıktan sonra MFA kurtarma normalde 24 saat içinde sonuçlandırılır.",
+            "quote_match": true,
+            "raw_quote": "Kimlik kontrolleri başarıyla tamamlandıktan sonra MFA kurtarma normalde 24 saat içinde sonuçlandırılır.",
+            "source_id": "account-security",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "MFA kurtarma hedefi ayrıntısı doğrulanmıştır. Belirlenen normal MFA kurtarma hedefi, kimlik kontrollerinin başarıyla tamamlanmasından sonra 24 saattir.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "MFA kurtarma hedefi ayrıntısı doğrulanmıştır. Belirlenen normal MFA kurtarma hedefi, kimlik kontrollerinin başarıyla tamamlanmasından sonra 24 saattir. [E1] [E2]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:54:36.397630+00:00",
+    "connection_established_at": "2026-08-28T19:54:36.397127+00:00",
+    "context_hash": "b3881a1b6103d11a3886f8e2cca5ca5da98674ad35c1dfcfe088d5bd1b7db0fb",
+    "elapsed_ms": 29957.985,
+    "first_body_byte_at": "2026-08-28T19:54:36.397270+00:00",
+    "headers_received_at": "2026-08-28T19:54:36.397127+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "a10429d9179d194ac9786de79007a4365972a5332c611cc7c9efa42aca2f875d",
+    "request_id": "b67f497c33454b59b365ead4c35cb19e",
+    "request_started_at": "2026-08-28T19:54:06.440657+00:00",
+    "response_bytes": 793,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "native-08-3",
+  "run_key": "667cba5f7e18178f17d2e7fc157c48dd0af8e2162a0f2c091088d8ca5de913ba",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "da7a63bcf8a391fbb3de9b5ce2cdc854e98e79aeb4f4ff600430084e51b629f8",
+  "state": "GENERATION_COMPLETE"
+}

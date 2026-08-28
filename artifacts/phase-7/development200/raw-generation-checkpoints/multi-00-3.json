@@ -1,0 +1,173 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7286,
+    "context_hash": "4560a5621f746c88ca91d57bc5f78f0fc66b8d87e6b5c6a66dc67501a05f7bb5",
+    "context_tokens": 600,
+    "expanded": true,
+    "input_chunk_ids": [
+      "27816f01-3236-59fa-ace9-3e5ff651bf91",
+      "b3b30141-6504-54bb-a9dc-de95e27dca22",
+      "c525e9f2-2aac-53ad-adc4-ff87d6f10918",
+      "a7c1e5ef-c917-572f-8a87-643c962b9a71",
+      "1b50ae39-8364-5172-a719-f2090efce26e"
+    ],
+    "output_block_ids": [
+      "evidence-5484e69bfe8a560bb2648412",
+      "evidence-a41a91598b59026cd04a0e13",
+      "evidence-a5be740e0ffb51f76dc60a19"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": true,
+      "application_forced_abstention": true,
+      "citation_suppressed": true,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ],
+      "violations": [
+        "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+        "QUOTE_NOT_FOUND"
+      ]
+    }
+  ],
+  "generation_latency_ms": 50918.472,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": true,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"The combination that explains both the standard return window and the evidence fields support must record is: identifying the order channel (direct sale or marketplace), confirming plan and product type, locating delivery or activation evidence, checking region and policy effective date, verifying a signed enterprise exception if applicable, recording the requested remedy and required approval, and documenting closure details including order channel, delivery event, canonical policy, approval status, customer message, contract reviewer identifier, effective-date question, security incident link (if applicable), and avoiding copying sensitive indicators into routine notes. For Standard direct-sale orders, the return window is 14 calendar days from delivery for unused items with available order references; Premium customers have a 30-day window under specific conditions but remain subject to their channel's rules if marketplace or digital goods apply.\",\"evidence\":[{\"evidence_id\":\"E2\",\"quote\":\"Premium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies.\"},{\"evidence_id\":\"E1\",\"quote\":\"For direct Standard orders, the current canonical policy controls the ordinary window... For a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review.\"},{\"evidence_id\":\"E3\",\"quote\":\"Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window... Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E2",
+            "quote": "Premium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies."
+          },
+          {
+            "evidence_id": "E1",
+            "quote": "For direct Standard orders, the current canonical policy controls the ordinary window... For a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review."
+          },
+          {
+            "evidence_id": "E3",
+            "quote": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window... Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "81627801-791b-5379-b97c-359c2058031b",
+              "a7c1e5ef-c917-572f-8a87-643c962b9a71"
+            ],
+            "evidence_block_id": "evidence-a41a91598b59026cd04a0e13",
+            "evidence_id": "E2",
+            "matched_span": [
+              122,
+              313
+            ],
+            "normalized_quote": "Premium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies.",
+            "quote_match": true,
+            "raw_quote": "Premium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies.",
+            "source_id": "premium-returns-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "evidence_block_id": "evidence-5484e69bfe8a560bb2648412",
+            "evidence_id": "E1",
+            "normalized_quote": "For direct Standard orders, the current canonical policy controls the ordinary window... For a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review.",
+            "quote_match": false,
+            "raw_quote": "For direct Standard orders, the current canonical policy controls the ordinary window... For a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review.",
+            "status": "QUOTE_NOT_FOUND"
+          },
+          {
+            "evidence_block_id": "evidence-a5be740e0ffb51f76dc60a19",
+            "evidence_id": "E3",
+            "normalized_quote": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window... Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.",
+            "quote_match": false,
+            "raw_quote": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window... Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope.",
+            "status": "QUOTE_NOT_FOUND"
+          }
+        ],
+        "survived": false,
+        "text": "The combination that explains both the standard return window and the evidence fields support must record is: identifying the order channel (direct sale or marketplace), confirming plan and product type, locating delivery or activation evidence, checking region and policy effective date, verifying a signed enterprise exception if applicable, recording the requested remedy and required approval, and documenting closure details including order channel, delivery event, canonical policy, approval status, customer message, contract reviewer identifier, effective-date question, security incident link (if applicable), and avoiding copying sensitive indicators into routine notes. For Standard direct-sale orders, the return window is 14 calendar days from delivery for unused items with available order references; Premium customers have a 30-day window under specific conditions but remain subject to their channel's rules if marketplace or digital goods apply.",
+        "validation_status": "REJECTED"
+      }
+    ],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E2",
+              "quote": "Premium customers have 30 calendar days from delivery to request a return. The account and order must be linked, and the item must be unused unless an approved damaged-item exception applies."
+            },
+            {
+              "evidence_id": "E1",
+              "quote": "For direct Standard orders, the current canonical policy controls the ordinary window... For a resolved Standard return, the closure records the order channel, delivery event, canonical policy, approval, and customer message. For a pending enterprise exception, it records the contract reviewer, identifier, effective-date question, and next review."
+            },
+            {
+              "evidence_id": "E3",
+              "quote": "Standard-plan customers may request a refund within 14 calendar days of delivery. The item must be unused and the order reference must be available. The delivery event, rather than the date of the first support contact, starts the window... Before approving a request, record the plan, order channel, delivery date, product type, requested remedy, and any applicable contract or regional scope."
+            }
+          ],
+          "text": "The combination that explains both the standard return window and the evidence fields support must record is: identifying the order channel (direct sale or marketplace), confirming plan and product type, locating delivery or activation evidence, checking region and policy effective date, verifying a signed enterprise exception if applicable, recording the requested remedy and required approval, and documenting closure details including order channel, delivery event, canonical policy, approval status, customer message, contract reviewer identifier, effective-date question, security incident link (if applicable), and avoiding copying sensitive indicators into routine notes. For Standard direct-sale orders, the return window is 14 calendar days from delivery for unused items with available order references; Premium customers have a 30-day window under specific conditions but remain subject to their channel's rules if marketplace or digital goods apply."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [],
+    "validated_output": "I could not find this in the document.",
+    "validated_output_available": true,
+    "validator_failure_codes": [
+      "NO_VALID_EVIDENCE_BACKED_CLAIMS",
+      "QUOTE_NOT_FOUND"
+    ],
+    "validator_input_available": true,
+    "validator_pass": false
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:37:06.172024+00:00",
+    "connection_established_at": "2026-08-28T19:37:06.160644+00:00",
+    "context_hash": "5b3f5792cf16a6926ff6807bc555fffe250680ff7ecbd70ca4c41f92008edb40",
+    "elapsed_ms": 50914.401,
+    "first_body_byte_at": "2026-08-28T19:37:06.161272+00:00",
+    "headers_received_at": "2026-08-28T19:37:06.160644+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "6e680153e97e8e5f3e6d2cfd4b2d808cae4e0f50df5b13a6e92bfe952d15a9f0",
+    "request_id": "306f4347acbe4775ba841df59a9d3def",
+    "request_started_at": "2026-08-28T19:36:15.258806+00:00",
+    "response_bytes": 2388,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "multi-00-3",
+  "run_key": "f59850143d6a8c8a55b96badff1c83275548fba5e37670e24516d911f5d2414d",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "16ecf82a51099cc1080e9cd036bed4586712da19c8137e2a45d142cb1490ee6b",
+  "state": "GENERATION_COMPLETE"
+}

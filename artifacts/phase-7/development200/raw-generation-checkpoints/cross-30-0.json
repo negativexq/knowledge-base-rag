@@ -1,0 +1,157 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7541,
+    "context_hash": "f82e1aeae74e30391672707ff978ef06c8142ee417df496b638fc4fda3da777c",
+    "context_tokens": 560,
+    "expanded": true,
+    "input_chunk_ids": [
+      "81c42719-5b0b-5c64-897a-a8a0ae51b5d8",
+      "49df1fbd-e41f-5702-b1f6-903e0e17c8d0",
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "955d96b7-9420-5d68-a59e-5879e373c9c2",
+      "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b"
+    ],
+    "output_block_ids": [
+      "evidence-18dff0edf106c3883371702d",
+      "evidence-f72215516d7672d92b0f6733",
+      "evidence-8fea465773fe4e1d004015a6",
+      "evidence-e26baa610e90e2546b98101f"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 55811.856,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"2026 sürümünde geçersiz kılınan politika (Standart Dönüş — 2025) doğrudan satış Standart planı siparişleri için teslimattan itibaren 30 takvim günü içinde iade talebi açmayı öngörür. Bu eski kurallar, teslim tarihi 14 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür.\",\"evidence\":[{\"evidence_id\":\"E3\",\"quote\":\"The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.\"},{\"evidence_id\":\"E2\",\"quote\":\"Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır.\"}]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E3",
+              "quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date."
+            },
+            {
+              "evidence_id": "E2",
+              "quote": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır."
+            }
+          ],
+          "text": "2026 sürümünde geçersiz kılınan politika (Standart Dönüş — 2025) doğrudan satış Standart planı siparişleri için teslimattan itibaren 30 takvim günü içinde iade talebi açmayı öngörür. Bu eski kurallar, teslim tarihi 14 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb"
+            ],
+            "evidence_block_id": "evidence-8fea465773fe4e1d004015a6",
+            "evidence_id": "E3",
+            "matched_span": [
+              235,
+              350
+            ],
+            "normalized_quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.",
+            "quote_match": true,
+            "raw_quote": "The previous 30-day rule remains applicable to cases whose governing delivery date falls before the effective date.",
+            "source_id": "refund-policy-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "90e9d5ad-7fa0-562f-8312-0fe63ce5cd5b",
+              "49df1fbd-e41f-5702-b1f6-903e0e17c8d0"
+            ],
+            "evidence_block_id": "evidence-f72215516d7672d92b0f6733",
+            "evidence_id": "E2",
+            "matched_span": [
+              503,
+              611
+            ],
+            "normalized_quote": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır.",
+            "quote_match": true,
+            "raw_quote": "Doğrudan satılan Standart plan fiziksel ürünleri için 2026 politikasındaki 14 takvim günlük süre kullanılır.",
+            "source_id": "long-policy-tr",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "2026 sürümünde geçersiz kılınan politika (Standart Dönüş — 2025) doğrudan satış Standart planı siparişleri için teslimattan itibaren 30 takvim günü içinde iade talebi açmayı öngörür. Bu eski kurallar, teslim tarihi 14 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "2026 sürümünde geçersiz kılınan politika (Standart Dönüş — 2025) doğrudan satış Standart planı siparişleri için teslimattan itibaren 30 takvim günü içinde iade talebi açmayı öngörür. Bu eski kurallar, teslim tarihi 14 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. Eski kurallar, teslim tarihi 15 Ocak 2026'da ve bundan önce olan durumlarda geçerlidir; ancak yeni politika (Standart Dönüş — 2026) bu tarihlerden sonra doğrudan satış Standart planı fiziksel ürünleri için teslimattan itibaren 14 takvim günü içinde iade talebi açmayı öngörür. [E3] [E2]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:15:59.006086+00:00",
+    "connection_established_at": "2026-08-28T19:15:59.002863+00:00",
+    "context_hash": "5f5629f62058d9dc8d8b176434f3e8bf19c8a627073daa8f6cf57d451b26f77e",
+    "elapsed_ms": 55809.473,
+    "first_body_byte_at": "2026-08-28T19:15:59.004329+00:00",
+    "headers_received_at": "2026-08-28T19:15:59.002863+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "8ec4b35ce54a00f38ea89848827a56d3ee2a9bc0ccdf3a949c1418d27b88566f",
+    "request_id": "84698ce1fe914521ad6c8d1e105f2db6",
+    "request_started_at": "2026-08-28T19:15:03.197997+00:00",
+    "response_bytes": 1792,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "cross-30-0",
+  "run_key": "2ef5a2dc45f3aabe8d28e43809409b4a00fc8d47ee0e0616929e4be29c4376a2",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "1f996d6dea3891df9b3fa173c8eb537e160877b1661cfbb45bdb2eaa268ad64e",
+  "state": "GENERATION_COMPLETE"
+}

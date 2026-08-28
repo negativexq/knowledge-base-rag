@@ -1,0 +1,155 @@
+{
+  "all_required_present": true,
+  "answerability": "answerable",
+  "application_forced_abstention": false,
+  "category": "hard_answerable",
+  "checkpoint_state": "PERSISTED_COMPLETE",
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 6059,
+    "context_hash": "e60f32ad9641a8a76478bcd9220e12433fdb3bbd70e69896535ae17e5e03a5c3",
+    "context_tokens": 493,
+    "expanded": true,
+    "input_chunk_ids": [
+      "69ef7766-c3b9-53b0-aa17-b9290ca74de7",
+      "0183d997-4c6e-5da5-9664-b2d74ccc4d81",
+      "3df9abf5-f2e3-5070-97e5-e1387431151d",
+      "7f71ca40-865b-5ee5-a026-6855df81dba9",
+      "c63e9c22-4687-5320-a0e5-0e0c7e57d3f5"
+    ],
+    "output_block_ids": [
+      "evidence-2d96a30087fc96df5b10c9b8",
+      "evidence-4f54995a8993a9d8a9b4a4e0",
+      "evidence-784ab108220d2f761b736fa9"
+    ]
+  },
+  "embedding_calls": 0,
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "fact_score": {
+    "expected_components": [
+      "preserve source identity without copying secrets or evaluator labels"
+    ],
+    "fact_coverage": 0.0,
+    "matched_fact_ids": [],
+    "matches": [
+      {
+        "matched": false,
+        "reason": "no_safe_match"
+      }
+    ],
+    "missing_fact_ids": [
+      "fact_1"
+    ],
+    "required_fact_count": 1,
+    "required_fact_ids": [
+      "fact_1"
+    ],
+    "status": "INCORRECT"
+  },
+  "generation_calls": 1,
+  "generation_latency_ms": 23569.242,
+  "gold_present": true,
+  "language_pair": "en->en",
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "model_abstention": false,
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T20:14:02.584127+00:00",
+    "connection_established_at": "2026-08-28T20:14:02.583400+00:00",
+    "context_hash": "674b07056f0235e45f4296e4b19ce67b0a99b353c3375d53a4dd2f8a3f7e27a3",
+    "elapsed_ms": 23568.351,
+    "first_body_byte_at": "2026-08-28T20:14:02.583601+00:00",
+    "headers_received_at": "2026-08-28T20:14:02.583400+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "247b24abb21963372779f4b877927f226acded31a3af851e65750d6a48b2eaa2",
+    "request_id": "ac1c7cbf592048de8c0f949cfc054173",
+    "request_started_at": "2026-08-28T20:13:39.016615+00:00",
+    "response_bytes": 861,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "provider_status": "COMPLETED",
+  "query_id": "native-32-2",
+  "raw_candidate": "{\"answer_parts\":[{\"text\":\"In the audit section of the employee handbook, evidence citation requires that if a document refers to another source, only the authorized tenant context should be followed. The actual source used must be recorded, and attaching an entire document is not permitted when a page or section reference suffices.\",\"evidence\":[\n  {\"evidence_id\":\"E2\",\"quote\":\"When a document refers to another source, follow the reference only within the authorized tenant context. Record the source actually used.\"}\n]}],\"abstain\":false}",
+  "raw_candidate_available": true,
+  "rejected_answer_parts": [],
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "run_key": "cb6ece06e911ad679d80e04a78f5adb0cd303ea0be0545c6cbe536cf9161cf16",
+  "schema_version": "development200-result-v1",
+  "seed": 42,
+  "snapshot_input_hash": "259bf4815bcf0195d77d9d31361f840bdfa826f0f7b21ae4cffc4c0f643d0ce6",
+  "state": "PERSISTED_COMPLETE",
+  "structured_candidate": {
+    "abstain": false,
+    "answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E2",
+            "quote": "When a document refers to another source, follow the reference only within the authorized tenant context. Record the source actually used."
+          }
+        ],
+        "text": "In the audit section of the employee handbook, evidence citation requires that if a document refers to another source, only the authorized tenant context should be followed. The actual source used must be recorded, and attaching an entire document is not permitted when a page or section reference suffices."
+      }
+    ],
+    "reason_code": null
+  },
+  "user_visible_output": "In the audit section of the employee handbook, evidence citation requires that if a document refers to another source, only the authorized tenant context should be followed. The actual source used must be recorded, and attaching an entire document is not permitted when a page or section reference suffices. [E2]",
+  "user_visible_output_available": true,
+  "validated_answer_parts": [
+    {
+      "evidence": [
+        {
+          "evidence_id": "E2",
+          "quote": "When a document refers to another source, follow the reference only within the authorized tenant context. Record the source actually used."
+        }
+      ],
+      "evidence_validation": [
+        {
+          "contributing_chunk_ids": [
+            "7f71ca40-865b-5ee5-a026-6855df81dba9"
+          ],
+          "evidence_block_id": "evidence-4f54995a8993a9d8a9b4a4e0",
+          "evidence_id": "E2",
+          "matched_span": [
+            281,
+            419
+          ],
+          "normalized_quote": "When a document refers to another source, follow the reference only within the authorized tenant context. Record the source actually used.",
+          "quote_match": true,
+          "raw_quote": "When a document refers to another source, follow the reference only within the authorized tenant context. Record the source actually used.",
+          "source_id": "support-playbook",
+          "status": "VALID_EVIDENCE_QUOTE"
+        }
+      ],
+      "survived": true,
+      "text": "In the audit section of the employee handbook, evidence citation requires that if a document refers to another source, only the authorized tenant context should be followed. The actual source used must be recorded, and attaching an entire document is not permitted when a page or section reference suffices.",
+      "validation_status": "VALID"
+    }
+  ],
+  "validator_failure_codes": [],
+  "validator_pass": true
+}

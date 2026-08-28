@@ -1,0 +1,157 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 7145,
+    "context_hash": "71c8be27505988572dfc1021e916927b98d0aa33845dd3bd338e567c07e419be",
+    "context_tokens": 553,
+    "expanded": true,
+    "input_chunk_ids": [
+      "5fb06011-67fe-599f-85e3-d418ba1fe5d8",
+      "c1925666-6909-5b2b-a05f-77c72c526530",
+      "6fc1009f-4278-5950-9f06-22022a85aea5",
+      "74efa568-9790-5707-ade8-ce23376503ce",
+      "907ba715-0cdd-5b0c-ae46-a4b790657aea"
+    ],
+    "output_block_ids": [
+      "evidence-91b5cf49ebe1c87fb6a9fb01",
+      "evidence-4458f1f50e106c9c083a6246",
+      "evidence-0ce0bfa2b7dd775f2f1a6d70",
+      "evidence-503a314f120fa68ad6b1a5ac"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 72763.346,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"The account-security policy states that MFA recovery starts its normal target only after identity checks pass. The specific duration for this process is not explicitly defined in the provided evidence, though one document mentions a 24-hour timeframe under different conditions.\",\"evidence\":[\n  {\"evidence_id\":\"E1\",\"quote\":\"MFA recovery starts its normal target only after identity checks pass.\"},\n  {\"evidence_id\":\"E3\",\"quote\":\"A normal MFA recovery target is measured only after identity checks pass. An urgent business impact does not justify bypassing verification.\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E1",
+              "quote": "MFA recovery starts its normal target only after identity checks pass."
+            },
+            {
+              "evidence_id": "E3",
+              "quote": "A normal MFA recovery target is measured only after identity checks pass. An urgent business impact does not justify bypassing verification."
+            }
+          ],
+          "text": "The account-security policy states that MFA recovery starts its normal target only after identity checks pass. The specific duration for this process is not explicitly defined in the provided evidence, though one document mentions a 24-hour timeframe under different conditions."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "MFA recovery starts its normal target only after identity checks pass."
+          },
+          {
+            "evidence_id": "E3",
+            "quote": "A normal MFA recovery target is measured only after identity checks pass. An urgent business impact does not justify bypassing verification."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "5fb06011-67fe-599f-85e3-d418ba1fe5d8"
+            ],
+            "evidence_block_id": "evidence-91b5cf49ebe1c87fb6a9fb01",
+            "evidence_id": "E1",
+            "matched_span": [
+              151,
+              221
+            ],
+            "normalized_quote": "MFA recovery starts its normal target only after identity checks pass.",
+            "quote_match": true,
+            "raw_quote": "MFA recovery starts its normal target only after identity checks pass.",
+            "source_id": "support-playbook",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "907ba715-0cdd-5b0c-ae46-a4b790657aea",
+              "6fc1009f-4278-5950-9f06-22022a85aea5"
+            ],
+            "evidence_block_id": "evidence-0ce0bfa2b7dd775f2f1a6d70",
+            "evidence_id": "E3",
+            "matched_span": [
+              643,
+              783
+            ],
+            "normalized_quote": "A normal MFA recovery target is measured only after identity checks pass. An urgent business impact does not justify bypassing verification.",
+            "quote_match": true,
+            "raw_quote": "A normal MFA recovery target is measured only after identity checks pass. An urgent business impact does not justify bypassing verification.",
+            "source_id": "employee-handbook-en",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "The account-security policy states that MFA recovery starts its normal target only after identity checks pass. The specific duration for this process is not explicitly defined in the provided evidence, though one document mentions a 24-hour timeframe under different conditions.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "The account-security policy states that MFA recovery starts its normal target only after identity checks pass. The specific duration for this process is not explicitly defined in the provided evidence, though one document mentions a 24-hour timeframe under different conditions. [E1] [E3]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:05:20.582999+00:00",
+    "connection_established_at": "2026-08-28T19:05:20.581503+00:00",
+    "context_hash": "d9ffb81c2446c9a498b97051e129f4bd25dcb741bb357e50dde471258e5e8fa9",
+    "elapsed_ms": 72759.408,
+    "first_body_byte_at": "2026-08-28T19:05:20.581835+00:00",
+    "headers_received_at": "2026-08-28T19:05:20.581503+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "af32fa5ebbbc5620ae3d1d39282ac6215e7a848c2b11f19382b15e1bc90f1eee",
+    "request_id": "c453acb2ccd04d29894e1ebfa29a90f1",
+    "request_started_at": "2026-08-28T19:04:07.824232+00:00",
+    "response_bytes": 949,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "cross-08-1",
+  "run_key": "78ea8bbafc3e63df264231de004a7be7443d3812137e1e6078dda2fc62b02f7b",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "c6a04317a64ff61a28f56c36f8104bd61845954d454067c8afe16f93a0370bc2",
+  "state": "GENERATION_COMPLETE"
+}

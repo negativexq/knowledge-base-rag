@@ -1,0 +1,131 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 3590,
+    "context_hash": "26ec71e76cb2b8e0256d1ede1615b329e7cfb78c069164015225524d1c925ef8",
+    "context_tokens": 228,
+    "expanded": false,
+    "input_chunk_ids": [
+      "77206e60-3666-5284-a1d5-a3882eec051d",
+      "829a6173-9393-504b-a8cd-fae5ca5824a1",
+      "c0c6e454-57a2-53f6-a752-d103e14286d3",
+      "a96f77fd-81bb-56a9-9666-49b61c9ba947",
+      "50b13d5a-be12-5de9-b416-5443d1b514f1"
+    ],
+    "output_block_ids": [
+      "evidence-3e21acb77858dc06ed3883bb",
+      "evidence-0531c96094cc89229356d7d5",
+      "evidence-2fdaa63858a521dc960ad48b"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 20980.38,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"The private integration rate limit for tenant-b is 600 requests per minute per API key, with a burst of up to 40 requests.\",\"evidence\":[\n  {\"evidence_id\":\"E3\",\"quote\":\"The tenant-b integration plan permits 600 requests per minute per API key, with a burst of up to 40 requests.\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E3",
+              "quote": "The tenant-b integration plan permits 600 requests per minute per API key, with a burst of up to 40 requests."
+            }
+          ],
+          "text": "The private integration rate limit for tenant-b is 600 requests per minute per API key, with a burst of up to 40 requests."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "The tenant-b integration plan permits 600 requests per minute per API key, with a burst of up to 40 requests."
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "c0c6e454-57a2-53f6-a752-d103e14286d3"
+            ],
+            "evidence_block_id": "evidence-2fdaa63858a521dc960ad48b",
+            "evidence_id": "E3",
+            "matched_span": [
+              142,
+              251
+            ],
+            "normalized_quote": "The tenant-b integration plan permits 600 requests per minute per API key, with a burst of up to 40 requests.",
+            "quote_match": true,
+            "raw_quote": "The tenant-b integration plan permits 600 requests per minute per API key, with a burst of up to 40 requests.",
+            "source_id": "tenant-b-api-limits",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "The private integration rate limit for tenant-b is 600 requests per minute per API key, with a burst of up to 40 requests.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "The private integration rate limit for tenant-b is 600 requests per minute per API key, with a burst of up to 40 requests. [E3]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:24:46.487332+00:00",
+    "connection_established_at": "2026-08-28T19:24:46.486824+00:00",
+    "context_hash": "8dff7b1b1bbb2f6951f3434ada938d8d2e17d1d9a64d5bb7e03670d05577191c",
+    "elapsed_ms": 20979.509,
+    "first_body_byte_at": "2026-08-28T19:24:46.486988+00:00",
+    "headers_received_at": "2026-08-28T19:24:46.486824+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "42b626dff427d05c2ec4a89a8141da119a9f198975d6d5e9ca4e7358b8dee90f",
+    "request_id": "9f24b881c1e7480db2a9da12dcf4b1f9",
+    "request_started_at": "2026-08-28T19:24:25.508414+00:00",
+    "response_bytes": 646,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "hard-api-private",
+  "run_key": "c3532f236b883a52d45c7302a368d3b1a7829eaf0d525853b2a1fcc944afc178",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "f645359c015607041ab5c8bd7a8eea6743ee024b9d6b8d8dc7ad60627f3ebc16",
+  "state": "GENERATION_COMPLETE"
+}

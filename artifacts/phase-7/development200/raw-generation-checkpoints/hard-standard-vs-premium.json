@@ -1,0 +1,182 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "context": {
+    "context_chars": 8426,
+    "context_hash": "def5c4ae811798eb42b25fac2e9e3e1bccf8e8304585e0afbba72def6946f6d2",
+    "context_tokens": 657,
+    "expanded": true,
+    "input_chunk_ids": [
+      "a429ec1b-1808-5d00-bc24-0136fec79326",
+      "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb",
+      "5bd2643d-4837-5733-9717-c88c37860274",
+      "a70b14bd-1aad-5f44-9ee6-edf37046602f",
+      "b3b30141-6504-54bb-a9dc-de95e27dca22"
+    ],
+    "output_block_ids": [
+      "evidence-aab34e8c708da5410bb0e5b4",
+      "evidence-8fea465773fe4e1d004015a6",
+      "evidence-c3e56011af0b7007b88d893a",
+      "evidence-69d5a509e10038655c20a608",
+      "evidence-6e9f74157629b826e5636c57"
+    ]
+  },
+  "events": [
+    {
+      "output_contract_version": "output_contract_v2_2",
+      "pipeline_version": "pipeline_v2_2_evidence_backed",
+      "prompt_version": "v3",
+      "type": "metadata"
+    },
+    {
+      "abstain": false,
+      "application_forced_abstention": false,
+      "citation_suppressed": false,
+      "hidden_prompt_leaked": false,
+      "passed": true,
+      "type": "security_validation",
+      "validator_failure_codes": [],
+      "violations": []
+    }
+  ],
+  "generation_latency_ms": 39440.738,
+  "measurement_plan_hash": "4bdd743c9556080b22a9f77016defa05a59ca92c265e16c83d0a4db4d3e6b7f0",
+  "observation": {
+    "application_forced_abstention": false,
+    "citations_extracted_from_raw": [],
+    "citations_extracted_from_validated": [],
+    "model_abstention": false,
+    "output_contract_version": "output_contract_v2_2",
+    "pipeline_version": "pipeline_v2_2_evidence_backed",
+    "raw_candidate_available": true,
+    "raw_candidate_output": "{\"answer_parts\":[{\"text\":\"For a standard-plan direct-sale order where the customer mentions the Premium brand but no plan upgrade occurred after delivery, the return window is 14 calendar days from delivery. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order.\",\"evidence\":[\n  {\"evidence_id\":\"E3\",\"quote\":\"Standard-plan customers may request a refund within 14 calendar days of delivery.\"},\n  {\"evidence_id\":\"E2\",\"quote\":\"deliveries governed by the new policy use 14 calendar days from delivery\"},\n  {\"evidence_id\":\"E1\",\"quote\":\"A later Premium status does not automatically grant the Premium direct-sale window to an earlier order\"}\n]}],\"abstain\":false}",
+    "rejected_answer_parts": [],
+    "structured_candidate": {
+      "abstain": false,
+      "answer_parts": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "E3",
+              "quote": "Standard-plan customers may request a refund within 14 calendar days of delivery."
+            },
+            {
+              "evidence_id": "E2",
+              "quote": "deliveries governed by the new policy use 14 calendar days from delivery"
+            },
+            {
+              "evidence_id": "E1",
+              "quote": "A later Premium status does not automatically grant the Premium direct-sale window to an earlier order"
+            }
+          ],
+          "text": "For a standard-plan direct-sale order where the customer mentions the Premium brand but no plan upgrade occurred after delivery, the return window is 14 calendar days from delivery. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order."
+        }
+      ],
+      "reason_code": null
+    },
+    "user_visible_output_available": true,
+    "validated_answer_parts": [
+      {
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "Standard-plan customers may request a refund within 14 calendar days of delivery."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "deliveries governed by the new policy use 14 calendar days from delivery"
+          },
+          {
+            "evidence_id": "E1",
+            "quote": "A later Premium status does not automatically grant the Premium direct-sale window to an earlier order"
+          }
+        ],
+        "evidence_validation": [
+          {
+            "contributing_chunk_ids": [
+              "5bd2643d-4837-5733-9717-c88c37860274",
+              "1b50ae39-8364-5172-a719-f2090efce26e"
+            ],
+            "evidence_block_id": "evidence-c3e56011af0b7007b88d893a",
+            "evidence_id": "E3",
+            "matched_span": [
+              135,
+              216
+            ],
+            "normalized_quote": "Standard-plan customers may request a refund within 14 calendar days of delivery.",
+            "quote_match": true,
+            "raw_quote": "Standard-plan customers may request a refund within 14 calendar days of delivery.",
+            "source_id": "standard-returns-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "e317464c-cdf1-5415-b6c5-4b9f7fd9c7bb"
+            ],
+            "evidence_block_id": "evidence-8fea465773fe4e1d004015a6",
+            "evidence_id": "E2",
+            "matched_span": [
+              161,
+              233
+            ],
+            "normalized_quote": "deliveries governed by the new policy use 14 calendar days from delivery",
+            "quote_match": true,
+            "raw_quote": "deliveries governed by the new policy use 14 calendar days from delivery",
+            "source_id": "refund-policy-2026",
+            "status": "VALID_EVIDENCE_QUOTE"
+          },
+          {
+            "contributing_chunk_ids": [
+              "a429ec1b-1808-5d00-bc24-0136fec79326"
+            ],
+            "evidence_block_id": "evidence-aab34e8c708da5410bb0e5b4",
+            "evidence_id": "E1",
+            "matched_span": [
+              337,
+              439
+            ],
+            "normalized_quote": "A later Premium status does not automatically grant the Premium direct-sale window to an earlier order",
+            "quote_match": true,
+            "raw_quote": "A later Premium status does not automatically grant the Premium direct-sale window to an earlier order",
+            "source_id": "employee-handbook-en",
+            "status": "VALID_EVIDENCE_QUOTE"
+          }
+        ],
+        "survived": true,
+        "text": "For a standard-plan direct-sale order where the customer mentions the Premium brand but no plan upgrade occurred after delivery, the return window is 14 calendar days from delivery. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order.",
+        "validation_status": "VALID"
+      }
+    ],
+    "validated_output": "For a standard-plan direct-sale order where the customer mentions the Premium brand but no plan upgrade occurred after delivery, the return window is 14 calendar days from delivery. A later Premium status does not automatically grant the Premium direct-sale window to an earlier order. [E3] [E2] [E1]",
+    "validated_output_available": true,
+    "validator_failure_codes": [],
+    "validator_input_available": true,
+    "validator_pass": true
+  },
+  "provider_observation": {
+    "attempt": 1,
+    "completed_at": "2026-08-28T19:28:36.880657+00:00",
+    "connection_established_at": "2026-08-28T19:28:36.879749+00:00",
+    "context_hash": "8b7e0218544f71ff1e2603bebf59c6fff9978ca2e611ec93016a0651d502c7cd",
+    "elapsed_ms": 39439.593,
+    "first_body_byte_at": "2026-08-28T19:28:36.879999+00:00",
+    "headers_received_at": "2026-08-28T19:28:36.879749+00:00",
+    "model": "qwen3.5:4b",
+    "prompt_hash": "482062fd39cd0d6f367518098abb1a1ca2dbfdf7338b3d28eee376d17d0f0742",
+    "request_hash": "6bd2390191e80911b71f0ba94a36add4212462835371db7a21cc28241d93da0f",
+    "request_id": "ea3f1b2f1bdb47e194a65ed45aa92d44",
+    "request_started_at": "2026-08-28T19:27:57.439359+00:00",
+    "response_bytes": 1044,
+    "schema_hash": "ab655795576455da96cfc91d2251aa268a666812c55e781dde9e5013954a14d1",
+    "seed": 42,
+    "status": "COMPLETE",
+    "status_code": 200,
+    "streaming": false,
+    "timeout_type": null
+  },
+  "query_id": "hard-standard-vs-premium",
+  "run_key": "76b60c704e8d76b33503f8a4b9b2197894a0cf1a16142b48ea5b3a2801bbec14",
+  "schema_version": "development200-raw-checkpoint-v1",
+  "seed": 42,
+  "snapshot_hash": "67bd6e0860e44345e072e83b6cdbbdbed7dbb1b3ad6a42a821a413395f3aa340",
+  "state": "GENERATION_COMPLETE"
+}
