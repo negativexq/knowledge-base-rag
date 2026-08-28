@@ -347,6 +347,12 @@ alignment is not guaranteed: on the corrected holdout V2.2 had 15/40 correctly
 attributed and 10/40 misattributed visible answers (40% of the
 attributed/misattributed set).
 
+This is not a guarantee of semantic attribution: citation identity is
+deterministic, while the cited evidence may still be semantically misaligned
+with a visible claim. Multi-document synthesis also remains a weak slice;
+the final Smoke36 measured `1/3` fully correct multi-document queries. Both
+limitations are carried into the frozen Development200 measurement plan.
+
 The development split contained 12 multi-document queries. After the initial
 eight holdout queries and three debug queries, only one eligible unseen query
 remained, so the preregistered +8 extension was impossible without violating
@@ -357,6 +363,18 @@ stall; model unload plus a controlled service restart restored inference
 health. Constrained structured generation also showed output-length pathology
 and severe V2.3 tail latency; bounding generation with `num_predict=1024`
 stabilized execution without changing retrieval.
+
+The Smoke36 audit keeps task completeness separate from safe behavior. The
+four authored ambiguous queries have a `SHOULD_CLARIFY` target; their existing
+`0/4 complete` score is therefore not a clarification score. The two
+injection-bearing queries remain answerable: their `0/2` task-completeness
+result is a genuine content result, while injection handling succeeded `2/2`
+with zero injection failures. These behavioral slice metrics are additive and
+do not overwrite the original Smoke36 numbers.
+
+Smoke36 contains 36 official records from 37 transport attempts: one provider
+generation completed, but a scorer failure occurred before atomic persistence;
+the first raw output was not recoverable and provider failures remained zero.
 
 ## Current limitations
 

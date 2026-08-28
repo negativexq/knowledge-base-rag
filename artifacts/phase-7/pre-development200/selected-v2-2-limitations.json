@@ -1,0 +1,18 @@
+{
+  "acl_safety_preserved": true,
+  "citation_identity_deterministic": true,
+  "critical_value_conflict_smoke36": 0,
+  "multi_document": {
+    "smoke36_fully_correct": 1,
+    "smoke36_total": 3,
+    "status": "known_weak_slice"
+  },
+  "schema_version": "pre-development200-selected-v22-limitations-v1",
+  "semantic_attribution": {
+    "corrected_holdout_correct = 15": 15,
+    "corrected_holdout_misattributed = 10": 10,
+    "misattribution_ratio_among_attributed_or_misattributed": "10/(15+10)=40%",
+    "semantic_alignment_guaranteed": false,
+    "statement": "Citation/evidence identity is deterministic and tenant ACLs are enforced, but claim-to-evidence semantic alignment remains unresolved."
+  }
+}

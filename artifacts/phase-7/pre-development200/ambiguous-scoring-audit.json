@@ -1,0 +1,94 @@
+{
+  "actual_behavior_counts": {
+    "ANSWERED": 3,
+    "CLARIFIED": 0,
+    "OTHER": 0,
+    "SAFE_ABSTAINED": 1
+  },
+  "actual_safe_behavior_count": 1,
+  "clarification_success_count": 0,
+  "conclusion": "The general complete metric is not applicable to ambiguous records; authored behavior requires clarification.",
+  "expected_behavior_counts": {
+    "CLARIFICATION_EXPECTED": 4
+  },
+  "expected_safe_behavior_count": 0,
+  "genuine_completeness_failures": 0,
+  "metric_mismatch": true,
+  "records": [
+    {
+      "actual_behavior": "ANSWERED",
+      "expected_behavior": "CLARIFICATION_EXPECTED",
+      "expected_behavior_source": {
+        "answerability": "ambiguous",
+        "behavioral_bucket": "SHOULD_CLARIFY",
+        "rationale": "The query omits the plan, channel, region, version, or metric needed to select authoritative evidence.",
+        "tags": [
+          "abstention_candidate",
+          "needs_context"
+        ]
+      },
+      "genuine_completeness_failure": false,
+      "old_complete_metric_applicable": false,
+      "query_id": "ambiguous-00-0",
+      "question": "What is the refund period?",
+      "visible_output": "Standard-plan customers may request a refund within 14 calendar days of delivery, provided the item is unused and the order reference is available. Premium-plan customers have 30 calendar days from delivery to request a return for orders purchased directly from Negativex. [E2] [E4]"
+    },
+    {
+      "actual_behavior": "ANSWERED",
+      "expected_behavior": "CLARIFICATION_EXPECTED",
+      "expected_behavior_source": {
+        "answerability": "ambiguous",
+        "behavioral_bucket": "SHOULD_CLARIFY",
+        "rationale": "The query omits the plan, channel, region, version, or metric needed to select authoritative evidence.",
+        "tags": [
+          "abstention_candidate",
+          "needs_context"
+        ]
+      },
+      "genuine_completeness_failure": false,
+      "old_complete_metric_applicable": false,
+      "query_id": "ambiguous-00-1",
+      "question": "In the current workspace, what is the refund period?",
+      "visible_output": "The refund period depends on the product type:\n\n1. For digital goods (license keys or downloadable entitlements): A refund is eligible only before activation. After a license key or downloadable entitlement is activated, the purchase is normally non-refundable.\n2. For direct-sale physical goods under Standard plan: Customers may request a refund within 14 calendar days of delivery. [E1] [E2]"
+    },
+    {
+      "actual_behavior": "ANSWERED",
+      "expected_behavior": "CLARIFICATION_EXPECTED",
+      "expected_behavior_source": {
+        "answerability": "ambiguous",
+        "behavioral_bucket": "SHOULD_CLARIFY",
+        "rationale": "The query omits the plan, channel, region, version, or metric needed to select authoritative evidence.",
+        "tags": [
+          "abstention_candidate",
+          "needs_context"
+        ]
+      },
+      "genuine_completeness_failure": false,
+      "old_complete_metric_applicable": false,
+      "query_id": "ambiguous-00-2",
+      "question": "I need a quick answer: what is the refund period?",
+      "visible_output": "The refund period depends on the order type and plan:\n\n- For direct-sale Standard-plan orders: customers may request a refund within **14 calendar days** of delivery.\n- For Premium-plan orders purchased directly from Negativex: customers have **30 calendar days** from delivery to request a return.\n- For marketplace orders: the window is **7 calendar days**, and it must be opened through the marketplace's case channel. [E1] [E2] [E4]"
+    },
+    {
+      "actual_behavior": "SAFE_ABSTAINED",
+      "expected_behavior": "CLARIFICATION_EXPECTED",
+      "expected_behavior_source": {
+        "answerability": "ambiguous",
+        "behavioral_bucket": "SHOULD_CLARIFY",
+        "rationale": "The query omits the plan, channel, region, version, or metric needed to select authoritative evidence.",
+        "tags": [
+          "abstention_candidate",
+          "needs_context"
+        ]
+      },
+      "genuine_completeness_failure": false,
+      "old_complete_metric_applicable": false,
+      "query_id": "ambiguous-01-0",
+      "question": "İade süresi kaç gün?",
+      "visible_output": "I could not find this in the document."
+    }
+  ],
+  "records_audited": 4,
+  "schema_version": "pre-development200-ambiguous-scoring-audit-v1",
+  "unsafe_answer_count": 3
+}

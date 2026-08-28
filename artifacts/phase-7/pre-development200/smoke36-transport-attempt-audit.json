@@ -1,0 +1,25 @@
+{
+  "attempt_order_basis": "Smoke36 checkpoint had 12 persisted records before the scorer failure; cross-07-0 was the next query in query-set.json.",
+  "extra_attempt_query_id": "cross-07-0",
+  "first_attempt": {
+    "error": "numeric percentage scorer raised on an unnormalized 15% value; result was not atomically persisted",
+    "failure_location": "post-provider response, pre-record persistence scorer path",
+    "provider_completion": "COMPLETED_BEFORE_SCORER_FAILURE",
+    "raw_response_hash": "NOT_RECOVERABLE",
+    "recoverability": "FIRST_OUTPUT_NOT_RECOVERABLE",
+    "request_hash": "NOT_PERSISTED"
+  },
+  "first_vs_official_raw_output": "FIRST_OUTPUT_NOT_RECOVERABLE",
+  "interpretation": "The extra attempt is provenance bookkeeping; it does not alter the 36-record benchmark quality result.",
+  "official_benchmark_records": 36,
+  "official_second_attempt": {
+    "persisted_result_hash": "8e1dd2875d072c11f9c3db3d86a4fb6170a7674665e48a5313735f95a33a220e",
+    "provider_completion": "COMPLETED",
+    "raw_response_hash": "c8ba4bb12ee06cc8b0d0ad3c335e89abf1ba1a8233391782c0329bf6ffe3cebe",
+    "request_hash": "d9b5a50e72b39553d13069a502fa7aababebed90744676a4c7f773a09a04c9a5"
+  },
+  "provider_failures": 0,
+  "query_set_count": 36,
+  "schema_version": "pre-development200-smoke36-transport-attempt-audit-v1",
+  "transport_attempts": 37
+}

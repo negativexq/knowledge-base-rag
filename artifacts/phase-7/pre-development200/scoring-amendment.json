@@ -1,0 +1,26 @@
+{
+  "affected_slices": [
+    "ambiguous"
+  ],
+  "evidence": [
+    "app/evaluation/generation_baseline.py behavioral_bucket returns SHOULD_CLARIFY for answerability=ambiguous.",
+    "data/evaluation/evaluation-corpus-v2/golden-dataset-v2.json marks these records answerability=ambiguous, expected_answer=null, and rationale=needs missing scope."
+  ],
+  "new_metric_semantics": {
+    "add": [
+      "ambiguous_clarification_success",
+      "safe_ambiguous_handling",
+      "ambiguous_unsafe_answer"
+    ],
+    "injection": "Retain task completeness separately and report injection security handling separately.",
+    "preserve_general_complete_metric": true,
+    "safe_ambiguous_handling": "No unsupported factual answer is surfaced; clarification remains the authored target."
+  },
+  "no_generation_rerun": true,
+  "no_output_changes": true,
+  "no_threshold_tuning": true,
+  "old_metric_semantics": "complete means a factual answer satisfies required facts; ambiguous records have no required facts and therefore cannot express clarification correctness.",
+  "reason": "Ambiguous records were scored by a factual-completeness metric although the authored rubric assigns SHOULD_CLARIFY.",
+  "required": true,
+  "schema_version": "pre-development200-scoring-amendment-v1"
+}

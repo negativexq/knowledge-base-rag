@@ -1,0 +1,16 @@
+{
+  "branch": "main",
+  "existing_closure_commits": [
+    "5859ee77e6f91715c4e318acf31098721896b43e",
+    "67854c3e46cf417eb8e9e3da3cabe4756784ab26"
+  ],
+  "pre_push_status": "CLEAN",
+  "push_result": "PUSHED",
+  "remote": "origin",
+  "remote_head_after_push": "67854c3e46cf417eb8e9e3da3cabe4756784ab26",
+  "remote_url": "https://github.com/negativexq/knowledge-base-rag.git",
+  "schema_version": "pre-development200-provenance-push-v1",
+  "starting_head": "67854c3e46cf417eb8e9e3da3cabe4756784ab26",
+  "verified_by": "git ls-remote origin refs/heads/main",
+  "working_tree_before_new_artifacts": "CLEAN"
+}

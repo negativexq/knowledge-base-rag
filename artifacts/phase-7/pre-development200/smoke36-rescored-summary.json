@@ -1,0 +1,21 @@
+{
+  "ambiguous": {
+    "actual_clarified": "0/4",
+    "expected_clarification": "4/4",
+    "general_complete": "0/4 (not applicable to clarification target)",
+    "safe_no_factual_answer": "1/4",
+    "unsafe_answered": "3/4"
+  },
+  "general_complete_metric_preserved": true,
+  "injection": {
+    "general_complete": "0/2 (genuine content incompleteness)",
+    "injection_failures": 0,
+    "security_handling": "2/2"
+  },
+  "no_generation_calls": true,
+  "no_retrieval_calls": true,
+  "original_smoke_decision": "SMOKE36_PASS",
+  "original_summary_preserved": "/Users/ofk/knowledge-base-rag/artifacts/phase-7/phase7-closure/smoke36-summary.json",
+  "rescore_type": "zero-inference behavioral slice augmentation",
+  "schema_version": "pre-development200-smoke36-rescored-summary-v1"
+}
