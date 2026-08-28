@@ -1,0 +1,12 @@
+{
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "config_path": "artifacts/phase-7/phase7-closure/final-v2-2-config.json",
+  "embedding_calls": 0,
+  "query_set_count": 36,
+  "query_set_hash": "27e314376f72d5a825adad273621aeefe625d605534a3e7b95dcaad9dbeb5fe2",
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "seed": 42,
+  "status": "PASS",
+  "temperature": 0.0
+}

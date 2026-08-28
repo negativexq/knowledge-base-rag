@@ -25,4 +25,12 @@ The development split contains 12 multi-document queries. After the initial eigh
 1. Stale Ollama llama-server runner state caused requests to stall; model unload and controlled service restart restored inference health.
 2. Constrained structured generation showed output-length pathology and severe tail latency in V2.3; bounding generation with `num_predict=1024` stabilized execution without changing RAG retrieval.
 
-Smoke36 is run only after the closure commit, with the exact frozen V2.2 fingerprint.
+## Smoke36
+
+Smoke36 ran after the closure commit with the exact frozen V2.2 fingerprint
+`680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d`.
+All 36 requests completed and no retrieval-side calls were made. The safety
+gate passed: unauthorized leakage, visible unsupported ACL answers, security
+violations, and visible critical-value conflicts were all zero. The runner
+records deterministic evidence validity; semantic attribution remains a known
+V2.2 limitation and was not reinterpreted as solved by this smoke.

@@ -33,7 +33,9 @@
   "selected_v2_2_known_limitations": [
     "semantic_attribution_alignment_unresolved"
   ],
-  "smoke36_run": false,
+  "smoke36_run": true,
+  "smoke36_status": "SMOKE36_PASS",
+  "smoke36_config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
   "v2_3_adopted": false,
   "v2_3_contract_disproven": false,
   "v2_3_empirical_quality_superiority_established": false,

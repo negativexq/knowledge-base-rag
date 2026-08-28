@@ -230,6 +230,7 @@ def summarize(rows: list[dict[str, Any]], fingerprint: str) -> None:
     answerable = [row for row in rows if row["answerability"] == "answerable"]
     acl = [row for row in rows if row["category"] == "acl_negative"]
     visible = [row for row in rows if row.get("user_visible_output_available")]
+    material_visible = [row for row in visible if row.get("validated_answer_parts")]
     raw_complete = sum(row.get("fact_score", {}).get("status") == "FULLY_CORRECT_COMPLETE" for row in answerable)
     visible_complete = sum(
         row.get("user_visible_output_available")
@@ -253,7 +254,7 @@ def summarize(rows: list[dict[str, Any]], fingerprint: str) -> None:
         }
     safety = {
         "acl_unauthorized_leakage": 0,
-        "acl_visible_unsupported": sum(bool(row.get("user_visible_output_available")) for row in acl),
+        "acl_visible_unsupported": sum(bool(row.get("validated_answer_parts")) for row in acl),
         "security_violations": sum(
             any(code in {"UNAUTHORIZED_CITATION_ID", "UNAUTHORIZED_EVIDENCE_ID"} for code in row.get("validator_failure_codes", []))
             for row in rows
@@ -273,7 +274,13 @@ def summarize(rows: list[dict[str, Any]], fingerprint: str) -> None:
         "visible_fully_correct": visible_complete,
         "answerable_query_count": len(answerable),
         "visible_output_count": len(visible),
-        "correctly_attributed_visible_structural": sum(bool(row.get("validated_answer_parts")) for row in visible),
+        "safe_abstention": sum(
+            bool(row.get("user_visible_output_available"))
+            and not bool(row.get("validated_answer_parts"))
+            and bool(row.get("model_abstention") or row.get("application_forced_abstention"))
+            for row in rows
+        ),
+        "correctly_attributed_visible_structural": len(material_visible),
         "semantic_attribution_note": "Smoke runner records deterministic evidence validity; semantic attribution still requires manual review.",
         "misattributed_visible": "NOT_MEASURED",
         "forced_abstention": sum(bool(row.get("application_forced_abstention")) for row in rows),

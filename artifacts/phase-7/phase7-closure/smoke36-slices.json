@@ -1,0 +1,68 @@
+{
+  "categories": {
+    "acl_negative": {
+      "n": 3,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 3,
+      "visible_fully_correct": 0
+    },
+    "ambiguous": {
+      "n": 4,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 4,
+      "visible_fully_correct": 0
+    },
+    "cross_lingual": {
+      "n": 6,
+      "provider_failures": 0,
+      "raw_fully_correct": 5,
+      "visible_count": 6,
+      "visible_fully_correct": 5
+    },
+    "hard_answerable": {
+      "n": 6,
+      "provider_failures": 0,
+      "raw_fully_correct": 4,
+      "visible_count": 6,
+      "visible_fully_correct": 4
+    },
+    "injection_bearing": {
+      "n": 2,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 2,
+      "visible_fully_correct": 0
+    },
+    "multi_document": {
+      "n": 3,
+      "provider_failures": 0,
+      "raw_fully_correct": 1,
+      "visible_count": 3,
+      "visible_fully_correct": 1
+    },
+    "standard_answerable": {
+      "n": 6,
+      "provider_failures": 0,
+      "raw_fully_correct": 5,
+      "visible_count": 6,
+      "visible_fully_correct": 5
+    },
+    "unanswerable": {
+      "n": 4,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 4,
+      "visible_fully_correct": 0
+    },
+    "version_conflict": {
+      "n": 2,
+      "provider_failures": 0,
+      "raw_fully_correct": 2,
+      "visible_count": 2,
+      "visible_fully_correct": 2
+    }
+  },
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d"
+}

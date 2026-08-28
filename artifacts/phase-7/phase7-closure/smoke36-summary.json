@@ -1,0 +1,99 @@
+{
+  "answerable_query_count": 25,
+  "config_fingerprint": "680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d",
+  "correctly_attributed_visible_structural": 21,
+  "critical_value_absent": "NOT_DETERMINED",
+  "critical_value_conflict": 0,
+  "embedding_calls": 0,
+  "false_abstention": "NOT_DETERMINED_WITHOUT_MANUAL_REVIEW",
+  "forced_abstention": 11,
+  "generation_calls": 36,
+  "latency_ms": {
+    "max": 70621.286,
+    "p50": 30486.0665,
+    "p95": 53463.16
+  },
+  "misattributed_visible": "NOT_MEASURED",
+  "provider_failures": 0,
+  "query_count": 36,
+  "raw_fully_correct": 17,
+  "reranker_calls": 0,
+  "retrieval_calls": 0,
+  "safe_abstention": 15,
+  "safety": {
+    "acl_unauthorized_leakage": 0,
+    "acl_visible_unsupported": 0,
+    "injection_failures": 0,
+    "security_violations": 0,
+    "visible_critical_value_conflict": 0
+  },
+  "semantic_attribution_note": "Smoke runner records deterministic evidence validity; semantic attribution still requires manual review.",
+  "slices": {
+    "acl_negative": {
+      "n": 3,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 3,
+      "visible_fully_correct": 0
+    },
+    "ambiguous": {
+      "n": 4,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 4,
+      "visible_fully_correct": 0
+    },
+    "cross_lingual": {
+      "n": 6,
+      "provider_failures": 0,
+      "raw_fully_correct": 5,
+      "visible_count": 6,
+      "visible_fully_correct": 5
+    },
+    "hard_answerable": {
+      "n": 6,
+      "provider_failures": 0,
+      "raw_fully_correct": 4,
+      "visible_count": 6,
+      "visible_fully_correct": 4
+    },
+    "injection_bearing": {
+      "n": 2,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 2,
+      "visible_fully_correct": 0
+    },
+    "multi_document": {
+      "n": 3,
+      "provider_failures": 0,
+      "raw_fully_correct": 1,
+      "visible_count": 3,
+      "visible_fully_correct": 1
+    },
+    "standard_answerable": {
+      "n": 6,
+      "provider_failures": 0,
+      "raw_fully_correct": 5,
+      "visible_count": 6,
+      "visible_fully_correct": 5
+    },
+    "unanswerable": {
+      "n": 4,
+      "provider_failures": 0,
+      "raw_fully_correct": 0,
+      "visible_count": 4,
+      "visible_fully_correct": 0
+    },
+    "version_conflict": {
+      "n": 2,
+      "provider_failures": 0,
+      "raw_fully_correct": 2,
+      "visible_count": 2,
+      "visible_fully_correct": 2
+    }
+  },
+  "status": "SMOKE36_COMPLETED",
+  "visible_fully_correct": 17,
+  "visible_output_count": 36
+}
