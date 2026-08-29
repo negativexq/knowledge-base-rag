@@ -85,10 +85,8 @@ def make_pre_audit() -> dict[str, Any]:
     important = [
         "app/llm/ollama_client.py",
         "app/llm/structured_output.py",
-        "app/llm/support_units.py",
+        "app/evidence/support_units.py",
         "app/llm/observability.py",
-        "scripts/run_pipeline_v23_m0.py",
-        "scripts/finalize_v23_paired_execution.py",
         "scripts/final_integrity_audit.py",
     ]
     return {

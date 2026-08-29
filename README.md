@@ -58,11 +58,13 @@ flowchart TD
     Qdrant --> Retrieve
     Retrieve --> RRF[RRF fusion]
     RRF --> Rerank[BGE multilingual reranker]
-    Rerank --> Envelope[UNTRUSTED context envelope]
+    Rerank --> Envelope[Graceful SectionAware evidence]
     Query --> Envelope
-    Envelope --> Generate[answer_v3 generation]
-    Generate --> Validate[STRICT validation]
-    Validate --> Answer[Answer + canonical citations]
+    Envelope --> Units[Deterministic support units]
+    Units --> Generate[Luna generation]
+    Generate --> Validate[Support-ID validation]
+    Validate --> Resolve[Application citation resolution]
+    Resolve --> Answer[Answer + canonical citations]
 
     Console[React Operations Console] <-->|HTTP / SSE| API[FastAPI]
     API --> Auth
@@ -72,9 +74,9 @@ flowchart TD
 
 FastAPI owns authentication, authorization, tenant scoping, retrieval,
 generation, SSE production, and read-only `/ui/*` aggregation. Qdrant stores
-the active index, Ollama provides local embedding and generation inference, and
-Jaeger stores trace spans. The React client owns presentation state and
-client-observed timings; it is not an authorization boundary.
+the active index; the configured provider supplies generation; and Jaeger stores
+trace spans. The React client owns presentation state and client-observed
+timings; it is not an authorization boundary.
 
 See [the architecture deep dive](docs/architecture.md) for the control-plane
 and data-plane details.
@@ -92,7 +94,11 @@ authenticated request
   → reciprocal rank fusion
   → BAAI/bge-reranker-v2-m3
   → top 5 authorized results
-  → untrusted generation context
+  → graceful SectionAware evidence assembly
+  → deterministic support units
+  → Luna generation (`text` + `support_ids[]`)
+  → deterministic support-ID validation
+  → application-resolved citations
 ```
 
 The reranker receives 20 authorized candidates and returns the top 5. The
@@ -399,6 +405,23 @@ Hard safety passed with zero unauthorized leakage, visible unsupported ACL
 answers, security violations, injection safety failures, and critical-value
 conflicts. Configuration was locked only after this gate; Calibration112 and
 Frozen133 remain untouched.
+
+## Research history and benchmark record
+
+The compact decision log is in [docs/research-history.md](docs/research-history.md).
+The canonical public Basic-50 record is in
+[artifacts/ragbench/canonical/](artifacts/ragbench/canonical/). The pinned
+RAGBench eManual run found hybrid Top20 relevant-sentence recall of 100%, BGE
+Top5 mean recall of 96.24%, and SectionAware mean recall of 89.72%. Its visible
+semantic result was 29 correct, 7 partial, 4 incorrect, and 10 abstentions;
+lexical exact match is not the quality headline.
+
+The graceful SectionAware policy reduced budget assembly failures from 31 to
+0, increased grounded visible answers from 9 to 40, and reduced abstentions
+from 41 to 10. The sentence-ID citation contract is a small-scale validated
+direction (3/4 semantic recovery, 4/4 valid IDs), not a globally validated
+production result. It remains behind an explicit runtime path until broader
+confirmation exists.
 
 ## Current limitations
 

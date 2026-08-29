@@ -8,6 +8,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from app.evaluation.critical_values import critical_value_status
+from app.evidence.support_units import (
+    SupportUnit,
+    build_support_units,
+    serialize_support_units,
+    support_unit_map,
+)
 from app.llm.grounding import (
     GroundingResult,
     check_grounding,
@@ -18,12 +24,6 @@ from app.llm.observability import GenerationObservation, normalize_validator_fai
 from app.llm.output_policy import check_output_policy
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages, load_system_prompt
 from app.llm.provider import ChatProvider
-from app.llm.support_units import (
-    SupportUnit,
-    build_support_units,
-    serialize_support_units,
-    support_unit_map,
-)
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer
@@ -34,13 +34,12 @@ HARDENED_OUTPUT_CONTRACT_VERSION = "output_contract_v2_1"
 HARDENED_PIPELINE_VERSION = "pipeline_v2_1_hardened"
 EVIDENCE_BACKED_OUTPUT_CONTRACT_VERSION = "output_contract_v2_2"
 EVIDENCE_BACKED_PIPELINE_VERSION = "pipeline_v2_2_evidence_backed"
-SUPPORT_UNIT_OUTPUT_CONTRACT_VERSION = "output_contract_v2_3"
-SUPPORT_UNIT_PIPELINE_VERSION = "pipeline_v2_3_support_units"
-SUPPORT_UNIT_PATTERN_OUTPUT_CONTRACT_VERSION = "output_contract_v2_3_1"
-SUPPORT_UNIT_PATTERN_PIPELINE_VERSION = "pipeline_v2_3_1_support_units_pattern"
-SUPPORT_UNIT_BOUNDED_OUTPUT_CONTRACT_VERSION = "output_contract_v2_3_2"
-SUPPORT_UNIT_BOUNDED_PIPELINE_VERSION = "pipeline_v2_3_2_support_units_bounded_output"
-SUPPORT_UNIT_MAX_OUTPUT_TOKENS = 1024
+# Legacy compatibility: the final planned path is SUPPORT_ID_* below. The
+# quote contract remains available only for historical replay/rollback and is
+# not the canonical citation representation.
+SUPPORT_ID_OUTPUT_CONTRACT_VERSION = "output_contract_support_ids"
+SUPPORT_ID_PIPELINE_VERSION = "pipeline_support_ids"
+SUPPORT_ID_MAX_OUTPUT_TOKENS = 1024
 
 STRUCTURED_OUTPUT_INSTRUCTIONS = """
 Return only a JSON object with this exact shape:
@@ -156,9 +155,9 @@ EVIDENCE_BACKED_OUTPUT_SCHEMA = {
     "required": ["answer_parts", "abstain"],
 }
 
-SUPPORT_UNIT_OUTPUT_INSTRUCTIONS = """
+SUPPORT_ID_OUTPUT_INSTRUCTIONS = """
 Return only JSON with this shape:
-{"answer_parts":[{"text":"...","support_ids":["E1.U1"]}],"abstain":false}
+{"answer_parts":[{"text":"...","support_ids":["E1.S1"]}],"abstain":false}
 Use only the provided authorized support units. Every answer_part must include one
 or more support_ids from the supplied list. Do not invent IDs or answer from general
 knowledge. If a material claim has no directly supporting unit, omit that claim; if
@@ -416,38 +415,7 @@ def support_unit_output_schema(units: list[SupportUnit]) -> dict[str, Any]:
     }
 
 
-def support_unit_pattern_output_schema() -> dict[str, Any]:
-    """Diagnostic schema with structural IDs; membership stays app-validated.
 
-    This is intentionally not the production V2.3 schema.  It isolates the
-    cost of a request-scoped enum from the support-unit contract itself.
-    """
-    return {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "answer_parts": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "properties": {
-                        "text": {"type": "string"},
-                        "support_ids": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "pattern": r"^E[1-9][0-9]*\.U[1-9][0-9]*$",
-                            },
-                        },
-                    },
-                    "required": ["text", "support_ids"],
-                },
-            },
-            "abstain": {"type": "boolean"},
-        },
-        "required": ["answer_parts", "abstain"],
-    }
 def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
     value = json.loads(_strip_json_fence(raw))
     if not isinstance(value, dict) or set(value) - {"answer_parts", "abstain", "reason_code"}:
@@ -491,6 +459,10 @@ def validate_support_unit_answer(
         selected = [available.get(item) for item in part.support_ids]
         if any(unit is None for unit in selected):
             part_codes.append("UNKNOWN_SUPPORT_ID")
+        if any(unit is not None and not unit.model_visible for unit in selected):
+            part_codes.append("HIDDEN_SUPPORT_ID")
+        if any(unit is not None and not unit.authorized for unit in selected):
+            part_codes.append("UNAUTHORIZED_SUPPORT_ID")
         support_text = "\n".join(unit.text for unit in selected if unit is not None)
         value_status = critical_value_status(part.text, support_text)
         if value_status in {"CRITICAL_VALUE_ABSENT", "CRITICAL_VALUE_CONFLICT"}:
@@ -540,20 +512,20 @@ async def stream_support_unit_answer(
     num_ctx: int = 4096,
     seed: int | None = None,
 ):
-    """Pipeline v2.3.2: support IDs with bounded provider output."""
+    """Generate an answer whose citations are request-scoped support IDs."""
     units = build_support_units(blocks)
     yield {
         "type": "metadata",
         "prompt_version": prompt_version,
-        "pipeline_version": SUPPORT_UNIT_BOUNDED_PIPELINE_VERSION,
-        "output_contract_version": SUPPORT_UNIT_BOUNDED_OUTPUT_CONTRACT_VERSION,
+        "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
+        "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
     }
     messages = build_messages(
         query,
         units,
         version=prompt_version,
         context_serializer=context_serializer,
-        system_prompt_suffix=SUPPORT_UNIT_OUTPUT_INSTRUCTIONS,
+        system_prompt_suffix=SUPPORT_ID_OUTPUT_INSTRUCTIONS,
     )
     generation_kwargs = {
         "model": model,
@@ -564,7 +536,7 @@ async def stream_support_unit_answer(
         # authoritative.
         "schema": support_unit_output_schema(units),
         "num_ctx": num_ctx,
-        "num_predict": SUPPORT_UNIT_MAX_OUTPUT_TOKENS,
+        "num_predict": SUPPORT_ID_MAX_OUTPUT_TOKENS,
     }
     if seed is not None:
         generation_kwargs["seed"] = seed
@@ -591,9 +563,9 @@ async def stream_support_unit_answer(
         evaluation_observation.validated_output = rendered
         evaluation_observation.validated_output_available = user_visible
         evaluation_observation.user_visible_output_available = user_visible
-        evaluation_observation.pipeline_version = SUPPORT_UNIT_BOUNDED_PIPELINE_VERSION
+        evaluation_observation.pipeline_version = SUPPORT_ID_PIPELINE_VERSION
         evaluation_observation.output_contract_version = (
-            SUPPORT_UNIT_BOUNDED_OUTPUT_CONTRACT_VERSION
+            SUPPORT_ID_OUTPUT_CONTRACT_VERSION
         )
         evaluation_observation.model_abstention = validation.model_abstain
         evaluation_observation.application_forced_abstention = (

@@ -1,0 +1,9 @@
+{
+  "target": "4 quote-suppressed raw-correct queries",
+  "valid_request_scoped_ids": "4/4",
+  "semantic_recovery": "3/4",
+  "unsupported_visible": 0,
+  "unauthorized": 0,
+  "critical_conflicts": 0,
+  "status": "small-scale validated; broader confirmation pending"
+}

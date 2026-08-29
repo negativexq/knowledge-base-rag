@@ -123,7 +123,7 @@ def build_chat_dependencies(
             collection_name,
             token_budget=settings.pipeline_v2_context_token_budget,
         )
-        if settings.rag_pipeline_v2 or settings.rag_pipeline_v2_3
+        if settings.rag_pipeline_v2 or settings.support_ids_enabled
         else None
     )
 
@@ -155,7 +155,7 @@ def build_chat_dependencies(
         return result.blocks
 
     async def stream_fn(question: str, chunks: list[SearchResult]):
-        if settings.rag_pipeline_v2_3:
+        if settings.support_ids_enabled:
             async for event in stream_support_unit_answer(
                 question,
                 chunks,
@@ -199,18 +199,18 @@ def build_chat_dependencies(
             security_validation_mode=settings.security_validation_mode,
             semantic_evaluator=semantic_evaluator,
             evidence_fn=evidence_fn
-            if settings.rag_pipeline_v2 or settings.rag_pipeline_v2_3
+            if settings.rag_pipeline_v2 or settings.support_ids_enabled
             else None,
             pipeline_version=(
-                "pipeline_v2_3_support_units"
-                if settings.rag_pipeline_v2_3
+                "pipeline_support_ids"
+                if settings.support_ids_enabled
                 else "pipeline_v2_2_evidence_backed"
                 if settings.rag_pipeline_v2
                 else "pipeline_v1"
             ),
             output_contract_version=(
-                "output_contract_v2_3"
-                if settings.rag_pipeline_v2_3
+                "output_contract_support_ids"
+                if settings.support_ids_enabled
                 else "output_contract_v2_2"
                 if settings.rag_pipeline_v2
                 else "legacy"

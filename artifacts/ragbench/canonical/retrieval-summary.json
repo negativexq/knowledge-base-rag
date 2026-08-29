@@ -1,0 +1,6 @@
+{
+  "benchmark": "RAGBench eManual Basic-50",
+  "hybrid_recall": {"top5": "45/50", "top10": "48/50", "top20": "48/50"},
+  "relevant_sentence_recall": {"hybrid_top20": "100%", "bge_top5_mean": "96.24%", "sectionaware_mean": "89.72%"},
+  "graceful_budget": {"assembly_failures_before": 31, "assembly_failures_after": 0, "grounded_visible_before": "9/50", "grounded_visible_after": "40/50", "abstentions_before": "41/50", "abstentions_after": "10/50"}
+}

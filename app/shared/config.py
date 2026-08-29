@@ -50,11 +50,10 @@ class Settings(BaseSettings):
     ollama_overall_timeout_seconds: float = Field(default=240.0, gt=0)
     ollama_embed_model: str = "nomic-embed-text"
 
-    # Pipeline v2 is deliberately opt-in.  Keeping the switch next to the
-    # generation settings makes the runtime boundary explicit and leaves the
-    # historical v1 path untouched until a separate promotion decision.
+    # Evidence-backed generation is opt-in so the historical local profile
+    # remains reproducible while the support-ID path is promoted separately.
     rag_pipeline_v2: bool = False
-    rag_pipeline_v2_3: bool = False
+    support_ids_enabled: bool = False
     pipeline_v2_context_token_budget: int = Field(default=1200, gt=0)
 
     # Phase 6C is opt-in shadow telemetry. It never suppresses generation.

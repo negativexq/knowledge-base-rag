@@ -1,0 +1,9 @@
+{
+  "benchmark": "RAGBench eManual Basic-50",
+  "visible_answers": {"correct": 29, "partial": 7, "incorrect": 4, "abstention": 10},
+  "strict_semantic_accuracy": "72.5%",
+  "lenient_semantic_accuracy": "90.0%",
+  "grounded_supported": "40/50",
+  "unsupported_visible": "0",
+  "note": "Semantic audit uses the pinned relevant-sentence and expert-gold audit records; lexical exact match is not the quality headline."
+}

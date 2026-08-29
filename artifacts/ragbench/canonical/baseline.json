@@ -1,0 +1,23 @@
+{
+  "dataset": "RAGBench/eManual",
+  "revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+  "split": "test",
+  "sample_size": 50,
+  "sample_hash": "d65d578dcc1f88bb4df71451dfae5f923b2e56bf4fa60e331e6297b2b317cdf3",
+  "corpus_fingerprint": "241dae67feae5733026d9a50cf2640979f141b8a7c7c016c5dc8173bfb6f3ae2",
+  "config_fingerprint": "bba1d9164e5eb36dc056c8b3843e42b175764b542976d83bb5dadf93f9bee8ce",
+  "pipeline": "hybrid dense+BM25+RRF -> BGE Top5 -> graceful SectionAware",
+  "generator": "gpt-5.6-luna",
+  "reasoning": "none",
+  "metrics": {
+    "hybrid_top20_relevant_sentence_recall": "50/50",
+    "bge_top5_mean_relevant_sentence_recall": "96.24%",
+    "sectionaware_mean_relevant_sentence_recall": "89.72%",
+    "visible_correct": "29/50",
+    "visible_partial": "7/50",
+    "visible_incorrect": "4/50",
+    "abstention": "10/50",
+    "semantic_strict": "72.5%",
+    "semantic_correct_or_partial": "90.0%"
+  }
+}
