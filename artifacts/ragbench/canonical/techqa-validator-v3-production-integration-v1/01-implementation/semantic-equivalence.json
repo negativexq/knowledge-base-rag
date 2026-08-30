@@ -1,0 +1,9 @@
+{
+  "frozen_fixture_source": "artifacts/ragbench/canonical/techqa-validator-v3-independent-validation-v1/02-validation-population/population.jsonl",
+  "cases_checked": 50,
+  "security_cases_checked_separately": 10,
+  "production_port_mismatches": 0,
+  "experimental_v3_script_imported_by_production": false,
+  "result": "PASS",
+  "scope": "Offline decision/reason equivalence against frozen non-security V3 contract fixtures; no inference or independent-validation rerun."
+}

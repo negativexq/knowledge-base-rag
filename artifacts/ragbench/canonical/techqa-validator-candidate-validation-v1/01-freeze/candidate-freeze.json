@@ -1,0 +1,22 @@
+{
+  "baseline_source_hashes": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90"
+  },
+  "calibration_population_hash": "ce2be5218f01f656155985605b98e42c23c6e3f94245a8723aa783193e561b62",
+  "candidate_composition": {
+    "calibration_gates_path": "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v1/04-comparison/gates.json",
+    "calibration_gates_sha256": "23a9b2990d832de08a8438656366732d3efcbf566a545346b1e3e4c5463803c6",
+    "composition_type": "CUMULATIVE",
+    "exact_composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE",
+    "segmentation_included": false,
+    "selected_candidate": "IDENTIFIER_NEGATIVE"
+  },
+  "candidate_id": "VALIDATOR_CANDIDATE_V1_937aef6fba5b",
+  "candidate_source_hashes": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+    "scripts/run_techqa_validator_calibration_debug_v1.py": "937aef6fba5b576f12c609a612e44bc50e7b5ed5bd8ea63193e0eceef823f14c"
+  },
+  "created_at_utc": "2026-08-30T16:21:07.813186+00:00",
+  "immutable_during_validation": true,
+  "write_once": true
+}

@@ -1,0 +1,11 @@
+{
+  "G1_security": true,
+  "G2_true_conflict_recall": true,
+  "G3_false_positives": true,
+  "G4_determinate_precision": true,
+  "G5_indeterminate_safety": true,
+  "G6_unsafe_magnitude_collapse": true,
+  "G7_sign_identifier_safety": true,
+  "G8_version_specificity": false,
+  "G9_forced_abstain_proxy": true
+}

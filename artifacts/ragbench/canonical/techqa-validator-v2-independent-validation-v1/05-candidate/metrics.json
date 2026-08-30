@@ -1,0 +1,22 @@
+{
+  "candidate": "VALIDATOR_CANDIDATE_V2_c5f275a0f998",
+  "metrics": {
+    "case_count": 48,
+    "determinate_precision": 1.0,
+    "equivalent_correctly_allowed": 16,
+    "equivalent_false_rejected": 0,
+    "equivalent_total": 16,
+    "false_positive_count": 0,
+    "forced_abstain_proxy": 0,
+    "indeterminate_preserved": 10,
+    "indeterminate_total": 12,
+    "indeterminate_unsafe_acceptances": 0,
+    "security_correctly_rejected": 8,
+    "security_regressions": 0,
+    "security_total": 8,
+    "true_conflict_detected": 11,
+    "true_conflict_missed": 1,
+    "true_conflict_recall": 0.9166666666666666,
+    "true_conflict_total": 12
+  }
+}

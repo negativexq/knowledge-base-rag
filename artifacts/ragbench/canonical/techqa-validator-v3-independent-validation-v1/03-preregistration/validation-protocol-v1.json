@@ -1,0 +1,31 @@
+{
+  "candidate_composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD",
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "created_at_utc": "2026-08-30T19:49:51.710810+00:00",
+  "execution_sequence": [
+    "BASELINE",
+    "V3"
+  ],
+  "forced_abstain_proxy_definition": "equivalent/pass cases rejected or otherwise unavailable by the validator",
+  "identity": "VALIDATOR_V3_FREEZE_AND_INDEPENDENT_VALIDATION_V1",
+  "no_holdout": true,
+  "no_provider_calls": true,
+  "population_case_count": 60,
+  "population_sha256": "a934c00566e79771838d214ec1ce2d80a8b321394fe71f2b4f29a1d83968390f",
+  "primary_gates": {
+    "G10_ambiguous_version_safety": "ambiguous version claims remain INDETERMINATE",
+    "G11_v2_v3_regression_protection": "no regression in fixed locale, identifier, numeric, negative-claim, or version classes",
+    "G12_forced_abstain": "V3 forced-abstain proxy <= baseline",
+    "G1_security": "V3 security regressions = 0",
+    "G2_true_conflict_recall": "V3 recall >= baseline",
+    "G3_false_positives": "V3 false positives <= baseline",
+    "G4_determinate_precision": "V3 precision >= baseline",
+    "G5_indeterminate_safety": "V3 introduces 0 unsafe indeterminate acceptances",
+    "G6_locale_safety": "0 unsafe magnitude-changing ambiguous numeric acceptances",
+    "G7_sign_identifier_safety": "0 sign-loss or identifier-mismatch acceptances",
+    "G8_version_specificity": "0 incompatible family broadening acceptances",
+    "G9_exact_version_safety": "all incompatible exact versions rejected"
+  },
+  "production_promotion": false
+}

@@ -1,0 +1,24 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v3_debug_tree_sha256": "00b4372d04e56fc103fbacda999f0981f7863e6b35607929854dc1ec0975754c",
+  "v3_validation_tree_sha256": "c73cabfcc26d309d9415253bf5a60d8fbd436956f62bbf5d0817b8cc685d4452",
+  "v2_debug_tree_sha256": "02e186a0029fdedd6697933f2e9a16c81593a0c3dbb0c525962077a47f35b9c5",
+  "v2_validation_tree_sha256": "0dcc45e957d5c4d73f1e3aa395f2058e9afa158d14e2d9d752edaee97c683667",
+  "v1_validation_tree_sha256": "002c5c2655c2012b61ad784edf61a4a6c8951b2db9f1dd180fad9757ff7b9b10",
+  "v3_validation_verdict": "VALIDATOR_V3_INDEPENDENT_VALIDATION_PASSED",
+  "v3_validation_population": 60,
+  "v3_validation_gates": "G1-G12 PASS",
+  "candidate_mutated": false,
+  "corrected_holdout_reused": false,
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "production_default_enabled": false,
+  "provider_calls": {
+    "retrieval": 0,
+    "embedding": 0,
+    "bge": 0,
+    "luna": 0,
+    "terra": 0,
+    "ollama": 0
+  }
+}

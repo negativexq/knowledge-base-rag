@@ -1,0 +1,14 @@
+{
+  "G10_ambiguous_version_safety": true,
+  "G11_v2_v3_regression_protection": true,
+  "G12_forced_abstain": true,
+  "G1_security": true,
+  "G2_true_conflict_recall": true,
+  "G3_false_positives": true,
+  "G4_determinate_precision": true,
+  "G5_indeterminate_safety": true,
+  "G6_locale_safety": true,
+  "G7_sign_identifier_safety": true,
+  "G8_version_specificity": true,
+  "G9_exact_version_safety": true
+}

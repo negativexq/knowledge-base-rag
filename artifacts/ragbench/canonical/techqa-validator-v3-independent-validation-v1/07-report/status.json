@@ -1,0 +1,20 @@
+{
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD",
+  "corrected_holdout_consumed": true,
+  "corrected_holdout_used": false,
+  "primary_decision": "VALIDATOR_V3_INDEPENDENT_VALIDATION_PASSED",
+  "production_promoted": false,
+  "promotion_eligible": true,
+  "secondary_effect": "CLEAR_IMPROVEMENT"
+}

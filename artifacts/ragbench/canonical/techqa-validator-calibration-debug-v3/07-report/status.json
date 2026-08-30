@@ -1,0 +1,16 @@
+{
+  "calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "holdout_used": false,
+  "primary_decision": "VALIDATOR_V3_DEBUG_CANDIDATE_SELECTED",
+  "production_default_enabled": false,
+  "secondary_effect": "CLEAR_IMPROVEMENT",
+  "selected_composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD"
+}

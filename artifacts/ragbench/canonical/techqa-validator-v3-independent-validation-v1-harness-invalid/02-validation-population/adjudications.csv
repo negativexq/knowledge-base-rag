@@ -1,0 +1,61 @@
+case_id,category,critical_value_type,expected_class,expected_validator_behavior,version_case_type,locale_ambiguity,security_class,notes,adjudication_source
+IV3-TC-01,TRUE_CONFLICT,NUMBER,TRUE_CONFLICT,REJECT,NONE,False,NONE,integer conflict,pre-execution independent contract review
+IV3-TC-02,TRUE_CONFLICT,DURATION,TRUE_CONFLICT,REJECT,NONE,False,NONE,duration conflict,pre-execution independent contract review
+IV3-TC-03,TRUE_CONFLICT,PERCENT,TRUE_CONFLICT,REJECT,NONE,False,NONE,percentage conflict,pre-execution independent contract review
+IV3-TC-04,TRUE_CONFLICT,DATE,TRUE_CONFLICT,REJECT,NONE,False,NONE,date conflict,pre-execution independent contract review
+IV3-TC-05,TRUE_CONFLICT,RANGE,TRUE_CONFLICT,REJECT,NONE,False,NONE,range conflict,pre-execution independent contract review
+IV3-TC-06,TRUE_CONFLICT,UNIT,TRUE_CONFLICT,REJECT,NONE,False,NONE,unit-bound quantity conflict,pre-execution independent contract review
+IV3-TC-07,TRUE_CONFLICT,SIGNED_IDENTIFIER,TRUE_CONFLICT,REJECT,NONE,False,NONE,signed value conflict,pre-execution independent contract review
+IV3-TC-08,TRUE_CONFLICT,IDENTIFIER,TRUE_CONFLICT,REJECT,NONE,False,NONE,CVE mismatch,pre-execution independent contract review
+IV3-TC-09,TRUE_CONFLICT,IDENTIFIER,TRUE_CONFLICT,REJECT,NONE,False,NONE,SQLCODE mismatch,pre-execution independent contract review
+IV3-TC-10,TRUE_CONFLICT,VERSION,TRUE_CONFLICT,REJECT,EXACT_MISMATCH,False,NONE,exact patch mismatch,pre-execution independent contract review
+IV3-TC-11,TRUE_CONFLICT,VERSION,TRUE_CONFLICT,REJECT,FAMILY_MAJOR_MISMATCH,False,NONE,major family mismatch,pre-execution independent contract review
+IV3-TC-12,TRUE_CONFLICT,VERSION,TRUE_CONFLICT,REJECT,FAMILY_MINOR_MISMATCH,False,NONE,minor family mismatch,pre-execution independent contract review
+IV3-TC-13,TRUE_CONFLICT,VERSION,TRUE_CONFLICT,REJECT,EXACT_MISMATCH,False,NONE,negative exact version conflict,pre-execution independent contract review
+IV3-TC-14,TRUE_CONFLICT,NUMBER,TRUE_CONFLICT,REJECT,NONE,False,NONE,rate conflict,pre-execution independent contract review
+IV3-TC-15,TRUE_CONFLICT,PERCENT,TRUE_CONFLICT,REJECT,NONE,False,NONE,percentage conflict,pre-execution independent contract review
+IV3-TC-16,TRUE_CONFLICT,NUMBER,TRUE_CONFLICT,REJECT,NONE,False,NONE,byte count conflict,pre-execution independent contract review
+IV3-TC-17,TRUE_CONFLICT,DATE,TRUE_CONFLICT,REJECT,NONE,False,NONE,expiry date conflict,pre-execution independent contract review
+IV3-TC-18,TRUE_CONFLICT,RANGE,TRUE_CONFLICT,REJECT,NONE,False,NONE,range endpoint conflict,pre-execution independent contract review
+IV3-EQ-01,EQUIVALENT_PASS,NUMBER,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,explicit grouped integer,pre-execution independent contract review
+IV3-EQ-02,EQUIVALENT_PASS,NUMBER,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,technical grouped integer,pre-execution independent contract review
+IV3-EQ-03,EQUIVALENT_PASS,DURATION,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,decimal trailing zero,pre-execution independent contract review
+IV3-EQ-04,EQUIVALENT_PASS,PERCENT,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,percentage precision formatting,pre-execution independent contract review
+IV3-EQ-05,EQUIVALENT_PASS,RANGE,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,range dash formatting,pre-execution independent contract review
+IV3-EQ-06,EQUIVALENT_PASS,DATE,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,identical ISO date,pre-execution independent contract review
+IV3-EQ-07,EQUIVALENT_PASS,SIGNED_IDENTIFIER,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,SQLCODE punctuation,pre-execution independent contract review
+IV3-EQ-08,EQUIVALENT_PASS,IDENTIFIER,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,CVE separator formatting,pre-execution independent contract review
+IV3-EQ-09,EQUIVALENT_PASS,VERSION,EQUIVALENT_PASS,ACCEPT,EXACT_EQUAL,False,NONE,leading v normalization,pre-execution independent contract review
+IV3-EQ-10,EQUIVALENT_PASS,VERSION,EQUIVALENT_PASS,ACCEPT,FAMILY_MAJOR,False,NONE,explicit major family,pre-execution independent contract review
+IV3-EQ-11,EQUIVALENT_PASS,VERSION,EQUIVALENT_PASS,ACCEPT,FAMILY_MINOR,False,NONE,explicit minor family,pre-execution independent contract review
+IV3-EQ-12,EQUIVALENT_PASS,VERSION,EQUIVALENT_PASS,ACCEPT,FAMILY_MAJOR,False,NONE,explicit lower-bound family,pre-execution independent contract review
+IV3-EQ-13,EQUIVALENT_PASS,VERSION,EQUIVALENT_PASS,ACCEPT,EXACT_EQUAL,False,NONE,exact version equality,pre-execution independent contract review
+IV3-EQ-14,EQUIVALENT_PASS,UNIT,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,identical unit quantity,pre-execution independent contract review
+IV3-EQ-15,EQUIVALENT_PASS,NUMBER,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,grouped entry count,pre-execution independent contract review
+IV3-EQ-16,EQUIVALENT_PASS,DURATION,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,duration trailing zero,pre-execution independent contract review
+IV3-EQ-17,EQUIVALENT_PASS,PERCENT,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,percentage trailing zero,pre-execution independent contract review
+IV3-EQ-18,EQUIVALENT_PASS,IDENTIFIER,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,identical CVE,pre-execution independent contract review
+IV3-EQ-19,EQUIVALENT_PASS,SIGNED_IDENTIFIER,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,identical signed value,pre-execution independent contract review
+IV3-EQ-20,EQUIVALENT_PASS,DATE,EQUIVALENT_PASS,ACCEPT,NONE,False,NONE,identical review date,pre-execution independent contract review
+IV3-IND-01,INDETERMINATE,NUMBER,INDETERMINATE,INDETERMINATE,NONE,True,NONE,period decimal/grouping ambiguity,pre-execution independent contract review
+IV3-IND-02,INDETERMINATE,NUMBER,INDETERMINATE,INDETERMINATE,NONE,True,NONE,comma/period ambiguity,pre-execution independent contract review
+IV3-IND-03,INDETERMINATE,NUMBER,INDETERMINATE,INDETERMINATE,NONE,True,NONE,magnitude-changing punctuation ambiguity,pre-execution independent contract review
+IV3-IND-04,INDETERMINATE,NUMBER,INDETERMINATE,INDETERMINATE,NONE,True,NONE,mixed separator ambiguity,pre-execution independent contract review
+IV3-IND-05,INDETERMINATE,VERSION,INDETERMINATE,INDETERMINATE,AMBIGUOUS_MINOR,False,NONE,unspecified exact versus family,pre-execution independent contract review
+IV3-IND-06,INDETERMINATE,VERSION,INDETERMINATE,INDETERMINATE,AMBIGUOUS_MAJOR,False,NONE,short version without family wording,pre-execution independent contract review
+IV3-IND-07,INDETERMINATE,VERSION,INDETERMINATE,INDETERMINATE,AMBIGUOUS_MINOR,False,NONE,partial version specificity,pre-execution independent contract review
+IV3-IND-08,INDETERMINATE,VERSION,INDETERMINATE,INDETERMINATE,AMBIGUOUS_MINOR,False,NONE,truncated version,pre-execution independent contract review
+IV3-IND-09,INDETERMINATE,NUMBER,INDETERMINATE,INDETERMINATE,NONE,False,NONE,missing comparable literal,pre-execution independent contract review
+IV3-IND-10,INDETERMINATE,RANGE,INDETERMINATE,INDETERMINATE,NONE,False,NONE,range support unavailable,pre-execution independent contract review
+IV3-IND-11,INDETERMINATE,IDENTIFIER,INDETERMINATE,INDETERMINATE,NONE,False,NONE,identifier support incomplete,pre-execution independent contract review
+IV3-IND-12,INDETERMINATE,DATE,INDETERMINATE,INDETERMINATE,NONE,False,NONE,date support incomplete,pre-execution independent contract review
+IV3-SEC-01,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,UNKNOWN_SUPPORT_ID,unknown support ID,pre-execution independent contract review
+IV3-SEC-02,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,HIDDEN_SUPPORT_ID,hidden support,pre-execution independent contract review
+IV3-SEC-03,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,UNAUTHORIZED_SUPPORT_ID,unauthorized support,pre-execution independent contract review
+IV3-SEC-04,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,CROSS_TENANT_SUPPORT,cross-tenant injection,pre-execution independent contract review
+IV3-SEC-05,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,SPOOFED_SUPPORT_ID,spoofed support identity,pre-execution independent contract review
+IV3-SEC-06,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,UNKNOWN_SUPPORT_ID,malicious version text with unknown ID,pre-execution independent contract review
+IV3-SEC-07,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,HIDDEN_SUPPORT_ID,hidden numeric text,pre-execution independent contract review
+IV3-SEC-08,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,CROSS_TENANT_SUPPORT,cross-tenant identifier,pre-execution independent contract review
+IV3-SEC-09,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,UNAUTHORIZED_SUPPORT_ID,unauthorized signed code,pre-execution independent contract review
+IV3-SEC-10,SECURITY_REJECT,OTHER,SECURITY_REJECT,SECURITY_REJECT,NONE,False,SPOOFED_SUPPORT_ID,spoofed version support,pre-execution independent contract review

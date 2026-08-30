@@ -1,0 +1,10 @@
+{
+  "adjudications_path": "artifacts/ragbench/canonical/techqa-validator-v2-independent-validation-v1/02-validation-population/adjudications.csv",
+  "adjudications_sha256": "13a4db6f34225e4a118f89313a1ae67bae67e81bea68c2bb6a3c19351a6fae83",
+  "case_count": 48,
+  "frozen_before_execution": true,
+  "manifest_path": "artifacts/ragbench/canonical/techqa-validator-v2-independent-validation-v1/02-validation-population/manifest.json",
+  "manifest_sha256": "aca54615fb75f2225290311029ec44ab11f8cf12a7191ee3866b52cd34e632d9",
+  "population_path": "artifacts/ragbench/canonical/techqa-validator-v2-independent-validation-v1/02-validation-population/population.jsonl",
+  "population_sha256": "297a1b70ddb339872087b6629a239741196d24d5fbd23c6e74f73fa2829643c2"
+}

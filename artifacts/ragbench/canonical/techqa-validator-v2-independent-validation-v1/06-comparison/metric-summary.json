@@ -1,0 +1,70 @@
+{
+  "baseline": {
+    "case_count": 48,
+    "determinate_precision": 0.5,
+    "equivalent_correctly_allowed": 7,
+    "equivalent_false_rejected": 9,
+    "equivalent_total": 16,
+    "false_positive_count": 9,
+    "forced_abstain_proxy": 9,
+    "indeterminate_preserved": 11,
+    "indeterminate_total": 12,
+    "indeterminate_unsafe_acceptances": 0,
+    "security_correctly_rejected": 8,
+    "security_regressions": 0,
+    "security_total": 8,
+    "true_conflict_detected": 9,
+    "true_conflict_missed": 3,
+    "true_conflict_recall": 0.75,
+    "true_conflict_total": 12
+  },
+  "candidate": {
+    "case_count": 48,
+    "determinate_precision": 1.0,
+    "equivalent_correctly_allowed": 16,
+    "equivalent_false_rejected": 0,
+    "equivalent_total": 16,
+    "false_positive_count": 0,
+    "forced_abstain_proxy": 0,
+    "indeterminate_preserved": 10,
+    "indeterminate_total": 12,
+    "indeterminate_unsafe_acceptances": 0,
+    "security_correctly_rejected": 8,
+    "security_regressions": 0,
+    "security_total": 8,
+    "true_conflict_detected": 11,
+    "true_conflict_missed": 1,
+    "true_conflict_recall": 0.9166666666666666,
+    "true_conflict_total": 12
+  },
+  "candidate_mutated_after_freeze": false,
+  "candidate_source_hash_after_execution": "c5f275a0f9984b88b4ebf6159ad4521d0151880e6290eb1a754e5dca999ef6b6",
+  "candidate_source_hash_before_execution": "c5f275a0f9984b88b4ebf6159ad4521d0151880e6290eb1a754e5dca999ef6b6",
+  "delta_candidate_minus_baseline": {
+    "determinate_precision": 0.5,
+    "false_positive_count": -9,
+    "forced_abstain_proxy": -9,
+    "indeterminate_unsafe_acceptances": 0,
+    "true_conflict_recall": 0.16666666666666663
+  },
+  "gates": {
+    "G1_security": true,
+    "G2_true_conflict_recall": true,
+    "G3_false_positives": true,
+    "G4_determinate_precision": true,
+    "G5_indeterminate_safety": true,
+    "G6_unsafe_magnitude_collapse": true,
+    "G7_sign_identifier_safety": true,
+    "G8_version_specificity": false,
+    "G9_forced_abstain_proxy": true
+  },
+  "primary_decision": "VALIDATOR_V2_INDEPENDENT_VALIDATION_FAILED",
+  "promotion_eligible": false,
+  "secondary_effect": "REGRESSION",
+  "sign_identifier_failures": [],
+  "unsafe_locale_acceptances": [],
+  "unsafe_new_acceptances": [],
+  "version_specificity_failures": [
+    "IV2-TC-10"
+  ]
+}

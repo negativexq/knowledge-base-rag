@@ -12,7 +12,10 @@ import unicodedata
 from collections.abc import Sequence
 from typing import Any
 
-from app.evaluation.critical_values import claim_local_critical_value_audit
+from app.evaluation.critical_values import (
+    CriticalValidatorVersion,
+    claim_local_critical_value_audit,
+)
 
 _TOKEN = re.compile(r"[\w]+(?:[./:+#-][\w]+)*", re.UNICODE)
 
@@ -93,9 +96,7 @@ def content_tokens(text: str) -> tuple[str, ...]:
     """Return stable exact content tokens without stemming technical terms."""
     normalized = unicodedata.normalize("NFKC", text or "").casefold()
     return tuple(
-        token
-        for token in _TOKEN.findall(normalized)
-        if token not in _STOPWORDS and len(token) > 1
+        token for token in _TOKEN.findall(normalized) if token not in _STOPWORDS and len(token) > 1
     )
 
 
@@ -104,6 +105,8 @@ def audit_support_relevance(
     support_texts: Sequence[str],
     *,
     coverage_threshold: float,
+    validator_version: CriticalValidatorVersion = "baseline",
+    shadow_enabled: bool = False,
 ) -> dict[str, Any]:
     """Audit lexical support coverage plus critical-value consistency.
 
@@ -116,7 +119,12 @@ def audit_support_relevance(
     support_tokens = set(content_tokens("\n".join(support_texts)))
     matched = claim_tokens & support_tokens
     coverage = len(matched) / len(claim_tokens) if claim_tokens else 0.0
-    critical = claim_local_critical_value_audit(claim, support_texts)
+    critical = claim_local_critical_value_audit(
+        claim,
+        support_texts,
+        validator_version=validator_version,
+        shadow_enabled=shadow_enabled,
+    )
     failures: list[str] = []
     if not claim_tokens or coverage < coverage_threshold:
         failures.append("SUPPORT_RELEVANCE_BELOW_THRESHOLD")

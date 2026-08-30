@@ -1,0 +1,67 @@
+{
+  "holdout_accessed": false,
+  "population": {
+    "case_count": 23,
+    "dataset": "RAGBench TechQA development artifacts",
+    "historical_query_count": 10,
+    "historical_query_ids": [
+      "emanual_1#row-0023",
+      "emanual_176#row-0095",
+      "emanual_420#row-0005",
+      "emanual_420#row-0071",
+      "emanual_430#row-0106",
+      "emanual_433#row-0094",
+      "emanual_539#row-0027",
+      "emanual_558#row-0032",
+      "emanual_645#row-0051",
+      "emanual_645#row-0117"
+    ],
+    "holdout_used_for_tuning": false,
+    "source_identity": {
+      "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+      "artifacts/ragbench/canonical/basic50-claim-local-validator/claim-local-traces.jsonl": "2685e7ede1ebfe60541c0afad79200c1ff7a7deff8420f0f046ea911e4e27a1e",
+      "artifacts/ragbench/canonical/basic50-claim-local-validator/negative-controls.json": "e1fa46e2d245fc56ceda74248c078b5a6f02e33c9d9de4511de2012fbe351084",
+      "artifacts/ragbench/canonical/basic50-claim-local-validator/positive-controls.json": "877680e20fa4d0e3312e8ba8319aa10d115036620760d15826f88642e1d8030f",
+      "artifacts/ragbench/canonical/basic50-claim-local-validator/target-population.json": "43e959b5b4450d31cb3f64292347d838510d9360cba710e57215319c5c61fa27",
+      "artifacts/ragbench/canonical/basic50-final/sample.sha256": "6992f6182167432ef6d7bba283e0b22f1e75e08ea58a091d49505475c3590ac3",
+      "artifacts/ragbench/canonical/basic50-final/support-units.jsonl": "b1388fe3502a5d0c571955fe8fd24d6589996e53071be7ca4a6af08611e4e9ce",
+      "artifacts/ragbench/canonical/basic50-final/validation-results.jsonl": "17645e1f0a600d0e96b7a89da507581b0819522ae00098aab8f79620e7961698"
+    },
+    "split": "DEBUG/dev historical validator cases plus synthetic deterministic contract fixtures",
+    "synthetic_case_ids": [
+      "S-NUM-GROUP-DOT",
+      "S-NUM-GROUP-COMMA",
+      "S-NUM-DECIMAL-GUARD",
+      "S-NUM-MISMATCH",
+      "S-VERSION-FAMILY",
+      "S-VERSION-V-PREFIX",
+      "S-VERSION-EXACT-MISMATCH",
+      "S-CVE-SAME",
+      "S-CVE-DIFFERENT",
+      "S-SQLCODE-SIGNED",
+      "S-SQLCODE-MISMATCH",
+      "S-NEGATIVE-CONTRAST",
+      "S-NEGATIVE-CONFLICT",
+      "S-SEGMENT-EXACT",
+      "S-SEGMENT-DISTRACTOR"
+    ]
+  },
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "source_files": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+    "artifacts/ragbench/canonical/basic50-claim-local-validator/claim-local-traces.jsonl": "2685e7ede1ebfe60541c0afad79200c1ff7a7deff8420f0f046ea911e4e27a1e",
+    "artifacts/ragbench/canonical/basic50-claim-local-validator/negative-controls.json": "e1fa46e2d245fc56ceda74248c078b5a6f02e33c9d9de4511de2012fbe351084",
+    "artifacts/ragbench/canonical/basic50-claim-local-validator/positive-controls.json": "877680e20fa4d0e3312e8ba8319aa10d115036620760d15826f88642e1d8030f",
+    "artifacts/ragbench/canonical/basic50-claim-local-validator/target-population.json": "43e959b5b4450d31cb3f64292347d838510d9360cba710e57215319c5c61fa27",
+    "artifacts/ragbench/canonical/basic50-final/sample.sha256": "6992f6182167432ef6d7bba283e0b22f1e75e08ea58a091d49505475c3590ac3",
+    "artifacts/ragbench/canonical/basic50-final/support-units.jsonl": "b1388fe3502a5d0c571955fe8fd24d6589996e53071be7ca4a6af08611e4e9ce",
+    "artifacts/ragbench/canonical/basic50-final/validation-results.jsonl": "17645e1f0a600d0e96b7a89da507581b0819522ae00098aab8f79620e7961698"
+  }
+}

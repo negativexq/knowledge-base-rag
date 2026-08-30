@@ -1,0 +1,31 @@
+{
+  "scope": "offline deterministic validator-level verification",
+  "provider_calls": 0,
+  "authoritative_selector": "baseline",
+  "shadow_selector": "v3",
+  "baseline_without_shadow_is_authoritative": true,
+  "baseline_with_shadow_is_authoritative": true,
+  "visible_result_invariant": true,
+  "shadow_failure_isolated": true,
+  "shadow_failure_class": "SHADOW_EVALUATION_FAILURE",
+  "shadow_failure_disagreement": "SHADOW_ERROR",
+  "baseline_exception_is_not_swallowed": true,
+  "shadow_side_effects": false,
+  "authorization_or_support_id_changes": false,
+  "forced_abstain_is_baseline_selected": true,
+  "citations_and_evidence_selection_changed": false,
+  "contract_classes_checked": [
+    "PASS",
+    "REJECT",
+    "INDETERMINATE",
+    "numeric",
+    "locale ambiguity",
+    "signed identifier",
+    "CVE",
+    "SQLCODE",
+    "version family",
+    "exact version",
+    "ambiguous version"
+  ],
+  "result": "PASS"
+}

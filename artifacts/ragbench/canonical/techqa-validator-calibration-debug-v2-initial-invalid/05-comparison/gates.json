@@ -1,0 +1,9 @@
+{
+  "G1_security": true,
+  "G2_true_conflict_recall": true,
+  "G3_false_positives": true,
+  "G4_indeterminate_safety": false,
+  "G5_v1_regression_protection": true,
+  "G6_forced_abstain": true,
+  "G7_unsafe_magnitude_collapse": false
+}

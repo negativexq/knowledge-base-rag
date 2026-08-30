@@ -1,0 +1,41 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256_expected": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_sha256_before_review": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_sha256_after_review": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_unchanged": true,
+  "production_port_source_hashes_after_review": {
+    "app/evaluation/critical_values.py": "d76677a4c26bc61b333d2691b4c37639b47a2dfbee1b67c046929a55fd0ef8cd",
+    "app/llm/structured_output.py": "cfd818c8e66a67012998b038879b8b4261063c49e18b4d16629f737ee6f3e436",
+    "app/shared/config.py": "e34e6e236986e5d319ea6a17f89979c0589bd2a44b8a9f3d28d09283d9cbcf15",
+    "app/evidence/support_relevance.py": "fe967b59c1b944aa0dd6c4637aff5d302d1c13702f06b841dd04e9b60a1780ba",
+    "app/api/chat.py": "f0cf34c15b7b57f47008ef92e8337a4e6e8bb3fb2e642c18bfc3c5d1fc7a2736",
+    "app/retrieval/report.py": "b01b4cc90a3001004550e3649354420c8bcc936af5781935f3625ea31abcbd68",
+    "app/wiring.py": "3e3deebbc9ce3e95d1c322a44ca5c219dce5f58376d5772dab2c010fc4b2fec0"
+  },
+  "prior_artifacts_unchanged": {
+    "v1": true,
+    "v2": true,
+    "v3_debug": true,
+    "v3_independent_validation": true,
+    "promotion_review": true,
+    "production_integration": true,
+    "corrected_holdout": true
+  },
+  "defaults": {
+    "critical_validator_version": "baseline",
+    "critical_validator_v3_shadow_enabled": false
+  },
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "corrected_holdout_reused": false,
+  "traffic_changed": false,
+  "deployment_performed": false,
+  "provider_calls": {
+    "retrieval": 0,
+    "embedding": 0,
+    "bge": 0,
+    "luna": 0,
+    "terra": 0,
+    "ollama": 0
+  }
+}

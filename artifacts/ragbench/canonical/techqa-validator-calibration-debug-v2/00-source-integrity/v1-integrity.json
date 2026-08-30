@@ -1,0 +1,11 @@
+{
+  "production_default_changed": false,
+  "v1_artifacts_modified": false,
+  "v1_candidate_freeze_sha256": "787e13b3f6d60d7272c7107d0a386e058743629685afa994034cb29255ed235e",
+  "v1_candidate_id": "VALIDATOR_CANDIDATE_V1_937aef6fba5b",
+  "v1_expected_source_hash": "937aef6fba5b576f12c609a612e44bc50e7b5ed5bd8ea63193e0eceef823f14c",
+  "v1_observed_source_hash": "937aef6fba5b576f12c609a612e44bc50e7b5ed5bd8ea63193e0eceef823f14c",
+  "v1_status_path": "artifacts/ragbench/canonical/techqa-validator-candidate-validation-v1/07-report/status.json",
+  "v1_status_sha256": "482e4eea31215e84858dec2e9cc6c58517966c9b98733f863be073175a58efe2",
+  "v1_validation_verdict": "VALIDATOR_CANDIDATE_VALIDATION_FAILED"
+}

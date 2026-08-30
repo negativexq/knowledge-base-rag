@@ -1,0 +1,16 @@
+{
+  "candidate_source_sha256_after_tests": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_unchanged": true,
+  "v3_debug_artifacts_unchanged": true,
+  "v3_validation_artifacts_unchanged": true,
+  "promotion_review_artifacts_unchanged": true,
+  "prior_v1_v2_artifacts_unchanged": true,
+  "corrected_holdout_unchanged": true,
+  "bge_verdict_unchanged": true,
+  "top_n_unchanged": true,
+  "production_default": "baseline",
+  "shadow_enabled": false,
+  "traffic_changed": false,
+  "deployment_performed": false,
+  "provider_calls": 0
+}

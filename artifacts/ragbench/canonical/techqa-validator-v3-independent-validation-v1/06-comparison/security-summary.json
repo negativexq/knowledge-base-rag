@@ -1,0 +1,9 @@
+{
+  "cross_tenant_accepted": 0,
+  "hidden_support_accepted": 0,
+  "injection_bypass": 0,
+  "security_regressions": 0,
+  "security_total": 10,
+  "spoofed_support_accepted": 0,
+  "unauthorized_accepted": 0
+}

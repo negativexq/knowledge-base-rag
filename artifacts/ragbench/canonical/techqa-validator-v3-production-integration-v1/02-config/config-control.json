@@ -1,0 +1,13 @@
+{
+  "selector": "CRITICAL_VALIDATOR_VERSION",
+  "allowed_values": ["baseline", "v3"],
+  "default": "baseline",
+  "shadow_setting": "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED",
+  "shadow_default": false,
+  "server_controlled": true,
+  "request_override": false,
+  "invalid_value_behavior": "startup/config validation failure",
+  "rollback": "Set CRITICAL_VALIDATOR_VERSION=baseline using normal server configuration rollout.",
+  "visible_in": ["Settings", "chat_request OTel span", "RetrievalReport validator metadata"],
+  "index_compatibility_effect": false
+}

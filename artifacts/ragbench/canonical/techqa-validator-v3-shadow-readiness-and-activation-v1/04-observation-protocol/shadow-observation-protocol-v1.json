@@ -1,0 +1,51 @@
+{
+  "protocol_id": "VALIDATOR_V3_SHADOW_OBSERVATION_V1",
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "authoritative_validator": "baseline",
+  "shadow_validator": "v3",
+  "activation_configuration": {
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": true
+  },
+  "visible_behavior_rule": "Baseline remains authoritative; shadow adds diagnostics only.",
+  "eligible_denominator": "Requests in which the claim-local critical-value validator executes.",
+  "metrics": [
+    "shadow_comparisons",
+    "SAME",
+    "BASELINE_REJECT_V3_PASS",
+    "BASELINE_PASS_V3_REJECT",
+    "BASELINE_IND_V3_PASS",
+    "BASELINE_PASS_V3_IND",
+    "BASELINE_REJECT_V3_IND",
+    "BASELINE_IND_V3_REJECT",
+    "shadow_error_count",
+    "baseline_outcome_distribution",
+    "v3_shadow_outcome_distribution",
+    "baseline_forced_abstain_count",
+    "v3_hypothetical_forced_abstain_count",
+    "baseline_validator_duration_ms",
+    "v3_shadow_duration_ms"
+  ],
+  "disagreement_is_not_semantic_ground_truth": true,
+  "completion_criterion": "OBSERVATION_WINDOW_REQUIRES_RUNTIME_BASELINE: establish a defensible eligible-invocation sample and minimum observation period from the authorized runtime's baseline distribution; both must be met before canary review.",
+  "hard_stop_conditions": [
+    "security-boundary behavior change",
+    "baseline visible result changes under shadow",
+    "shadow exception breaks answer delivery",
+    "raw sensitive telemetry observed",
+    "unbounded telemetry cardinality",
+    "material shadow-attributable runtime instability",
+    "unexpected provider/network dependency"
+  ],
+  "soft_review_conditions": [
+    "BASELINE_PASS_V3_REJECT disagreement increase",
+    "V3 INDETERMINATE rate increase",
+    "forced-abstain proxy increase",
+    "validator latency increase",
+    "shadow exception above expected zero"
+  ],
+  "future_canary_requires": "A separate shadow observation review; no semantic correctness claim may be inferred from unlabeled disagreement.",
+  "frozen_before_actual_observation": true,
+  "actual_observation_collected": false
+}

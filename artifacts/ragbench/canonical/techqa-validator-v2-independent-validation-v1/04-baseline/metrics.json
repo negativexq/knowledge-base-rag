@@ -1,0 +1,22 @@
+{
+  "candidate": "BASELINE",
+  "metrics": {
+    "case_count": 48,
+    "determinate_precision": 0.5,
+    "equivalent_correctly_allowed": 7,
+    "equivalent_false_rejected": 9,
+    "equivalent_total": 16,
+    "false_positive_count": 9,
+    "forced_abstain_proxy": 9,
+    "indeterminate_preserved": 11,
+    "indeterminate_total": 12,
+    "indeterminate_unsafe_acceptances": 0,
+    "security_correctly_rejected": 8,
+    "security_regressions": 0,
+    "security_total": 8,
+    "true_conflict_detected": 9,
+    "true_conflict_missed": 3,
+    "true_conflict_recall": 0.75,
+    "true_conflict_total": 12
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "availability_transition_counts": {
+    "BOTH_AVAILABLE": 29,
+    "BOTH_UNAVAILABLE": 11,
+    "ON_AVAILABLE_OFF_UNAVAILABLE": 7,
+    "ON_UNAVAILABLE_OFF_AVAILABLE": 3
+  },
+  "calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "conclusion": "VALIDATOR_CALIBRATION_INCONCLUSIVE",
+  "critical_reject_query_sets": {
+    "both": [
+      "techqa_DEV_Q018#row-0112",
+      "techqa_DEV_Q039#row-0060",
+      "techqa_DEV_Q047#row-0156",
+      "techqa_DEV_Q126#row-0066",
+      "techqa_DEV_Q173#row-0147",
+      "techqa_DEV_Q174#row-0049",
+      "techqa_DEV_Q188#row-0026",
+      "techqa_DEV_Q220#row-0046",
+      "techqa_DEV_Q267#row-0132",
+      "techqa_DEV_Q277#row-0042",
+      "techqa_DEV_Q300#row-0109"
+    ],
+    "off_only": [
+      "techqa_DEV_Q012#row-0133",
+      "techqa_DEV_Q035#row-0121",
+      "techqa_DEV_Q036#row-0037",
+      "techqa_DEV_Q129#row-0013",
+      "techqa_DEV_Q149#row-0050",
+      "techqa_DEV_Q181#row-0079",
+      "techqa_DEV_Q182#row-0067",
+      "techqa_DEV_Q218#row-0137",
+      "techqa_DEV_Q250#row-0012",
+      "techqa_DEV_Q296#row-0040"
+    ],
+    "on_only": [
+      "techqa_DEV_Q077#row-0008",
+      "techqa_DEV_Q283#row-0080",
+      "techqa_DEV_Q308#row-0103"
+    ]
+  },
+  "off_unavailable_delta": 4,
+  "source_recheck": [
+    {
+      "path": "artifacts/ragbench/canonical/techqa-corrected-holdout-amendment-v2/01-amendment/preregistration-amendment-v2.json",
+      "raw_sha256_at_end": "22da15d58b5e29bacd3a5593f0d40a14c9c81e84b54f69179341cbdf865326a4",
+      "raw_sha256_at_start": "22da15d58b5e29bacd3a5593f0d40a14c9c81e84b54f69179341cbdf865326a4",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/09-semantic-review/codex-scorecard-frozen.csv",
+      "raw_sha256_at_end": "7ebbc884f659f5f0625d76ed6b3ca81aef4d5dfb8ab2a3b4f0ba296dedc2f6c4",
+      "raw_sha256_at_start": "7ebbc884f659f5f0625d76ed6b3ca81aef4d5dfb8ab2a3b4f0ba296dedc2f6c4",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/10-unblind-protocol/unblind-decision-protocol-v1.json",
+      "raw_sha256_at_end": "11ef8f09bbd4eb119f066305bc283e8b187d3cba0ed70fa94869e859f31c06bb",
+      "raw_sha256_at_start": "11ef8f09bbd4eb119f066305bc283e8b187d3cba0ed70fa94869e859f31c06bb",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/11-final-unblind/unblinded-semantic-results.csv",
+      "raw_sha256_at_end": "e88716e47b4cf944c5272e46478bfe06b68a46a28b63ac998e01c722e01e259a",
+      "raw_sha256_at_start": "e88716e47b4cf944c5272e46478bfe06b68a46a28b63ac998e01c722e01e259a",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/11-final-unblind/semantic-summary.json",
+      "raw_sha256_at_end": "52336f1bb008b2b49107c03637295f36b3e3652c57dd12170549d49d547e590f",
+      "raw_sha256_at_start": "52336f1bb008b2b49107c03637295f36b3e3652c57dd12170549d49d547e590f",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/11-final-unblind/g1-g7-gate.json",
+      "raw_sha256_at_end": "dcaf5c4b11b8fde3320a4f2bff40b9568024b31ba4328d9a257671656bb45b7a",
+      "raw_sha256_at_start": "dcaf5c4b11b8fde3320a4f2bff40b9568024b31ba4328d9a257671656bb45b7a",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/11-final-unblind/final-verdict.json",
+      "raw_sha256_at_end": "dfc0e1a9b46dee450972ca37e35c1bdad19915e0f378ca9441a878e8bd4e4220",
+      "raw_sha256_at_start": "dfc0e1a9b46dee450972ca37e35c1bdad19915e0f378ca9441a878e8bd4e4220",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/06-deterministic/validation-results.jsonl",
+      "raw_sha256_at_end": "8185746c7a267316325a132d4b4aae3fa2f118c8fdf970f4209669e7390a0203",
+      "raw_sha256_at_start": "8185746c7a267316325a132d4b4aae3fa2f118c8fdf970f4209669e7390a0203",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/04-evidence/on-evidence.jsonl",
+      "raw_sha256_at_end": "637c39fe70d7028488c5340b85687c0f49aa1c2792770449416be9155b229a0c",
+      "raw_sha256_at_start": "637c39fe70d7028488c5340b85687c0f49aa1c2792770449416be9155b229a0c",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/04-evidence/off-evidence.jsonl",
+      "raw_sha256_at_end": "e04a8699b0ccabbde5e081b112cf94e4deb4f7c288d39deaa1cb38e9ee4cd33f",
+      "raw_sha256_at_start": "e04a8699b0ccabbde5e081b112cf94e4deb4f7c288d39deaa1cb38e9ee4cd33f",
+      "unchanged": true
+    },
+    {
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/04-evidence/query-level-funnel.jsonl",
+      "raw_sha256_at_end": "0ba4053ee0281443605e619bf4d3d431296b72d3afc3d1dd85b5c0a25ec0aba6",
+      "raw_sha256_at_start": "0ba4053ee0281443605e619bf4d3d431296b72d3afc3d1dd85b5c0a25ec0aba6",
+      "unchanged": true
+    }
+  ]
+}

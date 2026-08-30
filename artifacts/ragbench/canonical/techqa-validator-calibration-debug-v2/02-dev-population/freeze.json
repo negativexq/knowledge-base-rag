@@ -1,0 +1,10 @@
+{
+  "adjudications_path": "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v2-rerun/02-dev-population/adjudications.csv",
+  "adjudications_sha256": "a69a2e77e949d2a864940b2da47260dc7ab79da98304364ba1d514c7e3a78c95",
+  "case_count": 30,
+  "frozen_before_execution": true,
+  "manifest_path": "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v2-rerun/02-dev-population/manifest.json",
+  "manifest_sha256": "3b75a9784bfbd299aaac71cb859b7828a83c0710fc38643a533e0a8995c7709f",
+  "population_path": "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v2-rerun/02-dev-population/population.jsonl",
+  "population_sha256": "6f9c91146880885699d6e58bc21e2e2d178d6f6ca03dcaee74fedf5ee03dfb19"
+}

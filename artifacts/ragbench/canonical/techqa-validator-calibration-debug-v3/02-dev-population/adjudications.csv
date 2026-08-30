@@ -1,0 +1,41 @@
+case_id,expected_class,critical_value_type,version_case_type,unsafe_locale,security_class,adjudication_source,notes
+V3-TC-01,TRUE_CONFLICT,VERSION,EXACT,False,NONE,pre-execution fresh DEBUG contract definition,exact patch mismatch
+V3-TC-02,TRUE_CONFLICT,VERSION,EXACT,False,NONE,pre-execution fresh DEBUG contract definition,exact version mismatch
+V3-TC-03,TRUE_CONFLICT,VERSION,FAMILY_MAJOR,False,NONE,pre-execution fresh DEBUG contract definition,incompatible major family
+V3-TC-04,TRUE_CONFLICT,VERSION,FAMILY_MINOR,False,NONE,pre-execution fresh DEBUG contract definition,incompatible minor family
+V3-TC-05,TRUE_CONFLICT,VERSION,EXACT,False,NONE,pre-execution fresh DEBUG contract definition,negative exact-version contradiction
+V3-TC-06,TRUE_CONFLICT,NUMBER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,integer mismatch
+V3-TC-07,TRUE_CONFLICT,IDENTIFIER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,signed mismatch
+V3-TC-08,TRUE_CONFLICT,IDENTIFIER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,CVE mismatch
+V3-TC-09,TRUE_CONFLICT,DATE,NONE,False,NONE,pre-execution fresh DEBUG contract definition,date mismatch
+V3-TC-10,TRUE_CONFLICT,RANGE,NONE,False,NONE,pre-execution fresh DEBUG contract definition,range mismatch
+V3-TC-11,TRUE_CONFLICT,PERCENT,NONE,False,NONE,pre-execution fresh DEBUG contract definition,percentage mismatch
+V3-TC-12,TRUE_CONFLICT,DURATION,NONE,False,NONE,pre-execution fresh DEBUG contract definition,decimal mismatch
+V3-EQ-01,EQUIVALENT_PASS,VERSION,FAMILY_MAJOR,False,NONE,pre-execution fresh DEBUG contract definition,major family compatibility
+V3-EQ-02,EQUIVALENT_PASS,VERSION,FAMILY_MINOR,False,NONE,pre-execution fresh DEBUG contract definition,minor family compatibility
+V3-EQ-03,EQUIVALENT_PASS,VERSION,FAMILY_MAJOR,False,NONE,pre-execution fresh DEBUG contract definition,wildcard family compatibility
+V3-EQ-04,EQUIVALENT_PASS,VERSION,EXACT,False,NONE,pre-execution fresh DEBUG contract definition,leading-v exact formatting
+V3-EQ-05,EQUIVALENT_PASS,VERSION,EXACT,False,NONE,pre-execution fresh DEBUG contract definition,identical exact version
+V3-EQ-06,EQUIVALENT_PASS,NUMBER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,technical grouping
+V3-EQ-07,EQUIVALENT_PASS,NUMBER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,technical dotted grouping
+V3-EQ-08,EQUIVALENT_PASS,DURATION,NONE,False,NONE,pre-execution fresh DEBUG contract definition,decimal trailing zero
+V3-EQ-09,EQUIVALENT_PASS,IDENTIFIER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,SQLCODE punctuation
+V3-EQ-10,EQUIVALENT_PASS,IDENTIFIER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,CVE formatting
+V3-EQ-11,EQUIVALENT_PASS,RANGE,NONE,False,NONE,pre-execution fresh DEBUG contract definition,dash formatting
+V3-EQ-12,EQUIVALENT_PASS,PERCENT,NONE,False,NONE,pre-execution fresh DEBUG contract definition,percentage trailing zero
+V3-EQ-13,EQUIVALENT_PASS,IDENTIFIER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,signed identifier formatting
+V3-EQ-14,EQUIVALENT_PASS,VERSION,FAMILY_MAJOR,False,NONE,pre-execution fresh DEBUG contract definition,explicit lower-bound family
+V3-IND-01,INDETERMINATE,NUMBER,NONE,True,NONE,pre-execution fresh DEBUG contract definition,ambiguous locale magnitude
+V3-IND-02,INDETERMINATE,NUMBER,NONE,True,NONE,pre-execution fresh DEBUG contract definition,mixed separator ambiguity
+V3-IND-03,INDETERMINATE,NUMBER,NONE,True,NONE,pre-execution fresh DEBUG contract definition,ambiguous magnitude
+V3-IND-04,INDETERMINATE,VERSION,AMBIGUOUS,False,NONE,pre-execution fresh DEBUG contract definition,exact versus minor-family unresolved
+V3-IND-05,INDETERMINATE,VERSION,AMBIGUOUS,False,NONE,pre-execution fresh DEBUG contract definition,major specificity unresolved
+V3-IND-06,INDETERMINATE,VERSION,AMBIGUOUS,False,NONE,pre-execution fresh DEBUG contract definition,truncated version specificity
+V3-IND-07,INDETERMINATE,VERSION,AMBIGUOUS,False,NONE,pre-execution fresh DEBUG contract definition,multiple support versions
+V3-IND-08,INDETERMINATE,RANGE,NONE,False,NONE,pre-execution fresh DEBUG contract definition,unresolved range context
+V3-IND-09,INDETERMINATE,NUMBER,NONE,False,NONE,pre-execution fresh DEBUG contract definition,claim-support binding ambiguity
+V3-SEC-01,SECURITY_REJECT,OTHER,NONE,False,UNKNOWN_SUPPORT_ID,pre-execution fresh DEBUG contract definition,unknown support
+V3-SEC-02,SECURITY_REJECT,OTHER,NONE,False,HIDDEN_SUPPORT_ID,pre-execution fresh DEBUG contract definition,hidden support
+V3-SEC-03,SECURITY_REJECT,OTHER,NONE,False,UNAUTHORIZED_SUPPORT_ID,pre-execution fresh DEBUG contract definition,unauthorized support
+V3-SEC-04,SECURITY_REJECT,OTHER,NONE,False,CROSS_TENANT_SUPPORT,pre-execution fresh DEBUG contract definition,cross-tenant injection
+V3-SEC-05,SECURITY_REJECT,OTHER,NONE,False,SPOOFED_SUPPORT_ID,pre-execution fresh DEBUG contract definition,spoofed support

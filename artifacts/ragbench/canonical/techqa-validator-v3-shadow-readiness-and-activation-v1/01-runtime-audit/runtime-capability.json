@@ -1,0 +1,33 @@
+{
+  "classification": "LOCAL_SHADOW_RUNTIME_ONLY",
+  "live_shadow_runtime_available": false,
+  "staging_shadow_runtime_available": false,
+  "local_controlled_validator_path_available": true,
+  "backend_runtime_observed": false,
+  "observed_compose_services": {
+    "qdrant": "running",
+    "jaeger": "running",
+    "backend": "not running"
+  },
+  "available_runtime_mechanisms": [
+    "Docker Compose",
+    "Makefile",
+    "app.server:app",
+    "environment-backed Settings",
+    "OpenTelemetry/Jaeger configuration"
+  ],
+  "runtime_files_inspected": [
+    "Dockerfile",
+    "docker-compose.yml",
+    "Makefile",
+    ".github/workflows/ci.yml",
+    "app/server.py",
+    "app/shared/config.py",
+    "app/shared/tracing.py"
+  ],
+  "activation_performed": false,
+  "production_shadow_active": false,
+  "staging_shadow_active": false,
+  "reason": "No authorized application/staging/production runtime was available. Only validator-level local verification is in scope.",
+  "provider_calls": 0
+}

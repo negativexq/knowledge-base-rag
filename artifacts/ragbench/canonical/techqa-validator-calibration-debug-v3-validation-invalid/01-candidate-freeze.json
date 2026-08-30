@@ -1,0 +1,16 @@
+{
+  "candidate_composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD",
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_15c993b4f7b3",
+  "candidate_source_file_hashes": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+    "scripts/run_validator_calibration_debug_v2.py": "c5f275a0f9984b88b4ebf6159ad4521d0151880e6290eb1a754e5dca999ef6b6",
+    "scripts/run_validator_calibration_debug_v3.py": "15c993b4f7b35573def2fd4f0403a71a7bd5b7720b5940db52fb8529074f3ea3"
+  },
+  "candidate_source_hash": "15c993b4f7b35573def2fd4f0403a71a7bd5b7720b5940db52fb8529074f3ea3",
+  "created_at_utc": "2026-08-30T19:34:40.915116+00:00",
+  "debug_population_hash": "6f9c91146880885699d6e58bc21e2e2d178d6f6ca03dcaee74fedf5ee03dfb19",
+  "frozen_before_execution": true,
+  "immutable_during_execution": true,
+  "production_default_enabled": false,
+  "v2_candidate_source_hash": "c5f275a0f9984b88b4ebf6159ad4521d0151880e6290eb1a754e5dca999ef6b6"
+}

@@ -164,6 +164,8 @@ def build_chat_dependencies(
                 prompt_version=settings.active_prompt_version,
                 think=settings.ollama_thinking,
                 num_ctx=settings.ollama_num_ctx,
+                validator_version=settings.critical_validator_version,
+                shadow_enabled=settings.critical_validator_v3_shadow_enabled,
             ):
                 yield event
             return
@@ -215,6 +217,8 @@ def build_chat_dependencies(
                 if settings.rag_pipeline_v2
                 else "legacy"
             ),
+            critical_validator_version=settings.critical_validator_version,
+            critical_validator_v3_shadow_enabled=settings.critical_validator_v3_shadow_enabled,
         ),
         chat_provider,
     )

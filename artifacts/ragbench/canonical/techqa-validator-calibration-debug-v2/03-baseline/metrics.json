@@ -1,0 +1,22 @@
+{
+  "candidate": "03-baseline",
+  "metrics": {
+    "case_count": 30,
+    "determinate_precision": 0.6,
+    "equivalent_correctly_allowed": 5,
+    "equivalent_false_rejected": 6,
+    "equivalent_total": 11,
+    "false_positive_count": 4,
+    "forced_abstain_proxy": 6,
+    "indeterminate_preserved": 6,
+    "indeterminate_total": 6,
+    "indeterminate_unsafe_accepted": 0,
+    "security_correctly_rejected": 5,
+    "security_regressions": 0,
+    "security_total": 5,
+    "true_conflict_detected": 6,
+    "true_conflict_missed": 2,
+    "true_conflict_recall": 0.75,
+    "true_conflict_total": 8
+  }
+}

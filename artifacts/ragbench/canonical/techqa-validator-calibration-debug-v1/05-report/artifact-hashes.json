@@ -1,0 +1,23 @@
+{
+  "01-preregistration/preregistration.json": "1ba2dfae2f4fbe3ea13de320a4fe6432bbed4d6534de1dd5112a233f3db44717",
+  "01-preregistration/preregistration.sha256": "a3b1d44ae37bde40309751abb05da4ef347e4db06b24132d5c4d08c3216b18cd",
+  "02-baseline/event-summary.json": "36cdd95cca20f407bc8d3157d678dd105bbabe88549a3939156403d04efa834e",
+  "02-baseline/query-summary.csv": "c006baf208a4e8eb43f0c3bc6bd4a37905e636da76469921ce0bf7133f42080a",
+  "02-baseline/source-integrity.json": "d7cd4e3fa3750a60b5908d2fce3bb9b48b3580de083c8ed05de2a3d281ac467b",
+  "03-candidates/identifier-negative/event-comparison.csv": "4c981139bc76dea9c2b01fcc1cc65423216e415be755f5eda904ec5d4fe72c2b",
+  "03-candidates/identifier-negative/metrics.json": "9cc1229875c530bcd5f69e32ec9fabe0e69289166ee672694c148c1a36b5b543",
+  "03-candidates/identifier-negative/query-comparison.csv": "42681b85c33197b95adc9601c8adbec45248702a29ebb141aabe0215c56882a7",
+  "03-candidates/numeric/event-comparison.csv": "3bd9b9031de16916acffa6ac0a1ba0454d4b2070bfb61e03f6d732d63c7a338a",
+  "03-candidates/numeric/metrics.json": "16178a40c4f78f759707857fa720c6aa21e0142b6c201468d99eb1eea98ee666",
+  "03-candidates/numeric/query-comparison.csv": "94aaebb8049123a6b7a96bfd336bcbd0751489d1e4248f140a22edc3863b2f53",
+  "03-candidates/segmentation/event-comparison.csv": "4c981139bc76dea9c2b01fcc1cc65423216e415be755f5eda904ec5d4fe72c2b",
+  "03-candidates/segmentation/metrics.json": "a58cdec5c98d82aaac7331206e395c2efb951835453addf0a176f15e263af746",
+  "03-candidates/segmentation/query-comparison.csv": "42681b85c33197b95adc9601c8adbec45248702a29ebb141aabe0215c56882a7",
+  "03-candidates/version/event-comparison.csv": "c53e75e07653ba039ba01fba391c0df480c94f44a4e702ba55ae83de37845ede",
+  "03-candidates/version/metrics.json": "f9eeb62aa78f862c665fa260f1562b5019bf983c8a93f80063c4f6982d9b9f51",
+  "03-candidates/version/query-comparison.csv": "42681b85c33197b95adc9601c8adbec45248702a29ebb141aabe0215c56882a7",
+  "04-comparison/candidate-comparison.csv": "ce2be5218f01f656155985605b98e42c23c6e3f94245a8723aa783193e561b62",
+  "04-comparison/gates.json": "23a9b2990d832de08a8438656366732d3efcbf566a545346b1e3e4c5463803c6",
+  "05-report/report.md": "ce0cb7c28d92ef410a873b011c1cab79ad0305dbb79d352666a14313b92753dc",
+  "05-report/status.json": "c3d309e993ab1bc6fbe98408464d113608abb041df61e4d777276161f8c4e79d"
+}

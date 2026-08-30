@@ -1,0 +1,34 @@
+{
+  "bounded_non_sensitive": true,
+  "raw_claim_or_support_logged": false,
+  "otel_attributes": [
+    "validator.version",
+    "validator.shadow_enabled",
+    "validator.invocations",
+    "validator.pass",
+    "validator.reject",
+    "validator.indeterminate",
+    "validator.outcome",
+    "validator.reason_class",
+    "validator.critical_value_type",
+    "validator.critical_value_count",
+    "validator.forced_abstain",
+    "validator.locale_ambiguity",
+    "validator.version_ambiguity",
+    "validator.version_specificity_reject",
+    "validator.identifier_reject",
+    "validator.duration_ms",
+    "validator.shadow_disagreement"
+  ],
+  "disagreement_values": [
+    "SAME",
+    "BASELINE_REJECT_V3_PASS",
+    "BASELINE_PASS_V3_REJECT",
+    "BASELINE_IND_V3_PASS",
+    "BASELINE_PASS_V3_IND",
+    "BASELINE_REJECT_V3_IND",
+    "BASELINE_IND_V3_REJECT"
+  ],
+  "telemetry_failure_breaks_answers": false,
+  "canary_prerequisite": true
+}

@@ -1,0 +1,58 @@
+{
+  "baseline": {
+    "calibration_cases": 23,
+    "determinate_precision": 0.8571428571428571,
+    "false_positive": 1,
+    "false_positive_rate_among_determinate": 0.14285714285714285,
+    "forced_abstain_proxy": 4,
+    "indeterminate": 4,
+    "known_false_positive_cases": 11,
+    "known_indeterminate_cases": 5,
+    "known_true_conflict_cases": 7,
+    "security_regressions": 0,
+    "true_conflict": 6,
+    "true_conflict_recall": 0.8571428571428571,
+    "unresolved_on_known_false_positive": 3,
+    "validator_event_outputs": {
+      "DIRECT_CONFLICT": 11,
+      "DIRECT_SUPPORT": 4,
+      "INDETERMINATE": 4,
+      "SUPPORTED": 4
+    }
+  },
+  "candidate": "VERSION",
+  "candidate_metrics": {
+    "calibration_cases": 23,
+    "determinate_precision": 1.0,
+    "false_positive": 0,
+    "false_positive_rate_among_determinate": 0.0,
+    "forced_abstain_proxy": 0,
+    "indeterminate": 1,
+    "known_false_positive_cases": 11,
+    "known_indeterminate_cases": 5,
+    "known_true_conflict_cases": 7,
+    "security_regressions": 0,
+    "true_conflict": 6,
+    "true_conflict_recall": 0.8571428571428571,
+    "unresolved_on_known_false_positive": 0,
+    "validator_event_outputs": {
+      "DIRECT_CONFLICT": 10,
+      "DIRECT_SUPPORT": 4,
+      "INDETERMINATE": 1,
+      "SUPPORTED": 8
+    }
+  },
+  "deltas": {
+    "false_positive": -1,
+    "forced_abstain_proxy": -4,
+    "true_conflict_recall": 0.0
+  },
+  "gates": {
+    "G1_security_regressions": true,
+    "G2_true_conflict_recall_not_decreased": true,
+    "G3_false_positives_reduced": true,
+    "G4_no_unsafe_broad_equivalence": true,
+    "G5_forced_abstain_proxy_not_increased": true
+  },
+  "verdict": "SMALL_IMPROVEMENT"
+}

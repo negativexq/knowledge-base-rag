@@ -1,0 +1,19 @@
+{
+  "protocol": "VALIDATOR_V3_CANARY_PROMOTION_V1",
+  "canary_eligible_now": false,
+  "reason": "SHADOW_OBSERVATION_PENDING",
+  "gates": {
+    "C1_shadow_safety": "baseline visible decisions unchanged",
+    "C2_shadow_stability": "no shadow-induced request failures",
+    "C3_security": "no authorization or security-boundary regression",
+    "C4_privacy": "no sensitive or raw telemetry leakage",
+    "C5_semantic_evidence": "frozen independent validation remains valid and unchanged",
+    "C6_operational_latency": "shadow local cost acceptable relative to runtime baseline",
+    "C7_disagreement_review": "all material disagreement directions reviewed",
+    "C8_forced_abstain": "no unexplained shadow evidence of increased forced abstention",
+    "C9_config_rollback": "server-side disable returns to baseline immediately",
+    "C10_artifact_integrity": "frozen candidate hash unchanged"
+  },
+  "threshold_policy": "Do not invent numerical thresholds before runtime baseline observation.",
+  "primary_validator_change_allowed": false
+}

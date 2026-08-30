@@ -1,0 +1,26 @@
+{
+  "candidate_composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD",
+  "candidate_sequence": [
+    "BASELINE",
+    "V2_REPRODUCTION",
+    "V3_VERSION_SPECIFICITY_GUARD"
+  ],
+  "created_at_utc": "2026-08-30T19:35:19.566439+00:00",
+  "gates": {
+    "G1_security": "V3 security regressions = 0",
+    "G2_true_conflict_recall": "V3 recall >= V2 reproduction",
+    "G3_false_positives": "V3 false positives <= V2 reproduction",
+    "G4_version_specificity": "unsafe family broadening = 0",
+    "G5_exact_version_safety": "all incompatible exact-version cases rejected",
+    "G6_ambiguous_version_safety": "ambiguous version claims are not unjustifiably accepted",
+    "G7_v2_regression_protection": "locale, signed values, identifiers, negative claims, and safe numeric equivalence are not regressed",
+    "G8_forced_abstain": "V3 forced-abstain proxy <= baseline"
+  },
+  "identity": "VALIDATOR_CALIBRATION_DEBUG_V3",
+  "no_holdout": true,
+  "no_provider_calls": true,
+  "objective": "Preserve V2 gains while requiring claim and support version specificity to agree.",
+  "population_will_be_frozen_before_execution": true,
+  "production_promotion": false,
+  "v2_candidate": "VALIDATOR_CANDIDATE_V2_c5f275a0f998"
+}

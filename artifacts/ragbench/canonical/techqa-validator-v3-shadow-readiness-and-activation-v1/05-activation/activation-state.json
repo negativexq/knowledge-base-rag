@@ -1,0 +1,20 @@
+{
+  "activation_state": "LOCAL_SHADOW_VERIFIED",
+  "shadow_activated": false,
+  "actual_runtime_changed": false,
+  "production_shadow_active": false,
+  "staging_shadow_active": false,
+  "local_verification": {
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": true,
+    "scope": "controlled validator-level deterministic path",
+    "baseline_remained_authoritative": true,
+    "provider_calls": 0
+  },
+  "committed_defaults": {
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": false
+  },
+  "traffic_changed": false,
+  "deployment_performed": false
+}

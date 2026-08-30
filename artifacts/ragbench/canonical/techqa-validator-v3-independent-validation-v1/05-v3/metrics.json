@@ -1,0 +1,90 @@
+{
+  "arm": "V3",
+  "metrics": {
+    "case_count": 60,
+    "determinate_precision": 0.9,
+    "equivalent_correctly_allowed": 18,
+    "equivalent_total": 20,
+    "false_positive_count": 2,
+    "forced_abstain_proxy": 2,
+    "identifier_metrics": {
+      "CVE_correct": 3,
+      "CVE_total": 3,
+      "SQLCODE_correct": 2,
+      "SQLCODE_total": 2,
+      "identifier_mismatch_acceptance": 0,
+      "sign_loss_acceptance": 0,
+      "signed_values_correct": 3,
+      "signed_values_total": 3,
+      "technical_identifier_correct": 5,
+      "technical_identifier_total": 5
+    },
+    "indeterminate_preserved": 12,
+    "indeterminate_total": 12,
+    "indeterminate_unsafe_accepted": 0,
+    "locale_metrics": {
+      "ambiguous_locale_preserved": 4,
+      "ambiguous_locale_total": 4,
+      "unambiguous_decimal_correct": 3,
+      "unambiguous_decimal_total": 3,
+      "unambiguous_grouping_correct": 4,
+      "unambiguous_grouping_total": 4,
+      "unsafe_magnitude_acceptance": 0
+    },
+    "security_correctly_rejected": 10,
+    "security_regressions": 0,
+    "security_total": 10,
+    "true_conflict_detected": 18,
+    "true_conflict_recall": 1.0,
+    "true_conflict_total": 18,
+    "type_metrics": {
+      "DATE": {
+        "correct": 5,
+        "total": 5
+      },
+      "DURATION": {
+        "correct": 2,
+        "total": 3
+      },
+      "IDENTIFIER": {
+        "correct": 5,
+        "total": 5
+      },
+      "NUMBER": {
+        "correct": 11,
+        "total": 11
+      },
+      "PERCENT": {
+        "correct": 3,
+        "total": 4
+      },
+      "RANGE": {
+        "correct": 4,
+        "total": 4
+      },
+      "SIGNED_IDENTIFIER": {
+        "correct": 3,
+        "total": 3
+      },
+      "UNIT": {
+        "correct": 2,
+        "total": 2
+      },
+      "VERSION": {
+        "correct": 13,
+        "total": 13
+      }
+    },
+    "version_metrics": {
+      "ambiguous_claim_preserved": 4,
+      "ambiguous_claim_total": 4,
+      "exact_claim_correct": 4,
+      "exact_claim_total": 4,
+      "exact_mismatch_accepted": 0,
+      "family_claim_correct": 5,
+      "family_claim_total": 5,
+      "unsafe_family_broadening": 0
+    },
+    "version_specificity_errors": 0
+  }
+}

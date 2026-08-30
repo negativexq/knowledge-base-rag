@@ -1,0 +1,15 @@
+{
+  "calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "holdout_used": false,
+  "primary_decision": "VALIDATOR_CANDIDATE_VALIDATION_FAILED",
+  "production_promoted": false,
+  "promotion_eligible": false,
+  "secondary_effect": "REGRESSION"
+}

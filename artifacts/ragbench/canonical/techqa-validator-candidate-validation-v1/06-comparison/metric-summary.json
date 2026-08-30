@@ -1,0 +1,62 @@
+{
+  "baseline": {
+    "case_count": 28,
+    "determinate_precision": 0.8571428571428571,
+    "equivalent_correctly_allowed": 6,
+    "equivalent_false_rejected": 4,
+    "equivalent_total": 10,
+    "false_positive_count": 1,
+    "forced_abstain_proxy": 4,
+    "indeterminate_preserved": 4,
+    "indeterminate_total": 5,
+    "indeterminate_unsafe_acceptances": 1,
+    "security_correctly_rejected": 5,
+    "security_regressions": 0,
+    "security_total": 5,
+    "true_conflict_detected": 6,
+    "true_conflict_missed": 2,
+    "true_conflict_recall": 0.75,
+    "true_conflict_total": 8
+  },
+  "candidate": {
+    "case_count": 28,
+    "determinate_precision": 1.0,
+    "equivalent_correctly_allowed": 10,
+    "equivalent_false_rejected": 0,
+    "equivalent_total": 10,
+    "false_positive_count": 0,
+    "forced_abstain_proxy": 0,
+    "indeterminate_preserved": 2,
+    "indeterminate_total": 5,
+    "indeterminate_unsafe_acceptances": 3,
+    "security_correctly_rejected": 5,
+    "security_regressions": 0,
+    "security_total": 5,
+    "true_conflict_detected": 7,
+    "true_conflict_missed": 1,
+    "true_conflict_recall": 0.875,
+    "true_conflict_total": 8
+  },
+  "delta_candidate_minus_baseline": {
+    "determinate_precision": 0.1428571428571429,
+    "false_positive_count": -1,
+    "forced_abstain_proxy": -4,
+    "true_conflict_recall": 0.125
+  },
+  "gates": {
+    "G1_security_regressions_zero": true,
+    "G2_true_conflict_recall_candidate_gte_baseline": true,
+    "G3_false_positive_candidate_lte_baseline": true,
+    "G4_determinate_precision_candidate_gte_baseline": true,
+    "G5_forced_abstain_proxy_candidate_lte_baseline": true,
+    "G6_no_new_unsafe_equivalence_acceptance": false,
+    "G7_no_unsafe_indeterminate_acceptance": false
+  },
+  "new_unsafe_equivalence_acceptance_case_ids": [
+    "V-IND-01",
+    "V-IND-02"
+  ],
+  "primary_decision": "VALIDATOR_CANDIDATE_VALIDATION_FAILED",
+  "promotion_eligible": false,
+  "secondary_effect": "REGRESSION"
+}

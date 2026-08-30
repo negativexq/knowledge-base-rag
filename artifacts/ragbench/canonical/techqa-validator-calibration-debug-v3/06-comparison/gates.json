@@ -1,0 +1,10 @@
+{
+  "G1_security": true,
+  "G2_true_conflict_recall": true,
+  "G3_false_positives": true,
+  "G4_version_specificity": true,
+  "G5_exact_version_safety": true,
+  "G6_ambiguous_version_safety": true,
+  "G7_v2_regression_protection": true,
+  "G8_forced_abstain": true
+}

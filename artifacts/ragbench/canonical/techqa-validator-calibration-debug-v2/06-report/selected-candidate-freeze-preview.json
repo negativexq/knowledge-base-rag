@@ -1,0 +1,29 @@
+{
+  "candidate_id_preview": "VALIDATOR_V2_DEBUG_CANDIDATE_c5f275a0f998",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD",
+  "metrics": {
+    "case_count": 30,
+    "determinate_precision": 1.0,
+    "equivalent_correctly_allowed": 11,
+    "equivalent_false_rejected": 0,
+    "equivalent_total": 11,
+    "false_positive_count": 0,
+    "forced_abstain_proxy": 0,
+    "indeterminate_preserved": 6,
+    "indeterminate_total": 6,
+    "indeterminate_unsafe_accepted": 0,
+    "security_correctly_rejected": 5,
+    "security_regressions": 0,
+    "security_total": 5,
+    "true_conflict_detected": 8,
+    "true_conflict_missed": 0,
+    "true_conflict_recall": 1.0,
+    "true_conflict_total": 8
+  },
+  "production_default_enabled": false,
+  "requires_separate_independent_validation": true,
+  "source_hashes": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+    "scripts/run_validator_calibration_debug_v2.py": "c5f275a0f9984b88b4ebf6159ad4521d0151880e6290eb1a754e5dca999ef6b6"
+  }
+}

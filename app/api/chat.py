@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from app.api.deps import get_current_user
 from app.evaluation.answerability import extract_answerability_observation
+from app.evaluation.critical_values import CriticalValidatorVersion
 from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
@@ -109,6 +110,8 @@ class ChatDependencies:
     evidence_fn: EvidenceFn | None = None
     pipeline_version: str = "pipeline_v1"
     output_contract_version: str = "legacy"
+    critical_validator_version: CriticalValidatorVersion = "baseline"
+    critical_validator_v3_shadow_enabled: bool = False
 
 
 async def _sse_event_stream(
@@ -131,6 +134,12 @@ async def _sse_event_stream(
         report.prompt_policy_version = deps.prompt_version
         report.untrusted_context_enabled = deps.prompt_version == "v3"
         report.security_validation_mode = deps.security_validation_mode
+        report.validator = {
+            "version": deps.critical_validator_version,
+            "shadow_enabled": deps.critical_validator_v3_shadow_enabled,
+        }
+        span.set_attribute("validator.version", deps.critical_validator_version)
+        span.set_attribute("validator.shadow_enabled", deps.critical_validator_v3_shadow_enabled)
         chunks = await deps.search_fn(question, context, report)
         anchor_chunks = chunks
         authorized_candidate_count = report.authorized_candidate_count

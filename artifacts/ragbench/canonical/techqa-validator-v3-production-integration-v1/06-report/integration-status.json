@@ -1,0 +1,12 @@
+{
+  "decision": "VALIDATOR_V3_PRODUCTION_INTEGRATION_PASSED",
+  "shadow_activation_eligible": true,
+  "shadow_activated": false,
+  "production_default": "baseline",
+  "traffic_changed": false,
+  "deployment_performed": false,
+  "shadow_readiness": "PENDING_SEPARATE_READINESS_REVIEW",
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "corrected_holdout_reused": false,
+  "provider_calls": 0
+}

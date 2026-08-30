@@ -1,0 +1,16 @@
+{
+  "calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_15c993b4f7b3",
+  "holdout_used": false,
+  "primary_decision": "NO_VALIDATOR_V3_CANDIDATE_SELECTED",
+  "production_default_enabled": false,
+  "secondary_effect": "REGRESSION",
+  "selected_composition": null
+}

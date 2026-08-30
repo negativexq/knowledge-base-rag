@@ -1,0 +1,18 @@
+{
+  "baseline_source_hashes": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90"
+  },
+  "candidate_id": "VALIDATOR_CANDIDATE_V1_937aef6fba5b",
+  "candidate_source_hashes": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+    "scripts/run_techqa_validator_calibration_debug_v1.py": "937aef6fba5b576f12c609a612e44bc50e7b5ed5bd8ea63193e0eceef823f14c"
+  },
+  "production_default_changed": false,
+  "source_functions": [
+    "tokenized",
+    "number_equivalent",
+    "version_context_equivalent",
+    "relation_audit",
+    "result_for"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "candidate_composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD",
+  "candidate_freeze_sha256": "01278cd97eb2f03a5be6b52e1389a78920fed78470e6ba1107cffff7ac347ad3",
+  "candidate_id": "VALIDATOR_CANDIDATE_V2_c5f275a0f998",
+  "decision": "all G1-G9 must pass for VALIDATOR_V2_INDEPENDENT_VALIDATION_PASSED",
+  "gates_frozen_before_execution": {
+    "G1_security": "candidate security regressions = 0",
+    "G2_true_conflict_recall": "candidate recall >= baseline",
+    "G3_false_positives": "candidate false-positive count <= baseline",
+    "G4_determinate_precision": "candidate precision >= baseline",
+    "G5_indeterminate_safety": "zero new unsafe acceptance of genuinely ambiguous cases",
+    "G6_unsafe_magnitude_collapse": "zero ambiguous-punctuation magnitude collapses",
+    "G7_sign_identifier_safety": "zero new sign-loss or identifier-mismatch acceptance",
+    "G8_version_specificity": "family compatibility is not collapsed into exact equality",
+    "G9_forced_abstain_proxy": "candidate forced-abstain proxy <= baseline"
+  },
+  "holdout_used": false,
+  "identity": "VALIDATOR_V2_INDEPENDENT_VALIDATION_V1",
+  "population_freeze": {
+    "adjudications_path": "artifacts/ragbench/canonical/techqa-validator-v2-independent-validation-v1/02-validation-population/adjudications.csv",
+    "adjudications_sha256": "13a4db6f34225e4a118f89313a1ae67bae67e81bea68c2bb6a3c19351a6fae83",
+    "case_count": 48,
+    "frozen_before_execution": true,
+    "manifest_path": "artifacts/ragbench/canonical/techqa-validator-v2-independent-validation-v1/02-validation-population/manifest.json",
+    "manifest_sha256": "aca54615fb75f2225290311029ec44ab11f8cf12a7191ee3866b52cd34e632d9",
+    "population_path": "artifacts/ragbench/canonical/techqa-validator-v2-independent-validation-v1/02-validation-population/population.jsonl",
+    "population_sha256": "297a1b70ddb339872087b6629a239741196d24d5fbd23c6e74f73fa2829643c2"
+  },
+  "production_promotion_authorized": false,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "secondary_effect_labels": [
+    "CLEAR_IMPROVEMENT",
+    "SMALL_IMPROVEMENT",
+    "NO_MEANINGFUL_CHANGE",
+    "REGRESSION"
+  ]
+}

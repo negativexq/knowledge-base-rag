@@ -1,0 +1,16 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD",
+  "implementation_status": "EXPERIMENT_ONLY",
+  "production_default": "BASELINE",
+  "review_conclusion": "Semantics are sufficiently specified for a separate integration task; this artifact does not promote or enable the candidate.",
+  "behavioral_invariants": [
+    "ambiguous locale forms remain INDETERMINATE",
+    "exact versions require component equality",
+    "family matching requires explicit family scope",
+    "signs and technical identifiers remain identity-sensitive",
+    "INDETERMINATE remains a valid conservative outcome",
+    "support-ID authorization remains independent of value normalization"
+  ]
+}

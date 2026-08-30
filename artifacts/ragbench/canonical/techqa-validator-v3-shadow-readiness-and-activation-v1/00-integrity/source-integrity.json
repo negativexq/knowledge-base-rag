@@ -1,0 +1,25 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256_expected": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_sha256_actual": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_unchanged": true,
+  "v3_debug_artifacts_tree_sha256": "3f87d14b307f2ae16bbf4da065a7a0e4d0efd16c0fc4ff1f99c2c84956b554c7",
+  "v3_independent_validation_tree_sha256": "042f1a473afdc364cfb615e1f34282d1fa2626c6b58e83d5eff47eb1b1a679c6",
+  "promotion_review_tree_sha256": "46cf3f36debb997071b6de85187be1bec38616601fa46a95446079b6724b79a9",
+  "production_integration_tree_sha256": "f5cd6ddebb02c1db0cccf6b2d4c683d473939192a209554915b41f7a70e19767",
+  "prior_artifacts_modified": false,
+  "corrected_holdout_reused": false,
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "production_default": "baseline",
+  "shadow_default": false,
+  "production_traffic_changed": false,
+  "deployment_performed": false,
+  "provider_calls": {
+    "retrieval": 0,
+    "embedding": 0,
+    "bge": 0,
+    "luna": 0,
+    "terra": 0,
+    "ollama": 0
+  }
+}

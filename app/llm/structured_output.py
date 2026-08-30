@@ -5,10 +5,15 @@ from __future__ import annotations
 import json
 import unicodedata
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
-from app.evaluation.critical_values import claim_local_critical_value_audit
+from opentelemetry import trace
+
+from app.evaluation.critical_values import (
+    CriticalValidatorVersion,
+    claim_local_critical_value_audit,
+)
 from app.evidence.support_relevance import audit_support_relevance
 from app.evidence.support_units import (
     SupportUnit,
@@ -289,6 +294,7 @@ class SupportUnitValidation:
     top_level_valid: bool
     model_abstain: bool
     application_abstain: bool
+    validator_telemetry: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -574,12 +580,12 @@ def validate_answerability_output(
     units: list[SupportUnit],
     *,
     coverage_threshold: float,
+    validator_version: CriticalValidatorVersion = "baseline",
+    shadow_enabled: bool = False,
 ) -> AnswerabilityValidation:
     """Validate support identity and deterministic relevance part by part."""
     if answer.abstain:
-        return AnswerabilityValidation(
-            answer, [], [], [], True, False, answer.reason_code, []
-        )
+        return AnswerabilityValidation(answer, [], [], [], True, False, answer.reason_code, [])
     available = support_unit_map(units)
     valid: list[SupportUnitAnswerPart] = []
     rejected: list[dict[str, Any]] = []
@@ -599,6 +605,8 @@ def validate_answerability_output(
             part.text,
             [unit.text for unit in relevant_units],
             coverage_threshold=coverage_threshold,
+            validator_version=validator_version,
+            shadow_enabled=shadow_enabled,
         )
         codes.extend(relevance["failure_codes"])
         part_result = {
@@ -673,14 +681,70 @@ def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
 
 
 def validate_support_unit_answer(
-    answer: SupportUnitAnswer, units: list[SupportUnit]
+    answer: SupportUnitAnswer,
+    units: list[SupportUnit],
+    *,
+    validator_version: CriticalValidatorVersion = "baseline",
+    shadow_enabled: bool = False,
 ) -> SupportUnitValidation:
     available = support_unit_map(units)
     if answer.abstain:
-        return SupportUnitValidation(answer, [], [], [], True, True, False)
+        return SupportUnitValidation(
+            answer,
+            [],
+            [],
+            [],
+            True,
+            True,
+            False,
+            {
+                "version": validator_version,
+                "shadow_enabled": shadow_enabled,
+                "invocations": 0,
+                "pass": 0,
+                "reject": 0,
+                "indeterminate": 0,
+                "forced_abstain": False,
+                "critical_value_count": 0,
+                "reason_classes": [],
+                "critical_value_types": [],
+                "locale_ambiguity": False,
+                "version_ambiguity": False,
+                "version_specificity_reject": False,
+                "identifier_reject": False,
+                "duration_ms": 0.0,
+                "baseline_duration_ms": 0.0,
+                "shadow_v3_duration_ms": 0.0,
+                "shadow_errors": 0,
+                "shadow_error_classes": [],
+                "shadow_disagreements": [],
+            },
+        )
     valid: list[SupportUnitAnswerPart] = []
     rejected: list[dict[str, Any]] = []
     codes: list[str] = []
+    validator_telemetry: dict[str, Any] = {
+        "version": validator_version,
+        "shadow_enabled": shadow_enabled,
+        "invocations": 0,
+        "pass": 0,
+        "reject": 0,
+        "indeterminate": 0,
+        "forced_abstain": False,
+        "critical_value_count": 0,
+        "reason_classes": [],
+        "critical_value_types": [],
+        "locale_ambiguity": False,
+        "version_ambiguity": False,
+        "version_specificity_reject": False,
+        "identifier_reject": False,
+        "duration_ms": 0.0,
+        "baseline_duration_ms": 0.0,
+        "shadow_v3_duration_ms": 0.0,
+        "shadow_errors": 0,
+        "shadow_error_classes": [],
+        "shadow_disagreements": [],
+    }
     for index, part in enumerate(answer.answer_parts):
         part_codes: list[str] = []
         if not part.text:
@@ -695,7 +759,36 @@ def validate_support_unit_answer(
         if any(unit is not None and not unit.authorized for unit in selected):
             part_codes.append("UNAUTHORIZED_SUPPORT_ID")
         support_texts = [unit.text for unit in selected if unit is not None]
-        value_audit = claim_local_critical_value_audit(part.text, support_texts)
+        value_audit = claim_local_critical_value_audit(
+            part.text,
+            support_texts,
+            validator_version=validator_version,
+            shadow_enabled=shadow_enabled,
+        )
+        validator_telemetry["invocations"] += 1
+        outcome = value_audit["validator_outcome"]
+        validator_telemetry[outcome.lower()] += 1
+        validator_telemetry["critical_value_count"] += value_audit["critical_value_count"]
+        if value_audit["critical_value_type"]:
+            validator_telemetry["critical_value_types"].append(value_audit["critical_value_type"])
+        validator_telemetry["reason_classes"].append(value_audit["validator_reason_class"])
+        validator_telemetry["locale_ambiguity"] |= value_audit["locale_ambiguity"]
+        validator_telemetry["version_ambiguity"] |= value_audit["version_ambiguity"]
+        validator_telemetry["version_specificity_reject"] |= value_audit[
+            "version_specificity_reject"
+        ]
+        validator_telemetry["identifier_reject"] |= value_audit["identifier_reject"]
+        validator_telemetry["duration_ms"] += value_audit["duration_ms"]
+        validator_telemetry["baseline_duration_ms"] += value_audit["baseline_duration_ms"]
+        validator_telemetry["shadow_v3_duration_ms"] += value_audit["shadow_v3_duration_ms"]
+        if value_audit["shadow_error"]:
+            validator_telemetry["shadow_errors"] += 1
+            if value_audit["shadow_error_class"]:
+                validator_telemetry["shadow_error_classes"].append(
+                    value_audit["shadow_error_class"]
+                )
+        if value_audit["shadow_disagreement"]:
+            validator_telemetry["shadow_disagreements"].append(value_audit["shadow_disagreement"])
         value_status = value_audit["status"]
         if not value_audit["pass"]:
             part_codes.extend(value_audit["failure_codes"])
@@ -718,8 +811,26 @@ def validate_support_unit_answer(
     application_abstain = not valid
     if application_abstain:
         codes.append("NO_VALID_SUPPORT_BACKED_CLAIMS")
+    validator_telemetry["forced_abstain"] = application_abstain
+    validator_telemetry["critical_value_types"] = sorted(
+        set(validator_telemetry["critical_value_types"])
+    )
+    validator_telemetry["reason_classes"] = sorted(set(validator_telemetry["reason_classes"]))
+    validator_telemetry["shadow_error_classes"] = sorted(
+        set(validator_telemetry["shadow_error_classes"])
+    )
+    validator_telemetry["shadow_disagreements"] = sorted(
+        set(validator_telemetry["shadow_disagreements"])
+    )
     return SupportUnitValidation(
-        answer, valid, rejected, sorted(set(codes)), True, False, application_abstain
+        answer,
+        valid,
+        rejected,
+        sorted(set(codes)),
+        True,
+        False,
+        application_abstain,
+        validator_telemetry,
     )
 
 
@@ -730,6 +841,67 @@ def render_support_unit_answer(parts: list[SupportUnitAnswerPart], *, abstain: b
         f"{part.text} {' '.join(f'[{item}]' for item in part.support_ids)}".strip()
         for part in parts
     )
+
+
+def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
+    """Attach bounded validator metadata to the current request span."""
+    try:
+        span = trace.get_current_span()
+        if not span.is_recording():
+            return
+        scalar_fields = {
+            "validator.version": telemetry.get("version", "baseline"),
+            "validator.shadow_enabled": bool(telemetry.get("shadow_enabled", False)),
+            "validator.invocations": int(telemetry.get("invocations", 0)),
+            "validator.pass": int(telemetry.get("pass", 0)),
+            "validator.reject": int(telemetry.get("reject", 0)),
+            "validator.indeterminate": int(telemetry.get("indeterminate", 0)),
+            "validator.outcome": (
+                next(
+                    (
+                        outcome
+                        for outcome in ("PASS", "REJECT", "INDETERMINATE")
+                        if telemetry.get(outcome.lower(), 0)
+                    ),
+                    "NO_CRITICAL_VALUE",
+                )
+                if sum(
+                    int(telemetry.get(outcome.lower(), 0))
+                    for outcome in ("PASS", "REJECT", "INDETERMINATE")
+                )
+                <= 1
+                else "MIXED"
+            ),
+            "validator.forced_abstain": bool(telemetry.get("forced_abstain", False)),
+            "validator.critical_value_count": int(telemetry.get("critical_value_count", 0)),
+            "validator.locale_ambiguity": bool(telemetry.get("locale_ambiguity", False)),
+            "validator.version_ambiguity": bool(telemetry.get("version_ambiguity", False)),
+            "validator.version_specificity_reject": bool(
+                telemetry.get("version_specificity_reject", False)
+            ),
+            "validator.identifier_reject": bool(telemetry.get("identifier_reject", False)),
+            "validator.duration_ms": float(telemetry.get("duration_ms", 0.0)),
+            "validator.baseline.duration_ms": float(
+                telemetry.get("baseline_duration_ms", 0.0)
+            ),
+            "validator.shadow_v3.duration_ms": float(
+                telemetry.get("shadow_v3_duration_ms", 0.0)
+            ),
+            "validator.shadow_error": int(telemetry.get("shadow_errors", 0)) > 0,
+        }
+        for name, value in scalar_fields.items():
+            span.set_attribute(name, value)
+        reason_classes = telemetry.get("reason_classes", [])
+        critical_value_types = telemetry.get("critical_value_types", [])
+        disagreements = telemetry.get("shadow_disagreements", [])
+        shadow_error_classes = telemetry.get("shadow_error_classes", [])
+        span.set_attribute("validator.reason_class", ",".join(reason_classes))
+        span.set_attribute("validator.critical_value_type", ",".join(critical_value_types))
+        span.set_attribute("validator.shadow_disagreement", ",".join(disagreements))
+        span.set_attribute("validator.shadow_error_class", ",".join(shadow_error_classes))
+    except Exception:
+        # Tracing/exporter failures must never change answer delivery.
+        return
 
 
 async def stream_support_unit_answer(
@@ -744,6 +916,8 @@ async def stream_support_unit_answer(
     think: bool = False,
     num_ctx: int = 4096,
     seed: int | None = None,
+    validator_version: CriticalValidatorVersion = "baseline",
+    shadow_enabled: bool = False,
 ):
     """Generate an answer whose citations are request-scoped support IDs."""
     units = build_support_units(blocks)
@@ -776,13 +950,27 @@ async def stream_support_unit_answer(
     raw = await provider.chat_json(messages, **generation_kwargs)
     try:
         parsed = parse_support_unit_answer(raw)
-        validation = validate_support_unit_answer(parsed, units)
+        validation = validate_support_unit_answer(
+            parsed,
+            units,
+            validator_version=validator_version,
+            shadow_enabled=shadow_enabled,
+        )
     except (ValueError, json.JSONDecodeError):
         parsed = None
         validation = SupportUnitValidation(
-            None, [], [], ["TOP_LEVEL_SCHEMA_INVALID"], False, False, True
+            None,
+            [],
+            [],
+            ["TOP_LEVEL_SCHEMA_INVALID"],
+            False,
+            False,
+            True,
+            {"version": validator_version, "shadow_enabled": shadow_enabled},
         )
     final_abstain = validation.model_abstain or validation.application_abstain
+    telemetry = validation.validator_telemetry
+    _record_validator_telemetry(telemetry)
     rendered = render_support_unit_answer(validation.valid_parts, abstain=final_abstain)
     user_visible = validation.top_level_valid and bool(rendered)
     if evaluation_observation is not None:

@@ -1,0 +1,9 @@
+{
+  "baseline_security_regressions": 0,
+  "candidate_security_regressions": 0,
+  "cross_tenant_accepted": 0,
+  "hidden_support_accepted": 0,
+  "injection_bypass": 0,
+  "spoofed_support_accepted": 0,
+  "unauthorized_accepted": 0
+}

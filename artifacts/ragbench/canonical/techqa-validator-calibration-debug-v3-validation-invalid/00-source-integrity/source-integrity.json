@@ -1,0 +1,23 @@
+{
+  "holdout_used": false,
+  "initial_invalid_v2_preserved": true,
+  "production_default_enabled": false,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "v2_artifacts_modified": false,
+  "v2_candidate_freeze_sha256": "01278cd97eb2f03a5be6b52e1389a78920fed78470e6ba1107cffff7ac347ad3",
+  "v2_candidate_id": "VALIDATOR_CANDIDATE_V2_c5f275a0f998",
+  "v2_debug_preview_sha256": "9f2803c703c2aa6004d42b5f82e0de328895266200e57a6c33b5a34562394117",
+  "v2_debug_status_sha256": "beccef9dcc6a844e876955dadd7dcecf4da7cfd09157ca2f1f3a3975e6fe2f7c",
+  "v2_g8_blocker": "IV2-TC-10",
+  "v2_source_hash": "c5f275a0f9984b88b4ebf6159ad4521d0151880e6290eb1a754e5dca999ef6b6",
+  "v2_validation_metric_sha256": "94d2d0c8823afb59d1f35d77dfc02514d08395d3717792f48f9825a4287f77d2",
+  "v2_validation_status_sha256": "773fa66b17fe80267270d0571ddf7db72683e4cdc2173fc13fd50844d3602651",
+  "v3_script_sha256": "15c993b4f7b35573def2fd4f0403a71a7bd5b7720b5940db52fb8529074f3ea3"
+}

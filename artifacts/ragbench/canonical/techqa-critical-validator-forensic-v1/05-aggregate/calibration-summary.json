@@ -1,0 +1,22 @@
+{
+  "classification_policy": "Conservative: unresolved traces remain INDETERMINATE; representation-only equivalence is FALSE_POSITIVE only when deterministically demonstrated from attached support.",
+  "event_level": {
+    "FALSE_POSITIVE": 26,
+    "INDETERMINATE": 52,
+    "TRUE_CONFLICT": 0,
+    "false_positive_rate_among_determinate": 1.0,
+    "precision_determinate": 0.0,
+    "total_critical_reject_events": 78
+  },
+  "query_arm_level": {
+    "FALSE_POSITIVE": 6,
+    "INDETERMINATE": 20,
+    "TRUE_CONFLICT": 0,
+    "total_critical_reject_query_arms": 35
+  },
+  "query_arm_level_primary_outcome": {
+    "FALSE_POSITIVE_REJECT": 6,
+    "INDETERMINATE_REJECT": 20,
+    "MIXED_REJECTS": 9
+  }
+}

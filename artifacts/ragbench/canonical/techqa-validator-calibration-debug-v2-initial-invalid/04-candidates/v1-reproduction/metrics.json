@@ -1,0 +1,22 @@
+{
+  "candidate": "04-candidates/v1-reproduction",
+  "metrics": {
+    "case_count": 30,
+    "determinate_precision": 0.7777777777777778,
+    "equivalent_correctly_allowed": 9,
+    "equivalent_false_rejected": 2,
+    "equivalent_total": 11,
+    "false_positive_count": 2,
+    "forced_abstain_proxy": 2,
+    "indeterminate_preserved": 3,
+    "indeterminate_total": 6,
+    "indeterminate_unsafe_accepted": 3,
+    "security_correctly_rejected": 5,
+    "security_regressions": 0,
+    "security_total": 5,
+    "true_conflict_detected": 7,
+    "true_conflict_missed": 1,
+    "true_conflict_recall": 0.875,
+    "true_conflict_total": 8
+  }
+}

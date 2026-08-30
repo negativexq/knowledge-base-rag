@@ -1,0 +1,22 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256_expected": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_sha256_actual": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_unchanged": true,
+  "v3_debug_artifacts_verified": true,
+  "v3_validation_artifacts_verified": true,
+  "promotion_review_verified": true,
+  "prior_v1_v2_artifacts_unchanged": true,
+  "corrected_holdout_reused": false,
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "production_promoted": false,
+  "traffic_changed": false,
+  "provider_calls": {
+    "retrieval": 0,
+    "embedding": 0,
+    "bge": 0,
+    "luna": 0,
+    "terra": 0,
+    "ollama": 0
+  }
+}

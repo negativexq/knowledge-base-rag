@@ -1,0 +1,31 @@
+case_id,expected_class,unsafe_equivalence,regression_protection,security_class,adjudication_source,notes
+V2-TC-01,TRUE_CONFLICT,False,True,NONE,pre-execution deterministic contract definition,ordinary numeric conflict
+V2-TC-02,TRUE_CONFLICT,False,True,NONE,pre-execution deterministic contract definition,signed numeric conflict
+V2-TC-03,TRUE_CONFLICT,False,True,NONE,pre-execution deterministic contract definition,exact version conflict
+V2-TC-04,TRUE_CONFLICT,False,True,NONE,pre-execution deterministic contract definition,CVE identity conflict
+V2-TC-05,TRUE_CONFLICT,False,False,NONE,pre-execution deterministic contract definition,date conflict
+V2-TC-06,TRUE_CONFLICT,False,False,NONE,pre-execution deterministic contract definition,range conflict
+V2-TC-07,TRUE_CONFLICT,False,False,NONE,pre-execution deterministic contract definition,duration conflict
+V2-TC-08,TRUE_CONFLICT,False,True,NONE,pre-execution deterministic contract definition,negative claim conflict
+V2-EQ-01,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,explicit technical integer grouping
+V2-EQ-02,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,explicit record-count grouping
+V2-EQ-03,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,unambiguous decimal trailing zero
+V2-EQ-04,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,unambiguous decimal precision
+V2-EQ-05,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,signed SQLCODE formatting
+V2-EQ-06,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,CVE separator formatting
+V2-EQ-07,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,version prefix formatting
+V2-EQ-08,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,explicit family lower bound
+V2-EQ-09,EQUIVALENT_PASS,False,True,NONE,pre-execution deterministic contract definition,identical version
+V2-EQ-10,EQUIVALENT_PASS,False,False,NONE,pre-execution deterministic contract definition,dash representation
+V2-EQ-11,EQUIVALENT_PASS,False,False,NONE,pre-execution deterministic contract definition,identical date
+V2-IND-01,INDETERMINATE,True,False,NONE,pre-execution deterministic contract definition,decimal or grouping is unresolved
+V2-IND-02,INDETERMINATE,True,False,NONE,pre-execution deterministic contract definition,separator roles conflict
+V2-IND-03,INDETERMINATE,True,False,NONE,pre-execution deterministic contract definition,locale ambiguity
+V2-IND-04,INDETERMINATE,False,False,NONE,pre-execution deterministic contract definition,missing comparable support value
+V2-IND-05,INDETERMINATE,False,False,NONE,pre-execution deterministic contract definition,no explicit family compatibility
+V2-IND-06,INDETERMINATE,False,False,NONE,pre-execution deterministic contract definition,support context is incomplete
+V2-SEC-01,SECURITY_REJECT,False,False,UNKNOWN_SUPPORT_ID,pre-execution deterministic contract definition,unknown support ID
+V2-SEC-02,SECURITY_REJECT,False,False,HIDDEN_SUPPORT_ID,pre-execution deterministic contract definition,hidden support
+V2-SEC-03,SECURITY_REJECT,False,False,UNAUTHORIZED_SUPPORT_ID,pre-execution deterministic contract definition,unauthorized support
+V2-SEC-04,SECURITY_REJECT,False,False,CROSS_TENANT_SUPPORT,pre-execution deterministic contract definition,cross-tenant/injected evidence
+V2-SEC-05,SECURITY_REJECT,False,False,SPOOFED_SUPPORT_ID,pre-execution deterministic contract definition,spoofed support identifier

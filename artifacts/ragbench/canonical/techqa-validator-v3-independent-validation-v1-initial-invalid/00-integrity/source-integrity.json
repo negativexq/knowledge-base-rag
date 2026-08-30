@@ -1,0 +1,33 @@
+{
+  "holdout_used_for_validation": false,
+  "initial_invalid_v3_history_preserved": true,
+  "prior_artifact_tree_hashes_before": {
+    "v1_validation": "002c5c2655c2012b61ad784edf61a4a6c8951b2db9f1dd180fad9757ff7b9b10",
+    "v2_debug": "02e186a0029fdedd6697933f2e9a16c81593a0c3dbb0c525962077a47f35b9c5",
+    "v2_validation": "0dcc45e957d5c4d73f1e3aa395f2058e9afa158d14e2d9d752edaee97c683667",
+    "v3_debug": "00b4372d04e56fc103fbacda999f0981f7863e6b35607929854dc1ec0975754c"
+  },
+  "production_default_enabled": false,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "v1_validation_present": true,
+  "v2_debug_present": true,
+  "v2_validation_present": true,
+  "v3_debug": {
+    "candidate_freeze_sha256": "3583f82ac2bda0119f25556448ea3bea5d4e958c92297a500584a2fe6b05c693",
+    "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+    "candidate_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+    "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD",
+    "debug_decision": "VALIDATOR_V3_DEBUG_CANDIDATE_SELECTED",
+    "dev_population_freeze_sha256": "83c8593610bff145b652ae424d89d07d6349bcb03b53524f5d8f02e870f63caa",
+    "preregistration_sha256": "669591cb9af968ad804fe122aef16501218f29d7f4fe78658e57ac9249fe4c8e",
+    "preview_sha256": "fe8d149023adb91f8fb407352515a9b68d691c561865507d6f577cac88ce8e87",
+    "status_sha256": "0a6e5b79c178b7d2f5f157b34933264ff8ac56f3caaffbf2a21bcfb15345ee56"
+  }
+}

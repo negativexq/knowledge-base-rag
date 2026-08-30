@@ -1,0 +1,123 @@
+{
+  "candidate": "BASELINE",
+  "metrics": {
+    "calibration_cases": 23,
+    "determinate_precision": 0.8571428571428571,
+    "false_positive": 1,
+    "false_positive_rate_among_determinate": 0.14285714285714285,
+    "forced_abstain_proxy": 4,
+    "indeterminate": 4,
+    "known_false_positive_cases": 11,
+    "known_indeterminate_cases": 5,
+    "known_true_conflict_cases": 7,
+    "security_regressions": 0,
+    "true_conflict": 6,
+    "true_conflict_recall": 0.8571428571428571,
+    "unresolved_on_known_false_positive": 3,
+    "validator_event_outputs": {
+      "DIRECT_CONFLICT": 11,
+      "DIRECT_SUPPORT": 4,
+      "INDETERMINATE": 4,
+      "SUPPORTED": 4
+    }
+  },
+  "population": 23,
+  "security_controls": {
+    "negative": {
+      "all_passed": true,
+      "count": 7,
+      "results": [
+        {
+          "actual_pass": false,
+          "case": "numeric_mismatch",
+          "expected_pass": false,
+          "failure_codes": [
+            "CRITICAL_VALUE_CONFLICT"
+          ],
+          "passed_control": true
+        },
+        {
+          "actual_pass": false,
+          "case": "version_mismatch",
+          "expected_pass": false,
+          "failure_codes": [
+            "CRITICAL_VALUE_CONFLICT"
+          ],
+          "passed_control": true
+        },
+        {
+          "actual_pass": false,
+          "case": "percentage_mismatch",
+          "expected_pass": false,
+          "failure_codes": [
+            "CRITICAL_VALUE_CONFLICT"
+          ],
+          "passed_control": true
+        },
+        {
+          "actual_pass": false,
+          "case": "duration_unit_mismatch",
+          "expected_pass": false,
+          "failure_codes": [
+            "CRITICAL_VALUE_INDETERMINATE"
+          ],
+          "passed_control": true
+        },
+        {
+          "actual_pass": false,
+          "case": "unknown_id",
+          "expected_pass": false,
+          "failure_codes": [
+            "UNKNOWN_SUPPORT_ID"
+          ],
+          "passed_control": true
+        },
+        {
+          "actual_pass": false,
+          "case": "hidden_id",
+          "expected_pass": false,
+          "failure_codes": [
+            "HIDDEN_SUPPORT_ID"
+          ],
+          "passed_control": true
+        },
+        {
+          "actual_pass": false,
+          "case": "unauthorized_id",
+          "expected_pass": false,
+          "failure_codes": [
+            "UNAUTHORIZED_SUPPORT_ID"
+          ],
+          "passed_control": true
+        }
+      ]
+    },
+    "positive": {
+      "all_passed": true,
+      "count": 3,
+      "results": [
+        {
+          "actual_pass": true,
+          "case": "unrelated_value_ignored",
+          "expected_pass": true,
+          "failure_codes": [],
+          "passed_control": true
+        },
+        {
+          "actual_pass": true,
+          "case": "unrelated_version_ignored",
+          "expected_pass": true,
+          "failure_codes": [],
+          "passed_control": true
+        },
+        {
+          "actual_pass": true,
+          "case": "multiple_values",
+          "expected_pass": true,
+          "failure_codes": [],
+          "passed_control": true
+        }
+      ]
+    }
+  }
+}

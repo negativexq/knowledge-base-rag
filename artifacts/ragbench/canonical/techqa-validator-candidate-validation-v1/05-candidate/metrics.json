@@ -1,0 +1,22 @@
+{
+  "candidate": "IDENTIFIER_NEGATIVE",
+  "metrics": {
+    "case_count": 28,
+    "determinate_precision": 1.0,
+    "equivalent_correctly_allowed": 10,
+    "equivalent_false_rejected": 0,
+    "equivalent_total": 10,
+    "false_positive_count": 0,
+    "forced_abstain_proxy": 0,
+    "indeterminate_preserved": 2,
+    "indeterminate_total": 5,
+    "indeterminate_unsafe_acceptances": 3,
+    "security_correctly_rejected": 5,
+    "security_regressions": 0,
+    "security_total": 5,
+    "true_conflict_detected": 7,
+    "true_conflict_missed": 1,
+    "true_conflict_recall": 0.875,
+    "true_conflict_total": 8
+  }
+}

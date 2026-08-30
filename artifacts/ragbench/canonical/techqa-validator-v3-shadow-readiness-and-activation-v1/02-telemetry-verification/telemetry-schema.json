@@ -1,0 +1,55 @@
+{
+  "bounded_non_sensitive": true,
+  "raw_claim_or_support_logged": false,
+  "bounded_fields": {
+    "validator.version": ["baseline", "v3"],
+    "validator.shadow_enabled": "boolean",
+    "validator.invocations": "integer",
+    "validator.pass": "integer",
+    "validator.reject": "integer",
+    "validator.indeterminate": "integer",
+    "validator.outcome": ["PASS", "REJECT", "INDETERMINATE", "MIXED", "NO_CRITICAL_VALUE"],
+    "validator.reason_class": "bounded enum list",
+    "validator.critical_value_type": "bounded enum list",
+    "validator.critical_value_count": "integer",
+    "validator.forced_abstain": "boolean",
+    "validator.indeterminate": "integer",
+    "validator.locale_ambiguity": "boolean",
+    "validator.version_ambiguity": "boolean",
+    "validator.version_specificity_reject": "boolean",
+    "validator.identifier_reject": "boolean",
+    "validator.duration_ms": "non-negative number",
+    "validator.baseline.duration_ms": "non-negative number",
+    "validator.shadow_v3.duration_ms": "non-negative number",
+    "validator.shadow_error": "boolean",
+    "validator.shadow_error_class": ["SHADOW_EVALUATION_FAILURE"],
+    "validator.shadow_disagreement": [
+      "SAME",
+      "BASELINE_REJECT_V3_PASS",
+      "BASELINE_PASS_V3_REJECT",
+      "BASELINE_IND_V3_PASS",
+      "BASELINE_PASS_V3_IND",
+      "BASELINE_REJECT_V3_IND",
+      "BASELINE_IND_V3_REJECT",
+      "SHADOW_ERROR"
+    ]
+  },
+  "raw_sensitive_dimensions_forbidden": [
+    "query_id",
+    "support_id",
+    "document_id",
+    "user_id",
+    "tenant_id",
+    "raw_query",
+    "raw_claim",
+    "raw_support",
+    "raw_numeric_literal",
+    "raw_version"
+  ],
+  "telemetry_failure_breaks_answers": false,
+  "configuration_fingerprint": {
+    "validator_version": "server-owned bounded setting",
+    "shadow_enabled": "server-owned bounded setting",
+    "index_fingerprint_unchanged": true
+  }
+}

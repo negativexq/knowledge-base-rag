@@ -1,0 +1,23 @@
+{
+  "candidate_source_sha256_after_review": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "candidate_source_unchanged": true,
+  "prior_artifacts_unchanged": true,
+  "v3_debug_unchanged": true,
+  "v3_validation_unchanged": true,
+  "v2_artifacts_unchanged": true,
+  "v1_artifacts_unchanged": true,
+  "corrected_holdout_unchanged": true,
+  "bge_verdict_unchanged": true,
+  "top_n_unchanged": true,
+  "production_validator_unchanged": true,
+  "production_promoted": false,
+  "traffic_changed": false,
+  "provider_calls": {
+    "retrieval": 0,
+    "embedding": 0,
+    "bge": 0,
+    "luna": 0,
+    "terra": 0,
+    "ollama": 0
+  }
+}

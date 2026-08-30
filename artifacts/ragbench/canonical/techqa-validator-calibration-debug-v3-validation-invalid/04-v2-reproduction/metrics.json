@@ -1,0 +1,27 @@
+{
+  "candidate": "04-v2-reproduction",
+  "metrics": {
+    "ambiguous_claim_preserved_indeterminate": 0,
+    "ambiguous_claim_total": 4,
+    "case_count": 40,
+    "determinate_precision": 0.9166666666666666,
+    "equivalent_correctly_allowed": 13,
+    "equivalent_total": 14,
+    "exact_claim_correct": 4,
+    "exact_claim_total": 5,
+    "false_positive_count": 1,
+    "family_claim_correct": 5,
+    "family_claim_total": 6,
+    "forced_abstain_proxy": 1,
+    "indeterminate_preserved": 5,
+    "indeterminate_total": 9,
+    "indeterminate_unsafe_accepted": 0,
+    "security_correctly_rejected": 5,
+    "security_regressions": 0,
+    "security_total": 5,
+    "true_conflict_detected": 11,
+    "true_conflict_recall": 0.9166666666666666,
+    "true_conflict_total": 12,
+    "version_specificity_errors": 6
+  }
+}

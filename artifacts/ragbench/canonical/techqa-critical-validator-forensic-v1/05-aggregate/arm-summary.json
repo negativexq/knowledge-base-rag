@@ -1,0 +1,120 @@
+{
+  "arms": {
+    "OFF": {
+      "critical_reject_and_available": 15,
+      "critical_reject_and_forced_abstain": 6,
+      "critical_reject_and_no_forced_abstain": 15,
+      "critical_reject_and_unavailable": 6,
+      "critical_reject_queries": 21,
+      "event_count": 48,
+      "false_positive_events": 17,
+      "indeterminate_events": 31,
+      "no_critical_reject_and_forced_abstain": 4,
+      "no_critical_reject_and_unavailable": 12,
+      "p_forced_abstain_given_critical_reject": 0.2857142857142857,
+      "semantic_counts_all": {
+        "CORRECT": 12,
+        "INCORRECT": 1,
+        "PARTIAL": 19,
+        "UNAVAILABLE": 18
+      },
+      "semantic_counts_by_event_class": {
+        "FALSE_POSITIVE": {
+          "CORRECT": 2,
+          "INCORRECT": 0,
+          "PARTIAL": 4,
+          "UNAVAILABLE": 3
+        },
+        "INDETERMINATE": {
+          "CORRECT": 6,
+          "INCORRECT": 0,
+          "PARTIAL": 6,
+          "UNAVAILABLE": 4
+        },
+        "TRUE_CONFLICT": {
+          "CORRECT": 0,
+          "INCORRECT": 0,
+          "PARTIAL": 0,
+          "UNAVAILABLE": 0
+        }
+      },
+      "true_conflict_events": 0
+    },
+    "ON": {
+      "critical_reject_and_available": 11,
+      "critical_reject_and_forced_abstain": 3,
+      "critical_reject_and_no_forced_abstain": 11,
+      "critical_reject_and_unavailable": 3,
+      "critical_reject_queries": 14,
+      "event_count": 30,
+      "false_positive_events": 9,
+      "indeterminate_events": 21,
+      "no_critical_reject_and_forced_abstain": 2,
+      "no_critical_reject_and_unavailable": 11,
+      "p_forced_abstain_given_critical_reject": 0.21428571428571427,
+      "semantic_counts_all": {
+        "CORRECT": 15,
+        "INCORRECT": 1,
+        "PARTIAL": 20,
+        "UNAVAILABLE": 14
+      },
+      "semantic_counts_by_event_class": {
+        "FALSE_POSITIVE": {
+          "CORRECT": 1,
+          "INCORRECT": 1,
+          "PARTIAL": 1,
+          "UNAVAILABLE": 3
+        },
+        "INDETERMINATE": {
+          "CORRECT": 3,
+          "INCORRECT": 0,
+          "PARTIAL": 7,
+          "UNAVAILABLE": 3
+        },
+        "TRUE_CONFLICT": {
+          "CORRECT": 0,
+          "INCORRECT": 0,
+          "PARTIAL": 0,
+          "UNAVAILABLE": 0
+        }
+      },
+      "true_conflict_events": 0
+    }
+  },
+  "critical_reject_query_sets": {
+    "both": [
+      "techqa_DEV_Q018#row-0112",
+      "techqa_DEV_Q039#row-0060",
+      "techqa_DEV_Q047#row-0156",
+      "techqa_DEV_Q126#row-0066",
+      "techqa_DEV_Q173#row-0147",
+      "techqa_DEV_Q174#row-0049",
+      "techqa_DEV_Q188#row-0026",
+      "techqa_DEV_Q220#row-0046",
+      "techqa_DEV_Q267#row-0132",
+      "techqa_DEV_Q277#row-0042",
+      "techqa_DEV_Q300#row-0109"
+    ],
+    "off_only": [
+      "techqa_DEV_Q012#row-0133",
+      "techqa_DEV_Q035#row-0121",
+      "techqa_DEV_Q036#row-0037",
+      "techqa_DEV_Q129#row-0013",
+      "techqa_DEV_Q149#row-0050",
+      "techqa_DEV_Q181#row-0079",
+      "techqa_DEV_Q182#row-0067",
+      "techqa_DEV_Q218#row-0137",
+      "techqa_DEV_Q250#row-0012",
+      "techqa_DEV_Q296#row-0040"
+    ],
+    "on_only": [
+      "techqa_DEV_Q077#row-0008",
+      "techqa_DEV_Q283#row-0080",
+      "techqa_DEV_Q308#row-0103"
+    ]
+  },
+  "population": {
+    "critical_reject_events": 78,
+    "validation_query_arm_rows": 100
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "FALSE_POSITIVE": {
+    "forced_abstain": 6,
+    "note": "Groups can overlap for MIXED_REJECTS; this is descriptive, not a counterfactual score.",
+    "query_arm_rows": 15,
+    "semantic_counts": {
+      "CORRECT": 3,
+      "INCORRECT": 1,
+      "PARTIAL": 5,
+      "UNAVAILABLE": 6
+    },
+    "unavailable": 6
+  },
+  "INDETERMINATE": {
+    "forced_abstain": 7,
+    "note": "Groups can overlap for MIXED_REJECTS; this is descriptive, not a counterfactual score.",
+    "query_arm_rows": 29,
+    "semantic_counts": {
+      "CORRECT": 9,
+      "INCORRECT": 0,
+      "PARTIAL": 13,
+      "UNAVAILABLE": 7
+    },
+    "unavailable": 7
+  },
+  "TRUE_CONFLICT": {
+    "forced_abstain": 0,
+    "note": "Groups can overlap for MIXED_REJECTS; this is descriptive, not a counterfactual score.",
+    "query_arm_rows": 0,
+    "semantic_counts": {
+      "CORRECT": 0,
+      "INCORRECT": 0,
+      "PARTIAL": 0,
+      "UNAVAILABLE": 0
+    },
+    "unavailable": 0
+  }
+}

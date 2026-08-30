@@ -1,2 +1,4 @@
-# Generated PDF fixtures are binary derived artifacts; review their Markdown sources.
-*.pdf binary
+# Frozen experiment report templates use Markdown hard-break spaces. Preserve
+# their byte identity while keeping whitespace checks strict everywhere else.
+scripts/run_validator_calibration_debug_v3.py whitespace=-trailing-space
+scripts/run_validator_v2_independent_validation_v1.py whitespace=-trailing-space

@@ -1,0 +1,14 @@
+{
+  "reusable_test_file": "tests/test_critical_validator_rollout.py",
+  "coverage": [
+    "baseline default and fail-closed selector",
+    "safe numeric equivalence",
+    "ambiguous locale conservatism",
+    "signed value and CVE identity",
+    "version family/exact/ambiguous behavior",
+    "shadow visible-result invariance",
+    "bounded telemetry without raw inputs"
+  ],
+  "experiment_specific_tests_added": false,
+  "provider_e2e_run": false
+}

@@ -1,0 +1,14 @@
+{
+  "calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "holdout_used_for_tuning": false,
+  "production_default_changed": false,
+  "selected_candidate": "IDENTIFIER_NEGATIVE",
+  "selection_status": "VALIDATOR_DEBUG_CANDIDATE_SELECTED"
+}

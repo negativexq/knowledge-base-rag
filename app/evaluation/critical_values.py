@@ -3,10 +3,25 @@
 from __future__ import annotations
 
 import re
+import time
 import unicodedata
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any
+from decimal import Decimal, InvalidOperation
+from typing import Any, Literal, cast
+
+CriticalValidatorVersion = Literal["baseline", "v3"]
+VALID_CRITICAL_VALIDATOR_VERSIONS = ("baseline", "v3")
+
+
+def validate_critical_validator_version(value: str) -> CriticalValidatorVersion:
+    """Validate the server-owned critical-value validator selector."""
+    if value not in VALID_CRITICAL_VALIDATOR_VERSIONS:
+        raise ValueError(
+            "critical validator version must be one of "
+            f"{VALID_CRITICAL_VALIDATOR_VERSIONS}, got {value!r}"
+        )
+    return cast(CriticalValidatorVersion, value)
 
 
 @dataclass(frozen=True)
@@ -222,7 +237,9 @@ def _local_key(value: dict[str, Any]) -> tuple[str | None, str | None, str | Non
     return value.get("kind"), value.get("value"), value.get("unit")
 
 
-def claim_local_critical_value_audit(claim: str, support_texts: Sequence[str]) -> dict[str, Any]:
+def _baseline_claim_local_critical_value_audit(
+    claim: str, support_texts: Sequence[str]
+) -> dict[str, Any]:
     """Check critical values against claim-local selected support units.
 
     This is a deterministic consistency guard, not a semantic entailment check.
@@ -322,3 +339,407 @@ def claim_local_critical_value_audit(claim: str, support_texts: Sequence[str]) -
         ),
         "pass": not failures,
     }
+
+
+# The following helpers are the production-compatible port of the frozen V3
+# contract.  They intentionally remain local and deterministic: the offline
+# calibration scripts are never imported by serving code.
+_V3_VERSION = re.compile(r"(?<![\w-])v?(\d+(?:\.\d+){0,2})(?:\.x)?(?![\w])", re.IGNORECASE)
+_V3_GROUPED_INTEGER = re.compile(r"\d{1,3}(?:[.,]\d{3})+")
+_V3_SIGNED = re.compile(r"(?<![\w])([+-])(\d+(?:[.,]\d+)?)(?![\w])")
+_V3_SQLCODE = re.compile(r"\bSQLCODE\s*=?\s*([+-]?\d+)\b", re.IGNORECASE)
+
+
+def _v3_version_values(text: str) -> list[tuple[int, ...]]:
+    values: list[tuple[int, ...]] = []
+    for match in _V3_VERSION.finditer(text or ""):
+        # ISO dates are dates, not versions. The frozen candidate only
+        # applies its version guard when the critical value is a version.
+        if re.match(r"\d{4}-\d{1,2}-\d{1,2}", text[match.start() :]):
+            continue
+        try:
+            values.append(tuple(int(part) for part in match.group(1).split(".")))
+        except ValueError:
+            continue
+    return values
+
+
+def _v3_version_signal(text: str) -> bool:
+    """Distinguish version notation from dotted/grouped numeric values."""
+    if re.search(r"\b(?:version|release|family|series)\b|\bv\d", text, re.IGNORECASE):
+        return bool(_v3_version_values(text))
+    return any(len(value) >= 3 for value in _v3_version_values(text))
+
+
+def _v3_claim_version_specificity(claim: str) -> str:
+    lower = claim.lower()
+    if re.search(
+        r"\b(?:family|series|major version|major release)\b|\.x\b|\bor\s+later\b",
+        lower,
+    ):
+        if re.search(r"\b\d+\.\d+\.x\b|\bminor series\b", lower):
+            return "FAMILY_MINOR"
+        return "FAMILY_MAJOR"
+    if re.search(r"\b(?:exact(?:ly)?|full version)\b", lower):
+        return "EXACT"
+    values = _v3_version_values(claim)
+    if values and len(values[0]) >= 3:
+        return "EXACT"
+    return "AMBIGUOUS"
+
+
+def _v3_version_guard_status(claim: str, support: str) -> str | None:
+    claim_versions = _v3_version_values(claim)
+    support_versions = _v3_version_values(support)
+    if not claim_versions or not support_versions:
+        return None
+    specificity = _v3_claim_version_specificity(claim)
+    claim_value = claim_versions[0]
+    if specificity == "EXACT":
+        if re.search(
+            r"\b(?:not|no|never|does\s+not|doesn't|cannot|can't)\b",
+            claim,
+            re.IGNORECASE,
+        ) and re.search(r"\b(?:supports?|exposes?|returns?)\b", support, re.IGNORECASE):
+            if any(value == claim_value for value in support_versions):
+                return "DIRECT_CONFLICT"
+        return (
+            "DIRECT_SUPPORT"
+            if any(value == claim_value for value in support_versions)
+            else "DIRECT_CONFLICT"
+        )
+    if specificity == "FAMILY_MAJOR":
+        if "or later" in claim.lower():
+            return (
+                "DIRECT_SUPPORT"
+                if any(value >= claim_value for value in support_versions)
+                else "DIRECT_CONFLICT"
+            )
+        return (
+            "DIRECT_SUPPORT"
+            if any(value[0] == claim_value[0] for value in support_versions)
+            else "DIRECT_CONFLICT"
+        )
+    if specificity == "FAMILY_MINOR":
+        return (
+            "DIRECT_SUPPORT"
+            if any(len(value) >= 2 and value[:2] == claim_value[:2] for value in support_versions)
+            else "DIRECT_CONFLICT"
+        )
+    return "INDETERMINATE"
+
+
+def _v3_number_equivalent(left: str, right: str) -> bool:
+    def grouped(value: str) -> str | None:
+        if _V3_GROUPED_INTEGER.fullmatch(value):
+            return value.replace(",", "").replace(".", "")
+        return None
+
+    if left.replace(",", ".") == right.replace(",", "."):
+        return True
+    return grouped(left) == right or grouped(right) == left
+
+
+def _v3_decimal_equivalent(left: str, right: str, claim: str, support: str) -> bool:
+    if "." not in left or "." not in right:
+        return False
+    if not re.fullmatch(r"\d+\.\d+", left) or not re.fullmatch(r"\d+\.\d+", right):
+        return False
+    if not re.search(
+        r"\b(?:seconds?|secs?|percent|rate|ratio|latency|probability)\b|%",
+        f"{claim} {support}",
+        re.IGNORECASE,
+    ):
+        return False
+    try:
+        return Decimal(left) == Decimal(right)
+    except InvalidOperation:
+        return False
+
+
+def _v3_explicit_grouping_context(claim: str, support: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:bytes?|records?|entries|rows?|packets?|blocks?|kb|mb|gb)\b",
+            f"{claim} {support}",
+            re.IGNORECASE,
+        )
+    )
+
+
+def _v3_ambiguous_locale_pair(claim: str, support: str) -> bool:
+    def numeric(text: str) -> list[str]:
+        return re.findall(r"(?<![\w])\d+(?:[.,]\d+)*(?![\w])", text)
+
+    grouped = [value for value in numeric(claim) if _V3_GROUPED_INTEGER.fullmatch(value)]
+    if not grouped:
+        return False
+    normalized = {value.replace(",", "").replace(".", "") for value in grouped}
+    support_values = set()
+    for value in numeric(support):
+        if _V3_GROUPED_INTEGER.fullmatch(value):
+            support_values.add(value.replace(",", "").replace(".", ""))
+        elif value.isdigit() and len(value) > 3:
+            support_values.add(value)
+    return bool(normalized & support_values) and not _v3_explicit_grouping_context(claim, support)
+
+
+def _v3_signed_numeric(text: str) -> str | None:
+    match = _V3_SIGNED.search(text or "")
+    return match.group(1) + match.group(2).replace(",", ".") if match else None
+
+
+def _v3_tokenized(text: str) -> list[dict[str, Any]]:
+    tokens = _local_tokens(text)
+    for token in tokens:
+        context = token.get("local_context", "")
+        if (
+            token.get("kind") == "VERSION"
+            and re.fullmatch(r"\d{1,3}[.,]\d{3}", str(token.get("value")))
+            and not re.search(r"\b(?:version|release|v)\b", context, re.IGNORECASE)
+        ):
+            token["kind"] = "NUMBER"
+    version_number = re.compile(r"\bversion\s+(\d+)\b", re.IGNORECASE)
+    for match in version_number.finditer(text):
+        for token in tokens:
+            if token.get("kind") == "NUMBER" and token.get("start") == match.start(1):
+                token["kind"] = "VERSION"
+    return tokens
+
+
+def _v3_relation_audit(claim: str, support: Sequence[str]) -> list[str]:
+    """Return frozen V3 relation statuses for non-version critical values."""
+    support_text = " ".join(support)
+    claim_cve = re.search(r"CVE[- ](\d{4})[- ](\d+)", claim, re.IGNORECASE)
+    claim_sql = _V3_SQLCODE.search(claim)
+    if claim_cve or claim_sql:
+        identifier = (
+            f"CVE-{claim_cve.group(1)}-{claim_cve.group(2)}"
+            if claim_cve
+            else f"SQLCODE {claim_sql.group(1)}"
+        )
+        compact = re.sub(r"[^a-z0-9]+", "", identifier.casefold())
+        compact_support = re.sub(r"[^a-z0-9]+", "", support_text.casefold())
+        if compact in compact_support:
+            return ["DIRECT_SUPPORT"]
+        if re.search(r"\b(?:CVE-|SQLCODE)\b", support_text, re.IGNORECASE):
+            return ["DIRECT_CONFLICT"]
+        return ["INDETERMINATE"]
+
+    claim_tokens = _v3_tokenized(claim)
+    support_tokens = [_v3_tokenized(text) for text in support]
+    statuses: list[str] = []
+    for index, token in enumerate(claim_tokens):
+        claim_context = token.get("local_context", "")
+        claim_words = set(re.findall(r"[A-Za-z0-9_]+", claim_context.lower()))
+        has_support = False
+        has_conflict = False
+        signed_claim = _v3_signed_numeric(claim_context)
+        for other_tokens in support_tokens:
+            for other in other_tokens:
+                same_kind = other.get("kind") == token.get("kind") and other.get(
+                    "unit"
+                ) == token.get("unit")
+                same_value = str(other.get("value")) == str(token.get("value"))
+                equivalent = token.get("kind") in {
+                    "NUMBER",
+                    "PERCENTAGE",
+                    "DURATION",
+                    "CURRENCY",
+                } and _v3_number_equivalent(str(token.get("value")), str(other.get("value")))
+                other_context = other.get("local_context", "")
+                context_related = bool(
+                    claim_words & set(re.findall(r"[A-Za-z0-9_]+", other_context.lower()))
+                )
+                if same_kind and (same_value or equivalent) and context_related:
+                    has_support = True
+                elif same_kind and context_related:
+                    has_conflict = True
+        if signed_claim:
+            support_signed = _v3_signed_numeric(support_text)
+            if support_signed == signed_claim:
+                has_support = True
+            elif re.search(
+                rf"(?<![\w])(?:[+-])?{re.escape(signed_claim.lstrip('+-'))}(?![\w])",
+                support_text,
+            ):
+                has_conflict = True
+        if _v3_decimal_equivalent(
+            "".join(re.findall(r"\d+\.\d+", claim)[:1]),
+            "".join(re.findall(r"\d+\.\d+", support_text)[:1]),
+            claim,
+            support_text,
+        ):
+            has_support = True
+        statuses.append(
+            "DIRECT_SUPPORT"
+            if has_support
+            else "DIRECT_CONFLICT"
+            if has_conflict
+            else "INDETERMINATE"
+        )
+    return statuses
+
+
+def _v3_status(claim: str, support_texts: Sequence[str]) -> str:
+    support = " ".join(support_texts)
+    version_status = _v3_version_guard_status(claim, support) if _v3_version_signal(claim) else None
+    if version_status:
+        return version_status
+    claim_values = _local_tokens(claim)
+    if _V3_SQLCODE.search(claim):
+        claim_code = _V3_SQLCODE.search(claim).group(1)  # type: ignore[union-attr]
+        support_codes = _V3_SQLCODE.findall(support)
+        return (
+            "DIRECT_SUPPORT"
+            if claim_code in support_codes
+            else "DIRECT_CONFLICT"
+            if support_codes
+            else "INDETERMINATE"
+        )
+    if _v3_signed_numeric(claim):
+        signed = _v3_signed_numeric(claim)
+        support_signed = _v3_signed_numeric(support)
+        if support_signed == signed:
+            return "DIRECT_SUPPORT"
+        if signed and re.search(
+            rf"(?<![\w])(?:[+-])?{re.escape(signed.lstrip('+-'))}(?![\w])", support
+        ):
+            return "DIRECT_CONFLICT"
+    if _v3_ambiguous_locale_pair(claim, support):
+        return "INDETERMINATE"
+    statuses = _v3_relation_audit(claim, support_texts)
+    if "DIRECT_CONFLICT" in statuses:
+        return "DIRECT_CONFLICT"
+    if "INDETERMINATE" in statuses:
+        return "INDETERMINATE"
+    return "DIRECT_SUPPORT" if claim_values else "DIRECT_SUPPORT"
+
+
+def _v3_critical_type(claim: str) -> str | None:
+    if _V3_SQLCODE.search(claim) or re.search(r"\bCVE[- ]\d{4}[- ]\d+", claim, re.IGNORECASE):
+        return "IDENTIFIER"
+    if _v3_version_signal(claim):
+        return "VERSION"
+    tokens = _v3_tokenized(claim)
+    return tokens[0].get("kind") if tokens else None
+
+
+def _validator_disagreement(baseline: dict[str, Any], candidate: dict[str, Any]) -> str:
+    left = baseline.get("validator_outcome")
+    right = candidate.get("validator_outcome")
+    if left == right:
+        return "SAME"
+    return {
+        ("REJECT", "PASS"): "BASELINE_REJECT_V3_PASS",
+        ("PASS", "REJECT"): "BASELINE_PASS_V3_REJECT",
+        ("INDETERMINATE", "PASS"): "BASELINE_IND_V3_PASS",
+        ("PASS", "INDETERMINATE"): "BASELINE_PASS_V3_IND",
+        ("REJECT", "INDETERMINATE"): "BASELINE_REJECT_V3_IND",
+        ("INDETERMINATE", "REJECT"): "BASELINE_IND_V3_REJECT",
+    }.get((left, right), "SAME")
+
+
+def _audit_outcome(result: dict[str, Any]) -> str:
+    if result.get("pass"):
+        return "PASS"
+    if any("INDETERMINATE" in code for code in result.get("failure_codes", [])):
+        return "INDETERMINATE"
+    return "REJECT"
+
+
+def claim_local_critical_value_audit(
+    claim: str,
+    support_texts: Sequence[str],
+    *,
+    validator_version: CriticalValidatorVersion = "baseline",
+    shadow_enabled: bool = False,
+) -> dict[str, Any]:
+    """Audit a claim with the server-selected validator, optionally in shadow.
+
+    Shadow evaluation is diagnostic only: the baseline result is always
+    returned while shadow mode is active with the baseline selector.
+    """
+    version = validate_critical_validator_version(validator_version)
+    started = time.perf_counter()
+    baseline_started = time.perf_counter()
+    baseline = _baseline_claim_local_critical_value_audit(claim, support_texts)
+    baseline_duration_ms = round((time.perf_counter() - baseline_started) * 1000, 3)
+    result = baseline
+    if version == "v3":
+        status = _v3_status(claim, support_texts)
+        outcome = (
+            "REJECT"
+            if status == "DIRECT_CONFLICT"
+            else "INDETERMINATE"
+            if status == "INDETERMINATE"
+            else "PASS"
+        )
+        result = {
+            **baseline,
+            "failure_codes": (
+                ["CRITICAL_VALUE_DIRECT_CONFLICT"]
+                if outcome == "REJECT"
+                else ["CRITICAL_VALUE_INDETERMINATE"]
+                if outcome == "INDETERMINATE"
+                else []
+            ),
+            "status": (
+                "CRITICAL_VALUE_DIRECT_CONFLICT"
+                if outcome == "REJECT"
+                else "CRITICAL_VALUE_INDETERMINATE"
+                if outcome == "INDETERMINATE"
+                else "CRITICAL_VALUE_SUPPORTED"
+            ),
+            "pass": outcome == "PASS",
+        }
+    shadow = None
+    shadow_v3_duration_ms = 0.0
+    shadow_error = False
+    shadow_error_class: str | None = None
+    if shadow_enabled and version == "baseline":
+        shadow_started = time.perf_counter()
+        try:
+            candidate = claim_local_critical_value_audit(
+                claim, support_texts, validator_version="v3", shadow_enabled=False
+            )
+            shadow = _validator_disagreement(
+                {"validator_outcome": _audit_outcome(result)},
+                {"validator_outcome": _audit_outcome(candidate)},
+            )
+        except Exception:
+            # Shadow is diagnostic only. A candidate failure must never alter
+            # the baseline answer path or turn into a user-visible failure.
+            shadow_error = True
+            shadow_error_class = "SHADOW_EVALUATION_FAILURE"
+            shadow = "SHADOW_ERROR"
+        finally:
+            shadow_v3_duration_ms = round((time.perf_counter() - shadow_started) * 1000, 3)
+    outcome = _audit_outcome(result)
+    reason = result.get("status") or "NO_CRITICAL_VALUE"
+    result.update(
+        {
+            "validator_version": version,
+            "validator_outcome": outcome,
+            "validator_reason_class": reason,
+            "critical_value_type": _v3_critical_type(claim),
+            "critical_value_count": len(result.get("answer_critical_tokens", [])),
+            "forced_abstain": outcome != "PASS",
+            "indeterminate": outcome == "INDETERMINATE",
+            "locale_ambiguity": outcome == "INDETERMINATE"
+            and _v3_ambiguous_locale_pair(claim, " ".join(support_texts)),
+            "version_ambiguity": outcome == "INDETERMINATE"
+            and _v3_claim_version_specificity(claim) == "AMBIGUOUS",
+            "version_specificity_reject": outcome == "REJECT"
+            and _v3_critical_type(claim) == "VERSION",
+            "identifier_reject": outcome == "REJECT" and _v3_critical_type(claim) == "IDENTIFIER",
+            "duration_ms": round((time.perf_counter() - started) * 1000, 3),
+            "baseline_duration_ms": baseline_duration_ms,
+            "shadow_v3_duration_ms": shadow_v3_duration_ms,
+            "shadow_enabled": bool(shadow_enabled),
+            "shadow_disagreement": shadow,
+            "shadow_error": shadow_error,
+            "shadow_error_class": shadow_error_class,
+        }
+    )
+    return result

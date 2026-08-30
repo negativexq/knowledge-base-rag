@@ -1,0 +1,12 @@
+{
+  "from": "v3",
+  "to": "baseline",
+  "action": "Set CRITICAL_VALIDATOR_VERSION=baseline and restart/redeploy according to normal server configuration procedure.",
+  "requires_reindex": false,
+  "requires_migration": false,
+  "requires_data_rewrite": false,
+  "requires_model_reload": false,
+  "requires_artifact_regeneration": false,
+  "verification": "Confirm config fingerprint/OTel validator.version is baseline and visible behavior follows the baseline path.",
+  "recovery_time_class": "normal configuration rollout; exact SLA not measured"
+}

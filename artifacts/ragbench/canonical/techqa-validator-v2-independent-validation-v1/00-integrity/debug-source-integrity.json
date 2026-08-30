@@ -1,0 +1,21 @@
+{
+  "baseline_source_sha256": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD",
+  "debug_population_freeze_sha256": "cdbf353c4c8863ea2ed531f37b508ba3b6ec0f2aa885c4c7e6b948d782367764",
+  "debug_preregistration_sha256": "b14e216f35e581313bd053d2d6ab74d24dafbda104cd5fc53c74f6be783ae963",
+  "debug_preview_id": "VALIDATOR_V2_DEBUG_CANDIDATE_c5f275a0f998",
+  "debug_preview_sha256": "9f2803c703c2aa6004d42b5f82e0de328895266200e57a6c33b5a34562394117",
+  "debug_root": "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v2",
+  "debug_v2_script_sha256": "c5f275a0f9984b88b4ebf6159ad4521d0151880e6290eb1a754e5dca999ef6b6",
+  "holdout_used": false,
+  "initial_invalid_root_preserved": true,
+  "production_default_enabled": false,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  }
+}

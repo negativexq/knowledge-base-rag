@@ -1,0 +1,27 @@
+{
+  "current_production_path": [
+    "app/evaluation/critical_values.py::claim_local_critical_value_audit",
+    "app/evidence/support_relevance.py::audit_support_relevance",
+    "app/llm/structured_output.py::validate_support_unit_answer"
+  ],
+  "v3_experimental_path": [
+    "scripts/run_validator_calibration_debug_v3.py::version_values",
+    "scripts/run_validator_calibration_debug_v3.py::claim_version_specificity",
+    "scripts/run_validator_calibration_debug_v3.py::version_guard_status",
+    "scripts/run_validator_calibration_debug_v3.py::v3_status"
+  ],
+  "delta_scope": [
+    "NORMALIZATION_BEHAVIOR",
+    "VERSION_SEMANTICS",
+    "IDENTIFIER_HANDLING",
+    "LOCALE_AMBIGUITY"
+  ],
+  "security_boundary_change_required": false,
+  "configuration_change_required_for_integration": true,
+  "observability_change_required_for_canary": true,
+  "api_contract_change_required": false,
+  "dependency_change_required": false,
+  "state_storage_change_required": false,
+  "direct_production_import_safe": false,
+  "integration_note": "V3 is an offline experiment harness and imports calibration helpers. A future task must port the frozen semantics into a production-compatible helper without importing experiment scripts."
+}

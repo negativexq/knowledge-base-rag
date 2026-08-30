@@ -1,0 +1,49 @@
+case_id,expected_class,expected_reason_class,critical_value_type,security_class,unsafe_locale,sign_identifier_case,version_specificity_case,adjudication_source,notes
+IV2-TC-01,TRUE_CONFLICT,TRUE_CONFLICT,NUMBER,NONE,False,False,False,pre-execution independent contract definition,plain integer mismatch
+IV2-TC-02,TRUE_CONFLICT,TRUE_CONFLICT,IDENTIFIER,NONE,False,True,False,pre-execution independent contract definition,signed integer mismatch
+IV2-TC-03,TRUE_CONFLICT,TRUE_CONFLICT,VERSION,NONE,False,False,True,pre-execution independent contract definition,exact version mismatch
+IV2-TC-04,TRUE_CONFLICT,TRUE_CONFLICT,IDENTIFIER,NONE,False,True,False,pre-execution independent contract definition,CVE identity mismatch
+IV2-TC-05,TRUE_CONFLICT,TRUE_CONFLICT,DATE,NONE,False,False,False,pre-execution independent contract definition,date mismatch
+IV2-TC-06,TRUE_CONFLICT,TRUE_CONFLICT,RANGE,NONE,False,False,False,pre-execution independent contract definition,range endpoint mismatch
+IV2-TC-07,TRUE_CONFLICT,TRUE_CONFLICT,DURATION,NONE,False,False,False,pre-execution independent contract definition,duration mismatch
+IV2-TC-08,TRUE_CONFLICT,TRUE_CONFLICT,PERCENT,NONE,False,False,False,pre-execution independent contract definition,percentage mismatch
+IV2-TC-09,TRUE_CONFLICT,TRUE_CONFLICT,DURATION,NONE,False,False,False,pre-execution independent contract definition,decimal mismatch
+IV2-TC-10,TRUE_CONFLICT,TRUE_CONFLICT,VERSION,NONE,False,False,True,pre-execution independent contract definition,negative claim contradiction
+IV2-TC-11,TRUE_CONFLICT,TRUE_CONFLICT,IDENTIFIER,NONE,False,True,False,pre-execution independent contract definition,SQLCODE identity mismatch
+IV2-TC-12,TRUE_CONFLICT,TRUE_CONFLICT,VERSION,NONE,False,False,True,pre-execution independent contract definition,version-family mismatch
+IV2-EQ-01,EQUIVALENT_PASS,EQUIVALENT_PASS,NUMBER,NONE,False,False,False,pre-execution independent contract definition,technical grouped integer
+IV2-EQ-02,EQUIVALENT_PASS,EQUIVALENT_PASS,NUMBER,NONE,False,False,False,pre-execution independent contract definition,technical dotted grouping
+IV2-EQ-03,EQUIVALENT_PASS,EQUIVALENT_PASS,DURATION,NONE,False,False,False,pre-execution independent contract definition,decimal trailing zero
+IV2-EQ-04,EQUIVALENT_PASS,EQUIVALENT_PASS,PERCENT,NONE,False,False,False,pre-execution independent contract definition,percentage trailing zero
+IV2-EQ-05,EQUIVALENT_PASS,EQUIVALENT_PASS,IDENTIFIER,NONE,False,True,False,pre-execution independent contract definition,SQLCODE punctuation
+IV2-EQ-06,EQUIVALENT_PASS,EQUIVALENT_PASS,IDENTIFIER,NONE,False,True,False,pre-execution independent contract definition,CVE separators
+IV2-EQ-07,EQUIVALENT_PASS,EQUIVALENT_PASS,VERSION,NONE,False,False,False,pre-execution independent contract definition,version prefix
+IV2-EQ-08,EQUIVALENT_PASS,EQUIVALENT_PASS,VERSION,NONE,False,False,False,pre-execution independent contract definition,explicit family lower bound
+IV2-EQ-09,EQUIVALENT_PASS,EQUIVALENT_PASS,VERSION,NONE,False,False,False,pre-execution independent contract definition,identical exact version
+IV2-EQ-10,EQUIVALENT_PASS,EQUIVALENT_PASS,RANGE,NONE,False,False,False,pre-execution independent contract definition,dash representation
+IV2-EQ-11,EQUIVALENT_PASS,EQUIVALENT_PASS,DATE,NONE,False,False,False,pre-execution independent contract definition,identical date
+IV2-EQ-12,EQUIVALENT_PASS,EQUIVALENT_PASS,NUMBER,NONE,False,False,False,pre-execution independent contract definition,packet grouping
+IV2-EQ-13,EQUIVALENT_PASS,EQUIVALENT_PASS,NUMBER,NONE,False,False,False,pre-execution independent contract definition,ratio trailing zero
+IV2-EQ-14,EQUIVALENT_PASS,EQUIVALENT_PASS,IDENTIFIER,NONE,False,True,False,pre-execution independent contract definition,signed identifier across labels
+IV2-EQ-15,EQUIVALENT_PASS,EQUIVALENT_PASS,IDENTIFIER,NONE,False,True,False,pre-execution independent contract definition,hyphenated CVE formatting
+IV2-EQ-16,EQUIVALENT_PASS,EQUIVALENT_PASS,VERSION,NONE,False,False,False,pre-execution independent contract definition,explicit family wording
+IV2-IND-01,INDETERMINATE,INDETERMINATE,NUMBER,NONE,True,False,False,pre-execution independent contract definition,decimal versus grouping ambiguity
+IV2-IND-02,INDETERMINATE,INDETERMINATE,NUMBER,NONE,True,False,False,pre-execution independent contract definition,separator roles conflict
+IV2-IND-03,INDETERMINATE,INDETERMINATE,NUMBER,NONE,True,False,False,pre-execution independent contract definition,locale-dependent magnitude
+IV2-IND-04,INDETERMINATE,INDETERMINATE,NUMBER,NONE,True,False,False,pre-execution independent contract definition,mixed separator ambiguity
+IV2-IND-05,INDETERMINATE,INDETERMINATE,NUMBER,NONE,True,False,False,pre-execution independent contract definition,locale decimal/grouping ambiguity
+IV2-IND-06,INDETERMINATE,INDETERMINATE,NUMBER,NONE,False,False,False,pre-execution independent contract definition,no comparable support literal
+IV2-IND-07,INDETERMINATE,INDETERMINATE,VERSION,NONE,False,False,True,pre-execution independent contract definition,family intent not stated
+IV2-IND-08,INDETERMINATE,INDETERMINATE,NUMBER,NONE,False,False,False,pre-execution independent contract definition,conflicting attached supports
+IV2-IND-09,INDETERMINATE,INDETERMINATE,RANGE,NONE,False,False,False,pre-execution independent contract definition,unresolved range context
+IV2-IND-10,INDETERMINATE,INDETERMINATE,VERSION,NONE,False,False,True,pre-execution independent contract definition,no family/exact wording
+IV2-IND-11,INDETERMINATE,INDETERMINATE,NUMBER,NONE,False,False,False,pre-execution independent contract definition,claim-support binding ambiguity
+IV2-IND-12,INDETERMINATE,INDETERMINATE,NUMBER,NONE,True,False,False,pre-execution independent contract definition,ambiguous technical magnitude
+IV2-SEC-01,SECURITY_REJECT,SECURITY_REJECT,OTHER,UNKNOWN_SUPPORT_ID,False,False,False,pre-execution independent contract definition,unknown support
+IV2-SEC-02,SECURITY_REJECT,SECURITY_REJECT,OTHER,HIDDEN_SUPPORT_ID,False,False,False,pre-execution independent contract definition,hidden support
+IV2-SEC-03,SECURITY_REJECT,SECURITY_REJECT,OTHER,UNAUTHORIZED_SUPPORT_ID,False,False,False,pre-execution independent contract definition,unauthorized support
+IV2-SEC-04,SECURITY_REJECT,SECURITY_REJECT,OTHER,CROSS_TENANT_SUPPORT,False,False,False,pre-execution independent contract definition,cross-tenant injection
+IV2-SEC-05,SECURITY_REJECT,SECURITY_REJECT,OTHER,SPOOFED_SUPPORT_ID,False,False,False,pre-execution independent contract definition,spoofed support
+IV2-SEC-06,SECURITY_REJECT,SECURITY_REJECT,OTHER,HIDDEN_SUPPORT_ID,False,False,False,pre-execution independent contract definition,hidden numeric injection
+IV2-SEC-07,SECURITY_REJECT,SECURITY_REJECT,OTHER,UNAUTHORIZED_SUPPORT_ID,False,False,False,pre-execution independent contract definition,unauthorized identifier
+IV2-SEC-08,SECURITY_REJECT,SECURITY_REJECT,OTHER,CROSS_TENANT_SUPPORT,False,False,False,pre-execution independent contract definition,cross-tenant signed identifier

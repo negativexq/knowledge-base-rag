@@ -1,0 +1,50 @@
+{
+  "candidate_composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD",
+  "candidate_sequence": [
+    "BASELINE",
+    "V1_REPRODUCTION",
+    "V2_LOCALE_GUARD"
+  ],
+  "created_at_utc": "2026-08-30T19:10:47.379255+00:00",
+  "gates": {
+    "G1_security": "V2 security regressions = 0",
+    "G2_true_conflict_recall": "V2 >= V1 reproduction",
+    "G3_false_positives": "V2 <= V1 reproduction",
+    "G4_indeterminate_safety": "V2 introduces 0 new unsafe acceptance relative to baseline",
+    "G5_v1_regression_protection": "signed identifiers, version semantics, and determinate numeric equivalence are not regressed",
+    "G6_forced_abstain": "V2 <= baseline",
+    "G7_unsafe_magnitude_collapse": "V2 accepts 0 ambiguous-punctuation magnitude collapses"
+  },
+  "goal": "Preserve V1 normalization gains while treating unresolved locale-dependent numeric representations as INDETERMINATE.",
+  "identity": "VALIDATOR_CALIBRATION_DEBUG_V2",
+  "metrics": [
+    "true_conflict_recall",
+    "false_positive_count",
+    "indeterminate_unsafe_accepted",
+    "determinate_precision",
+    "forced_abstain_proxy",
+    "security_regressions"
+  ],
+  "population": {
+    "case_count": 30,
+    "holdout_used": false,
+    "population_will_be_frozen_before_execution": true
+  },
+  "priority_order": [
+    "security",
+    "true_conflict_safety",
+    "indeterminate_safety",
+    "false_positive_reduction",
+    "forced_abstain_reduction"
+  ],
+  "production_default_enabled": false,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "ollama": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "v1_candidate": "VALIDATOR_CANDIDATE_V1_937aef6fba5b"
+}

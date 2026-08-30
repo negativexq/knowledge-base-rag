@@ -1,0 +1,25 @@
+{
+  "arithmetic": {
+    "categories_equal_evaluable": true,
+    "raw_total_equals_historical_plus_synthetic": true,
+    "unique_equals_raw_minus_duplicates": true
+  },
+  "duplicate_case_ids": [],
+  "duplicate_cases": 0,
+  "evaluable_cases": 23,
+  "excluded_case_ids": [],
+  "excluded_cases": 0,
+  "exclusion_reasons": {},
+  "false_positive_targets": 11,
+  "indeterminate_targets": 5,
+  "neutral_or_non_evaluable_cases": 0,
+  "note": "The prior report counted 10 historical query IDs as if they were 10 historical event cases. The frozen comparison contains 8 historical event cases and 15 synthetic cases; category totals are 7/11/5.",
+  "raw_historical_cases": 8,
+  "raw_synthetic_cases": 15,
+  "raw_total_cases": 23,
+  "reported_historical_query_ids": 10,
+  "source_artifact": "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v1/04-comparison/candidate-comparison.csv",
+  "source_sha256": "ce2be5218f01f656155985605b98e42c23c6e3f94245a8723aa783193e561b62",
+  "true_conflict_targets": 7,
+  "unique_cases": 23
+}

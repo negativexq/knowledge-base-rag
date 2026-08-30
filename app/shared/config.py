@@ -3,6 +3,7 @@ from typing import Literal, Self, cast
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.evaluation.critical_values import validate_critical_validator_version
 from app.ingestion.chunking_config import (
     BOUNDARY_STRATEGY,
     QWEN3_EMBEDDING_TOKENIZER,
@@ -62,6 +63,11 @@ class Settings(BaseSettings):
     answerability_eval_model: str = "qwen3:4b"
     answerability_eval_timeout_seconds: float = Field(default=30.0, gt=0)
     answerability_eval_retries: int = Field(default=1, ge=0, le=2)
+
+    # Server-owned critical-value validator rollout controls.  Baseline is
+    # deliberately the default; requests cannot select this version.
+    critical_validator_version: Literal["baseline", "v3"] = "baseline"
+    critical_validator_v3_shadow_enabled: bool = False
 
     # Qwen3-Embedding-4B benchmark configuration — served
     # via the same Ollama instance as everything else (no new transport),
@@ -298,6 +304,11 @@ class Settings(BaseSettings):
             auth_enabled=self.auth_enabled,
             auth_tokens_json=self.auth_tokens_json,
         )
+        return self
+
+    @model_validator(mode="after")
+    def validate_critical_validator(self) -> Self:
+        validate_critical_validator_version(self.critical_validator_version)
         return self
 
     @model_validator(mode="after")

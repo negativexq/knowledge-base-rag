@@ -64,6 +64,7 @@ class RetrievalReport:
     context: dict = field(default_factory=dict)
     answerability: dict | None = None
     semantic_answerability: dict | None = None
+    validator: dict | None = None
     pre_acl_candidate_count: int | None = None
     authorized_candidate_count: int | None = None
 
@@ -83,6 +84,7 @@ class RetrievalReport:
             "reranker": self.reranker,
             "answerability": self.answerability,
             "semantic_answerability": self.semantic_answerability,
+            "validator": self.validator,
             "context": self.context,
             "security": {
                 "prompt_policy_version": self.prompt_policy_version,

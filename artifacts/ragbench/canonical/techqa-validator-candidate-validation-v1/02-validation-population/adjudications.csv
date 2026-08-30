@@ -1,0 +1,29 @@
+case_id,expected_validator_class,security_class,critical_value_type,unsafe_equivalence,adjudication_source,notes
+V-TC-01,TRUE_CONFLICT,NONE,NUMBER,False,pre-execution independent fixture contract,ordinary numeric mismatch
+V-TC-02,TRUE_CONFLICT,NONE,IDENTIFIER,True,pre-execution independent fixture contract,signed identifier conflict
+V-TC-03,TRUE_CONFLICT,NONE,VERSION,False,pre-execution independent fixture contract,exact version mismatch
+V-TC-04,TRUE_CONFLICT,NONE,IDENTIFIER,False,pre-execution independent fixture contract,CVE identity mismatch
+V-TC-05,TRUE_CONFLICT,NONE,DATE,False,pre-execution independent fixture contract,date mismatch
+V-TC-06,TRUE_CONFLICT,NONE,RANGE,False,pre-execution independent fixture contract,range endpoint mismatch
+V-TC-07,TRUE_CONFLICT,NONE,DURATION,False,pre-execution independent fixture contract,duration mismatch
+V-TC-08,TRUE_CONFLICT,NONE,VERSION,False,pre-execution independent fixture contract,negative claim contradiction
+V-EQ-01,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,NUMBER,False,pre-execution independent fixture contract,comma thousands grouping
+V-EQ-02,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,NUMBER,False,pre-execution independent fixture contract,technical dotted thousands grouping
+V-EQ-03,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,IDENTIFIER,False,pre-execution independent fixture contract,signed SQLCODE punctuation
+V-EQ-04,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,IDENTIFIER,False,pre-execution independent fixture contract,CVE separator formatting
+V-EQ-05,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,VERSION,False,pre-execution independent fixture contract,version prefix formatting
+V-EQ-06,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,VERSION,False,pre-execution independent fixture contract,explicit family lower bound
+V-EQ-07,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,DURATION,False,pre-execution independent fixture contract,unit abbreviation normalization
+V-EQ-08,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,VERSION,False,pre-execution independent fixture contract,exact repeated version
+V-EQ-09,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,RANGE,False,pre-execution independent fixture contract,dash representation
+V-EQ-10,FALSE_POSITIVE_RISK_EQUIVALENT,NONE,DATE,False,pre-execution independent fixture contract,identical date representation
+V-IND-01,INDETERMINATE,NONE,NUMBER,True,pre-execution independent fixture contract,locale ambiguity; must not collapse decimal and grouping
+V-IND-02,INDETERMINATE,NONE,NUMBER,True,pre-execution independent fixture contract,locale ambiguity
+V-IND-03,INDETERMINATE,NONE,VERSION,False,pre-execution independent fixture contract,no explicit family contract
+V-IND-04,INDETERMINATE,NONE,NUMBER,False,pre-execution independent fixture contract,support lacks comparable critical value
+V-IND-05,INDETERMINATE,NONE,NUMBER,False,pre-execution independent fixture contract,conflicting attached supports
+V-SEC-01,SECURITY_REJECT,UNKNOWN_SUPPORT_ID,OTHER,False,pre-execution independent fixture contract,unknown support ID
+V-SEC-02,SECURITY_REJECT,HIDDEN_SUPPORT_ID,OTHER,False,pre-execution independent fixture contract,hidden support
+V-SEC-03,SECURITY_REJECT,UNAUTHORIZED_SUPPORT_ID,OTHER,False,pre-execution independent fixture contract,unauthorized support
+V-SEC-04,SECURITY_REJECT,CROSS_TENANT_SUPPORT,OTHER,False,pre-execution independent fixture contract,cross-tenant/injected evidence
+V-SEC-05,SECURITY_REJECT,SPOOFED_SUPPORT_ID,OTHER,False,pre-execution independent fixture contract,spoofed support identifier

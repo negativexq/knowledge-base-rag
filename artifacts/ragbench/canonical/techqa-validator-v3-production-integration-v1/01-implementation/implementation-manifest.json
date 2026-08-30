@@ -1,0 +1,37 @@
+{
+  "api_contract_changed": false,
+  "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "candidate_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD",
+  "default_validator_version": "baseline",
+  "experimental_scripts_imported_by_production": false,
+  "frozen_semantics_preserved": true,
+  "index_fingerprint_changed": false,
+  "migration_required": false,
+  "notes": "Validator version is serving behavior and is visible in request telemetry/config metadata; it is intentionally not part of the embedding/index compatibility fingerprint.",
+  "production_files_changed": [
+    "app/evaluation/critical_values.py",
+    "app/evidence/support_relevance.py",
+    "app/llm/structured_output.py",
+    "app/shared/config.py",
+    "app/api/chat.py",
+    "app/retrieval/report.py",
+    "app/wiring.py",
+    ".env.example",
+    "docs/validator-v3-rollout.md",
+    "tests/test_critical_validator_rollout.py"
+  ],
+  "production_v3_path": "app.evaluation.critical_values.claim_local_critical_value_audit(validator_version=\"v3\")",
+  "provider_dependency_added": false,
+  "security_boundary_changed": false,
+  "shadow_default": false,
+  "source_file_hashes": {
+    "app/api/chat.py": "f0cf34c15b7b57f47008ef92e8337a4e6e8bb3fb2e642c18bfc3c5d1fc7a2736",
+    "app/evaluation/critical_values.py": "32e22558383203fe77e2d1935db195503890e708fec730938b9dce015fb269b1",
+    "app/evidence/support_relevance.py": "fe967b59c1b944aa0dd6c4637aff5d302d1c13702f06b841dd04e9b60a1780ba",
+    "app/llm/structured_output.py": "b1d525e9d8843e2040956cb3879e261a14bf4c5261e5cd0f6bae7e9e5c8fedb9",
+    "app/retrieval/report.py": "b01b4cc90a3001004550e3649354420c8bcc936af5781935f3625ea31abcbd68",
+    "app/shared/config.py": "e34e6e236986e5d319ea6a17f89979c0589bd2a44b8a9f3d28d09283d9cbcf15",
+    "app/wiring.py": "3e3deebbc9ce3e95d1c322a44ca5c219dce5f58376d5772dab2c010fc4b2fec0"
+  }
+}
