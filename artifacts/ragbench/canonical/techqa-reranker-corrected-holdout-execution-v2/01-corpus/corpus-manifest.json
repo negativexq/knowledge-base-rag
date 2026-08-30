@@ -1,0 +1,27 @@
+{
+  "chunk_count": 1116,
+  "chunker": {
+    "boundary_strategy": "legacy_word_sentence_heading_page_v1",
+    "hard_max_tokens": null,
+    "mode": "baseline",
+    "name": "baseline",
+    "overlap_tokens": 50,
+    "target_tokens": 500,
+    "tokenizer_model": "Qwen/Qwen3-Embedding-4B",
+    "tokenizer_revision": "main"
+  },
+  "collection": "ragbench_techqa_corrected_holdout_v2_dd28bec092c22172",
+  "corpus_fingerprint": "dd28bec092c22172d240a0ff9c65f4034fbb0e142f0a116d6b1a4cbb2d533cab",
+  "created_at": "2026-08-30T11:59:27.143343+00:00",
+  "dataset": "RAGBench TechQA",
+  "dataset_revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+  "document_count": 769,
+  "embedding_calls": 1116,
+  "embedding_dimension": 1024,
+  "embedding_model": "qwen3-embedding:4b",
+  "embedding_output_dimension": 1024,
+  "embedding_revision": "latest",
+  "reused_existing_collection": false,
+  "source_type": "ragbench_techqa",
+  "tenant": "ragbench-techqa"
+}

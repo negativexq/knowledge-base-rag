@@ -1,0 +1,15 @@
+{
+  "all": 32,
+  "any": 37,
+  "budget_exhausted": 17,
+  "max_context_tokens": 2400.0,
+  "mean_context_tokens": 2000.6315789473683,
+  "mean_recall": 0.9205004473285319,
+  "mean_support_units": 80.86842105263158,
+  "none": 1,
+  "p50_context_tokens": 2086.5,
+  "p95_context_tokens": 2400.0,
+  "partial": 5,
+  "queries": 38,
+  "serialized_chars_mean": 24108.07894736842
+}

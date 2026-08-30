@@ -1,0 +1,10 @@
+{
+  "candidate_k": 20,
+  "collection": "ragbench_techqa_corrected_holdout_v2_dd28bec092c22172",
+  "collection_count": 1116,
+  "query_count": 50,
+  "query_embeddings": 50,
+  "shared_candidate_hashes": true,
+  "shared_retrieval_executions": 50,
+  "terra_calls": 0
+}

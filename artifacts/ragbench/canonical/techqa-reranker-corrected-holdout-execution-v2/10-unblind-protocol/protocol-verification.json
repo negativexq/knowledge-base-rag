@@ -1,0 +1,17 @@
+{
+  "protocol_path": "10-unblind-protocol/unblind-decision-protocol-v1.json",
+  "protocol_exists": true,
+  "protocol_file_size": 7396,
+  "raw_sha256": "11ef8f09bbd4eb119f066305bc283e8b187d3cba0ed70fa94869e859f31c06bb",
+  "sidecar_path": "10-unblind-protocol/unblind-decision-protocol-v1.sha256",
+  "sidecar_value": "11ef8f09bbd4eb119f066305bc283e8b187d3cba0ed70fa94869e859f31c06bb",
+  "sidecar_match": true,
+  "authoritative_hash_convention": "RAW_FILE_BYTES_SHA256",
+  "amendment_v2_sha256_verified": true,
+  "frozen_scorecard_sha256_verified": true,
+  "arm_map_opened": false,
+  "on_off_identity_known": false,
+  "semantic_labels_changed": false,
+  "protocol_write_once": true,
+  "end_of_task_hash_recheck": "PASS"
+}

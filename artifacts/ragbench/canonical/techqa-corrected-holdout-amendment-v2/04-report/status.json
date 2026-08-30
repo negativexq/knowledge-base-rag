@@ -1,0 +1,38 @@
+{
+  "arm_maps_opened": 0,
+  "authorized": true,
+  "code_hashes": {
+    "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+    "app/evidence/section_aware.py": "cfed578102953d01b087105b299aef337ffd0a4a19c60fbbe9d56e3468fae2cd",
+    "app/evidence/support_relevance.py": "dcca796dabaabb2f54605f8a910b034d44be98ed1b54cd797a5edcc0389fe3f6",
+    "app/evidence/support_units.py": "75f646eb4ab63477d004aa935018703b3a39e6be25e503a3b3f0c7bb60334da6",
+    "app/ingestion/chunker.py": "651c9c1dcab27ab95889538e5d74643434438e2a602d4e505cab3441d7ba3620",
+    "app/ingestion/chunking_config.py": "43ba52fe1c962364b36a69423dfe3b389d0a991a8e259711e2800d628b978f7f",
+    "app/ingestion/markdown_chunker.py": "be4e2bb0a500d1465b6361ccfa41b86df914bc94805529542e8e655d7d1c441b",
+    "app/ingestion/qdrant_store.py": "faf4653b59f396779e3cedc1cab509fe29732e27b9f1e7b05203d9633034be5c",
+    "app/llm/citation_location.py": "6d890d3aaef2fccb6b19e84c05cb3f5ec11b8a264d6eb0a756ed9feee4ef07da",
+    "app/llm/embedding_models.py": "cf9006405b00aa356b9388d9c9e5cdbdf872440f5d8a091e2e12b572a21acb6f",
+    "app/llm/openai_client.py": "832c2ba9d794490e6b3bb36dc74213111752e85ea2bb5dfb9fcd802885220459",
+    "app/llm/prompt.py": "2cf92e09f01017186550eac2ad5178ee3ea0e9ee15bf8baa7601f004f15e947f",
+    "app/llm/structured_output.py": "69d34a95a83e587ab199b1265768f704b67e883543340ab9ad706c19f4219ce0",
+    "app/reranker/config.py": "182252bfdd4f2a74cd02a4ee5d45ad0c0892576fb2b06ca275560bfec7794b9e",
+    "app/reranker/cross_encoder.py": "4aca87d70c281d44444f9129e935990a728214b61a36b6372e6c117c2c82ee78",
+    "app/retrieval/filters.py": "c70e900954a0da264d126624fc6859c0b6562f1d98b7b17bda73532b468cfcf8",
+    "app/retrieval/hybrid_search.py": "1624d1b8356f430be2ca0b053e98fd6c8b64dd8bbbe017f8726bef1c4631991a",
+    "app/retrieval/search.py": "cc8df95a8d16ba4259182f1ecee59e895c16f3a415cd2b30fa881035db349869",
+    "app/retrieval/sparse.py": "dbbfeafb9253a4d5181d4373eb1fbf75d4d30e10069fbb4753bbbfad828e1f04",
+    "scripts/run_ragbench_techqa_canonical.py": "5fbc904679dd31de1ac448a8ed5625b736e502b4731a08cede7ffadeb8dc6de0",
+    "scripts/run_techqa_reranker_holdout_oneshot_v1.py": "40a7c7b0dc9acecd4504bf276cdd35f84cadb300d345a0a531277af82e0d2f54"
+  },
+  "executed": false,
+  "holdout_content_accessed_this_task": false,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "semantic_review": false,
+  "status": "CORRECTED_HOLDOUT_EXECUTION_AUTHORIZED_BY_AMENDMENT_V2"
+}

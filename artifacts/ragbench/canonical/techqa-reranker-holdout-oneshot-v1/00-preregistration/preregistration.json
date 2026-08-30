@@ -1,0 +1,87 @@
+{
+  "version": "TECHQA_RERANKER_HOLDOUT_ONESHOT_V1",
+  "implementation_check": false,
+  "architecture_diagnostic": true,
+  "promotion_authority": false,
+  "starting_head": "30df0be63349caeac4cb216b9fd2a5f36791eaa2",
+  "source": {
+    "dataset": "RAGBench TechQA",
+    "revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+    "split": "test",
+    "debug50_hash": "f85f91ff8790f627592a05bc0412b40e49e39d862325524a2747e57f5099ff57",
+    "holdout50_hash": "2833bc1c638e55f00ed5a58eb57d05382838ccc6ec0a47e39b13a496bc90abaa",
+    "corpus_fingerprint": "b7cb98f8ab85b40407d37c95b73e2a699d13802a1dfa1bdba8e1913bb194354f",
+    "canonical_config_fingerprint": "9cbc1286e802a526849bfb2e028ae0a570540658f72426bebf693f0d27434e87"
+  },
+  "conditions": {
+    "on": {
+      "retrieval": "shared Dense + BM25 + RRF candidate_k=20",
+      "ranking": "BGE reranker BAAI/bge-reranker-v2-m3, top_n=5"
+    },
+    "off": {
+      "retrieval": "same shared Dense + BM25 + RRF candidate_k=20",
+      "ranking": "direct RRF ranks 1..5; no BGE inference"
+    },
+    "section_aware_budget": 2400,
+    "top_n": 5
+  },
+  "frozen_downstream": {
+    "section_aware": "current canonical SectionAwareEvidenceBuilder",
+    "support_units": "current deterministic request-scoped support units",
+    "generator": "gpt-5.6-luna",
+    "reasoning": "none",
+    "temperature": 0.0,
+    "max_output_tokens": 1024,
+    "prompt_hash": "c18f70f3d4477d7aa812b18d142ae46de613a263123b9d47024dedf6087d9a43",
+    "schema": "support_unit_answerability_schema",
+    "downstream_policy": "V4 answerability contract + support relevance + critical-value + support-ID + citation resolution unchanged",
+    "chunking": "frozen canonical legacy baseline",
+    "embedding": "frozen Qwen3-Embedding-4B 1024-dimensional canonical configuration"
+  },
+  "metrics": [
+    "shared retrieval identities and ACL",
+    "native relevance ANY/ALL/mean recall where mapped",
+    "application contract and visibility",
+    "self/forced abstention",
+    "support-ID security and citation resolution",
+    "critical-value rejects and surviving claims",
+    "measured stage latency and wall-clock E2E",
+    "Luna usage and cost",
+    "blinded semantic review pack with blank scorecard"
+  ],
+  "final_decision_gate": {
+    "BGE_REMOVAL_SUPPORTED_requires_all": [
+      "OFF deterministic security regressions = 0",
+      "OFF Incorrect <= ON Incorrect",
+      "OFF Correct + Partial >= ON Correct + Partial",
+      "OFF_BETTER >= ON_BETTER",
+      "where mapped, ALL_OFF >= ALL_ON and mean_recall_OFF >= mean_recall_ON - 0.01",
+      "no preregistered catastrophic query-class regression",
+      "meaningful measured latency reduction from reranker removal"
+    ],
+    "catastrophic_regression_definition": [
+      "deterministic security leakage",
+      "repeatable unauthorized or hidden support acceptance",
+      "severe systematic wrong-value/entity behavior unique to OFF",
+      "one clearly defined query class materially collapsing under OFF"
+    ],
+    "mixed_semantic_result": "INCONCLUSIVE"
+  },
+  "execution": {
+    "holdout_one_shot": true,
+    "shared_candidate_retrieval_once_per_query": true,
+    "official_luna_calls_max": {"on": 50, "off": 50},
+    "preflight_calls_max": 2,
+    "terra_calls": 0,
+    "paired_order_seed": 20260830,
+    "blind_review_seed": 20260831,
+    "no_tuning_after_holdout_access": true,
+    "semantic_unblind_in_this_task": false
+  },
+  "holdout_access": {
+    "access_log_required_before_content": true,
+    "holdout_content_read_before_this_preregistration": false,
+    "holdout_retrieval_before_this_preregistration": false,
+    "holdout_generation_before_this_preregistration": false
+  }
+}

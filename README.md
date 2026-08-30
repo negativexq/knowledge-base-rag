@@ -22,7 +22,8 @@ focuses on the boundaries that decide whether that demo is useful in practice:
 - retrieval is restricted by server-owned tenant and role context;
 - dense and sparse signals are fused before multilingual reranking;
 - retrieved text and metadata remain explicitly untrusted reference data;
-- citations are canonicalized and checked against the authorized result set;
+- support IDs are checked against the authorized, model-visible result set;
+- critical-value consistency is checked locally per answer part and support;
 - production generation defaults to buffer → validate → release;
 - sync, index activation, evaluation, and trace state are inspectable.
 
@@ -63,7 +64,8 @@ flowchart TD
     Envelope --> Units[Deterministic support units]
     Units --> Generate[Luna generation]
     Generate --> Validate[Support-ID validation]
-    Validate --> Resolve[Application citation resolution]
+    Validate --> Critical[Claim-local critical-value validation]
+    Critical --> Resolve[Application citation resolution]
     Resolve --> Answer[Answer + canonical citations]
 
     Console[React Operations Console] <-->|HTTP / SSE| API[FastAPI]
@@ -98,6 +100,7 @@ authenticated request
   → deterministic support units
   → Luna generation (`text` + `support_ids[]`)
   → deterministic support-ID validation
+  → claim-local critical-value consistency validation
   → application-resolved citations
 ```
 
@@ -112,6 +115,11 @@ The active Qdrant collection is served through the `kb_active` alias. Pipeline
 fingerprints include the embedding, parser, index, and chunk configuration so a
 configuration mismatch is surfaced instead of silently serving an incompatible
 index.
+
+Support IDs provide request-scoped provenance and authorization; the application
+resolves their exact citation text. Claim-local critical-value validation protects
+numbers, units, versions, dates, and similar literal values without presenting
+that consistency check as semantic entailment or an LLM faithfulness guarantee.
 
 ## Security model
 
@@ -148,6 +156,51 @@ remain in [artifacts/](artifacts/) and the linked deep dives.
 
 The next benchmark preparation set is documented in [Evaluation Corpus v2](docs/evaluation-dataset.md); it is a frozen, model-free fixture expansion and has not been benchmarked yet.
 
+### Current TechQA reranker status
+
+The corrected TechQA HOLDOUT50 decision is closed as
+`BGE_REMOVAL_NOT_SUPPORTED`. The production-like BGE-on arm reached 15/50
+strictly correct answers (30%), 35/50 correct-or-partial (70%), 1/50
+incorrect (2%), and 14/50 unavailable. Deterministic support-ID provenance,
+authorization, hidden/cross-query checks, and citation resolution remained
+clean in the measured scope.
+
+The no-reranker arm improved evidence completeness, but no robust directional
+semantic effect was distinguishable: pairwise preference was ON_BETTER 13,
+OFF_BETTER 12, TIE 25, with `NET_OFF = -1`. The preregistered semantic
+non-regression gate failed on its nominal Correct+Partial and pairwise
+criteria, so production architecture was not changed. This verdict does not
+prove that BGE is semantically higher quality.
+
+| Corrected HOLDOUT50 metric | BGE ON | RRF/OFF |
+| --- | ---: | ---: |
+| Correct | 15/50 (30%) | 12/50 (24%) |
+| Correct + Partial | 35/50 (70%) | 31/50 (62%) |
+| Incorrect | 1/50 (2%) | 1/50 (2%) |
+| Unavailable | 14/50 (28%) | 18/50 (36%) |
+
+For the 41 annotated HOLDOUT rows, the evidence funnel was:
+
+| Evidence stage | ANY | ALL | Mean recall |
+| --- | ---: | ---: | ---: |
+| Shared RRF Top20 | 40/41 | 38/41 | 95.905% |
+| BGE Top5 | 33/41 | 30/41 | 77.875% |
+| RRF Top5 | 37/41 | 32/41 | 85.054% |
+| BGE + SectionAware @2400 | 33/41 | 30/41 | 77.875% |
+| RRF + SectionAware @2400 | 37/41 | 33/41 | 85.867% |
+
+Candidate retrieval is strong; most required evidence is present in RRF
+Top20, with substantial loss at Top20 → Top5 selection. OFF recovers more
+evidence, but that gain did not satisfy the frozen semantic gate. The retained
+BGE implementation measured 98.70s p50, 251.40s p95, and 293.58s max on this
+corrected run; Luna p50 was approximately 2.62s ON and 2.69s OFF.
+
+The evaluation harness is allowed to veto the engineer: a result changes the
+system only when it passes a decision rule frozen before the result is known.
+The corrected HOLDOUT was a new execution after the original run was
+invalidated for using a DEBUG50-only corpus; it must not be described as an
+untouched or pristine HOLDOUT.
+
 ### Answerability evaluation
 
 Phase 6 evaluated retrieval-derived gates, statistical calibration, and
@@ -170,15 +223,17 @@ The fixed-obligation support follow-up is documented in [docs/phase-6c6-fixed-ob
 | --- | --- | --- |
 | Embeddings | Qwen3-Embedding-4B @ 1024 | [Multilingual embedding benchmark](artifacts/embedding-benchmark-sprint21/stability.json) and migration artifacts |
 | Retrieval | Dense + BM25 + RRF | [220-query multilingual evaluation set](artifacts/reranker-benchmark-sprint26/results.json) |
-| Reranker | `BAAI/bge-reranker-v2-m3` | Cross-lingual Recall@5 `1.0000`, MRR `0.9558`; 63 rescues, 0 drops ([results](artifacts/reranker-benchmark-sprint26/results.json)) |
+| Reranker | `BAAI/bge-reranker-v2-m3` retained | Corrected TechQA removal verdict `BGE_REMOVAL_NOT_SUPPORTED`; measured BGE p50 `98.70s` ([final artifacts](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/)) |
 | Chunking | Legacy 500/50 baseline retained | Token-aware candidates matched quality but did not reduce context, chunk count, or storage on the current corpus |
 | Prompt security | Tenant ACL + untrusted context + STRICT | 82 adversarial cases; injection, spoofing, suppression, unauthorized citation, and cross-tenant exfiltration rates all `0.0000` ([results](artifacts/security-sprint25/adversarial-results.json)) |
 | Generation sanity | Baseline generation path retained | 26/26 successful; citation integrity, not-found behavior, and strict validation all `1.0000` ([results](artifacts/chunking-benchmark-sprint27/generation-sanity.json)) |
 
-The reranker benchmark measured cross-lingual Recall@5 of `1.0000` for the
-selected model versus `0.9563` with reranking disabled. The multilingual model
-has a meaningful local CPU latency cost; see [docs/reranking.md](docs/reranking.md)
-for the full trade-off and paired comparison.
+Historical reranker-benchmark-sprint26 results are retained for model
+characterization, but the authoritative architecture decision is the frozen
+corrected TechQA HOLDOUT50 result above. BGE remains enabled because the
+preregistered removal gate did not pass; its measured latency remains an
+unresolved production blocker and engineering debt. See
+[docs/reranking.md](docs/reranking.md) for the broader trade-off history.
 
 The chunking corpus is intentionally called out as a limitation: its average
 chunk is about 69 Qwen tokens and its maximum is 100, so the 256–768 token
@@ -412,16 +467,44 @@ The compact decision log is in [docs/research-history.md](docs/research-history.
 The canonical public Basic-50 record is in
 [artifacts/ragbench/canonical/](artifacts/ragbench/canonical/). The pinned
 RAGBench eManual run found hybrid Top20 relevant-sentence recall of 100%, BGE
-Top5 mean recall of 96.24%, and SectionAware mean recall of 89.72%. Its visible
-semantic result was 29 correct, 7 partial, 4 incorrect, and 10 abstentions;
-lexical exact match is not the quality headline.
+Top5 mean recall of 96.24%, and SectionAware mean recall of 89.72%. The
+historical graceful-budget semantic result was 29 correct, 7 partial, 4
+incorrect, and 10 abstentions; lexical exact match is not the quality
+headline.
 
 The graceful SectionAware policy reduced budget assembly failures from 31 to
 0, increased grounded visible answers from 9 to 40, and reduced abstentions
 from 41 to 10. The sentence-ID citation contract is a small-scale validated
 direction (3/4 semantic recovery, 4/4 valid IDs), not a globally validated
-production result. It remains behind an explicit runtime path until broader
-confirmation exists.
+production result. The initial full canonical Basic-50 confirmation exposed
+support-ID output/validation debt: Luna completed 50/50 calls, but only 31/50
+visible outputs had valid support-ID selections, with 24 correct, 7 partial, 2
+incorrect, 15 validator-induced no-valid-output cases, and 2 parse failures.
+The subsequent claim-local critical-value fix recovered 5 previously
+suppressed outputs in a frozen replay with no visibility or safety regressions.
+Targeted semantic judging of those exact five outputs found 1 correct and 4
+partial answers, making the post-fix record 25 correct, 11 partial, 2
+incorrect, and 12 unavailable (38 visible). This was a validator-only replay
+plus five Terra judge calls, not a regenerated 50-query benchmark; broader
+support-ID validation remains a follow-up before treating the architecture as
+production-wide proven. The post-fix operational rates are 50.0% strict and
+72.0% correct-or-partial, so the project-local strict classification remains
+BASIC_RAG_NEEDS_WORK even though validator recovery improved useful
+availability.
+
+The first frozen cross-dataset confirmation on RAGBench TechQA Basic-50 used
+the same architecture and no TechQA-specific tuning. That earlier DEBUG50
+record remains separate from the corrected HOLDOUT decision. Its artifacts are
+in [artifacts/ragbench/canonical/techqa-basic50/](artifacts/ragbench/canonical/techqa-basic50/).
+
+The original HOLDOUT execution was invalidated before semantic unblind because
+HOLDOUT queries were run against a DEBUG50-only corpus/index: 0/41 usable
+annotated rows had their gold source in that index. The audit reproduced the
+known DEBUG scorer metrics exactly, proving an arm-symmetric, outcome-
+independent corpus-scope failure rather than a scorer defect. The corrected
+execution required L0 gold-source coverage and L1 annotation mappability to
+pass 41/41 before retrieval or provider calls. This is an evaluation-
+reliability improvement, not a quality result.
 
 ## Current limitations
 
@@ -440,12 +523,25 @@ confirmation exists.
 - Sync coordination is process-local and the current connector model maps each
   configured source type to a server-owned tenant.
 
-## Next
+## Next engineering work
 
-The next useful engineering step is end-to-end grounded generation quality
-evaluation using the existing retrieval, ACL, reranker, and citation-safe
-runtime path. Async/concurrent model serving remains a separate concern. The
-complete roadmap and historical decisions remain in [docs/PLANNING.md](docs/PLANNING.md).
+The BGE removal decision is closed as `BGE_REMOVAL_NOT_SUPPORTED`; do not
+reopen it on this consumed HOLDOUT. The next priorities are:
+
+- forensic/calibration work on the claim-local critical-value validator. The
+  corrected run recorded 14 ON versus 21 OFF critical rejects and 5 ON versus
+  10 OFF forced abstentions; this is a follow-up hypothesis, not a proven
+  causal explanation;
+- a new DEV/DEBUG Top-N experiment. RRF Top20 ALL was 38/41 versus 32/41 at
+  RRF Top5, but earlier Top8 evidence was budget-confounded and Top5 is not a
+  globally settled choice;
+- a new evaluation population for future architecture decisions. This
+  corrected HOLDOUT50 is consumed and must not be treated as untouched;
+- BGE serving-latency work. BGE remains enabled, but its measured tail latency
+  is an unresolved production blocker.
+
+The complete roadmap and historical decisions remain in
+[docs/PLANNING.md](docs/PLANNING.md).
 
 ## License
 

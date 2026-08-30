@@ -1,0 +1,10 @@
+{
+  "population": 50,
+  "ON_BETTER": 13,
+  "OFF_BETTER": 12,
+  "TIE": 25,
+  "BOTH_BAD": 0,
+  "NET_OFF": -1,
+  "semantic_direction": "NO_LARGE_DIRECTIONAL_EFFECT"
+}
+

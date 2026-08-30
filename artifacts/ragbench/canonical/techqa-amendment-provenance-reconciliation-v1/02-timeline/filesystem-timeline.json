@@ -1,0 +1,53 @@
+{
+  "current_worktree_state": [
+    "?? artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/"
+  ],
+  "files": [
+    {
+      "ctime_utc": "2026-08-30T09:50:53.650538+00:00",
+      "exists": true,
+      "inode": 39387598,
+      "mtime_utc": "2026-08-30T09:50:53.650538+00:00",
+      "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.json",
+      "size": 1718,
+      "tracked_by_git": false
+    },
+    {
+      "ctime_utc": "2026-08-30T09:50:53.650700+00:00",
+      "exists": true,
+      "inode": 39387599,
+      "mtime_utc": "2026-08-30T09:50:53.650700+00:00",
+      "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.sha256",
+      "size": 65,
+      "tracked_by_git": false
+    },
+    {
+      "ctime_utc": "2026-08-30T09:50:53.649984+00:00",
+      "exists": true,
+      "inode": 39387596,
+      "mtime_utc": "2026-08-30T09:50:53.649984+00:00",
+      "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/04-root-cause/root-cause.json",
+      "size": 2689,
+      "tracked_by_git": false
+    },
+    {
+      "ctime_utc": "2026-08-30T09:50:53.650815+00:00",
+      "exists": true,
+      "inode": 39387600,
+      "mtime_utc": "2026-08-30T09:50:53.650815+00:00",
+      "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/04-root-cause/root-cause.md",
+      "size": 3571,
+      "tracked_by_git": false
+    },
+    {
+      "ctime_utc": "2026-08-30T09:50:53.650988+00:00",
+      "exists": true,
+      "inode": 39387603,
+      "mtime_utc": "2026-08-30T09:50:53.650988+00:00",
+      "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/06-report/report.md",
+      "size": 3571,
+      "tracked_by_git": false
+    }
+  ],
+  "interpretation": "Filesystem timestamps are supporting evidence only, not authoritative creation history."
+}

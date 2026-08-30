@@ -1,0 +1,27 @@
+{
+  "amendment_v2_verified": true,
+  "bge_off_calls": 0,
+  "bge_on_calls": 50,
+  "blind_review": {
+    "arm_identity_leak": false,
+    "blind_seed": 20260832,
+    "candidate_identities_hidden": true,
+    "mapping_sha256": "72d3ad76356678c5d4d2e96d7e6c98a168cc86dc2c8a54bac02968fd71d213f1",
+    "query_count": 50,
+    "semantic_fields_blank": true
+  },
+  "collection": "ragbench_techqa_corrected_holdout_v2_dd28bec092c22172",
+  "corrected_corpus_fingerprint": "dd28bec092c22172d240a0ff9c65f4034fbb0e142f0a116d6b1a4cbb2d533cab",
+  "holdout_content_accessed": true,
+  "new_semantic_labels": 0,
+  "official_luna_calls": 100,
+  "original_holdout_accessed": true,
+  "original_invalid_reason": "HOLDOUT_RUN_INVALID_CORPUS_SCOPE",
+  "production_changed": false,
+  "query_embedding_calls": 50,
+  "retrieval_executions": 50,
+  "semantic_status": "PENDING_BLIND_REVIEW",
+  "semantic_unblind": false,
+  "status": "CORRECTED_HOLDOUT_EXECUTION_VALID",
+  "terra_calls": 0
+}

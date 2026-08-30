@@ -1,0 +1,41 @@
+{
+  "primary_denominator": 50,
+  "sensitivity_denominator": 45,
+  "excluded_query_ids": [
+    "techqa_DEV_Q157#row-0153",
+    "techqa_DEV_Q252#row-0006",
+    "techqa_DEV_Q283#row-0080",
+    "techqa_DEV_Q300#row-0109",
+    "techqa_DEV_Q308#row-0103"
+  ],
+  "on": {
+    "CORRECT": 14,
+    "PARTIAL": 16,
+    "INCORRECT": 1,
+    "UNAVAILABLE": 14
+  },
+  "off": {
+    "CORRECT": 12,
+    "PARTIAL": 14,
+    "INCORRECT": 1,
+    "UNAVAILABLE": 18
+  },
+  "pairwise": {
+    "ON_BETTER": 10,
+    "OFF_BETTER": 11,
+    "TIE": 24,
+    "BOTH_BAD": 0,
+    "NET_OFF_45": 1
+  },
+  "primary_net_off": -1,
+  "primary_direction": "NO_LARGE_DIRECTIONAL_EFFECT",
+  "sensitivity_direction": "NO_LARGE_DIRECTIONAL_EFFECT",
+  "direction_sign_preserved": false,
+  "crosses_eight_query_boundary": false,
+  "g2_changed": false,
+  "g3_changed": false,
+  "g4_changed": true,
+  "robustness": "LOW",
+  "may_override_primary": false
+}
+

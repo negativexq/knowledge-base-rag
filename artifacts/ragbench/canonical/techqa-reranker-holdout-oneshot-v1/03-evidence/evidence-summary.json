@@ -1,0 +1,32 @@
+{
+  "budget": 2400,
+  "off": {
+    "all": 0,
+    "annotated": 41,
+    "any": 11,
+    "budget_exhausted": 32,
+    "max_context_tokens": 2400.0,
+    "mean_context_tokens": 2226.3414634146343,
+    "mean_recall": 0.06312131519217717,
+    "mean_support_units": 92.53658536585365,
+    "none": 30,
+    "p50_context_tokens": 2291.0,
+    "p95_context_tokens": 2400.0,
+    "partial": 11
+  },
+  "on": {
+    "all": 0,
+    "annotated": 41,
+    "any": 12,
+    "budget_exhausted": 30,
+    "max_context_tokens": 2400.0,
+    "mean_context_tokens": 2257.3658536585367,
+    "mean_recall": 0.06785621340198428,
+    "mean_support_units": 87.97560975609755,
+    "none": 29,
+    "p50_context_tokens": 2355.0,
+    "p95_context_tokens": 2400.0,
+    "partial": 12
+  },
+  "same_shared_retrieval": true
+}

@@ -1,0 +1,48 @@
+{
+  "off": {
+    "abstain": 18,
+    "answer": 32,
+    "citation_resolution_failures": 0,
+    "critical_rejects": 21,
+    "forced_abstain": 10,
+    "provider_failures": 0,
+    "queries": 50,
+    "raw_complete": 50,
+    "security": {
+      "cross_query_accepted": 0,
+      "hidden_accepted": 0,
+      "unauthorized_accepted": 0,
+      "unknown_accepted": 0
+    },
+    "self_abstain": 8,
+    "support_validation_failures": 0,
+    "valid_application_contracts": 50,
+    "visible": 32
+  },
+  "on": {
+    "abstain": 14,
+    "answer": 36,
+    "citation_resolution_failures": 0,
+    "critical_rejects": 14,
+    "forced_abstain": 5,
+    "provider_failures": 0,
+    "queries": 50,
+    "raw_complete": 50,
+    "security": {
+      "cross_query_accepted": 0,
+      "hidden_accepted": 0,
+      "unauthorized_accepted": 0,
+      "unknown_accepted": 0
+    },
+    "self_abstain": 9,
+    "support_validation_failures": 0,
+    "valid_application_contracts": 50,
+    "visible": 36
+  },
+  "only_material_config_difference": [
+    "ranking_source",
+    "reranker_enabled"
+  ],
+  "provider_failures": 0,
+  "terra_calls": 0
+}

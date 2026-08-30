@@ -116,7 +116,94 @@ def responses_strict_schema(schema: dict[str, Any]) -> dict[str, Any]:
                 {"type": "null"},
             ]
         }
+
+    def enforce(node: object) -> None:
+        if not isinstance(node, dict):
+            return
+        properties = node.get("properties")
+        if node.get("type") == "object":
+            if not isinstance(properties, dict):
+                properties = {}
+                node["properties"] = properties
+            node["additionalProperties"] = False
+            node["required"] = list(properties)
+        if isinstance(properties, dict):
+            for child in properties.values():
+                enforce(child)
+        items = node.get("items")
+        if isinstance(items, dict):
+            enforce(items)
+        for keyword in ("anyOf", "allOf"):
+            variants = node.get(keyword)
+            if isinstance(variants, list):
+                for variant in variants:
+                    enforce(variant)
+
+    enforce(adapted)
     return adapted
+
+
+def validate_responses_strict_schema_shape(schema: dict[str, Any]) -> None:
+    """Reject malformed strict-output schemas before a provider request.
+
+    This intentionally checks only the structural invariants required by the
+    repository's Responses schemas.  It is not a replacement for provider
+    validation, but it prevents known-invalid object/array/property shapes
+    from consuming a live preflight or official request.
+    """
+
+    def visit(node: object, path: tuple[str, ...]) -> None:
+        if not isinstance(node, dict):
+            raise ValueError(f"schema node must be an object at {'.'.join(path) or '<root>'}")
+        node_type = node.get("type")
+        if not path and any(keyword in node for keyword in ("anyOf", "allOf", "oneOf")):
+            raise ValueError("Responses strict schema cannot use a union at the root")
+        properties = node.get("properties")
+        if node_type == "object":
+            if node.get("additionalProperties") is not False:
+                raise ValueError(
+                    "object schema must set additionalProperties=false at "
+                    f"{'.'.join(path) or '<root>'}"
+                )
+            if not isinstance(properties, dict):
+                raise ValueError(
+                    f"object schema must declare properties at {'.'.join(path) or '<root>'}"
+                )
+            required = node.get("required")
+            if not isinstance(required, list) or set(required) != set(properties):
+                raise ValueError(
+                    "strict object schema must require every property at "
+                    f"{'.'.join(path) or '<root>'}"
+                )
+        if isinstance(properties, dict):
+            for name, child in properties.items():
+                if not isinstance(child, dict) or not any(
+                    key in child for key in ("type", "anyOf", "allOf", "$ref")
+                ):
+                    raise ValueError(
+                        "property schema must declare a type or union at "
+                        f"{'.'.join((*path, 'properties', name))}"
+                    )
+                visit(child, (*path, "properties", name))
+        if node_type == "array":
+            items = node.get("items")
+            if not isinstance(items, dict):
+                raise ValueError(
+                    f"array schema must declare items at {'.'.join(path) or '<root>'}"
+                )
+            visit(items, (*path, "items"))
+        for keyword in ("anyOf", "allOf"):
+            variants = node.get(keyword)
+            if variants is None:
+                continue
+            if not isinstance(variants, list) or not variants:
+                raise ValueError(
+                    f"{keyword} must be a non-empty array at {'.'.join(path) or '<root>'}"
+                )
+            for index, variant in enumerate(variants):
+                visit(variant, (*path, keyword, str(index)))
+
+    visit(schema, ())
 
 
 class OpenAIGeneratorClient:
@@ -193,6 +280,7 @@ class OpenAIGeneratorClient:
         text_config: dict[str, Any] | None = None
         sent_schema = responses_strict_schema(schema) if schema is not None else None
         if schema is not None:
+            validate_responses_strict_schema_shape(sent_schema)
             text_config = {
                 "format": {
                     "type": "json_schema",

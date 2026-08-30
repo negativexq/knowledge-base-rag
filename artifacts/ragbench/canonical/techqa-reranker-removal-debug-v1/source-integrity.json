@@ -1,0 +1,20 @@
+{
+  "annotated_population": 38,
+  "calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna_official": 100,
+    "luna_preflight": 2,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "config_fingerprint": "9cbc1286e802a526849bfb2e028ae0a570540658f72426bebf693f0d27434e87",
+  "corpus_fingerprint": "b7cb98f8ab85b40407d37c95b73e2a699d13802a1dfa1bdba8e1913bb194354f",
+  "dataset": "RAGBench TechQA",
+  "debug50_hash": "f85f91ff8790f627592a05bc0412b40e49e39d862325524a2747e57f5099ff57",
+  "holdout50_hash": "2833bc1c638e55f00ed5a58eb57d05382838ccc6ec0a47e39b13a496bc90abaa",
+  "holdout_touched": false,
+  "query_count": 50,
+  "revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+  "split": "test"
+}

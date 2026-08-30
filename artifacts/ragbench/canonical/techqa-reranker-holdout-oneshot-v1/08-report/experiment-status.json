@@ -1,0 +1,18 @@
+{
+  "blind_review": {
+    "arm_map_sha256": "7cc3f231f4a731da976714fac14428d2333d010026f9ee6af583b3f325f8c34b",
+    "blind_seed": 20260831,
+    "candidate_identities_hidden": true,
+    "query_count": 50,
+    "semantic_fields_blank": true
+  },
+  "holdout_touched": true,
+  "one_shot_valid": true,
+  "logical_official_luna_calls": 100,
+  "physical_luna_attempts": 135,
+  "retryable_provider_failures_recovered": 35,
+  "production_changed": false,
+  "semantic_unblind": false,
+  "status": "HOLDOUT_SEMANTIC_STATUS_PENDING_BLIND_REVIEW",
+  "terra_calls": 0
+}

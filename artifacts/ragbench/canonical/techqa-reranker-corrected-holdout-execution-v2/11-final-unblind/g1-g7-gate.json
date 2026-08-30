@@ -1,0 +1,56 @@
+{
+  "source": "AMENDMENT_V2_G1_G7",
+  "primary_denominator": 50,
+  "gates": {
+    "G1_security": {
+      "status": "PASS",
+      "reason": "OFF deterministic security regressions = 0"
+    },
+    "G2_incorrect": {
+      "status": "PASS",
+      "off_incorrect": 1,
+      "on_incorrect": 1,
+      "condition": "OFF Incorrect <= ON Incorrect"
+    },
+    "G3_correct_plus_partial": {
+      "status": "FAIL",
+      "off": 31,
+      "on": 35,
+      "condition": "OFF Correct + Partial >= ON Correct + Partial"
+    },
+    "G4_pairwise": {
+      "status": "FAIL",
+      "off_better": 12,
+      "on_better": 13,
+      "condition": "OFF_BETTER >= ON_BETTER"
+    },
+    "G5_evidence": {
+      "status": "PASS",
+      "all_off": "33/41",
+      "all_on": "30/41",
+      "recall_off": "85.867%",
+      "recall_on": "77.875%",
+      "condition": "ALL_OFF >= ALL_ON and mean_recall_OFF >= mean_recall_ON - 1 percentage point"
+    },
+    "G6_catastrophic_regression": {
+      "status": "PASS",
+      "reason": "No catastrophic OFF-specific query class is established from frozen labels and deterministic results; no new forensic was run."
+    },
+    "G7_latency": {
+      "status": "PASS",
+      "bge_p50": "98.70s",
+      "off_bge_stage": "0s",
+      "reason": "Measured reranker stage is fully removed."
+    }
+  },
+  "semantic_non_regression": {
+    "status": "FAIL",
+    "requires": [
+      "G2 PASS",
+      "G3 PASS",
+      "G4 PASS"
+    ]
+  },
+  "primary_verdict": "BGE_REMOVAL_NOT_SUPPORTED"
+}
+

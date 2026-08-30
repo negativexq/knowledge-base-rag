@@ -1,0 +1,701 @@
+{
+  "calls": [
+    {
+      "condition": "ON",
+      "cost_usd": 0.0020812,
+      "evidence_hash": "53676fd6409b309f8b05f779a41094b64655d286dc3e01a056a87f983473eb25",
+      "latency_ms": 4107.422,
+      "legacy_context_count": 2187,
+      "preflight": true,
+      "prompt_hash": "7e6af6d69a45ae65e88e02c55a0f71c32b2413d7d807df4db21e77e9e487ecff",
+      "provider_observation": {
+        "attempt": 1,
+        "completed_at": "2026-08-30T00:40:41.965893+00:00",
+        "elapsed_ms": 4107.012,
+        "endpoint": "responses.create",
+        "error_code": null,
+        "first_body_byte_at": "2026-08-30T00:40:41.965580+00:00",
+        "headers_received_at": "2026-08-30T00:40:41.965580+00:00",
+        "logical_schema_hash": "6bb049b787a4ae8afeb4cb635ca0cffd8b23650d3685d3e8140ca97b21dc4ca6",
+        "max_output_tokens": 1024,
+        "model": "gpt-5.6-luna",
+        "prompt_content_hash": "7e6af6d69a45ae65e88e02c55a0f71c32b2413d7d807df4db21e77e9e487ecff",
+        "provider": "openai",
+        "raw_response": {
+          "background": false,
+          "billing": {
+            "payer": "openai"
+          },
+          "completed_at": 1788050441.0,
+          "conversation": null,
+          "created_at": 1788050439.0,
+          "error": null,
+          "frequency_penalty": 0.0,
+          "id": "resp_089af37ef764cfa5006a937c07501887d2800727b8caced931",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 1024,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5.6-luna",
+          "moderation": null,
+          "object": "response",
+          "output": [
+            {
+              "content": [
+                {
+                  "annotations": [],
+                  "logprobs": [],
+                  "text": "{\"result\":{\"status\":\"ANSWER\",\"answer_parts\":[{\"text\":\"For Netcool/OMNIbus V8.1, use the newer Socket Gateway package, nco-g-socket-java-2_0. The V8.1 package contains gateway versions for all supported operating systems: AIX, Linux, Solaris, Windows, and zLinux. Its Passport Advantage part number is CN6I1EN.\",\"support_ids\":[\"E1.S2\",\"E1.S7\",\"E1.S8\",\"E1.S9\",\"E1.S10\"]},{\"text\":\"For Netcool/OMNIbus V7.4.0, use the separately supplied Socket Gateway package for the relevant operating system; the evidence lists the applicable part numbers by platform.\",\"support_ids\":[\"E1.S11\",\"E1.S12\",\"E1.S13\"]}]} }",
+                  "type": "output_text"
+                }
+              ],
+              "id": "msg_089af37ef764cfa5006a937c084a4087d28ee710d8f8d4013d",
+              "phase": "final_answer",
+              "role": "assistant",
+              "status": "completed",
+              "type": "message"
+            }
+          ],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0.0,
+          "previous_response_id": null,
+          "prompt": null,
+          "prompt_cache_key": null,
+          "prompt_cache_options": null,
+          "prompt_cache_retention": "24h",
+          "reasoning": {
+            "context": "all_turns",
+            "effort": "none",
+            "generate_summary": null,
+            "mode": "standard",
+            "summary": null
+          },
+          "safety_identifier": null,
+          "service_tier": "default",
+          "status": "completed",
+          "store": true,
+          "temperature": 0.0,
+          "text": {
+            "format": {
+              "description": null,
+              "name": "rag_answer_v2_2",
+              "schema_": {
+                "additionalProperties": false,
+                "properties": {
+                  "result": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "answer_parts": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "support_ids": {
+                                  "items": {
+                                    "enum": [
+                                      "E1.S1",
+                                      "E1.S2",
+                                      "E1.S3",
+                                      "E1.S4",
+                                      "E1.S5",
+                                      "E1.S6",
+                                      "E1.S7",
+                                      "E1.S8",
+                                      "E1.S9",
+                                      "E1.S10",
+                                      "E1.S11",
+                                      "E1.S12",
+                                      "E1.S13",
+                                      "E1.S14",
+                                      "E1.S15",
+                                      "E2.S1",
+                                      "E2.S2",
+                                      "E2.S3",
+                                      "E2.S4",
+                                      "E2.S5",
+                                      "E2.S6",
+                                      "E2.S7",
+                                      "E2.S8",
+                                      "E2.S9",
+                                      "E2.S10",
+                                      "E2.S11",
+                                      "E2.S12",
+                                      "E2.S13",
+                                      "E2.S14",
+                                      "E2.S15",
+                                      "E2.S16",
+                                      "E2.S17",
+                                      "E2.S18",
+                                      "E2.S19",
+                                      "E2.S20",
+                                      "E2.S21",
+                                      "E2.S22",
+                                      "E2.S23",
+                                      "E2.S24",
+                                      "E2.S25",
+                                      "E2.S26",
+                                      "E3.S1",
+                                      "E3.S2",
+                                      "E3.S3",
+                                      "E3.S4",
+                                      "E3.S5",
+                                      "E3.S6",
+                                      "E3.S7",
+                                      "E3.S8",
+                                      "E3.S9",
+                                      "E3.S10",
+                                      "E3.S11",
+                                      "E3.S12",
+                                      "E3.S13",
+                                      "E3.S14",
+                                      "E3.S15",
+                                      "E3.S16",
+                                      "E4.S1",
+                                      "E4.S2",
+                                      "E4.S3",
+                                      "E4.S4",
+                                      "E4.S5",
+                                      "E4.S6",
+                                      "E4.S7",
+                                      "E4.S8",
+                                      "E4.S9",
+                                      "E4.S10",
+                                      "E4.S11",
+                                      "E4.S12",
+                                      "E4.S13",
+                                      "E4.S14",
+                                      "E4.S15",
+                                      "E5.S1",
+                                      "E5.S2",
+                                      "E5.S3",
+                                      "E5.S4",
+                                      "E5.S5",
+                                      "E5.S6",
+                                      "E5.S7",
+                                      "E5.S8",
+                                      "E5.S9",
+                                      "E5.S10",
+                                      "E5.S11",
+                                      "E5.S12",
+                                      "E5.S13",
+                                      "E5.S14",
+                                      "E5.S15",
+                                      "E5.S16",
+                                      "E5.S17",
+                                      "E5.S18",
+                                      "E5.S19",
+                                      "E5.S20",
+                                      "E5.S21",
+                                      "E5.S22",
+                                      "E5.S23",
+                                      "E5.S24",
+                                      "E5.S25",
+                                      "E5.S26",
+                                      "E5.S27",
+                                      "E5.S28",
+                                      "E5.S29",
+                                      "E5.S30"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  "minItems": 1,
+                                  "type": "array"
+                                },
+                                "text": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "text",
+                                "support_ids"
+                              ],
+                              "type": "object"
+                            },
+                            "minItems": 1,
+                            "type": "array"
+                          },
+                          "status": {
+                            "enum": [
+                              "ANSWER"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "status",
+                          "answer_parts"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "reason_code": {
+                            "enum": [
+                              "NO_RELEVANT_EVIDENCE",
+                              "EVIDENCE_INSUFFICIENT",
+                              "QUERY_AMBIGUOUS",
+                              "EVIDENCE_CONFLICT"
+                            ],
+                            "type": "string"
+                          },
+                          "status": {
+                            "enum": [
+                              "ABSTAIN"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "status",
+                          "reason_code"
+                        ],
+                        "type": "object"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "result"
+                ],
+                "type": "object"
+              },
+              "strict": true,
+              "type": "json_schema"
+            },
+            "verbosity": "medium"
+          },
+          "tool_choice": "auto",
+          "tool_usage": {
+            "image_gen": {
+              "input_tokens": 0,
+              "input_tokens_details": {
+                "image_tokens": 0,
+                "text_tokens": 0
+              },
+              "output_tokens": 0,
+              "output_tokens_details": {
+                "image_tokens": 0,
+                "text_tokens": 0
+              },
+              "total_tokens": 0
+            },
+            "web_search": {
+              "num_requests": 0
+            }
+          },
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 0.98,
+          "truncation": "disabled",
+          "usage": {
+            "input_tokens": 9302,
+            "input_tokens_details": {
+              "cache_write_tokens": 9299,
+              "cached_tokens": 0
+            },
+            "output_tokens": 184,
+            "output_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "total_tokens": 9486
+          },
+          "user": null
+        },
+        "reasoning": "none",
+        "request_hash": "f641fcbea97f537af85e377457deedd981488bdff3bc8e271e64920df0f3a419",
+        "request_id": "c6babccbbf3e40cca34eaa8f0e750600",
+        "request_started_at": "2026-08-30T00:40:37.858822+00:00",
+        "response_bytes": 600,
+        "response_id": "resp_089af37ef764cfa5006a937c07501887d2800727b8caced931",
+        "schema_hash": "6bb049b787a4ae8afeb4cb635ca0cffd8b23650d3685d3e8140ca97b21dc4ca6",
+        "seed_requested": null,
+        "seed_sent": false,
+        "seed_support": "not_supported_by_installed_responses_api",
+        "status": "COMPLETE",
+        "status_code": 200,
+        "streaming": false,
+        "temperature_requested": 0.0,
+        "temperature_sent": 0.0,
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 9302,
+          "output_tokens": 184,
+          "reasoning_tokens": 0,
+          "total_tokens": 9486
+        }
+      },
+      "query_id": "techqa_DEV_Q007#row-0076",
+      "ranking_source": "BGE_TOP5",
+      "raw_output": "{\"result\":{\"status\":\"ANSWER\",\"answer_parts\":[{\"text\":\"For Netcool/OMNIbus V8.1, use the newer Socket Gateway package, nco-g-socket-java-2_0. The V8.1 package contains gateway versions for all supported operating systems: AIX, Linux, Solaris, Windows, and zLinux. Its Passport Advantage part number is CN6I1EN.\",\"support_ids\":[\"E1.S2\",\"E1.S7\",\"E1.S8\",\"E1.S9\",\"E1.S10\"]},{\"text\":\"For Netcool/OMNIbus V7.4.0, use the separately supplied Socket Gateway package for the relevant operating system; the evidence lists the applicable part numbers by platform.\",\"support_ids\":[\"E1.S11\",\"E1.S12\",\"E1.S13\"]}]} }",
+      "schema_hash": "6bb049b787a4ae8afeb4cb635ca0cffd8b23650d3685d3e8140ca97b21dc4ca6",
+      "selected_anchor_ids": [],
+      "state": "RAW_COMPLETE",
+      "tokenizer_proxy_tokens": 3105,
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 9302,
+        "output_tokens": 184,
+        "reasoning_tokens": 0,
+        "total_tokens": 9486
+      }
+    },
+    {
+      "condition": "OFF",
+      "cost_usd": 0.0021858,
+      "evidence_hash": "4329634304db28427bd2d6035d764665ed095083f7c51b7e1dce42e030956167",
+      "latency_ms": 2746.277,
+      "legacy_context_count": 1848,
+      "preflight": true,
+      "prompt_hash": "3e9a54983888c268852f0ba82f4f7658f2d704b4973d5de9655010d13885768e",
+      "provider_observation": {
+        "attempt": 1,
+        "completed_at": "2026-08-30T00:40:44.712736+00:00",
+        "elapsed_ms": 2745.787,
+        "endpoint": "responses.create",
+        "error_code": null,
+        "first_body_byte_at": "2026-08-30T00:40:44.712475+00:00",
+        "headers_received_at": "2026-08-30T00:40:44.712475+00:00",
+        "logical_schema_hash": "298f2fb2fa30ca21c36a08a6aa7f79ea825e675da2c06912d79b37fee0113e3a",
+        "max_output_tokens": 1024,
+        "model": "gpt-5.6-luna",
+        "prompt_content_hash": "3e9a54983888c268852f0ba82f4f7658f2d704b4973d5de9655010d13885768e",
+        "provider": "openai",
+        "raw_response": {
+          "background": false,
+          "billing": {
+            "payer": "openai"
+          },
+          "completed_at": 1788050444.0,
+          "conversation": null,
+          "created_at": 1788050442.0,
+          "error": null,
+          "frequency_penalty": 0.0,
+          "id": "resp_021e2dce53423f1d006a937c0a3a6487d29abd2f09cf66225e",
+          "incomplete_details": null,
+          "instructions": null,
+          "max_output_tokens": 1024,
+          "max_tool_calls": null,
+          "metadata": {},
+          "model": "gpt-5.6-luna",
+          "moderation": null,
+          "object": "response",
+          "output": [
+            {
+              "content": [
+                {
+                  "annotations": [],
+                  "logprobs": [],
+                  "text": "{\"result\":{\"status\":\"ANSWER\",\"answer_parts\":[{\"text\":\"Use the Socket Gateway version that matches your Netcool/OMNIbus release. For Netcool/OMNIbus V8.1, use the newer Socket Gateway package; it contains versions for all supported operating systems. The Passport Advantage part number is CN6I1EN.\",\"support_ids\":[\"E1.S7\",\"E1.S8\",\"E1.S9\",\"E1.S10\"]},{\"text\":\"For Netcool/OMNIbus V7.4.0, use the separate Socket Gateway package for the target operating system. The documented package part numbers are CN6GZEN (AIX), CN6H1EN (HP-UX on Itanium), CN6H2EN (Linux), CN6H3EN (Linux for zSeries), CN6H4EN (Solaris), and CN6H5EN (Windows).\",\"support_ids\":[\"E1.S11\",\"E1.S12\",\"E1.S13\"]},{\"text\":\"The supplied evidence does not explicitly map the filenames nco-g-socket-java-2_0 and nco-g-socket-10_0 to those product versions, so the filename alone should not be used as the selection criterion.\",\"support_ids\":[\"E1.S7\",\"E1.S10\",\"E1.S11\",\"E1.S12\"]}]}}",
+                  "type": "output_text"
+                }
+              ],
+              "id": "msg_021e2dce53423f1d006a937c0ad44887d2b92a8d3332bdfbcc",
+              "phase": "final_answer",
+              "role": "assistant",
+              "status": "completed",
+              "type": "message"
+            }
+          ],
+          "parallel_tool_calls": true,
+          "presence_penalty": 0.0,
+          "previous_response_id": null,
+          "prompt": null,
+          "prompt_cache_key": null,
+          "prompt_cache_options": null,
+          "prompt_cache_retention": "24h",
+          "reasoning": {
+            "context": "all_turns",
+            "effort": "none",
+            "generate_summary": null,
+            "mode": "standard",
+            "summary": null
+          },
+          "safety_identifier": null,
+          "service_tier": "default",
+          "status": "completed",
+          "store": true,
+          "temperature": 0.0,
+          "text": {
+            "format": {
+              "description": null,
+              "name": "rag_answer_v2_2",
+              "schema_": {
+                "additionalProperties": false,
+                "properties": {
+                  "result": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "answer_parts": {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "support_ids": {
+                                  "items": {
+                                    "enum": [
+                                      "E1.S1",
+                                      "E1.S2",
+                                      "E1.S3",
+                                      "E1.S4",
+                                      "E1.S5",
+                                      "E1.S6",
+                                      "E1.S7",
+                                      "E1.S8",
+                                      "E1.S9",
+                                      "E1.S10",
+                                      "E1.S11",
+                                      "E1.S12",
+                                      "E1.S13",
+                                      "E1.S14",
+                                      "E1.S15",
+                                      "E2.S1",
+                                      "E2.S2",
+                                      "E2.S3",
+                                      "E2.S4",
+                                      "E2.S5",
+                                      "E2.S6",
+                                      "E2.S7",
+                                      "E2.S8",
+                                      "E2.S9",
+                                      "E2.S10",
+                                      "E2.S11",
+                                      "E2.S12",
+                                      "E2.S13",
+                                      "E2.S14",
+                                      "E2.S15",
+                                      "E2.S16",
+                                      "E3.S1",
+                                      "E3.S2",
+                                      "E3.S3",
+                                      "E3.S4",
+                                      "E3.S5",
+                                      "E3.S6",
+                                      "E3.S7",
+                                      "E3.S8",
+                                      "E3.S9",
+                                      "E3.S10",
+                                      "E3.S11",
+                                      "E3.S12",
+                                      "E3.S13",
+                                      "E3.S14",
+                                      "E3.S15",
+                                      "E4.S1",
+                                      "E4.S2",
+                                      "E4.S3",
+                                      "E4.S4",
+                                      "E4.S5",
+                                      "E4.S6",
+                                      "E4.S7",
+                                      "E4.S8",
+                                      "E4.S9",
+                                      "E4.S10",
+                                      "E4.S11",
+                                      "E4.S12",
+                                      "E4.S13",
+                                      "E4.S14",
+                                      "E4.S15",
+                                      "E4.S16",
+                                      "E4.S17",
+                                      "E4.S18",
+                                      "E4.S19",
+                                      "E4.S20",
+                                      "E4.S21",
+                                      "E4.S22",
+                                      "E4.S23",
+                                      "E4.S24",
+                                      "E4.S25",
+                                      "E4.S26",
+                                      "E5.S1",
+                                      "E5.S2",
+                                      "E5.S3",
+                                      "E5.S4",
+                                      "E5.S5",
+                                      "E5.S6",
+                                      "E5.S7",
+                                      "E5.S8",
+                                      "E5.S9",
+                                      "E5.S10",
+                                      "E5.S11",
+                                      "E5.S12",
+                                      "E5.S13",
+                                      "E5.S14",
+                                      "E5.S15",
+                                      "E5.S16",
+                                      "E5.S17",
+                                      "E5.S18",
+                                      "E5.S19",
+                                      "E5.S20",
+                                      "E5.S21",
+                                      "E5.S22",
+                                      "E5.S23",
+                                      "E5.S24",
+                                      "E5.S25",
+                                      "E5.S26",
+                                      "E5.S27",
+                                      "E5.S28",
+                                      "E5.S29",
+                                      "E5.S30",
+                                      "E5.S31",
+                                      "E5.S32",
+                                      "E5.S33",
+                                      "E5.S34",
+                                      "E5.S35"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  "minItems": 1,
+                                  "type": "array"
+                                },
+                                "text": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "text",
+                                "support_ids"
+                              ],
+                              "type": "object"
+                            },
+                            "minItems": 1,
+                            "type": "array"
+                          },
+                          "status": {
+                            "enum": [
+                              "ANSWER"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "status",
+                          "answer_parts"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "reason_code": {
+                            "enum": [
+                              "NO_RELEVANT_EVIDENCE",
+                              "EVIDENCE_INSUFFICIENT",
+                              "QUERY_AMBIGUOUS",
+                              "EVIDENCE_CONFLICT"
+                            ],
+                            "type": "string"
+                          },
+                          "status": {
+                            "enum": [
+                              "ABSTAIN"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "status",
+                          "reason_code"
+                        ],
+                        "type": "object"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "result"
+                ],
+                "type": "object"
+              },
+              "strict": true,
+              "type": "json_schema"
+            },
+            "verbosity": "medium"
+          },
+          "tool_choice": "auto",
+          "tool_usage": {
+            "image_gen": {
+              "input_tokens": 0,
+              "input_tokens_details": {
+                "image_tokens": 0,
+                "text_tokens": 0
+              },
+              "output_tokens": 0,
+              "output_tokens_details": {
+                "image_tokens": 0,
+                "text_tokens": 0
+              },
+              "total_tokens": 0
+            },
+            "web_search": {
+              "num_requests": 0
+            }
+          },
+          "tools": [],
+          "top_logprobs": 0,
+          "top_p": 0.98,
+          "truncation": "disabled",
+          "usage": {
+            "input_tokens": 9183,
+            "input_tokens_details": {
+              "cache_write_tokens": 9180,
+              "cached_tokens": 0
+            },
+            "output_tokens": 291,
+            "output_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "total_tokens": 9474
+          },
+          "user": null
+        },
+        "reasoning": "none",
+        "request_hash": "cb80fb4dcf490a78cf9b05a3820ac0d0e07e2836433913f17785393a8f36e6eb",
+        "request_id": "1e1e2ac6f6a648a295021adda443d5b8",
+        "request_started_at": "2026-08-30T00:40:41.966920+00:00",
+        "response_bytes": 938,
+        "response_id": "resp_021e2dce53423f1d006a937c0a3a6487d29abd2f09cf66225e",
+        "schema_hash": "298f2fb2fa30ca21c36a08a6aa7f79ea825e675da2c06912d79b37fee0113e3a",
+        "seed_requested": null,
+        "seed_sent": false,
+        "seed_support": "not_supported_by_installed_responses_api",
+        "status": "COMPLETE",
+        "status_code": 200,
+        "streaming": false,
+        "temperature_requested": 0.0,
+        "temperature_sent": 0.0,
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 9183,
+          "output_tokens": 291,
+          "reasoning_tokens": 0,
+          "total_tokens": 9474
+        }
+      },
+      "query_id": "techqa_DEV_Q007#row-0076",
+      "ranking_source": "RRF_TOP5",
+      "raw_output": "{\"result\":{\"status\":\"ANSWER\",\"answer_parts\":[{\"text\":\"Use the Socket Gateway version that matches your Netcool/OMNIbus release. For Netcool/OMNIbus V8.1, use the newer Socket Gateway package; it contains versions for all supported operating systems. The Passport Advantage part number is CN6I1EN.\",\"support_ids\":[\"E1.S7\",\"E1.S8\",\"E1.S9\",\"E1.S10\"]},{\"text\":\"For Netcool/OMNIbus V7.4.0, use the separate Socket Gateway package for the target operating system. The documented package part numbers are CN6GZEN (AIX), CN6H1EN (HP-UX on Itanium), CN6H2EN (Linux), CN6H3EN (Linux for zSeries), CN6H4EN (Solaris), and CN6H5EN (Windows).\",\"support_ids\":[\"E1.S11\",\"E1.S12\",\"E1.S13\"]},{\"text\":\"The supplied evidence does not explicitly map the filenames nco-g-socket-java-2_0 and nco-g-socket-10_0 to those product versions, so the filename alone should not be used as the selection criterion.\",\"support_ids\":[\"E1.S7\",\"E1.S10\",\"E1.S11\",\"E1.S12\"]}]}}",
+      "schema_hash": "298f2fb2fa30ca21c36a08a6aa7f79ea825e675da2c06912d79b37fee0113e3a",
+      "selected_anchor_ids": [
+        "bcb623a7-cef5-54e9-891f-c558ec5f904e",
+        "ad058d74-a874-501f-8598-50d5f0140c23",
+        "ec774289-ae95-5fe3-a939-02c514851561",
+        "63b1e8a9-6a88-5904-8977-a718a816c9a9",
+        "2fffa07d-3027-56e3-9c86-9c9e27dd030b"
+      ],
+      "state": "RAW_COMPLETE",
+      "tokenizer_proxy_tokens": null,
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 9183,
+        "output_tokens": 291,
+        "reasoning_tokens": 0,
+        "total_tokens": 9474
+      }
+    }
+  ],
+  "count": 2,
+  "technical_only": true
+}

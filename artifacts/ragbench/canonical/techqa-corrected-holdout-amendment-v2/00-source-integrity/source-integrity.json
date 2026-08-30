@@ -1,0 +1,43 @@
+{
+  "amendment_v1": {
+    "authorization_status": "INVALID_FOR_AUTHORIZATION",
+    "historical_reported_sha256": "dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8",
+    "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.json",
+    "raw_sha256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+    "sidecar_path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.sha256",
+    "sidecar_sha256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4"
+  },
+  "arm_maps_opened_this_task": 0,
+  "dataset_revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+  "debug50_hash": "f85f91ff8790f627592a05bc0412b40e49e39d862325524a2747e57f5099ff57",
+  "holdout50_hash": "2833bc1c638e55f00ed5a58eb57d05382838ccc6ec0a47e39b13a496bc90abaa",
+  "holdout_content_accessed_this_task": false,
+  "measurement_validity_report": {
+    "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/06-report/report.md",
+    "sha256": "e4d4d1cd5e25675210caf9161e0f1e046be8b423ec66ed11cd9d88ca26b3c95d"
+  },
+  "provenance_reconciliation": {
+    "report_path": "artifacts/ragbench/canonical/techqa-amendment-provenance-reconciliation-v1/07-report/report.md",
+    "report_sha256": "54820044ee6c22f6008bcd8e6941f12f0278179cd7e6d5651dd22303762b20fd",
+    "verdict": "AMENDMENT_V1_PROVENANCE_INCONCLUSIVE",
+    "verdict_path": "artifacts/ragbench/canonical/techqa-amendment-provenance-reconciliation-v1/05-verdict/verdict.json",
+    "verdict_sha256": "a03f06037ddb6e50e7f3fee8afce7de08485088cd7ae8e7a058c6b2ca2db0d69"
+  },
+  "provider_calls_this_task": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "root_cause": {
+    "arm_symmetric": true,
+    "outcome_independent": true,
+    "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/04-root-cause/root-cause.json",
+    "report_path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/04-root-cause/root-cause.md",
+    "report_sha256": "e4d4d1cd5e25675210caf9161e0f1e046be8b423ec66ed11cd9d88ca26b3c95d",
+    "root_cause": "HOLDOUT_DATA_OR_CORPUS_SCOPE_MISMATCH: the original index is the DEBUG50 corpus, while none of the 41 annotated HOLDOUT gold source documents is indexed.",
+    "sha256": "7d2663895b4c8fbf6bb1b5dbefdc1dafe23e5f2ecbfcda45cf8630343f3c517d"
+  },
+  "starting_head": "30df0be63349caeac4cb216b9fd2a5f36791eaa2"
+}

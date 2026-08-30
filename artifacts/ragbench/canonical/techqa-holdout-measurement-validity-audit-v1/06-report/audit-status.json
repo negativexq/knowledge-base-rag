@@ -1,0 +1,13 @@
+{
+  "arm_map_unblinded": false,
+  "corrected_rerun_authorization": "PENDING",
+  "implementation_check": true,
+  "no_post_result_tuning": true,
+  "original_evidence_metrics_usable": false,
+  "original_holdout_accessed": true,
+  "original_semantic_blind_review_should_proceed": false,
+  "promotion_authority": false,
+  "semantic_review_started": false,
+  "status": "EXECUTION_COMPLETED_MEASUREMENT_VALIDITY_UNDER_INVESTIGATION",
+  "verdict": "HOLDOUT_RUN_INVALID_CORPUS_SCOPE"
+}

@@ -1,0 +1,21 @@
+{
+  "starting_head": "30df0be63349caeac4cb216b9fd2a5f36791eaa2",
+  "amendment_v2_sha256": "22da15d58b5e29bacd3a5593f0d40a14c9c81e84b54f69179341cbdf865326a4",
+  "scorecard_sha256": "7ebbc884f659f5f0625d76ed6b3ca81aef4d5dfb8ab2a3b4f0ba296dedc2f6c4",
+  "protocol_sha256": "11ef8f09bbd4eb119f066305bc283e8b187d3cba0ed70fa94869e859f31c06bb",
+  "arm_map_sha256": "72d3ad76356678c5d4d2e96d7e6c98a168cc86dc2c8a54bac02968fd71d213f1",
+  "source_hashes_verified": true,
+  "arm_map_opened_after_hash_gate": true,
+  "arm_map_rows": 50,
+  "opposite_arm_per_query": true,
+  "semantic_scorecard_rows": 50,
+  "semantic_labels_modified_after_unblind": false,
+  "new_retrieval": 0,
+  "new_embedding": 0,
+  "new_bge": 0,
+  "new_luna": 0,
+  "terra": 0,
+  "production_config_changed": false,
+  "commit_push": false
+}
+

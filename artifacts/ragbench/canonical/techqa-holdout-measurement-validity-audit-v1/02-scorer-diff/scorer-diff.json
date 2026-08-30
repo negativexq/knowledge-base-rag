@@ -1,0 +1,13 @@
+{
+  "canonical_debug_path": "scripts/run_techqa_reranker_removal_debug.py::relevant_truth",
+  "conclusion": "DEBUG replay reproduces canonical mapping; no scorer defect demonstrated.",
+  "debug_replay_mapping_difference_rows": 0,
+  "debug_sentence_object_unmapped": {
+    "keys": [
+      "1zaa"
+    ],
+    "query_count": 1
+  },
+  "holdout_path": "scripts/run_techqa_reranker_holdout_oneshot_v1.py::truth_presence",
+  "shared_matching_primitive": "scripts/ragbench_emanual_common.py::text_has_sentence"
+}

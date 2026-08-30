@@ -1,0 +1,21 @@
+{
+  "abstain_states": 11,
+  "answer_states": 39,
+  "application_contract_valid": 50,
+  "citation_resolution_failures": 0,
+  "condition": "OFF",
+  "critical_rejects": 17,
+  "cross_query_ids_accepted": 0,
+  "forced_abstain": 1,
+  "hidden_ids_accepted": 0,
+  "parts_suppressed": 47,
+  "parts_total": 155,
+  "queries": 50,
+  "raw_complete": 50,
+  "self_abstain": 11,
+  "support_security_failures": 0,
+  "support_validation_failures": 29,
+  "unauthorized_ids_accepted": 0,
+  "unknown_ids_accepted": 0,
+  "visible": 38
+}

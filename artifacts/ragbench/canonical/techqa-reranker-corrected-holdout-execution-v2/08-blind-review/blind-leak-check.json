@@ -1,0 +1,7 @@
+{
+  "arm_identity_leak": false,
+  "leaked_packaging_terms": [],
+  "mapping_written_once": true,
+  "natural_source_text_allowed": true,
+  "semantic_fields_blank": true
+}

@@ -1,0 +1,31 @@
+{
+  "population": 50,
+  "on": {
+    "CORRECT": 15,
+    "PARTIAL": 20,
+    "INCORRECT": 1,
+    "UNAVAILABLE": 14
+  },
+  "off": {
+    "CORRECT": 12,
+    "PARTIAL": 19,
+    "INCORRECT": 1,
+    "UNAVAILABLE": 18
+  },
+  "strict_on": "15/50",
+  "strict_off": "12/50",
+  "lenient_on": "35/50",
+  "lenient_off": "31/50",
+  "strict_on_percent": 30.0,
+  "strict_off_percent": 24.0,
+  "lenient_on_percent": 70.0,
+  "lenient_off_percent": 62.0,
+  "delta_off_minus_on": {
+    "correct": -3,
+    "correct_plus_partial": -4,
+    "incorrect": 0,
+    "unavailable": 4
+  },
+  "semantic_labels_modified": false
+}
+

@@ -1,0 +1,319 @@
+{
+  "amendment": "TECHQA_CORRECTED_HOLDOUT_AMENDMENT_V2",
+  "amendment_version": 2,
+  "arms": {
+    "OFF": {
+      "pipeline": "Dense + BM25 + RRF shared Top20 -> direct RRF Top5 -> SectionAware -> support units -> Luna -> frozen validators",
+      "ranking_source": "RRF",
+      "reranker_enabled": false
+    },
+    "ON": {
+      "pipeline": "Dense + BM25 + RRF shared Top20 -> BAAI/bge-reranker-v2-m3 -> Top5 -> SectionAware -> support units -> Luna -> frozen validators",
+      "ranking_source": "BGE",
+      "reranker_enabled": true
+    },
+    "only_intended_difference": [
+      "ranking_source",
+      "reranker_enabled"
+    ],
+    "shared_candidate_set": true
+  },
+  "authorization": {
+    "architecture_diagnostic": true,
+    "authorization_status": "CORRECTED_HOLDOUT_EXECUTION_AUTHORIZED_BY_AMENDMENT_V2",
+    "corrected_execution_authorized": true,
+    "execution_terminology": "CORRECTED_HOLDOUT_EXECUTION",
+    "implementation_check": true,
+    "production_change_authorized": false,
+    "promotion_authority": false
+  },
+  "bge": {
+    "backend": "sentence-transformers",
+    "candidate_k": 20,
+    "code_hashes": {
+      "app/reranker/config.py": "182252bfdd4f2a74cd02a4ee5d45ad0c0892576fb2b06ca275560bfec7794b9e",
+      "app/reranker/cross_encoder.py": "4aca87d70c281d44444f9129e935990a728214b61a36b6372e6c117c2c82ee78"
+    },
+    "device": "runner-supplied device override only; no new override authorized",
+    "max_concurrency": 1,
+    "model": "BAAI/bge-reranker-v2-m3",
+    "score_extraction": "CrossEncoder.predict pairs [question, candidate.text], sort descending score",
+    "top_n": 5,
+    "trust_remote_code": false
+  },
+  "blind_review": {
+    "candidate_identities_hidden": true,
+    "new_mapping_required": true,
+    "reuse_invalid_v1_map": false,
+    "rubric": "exact existing DEBUG blind rubric; CORRECT/PARTIAL/INCORRECT/UNAVAILABLE; A_BETTER/B_BETTER/TIE/BOTH_BAD",
+    "semantic_labels_during_execution": false,
+    "sequence": "corrected outputs frozen -> new blind pack -> STOP -> separate scoring/freeze/unblind task"
+  },
+  "bm25": {
+    "code_hash": "dbbfeafb9253a4d5181d4373eb1fbf75d4d30e10069fbb4753bbbfad828e1f04",
+    "idf": "Qdrant server-side IDF modifier",
+    "implementation": "Qdrant/bm25 via app.retrieval.sparse.SparseEncoder",
+    "named_vector": "sparse",
+    "query_tokenization": "provider implementation unchanged",
+    "top_k": 20
+  },
+  "catastrophic_regression": [
+    "deterministic security leakage",
+    "repeatable unauthorized/hidden support acceptance",
+    "severe repeatable wrong-value/entity failure unique to OFF",
+    "one clearly defined query class materially collapsing uniquely under OFF"
+  ],
+  "corpus_construction": {
+    "algorithm_source": "scripts/run_ragbench_techqa_canonical.py::build_documents",
+    "chunking": {
+      "code_hashes": {
+        "app/ingestion/chunker.py": "651c9c1dcab27ab95889538e5d74643434438e2a602d4e505cab3441d7ba3620",
+        "app/ingestion/chunking_config.py": "43ba52fe1c962364b36a69423dfe3b389d0a991a8e259711e2800d628b978f7f",
+        "app/ingestion/markdown_chunker.py": "be4e2bb0a500d1465b6361ccfa41b86df914bc94805529542e8e655d7d1c441b"
+      },
+      "hard_max_tokens": null,
+      "heading_page_grouping": "markdown heading sections; PDF page units in shared legacy chunker",
+      "identity": "legacy_word_sentence_heading_page_v1",
+      "mode": "baseline",
+      "normalization": "source text retained; deterministic source/document hashes",
+      "overlap_tokens": 50,
+      "sentence_end_lookahead_chars": 300,
+      "target_tokens": 500
+    },
+    "document_identity": "source_id=ragbench_techqa_doc_<sha256(text)[:16]>, document_version=sha256(text)",
+    "source_type": "ragbench_techqa",
+    "tenant": "ragbench-techqa"
+  },
+  "correction_scope": {
+    "construction_rule": "all pinned test-split source documents, content-hash deduplicated; neither DEBUG-only nor HOLDOUT-only selection",
+    "construction_source": "scripts/run_ragbench_techqa_canonical.py::load_rows + unique_candidates + build_documents",
+    "corrected_scope": "deterministic proper TechQA source-document corpus required by the pinned test-split benchmark revision",
+    "gold_must_not_influence": [
+      "retrieval",
+      "ranking",
+      "Top5 selection",
+      "SectionAware",
+      "budget allocation",
+      "support units",
+      "generation"
+    ],
+    "gold_usage": [
+      "pre-execution L0 source coverage verification",
+      "pre-execution L1 annotation mappability verification",
+      "post-retrieval evidence scoring"
+    ],
+    "only_authorized_benchmark_correction": "CORPUS_SCOPE",
+    "original_scope": "DEBUG50-only indexed corpus"
+  },
+  "created_at": "2026-08-30T10:21:52.041137+00:00",
+  "dense_retrieval": {
+    "acl": "server-owned tenant-scoped ACL before reranking",
+    "code_hashes": {
+      "app/ingestion/qdrant_store.py": "faf4653b59f396779e3cedc1cab509fe29732e27b9f1e7b05203d9633034be5c",
+      "app/retrieval/filters.py": "c70e900954a0da264d126624fc6859c0b6562f1d98b7b17bda73532b468cfcf8",
+      "app/retrieval/hybrid_search.py": "1624d1b8356f430be2ca0b053e98fd6c8b64dd8bbbe017f8726bef1c4631991a",
+      "app/retrieval/search.py": "cc8df95a8d16ba4259182f1ecee59e895c16f3a415cd2b30fa881035db349869"
+    },
+    "distance": "COSINE",
+    "implementation": "app.retrieval.search.search + app.retrieval.hybrid_search.hybrid_search",
+    "named_vector": "dense",
+    "prefetch_limit_per_branch": 20,
+    "query_embedding": "frozen embedding config above",
+    "top_k": 20
+  },
+  "downstream_contract_and_validators": {
+    "citation_resolution": "existing application citation resolver",
+    "code_hashes": {
+      "app/evaluation/critical_values.py": "5ff6c31128c19f38b5828726d5950d701a70fbb8c735b133cb601c316f81dc90",
+      "app/evidence/support_relevance.py": "dcca796dabaabb2f54605f8a910b034d44be98ed1b54cd797a5edcc0389fe3f6",
+      "app/llm/citation_location.py": "6d890d3aaef2fccb6b19e84c05cb3f5ec11b8a264d6eb0a756ed9feee4ef07da",
+      "app/llm/structured_output.py": "69d34a95a83e587ab199b1265768f704b67e883543340ab9ad706c19f4219ce0"
+    },
+    "critical_value_validator": "existing claim-local critical-value audit unchanged",
+    "forced_abstain": "existing behavior unchanged",
+    "output_contract": "existing V4 support-unit answerability contract; no redesign or fallback",
+    "security_policy": "strict ACL and support-ID validation; no weakening",
+    "support_id_validation": "identity, request scope, authorization, model visibility, source/version",
+    "support_relevance": "existing deterministic content-token coverage threshold 0.60"
+  },
+  "embedding": {
+    "backend": "ollama",
+    "code_hash": "cf9006405b00aa356b9388d9c9e5cdbdf872440f5d8a091e2e12b572a21acb6f",
+    "dimension": 1024,
+    "document_instruction": "",
+    "embedding_concurrency": 4,
+    "model_family": "Qwen/Qwen3-Embedding-4B",
+    "ollama_model": "qwen3-embedding:4b",
+    "output_dimension": 1024,
+    "query_instruction": "Instruct: Given a search query, retrieve relevant passages that answer the query\nQuery: ",
+    "revision": "latest",
+    "settings_profile": "Settings.benchmark_reference()"
+  },
+  "gates": {
+    "l0": "all 41 currently usable annotated HOLDOUT rows have gold source present before query embedding/retrieval",
+    "l0_required": "41/41",
+    "l1": "all same 41 rows have faithfully mappable native annotation before retrieval",
+    "l1_required": "41/41",
+    "post_retrieval_integrity": "corrected collection sources and scorer mapping coherent; not a quality threshold",
+    "security": "unknown, cross-query, hidden, unauthorized accepted = 0; citation failures tracked"
+  },
+  "generator": {
+    "debug_generation_config_path": "artifacts/ragbench/canonical/techqa-reranker-removal-debug-v1/generation-config.json",
+    "debug_generation_config_sha256": "255c99ac6c69a0d87a3dd2838fea73bfaef1186cf77ec9f5f49218a020145eff",
+    "max_output_tokens": 1024,
+    "model": "gpt-5.6-luna",
+    "prompt_hash": "c18f70f3d4477d7aa812b18d142ae46de613a263123b9d47024dedf6087d9a43",
+    "prompt_source": "app.llm.structured_output.ANSWERABILITY_OUTPUT_INSTRUCTIONS",
+    "provider_adapter": "OpenAI Responses native strict json_schema",
+    "reasoning": "none",
+    "schema": "support_unit_answerability_schema",
+    "schema_source": "app.llm.structured_output.support_unit_answerability_schema",
+    "schema_source_sha256": "69d34a95a83e587ab199b1265768f704b67e883543340ab9ad706c19f4219ce0",
+    "stream": false,
+    "temperature": 0.0
+  },
+  "hash_algorithm": "sha256",
+  "hash_convention": "raw_file_bytes",
+  "historical_reported_v1_hash": "dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8",
+  "metrics": {
+    "cost": [
+      "ON/OFF Luna usage and cost",
+      "preflight",
+      "total provider cost",
+      "Terra=0",
+      "BGE local compute/latency"
+    ],
+    "evidence": [
+      "RRF Top20 ANY/ALL/mean recall",
+      "BGE Top5 ANY/ALL/mean recall",
+      "RRF Top5 ANY/ALL/mean recall",
+      "SectionAware ON/OFF ANY/ALL/mean recall",
+      "budget exhausted"
+    ],
+    "latency": [
+      "query embedding",
+      "hybrid retrieval",
+      "BGE",
+      "SectionAware",
+      "Luna",
+      "validation",
+      "p50/p95/max",
+      "MEASURED_E2E or SUMMED_STAGE_ESTIMATE"
+    ],
+    "operational": [
+      "provider success",
+      "valid JSON/schema/contract",
+      "ANSWER/ABSTAIN",
+      "visible",
+      "self/forced abstain",
+      "support failures",
+      "critical rejects",
+      "citation failures"
+    ]
+  },
+  "no_tuning": {
+    "forbidden_changes": [
+      "chunk size",
+      "overlap",
+      "embedding",
+      "dense/BM25/RRF weighting",
+      "candidate_k",
+      "top_n",
+      "BGE config",
+      "budget",
+      "SectionAware",
+      "support units",
+      "prompt",
+      "schema",
+      "Luna",
+      "validators",
+      "security",
+      "token accounting semantics"
+    ],
+    "no_production_change": true,
+    "only_change": "corpus scope correction"
+  },
+  "paired_execution": {
+    "arm_order": "deterministic randomized approximately balanced before first official call",
+    "outputs_persisted_before_review_pack": true,
+    "retrieval_per_query": 1,
+    "shared_top20": true
+  },
+  "provenance_reconciliation_verdict": "AMENDMENT_V1_PROVENANCE_INCONCLUSIVE",
+  "provider_budget": {
+    "holdout_queries": 50,
+    "official_luna_off": 50,
+    "official_luna_on": 50,
+    "official_luna_total": 100,
+    "technical_preflight_max": 2,
+    "terra": 0
+  },
+  "reason_for_v2": [
+    "v1 provenance could not reconcile the historical reported hash",
+    "v1 semantic experiment freeze was incomplete",
+    "v1 writer rewrote the same path with dynamic created_at on reruns",
+    "v2 is a new write-once authorization artifact and does not repair v1"
+  ],
+  "retry_policy": {
+    "backoff_seconds": 2.0,
+    "code_hashes": {
+      "app/llm/openai_client.py": "832c2ba9d794490e6b3bb36dc74213111752e85ea2bb5dfb9fcd802885220459",
+      "scripts/run_techqa_reranker_holdout_oneshot_v1.py": "40a7c7b0dc9acecd4504bf276cdd35f84cadb300d345a0a531277af82e0d2f54"
+    },
+    "logical_vs_physical": "record separately; successful logical output is never regenerated",
+    "openai_sdk_max_retries": 0,
+    "retryable_classes": "existing OpenAI adapter classification only",
+    "runner_retry": "only genuine transport/timeout/rate-limit failures; explicit existing retry path; no semantic retry sampling"
+  },
+  "rrf": {
+    "bm25_contribution": "prefetch limit 20",
+    "candidate_k": 20,
+    "code_hashes": {
+      "app/retrieval/hybrid_search.py": "1624d1b8356f430be2ca0b053e98fd6c8b64dd8bbbe017f8726bef1c4631991a",
+      "app/retrieval/search.py": "cc8df95a8d16ba4259182f1ecee59e895c16f3a415cd2b30fa881035db349869"
+    },
+    "dense_contribution": "prefetch limit 20",
+    "implementation": "Qdrant FusionQuery(Fusion.RRF)",
+    "tie_break": "stable order by (-score, point_id)"
+  },
+  "section_aware": {
+    "budget_semantics": "existing whitespace-like internal count",
+    "code_hash": "cfed578102953d01b087105b299aef337ffd0a4a19c60fbbe9d56e3468fae2cd",
+    "implementation": "SectionAwareEvidenceBuilder",
+    "legacy_budget": 2400,
+    "ordering": "anchor-first, deterministic source/section ordering, fair anchor reservation, opportunistic same-boundary expansion",
+    "support_expansion": "same authorized source/document-version/tenant boundary",
+    "truncation": "existing graceful budget behavior; no tokenizer migration"
+  },
+  "semantic_changes_from_v1": [
+    "explicitly freeze previously implicit chunking, retrieval, generator, validator, retry, and blind-review constraints",
+    "no RAG behavior or benchmark variable is changed by this amendment"
+  ],
+  "sidecar_path": "artifacts/ragbench/canonical/techqa-corrected-holdout-amendment-v2/01-amendment/preregistration-amendment-v2.sha256",
+  "source": {
+    "canonical_config_fingerprint": "9cbc1286e802a526849bfb2e028ae0a570540658f72426bebf693f0d27434e87",
+    "dataset_name": "RAGBench TechQA",
+    "dataset_revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+    "debug50_hash": "f85f91ff8790f627592a05bc0412b40e49e39d862325524a2747e57f5099ff57",
+    "debug_holdout_overlap": 0,
+    "holdout50_hash": "2833bc1c638e55f00ed5a58eb57d05382838ccc6ec0a47e39b13a496bc90abaa",
+    "holdout_size": 50,
+    "old_wrong_corpus_fingerprint": "b7cb98f8ab85b40407d37c95b73e2a699d13802a1dfa1bdba8e1913bb194354f",
+    "original_arm_map_opened": false,
+    "original_holdout_accessed": true,
+    "original_run_status": "HOLDOUT_RUN_INVALID_CORPUS_SCOPE",
+    "original_semantic_review_started": false,
+    "original_semantic_unblind": false,
+    "starting_head": "30df0be63349caeac4cb216b9fd2a5f36791eaa2"
+  },
+  "supersedes": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.json",
+  "supersedes_hash_observed": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+  "support_units": {
+    "code_hash": "75f646eb4ab63477d004aa935018703b3a39e6be25e503a3b3f0c7bb60334da6",
+    "id_format": "deterministic request-scoped E<n>.S<n>",
+    "implementation": "app.evidence.support_units.build_support_units",
+    "metadata": "source/document-version/section/tenant/contributing chunks",
+    "serialization": "app.evidence.support_units.serialize_support_units"
+  },
+  "top_n": 5
+}

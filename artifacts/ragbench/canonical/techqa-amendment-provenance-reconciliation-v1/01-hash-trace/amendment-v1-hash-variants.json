@@ -1,0 +1,16 @@
+{
+  "any_legitimate_representation_matches_expected": false,
+  "current_raw_matches_sidecar": true,
+  "expected_hash": "dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8",
+  "file_size": 1718,
+  "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.json",
+  "variants": {
+    "JSON_CANONICAL_SORTED_COMPACT_SHA256": "58a3ec8024924757aa8b32a6ffc86226b325cb66bec1e362809f29dea5333c5a",
+    "JSON_CANONICAL_SORTED_PRETTY_SHA256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+    "NORMALIZED_NEWLINE_SHA256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+    "RAW_BYTES_SHA256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+    "TRAILING_NEWLINE_ADDED_SHA256": "6a6c6cded6bd13578e01062e1aee0d8cb0519bc8355ef902cb6d5fd38cfa065d",
+    "TRAILING_NEWLINE_REMOVED_SHA256": "5a5ee7671231f43cc9e5dec0e12df886f255c10348c3a138b8532d9ceeae277b",
+    "UTF8_TEXT_SHA256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4"
+  }
+}

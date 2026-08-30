@@ -30,6 +30,8 @@ explicit JSON-encoded UNTRUSTED retrieved context
        ↓
 generation
        ↓
+support-ID and claim-local critical-value validation
+       ↓
 canonical citation and output-policy validation
 ```
 
@@ -39,7 +41,10 @@ document text never becomes a provider `system` or `assistant` message.
 Deterministic support units are request-scoped and validated against the
 authorized, model-visible evidence set. The application resolves support IDs
 to exact citation text; a valid support ID proves provenance, not semantic
-entailment.
+entailment. The critical-value guard is claim-local: unrelated values in another
+selected support unit do not invalidate a claim, while unresolved or directly
+conflicting values remain conservative. It is a deterministic consistency check,
+not a semantic verifier.
 
 `fast` preserves token-by-token delivery and reports policy results after the
 stream. `strict` buffers the generated answer and releases it only after
@@ -53,7 +58,8 @@ The intended request path is deliberately:
 query → tenant ACL → dense + BM25 + RRF → authorized Top20
       → BGE Top5 → graceful SectionAware evidence assembly
       → deterministic support units → Luna generation
-      → support-ID validation → application-resolved citations
+      → support-ID validation → claim-local critical-value validation
+      → application-resolved citations
 ```
 
 Phase 6 answerability classifiers and semantic evaluators are evaluated or

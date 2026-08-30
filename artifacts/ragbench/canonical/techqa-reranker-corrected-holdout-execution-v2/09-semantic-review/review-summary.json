@@ -1,0 +1,36 @@
+{
+  "reviewer_type": "CODEX_BLIND",
+  "review_mode": "BLINDED_SEMANTIC_REVIEW",
+  "population": 50,
+  "candidate_a": {
+    "CORRECT": 15,
+    "PARTIAL": 18,
+    "INCORRECT": 1,
+    "UNAVAILABLE": 16
+  },
+  "candidate_b": {
+    "CORRECT": 12,
+    "PARTIAL": 21,
+    "INCORRECT": 1,
+    "UNAVAILABLE": 16
+  },
+  "pair_preference": {
+    "A_BETTER": 15,
+    "B_BETTER": 10,
+    "TIE": 25,
+    "BOTH_BAD": 0
+  },
+  "low_confidence_query_ids": [
+    "Q252",
+    "Q157",
+    "Q300",
+    "Q308",
+    "Q283"
+  ],
+  "suppression_diagnostics": {
+    "aggregated": false,
+    "reason": "arm-neutral notes only; no arm mapping or visibility-based quality inference"
+  },
+  "arm_identity_known": false,
+  "semantic_unblind": false
+}

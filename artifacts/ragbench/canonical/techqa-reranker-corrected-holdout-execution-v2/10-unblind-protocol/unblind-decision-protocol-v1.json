@@ -1,0 +1,193 @@
+{
+  "protocol": "TECHQA_RERANKER_UNBLIND_DECISION_PROTOCOL_V1",
+  "protocol_version": 1,
+  "created_at": "2026-08-30T14:12:18Z",
+  "purpose": "Freeze interpretation of the already frozen corrected HOLDOUT blind semantic review after, and only after, scorecard verification and arm-map unblinding.",
+  "scope": {
+    "population": "corrected HOLDOUT50",
+    "primary_denominator": 50,
+    "semantic_reviewer": "CODEX_BLIND",
+    "semantic_labels_frozen": true,
+    "no_new_inference": true,
+    "no_provider_calls": true,
+    "no_semantic_judge": true,
+    "production_change_authorized": false
+  },
+  "frozen_identities": {
+    "amendment_v2_path": "artifacts/ragbench/canonical/techqa-corrected-holdout-amendment-v2/01-amendment/preregistration-amendment-v2.json",
+    "amendment_v2_sha256": "22da15d58b5e29bacd3a5593f0d40a14c9c81e84b54f69179341cbdf865326a4",
+    "frozen_scorecard_path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/09-semantic-review/codex-scorecard-frozen.csv",
+    "frozen_scorecard_sha256": "7ebbc884f659f5f0625d76ed6b3ca81aef4d5dfb8ab2a3b4f0ba296dedc2f6c4",
+    "corrected_execution_root": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2",
+    "corrected_arm_map_path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/08-blind-review/corrected-arm-map.json",
+    "corrected_arm_map_content_included": false,
+    "corrected_arm_map_opened_this_protocol_task": false
+  },
+  "blind_structure": {
+    "per_query_randomized_mixture": true,
+    "randomization_confirmed_from_non_secret_metadata": true,
+    "candidate_a_is_pure_arm": false,
+    "candidate_b_is_pure_arm": false,
+    "candidate_a_unavailable": 16,
+    "candidate_b_unavailable": 16,
+    "total_blind_unavailable": 32,
+    "operational_total_abstain": 32,
+    "aggregate_reconciliation": "16 + 16 = 14 + 18 = 32",
+    "arm_assignment_disclosed_by_aggregate": false,
+    "blind_randomization_failure_action": "STOP_BLIND_RANDOMIZATION_ASSUMPTION_FAILURE"
+  },
+  "primary_gate": {
+    "source": "AMENDMENT_V2_G1_G7",
+    "modified": false,
+    "requirements": {
+      "G1": "OFF deterministic security regressions = 0",
+      "G2": "OFF Incorrect <= ON Incorrect",
+      "G3": "OFF Correct + Partial >= ON Correct + Partial",
+      "G4": "OFF_BETTER >= ON_BETTER",
+      "G5": {
+        "evidence_noninferiority": "ALL_OFF >= ALL_ON AND mean_recall_OFF >= mean_recall_ON - 1 percentage point"
+      },
+      "G6": "No catastrophic OFF-specific query-class regression",
+      "G7": "Meaningful measured reranker latency removal"
+    },
+    "primary_semantic_non_regression": {
+      "PASS_if": [
+        "G2 PASS",
+        "G3 PASS",
+        "G4 PASS"
+      ],
+      "otherwise": "FAIL",
+      "distinct_from_secondary_effect_size": true
+    }
+  },
+  "known_non_semantic_inputs": {
+    "evidence": {
+      "on_sectionaware_any": "33/41",
+      "on_sectionaware_all": "30/41",
+      "on_sectionaware_mean_recall": "77.875%",
+      "off_sectionaware_any": "37/41",
+      "off_sectionaware_all": "33/41",
+      "off_sectionaware_mean_recall": "85.867%",
+      "G5_arithmetic": {
+        "all": "33 >= 30 PASS",
+        "mean_recall": "85.867 >= 77.875 - 1.0 PASS"
+      }
+    },
+    "security": {
+      "unknown_accepted_on_off": "0 / 0",
+      "cross_query_accepted_on_off": "0 / 0",
+      "hidden_accepted_on_off": "0 / 0",
+      "unauthorized_accepted_on_off": "0 / 0",
+      "citation_failures_on_off": "0 / 0"
+    },
+    "measured_bge_latency": {
+      "p50": "98.70s",
+      "p95": "251.40s",
+      "max": "293.58s"
+    }
+  },
+  "secondary_effect_size": {
+    "definition": "NET_OFF = OFF_BETTER - ON_BETTER",
+    "threshold_convention": "do not overinterpret effects smaller than 8 queries",
+    "labels": {
+      "CLEAR_OFF_WIN": "NET_OFF >= +8",
+      "NO_LARGE_DIRECTIONAL_EFFECT": "-7 <= NET_OFF <= +7",
+      "CLEAR_OFF_REGRESSION": "NET_OFF <= -8"
+    },
+    "does_not_replace_primary_gate": true,
+    "formal_equivalence_claim_allowed": false,
+    "forbidden_labels": [
+      "STATISTICALLY_EQUIVALENT",
+      "PROVEN_EQUIVALENT"
+    ]
+  },
+  "low_confidence_sensitivity": {
+    "primary_rows": 50,
+    "sensitivity_rows": 45,
+    "excluded_only_for_secondary_sensitivity": [
+      "Q252",
+      "Q157",
+      "Q300",
+      "Q308",
+      "Q283"
+    ],
+    "re_scoring_allowed": false,
+    "may_override_primary_verdict": false,
+    "metrics": [
+      "ON Correct/Partial/Incorrect/Unavailable",
+      "OFF Correct/Partial/Incorrect/Unavailable",
+      "ON_BETTER",
+      "OFF_BETTER",
+      "TIE",
+      "BOTH_BAD",
+      "NET_OFF_45"
+    ],
+    "robustness": {
+      "HIGH_if": "removing the five rows preserves the sign/category of the primary directional interpretation",
+      "LOW_if": "removal reverses direction, crosses the +/-8 boundary materially, or changes qualitative interpretation materially"
+    }
+  },
+  "semantic_reporting": {
+    "per_arm_labels": [
+      "Correct",
+      "Partial",
+      "Incorrect",
+      "Unavailable"
+    ],
+    "strict": "Correct / 50",
+    "lenient": "(Correct + Partial) / 50",
+    "deltas": [
+      "delta_correct",
+      "delta_correct_plus_partial",
+      "delta_incorrect",
+      "delta_unavailable"
+    ],
+    "visible_only_metrics_not_primary": true,
+    "blinded_aggregate_caveat": "Candidate A/B aggregates are randomized mixtures and cannot be treated as arm aggregates"
+  },
+  "allowed_final_verdicts": [
+    "BGE_REMOVAL_SUPPORTED",
+    "BGE_REMOVAL_NOT_SUPPORTED",
+    "BGE_REMOVAL_INCONCLUSIVE"
+  ],
+  "verdict_rules": {
+    "BGE_REMOVAL_SUPPORTED": "All Amendment V2 G1-G7 pass",
+    "BGE_REMOVAL_NOT_SUPPORTED": "Frozen primary gate materially fails with unacceptable OFF semantic or security regression",
+    "BGE_REMOVAL_INCONCLUSIVE": "Gate cannot responsibly be resolved due to integrity failure, mapping failure, unresolved catastrophic status, or genuinely contradictory evidence",
+    "small_net_effect_exception": "A small NET_OFF does not by itself cause INCONCLUSIVE; primary gate PASS plus NO_LARGE_DIRECTIONAL_EFFECT may support an architecture decision based on non-regression, evidence, security, latency, and complexity"
+  },
+  "decision_sequence": [
+    "verify protocol raw-byte SHA256",
+    "verify frozen semantic scorecard raw-byte SHA256",
+    "only then open corrected-arm-map.json",
+    "validate 50/50 query-level mapping",
+    "map Candidate A/B labels to ON/OFF without reinterpretation",
+    "evaluate G1-G7 independently",
+    "compute NET_OFF and secondary effect label",
+    "run exact five-query low-confidence sensitivity",
+    "assign robustness label",
+    "publish final architecture verdict without changing frozen labels"
+  ],
+  "deferred_analyses": [
+    "critical rejects",
+    "forced abstains",
+    "validator false positives",
+    "Top8/Top12",
+    "token budget forensic"
+  ],
+  "constraints": {
+    "arm_map_opened_this_task": false,
+    "on_off_identity_known_this_task": false,
+    "semantic_labels_changed": false,
+    "new_retrieval": 0,
+    "new_embedding": 0,
+    "new_bge": 0,
+    "new_luna": 0,
+    "terra": 0,
+    "production_config_changed": false,
+    "commit_push": false
+  },
+  "hash_algorithm": "sha256",
+  "hash_convention": "raw_file_bytes",
+  "sidecar_path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/10-unblind-protocol/unblind-decision-protocol-v1.sha256"
+}

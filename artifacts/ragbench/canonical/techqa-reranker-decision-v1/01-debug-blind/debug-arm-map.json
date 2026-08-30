@@ -1,0 +1,202 @@
+{
+  "techqa_DEV_Q007#row-0076": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q014#row-0035": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q015#row-0065": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q016#row-0071": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q017#row-0094": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q019#row-0089": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q020#row-0078": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q021#row-0099": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q022#row-0053": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q030#row-0111": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q042#row-0113": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q043#row-0015": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q049#row-0085": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q052#row-0110": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q061#row-0044": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q063#row-0083": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q066#row-0086": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q069#row-0073": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q072#row-0036": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q081#row-0047": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q084#row-0069": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q093#row-0154": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q096#row-0127": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q101#row-0070": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q103#row-0139": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q104#row-0143": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q105#row-0092": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q106#row-0129": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q115#row-0152": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q135#row-0131": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q137#row-0019": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q139#row-0017": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q150#row-0123": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q168#row-0149": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q170#row-0054": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q180#row-0021": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q199#row-0007": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q209#row-0107": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q210#row-0151": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q215#row-0010": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q231#row-0003": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q249#row-0011": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q256#row-0138": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q266#row-0025": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q270#row-0142": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q278#row-0115": {
+    "candidate_a_arm": "OFF",
+    "candidate_b_arm": "ON"
+  },
+  "techqa_DEV_Q284#row-0102": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q292#row-0058": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q305#row-0023": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  },
+  "techqa_DEV_Q307#row-0116": {
+    "candidate_a_arm": "ON",
+    "candidate_b_arm": "OFF"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "source_filled_scorecard": "09-semantic-review/blind-scorecard-codex.csv",
+  "frozen_scorecard": "09-semantic-review/codex-scorecard-frozen.csv",
+  "row_count": 50,
+  "unique_query_count": 50,
+  "matches_original_query_set": true,
+  "raw_sha256": "7ebbc884f659f5f0625d76ed6b3ca81aef4d5dfb8ab2a3b4f0ba296dedc2f6c4",
+  "sidecar_value": "7ebbc884f659f5f0625d76ed6b3ca81aef4d5dfb8ab2a3b4f0ba296dedc2f6c4",
+  "sidecar_sha256": "030ce1bd8824befcb9389898274515b63e250d3d61f589a1a96212eeb2fc32fb",
+  "sidecar_match": true,
+  "file_size": 8722,
+  "original_blank_scorecard_unchanged": true,
+  "arm_map_read": false,
+  "semantic_labels_frozen": true,
+  "end_of_task_hash_recheck": "PASS",
+  "authoritative_hash_convention": "RAW_FILE_BYTES_SHA256"
+}

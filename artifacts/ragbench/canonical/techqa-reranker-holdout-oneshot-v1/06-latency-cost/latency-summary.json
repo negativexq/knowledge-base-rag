@@ -1,0 +1,61 @@
+{
+  "historical_bge_p50_ms": 64340,
+  "historical_e2e_p50_ms": 68200,
+  "measurement_type": "MEASURED_STAGES; shared retrieval is not double-counted",
+  "shared_retrieval": {
+    "query_embedding": {
+      "mean_ms": 1369.8592,
+      "p50_ms": 1130.414,
+      "p95_ms": 2101.039,
+      "max_ms": 5799.849
+    },
+    "sparse_encoding": {
+      "mean_ms": 13.13016,
+      "p50_ms": 8.684,
+      "p95_ms": 40.769,
+      "max_ms": 68.298
+    },
+    "hybrid_retrieval": {
+      "mean_ms": 124.5695,
+      "p50_ms": 93.786,
+      "p95_ms": 273.131,
+      "max_ms": 492.051
+    }
+  },
+  "off": {
+    "bge": {
+      "max_ms": 0,
+      "p50_ms": 0,
+      "p95_ms": 0
+    },
+    "evidence": {
+      "max_ms": 549.021,
+      "p50_ms": 87.86,
+      "p95_ms": 229.845
+    },
+    "luna": {
+      "max_ms": 3818.619,
+      "p50_ms": 1274.23,
+      "p95_ms": 3210.67
+    }
+  },
+  "on": {
+    "bge": {
+      "max_ms": 287556.297,
+      "p50_ms": 75882.409,
+      "p95_ms": 198245.4
+    },
+    "evidence": {
+      "max_ms": 1146.154,
+      "p50_ms": 335.332,
+      "p95_ms": 920.009
+    },
+    "luna": {
+      "max_ms": 4678.327,
+      "p50_ms": 1189.441,
+      "p95_ms": 3013.684
+    }
+  },
+  "summed_stage_estimate": "shared retrieval + arm evidence + arm Luna + validation; see per-stage fields",
+  "true_full_e2e": "NOT_MEASURED_AS_SEPARATE_REQUESTS"
+}

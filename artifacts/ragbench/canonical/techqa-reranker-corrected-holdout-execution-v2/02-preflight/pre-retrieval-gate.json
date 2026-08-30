@@ -1,0 +1,12 @@
+{
+  "PRE_RETRIEVAL_GATE": "PASS",
+  "amendment_verified": true,
+  "corrected_corpus_identity_verified": true,
+  "dataset_revision_verified": true,
+  "debug_overlap": 0,
+  "frozen_config_verified": true,
+  "holdout_hash_verified": true,
+  "l0": "PASS",
+  "l1": "PASS",
+  "single_variable_design_verified": true
+}

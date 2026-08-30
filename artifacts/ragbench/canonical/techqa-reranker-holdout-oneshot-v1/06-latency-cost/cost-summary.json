@@ -1,0 +1,19 @@
+{
+  "off": {
+    "calls": 50,
+    "cost_usd": 0.0921732,
+    "input_tokens": 444468,
+    "output_tokens": 2733,
+    "reasoning_tokens": 0
+  },
+  "on": {
+    "calls": 50,
+    "cost_usd": 0.0949984,
+    "input_tokens": 458498,
+    "output_tokens": 2749,
+    "reasoning_tokens": 0
+  },
+  "preflight": 0.000132,
+  "terra_cost_usd": 0,
+  "total_provider_cost_usd": 0.1873036
+}

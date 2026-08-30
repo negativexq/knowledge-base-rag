@@ -1,0 +1,16 @@
+{
+  "candidate_k": 20,
+  "holdout_started": true,
+  "max_output_tokens": 1024,
+  "model": "gpt-5.6-luna",
+  "official_logical_calls": 100,
+  "preflight_max": 2,
+  "prompt_hash": "c18f70f3d4477d7aa812b18d142ae46de613a263123b9d47024dedf6087d9a43",
+  "reasoning": "none",
+  "schema": "support_unit_answerability_schema",
+  "schema_source_sha256": "69d34a95a83e587ab199b1265768f704b67e883543340ab9ad706c19f4219ce0",
+  "section_aware_budget": 2400,
+  "temperature": 0.0,
+  "top_n": 5,
+  "v4_downstream_policy": true
+}

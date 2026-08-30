@@ -1,0 +1,245 @@
+{
+  "calls": 1,
+  "holdout_query": false,
+  "result": {
+    "condition": "PREFLIGHT",
+    "cost_usd": 0.000132,
+    "evidence_hash": "bb934d72699da8c958e4b8791e34acd65473906d5367e982ea23c28db13f48cd",
+    "generation_latency_ms": 3038.456,
+    "preflight": true,
+    "prompt_hash": "7c16a7a49a2c16aedda52019ed56e4135e6fbba198d275ca33774df11a73de5c",
+    "provider_observation": {
+      "attempt": 1,
+      "completed_at": "2026-08-30T01:41:07.679312+00:00",
+      "elapsed_ms": 3038.253,
+      "endpoint": "responses.create",
+      "error_code": null,
+      "first_body_byte_at": "2026-08-30T01:41:07.679046+00:00",
+      "headers_received_at": "2026-08-30T01:41:07.679046+00:00",
+      "logical_schema_hash": "aec185df79b5443d53a6606e3ee1bd9dcd82289a1b6b5e5f848c69e30b4d762a",
+      "max_output_tokens": 1024,
+      "model": "gpt-5.6-luna",
+      "prompt_content_hash": "7c16a7a49a2c16aedda52019ed56e4135e6fbba198d275ca33774df11a73de5c",
+      "provider": "openai",
+      "raw_response": {
+        "background": false,
+        "billing": {
+          "payer": "openai"
+        },
+        "completed_at": 1788054067.0,
+        "conversation": null,
+        "created_at": 1788054066.0,
+        "error": null,
+        "frequency_penalty": 0.0,
+        "id": "resp_04f4cb1e7472a642006a938a32275c87d29a4d04a68d3f70a5",
+        "incomplete_details": null,
+        "instructions": null,
+        "max_output_tokens": 1024,
+        "max_tool_calls": null,
+        "metadata": {},
+        "model": "gpt-5.6-luna",
+        "moderation": null,
+        "object": "response",
+        "output": [
+          {
+            "content": [
+              {
+                "annotations": [],
+                "logprobs": [],
+                "text": "{\"result\":{\"status\":\"ABSTAIN\",\"reason_code\":\"EVIDENCE_INSUFFICIENT\"}}",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_04f4cb1e7472a642006a938a33008887d2873c2d1ad2f9cf20",
+            "phase": "final_answer",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          }
+        ],
+        "parallel_tool_calls": true,
+        "presence_penalty": 0.0,
+        "previous_response_id": null,
+        "prompt": null,
+        "prompt_cache_key": null,
+        "prompt_cache_options": null,
+        "prompt_cache_retention": "24h",
+        "reasoning": {
+          "context": "all_turns",
+          "effort": "none",
+          "generate_summary": null,
+          "mode": "standard",
+          "summary": null
+        },
+        "safety_identifier": null,
+        "service_tier": "default",
+        "status": "completed",
+        "store": true,
+        "temperature": 0.0,
+        "text": {
+          "format": {
+            "description": null,
+            "name": "rag_answer_v2_2",
+            "schema_": {
+              "additionalProperties": false,
+              "properties": {
+                "result": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "answer_parts": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "support_ids": {
+                                "items": {
+                                  "enum": [
+                                    "E1.S1"
+                                  ],
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "type": "array"
+                              },
+                              "text": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "text",
+                              "support_ids"
+                            ],
+                            "type": "object"
+                          },
+                          "minItems": 1,
+                          "type": "array"
+                        },
+                        "status": {
+                          "enum": [
+                            "ANSWER"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "answer_parts"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "reason_code": {
+                          "enum": [
+                            "NO_RELEVANT_EVIDENCE",
+                            "EVIDENCE_INSUFFICIENT",
+                            "QUERY_AMBIGUOUS",
+                            "EVIDENCE_CONFLICT"
+                          ],
+                          "type": "string"
+                        },
+                        "status": {
+                          "enum": [
+                            "ABSTAIN"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "reason_code"
+                      ],
+                      "type": "object"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "result"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "json_schema"
+          },
+          "verbosity": "medium"
+        },
+        "tool_choice": "auto",
+        "tool_usage": {
+          "image_gen": {
+            "input_tokens": 0,
+            "input_tokens_details": {
+              "image_tokens": 0,
+              "text_tokens": 0
+            },
+            "output_tokens": 0,
+            "output_tokens_details": {
+              "image_tokens": 0,
+              "text_tokens": 0
+            },
+            "total_tokens": 0
+          },
+          "web_search": {
+            "num_requests": 0
+          }
+        },
+        "tools": [],
+        "top_logprobs": 0,
+        "top_p": 0.98,
+        "truncation": "disabled",
+        "usage": {
+          "input_tokens": 468,
+          "input_tokens_details": {
+            "cache_write_tokens": 0,
+            "cached_tokens": 0
+          },
+          "output_tokens": 32,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 500
+        },
+        "user": null
+      },
+      "reasoning": "none",
+      "request_hash": "a6fcb022b80b8b6eeac43a57eb875be103162ec0f96178e72673b24c542cfe3e",
+      "request_id": "d92d80092ad7407abe93b677fb87352e",
+      "request_started_at": "2026-08-30T01:41:04.640998+00:00",
+      "response_bytes": 69,
+      "response_id": "resp_04f4cb1e7472a642006a938a32275c87d29a4d04a68d3f70a5",
+      "schema_hash": "aec185df79b5443d53a6606e3ee1bd9dcd82289a1b6b5e5f848c69e30b4d762a",
+      "seed_requested": null,
+      "seed_sent": false,
+      "seed_support": "not_supported_by_installed_responses_api",
+      "status": "COMPLETE",
+      "status_code": 200,
+      "streaming": false,
+      "temperature_requested": 0.0,
+      "temperature_sent": 0.0,
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 468,
+        "output_tokens": 32,
+        "reasoning_tokens": 0,
+        "total_tokens": 500
+      }
+    },
+    "query_id": "PREFLIGHT_SYNTHETIC",
+    "raw_output": "{\"result\":{\"status\":\"ABSTAIN\",\"reason_code\":\"EVIDENCE_INSUFFICIENT\"}}",
+    "schema_hash": "aec185df79b5443d53a6606e3ee1bd9dcd82289a1b6b5e5f848c69e30b4d762a",
+    "selected_support_ids_available": [
+      "E1.S1"
+    ],
+    "state": "GENERATION_RAW_COMPLETE",
+    "usage": {
+      "cached_input_tokens": 0,
+      "input_tokens": 468,
+      "output_tokens": 32,
+      "reasoning_tokens": 0,
+      "total_tokens": 500
+    }
+  },
+  "technical_only": true
+}

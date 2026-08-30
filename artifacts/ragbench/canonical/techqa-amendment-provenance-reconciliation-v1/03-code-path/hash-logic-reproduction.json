@@ -1,0 +1,8 @@
+{
+  "current_source_replay": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+  "dd4310_reproduced": false,
+  "full_audit_rerun": false,
+  "new_created_at_would_emit": "another hash, because created_at is included in the raw JSON",
+  "same_current_payload_emits": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+  "sidecar_replay": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4"
+}

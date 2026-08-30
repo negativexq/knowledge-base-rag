@@ -1,0 +1,32 @@
+{
+  "debug_gate": "PASS",
+  "gates": {
+    "G1_security": {
+      "pass": true,
+      "reason": "frozen deterministic security accepted-violation counts are zero"
+    },
+    "G2_off_incorrect_le_on": {
+      "off": 4,
+      "on": 8,
+      "pass": true
+    },
+    "G3_off_correct_plus_partial_ge_on": {
+      "pass": true
+    },
+    "G4_off_better_ge_on_better": {
+      "pass": true
+    },
+    "G5_off_evidence_all_gt_on": {
+      "off": 32,
+      "on": 29,
+      "pass": true
+    },
+    "G6_no_new_catastrophic_failure": {
+      "pass": true,
+      "reason": "no new failure was discovered by the unblind operation"
+    }
+  },
+  "holdout_touched": false,
+  "promotion_authority": false,
+  "status": "RERANKER_OFF_READY_FOR_HOLDOUT"
+}

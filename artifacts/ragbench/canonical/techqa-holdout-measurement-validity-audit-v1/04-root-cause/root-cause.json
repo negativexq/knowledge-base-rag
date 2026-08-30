@@ -1,0 +1,96 @@
+{
+  "affected_arms": [
+    "ON",
+    "OFF"
+  ],
+  "affected_metrics": [
+    "HOLDOUT evidence ANY/ALL/recall",
+    "HOLDOUT retrieval/evidence architecture interpretation",
+    "semantic architecture decision based on this evidence"
+  ],
+  "arm_symmetric": true,
+  "diagnostic_test": "Replay HOLDOUT scorer on frozen DEBUG evidence, then compare HOLDOUT gold sources against indexed corpus.",
+  "observed_result": {
+    "debug_canonical_expected": {
+      "off_all": 32,
+      "off_any": 37,
+      "off_recall": 0.9205004473285319,
+      "on_all": 29,
+      "on_any": 36,
+      "on_recall": 0.8794661023953517
+    },
+    "debug_replay": {
+      "OFF": {
+        "all": 32,
+        "annotated": 38,
+        "any": 37,
+        "canonical_all": 32,
+        "canonical_any": 37,
+        "mapping_difference_rows": 0,
+        "mean_recall": 0.9205004473285319,
+        "unmapped_annotation_key_count": 1,
+        "unmapped_annotation_keys": [
+          "1zaa"
+        ]
+      },
+      "ON": {
+        "all": 29,
+        "annotated": 38,
+        "any": 36,
+        "canonical_all": 29,
+        "canonical_any": 36,
+        "mapping_difference_rows": 0,
+        "mean_recall": 0.8794661023953517,
+        "unmapped_annotation_key_count": 1,
+        "unmapped_annotation_keys": [
+          "1zaa"
+        ]
+      }
+    },
+    "holdout_coverage": {
+      "annotation_mapped_to_corpus": 0,
+      "bge_top5": {
+        "all": 0,
+        "any": 12
+      },
+      "first_failure_stage": {
+        "CORPUS_MISSING": 41
+      },
+      "gold_doc_in_corpus": 0,
+      "holdout_rows": 50,
+      "holdout_union_source_count": 248,
+      "holdout_union_sources_intersecting_index": 2,
+      "indexed_source_count": 246,
+      "off_sectionaware": {
+        "all": 0,
+        "any": 11
+      },
+      "on_sectionaware": {
+        "all": 0,
+        "any": 12
+      },
+      "rrf_top20": {
+        "all": 0,
+        "any": 14
+      },
+      "rrf_top5": {
+        "all": 0,
+        "any": 11
+      },
+      "unmapped_annotation_rows": 9,
+      "usable_annotation_rows": 41
+    }
+  },
+  "original_holdout_run_supports_architecture_decision": false,
+  "outcome_independent_invalidity": true,
+  "root_cause": "HOLDOUT_DATA_OR_CORPUS_SCOPE_MISMATCH: the original index is the DEBUG50 corpus, while none of the 41 annotated HOLDOUT gold source documents is indexed.",
+  "semantic_outputs_interpretable_for_architecture_decision": false,
+  "symptom": "HOLDOUT evidence recall approximately 6% and ALL 0 despite non-empty, budget-filled contexts.",
+  "unaffected_instrumentation": [
+    "BGE latency",
+    "Luna latency",
+    "provider retry observation",
+    "provider cost",
+    "deterministic security counters"
+  ]
+}

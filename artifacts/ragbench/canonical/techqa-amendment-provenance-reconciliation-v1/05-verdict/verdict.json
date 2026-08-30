@@ -1,0 +1,13 @@
+{
+  "corrected_holdout_authorized": false,
+  "corrected_holdout_executed": false,
+  "current_file_mutation_evidence": false,
+  "hash_convention_mismatch": false,
+  "post_hash_mutation_confirmed": false,
+  "previous_byte_representation_recoverable": false,
+  "primary_verdict": "AMENDMENT_V1_PROVENANCE_INCONCLUSIVE",
+  "reason": "The current v1 and sidecar are raw-byte consistent, dd4310 is not a legitimate current-file representation and no prior v1 bytes or authoritative origin for dd4310 are recoverable.",
+  "reporting_defect_proven": false,
+  "v1_semantic_content_complete": false,
+  "v2_created": false
+}

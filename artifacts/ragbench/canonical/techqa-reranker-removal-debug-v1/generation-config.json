@@ -1,0 +1,41 @@
+{
+  "config_diff": {
+    "different_fields": [
+      "ranking_source",
+      "reranker_enabled"
+    ],
+    "off": {
+      "critical_threshold": 0.6,
+      "max_output_tokens": 1024,
+      "model": "gpt-5.6-luna",
+      "prompt_hash": "c18f70f3d4477d7aa812b18d142ae46de613a263123b9d47024dedf6087d9a43",
+      "ranking_source": "RRF_TOP5",
+      "reasoning": "none",
+      "reranker_enabled": false,
+      "schema_mode": "support_unit_answerability_schema",
+      "section_aware_budget": 2400,
+      "top_n": 5
+    },
+    "on": {
+      "critical_threshold": 0.6,
+      "max_output_tokens": 1024,
+      "model": "gpt-5.6-luna",
+      "prompt_hash": "c18f70f3d4477d7aa812b18d142ae46de613a263123b9d47024dedf6087d9a43",
+      "ranking_source": "BGE_TOP5",
+      "reasoning": "none",
+      "reranker_enabled": true,
+      "schema_mode": "support_unit_answerability_schema",
+      "section_aware_budget": 2400,
+      "top_n": 5
+    }
+  },
+  "downstream_policy": "V4 unchanged",
+  "max_output_tokens": 1024,
+  "model": "gpt-5.6-luna",
+  "prompt_hash": "c18f70f3d4477d7aa812b18d142ae46de613a263123b9d47024dedf6087d9a43",
+  "reasoning": "none",
+  "schema": "support_unit_answerability_schema",
+  "section_aware_budget": 2400,
+  "temperature": 0.0,
+  "top_n": 5
+}

@@ -1,0 +1,8 @@
+{
+  "candidate_k": 20,
+  "collection": "ragbench_techqa_basic50_b7cb98f8ab85b404",
+  "collection_count": 372,
+  "query_count": 50,
+  "shared_candidate_retrieval_executions": 50,
+  "terra_calls": 0
+}

@@ -1,0 +1,60 @@
+{
+  "annotated_rows": 41,
+  "budget": 2400,
+  "funnel": {
+    "bge_top5": {
+      "all": 30,
+      "annotated": 41,
+      "any": 33,
+      "mean_recall": 0.7787454490706524,
+      "none": 8,
+      "partial": 3
+    },
+    "off_sectionaware": {
+      "all": 33,
+      "annotated": 41,
+      "any": 37,
+      "budget_exhausted": 17,
+      "max_context_tokens": 2400.0,
+      "mean_context_tokens": 1928.52,
+      "mean_recall": 0.8586658873124678,
+      "mean_serialized_evidence_chars": 24507.66,
+      "mean_support_units": 89.72,
+      "none": 4,
+      "p50_context_tokens": 2094.0,
+      "partial": 4
+    },
+    "on_sectionaware": {
+      "all": 30,
+      "annotated": 41,
+      "any": 33,
+      "budget_exhausted": 21,
+      "max_context_tokens": 2400.0,
+      "mean_context_tokens": 2076.98,
+      "mean_recall": 0.7787454490706524,
+      "mean_serialized_evidence_chars": 27307.22,
+      "mean_support_units": 98.74,
+      "none": 8,
+      "p50_context_tokens": 2137.5,
+      "partial": 3
+    },
+    "rrf_top20": {
+      "all": 38,
+      "annotated": 41,
+      "any": 40,
+      "mean_recall": 0.9590484793736826,
+      "none": 1,
+      "partial": 2
+    },
+    "rrf_top5": {
+      "all": 32,
+      "annotated": 41,
+      "any": 37,
+      "mean_recall": 0.8505358060116549,
+      "none": 4,
+      "partial": 5
+    }
+  },
+  "same_shared_retrieval": true,
+  "semantic_scoring": false
+}

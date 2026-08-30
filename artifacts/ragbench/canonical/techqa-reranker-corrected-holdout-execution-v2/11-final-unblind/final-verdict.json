@@ -1,0 +1,11 @@
+{
+  "verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "semantic_direction": "NO_LARGE_DIRECTIONAL_EFFECT",
+  "semantic_non_regression": "FAIL",
+  "direction_robustness": "LOW",
+  "reason": "G3 and G4 fail: OFF has fewer Correct+Partial results and fewer OFF_BETTER pair preferences.",
+  "production_config_changed": false,
+  "architecture_migrated": false,
+  "semantic_labels_modified": false
+}
+

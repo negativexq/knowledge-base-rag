@@ -1,0 +1,25 @@
+{
+  "architecture_diagnostic": true,
+  "bge_harmed_queries": [
+    "techqa_DEV_Q043#row-0015",
+    "techqa_DEV_Q168#row-0149"
+  ],
+  "bge_helped_queries": [
+    "techqa_DEV_Q015#row-0065",
+    "techqa_DEV_Q019#row-0089",
+    "techqa_DEV_Q063#row-0083",
+    "techqa_DEV_Q066#row-0086",
+    "techqa_DEV_Q069#row-0073"
+  ],
+  "candidate_status": "RERANKER_OFF_READY_FOR_HUMAN_REVIEW",
+  "challenger_evaluation": true,
+  "deterministic_regression": false,
+  "evidence_regression_count": 2,
+  "holdout_run": "NO",
+  "holdout_status": "FROZEN_UNTOUCHED",
+  "off_evidence_vs_on": "OFF_EVIDENCE_BETTER",
+  "promotion_authority": false,
+  "security_regression": false,
+  "semantic_judgment": "PENDING_HUMAN_REVIEW",
+  "token_accounting_v2_needed": "YES"
+}

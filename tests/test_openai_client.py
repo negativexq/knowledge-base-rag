@@ -8,6 +8,7 @@ from app.llm.openai_client import (
     OpenAIGeneratorClient,
     canonical_hash,
     responses_strict_schema,
+    validate_responses_strict_schema_shape,
 )
 
 
@@ -133,6 +134,49 @@ def test_responses_schema_keeps_logical_optional_reason_code_nullable():
     assert adapted["required"] == ["answer_parts", "abstain", "reason_code"]
     assert adapted["properties"]["reason_code"]["anyOf"][1] == {"type": "null"}
     assert source["required"] == ["answer_parts", "abstain"]
+
+
+def test_strict_schema_shape_rejects_object_without_additional_properties_false():
+    with pytest.raises(ValueError, match="additionalProperties=false"):
+        validate_responses_strict_schema_shape(
+            {
+                "type": "object",
+                "properties": {"value": {"type": "string"}},
+                "required": ["value"],
+            }
+        )
+
+
+def test_strict_schema_shape_rejects_untyped_property():
+    with pytest.raises(ValueError, match="type or union"):
+        validate_responses_strict_schema_shape(
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {"values": {"minItems": 1}},
+                "required": ["values"],
+            }
+        )
+
+
+def test_strict_schema_shape_rejects_root_union_before_provider_call():
+    with pytest.raises(ValueError, match="cannot use a union at the root"):
+        validate_responses_strict_schema_shape(
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {},
+                "required": [],
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {},
+                        "required": [],
+                    }
+                ],
+            }
+        )
 
 
 def test_cost_calculation_uses_supplied_input_output_rates():

@@ -1,0 +1,14 @@
+{
+  "historical_bge_cost": "not remeasured",
+  "off_luna_calls": 50,
+  "off_luna_cost": 0.096263,
+  "on_luna_calls": 50,
+  "on_luna_cost": 0.0986112,
+  "preflight_luna_calls": 2,
+  "preflight_luna_cost": 0.004267,
+  "terra_cost": 0,
+  "total_luna_cost": 0.1948742,
+  "total_luna_cost_including_preflight": 0.1991412,
+  "total_luna_input_tokens": 849139,
+  "total_luna_output_tokens": 20872
+}

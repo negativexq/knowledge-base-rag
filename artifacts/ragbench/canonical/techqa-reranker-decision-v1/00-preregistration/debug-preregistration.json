@@ -1,0 +1,51 @@
+{
+  "architecture_diagnostic": true,
+  "blind_randomization": {
+    "arms": [
+      "Candidate A",
+      "Candidate B"
+    ],
+    "mapping_not_in_human_artifacts": true,
+    "mapping_secret": true,
+    "seed": 20260830
+  },
+  "human_columns_blank": true,
+  "implementation_check": true,
+  "pair_labels": [
+    "A_BETTER",
+    "B_BETTER",
+    "TIE",
+    "BOTH_BAD"
+  ],
+  "promotion_authority": false,
+  "review_labels": [
+    "CORRECT",
+    "PARTIAL",
+    "INCORRECT",
+    "UNAVAILABLE"
+  ],
+  "source": {
+    "config_fingerprint": "9cbc1286e802a526849bfb2e028ae0a570540658f72426bebf693f0d27434e87",
+    "corpus_fingerprint": "b7cb98f8ab85b40407d37c95b73e2a699d13802a1dfa1bdba8e1913bb194354f",
+    "dataset": "RAGBench TechQA",
+    "debug50_hash": "f85f91ff8790f627592a05bc0412b40e49e39d862325524a2747e57f5099ff57",
+    "debug_query_count": 50,
+    "holdout50_hash": "2833bc1c638e55f00ed5a58eb57d05382838ccc6ec0a47e39b13a496bc90abaa",
+    "revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+    "split": "test"
+  },
+  "source_artifact_sha256": {
+    "off_evidence": "e1313eb5d0a752c392e8e2398cf43613ebf6ece7166e82cb041757b2f548b5ff",
+    "on_evidence": "ca87a7e2686716c6b1ecbf82176562764bca0c9fc827bed030b97852869f5042",
+    "paired_generation": "60e332bf85cc7a7d6405f4b53569226e73d3246ad042f9f57b892c36db193612",
+    "reranker_results": "11e5df7ec97c499a08c32b8c8b04117183542ccd5595e235c7e63d8be224440c",
+    "retrieval_results": "03efcf813b949d0dcfd80c2cb340c09a4b731ab7309c047c7d6b703d39d64a17",
+    "section_aware_impl": "cfed578102953d01b087105b299aef337ffd0a4a19c60fbbe9d56e3468fae2cd",
+    "support_units_impl": "75f646eb4ab63477d004aa935018703b3a39e6be25e503a3b3f0c7bb60334da6",
+    "validation": "24ac53451dc338232fecf1a941cb0525d724d79d486a7914831b1343f0a136a4",
+    "validator_impl": "69d34a95a83e587ab199b1265768f704b67e883543340ab9ad706c19f4219ce0"
+  },
+  "stage": 1,
+  "stop_rule": "Stop after blind review pack; no unblind, forensic follow-up, or HOLDOUT until human scorecard is complete.",
+  "version": "TECHQA_RERANKER_DECISION_V1_STAGE1"
+}

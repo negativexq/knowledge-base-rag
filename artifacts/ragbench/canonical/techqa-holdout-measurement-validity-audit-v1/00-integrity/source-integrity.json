@@ -1,0 +1,28 @@
+{
+  "arm_map_opened": false,
+  "audit": "TECHQA_HOLDOUT_MEASUREMENT_VALIDITY_AUDIT_V1",
+  "config_fingerprint": "9cbc1286e802a526849bfb2e028ae0a570540658f72426bebf693f0d27434e87",
+  "corpus_fingerprint": "b7cb98f8ab85b40407d37c95b73e2a699d13802a1dfa1bdba8e1913bb194354f",
+  "dataset_revision": "97808f3e5fd16ede40bbff6c2949af8139b2eb7b",
+  "debug50_hash": "f85f91ff8790f627592a05bc0412b40e49e39d862325524a2747e57f5099ff57",
+  "historical_artifacts_modified": false,
+  "holdout50_hash": "2833bc1c638e55f00ed5a58eb57d05382838ccc6ec0a47e39b13a496bc90abaa",
+  "new_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "original_holdout_accessed": true,
+  "semantic_unblind_before_audit": false,
+  "source_hashes": {
+    "debug_reranker": "11e5df7ec97c499a08c32b8c8b04117183542ccd5595e235c7e63d8be224440c",
+    "debug_retrieval": "03efcf813b949d0dcfd80c2cb340c09a4b731ab7309c047c7d6b703d39d64a17",
+    "holdout_off_evidence": "37a4badc73b6ea3310dbe196c2b1f87a3d5d0f3e3f8b0281d8617e32b5be44dc",
+    "holdout_on_evidence": "a9decd1f33399977236061800e6542b9ac64f7ba46d03fc45522e659c8ae09aa",
+    "holdout_shared_retrieval": "002b6e2627d2a518882438a4ae4fee02da8837baffadebe2dc22666673d9efe7",
+    "holdout_source_integrity": "b33d3e7b71465d2a52297a7a97f751410df8f7bbaab9c4eebd1702f34118a9e4"
+  },
+  "starting_head": "30df0be63349caeac4cb216b9fd2a5f36791eaa2"
+}

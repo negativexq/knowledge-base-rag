@@ -1,0 +1,51 @@
+query_id,candidate_a_arm,candidate_b_arm,candidate_a_semantic,candidate_b_semantic,on_semantic,off_semantic,blind_pair_preference,unblinded_pair_preference,low_confidence,candidate_a_grounding_notes,candidate_b_grounding_notes,review_notes
+techqa_DEV_Q007#row-0076,ON,OFF,PARTIAL,PARTIAL,PARTIAL,PARTIAL,B_BETTER,OFF_BETTER,False,MISSING_REQUIRED_FACT,MISSING_REQUIRED_FACT,B covers both product-version branches; neither states both requested gateway filenames.
+techqa_DEV_Q014#row-0035,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both give the required V8.0 transition.
+techqa_DEV_Q015#row-0065,OFF,ON,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q016#row-0071,OFF,ON,PARTIAL,UNAVAILABLE,UNAVAILABLE,PARTIAL,A_BETTER,OFF_BETTER,False,MISSING_REQUIRED_FACT,ABSTAIN,A provides related deployment detail but does not configure the separate endpoint.
+techqa_DEV_Q017#row-0094,OFF,ON,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q019#row-0089,ON,OFF,INCORRECT,CORRECT,INCORRECT,CORRECT,B_BETTER,OFF_BETTER,False,WRONG_ENTITY,SUPPORTED,A answers a different product/security context; B addresses the requested bulletin.
+techqa_DEV_Q020#row-0078,OFF,ON,PARTIAL,PARTIAL,PARTIAL,PARTIAL,TIE,TIE,False,PARTIAL_EVIDENCE,PARTIAL_EVIDENCE,Both provide useful OOM diagnostics but omit important context-specific guidance.
+techqa_DEV_Q021#row-0099,ON,OFF,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both state the local WSDL refresh procedure and external-cache distinction.
+techqa_DEV_Q022#row-0053,ON,OFF,PARTIAL,PARTIAL,PARTIAL,PARTIAL,TIE,TIE,False,MISSING_REQUIRED_FACT,MISSING_REQUIRED_FACT,Both discuss the developer packaging path but do not directly state the requested fix is unavailable.
+techqa_DEV_Q030#row-0111,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both reproduce the required JVM arguments and rotation settings.
+techqa_DEV_Q042#row-0113,ON,OFF,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,True,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q043#row-0015,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both provide the requested download path and relevant part/install details.
+techqa_DEV_Q049#row-0085,ON,OFF,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q052#row-0110,OFF,ON,PARTIAL,CORRECT,CORRECT,PARTIAL,B_BETTER,ON_BETTER,False,PARTIAL_EVIDENCE,SUPPORTED,B gives the same-subject-DN diagnosis and the cache-clearing remedy more completely.
+techqa_DEV_Q061#row-0044,OFF,ON,CORRECT,INCORRECT,INCORRECT,CORRECT,A_BETTER,OFF_BETTER,False,SUPPORTED,WRONG_PROCEDURE,B addresses the stuck JVM server after maintenance; B answers a different refresh procedure.
+techqa_DEV_Q063#row-0083,ON,OFF,UNAVAILABLE,PARTIAL,UNAVAILABLE,PARTIAL,B_BETTER,OFF_BETTER,False,ABSTAIN,MISSING_REQUIRED_FACT,B gives a relevant deletion action but omits the status-based DeleteMe setup.
+techqa_DEV_Q066#row-0086,ON,OFF,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both identify the alerts and the required Red Hat remediation.
+techqa_DEV_Q069#row-0073,OFF,ON,PARTIAL,UNAVAILABLE,UNAVAILABLE,PARTIAL,A_BETTER,OFF_BETTER,False,PARTIAL_EVIDENCE,ABSTAIN,A gives relevant AMS behavior/workarounds but is less direct than the reference scenario.
+techqa_DEV_Q072#row-0036,OFF,ON,PARTIAL,CORRECT,CORRECT,PARTIAL,B_BETTER,ON_BETTER,False,WRONG_REFERENCE_LINK,SUPPORTED,B gives the requested bulletin and remediation details; A has a mismatched bulletin link.
+techqa_DEV_Q081#row-0047,ON,OFF,UNAVAILABLE,CORRECT,UNAVAILABLE,CORRECT,B_BETTER,OFF_BETTER,False,ABSTAIN,SUPPORTED,B identifies all three requested temporary files.
+techqa_DEV_Q084#row-0069,OFF,ON,PARTIAL,INCORRECT,INCORRECT,PARTIAL,A_BETTER,OFF_BETTER,False,MISSING_REQUIRED_FACT,OFF_TARGET,B is about the image identity rather than support/resolution for RHEL7.
+techqa_DEV_Q093#row-0154,OFF,ON,PARTIAL,UNAVAILABLE,UNAVAILABLE,PARTIAL,A_BETTER,OFF_BETTER,False,MISSING_REQUIRED_FACT,ABSTAIN,A gives a relevant scan outcome but omits the required scanner version/fix link.
+techqa_DEV_Q096#row-0127,ON,OFF,PARTIAL,CORRECT,PARTIAL,CORRECT,B_BETTER,OFF_BETTER,False,MISSING_REQUIRED_FACT,SUPPORTED,A gives one useful diagnostic path; B covers abnormal recovery and the documented fixes.
+techqa_DEV_Q101#row-0070,ON,OFF,UNAVAILABLE,CORRECT,UNAVAILABLE,CORRECT,B_BETTER,OFF_BETTER,False,ABSTAIN,SUPPORTED,B provides affected products and remediation references for the requested bulletin.
+techqa_DEV_Q103#row-0139,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both provide the timeout property and configuration path.
+techqa_DEV_Q104#row-0143,ON,OFF,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q105#row-0092,ON,OFF,UNAVAILABLE,CORRECT,UNAVAILABLE,CORRECT,B_BETTER,OFF_BETTER,False,ABSTAIN,SUPPORTED,B identifies the relevant alerts and Red Hat action.
+techqa_DEV_Q106#row-0129,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both give the Retry Attempts remediation and example intervals.
+techqa_DEV_Q115#row-0152,ON,OFF,INCORRECT,UNAVAILABLE,INCORRECT,UNAVAILABLE,B_BETTER,OFF_BETTER,False,WRONG_ENTITY,ABSTAIN,A attributes the bulletin to WSRR rather than MQ File Transfer Edition.
+techqa_DEV_Q135#row-0131,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both provide safe retry
+techqa_DEV_Q137#row-0019,ON,OFF,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q139#row-0017,OFF,ON,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,True,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q150#row-0123,OFF,ON,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,True,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q168#row-0149,OFF,ON,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q170#row-0054,OFF,ON,INCORRECT,UNAVAILABLE,UNAVAILABLE,INCORRECT,B_BETTER,ON_BETTER,False,WRONG_ENTITY,ABSTAIN,A answers a different OOM/APAR scenario; B safely provides no answer.
+techqa_DEV_Q180#row-0021,ON,OFF,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both identify the bulletin and materially correct vulnerability details.
+techqa_DEV_Q199#row-0007,ON,OFF,INCORRECT,PARTIAL,INCORRECT,PARTIAL,B_BETTER,OFF_BETTER,False,WRONG_WORK_MANAGER_OR_PROCEDURE,PARTIAL_EVIDENCE,A names a different work-manager resolution; B gives a related fix path but not the full tuning answer.
+techqa_DEV_Q209#row-0107,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both provide the ACCE property-definition navigation.
+techqa_DEV_Q210#row-0151,OFF,ON,PARTIAL,PARTIAL,PARTIAL,PARTIAL,TIE,TIE,False,PARTIAL_EVIDENCE,PARTIAL_EVIDENCE,Both explain exhausted handles/leaks but omit the reference’s explicit ulimit remedy.
+techqa_DEV_Q215#row-0010,ON,OFF,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both cover the negotiated-value cases and safe configuration guidance.
+techqa_DEV_Q231#row-0003,ON,OFF,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q249#row-0011,ON,OFF,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both contain the requested bulletin details
+techqa_DEV_Q256#row-0138,OFF,ON,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,UNAVAILABLE,TIE,TIE,False,ABSTAIN,ABSTAIN,No usable visible answer.
+techqa_DEV_Q266#row-0025,OFF,ON,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both give the Packaging Utility installation route.
+techqa_DEV_Q270#row-0142,ON,OFF,INCORRECT,CORRECT,INCORRECT,CORRECT,B_BETTER,OFF_BETTER,False,WRONG_VALUE,SUPPORTED,A supplies materially different Java levels for requested releases; B matches the reference and notes GSKit is unspecified.
+techqa_DEV_Q278#row-0115,OFF,ON,INCORRECT,INCORRECT,INCORRECT,INCORRECT,BOTH_BAD,BOTH_BAD,False,WRONG_ANSWER,WRONG_ANSWER,Both answer file-store handling rather than whether the UUID can be restored.
+techqa_DEV_Q284#row-0102,ON,OFF,UNAVAILABLE,INCORRECT,UNAVAILABLE,INCORRECT,A_BETTER,ON_BETTER,False,ABSTAIN,WRONG_ENTITY,B discusses Sterling mailbox roots
+techqa_DEV_Q292#row-0058,ON,OFF,CORRECT,CORRECT,CORRECT,CORRECT,TIE,TIE,False,SUPPORTED,SUPPORTED,Both provide the bootstrap-user permissions and ACCE checks.
+techqa_DEV_Q305#row-0023,ON,OFF,PARTIAL,CORRECT,PARTIAL,CORRECT,B_BETTER,OFF_BETTER,False,PARTIAL_EVIDENCE,SUPPORTED,B gives the broader path/SSL troubleshooting and the Process Monitor diagnostic.
+techqa_DEV_Q307#row-0116,ON,OFF,INCORRECT,INCORRECT,INCORRECT,INCORRECT,BOTH_BAD,BOTH_BAD,False,WRONG_SCOPE,WRONG_SCOPE,Both add an MQ8 affected-version claim beyond the reference’s MQ5.3 scope.

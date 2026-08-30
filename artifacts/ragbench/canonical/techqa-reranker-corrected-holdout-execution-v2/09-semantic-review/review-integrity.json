@@ -1,0 +1,26 @@
+{
+  "reviewer_type": "CODEX_BLIND",
+  "review_mode": "BLINDED_SEMANTIC_REVIEW",
+  "input_files": [
+    "08-blind-review/manual-review.md",
+    "08-blind-review/review-rubric.md",
+    "08-blind-review/blind-scorecard.csv"
+  ],
+  "query_count": 50,
+  "unique_query_ids": 50,
+  "matches_original_query_set": true,
+  "semantic_fields_complete": true,
+  "allowed_labels_only": true,
+  "original_blank_scorecard_modified": false,
+  "arm_map_read": false,
+  "forbidden_arm_artifacts_read": false,
+  "on_off_identity_known_during_scoring": false,
+  "new_retrieval_calls": 0,
+  "new_embedding_calls": 0,
+  "new_bge_calls": 0,
+  "new_luna_calls": 0,
+  "terra_calls": 0,
+  "consistency_pass_completed": true,
+  "consistency_pass_changes": "NONE",
+  "semantic_unblind": false
+}

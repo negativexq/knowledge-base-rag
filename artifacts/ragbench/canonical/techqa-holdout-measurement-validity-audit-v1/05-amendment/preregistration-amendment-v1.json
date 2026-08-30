@@ -1,0 +1,39 @@
+{
+  "amendment": "CORRECTED_HOLDOUT_EXECUTION_PREREGISTRATION_AMENDMENT_V1",
+  "corrected_rerun_authorization": "PENDING_NEW_EXPLICIT_TASK",
+  "corrected_rerun_executed": false,
+  "corrected_scope": "EXACT HOLDOUT50; no query exclusion, tuning, or semantic unblind before blinded review.",
+  "correction": "Prepare a corpus whose indexed source scope contains the exact pinned TechQA test-split documents required by HOLDOUT, then execute the same paired ON/OFF experiment once.",
+  "created_at": "2026-08-30T09:50:53.650019+00:00",
+  "defect": "The original run used the DEBUG50-only indexed corpus for HOLDOUT queries; all 41 annotated HOLDOUT gold sources were absent from that index.",
+  "detection": "Zero-inference DEBUG scorer replay matched canonical metrics, while L0 gold-source coverage was 0/41.",
+  "frozen_design": {
+    "candidate_k": 20,
+    "legacy_budget": 2400,
+    "same_on_off_downstream": true,
+    "top_n": 5
+  },
+  "holdout_previously_accessed": true,
+  "invalid_metrics": [
+    "HOLDOUT ANY/ALL/mean recall",
+    "HOLDOUT evidence completeness comparison",
+    "semantic architecture inference from those evidence payloads"
+  ],
+  "invalidity_arm_independent": true,
+  "no_new_architecture_variable": true,
+  "original_holdout_run": "techqa-reranker-holdout-oneshot-v1",
+  "original_preregistration_sha256": "007019eb92ffb1000b65fcdd1692e0c1e32bbece3009d2d761c1ca6bd9c57350",
+  "provider_call_budget": {
+    "official_luna_max": 100,
+    "preflight_max": 2,
+    "terra": 0
+  },
+  "semantic_unblind_before_amendment": false,
+  "valid_metrics": [
+    "BGE stage latency",
+    "Luna latency",
+    "provider cost",
+    "provider retry behavior",
+    "deterministic security instrumentation"
+  ]
+}

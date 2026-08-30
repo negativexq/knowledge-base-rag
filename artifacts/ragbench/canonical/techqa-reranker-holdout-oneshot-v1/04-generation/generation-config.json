@@ -1,0 +1,13 @@
+{
+  "candidate_k": 20,
+  "holdout_started": true,
+  "max_output_tokens": 1024,
+  "model": "gpt-5.6-luna",
+  "prompt_hash": "c18f70f3d4477d7aa812b18d142ae46de613a263123b9d47024dedf6087d9a43",
+  "reasoning": "none",
+  "schema": "support_unit_answerability_schema",
+  "section_aware_budget": 2400,
+  "temperature": 0.0,
+  "top_n": 5,
+  "v4_downstream_policy": true
+}

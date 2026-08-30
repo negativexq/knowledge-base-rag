@@ -1,0 +1,20 @@
+{
+  "abstain": 44,
+  "answer": 6,
+  "citation_resolution_failures": 0,
+  "critical_rejects": 1,
+  "cross_query_accepted": 0,
+  "forced_abstain": 1,
+  "hidden_accepted": 0,
+  "provider_failures": 0,
+  "queries": 50,
+  "raw_answer_parts": 25,
+  "raw_complete": 50,
+  "self_abstain": 43,
+  "support_validation_failures": 0,
+  "suppressed_parts": 9,
+  "unauthorized_accepted": 0,
+  "unknown_accepted": 0,
+  "valid_application_contracts": 50,
+  "visible": 6
+}

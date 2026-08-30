@@ -1,0 +1,82 @@
+{
+  "current_hash_match_count": 5,
+  "dd4310_belongs_to_v1_artifact": false,
+  "excluded": [
+    "corrected-holdout-arm-map.json",
+    "debug-arm-map.json",
+    "holdout-arm-map.json"
+  ],
+  "historical_expected_match_count": 3,
+  "matches": [
+    {
+      "classification": "raw_file_sha256_sidecar",
+      "context": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+      "hash": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+      "hash_role": "current_raw",
+      "line": 1,
+      "path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.sha256"
+    },
+    {
+      "classification": "task_provided_expected_hash",
+      "context": "\"expected_sha256_from_task\": \"dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8\",",
+      "hash": "dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8",
+      "hash_role": "historical_expected",
+      "line": 7,
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-v1/00-integrity/amendment-integrity-failure.json"
+    },
+    {
+      "classification": "raw_file_sha256_reference",
+      "context": "\"actual_sha256\": \"2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4\",",
+      "hash": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+      "hash_role": "current_raw",
+      "line": 8,
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-v1/00-integrity/amendment-integrity-failure.json"
+    },
+    {
+      "classification": "raw_file_sha256_reference",
+      "context": "\"sidecar_sha256\": \"2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4\",",
+      "hash": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+      "hash_role": "current_raw",
+      "line": 9,
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-v1/00-integrity/amendment-integrity-failure.json"
+    },
+    {
+      "classification": "UNKNOWN",
+      "context": "`dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8`, while",
+      "hash": "dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8",
+      "hash_role": "historical_expected",
+      "line": 7,
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-v1/09-report/report.md"
+    },
+    {
+      "classification": "UNKNOWN",
+      "context": "`2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4`.",
+      "hash": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+      "hash_role": "current_raw",
+      "line": 9,
+      "path": "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-v1/09-report/report.md"
+    },
+    {
+      "classification": "UNKNOWN",
+      "context": "EXPECTED = \"dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8\"",
+      "hash": "dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8",
+      "hash_role": "historical_expected",
+      "line": 29,
+      "path": "scripts/reconcile_techqa_amendment_provenance_v1.py"
+    },
+    {
+      "classification": "UNKNOWN",
+      "context": "CURRENT = \"2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4\"",
+      "hash": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+      "hash_role": "current_raw",
+      "line": 30,
+      "path": "scripts/reconcile_techqa_amendment_provenance_v1.py"
+    }
+  ],
+  "previous_v1_byte_representation_found": false,
+  "scope": [
+    "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1",
+    "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-v1",
+    "scripts"
+  ]
+}

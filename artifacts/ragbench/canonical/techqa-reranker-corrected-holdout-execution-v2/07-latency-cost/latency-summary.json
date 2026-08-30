@@ -1,0 +1,45 @@
+{
+  "bge_off": {
+    "max_ms": 0,
+    "p50_ms": 0,
+    "p95_ms": 0
+  },
+  "bge_on": {
+    "max_ms": 293577.038,
+    "p50_ms": 98702.951,
+    "p95_ms": 251399.467
+  },
+  "hybrid_retrieval": {
+    "max_ms": 1307.087,
+    "p50_ms": 184.956,
+    "p95_ms": 358.396
+  },
+  "luna_off": {
+    "max_ms": 5336.124,
+    "p50_ms": 2687.722,
+    "p95_ms": 4019.105
+  },
+  "luna_on": {
+    "max_ms": 5264.53,
+    "p50_ms": 2624.953,
+    "p95_ms": 4187.126
+  },
+  "measured_e2e": false,
+  "measurement_type": "MEASURED_STAGES; shared retrieval not double-counted",
+  "query_embedding": {
+    "max_ms": 19742.818,
+    "p50_ms": 1090.21,
+    "p95_ms": 6182.29
+  },
+  "section_aware_off": {
+    "max_ms": 449.026,
+    "p50_ms": 82.343,
+    "p95_ms": 248.19
+  },
+  "section_aware_on": {
+    "max_ms": 1908.998,
+    "p50_ms": 361.56,
+    "p95_ms": 1174.105
+  },
+  "summed_stage_estimate": "shared retrieval + arm evidence + Luna + validation"
+}

@@ -1,0 +1,18 @@
+{
+  "historical_expected_sha256": "dd4310b1717a16733e765de3c1d7fa76c9b58cddde43750e2f3bf4d4410b2fe8",
+  "holdout_arm_maps_read": false,
+  "holdout_content_accessed_this_task": false,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "luna": 0,
+    "retrieval": 0,
+    "terra": 0
+  },
+  "starting_head": "30df0be63349caeac4cb216b9fd2a5f36791eaa2",
+  "v1_files_modified": false,
+  "v1_path": "artifacts/ragbench/canonical/techqa-holdout-measurement-validity-audit-v1/05-amendment/preregistration-amendment-v1.json",
+  "v1_raw_sha256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4",
+  "v1_sidecar_matches": true,
+  "v1_sidecar_sha256": "2cea26bfda90d3f1861e575a5bdd34c6889506948beb3cba30313b9f26c210c4"
+}

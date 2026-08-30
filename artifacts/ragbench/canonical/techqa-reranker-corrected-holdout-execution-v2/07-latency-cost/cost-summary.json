@@ -1,0 +1,21 @@
+{
+  "off": {
+    "cost_usd": 0.096546,
+    "input_tokens": 422718,
+    "logical_calls": 50,
+    "output_tokens": 10002,
+    "reasoning_tokens": 0
+  },
+  "on": {
+    "cost_usd": 0.1058434,
+    "input_tokens": 471575,
+    "logical_calls": 50,
+    "output_tokens": 9607,
+    "reasoning_tokens": 0
+  },
+  "physical_attempts": 100,
+  "preflight": 0.000132,
+  "retryable_attempts": 0,
+  "terra_cost_usd": 0,
+  "total_provider_cost_usd": 0.2025214
+}

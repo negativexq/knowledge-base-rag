@@ -1,0 +1,33 @@
+{
+  "annotation_mapped_to_corpus": 0,
+  "bge_top5": {
+    "all": 0,
+    "any": 12
+  },
+  "first_failure_stage": {
+    "CORPUS_MISSING": 41
+  },
+  "gold_doc_in_corpus": 0,
+  "holdout_rows": 50,
+  "holdout_union_source_count": 248,
+  "holdout_union_sources_intersecting_index": 2,
+  "indexed_source_count": 246,
+  "off_sectionaware": {
+    "all": 0,
+    "any": 11
+  },
+  "on_sectionaware": {
+    "all": 0,
+    "any": 12
+  },
+  "rrf_top20": {
+    "all": 0,
+    "any": 14
+  },
+  "rrf_top5": {
+    "all": 0,
+    "any": 11
+  },
+  "unmapped_annotation_rows": 9,
+  "usable_annotation_rows": 41
+}

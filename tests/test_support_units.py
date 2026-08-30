@@ -7,9 +7,15 @@ from app.evidence.support_units import (
     resolve_support_ids,
     serialize_support_units,
 )
+from app.llm.openai_client import (
+    responses_strict_schema,
+    validate_responses_strict_schema_shape,
+)
 from app.llm.structured_output import (
     parse_support_unit_answer,
+    parse_support_unit_state_machine_answer,
     support_unit_output_schema,
+    support_unit_output_schema_state_machine,
     validate_support_unit_answer,
 )
 from app.retrieval.hybrid_search import SearchResult
@@ -44,6 +50,69 @@ def test_schema_enumerates_only_request_support_ids() -> None:
     schema = support_unit_output_schema(units)
     support_ids = schema["properties"]["answer_parts"]["items"]["properties"]["support_ids"]
     assert support_ids["items"]["enum"] == ["E1.S1"]
+
+
+def test_state_machine_schema_has_exclusive_answer_and_abstain_branches() -> None:
+    units = build_support_units([evidence("14 calendar days")])
+    schema = support_unit_output_schema_state_machine(units)
+    branches = schema["properties"]["result"]["anyOf"]
+    assert "anyOf" not in schema
+    assert branches[0]["properties"]["abstain"]["enum"] == [False]
+    assert branches[0]["properties"]["answer_parts"]["type"] == "array"
+    assert branches[0]["properties"]["answer_parts"]["minItems"] == 1
+    assert branches[1]["properties"]["abstain"]["enum"] == [True]
+    assert branches[1]["properties"]["answer_parts"]["type"] == "array"
+    assert branches[1]["properties"]["answer_parts"]["maxItems"] == 0
+
+
+def test_state_machine_schema_does_not_change_support_id_cardinality() -> None:
+    units = build_support_units([evidence("14 calendar days")])
+    old = support_unit_output_schema(units)
+    new = support_unit_output_schema_state_machine(units)
+    for branch in new["properties"]["result"]["anyOf"]:
+        assert (
+            branch["properties"]["answer_parts"]["items"]
+            == old["properties"]["answer_parts"]["items"]
+        )
+
+
+def test_state_machine_schema_passes_local_responses_strict_shape_validation() -> None:
+    units = build_support_units([evidence("14 calendar days")])
+    schema = responses_strict_schema(support_unit_output_schema_state_machine(units))
+    validate_responses_strict_schema_shape(schema)
+
+
+def test_state_machine_provider_wrapper_maps_to_canonical_answer() -> None:
+    parsed = parse_support_unit_state_machine_answer(
+        json.dumps(
+            {
+                "result": {
+                    "answer_parts": [
+                        {"text": "14 days", "support_ids": ["E1.S1"]}
+                    ],
+                    "abstain": False,
+                }
+            }
+        )
+    )
+    assert parsed.abstain is False
+    assert parsed.answer_parts[0].support_ids == ["E1.S1"]
+
+
+def test_state_machine_provider_wrapper_rejects_abstain_with_parts() -> None:
+    with pytest.raises(ValueError, match="abstain=true"):
+        parse_support_unit_state_machine_answer(
+            json.dumps(
+                {
+                    "result": {
+                        "answer_parts": [
+                            {"text": "14 days", "support_ids": ["E1.S1"]}
+                        ],
+                        "abstain": True,
+                    }
+                }
+            )
+        )
 
 
 def test_unknown_support_id_is_rejected_without_fallback() -> None:

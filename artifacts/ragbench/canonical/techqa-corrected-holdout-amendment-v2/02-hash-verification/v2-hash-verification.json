@@ -1,0 +1,12 @@
+{
+  "authoritative_convention": "RAW_FILE_BYTES_SHA256",
+  "end_of_creation_recheck": true,
+  "file_exists": true,
+  "file_size": 14299,
+  "match": true,
+  "path": "artifacts/ragbench/canonical/techqa-corrected-holdout-amendment-v2/01-amendment/preregistration-amendment-v2.json",
+  "raw_sha256": "22da15d58b5e29bacd3a5593f0d40a14c9c81e84b54f69179341cbdf865326a4",
+  "sidecar_exists": true,
+  "sidecar_path": "artifacts/ragbench/canonical/techqa-corrected-holdout-amendment-v2/01-amendment/preregistration-amendment-v2.sha256",
+  "sidecar_sha256": "22da15d58b5e29bacd3a5593f0d40a14c9c81e84b54f69179341cbdf865326a4"
+}

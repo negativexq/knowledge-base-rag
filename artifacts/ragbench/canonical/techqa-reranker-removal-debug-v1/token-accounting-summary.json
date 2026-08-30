@@ -1,0 +1,27 @@
+{
+  "conditions": {
+    "BGE_TOP5": {
+      "legacy_internal_count_mean": 2117.78,
+      "tokenizer_proxy_mean": 2884.66
+    },
+    "RRF_TOP5": {
+      "legacy_internal_count_mean": 2016.02,
+      "tokenizer_proxy_mean": 2763.92
+    }
+  },
+  "historical_provider_input_tokens": {
+    "techqa_DEV_Q015#row-0065": 7033,
+    "techqa_DEV_Q020#row-0078": 9727,
+    "techqa_DEV_Q049#row-0085": 6322,
+    "techqa_DEV_Q069#row-0073": 4538,
+    "techqa_DEV_Q135#row-0131": 7274,
+    "techqa_DEV_Q139#row-0017": 7509,
+    "techqa_DEV_Q150#row-0123": 12892,
+    "techqa_DEV_Q168#row-0149": 9061,
+    "techqa_DEV_Q170#row-0054": 10651,
+    "techqa_DEV_Q278#row-0115": 10176,
+    "techqa_DEV_Q284#row-0102": 7489
+  },
+  "note": "tokenizer_proxy_tokens are whitespace proxies, never provider exact tokens",
+  "selection_behavior_changed": false
+}

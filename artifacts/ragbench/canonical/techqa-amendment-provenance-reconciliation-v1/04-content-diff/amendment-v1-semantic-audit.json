@@ -1,0 +1,23 @@
+{
+  "checks": {
+    "arm_symmetric_invalidity": true,
+    "corrected_scope_no_tuning": true,
+    "correction_is_corpus_scope": true,
+    "defect_description": true,
+    "explicit_blind_review_procedure": true,
+    "explicit_chunking_freeze": false,
+    "explicit_embedding_retrieval_freeze": false,
+    "explicit_sectionaware_luna_validator_freeze": false,
+    "frozen_candidate_top_budget": true,
+    "invalid_run_identity": true,
+    "original_preregistration_hash": true,
+    "provider_budget": true
+  },
+  "content_semantically_complete": false,
+  "missing_explicit_constraints": [
+    "explicit_chunking_freeze",
+    "explicit_embedding_retrieval_freeze",
+    "explicit_sectionaware_luna_validator_freeze"
+  ],
+  "semantic_change_required_for_future_immutable_amendment": "explicitly record missing frozen pipeline constraints"
+}

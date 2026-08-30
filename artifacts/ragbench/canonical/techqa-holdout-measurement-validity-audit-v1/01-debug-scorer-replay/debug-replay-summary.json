@@ -1,0 +1,28 @@
+{
+  "OFF": {
+    "all": 32,
+    "annotated": 38,
+    "any": 37,
+    "canonical_all": 32,
+    "canonical_any": 37,
+    "mapping_difference_rows": 0,
+    "mean_recall": 0.9205004473285319,
+    "unmapped_annotation_key_count": 1,
+    "unmapped_annotation_keys": [
+      "1zaa"
+    ]
+  },
+  "ON": {
+    "all": 29,
+    "annotated": 38,
+    "any": 36,
+    "canonical_all": 29,
+    "canonical_any": 36,
+    "mapping_difference_rows": 0,
+    "mean_recall": 0.8794661023953517,
+    "unmapped_annotation_key_count": 1,
+    "unmapped_annotation_keys": [
+      "1zaa"
+    ]
+  }
+}
