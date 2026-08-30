@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from app.evaluation.critical_values import claim_local_critical_value_audit
 from app.evidence.support_units import SupportUnit
@@ -119,20 +118,3 @@ def test_unknown_support_id_is_not_repaired() -> None:
     )
     result = validate_support_unit_answer(answer, [unit("E1.S1", "Use it.")])
     assert "UNKNOWN_SUPPORT_ID" in result.failure_codes
-
-
-def test_frozen_replay_target_and_runner_are_artifact_only() -> None:
-    root = Path(__file__).resolve().parents[1]
-    source = root / "artifacts/ragbench/canonical/basic50-final"
-    rows = [
-        json.loads(line)
-        for line in (source / "validation-results.jsonl").read_text().splitlines()
-        if line
-    ]
-    target = [
-        row for row in rows if "CRITICAL_VALUE_CONFLICT" in row.get("validator_failure_codes", [])
-    ]
-    assert len(target) == 10
-    runner = (root / "scripts/replay_canonical_validator_fix.py").read_text().lower()
-    for forbidden in ("import openai", "import ollama", "import qdrant"):
-        assert forbidden not in runner

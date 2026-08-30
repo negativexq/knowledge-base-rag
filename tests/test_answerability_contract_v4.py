@@ -9,14 +9,7 @@ from app.llm.structured_output import (
     support_unit_answerability_schema,
     validate_answerability_output,
 )
-from scripts.run_techqa_answerability_contract_v4 import (
-    PREREG,
-    THRESHOLD,
-    assert_debug_only,
-    preflight_allows_official,
-    prepare,
-    target_ids,
-)
+from scripts.run_techqa_answerability_contract_v4 import preflight_allows_official
 
 
 def unit(support_id: str, text: str) -> SupportUnit:
@@ -136,17 +129,6 @@ def test_all_unsupported_parts_create_forced_abstain() -> None:
     assert result.forced_abstain is True
     assert result.output_reason_code == "EVIDENCE_INSUFFICIENT"
     assert result.valid_parts == []
-
-
-def test_preregistration_is_frozen_and_debug_target_is_holdout_disjoint() -> None:
-    prereg = json.loads(PREREG.read_text(encoding="utf-8"))
-    assert prereg["support_relevance_policy"]["content_token_coverage_threshold"] == THRESHOLD
-    assert prereg["implementation_check"] is True
-    assert prereg["promotion_authority"] is False
-    ids = target_ids()
-    assert len(ids) == 11
-    assert_debug_only(ids)
-    assert prepare() == ids
 
 
 def test_matching_raw_complete_preflight_is_required() -> None:

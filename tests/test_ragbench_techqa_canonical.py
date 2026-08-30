@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 from app.llm.openai_client import canonical_hash
 from scripts.run_ragbench_techqa_canonical import (
+    DATASET_PATH,
     DATASET_REVISION,
     RERANKER_MODEL,
     SAMPLE_SIZE,
@@ -12,7 +15,13 @@ from scripts.run_ragbench_techqa_canonical import (
 )
 
 
+def require_pinned_dataset() -> None:
+    if not DATASET_PATH.is_file():
+        pytest.skip("requires the optional pinned TechQA parquet fixture")
+
+
 def test_techqa_pinned_pool_and_sample_are_deterministic() -> None:
+    require_pinned_dataset()
     rows = load_rows()
     selected, sample = sample_rows(rows)
 
@@ -28,6 +37,7 @@ def test_techqa_pinned_pool_and_sample_are_deterministic() -> None:
 
 
 def test_techqa_deduplication_retains_first_pinned_parquet_row() -> None:
+    require_pinned_dataset()
     rows = load_rows()
     candidates = unique_candidates(rows)
     first_indices: dict[str, int] = {}

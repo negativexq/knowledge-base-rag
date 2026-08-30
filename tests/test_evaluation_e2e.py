@@ -30,6 +30,8 @@ from app.shared.config import settings
 from tests.fixtures.golden_markdown_source import build_golden_markdown_source
 from tests.fixtures.golden_source import build_golden_source_pdf
 
+pytestmark = pytest.mark.ollama_e2e
+
 COLLECTION = "test_evaluation_e2e"
 
 

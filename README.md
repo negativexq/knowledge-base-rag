@@ -156,28 +156,39 @@ remain in [artifacts/](artifacts/) and the linked deep dives.
 
 The next benchmark preparation set is documented in [Evaluation Corpus v2](docs/evaluation-dataset.md); it is a frozen, model-free fixture expansion and has not been benchmarked yet.
 
-### Current TechQA reranker status
+### Current TechQA quality and reranker decision
 
-The corrected TechQA HOLDOUT50 decision is closed as
-`BGE_REMOVAL_NOT_SUPPORTED`. The production-like BGE-on arm reached 15/50
-strictly correct answers (30%), 35/50 correct-or-partial (70%), 1/50
-incorrect (2%), and 14/50 unavailable. Deterministic support-ID provenance,
-authorization, hidden/cross-query checks, and citation resolution remained
-clean in the measured scope.
+On the corrected TechQA HOLDOUT50, the production-like path reached 95.9%
+candidate evidence recall, a 70% useful-answer rate, and only 2% materially
+incorrect answers. The dominant remaining failure mode is
+incompleteness/abstention rather than fabrication. Deterministic support-ID
+provenance, authorization, hidden/cross-query checks, and citation resolution
+remained clean in the measured scope.
+All measured deterministic security checks recorded zero accepted unknown,
+cross-query, hidden, or unauthorized support IDs, and zero citation resolution
+failures.
+
+| Outcome | Meaning | BGE ON | RRF/OFF |
+| --- | --- | ---: | ---: |
+| Fully correct | Complete and materially correct | 15/50 (30%) | 12/50 (24%) |
+| Useful but partial | Substantively useful but incomplete | 20/50 (40%) | 19/50 (38%) |
+| Materially incorrect | Wrong or materially misleading | 1/50 (2%) | 1/50 (2%) |
+| Unavailable | Abstained, suppressed, or no usable answer | 14/50 (28%) | 18/50 (36%) |
+| **Useful answer rate** | **Correct + Partial** | **35/50 (70%)** | **31/50 (62%)** |
+
+The 30% fully-correct figure is a strict completeness metric, not an overall
+30% QA accuracy figure. “Useful but partial” answers contain substantively
+correct, useful content with an important omission or limitation; “unavailable”
+means that no usable visible answer reached the user.
 
 The no-reranker arm improved evidence completeness, but no robust directional
-semantic effect was distinguishable: pairwise preference was ON_BETTER 13,
-OFF_BETTER 12, TIE 25, with `NET_OFF = -1`. The preregistered semantic
-non-regression gate failed on its nominal Correct+Partial and pairwise
-criteria, so production architecture was not changed. This verdict does not
-prove that BGE is semantically higher quality.
-
-| Corrected HOLDOUT50 metric | BGE ON | RRF/OFF |
-| --- | ---: | ---: |
-| Correct | 15/50 (30%) | 12/50 (24%) |
-| Correct + Partial | 35/50 (70%) | 31/50 (62%) |
-| Incorrect | 1/50 (2%) | 1/50 (2%) |
-| Unavailable | 14/50 (28%) | 18/50 (36%) |
+semantic difference was demonstrated: pairwise preference was ON_BETTER 13,
+OFF_BETTER 12, TIE 25, with `NET_OFF = -1`. Excluding the five low-confidence
+queries only for sensitivity produced ON_BETTER 10, OFF_BETTER 11, TIE 24,
+and `NET_OFF = +1`; direction robustness was low. The preregistered
+conservative semantic non-regression gate nevertheless failed on the nominal
+Correct+Partial and pairwise criteria, so removal was not authorized. This
+verdict does not prove that BGE is semantically higher quality.
 
 For the 41 annotated HOLDOUT rows, the evidence funnel was:
 
@@ -190,10 +201,18 @@ For the 41 annotated HOLDOUT rows, the evidence funnel was:
 | RRF + SectionAware @2400 | 37/41 | 33/41 | 85.867% |
 
 Candidate retrieval is strong; most required evidence is present in RRF
-Top20, with substantial loss at Top20 → Top5 selection. OFF recovers more
-evidence, but that gain did not satisfy the frozen semantic gate. The retained
-BGE implementation measured 98.70s p50, 251.40s p95, and 293.58s max on this
-corrected run; Luna p50 was approximately 2.62s ON and 2.69s OFF.
+Top20, with substantial loss at Top20 → Top5 selection. The current BGE does
+not improve evidence completeness on this benchmark; OFF preserves more
+evidence, but the downstream answer path did not convert that advantage into a
+passing semantic non-regression result. The retained BGE implementation
+measured 98.70s p50, 251.40s p95, and 293.58s max on this corrected run; Luna
+p50 was approximately 2.62s ON and 2.69s OFF. The experiment did not authorize
+BGE removal, but the retained BGE implementation remains unsuitable for
+latency-sensitive production serving and is an unresolved production blocker.
+
+The system usually finds the evidence and rarely produces a materially wrong
+visible answer; the harder problem is carrying enough of that evidence through
+selection and validation to produce a complete answer.
 
 The evaluation harness is allowed to veto the engineer: a result changes the
 system only when it passes a decision rule frozen before the result is known.
@@ -329,9 +348,18 @@ for the versioned index procedure.
 Backend checks:
 
 ```bash
-pytest
+pytest -m "not ollama_e2e"
 ruff check app tests scripts
 ```
+
+Provider integration checks are explicit and require local services:
+
+```bash
+pytest -m "ollama_e2e"
+```
+
+The suite taxonomy and historical-test policy are documented in
+[docs/test-suite-rationalization.md](docs/test-suite-rationalization.md).
 
 Frontend checks:
 
@@ -343,9 +371,10 @@ npm run lint
 npm run build
 ```
 
-The last full verification recorded 859 backend tests passed, 2 skipped
-(external credential checks), 18 frontend tests passed, and green
-typecheck, lint, build, and Ruff gates.
+The deterministic suite is the default backend verification path; provider
+integration tests are kept separate and are not run by default.
+Historical CI also recorded 18 frontend tests passed, with green typecheck,
+lint, build, and Ruff gates.
 
 ## Project structure
 
@@ -508,15 +537,20 @@ reliability improvement, not a quality result.
 
 ## Current limitations
 
-- BGE reranking runs in a worker thread from the async retrieval path; bounded
+- BGE reranking runs in a worker thread from the async retrieval path; its
+  measured tail latency remains a production blocker, and bounded
   multi-request serving remains a separate concern.
+- Evidence selection and downstream abstention leave completeness/availability
+  weak even when candidate retrieval is strong.
 - The chunking benchmark corpus is too short to distinguish 256–768 token
   boundaries. Revisit it when substantially longer documents exercise those
   limits.
 - Semantic answerability/abstention gates were evaluated in Phase 6 but were
   not promoted; the active runtime retains deterministic no-evidence safety
   and citation integrity, not a semantic gate. Claim-level semantic grounding
-  is still not implemented.
+  is not guaranteed by the runtime.
+- Critical-value validator calibration remains follow-up work; current reject
+  counts are an engineering hypothesis, not a proven causal root cause.
 - The local token authenticator and development identities are suitable for
   local/demo use. A production deployment should replace them with an
   appropriate identity provider or verifier.

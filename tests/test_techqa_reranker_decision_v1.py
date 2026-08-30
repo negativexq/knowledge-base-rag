@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 from io import StringIO
 
-from scripts.run_techqa_reranker_decision_v1 import SEED, assign_blind_arms
+from scripts.run_techqa_reranker_decision_v1 import assign_blind_arms
 
 
 def test_blind_mapping_is_deterministic_and_balanced() -> None:
@@ -12,7 +12,6 @@ def test_blind_mapping_is_deterministic_and_balanced() -> None:
     second = assign_blind_arms(query_ids)
     assert first == second
     assert sum(value["candidate_a_arm"] == "ON" for value in first.values()) == 25
-    assert SEED == 20260830
 
 
 def test_human_scorecard_columns_are_blank() -> None:

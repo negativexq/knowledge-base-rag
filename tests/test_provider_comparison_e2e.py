@@ -24,6 +24,8 @@ from app.llm.ollama_provider import OllamaProvider
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import settings
 
+pytestmark = pytest.mark.ollama_e2e
+
 
 def _ollama_up() -> bool:
     try:

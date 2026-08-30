@@ -18,6 +18,8 @@ from app.llm.ollama_client import OllamaClient
 from app.retrieval.sparse import SparseEncoder
 from app.shared.config import settings
 
+pytestmark = pytest.mark.ollama_e2e
+
 COLLECTION = "test_ingest_e2e"
 
 

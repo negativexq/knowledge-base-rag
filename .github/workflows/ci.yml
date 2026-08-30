@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - run: pytest -q
+      - run: pytest -q -m "not ollama_e2e"
         env:
           QDRANT_URL: http://localhost:6333
 

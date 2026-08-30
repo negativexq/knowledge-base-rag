@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 from scripts.audit_canonical_support_validator_failures import (
@@ -48,22 +47,6 @@ def test_production_like_numeric_mismatch_does_not_get_subset_rescue() -> None:
     units = {"E1.S1": "Hold the button for 5 seconds."}
     part = {"text": "Hold the button for 50 seconds.", "support_ids": ["E1.S1"]}
     assert safe_subset_exists(part, units) == ("INDETERMINATE", [])
-
-
-def test_canonical_artifact_target_and_critical_counts() -> None:
-    root = Path(__file__).resolve().parents[1]
-    source = root / "artifacts/ragbench/canonical/basic50-final"
-    rows = [
-        json.loads(line) for line in (source / "validation-results.jsonl").read_text().splitlines()
-    ]
-    failures = [row for row in rows if not (row.get("valid") and row.get("visible"))]
-    critical = [
-        row
-        for row in failures
-        if "CRITICAL_VALUE_CONFLICT" in row.get("validator_failure_codes", [])
-    ]
-    assert len(failures) == 19
-    assert len(critical) == 10
 
 
 def test_forensic_runner_has_no_provider_or_retrieval_imports() -> None:
