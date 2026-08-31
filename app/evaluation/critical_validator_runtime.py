@@ -155,7 +155,7 @@ def audit_critical_value(
     claim: str,
     support_texts: Sequence[str],
     *,
-    selector: ValidatorSelector = "baseline",
+    selector: ValidatorSelector = "architecture_v2",
     v3_shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
     claim_id: str = "claim",

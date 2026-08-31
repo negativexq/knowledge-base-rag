@@ -18,10 +18,11 @@ def audit(claim: str, support: str, *, version: str = "v3", shadow: bool = False
     )
 
 
-def test_validator_rollout_defaults_to_baseline_and_shadow_off() -> None:
+def test_validator_rollout_defaults_to_architecture_v2_and_shadow_off() -> None:
     settings = Settings(_env_file=None)
-    assert settings.critical_validator_version == "baseline"
+    assert settings.critical_validator_version == "architecture_v2"
     assert settings.critical_validator_v3_shadow_enabled is False
+    assert settings.critical_validator_arch_v2_shadow_enabled is False
 
 
 def test_invalid_validator_version_fails_closed() -> None:

@@ -102,7 +102,7 @@ def audit_support_relevance(
     support_texts: Sequence[str],
     *,
     coverage_threshold: float,
-    validator_version: ValidatorSelector = "baseline",
+    validator_version: ValidatorSelector = "architecture_v2",
     shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
 ) -> dict[str, Any]:

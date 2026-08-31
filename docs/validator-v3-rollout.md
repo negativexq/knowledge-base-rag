@@ -7,8 +7,9 @@ ambiguity guard, and a version-specificity guard. Ambiguous locale and version
 specificity remain conservative `INDETERMINATE` outcomes; support-ID
 authorization remains a separate security boundary.
 
-The selector accepts `baseline` or `v3` and defaults to `baseline`. The
-optional `CRITICAL_VALIDATOR_V3_SHADOW_ENABLED` setting defaults to `false`.
+The selector accepts `baseline`, `v3`, or `architecture_v2`; the portfolio
+runtime defaults to `architecture_v2`. The optional
+`CRITICAL_VALIDATOR_V3_SHADOW_ENABLED` setting defaults to `false`.
 When enabled with the baseline selector, V3 evaluates the same claim/support
 inputs for bounded diagnostics only; baseline still controls the visible
 answer and abstention behavior. Telemetry records version, outcome, bounded
@@ -21,10 +22,9 @@ The V3 independent validation passed, but it retains two known availability
 false positives: `12.00 hours` versus `12 hours`, and `100.0%` versus `100%`.
 They are not changed by this integration.
 
-Rollback is immediate at the configuration boundary: set
-`CRITICAL_VALIDATOR_VERSION=baseline` and restart/redeploy according to normal
-configuration procedure. No reindex, migration, data rewrite, model reload, or
-artifact regeneration is required. Local shadow safety is verified, but no
-authorized live/staging runtime observation was performed; the next step is a
-separate telemetry-backed shadow observation. V3 is not active for
-user-visible traffic.
+Rollback is configuration-only at the boundary: set
+`CRITICAL_VALIDATOR_VERSION=baseline` or `v3` and restart/redeploy according to
+normal configuration procedure. No reindex, migration, data rewrite, model
+reload, or artifact regeneration is required. Architecture V2 is the default
+portfolio-runtime validator; V3 remains available for compatibility and
+debugging.

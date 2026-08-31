@@ -22,10 +22,18 @@ from app.llm.structured_output import (
 from app.shared.config import Settings
 
 
-def test_architecture_v2_is_explicit_and_default_remains_baseline() -> None:
+def test_architecture_v2_is_default_and_rollback_selectors_remain_explicit() -> None:
     settings = Settings(_env_file=None)
-    assert settings.critical_validator_version == "baseline"
+    assert settings.critical_validator_version == "architecture_v2"
     assert settings.critical_validator_arch_v2_shadow_enabled is False
+    assert (
+        Settings(_env_file=None, critical_validator_version="baseline").critical_validator_version
+        == "baseline"
+    )
+    assert (
+        Settings(_env_file=None, critical_validator_version="v3").critical_validator_version
+        == "v3"
+    )
     assert (
         Settings(
             _env_file=None, critical_validator_version="architecture_v2"
@@ -194,6 +202,10 @@ def test_shadow_telemetry_promotes_occurrence_and_role_counts(
             "shadow_error": False,
             "shadow_error_class": None,
             "shadow_disagreement": None,
+            "locale_ambiguity": False,
+            "version_ambiguity": False,
+            "version_specificity_reject": False,
+            "identifier_reject": False,
             "architecture_id": runtime.ARCHITECTURE_V2_ID,
             "occurrence_count": 3,
             "validate_role_count": 1,
@@ -250,6 +262,10 @@ def test_shadow_telemetry_distinguishes_executed_zero_from_not_executed(
             "shadow_error": False,
             "shadow_error_class": None,
             "shadow_disagreement": None,
+            "locale_ambiguity": False,
+            "version_ambiguity": False,
+            "version_specificity_reject": False,
+            "identifier_reject": False,
             "architecture_id": runtime.ARCHITECTURE_V2_ID,
             "occurrence_count": 0,
             "validate_role_count": 0,
@@ -273,9 +289,14 @@ def test_shadow_telemetry_distinguishes_executed_zero_from_not_executed(
     )
     answer = SupportUnitAnswer([SupportUnitAnswerPart("No critical value here.", ["E1.S1"])], False)
     executed = validate_support_unit_answer(
-        answer, [unit], architecture_v2_shadow_enabled=True
+        answer,
+        [unit],
+        validator_version="baseline",
+        architecture_v2_shadow_enabled=True,
     ).validator_telemetry
-    not_executed = validate_support_unit_answer(answer, [unit]).validator_telemetry
+    not_executed = validate_support_unit_answer(
+        answer, [unit], validator_version="baseline"
+    ).validator_telemetry
     assert executed["architecture_v2_shadow_executed"] is True
     assert executed["architecture_v2_shadow_occurrence_count"] == 0
     assert not_executed["architecture_v2_shadow_executed"] is False

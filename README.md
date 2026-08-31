@@ -1,367 +1,312 @@
 # Knowledge Base RAG
 
-Knowledge Base RAG is a local-first, production-oriented platform for
-multilingual knowledge bases. It combines tenant-scoped hybrid retrieval,
-measured reranking, citation-aware generation, prompt-injection resistance,
-incremental synchronization, and an operations console for inspecting what the
-system retrieved and why.
+Production-style, evidence-grounded RAG with hybrid retrieval, deterministic
+support validation, occurrence-aware critical-value checking, privacy-safe
+observability, and reproducible evaluation.
 
-This is an engineering system for operating and evaluating RAG—not a ChatGPT
-clone. The UI makes the retrieval evidence, security context, validation state,
-and trace waterfall visible instead of hiding them behind a chat transcript.
+**Python** · **FastAPI** · **Qdrant** · **OpenAI / Ollama** · **React** ·
+**OpenTelemetry** · **pytest**
+
+Knowledge Base RAG is a local-first engineering portfolio system for
+multilingual knowledge bases. It is designed around a practical question that
+most RAG demos skip: what should happen when retrieved evidence, generated
+claims, citations, and critical literals do not agree?
 
 ![RAG Operations Console Playground](docs/assets/rag-playground.jpg)
 
-![RAG Operations Console Trace Waterfall](docs/assets/rag-playground-trace.jpg)
+## Why This Project Exists
 
-## Why this project
+Retrieval quality alone does not make an answer trustworthy. A useful system
+must preserve tenant boundaries, construct evidence deliberately, explain
+which support units reached the model, validate the model's references, and
+fail closed when a safety boundary cannot be established.
 
-Most RAG demos stop at “retrieve a few chunks and ask a model.” This project
-focuses on the boundaries that decide whether that demo is useful in practice:
+This project makes those boundaries explicit. It also treats evaluation as an
+engineering control: a change is adopted only when it passes a decision rule
+that was frozen before the result was known.
 
-- retrieval is restricted by server-owned tenant and role context;
-- dense and sparse signals are fused before multilingual reranking;
-- retrieved text and metadata remain explicitly untrusted reference data;
-- support IDs are checked against the authorized, model-visible result set;
-- critical-value consistency is checked locally per answer part and support;
-- production generation defaults to buffer → validate → release;
-- sync, index activation, evaluation, and trace state are inspectable.
+## What Makes It Different
 
-## Key capabilities
+The system goes beyond “upload a PDF, search vectors, call an LLM” with:
 
-- Multilingual hybrid retrieval with Qwen3-Embedding-4B at 1024 dimensions,
-  Qdrant BM25 sparse search, and reciprocal rank fusion.
-- `BAAI/bge-reranker-v2-m3` multilingual reranking over 20 candidates, with 5
-  results passed onward to generation.
-- Mandatory tenant ACL enforcement before reranking or generation, with
-  `USER`, `OPERATOR`, and `ADMIN` role boundaries.
-- Untrusted RAG context serialization, `answer_v3`, canonical citation
-  validation, and deterministic output-policy checks.
-- Strict production validation with an explicit fast streaming mode for
-  latency-sensitive development paths.
-- Incremental sync and reconciliation with content fingerprints, versioned
-  Qdrant collections, alias activation, deferred cleanup, and rollback-aware
-  index lifecycle.
-- OpenTelemetry traces and Jaeger-backed visibility for sync and chat flows.
-- A React RAG Operations Console for evidence inspection, evaluation results,
-  tenant-scoped knowledge, sync history, settings, and traces.
+- dense and sparse retrieval fused with reciprocal rank fusion;
+- server-owned tenant and role authorization before reranking or generation;
+- SectionAware evidence construction with request-scoped support-unit IDs;
+- deterministic validation of support identity and critical literal consistency;
+- a frozen occurrence-ledger architecture for negation, corrections, signed
+  values, versions, and repeated siblings;
+- bounded OpenTelemetry/Jaeger signals plus controlled local forensic capture;
+- an evaluation harness that separates retrieval, evidence, generation,
+  validation, citation, and security failures.
+
+## Key Results
+
+The headline numbers below are from the canonical TechQA BGE-ON evaluation
+record. They are benchmark results, not claims about live customer traffic or
+general production accuracy.
+
+| Metric | Result | Interpretation |
+| --- | ---: | --- |
+| Candidate evidence recall | **95.9%** | Required evidence was usually found in the candidate set. |
+| Useful-answer rate | **70%** | Correct + Partial; this is not an accuracy claim. |
+| Materially incorrect answers | **2%** | Wrong or materially misleading visible answers. |
+| Strict fully-correct | **30%** | Full-completeness scoring, stricter than useful-answer rate. |
+
+The retained BGE reranker improves the system's selection story only when the
+full evidence and semantic decision rules are considered; its measured
+corrected-run latency remains expensive. The preregistered removal decision
+was therefore `BGE_REMOVAL_NOT_SUPPORTED`. See the
+[canonical evaluation report](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/)
+for the evidence and score definitions.
 
 ## Architecture
 
 ```mermaid
 flowchart TD
-    Sources[Filesystem / Notion] --> Parse[Parse · Chunk · Fingerprint]
-    Parse --> Index[Qwen3 embeddings + BM25]
-    Index --> Qdrant[(Qdrant active alias)]
+    Query[Query] --> ACL[Tenant / ACL boundary]
+    ACL --> Retrieve[Hybrid Retrieval]
+    Retrieve --> Dense[Dense + BM25 + RRF]
+    Dense --> Rerank[BGE reranking]
+    Rerank --> Evidence[SectionAware Evidence Builder]
+    Evidence --> Units[Support Units]
+    Units --> LLM[LLM]
+    LLM --> Answer[text + support_ids[]]
+    Answer --> Support[Support-ID validation]
+    Support --> Critical[Architecture V2 critical-value validator]
+    Critical --> Citation[Citation resolution]
+    Citation --> Visible[Visible Answer]
 
-    Query[Authenticated query] --> Auth[UserContext + tenant ACL]
-    Auth --> Retrieve[Dense + sparse retrieval]
-    Qdrant --> Retrieve
-    Retrieve --> RRF[RRF fusion]
-    RRF --> Rerank[BGE multilingual reranker]
-    Rerank --> Envelope[Graceful SectionAware evidence]
-    Query --> Envelope
-    Envelope --> Units[Deterministic support units]
-    Units --> Generate[Luna generation]
-    Generate --> Validate[Support-ID validation]
-    Validate --> Critical[Claim-local critical-value validation]
-    Critical --> Resolve[Application citation resolution]
-    Resolve --> Answer[Answer + canonical citations]
-
-    Console[React Operations Console] <-->|HTTP / SSE| API[FastAPI]
-    API --> Auth
-    API --> Qdrant
-    API --> Observe[OpenTelemetry / Jaeger]
+    Critical -. bounded metadata .-> OTel[OTel / Jaeger]
+    Critical -. controlled local details .-> Forensic[Forensic capture]
+    Retrieve -. frozen measurements .-> Eval[Evaluation harness]
 ```
 
-FastAPI owns authentication, authorization, tenant scoping, retrieval,
-generation, SSE production, and read-only `/ui/*` aggregation. Qdrant stores
-the active index; the configured provider supplies generation; and Jaeger stores
-trace spans. The React client owns presentation state and client-observed
-timings; it is not an authorization boundary.
+FastAPI owns authentication, authorization, retrieval, generation, SSE, and
+citation resolution. Qdrant serves the active index. The React Operations
+Console presents the resulting evidence and trace state; it is not an
+authorization boundary.
 
-See [the architecture deep dive](docs/architecture.md) for the control-plane
-and data-plane details.
+## Architecture V2: Occurrence-Aware Validation
 
-## Retrieval pipeline
+### Why the Validator Uses an Occurrence Ledger
 
-The production query path is:
+Earlier validator prototypes added handling for negation, corrective claims,
+signed values, versions, and same-value siblings. Repeated failures exposed a
+structural problem: identity was lost between extraction, value matching,
+masking, and text re-discovery. A value could be rejoined with the wrong role
+or an inner unsigned value could be counted as an independent occurrence.
+
+The old shape was:
 
 ```text
-authenticated request
-  → server-owned UserContext / RetrievalContext
-  → mandatory tenant ACL
-  → Qwen3-Embedding-4B @ 1024 dense query embedding
-  → Qdrant dense + BM25 sparse retrieval
-  → reciprocal rank fusion
-  → BAAI/bge-reranker-v2-m3
-  → top 5 authorized results
-  → graceful SectionAware evidence assembly
-  → deterministic support units
-  → Luna generation (`text` + `support_ids[]`)
-  → deterministic support-ID validation
-  → claim-local critical-value consistency validation
-  → application-resolved citations
+extract → value/type matching → text rediscovery → masking → re-extraction → validate
 ```
 
-The reranker receives 20 authorized candidates and returns the top 5. The
-reranker cannot widen the ACL-filtered set. Production currently retains the
-legacy 500/50 whitespace-word chunking baseline: token-aware variants were
-structurally correct but did not produce a measurable quality or efficiency
-advantage on the current short fixture corpus. The implementation and the
-decision evidence are documented in [docs/chunking.md](docs/chunking.md).
+The frozen Architecture V2 shape is:
 
-The active Qdrant collection is served through the `kb_active` alias. Pipeline
-fingerprints include the embedding, parser, index, and chunk configuration so a
-configuration mismatch is surfaced instead of silently serving an incompatible
-index.
+```text
+one canonical extraction
+  → immutable occurrence ledger
+  → occurrence-local role classification
+  → structured VALIDATE filter
+  → frozen V3 value semantics
+```
 
-Support IDs provide request-scoped provenance and authorization; the application
-resolves their exact citation text. Claim-local critical-value validation protects
-numbers, units, versions, dates, and similar literal values without presenting
-that consistency check as semantic entailment or an LLM faithfulness guarantee.
+For example:
 
-## Security model
+> The signed result is -204, not 204.
 
-There are two distinct security questions:
+The conceptual ledger keeps identity attached to each occurrence:
 
-| Boundary | Question | Enforcement |
+```text
+O1: -204  → VALIDATE
+O2:  204  → SKIP_REJECTED_PREMISE
+```
+
+The `204` inside `-204` is not independently rediscovered. This is a small
+example of the larger design principle: role decisions belong to occurrences,
+not to globally normalized values.
+
+Architecture V2 is frozen under
+`CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1` and is the default
+validator in this portfolio runtime. Baseline and V3 remain explicit
+server-side options for rollback and comparison. The implementation and
+independent evidence are available in the
+[Architecture V2 artifacts](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-implementation-v1/)
+and [independent validation V2](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-independent-contract-validation-v2/).
+
+## Safety Boundaries
+
+The system deliberately separates three questions:
+
+1. **Support identity and provenance:** support-ID validation proves that a
+   cited support unit existed, was authorized, and was visible to the model.
+2. **Critical literal consistency:** Architecture V2 checks deterministic
+   consistency for values such as numbers, units, versions, dates, percentages,
+   and identifiers.
+3. **Semantic answer quality:** offline evaluation determines whether the
+   answer actually fulfills the question from the evidence.
+
+Support-ID validation does **not** prove semantic entailment. Critical-value
+validation does **not** solve general semantic grounding. Keeping those claims
+separate makes both the runtime behavior and the evaluation results easier to
+reason about.
+
+## Evaluation Philosophy
+
+> A result changes the system only if it passes a decision rule frozen before
+> the result is known.
+
+| Experiment | What it taught us | Decision |
 | --- | --- | --- |
-| Access control | Can this user retrieve this chunk? | Server-owned identity, role checks, and mandatory tenant ACL before reranking |
-| Prompt trust | If an authorized chunk contains instructions, should the model obey them? | Untrusted context envelope, `answer_v3`, canonical citation checks, and output validation |
+| BGE removal | Evidence completeness alone did not pass the preregistered semantic non-regression gate. | Keep BGE; `BGE_REMOVAL_NOT_SUPPORTED`. |
+| Validator V1 | Improved metrics did not compensate for a locale-safety hard-gate failure. | Reject the candidate. |
+| Validator V4/V5/V6 | Incremental polarity and masking fixes kept exposing occurrence-identity failures. | Stop patching; redesign the contract. |
+| Architecture V2 | Fresh independent contract validation and runtime integration passed with identity and privacy gates intact. | Integrate the occurrence-ledger architecture. |
 
-Document body, title, heading, source name, and location metadata are serialized
-as untrusted data. They never become provider `system` or `assistant` messages;
-delimiter-looking text inside a document cannot change the message role.
+The rejected paths remain available as canonical evidence rather than being
+rewritten into a success narrative. The historical V1 annotation defect and
+its `FAILED` verdict are preserved; the later independent V2 validation is a
+separate result.
 
-The default security validation mode is `strict`: the answer is buffered,
-validated, and released only if citation and output-policy checks pass. `fast`
-is an explicit server-side opt-in that streams immediately and performs a
-post-stream check; output may reach the client before a violation is detected.
-The frontend cannot downgrade the server-owned mode.
+## Runtime Status
 
-Authentication is environment-scoped: `APP_ENV=development` with an empty
-`AUTH_TOKENS_JSON` enables the documented demo identities. In
-`APP_ENV=production`, explicit credentials/verifier configuration is required;
-the demo token fallback and `AUTH_ENABLED=false` are rejected at startup.
+Architecture V2 is the default validator in this portfolio runtime. The path
+has been verified through a real local browser → API → RAG → validator →
+telemetry flow, including direct Chrome CDP control, citation resolution, and
+failure isolation.
 
-This design is tested against the documented adversarial suite; it is not a
-claim of universal prompt-injection immunity. Citation integrity is also not
-claim-level semantic grounding. See [docs/security.md](docs/security.md).
+This repository implements production-oriented controls, but it is a portfolio
+system rather than a claim of operating a customer-facing production service.
+There is no claim of live customer traffic, production SLOs, a completed
+production canary, or a production promotion exercise. Architecture V2 shadow
+is off by default.
 
-## Evaluation and benchmark highlights
+## Features
 
-The README reports current decisions; detailed runs and per-query evidence
-remain in [artifacts/](artifacts/) and the linked deep dives.
+### Retrieval
 
-The next benchmark preparation set is documented in [Evaluation Corpus v2](docs/evaluation-dataset.md); it is a frozen, model-free fixture expansion and has not been benchmarked yet.
+- Qwen3-Embedding-4B embeddings with the configured 1024-dimensional index.
+- Qdrant dense and BM25 sparse retrieval with reciprocal rank fusion.
+- BAAI/bge-reranker-v2-m3 over authorized candidates.
+- SectionAware evidence packing under a bounded context budget.
 
-### Current TechQA quality and reranker decision
+### Grounding and Safety
 
-On the corrected TechQA HOLDOUT50, the production-like path reached 95.9%
-candidate evidence recall, a 70% useful-answer rate, and only 2% materially
-incorrect answers. The dominant remaining failure mode is
-incompleteness/abstention rather than fabrication. Deterministic support-ID
-provenance, authorization, hidden/cross-query checks, and citation resolution
-remained clean in the measured scope.
-All measured deterministic security checks recorded zero accepted unknown,
-cross-query, hidden, or unauthorized support IDs, and zero citation resolution
-failures.
+- Mandatory tenant ACL and role boundaries before reranking or generation.
+- Request-scoped support units and application-owned citation resolution.
+- Frozen Architecture V2 occurrence ledger with fail-closed infrastructure
+  handling.
+- Untrusted context serialization and strict buffered validation mode.
 
-| Outcome | Meaning | BGE ON | RRF/OFF |
-| --- | --- | ---: | ---: |
-| Fully correct | Complete and materially correct | 15/50 (30%) | 12/50 (24%) |
-| Useful but partial | Substantively useful but incomplete | 20/50 (40%) | 19/50 (38%) |
-| Materially incorrect | Wrong or materially misleading | 1/50 (2%) | 1/50 (2%) |
-| Unavailable | Abstained, suppressed, or no usable answer | 14/50 (28%) | 18/50 (36%) |
-| **Useful answer rate** | **Correct + Partial** | **35/50 (70%)** | **31/50 (62%)** |
+### Evaluation
 
-The 30% fully-correct figure is a strict completeness metric, not an overall
-30% QA accuracy figure. “Useful but partial” answers contain substantively
-correct, useful content with an important omission or limitation; “unavailable”
-means that no usable visible answer reached the user.
+- Frozen populations, preregistration, hashes, scorecards, and decision records.
+- Separate strict, useful, materially incorrect, and unavailable outcomes.
+- Retrieval/evidence/generation/validator/citation failure attribution.
+- Independent contract validation for safety-critical validator behavior.
 
-The no-reranker arm improved evidence completeness, but no robust directional
-semantic difference was demonstrated: pairwise preference was ON_BETTER 13,
-OFF_BETTER 12, TIE 25, with `NET_OFF = -1`. Excluding the five low-confidence
-queries only for sensitivity produced ON_BETTER 10, OFF_BETTER 11, TIE 24,
-and `NET_OFF = +1`; direction robustness was low. The preregistered
-conservative semantic non-regression gate nevertheless failed on the nominal
-Correct+Partial and pairwise criteria, so removal was not authorized. This
-verdict does not prove that BGE is semantically higher quality.
+### Observability
 
-For the 41 annotated HOLDOUT rows, the evidence funnel was:
+- OpenTelemetry traces with Jaeger inspection for chat and sync flows.
+- Bounded architecture, outcome, role-count, duration, and error metadata.
+- No raw query, answer, evidence, literal, prompt, or credential in normal
+  telemetry.
+- Controlled local forensic capture for occurrence-level diagnosis.
 
-| Evidence stage | ANY | ALL | Mean recall |
-| --- | ---: | ---: | ---: |
-| Shared RRF Top20 | 40/41 | 38/41 | 95.905% |
-| BGE Top5 | 33/41 | 30/41 | 77.875% |
-| RRF Top5 | 37/41 | 32/41 | 85.054% |
-| BGE + SectionAware @2400 | 33/41 | 30/41 | 77.875% |
-| RRF + SectionAware @2400 | 37/41 | 33/41 | 85.867% |
+### Runtime
 
-Candidate retrieval is strong; most required evidence is present in RRF
-Top20, with substantial loss at Top20 → Top5 selection. The current BGE does
-not improve evidence completeness on this benchmark; OFF preserves more
-evidence, but the downstream answer path did not convert that advantage into a
-passing semantic non-regression result. The retained BGE implementation
-measured 98.70s p50, 251.40s p95, and 293.58s max on this corrected run; Luna
-p50 was approximately 2.62s ON and 2.69s OFF. The experiment did not authorize
-BGE removal, but the retained BGE implementation remains unsuitable for
-latency-sensitive production serving and is an unresolved production blocker.
+- FastAPI backend and React RAG Operations Console.
+- Qdrant-backed index lifecycle with alias activation and rollback-aware sync.
+- Server-side OpenAI/Ollama provider selection.
+- SSE answer delivery with application-resolved citations.
 
-The system usually finds the evidence and rarely produces a materially wrong
-visible answer; the harder problem is carrying enough of that evidence through
-selection and validation to produce a complete answer.
-
-The evaluation harness is allowed to veto the engineer: a result changes the
-system only when it passes a decision rule frozen before the result is known.
-The corrected HOLDOUT was a new execution after the original run was
-invalidated for using a DEBUG50-only corpus; it must not be described as an
-untouched or pristine HOLDOUT.
-
-### Answerability evaluation
-
-Phase 6 evaluated retrieval-derived gates, statistical calibration, and
-semantic ambiguity/evidence-sufficiency designs. The experiments remain
-research/shadow-only: no answerability gate was promoted to the active runtime.
-The final decision is documented in [docs/phase-6-answerability-decision.md](docs/phase-6-answerability-decision.md), with raw runs indexed in [artifacts/phase-6/README.md](artifacts/phase-6/README.md).
-
-The detailed semantic evaluator history remains available in [docs/phase-6c-semantic-answerability.md](docs/phase-6c-semantic-answerability.md).
-The cache-first local evaluator model smoke is documented in [docs/phase-6c1-semantic-model-smoke.md](docs/phase-6c1-semantic-model-smoke.md); it does not enable runtime gating.
-The balanced qwen3.5:4b validation smoke is documented in [docs/phase-6c2-balanced-semantic-smoke.md](docs/phase-6c2-balanced-semantic-smoke.md).
-The scope/authority ambiguity-v2 comparison is documented in [docs/phase-6c3-ambiguity-v2.md](docs/phase-6c3-ambiguity-v2.md); it remains experimental and shadow-only.
-
-The query-scope boundary comparison is documented in [docs/phase-6c4-query-scope-boundary.md](docs/phase-6c4-query-scope-boundary.md); it is offline and shadow-only.
-
-The obligation-based sufficiency experiment is documented in [docs/phase-6c5-obligation-sufficiency.md](docs/phase-6c5-obligation-sufficiency.md); it remains experimental and does not change runtime gating.
-
-The fixed-obligation support follow-up is documented in [docs/phase-6c6-fixed-obligation-support.md](docs/phase-6c6-fixed-obligation-support.md); extraction and support remain experimental and do not change runtime gating.
-
-| Layer | Active decision | Evidence |
-| --- | --- | --- |
-| Embeddings | Qwen3-Embedding-4B @ 1024 | [Multilingual embedding benchmark](artifacts/embedding-benchmark-sprint21/stability.json) and migration artifacts |
-| Retrieval | Dense + BM25 + RRF | [220-query multilingual evaluation set](artifacts/reranker-benchmark-sprint26/results.json) |
-| Reranker | `BAAI/bge-reranker-v2-m3` retained | Corrected TechQA removal verdict `BGE_REMOVAL_NOT_SUPPORTED`; measured BGE p50 `98.70s` ([final artifacts](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/)) |
-| Chunking | Legacy 500/50 baseline retained | Token-aware candidates matched quality but did not reduce context, chunk count, or storage on the current corpus |
-| Prompt security | Tenant ACL + untrusted context + STRICT | 82 adversarial cases; injection, spoofing, suppression, unauthorized citation, and cross-tenant exfiltration rates all `0.0000` ([results](artifacts/security-sprint25/adversarial-results.json)) |
-| Generation sanity | Baseline generation path retained | 26/26 successful; citation integrity, not-found behavior, and strict validation all `1.0000` ([results](artifacts/chunking-benchmark-sprint27/generation-sanity.json)) |
-
-Historical reranker-benchmark-sprint26 results are retained for model
-characterization, but the authoritative architecture decision is the frozen
-corrected TechQA HOLDOUT50 result above. BGE remains enabled because the
-preregistered removal gate did not pass; its measured latency remains an
-unresolved production blocker and engineering debt. See
-[docs/reranking.md](docs/reranking.md) for the broader trade-off history.
-
-The chunking corpus is intentionally called out as a limitation: its average
-chunk is about 69 Qwen tokens and its maximum is 100, so the 256–768 token
-candidate boundaries were not exercised. See [docs/chunking.md](docs/chunking.md)
-for corrected latency measurements and the KEEP_CURRENT decision.
-
-## RAG Operations Console
-
-The React console is an operations and debugging surface, not a conversational
-product shell. It exposes:
-
-- **Overview** — active index, source health, recent syncs, and security state.
-- **Playground** — streamed answer, canonical citations, Sources, Retrieval,
-  Security, and Trace inspectors.
-- **Knowledge** — tenant-scoped source and document metadata.
-- **Sync Runs** — role-aware sync actions and history.
-- **Evaluations** — retrieval, reranker, chunking, prompt-security, and
-  generation-sanity results from real artifacts.
-- **Traces** — sync trace summaries and links to the Jaeger-backed flow.
-- **Settings** — active embedding, reranker, chunking, generation, prompt, and
-  validation configuration.
-
-The development identity selector is explicitly local/demo authentication UX.
-The backend remains the enforcement point for bearer-token identity, tenant ACL,
-roles, and sync permissions. Local storage of the selected demo token is not a
-production authentication design.
-
-![RAG Operations Console Evaluations](docs/assets/rag-evaluations.jpg)
-
-For the remaining real UI captures—including Retrieval, Security, and the
-scrolled Settings sections—see the [complete screenshot asset set](docs/assets/).
-
-## Quick start
+## Quickstart
 
 ### Prerequisites
 
-- Python 3.11 or newer
+- Python 3.11+
 - Docker Desktop or a compatible Docker Engine
-- Node.js 22 and npm for the React console
-- Native [Ollama](https://ollama.com) on the host
-- Enough local disk/RAM for Qwen3-Embedding-4B and the configured generation
-  model
+- Node.js 22 and npm
+- Native [Ollama](https://ollama.com) for local generation and embeddings
 
-### Run the stack
+### Run locally
 
 ```bash
 cp .env.example .env
-
-# Ollama runs natively on the host.
 ollama pull qwen3-embedding:4b
 ollama pull qwen3.5:4b
 
-# Qdrant, Jaeger, and the FastAPI service.
 docker compose up -d --build
 
-# React Operations Console.
 cd frontend
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. The local compose setup expects Ollama at
-`host.docker.internal:11434`; the backend serves on port `8000`, Qdrant on
-`6333`, and Jaeger on `16686`. A fresh installation must ingest configured
-documents before retrieval can return evidence. Sync can be triggered from the
-console with an `OPERATOR` identity or through the protected sync API.
+Open the frontend URL printed by Vite, normally `http://localhost:5173`.
+The compose backend normally serves on `http://localhost:8000`, Qdrant on
+`6333`, and Jaeger on `16686`. A fresh installation must ingest documents
+before retrieval can return evidence. An operator identity can trigger sync
+from the console or the protected sync API.
 
-For host-native backend development, run Qdrant and Jaeger with
-`docker compose up -d qdrant jaeger`, then use `make dev` and run the frontend
-separately. The exact environment surface is in [.env.example](.env.example);
-it contains placeholders only.
+For host-native backend development, run `docker compose up -d qdrant jaeger`,
+then use `make dev` and run the frontend separately. The full environment
+surface, including auth and CORS settings, is documented in
+[`.env.example`](.env.example).
 
 ## Configuration
 
-The most important server-owned settings are:
+All validator selection is server-controlled. A query, header, cookie, body
+field, or frontend preference cannot select a validator.
 
-| Area | Current setting |
-| --- | --- |
-| Embedding | `EMBEDDING_MODEL_KEY=qwen3-4b`, `EMBEDDING_OUTPUT_DIMENSION=1024` |
-| Retrieval | Qdrant `kb_active`, BM25 sparse, RRF |
-| Reranking | `DEV_FAST`: `15 → 5`; global/reference: `20 → 5`, `BAAI/bge-reranker-v2-m3` |
-| Chunking | `CHUNKING_MODE=baseline`, legacy 500/50 production baseline |
-| Generation | `DEV_FAST`: Ollama `qwen3.5:4b`, `think=false` |
-| Prompt/security | `ACTIVE_PROMPT_VERSION=v3`, `SECURITY_VALIDATION_MODE=strict` |
-| Auth/CORS | `APP_ENV=development`, `AUTH_ENABLED=true`, explicit `CORS_ORIGINS` allow-list |
+| Setting | Portfolio default | Purpose |
+| --- | --- | --- |
+| `RAG_PIPELINE_V2` | `false` | Enables the evidence-backed RAG pipeline where used. |
+| `SUPPORT_IDS_ENABLED` | `false` | Enables request-scoped support-unit output. |
+| `CRITICAL_VALIDATOR_VERSION` | `architecture_v2` | `baseline`, `v3`, or `architecture_v2`. |
+| `CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED` | `false` | Diagnostic V2 shadow; off by default. |
+| `CRITICAL_VALIDATOR_V3_SHADOW_ENABLED` | `false` | Optional diagnostic V3 shadow. |
+| `GENERATION_PROVIDER` / model settings | Ollama / `qwen3.5:4b` | Local generation profile. |
+| `RAG_FORENSIC_CAPTURE_ENABLED` | `false` | Controlled local metadata capture. |
+| `RAG_FORENSIC_CAPTURE_RAW_TEXT` | `false` | Raw forensic text; never normal OTel. |
 
-Do not change model, dimension, or chunk settings without activating a matching
-indexed collection. See [docs/embedding-migration.md](docs/embedding-migration.md)
-for the versioned index procedure.
+Invalid validator selectors fail closed. To compare or roll back explicitly,
+set `CRITICAL_VALIDATOR_VERSION=baseline` or `v3`; no database, Qdrant,
+reindexing, embedding, or document migration is required.
+
+## Observability and Forensics
+
+The normal trace contains bounded metadata such as validator version, outcome,
+reason class, occurrence and role counts, duration, forced-abstain state, and
+shadow status. It does not contain raw user content or per-occurrence IDs.
+
+When controlled local forensic capture is enabled, the artifact can expose the
+occurrence ledger, role decisions, filtered `VALIDATE` IDs, and frozen V3
+delegation result. This provides a debugging path without turning production
+telemetry into a content store. Start with the
+[Architecture V2 rollout note](docs/critical-validator-architecture-v2-rollout.md)
+and the [local shadow-readiness evidence](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-shadow-readiness-v2/).
 
 ## Testing
 
-Backend checks:
+The deterministic backend suite is the default verification path and does not
+make provider calls:
 
 ```bash
 pytest -m "not ollama_e2e"
 ruff check app tests scripts
 ```
 
-Provider integration checks are explicit and require local services:
+The latest frozen runtime checkpoint recorded **1245 passed, 1 skipped, and 6
+deselected**. Counts may increase as reusable tests are added. Provider-backed
+checks are explicit:
 
 ```bash
 pytest -m "ollama_e2e"
 ```
 
-The suite taxonomy and historical-test policy are documented in
-[docs/test-suite-rationalization.md](docs/test-suite-rationalization.md).
-
-Frontend checks:
+Frontend checks are available when the UI changes:
 
 ```bash
 cd frontend
@@ -371,211 +316,87 @@ npm run lint
 npm run build
 ```
 
-The deterministic suite is the default backend verification path; provider
-integration tests are kept separate and are not run by default.
-Historical CI also recorded 18 frontend tests passed, with green typecheck,
-lint, build, and Ruff gates.
+## Reproducible Evidence
 
-## Project structure
+The canonical artifact tree preserves preregistrations, frozen populations,
+source hashes, scorecards, runtime reports, and decision records. It is
+evidence for the engineering decisions, not a substitute for the concise
+system description above.
+
+Curated entry points:
+
+- [Architecture V2 implementation](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-implementation-v1/)
+- [Independent contract validation V1](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-independent-contract-validation-v1/)
+- [Independent contract validation V2](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-independent-contract-validation-v2/)
+- [Production integration review](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-production-integration-review-v1/)
+- [Shadow readiness V2](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-shadow-readiness-v2/)
+- [Canonical RAGBench index](artifacts/ragbench/canonical/)
+
+## Failure Attribution
+
+When an answer fails, the useful question is not only “was it wrong?” but “at
+which boundary did it become wrong?” The runtime and evaluation records keep
+these classes distinct:
 
 ```text
-app/          FastAPI APIs, retrieval, security, sync, LLM wiring
-frontend/     React Operations Console
-prompts/      Versioned generation policies
-tests/        Backend and frontend regression coverage
-docs/         Architecture, security, benchmark deep dives, and history
-artifacts/    Machine-readable benchmark and evaluation evidence
+retrieval miss
+  → reranker loss
+  → evidence-packing loss
+  → generation error
+  → validator over-rejection
+  → citation failure
 ```
 
-## Engineering deep dives
+This makes it possible to improve the responsible layer without hiding a
+retrieval limitation behind a validator metric or calling a citation identity
+check semantic grounding.
 
-- [Architecture](docs/architecture.md) — UI/API/data-plane boundaries and
-  read-only UI aggregation.
-- [Security model](docs/security.md) — authentication, tenant ACL, untrusted
-  context, citations, and strict/fast semantics.
-- [Reranking decision](docs/reranking.md) — model choice, paired metrics,
-  cross-lingual lift, and latency cost.
-- [Chunking decision](docs/chunking.md) — tokenizer-aware implementation,
-  context efficiency, boundary checks, and the current production decision.
-- [Evaluation Corpus v2](docs/evaluation-dataset.md) — corpus design, golden
-  schema, frozen splits, static validation, and the next-run manifest.
-- [Phase 6A answerability shadow features](docs/phase-6a-answerability.md) —
-  deterministic post-retrieval signals without thresholds or abstention.
-- [Phase 6B answerability calibration](docs/phase-6b-answerability.md) —
-  development-fit and calibration-confirmation evidence without a runtime gate.
-- [Phase 5.5 runtime optimization](docs/phase-5-5-runtime-optimization.md) —
-  local generation profile and guarded candidate-k sweep.
-- [Embedding migration](docs/embedding-migration.md) — model/index lifecycle,
-  fingerprinting, activation, and rollback.
-- [Architecture decisions](docs/adr/README.md) — focused design records.
-- [Engineering history](docs/PLANNING.md) — development log and roadmap.
+## Reviewer Fast Path
 
-## Phase 7 closure
+For a 10-minute technical review:
 
-Phase 7 corrected the original source-level evidence metric: source presence
-was not treated as fact presence. Fact-level annotations showed that BGE Top-5
-could omit a fact-bearing passage even when the source was present, while the
-section-aware evidence representation restored the authored facts with modest
-context growth. Pipeline v2 then moved safety to deterministic
-evidence-backed validation; its exact-quote binding remained brittle.
+1. Start with the diagram and [Architecture V2: Occurrence-Aware Validation](#architecture-v2-occurrence-aware-validation).
+2. Read the reusable contracts in [`tests/test_critical_validator_architecture_v2_integration.py`](tests/test_critical_validator_architecture_v2_integration.py).
+3. Inspect the frozen implementation in [`app/evaluation/`](app/evaluation/).
+4. Read one [canonical TechQA report](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/).
+5. Run the local UI and inspect a trace in Jaeger.
+6. Compare the concise [rollout note](docs/critical-validator-architecture-v2-rollout.md) with the preserved canonical evidence.
 
-Pipeline v2.3 replaced copied quotes with support-unit IDs. Its initial paired
-result looked mixed, but the final integrity audit found asymmetric execution
-settings (`num_predict` was unset for historical V2.2 and 1024 for V2.3).
-Under corrected symmetric execution, the evaluated V2.3 implementation was
-not adopted: it produced no correctly attributed visible answers in the
-corrected 40-run holdout and had higher false-abstention and latency. The
-debug-set reproduction step was not run, so this does not disprove the
-support-unit contract itself or resolve implementation-versus-contract
-causality. No holdout-driven fix or additional architecture experiment was
-opened.
+## Limitations
 
-The selected closure candidate is the corrected symmetric
-`pipeline_v2_2_evidence_backed` configuration. Citation identity is
-deterministic and tenant ACLs remain enforced, but semantic claim-to-evidence
-alignment is not guaranteed: on the corrected holdout V2.2 had 15/40 correctly
-attributed and 10/40 misattributed visible answers (40% of the
-attributed/misattributed set).
+- Strict full-completeness remains below the useful-answer rate.
+- Conservative abstention is a deliberate safety trade-off, not a solved
+  answerability problem.
+- BGE reranking is measured as expensive for latency-sensitive serving; the
+  removal gate did not pass, so the model remains enabled.
+- The deterministic validator does not establish arbitrary semantic
+  entailment.
+- T4 boolean normalization and T6 unit-equivalence remain separate unresolved
+  mechanism classes; they were not folded into Architecture V2 activation.
+- The current benchmark corpus is short for distinguishing larger token-aware
+  chunk boundaries.
+- Local/demo authentication is not a complete customer-production identity
+  design.
+- This project makes no claim of real customer production traffic, production
+  SLOs, a live canary, or a production promotion.
 
-This is not a guarantee of semantic attribution: citation identity is
-deterministic, while the cited evidence may still be semantically misaligned
-with a visible claim. Multi-document synthesis also remains a weak slice;
-the final Smoke36 measured `1/3` fully correct multi-document queries. Both
-limitations are carried into the frozen Development200 measurement plan.
+## Roadmap
 
-The development split contained 12 multi-document queries. After the initial
-eight holdout queries and three debug queries, only one eligible unseen query
-remained, so the preregistered +8 extension was impossible without violating
-the split policy. Calibration and frozen test were untouched.
+- SectionAware multi-section invariant audit.
+- Better failure-attribution dashboards.
+- BGE serving, microbatching, or adaptive reranking experiments.
+- Broader benchmark corpora with longer documents and more multilingual cases.
+- Evaluator/final-evidence alignment work for semantic completeness.
 
-Operationally, a stale Ollama llama-server runner state caused requests to
-stall; model unload plus a controlled service restart restored inference
-health. Constrained structured generation also showed output-length pathology
-and severe V2.3 tail latency; bounding generation with `num_predict=1024`
-stabilized execution without changing retrieval.
+## Deeper Documentation
 
-The Smoke36 audit keeps task completeness separate from safe behavior. The
-four authored ambiguous queries have a `SHOULD_CLARIFY` target; their existing
-`0/4 complete` score is therefore not a clarification score. The two
-injection-bearing queries remain answerable: their `0/2` task-completeness
-result is a genuine content result, while injection handling succeeded `2/2`
-with zero injection failures. These behavioral slice metrics are additive and
-do not overwrite the original Smoke36 numbers.
-
-Smoke36 contains 36 official records from 37 transport attempts: one provider
-generation completed, but a scorer failure occurred before atomic persistence;
-the first raw output was not recoverable and provider failures remained zero.
-
-Development200 characterization used the exact frozen V2.2 configuration
-(`680ca44af8b296526bd22b7d81a5388c59132da4fd42ff4f4cb968c2b1c2158d`) with
-200/200 persisted results and zero provider failures. It measured 72 raw and
-72 visible fully correct answerable records, 56 forced abstentions, and 14
-false abstentions. The multi-document slice was 5/12 fully correct; this is a
-characterized weak slice, not a reason to reopen Phase 7 architecture work.
-
-The frozen 30-query blind attribution sample produced 21 correctly attributed
-and 3 misattributed visible factual answers, with 6 queries having no visible
-factual claim. These sample results are characterization only and are not a
-claim of general semantic attribution correctness. The corrected paired
-holdout remains the stronger limitation signal: 15/40 correctly attributed
-and 10/40 misattributed V2.2 visible answers (40% among those two classes).
-
-Ambiguous behavior is tracked separately: all 12 development ambiguous
-queries were authored to expect clarification; 0 clarified, 7 answered
-without clarification, and 5 safely abstained (silent-interpretation rate
-58.33%). Injection security handling succeeded 8/8, while task completeness
-was 4/8. Generation latency was 29.4s p50, 84.6s p95, and 104.3s max.
-Hard safety passed with zero unauthorized leakage, visible unsupported ACL
-answers, security violations, injection safety failures, and critical-value
-conflicts. Configuration was locked only after this gate; Calibration112 and
-Frozen133 remain untouched.
-
-## Research history and benchmark record
-
-The compact decision log is in [docs/research-history.md](docs/research-history.md).
-The canonical public Basic-50 record is in
-[artifacts/ragbench/canonical/](artifacts/ragbench/canonical/). The pinned
-RAGBench eManual run found hybrid Top20 relevant-sentence recall of 100%, BGE
-Top5 mean recall of 96.24%, and SectionAware mean recall of 89.72%. The
-historical graceful-budget semantic result was 29 correct, 7 partial, 4
-incorrect, and 10 abstentions; lexical exact match is not the quality
-headline.
-
-The graceful SectionAware policy reduced budget assembly failures from 31 to
-0, increased grounded visible answers from 9 to 40, and reduced abstentions
-from 41 to 10. The sentence-ID citation contract is a small-scale validated
-direction (3/4 semantic recovery, 4/4 valid IDs), not a globally validated
-production result. The initial full canonical Basic-50 confirmation exposed
-support-ID output/validation debt: Luna completed 50/50 calls, but only 31/50
-visible outputs had valid support-ID selections, with 24 correct, 7 partial, 2
-incorrect, 15 validator-induced no-valid-output cases, and 2 parse failures.
-The subsequent claim-local critical-value fix recovered 5 previously
-suppressed outputs in a frozen replay with no visibility or safety regressions.
-Targeted semantic judging of those exact five outputs found 1 correct and 4
-partial answers, making the post-fix record 25 correct, 11 partial, 2
-incorrect, and 12 unavailable (38 visible). This was a validator-only replay
-plus five Terra judge calls, not a regenerated 50-query benchmark; broader
-support-ID validation remains a follow-up before treating the architecture as
-production-wide proven. The post-fix operational rates are 50.0% strict and
-72.0% correct-or-partial, so the project-local strict classification remains
-BASIC_RAG_NEEDS_WORK even though validator recovery improved useful
-availability.
-
-The first frozen cross-dataset confirmation on RAGBench TechQA Basic-50 used
-the same architecture and no TechQA-specific tuning. That earlier DEBUG50
-record remains separate from the corrected HOLDOUT decision. Its artifacts are
-in [artifacts/ragbench/canonical/techqa-basic50/](artifacts/ragbench/canonical/techqa-basic50/).
-
-The original HOLDOUT execution was invalidated before semantic unblind because
-HOLDOUT queries were run against a DEBUG50-only corpus/index: 0/41 usable
-annotated rows had their gold source in that index. The audit reproduced the
-known DEBUG scorer metrics exactly, proving an arm-symmetric, outcome-
-independent corpus-scope failure rather than a scorer defect. The corrected
-execution required L0 gold-source coverage and L1 annotation mappability to
-pass 41/41 before retrieval or provider calls. This is an evaluation-
-reliability improvement, not a quality result.
-
-## Current limitations
-
-- BGE reranking runs in a worker thread from the async retrieval path; its
-  measured tail latency remains a production blocker, and bounded
-  multi-request serving remains a separate concern.
-- Evidence selection and downstream abstention leave completeness/availability
-  weak even when candidate retrieval is strong.
-- The chunking benchmark corpus is too short to distinguish 256–768 token
-  boundaries. Revisit it when substantially longer documents exercise those
-  limits.
-- Semantic answerability/abstention gates were evaluated in Phase 6 but were
-  not promoted; the active runtime retains deterministic no-evidence safety
-  and citation integrity, not a semantic gate. Claim-level semantic grounding
-  is not guaranteed by the runtime.
-- Critical-value validator calibration remains follow-up work; current reject
-  counts are an engineering hypothesis, not a proven causal root cause.
-- The local token authenticator and development identities are suitable for
-  local/demo use. A production deployment should replace them with an
-  appropriate identity provider or verifier.
-- Sync coordination is process-local and the current connector model maps each
-  configured source type to a server-owned tenant.
-
-## Next engineering work
-
-The BGE removal decision is closed as `BGE_REMOVAL_NOT_SUPPORTED`; do not
-reopen it on this consumed HOLDOUT. The next priorities are:
-
-- forensic/calibration work on the claim-local critical-value validator. The
-  corrected run recorded 14 ON versus 21 OFF critical rejects and 5 ON versus
-  10 OFF forced abstentions; this is a follow-up hypothesis, not a proven
-  causal explanation;
-- a new DEV/DEBUG Top-N experiment. RRF Top20 ALL was 38/41 versus 32/41 at
-  RRF Top5, but earlier Top8 evidence was budget-confounded and Top5 is not a
-  globally settled choice;
-- a new evaluation population for future architecture decisions. This
-  corrected HOLDOUT50 is consumed and must not be treated as untouched;
-- BGE serving-latency work. BGE remains enabled, but its measured tail latency
-  is an unresolved production blocker.
-
-The complete roadmap and historical decisions remain in
-[docs/PLANNING.md](docs/PLANNING.md).
+- [System architecture](docs/architecture.md)
+- [Security model](docs/security.md)
+- [Reranking decision](docs/reranking.md)
+- [Chunking decision](docs/chunking.md)
+- [Evaluation corpus design](docs/evaluation-dataset.md)
+- [Architecture decisions](docs/adr/README.md)
+- [Engineering history](docs/PLANNING.md)
 
 ## License
 

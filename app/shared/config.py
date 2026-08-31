@@ -65,9 +65,10 @@ class Settings(BaseSettings):
     answerability_eval_timeout_seconds: float = Field(default=30.0, gt=0)
     answerability_eval_retries: int = Field(default=1, ge=0, le=2)
 
-    # Server-owned critical-value validator rollout controls.  Baseline is
-    # deliberately the default; requests cannot select this version.
-    critical_validator_version: Literal["baseline", "v3", "architecture_v2"] = "baseline"
+    # Server-owned critical-value validator rollout controls. Architecture V2
+    # is the validated portfolio-runtime default; baseline and V3 remain
+    # explicit server-side rollback/debug options.
+    critical_validator_version: Literal["baseline", "v3", "architecture_v2"] = "architecture_v2"
     critical_validator_v3_shadow_enabled: bool = False
     critical_validator_arch_v2_shadow_enabled: bool = False
 

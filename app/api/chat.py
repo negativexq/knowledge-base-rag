@@ -115,7 +115,7 @@ class ChatDependencies:
     evidence_fn: EvidenceFn | None = None
     pipeline_version: str = "pipeline_v1"
     output_contract_version: str = "legacy"
-    critical_validator_version: ValidatorSelector = "baseline"
+    critical_validator_version: ValidatorSelector = "architecture_v2"
     critical_validator_v3_shadow_enabled: bool = False
     critical_validator_arch_v2_shadow_enabled: bool = False
     forensic_capture_enabled: bool = False

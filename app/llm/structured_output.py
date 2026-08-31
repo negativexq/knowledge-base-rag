@@ -579,7 +579,7 @@ def validate_answerability_output(
     units: list[SupportUnit],
     *,
     coverage_threshold: float,
-    validator_version: ValidatorSelector = "baseline",
+    validator_version: ValidatorSelector = "architecture_v2",
     shadow_enabled: bool = False,
 ) -> AnswerabilityValidation:
     """Validate support identity and deterministic relevance part by part."""
@@ -683,7 +683,7 @@ def validate_support_unit_answer(
     answer: SupportUnitAnswer,
     units: list[SupportUnit],
     *,
-    validator_version: ValidatorSelector = "baseline",
+    validator_version: ValidatorSelector = "architecture_v2",
     shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
 ) -> SupportUnitValidation:
@@ -1168,7 +1168,7 @@ async def stream_support_unit_answer(
     think: bool = False,
     num_ctx: int = 4096,
     seed: int | None = None,
-    validator_version: ValidatorSelector = "baseline",
+    validator_version: ValidatorSelector = "architecture_v2",
     shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
 ):
