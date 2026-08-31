@@ -1,0 +1,71 @@
+{
+  "experiment": "VALIDATOR_V4_CLAIM_POLARITY_INDEPENDENT_CONTRACT_VALIDATION_V1",
+  "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+  "secondary_unit": "CASE",
+  "candidate": {
+    "v3_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+    "v3_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+    "v4_id": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+    "v4_helper_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6"
+  },
+  "population": {
+    "population_sha256": "cc2192e784a3ef56e0b6b3aec76374d58790b895d5af3fd49a8dc30c9b173aa4",
+    "adjudication_sha256": "52c02f0c2918f28828adb91a727ff31b80b59b10ce3cdfda00e4b4cc4798540d",
+    "manifest_sha256": "495d88e172c5fd0d5c13205451a9d0e213e5c71e356b6ca53a3df1c99569bd8c",
+    "case_count": 50,
+    "occurrence_count": 100,
+    "labels_frozen_before_execution": true,
+    "disputed_excluded": 0,
+    "holdout_used": false
+  },
+  "labels": [
+    "VALIDATE",
+    "SKIP_REJECTED_PREMISE",
+    "AMBIGUOUS_KEEP_VALIDATING"
+  ],
+  "runtime_behavior": [
+    "VALIDATE",
+    "SKIP"
+  ],
+  "scoring": {
+    "v3_guard_behavior": "VALIDATE for every occurrence; V3 has no polarity suppression",
+    "v4_guard_behavior": "SKIP only when frozen V4 polarity occurrence at the adjudicated span is REJECTED_PREMISE; otherwise VALIDATE",
+    "ambiguous_maps_to": "VALIDATE",
+    "real_assertion_incorrectly_skipped": "expected VALIDATE and predicted SKIP",
+    "ambiguous_incorrectly_skipped": "expected AMBIGUOUS_KEEP_VALIDATING and predicted SKIP",
+    "rejected_premise_not_skipped": "expected SKIP_REJECTED_PREMISE and predicted VALIDATE"
+  },
+  "gates": {
+    "G1_real_assertion_safety": "V4 real_assertion_incorrectly_skipped = 0",
+    "G2_ambiguous_safety": "V4 ambiguous_incorrectly_skipped = 0",
+    "G3_unsupported_positive_claim_safety": "0 new unsupported factual claims escape validation due suppression",
+    "G4_corrective_improvement": "V4 rejected_premise_not_skipped < V3",
+    "G5_corrective_recovery": "V4 correctly skips meaningful majority of SKIP_REJECTED_PREMISE",
+    "G6_v3_regression_protection": "no regression in locale/sign/identifier/version/numeric slices",
+    "G7_query_echo_safety": "query-echo factual assertions remain VALIDATE",
+    "G8_negation_safety": "nearby negation does not globally disable validation",
+    "G9_multi_occurrence_safety": "same normalized literals retain occurrence roles",
+    "G10_security": "security regressions = 0"
+  },
+  "priority": [
+    "SECURITY",
+    "REAL_ASSERTION_SAFETY",
+    "AMBIGUITY_SAFETY",
+    "V3_REGRESSION_PROTECTION",
+    "CORRECTIVE_AVAILABILITY"
+  ],
+  "no_tuning": true,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  },
+  "production_selector_unchanged": true,
+  "independent_techqa_holdout": false,
+  "execution_order": [
+    "V3",
+    "V4"
+  ]
+}

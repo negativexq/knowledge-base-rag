@@ -1,0 +1,25 @@
+{
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "architecture_manifest_declared_sha256": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "architecture_manifest_raw_file_sha256": "c797556bff29669cdafdb165646b601e94ce4a1573969dd69b9e452f2d080d23",
+  "frozen_architecture_source_files": {
+    "app/evaluation/critical_values.py": "564022d4d9a5db2d3f4430756de7b666b3ba67bd1600a4949eb073cd8f40a910",
+    "app/evaluation/critical_occurrences.py": "d00423ab6f7f9777ff7bd20161f1372a263a6d78127ee670418e178eadbb005f",
+    "app/evaluation/critical_roles.py": "e74a7c63c0f132fe390aacd4bf7a1bb51aceeedd0d81673cd6230b252378b83f",
+    "app/evaluation/critical_occurrence_validation.py": "17adc1b0c76ea83c5a596e9bc19b0f4ec4fe1101f13145d4cf687cf9c74f2ad8",
+    "app/evaluation/critical_validator_architecture_v2.py": "b83657326f67533c0e3b4b854e7682cb3559452a7dc97caf65fe332ecc9ebc35"
+  },
+  "integration_source_files": {
+    "app/evaluation/critical_validator_runtime.py": "ea1f1bf0d31ec65c9e5bf6edbb0e73d7d876069184cc9a203b3a7154b7f78ca6",
+    "app/evaluation/forensic_capture.py": "90c249924fc4eac05c4b67d68030827613e0def86066149a63a9f620793650f4",
+    "app/evidence/support_relevance.py": "143fdbf45eba63e240db93ceebbca4a7bd6948471d94068e8834b56288ecae67",
+    "app/llm/structured_output.py": "73780fc2fcbe59f8340b76923f87c408c09af4313d03e2e473be030e3e6972d6",
+    "app/shared/config.py": "d0e3d7dc2608dc9cea95af76a8aae2fb5b7d936e0759be12fb91c6a99865a63a",
+    "app/api/chat.py": "ffa95b541e74391f801d9d5afbc77b4aeaebc1d3cbeecacd2b8b92e3abe5cbee",
+    "app/wiring.py": "921fa758c73a685547bf39f88ad3824d35b6eab7a42742eb00c0f265ad835a80",
+    "tests/test_critical_validator_architecture_v2_integration.py": "9b1114514ac64b1bbef36d2c4928473ca221df332541a8dbeecada5fd7c83fe6",
+    ".env.example": "900d2c66b0ec493461bb143e67066f9b1e3ac89334608135c375c20d887f2909",
+    "docs/critical-validator-architecture-v2-rollout.md": "6d0f4f034b28190bd82d0d9abafe265dbfa1994de2fce7b59a7ff5ee37b00d12"
+  },
+  "frozen_architecture_semantics_unchanged": true
+}

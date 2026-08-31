@@ -1,0 +1,12 @@
+{
+  "actual_jaeger_payload_checked": true,
+  "raw_query_leak_count": 0,
+  "raw_answer_leak_count": 0,
+  "raw_evidence_leak_count": 0,
+  "raw_critical_literal_leak_count": 0,
+  "raw_occurrence_text_leak_count": 0,
+  "occurrence_id_leak_count": 0,
+  "secret_leak_count": 0,
+  "forbidden_high_cardinality_attribute_count": 0,
+  "allowed_data_classes": ["bounded enums", "booleans", "counts", "durations", "architecture ID"]
+}

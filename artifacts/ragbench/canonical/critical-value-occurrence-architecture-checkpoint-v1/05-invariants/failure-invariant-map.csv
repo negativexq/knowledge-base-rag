@@ -1,0 +1,7 @@
+failure_id,source_version,root_cause,violated_invariant,evidence,confidence
+V4-SAME-VALUE,V4,VALUE_LEVEL_COLLAPSE;CLAIM_ASSOCIATION_LOSS,I1;I2;I11,V4 lacks immutable occurrence IDs and uses same-kind/value companion logic,HIGH
+V5-C57,V5,NESTED_LITERAL_COLLISION;SPAN_IDENTITY_LOSS,I4;I5;I12,V5 emits inner 204 from -204 and then re-extracts masked text,HIGH
+V6-GLOBAL-01..04,V6,ROLE_TO_VALUE_REJOIN;SIBLING_CONTAMINATION,I1;I2;I10;I13,GC cases S03 S14 P02 P06 retain spans but V5 role logic rejoins equal normalized values,HIGH
+V6-TYPE-01..04,V6,TYPE_REINTERPRETATION;ROLE_TO_VALUE_REJOIN,I1;I2;I12,Same four signed/unsigned cases account for both global and type-mismatch counters,HIGH
+V6-ROLE-08,V6,CLAIM_ASSOCIATION_LOSS,I11;I14,V6 exact spans survive but inherited V5 classifier misses eight expected corrective roles,MEDIUM
+V6-VERSION-SPANS,V6,ANNOTATION_NOT_EXTRACTOR_OWNED,I7,Three frozen expected version spans differ from extractor-owned spans; historical population preserved,HIGH

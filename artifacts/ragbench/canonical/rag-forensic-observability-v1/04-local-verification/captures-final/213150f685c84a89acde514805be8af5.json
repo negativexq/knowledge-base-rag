@@ -1,0 +1,245 @@
+{
+  "schema_version": "rag_forensic_capture_v1",
+  "forensic_request_id": "213150f685c84a89acde514805be8af5",
+  "query_hash": "7694b5952301a9afacda98d97d7a52137a404ff99b4b77cf8bb96452b67f0f97",
+  "raw_text_enabled": true,
+  "stages": {
+    "retrieval": {
+      "candidate_count": 1,
+      "authorized_candidate_count": 1,
+      "configured_top_k": 1,
+      "rrf_top20_observed": [
+        {
+          "rank": 1,
+          "chunk_id": "fixture-chunk-1",
+          "source_id": "synthetic-forensic-fixture",
+          "section_key": "limits",
+          "score": 0.9,
+          "document_version": "fixture-v1",
+          "authorized": true,
+          "text": "The default limit is 120 requests per minute."
+        }
+      ],
+      "stage_timings_ms": {}
+    },
+    "reranker": {
+      "input_candidate_ids": [
+        "fixture-chunk-1"
+      ],
+      "output_candidate_ids": [
+        "fixture-chunk-1"
+      ],
+      "bge_top5_observed": [
+        {
+          "rank": 1,
+          "chunk_id": "fixture-chunk-1",
+          "source_id": "synthetic-forensic-fixture",
+          "section_key": "limits",
+          "score": 0.9,
+          "document_version": "fixture-v1",
+          "authorized": true,
+          "text": "The default limit is 120 requests per minute."
+        }
+      ]
+    },
+    "evidence_build": {
+      "input_chunk_ids": [
+        "fixture-chunk-1"
+      ],
+      "contributing_chunk_ids": [
+        "fixture-chunk-1"
+      ],
+      "blocks_count": 1,
+      "context_tokens": "[REDACTED]",
+      "expanded": false,
+      "budget_exhausted": false,
+      "truncated_block_count": 0,
+      "dropped_expansion_count": 0,
+      "final_blocks": [
+        {
+          "rank": 1,
+          "chunk_id": "fixture-chunk-1",
+          "source_id": "synthetic-forensic-fixture",
+          "section_key": "limits",
+          "score": 0.9,
+          "document_version": "fixture-v1",
+          "authorized": true,
+          "text": "The default limit is 120 requests per minute."
+        }
+      ],
+      "evidence_build_ms": 0.1
+    },
+    "visible_pipeline": {
+      "pipeline_version": "pipeline_support_ids",
+      "output_contract_version": "output_contract_support_ids",
+      "validator_version": "baseline",
+      "shadow_enabled": true,
+      "final_evidence_blocks": [
+        {
+          "rank": 1,
+          "chunk_id": "fixture-chunk-1",
+          "source_id": "synthetic-forensic-fixture",
+          "section_key": "limits",
+          "evidence_id": "E1",
+          "document_version": "fixture-v1",
+          "truncated": false,
+          "text": "The default limit is 120 requests per minute."
+        }
+      ]
+    },
+    "generation": {
+      "provider_model": "synthetic-model",
+      "structured_output": true,
+      "support_id_contract_enabled": true,
+      "support_units": [
+        {
+          "position": 1,
+          "support_id": "E1.S1",
+          "parent_evidence_block_id": "block-1",
+          "evidence_id": "E1",
+          "source_id": "synthetic-forensic-fixture",
+          "section_key": "limits",
+          "document_version": "fixture-v1",
+          "contributing_chunk_ids": [
+            "fixture-chunk-1"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "The default limit is 120 requests per minute."
+        }
+      ],
+      "input_evidence_count": 1,
+      "structured_output_parse_status": "PARSED",
+      "generation_ms": 0.009,
+      "model_support_ids": [
+        "E1.S1"
+      ],
+      "raw_model_output": "{\"answer_parts\": [{\"text\": \"The limit is 120 requests per minute.\", \"support_ids\": [\"E1.S1\"]}], \"abstain\": false}",
+      "parsed_model_result": {
+        "answer_parts": [
+          {
+            "text": "The limit is 120 requests per minute.",
+            "support_ids": [
+              "E1.S1"
+            ]
+          }
+        ],
+        "abstain": false
+      }
+    },
+    "support_id_validation": {
+      "requested_support_ids": [
+        "E1.S1"
+      ],
+      "accepted_support_ids": [
+        "E1.S1"
+      ],
+      "rejected_support_ids": [],
+      "reason_classes": [],
+      "unknown_support_count": 0,
+      "unauthorized_support_count": 0,
+      "hidden_support_count": 0,
+      "critical_validator": {
+        "version": "baseline",
+        "shadow_enabled": true,
+        "invocations": 1,
+        "pass": 1,
+        "reject": 0,
+        "indeterminate": 0,
+        "forced_abstain": false,
+        "critical_value_count": 1,
+        "reason_classes": [
+          "CRITICAL_VALUE_SUPPORTED"
+        ],
+        "critical_value_types": [
+          "NUMBER"
+        ],
+        "locale_ambiguity": false,
+        "version_ambiguity": false,
+        "version_specificity_reject": false,
+        "identifier_reject": false,
+        "duration_ms": 0.445,
+        "baseline_duration_ms": 0.046,
+        "shadow_v3_duration_ms": 0.384,
+        "shadow_errors": 0,
+        "shadow_error_classes": [],
+        "shadow_disagreements": [
+          "SAME"
+        ],
+        "critical_inputs": [
+          {
+            "part_index": 0,
+            "support_ids": [
+              "E1.S1"
+            ],
+            "audit": {
+              "answer_critical_tokens": "[REDACTED]",
+              "token_traces": "[REDACTED]",
+              "failure_codes": [],
+              "status": "CRITICAL_VALUE_SUPPORTED",
+              "pass": true,
+              "validator_version": "baseline",
+              "validator_outcome": "PASS",
+              "validator_reason_class": "CRITICAL_VALUE_SUPPORTED",
+              "critical_value_type": "NUMBER",
+              "critical_value_count": 1,
+              "forced_abstain": false,
+              "indeterminate": false,
+              "locale_ambiguity": false,
+              "version_ambiguity": false,
+              "version_specificity_reject": false,
+              "identifier_reject": false,
+              "duration_ms": 0.445,
+              "baseline_duration_ms": 0.046,
+              "shadow_v3_duration_ms": 0.384,
+              "shadow_enabled": true,
+              "shadow_disagreement": "SAME",
+              "shadow_error": false,
+              "shadow_error_class": null,
+              "shadow_v3_outcome": "PASS",
+              "shadow_v3_reason_class": "CRITICAL_VALUE_SUPPORTED"
+            }
+          }
+        ],
+        "shadow_v3_outcomes": [
+          "PASS"
+        ],
+        "shadow_v3_reasons": [
+          "CRITICAL_VALUE_SUPPORTED"
+        ]
+      },
+      "pre_validation_model_result": {
+        "parsed": true,
+        "model_abstain": false
+      },
+      "post_validation_result": {
+        "application_abstain": false,
+        "forced_abstain": false,
+        "outcome": "ANSWER"
+      }
+    },
+    "citation_resolution": {
+      "model_support_ids": [
+        "E1.S1"
+      ],
+      "validated_support_ids": [
+        "E1.S1"
+      ],
+      "application_citation_ids": [
+        "E1.S1"
+      ],
+      "resolved_citation_ids": [
+        "E1.S1"
+      ],
+      "rejected_citation_ids": [],
+      "model_citation_like_text_present": false
+    },
+    "visible_response": {
+      "outcome": "ANSWER",
+      "citation_count": 1,
+      "support_id_count": 1,
+      "raw_visible_text": "The limit is 120 requests per minute. [E1.S1]"
+    }
+  },
+  "raw_query": "What is the default limit?"
+}

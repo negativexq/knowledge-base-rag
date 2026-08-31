@@ -1,0 +1,15 @@
+{
+  "v4_helper_sha256_expected": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v4_helper_sha256_actual": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "candidate_mutated_after_freeze": false,
+  "population_sha256": "cc2192e784a3ef56e0b6b3aec76374d58790b895d5af3fd49a8dc30c9b173aa4",
+  "protocol_sha256": "ef03d1bdc5542f144e2aac6abd653589ca6196efd6b021a2fec77762b8cc45d6",
+  "holdout_used": false,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

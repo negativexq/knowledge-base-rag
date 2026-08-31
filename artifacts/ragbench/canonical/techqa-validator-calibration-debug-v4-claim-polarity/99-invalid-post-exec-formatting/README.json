@@ -1,0 +1,5 @@
+{
+  "status": "INVALID_NOT_USED_FOR_DECISION",
+  "reason": "The V4 source was formatting-corrected after this arm execution to satisfy Ruff; all outputs are preserved and excluded from final metrics.",
+  "provider_calls": 0
+}

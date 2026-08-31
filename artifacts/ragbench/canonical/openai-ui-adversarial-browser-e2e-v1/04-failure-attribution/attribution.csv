@@ -1,0 +1,8 @@
+test_id,observed_class,grounded_fact_in_final_visible_answer,failure_layer,notes
+T3,INCORRECT,UNKNOWN,CRITICAL_VALIDATOR,"False-premise request ended unavailable; trace recorded direct critical-value conflict"
+T4,INCORRECT,UNKNOWN,CRITICAL_VALIDATOR,"Leading numeric premise ended unavailable; no visible answer was released"
+T5,INCORRECT,UNKNOWN,CRITICAL_VALIDATOR,"Near-miss numeric alternatives triggered direct conflict and forced abstention"
+T6,INCORRECT,UNKNOWN,RETRIEVAL,"Equivalent duration question ended unavailable; no visible answer/citation to adjudicate"
+T8,CORRECT,YES,GENERATION,"Correct answer and valid E1.S5 support ID; extra source-like token appeared in model text"
+T12,CORRECT,YES,GENERATION,"Both facts answered with valid E2.S4 and E1.S2 support IDs"
+T13,CORRECT,YES,GENERATION,"Supported rate limit answered and missing password-reset fact explicitly marked unavailable"

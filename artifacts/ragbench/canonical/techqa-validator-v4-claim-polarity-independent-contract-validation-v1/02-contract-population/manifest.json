@@ -1,0 +1,49 @@
+{
+  "population_kind": "independently_authored_occurrence_level_contract_set",
+  "case_count": 50,
+  "occurrence_count": 100,
+  "label_counts": {
+    "VALIDATE": 66,
+    "SKIP_REJECTED_PREMISE": 26,
+    "AMBIGUOUS_KEEP_VALIDATING": 8
+  },
+  "type_counts": {
+    "DURATION": 35,
+    "NUMBER": 28,
+    "VERSION": 14,
+    "PERCENTAGE": 10,
+    "SIGNED_IDENTIFIER": 5,
+    "DATE": 4,
+    "IDENTIFIER": 4
+  },
+  "category_counts": {
+    "CORRECTIVE": 25,
+    "POSITIVE": 1,
+    "NEGATED_ASSERTION": 2,
+    "COMPARISON": 2,
+    "MULTI_VALUE": 1,
+    "QUOTED_REPORTED": 2,
+    "VERSION": 2,
+    "IDENTIFIER": 2,
+    "PERCENTAGE": 1,
+    "DATE": 1,
+    "DURATION": 1,
+    "RANGE": 1,
+    "NUMBER": 1,
+    "AMBIGUOUS_POLARITY": 3,
+    "QUERY_ECHO": 2,
+    "QUOTED_AMBIGUOUS": 1,
+    "AMBIGUOUS_VERSION": 1,
+    "MULTI_OCCURRENCE": 1
+  },
+  "disputed_excluded_count": 0,
+  "historical_anchors_not_sole_proof": true,
+  "holdout_used": false,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

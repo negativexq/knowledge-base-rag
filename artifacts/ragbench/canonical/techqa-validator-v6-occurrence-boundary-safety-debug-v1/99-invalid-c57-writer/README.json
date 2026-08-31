@@ -1,0 +1,8 @@
+{
+  "status": "INVALID_NOT_SCORED",
+  "reason": "The first post-freeze comparison run completed both arms and wrote arm/comparison artifacts but aborted while rendering the C57 report because the V5 result key was named v5_polarity_occurrences.",
+  "replacement": "The subsequent run used the corrected report-only key and is the sole run used for final metrics and gates.",
+  "source_mutated": false,
+  "population_mutated": false,
+  "included_in_final_metrics": false
+}

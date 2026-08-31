@@ -1,0 +1,10 @@
+{
+  "frozen_before_execution": true,
+  "population_sha256": "46da3922f006161f1ec1ae21dc29906634231fdfc22bb5b9be8dc870d7085e19",
+  "adjudication_sha256": "28a4ec81076109dceee1965f5430dfaf7b3ea5fe0ebee8a9854f8a44ddd1bf94",
+  "manifest_sha256": "b3c2270abd2c11c56135d965f7a21de61f35821c7c8d97e9211fb0e9fd42f2ad",
+  "case_count": 60,
+  "occurrence_count": 134,
+  "disputed_excluded": 0,
+  "mutation_forbidden": true
+}

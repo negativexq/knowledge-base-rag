@@ -1,0 +1,8 @@
+{
+  "review_type": "deterministic_manual_contract_review",
+  "status": "CONFIRMED",
+  "occurrences_reviewed": 100,
+  "disputed_count": 0,
+  "reviewed_before_execution": true,
+  "holdout_used": false
+}

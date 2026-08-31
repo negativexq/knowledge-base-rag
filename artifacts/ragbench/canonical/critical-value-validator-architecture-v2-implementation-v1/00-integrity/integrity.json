@@ -1,0 +1,17 @@
+{
+  "task": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_IMPLEMENTATION_V1",
+  "v3_candidate": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "v3_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v4_candidate": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+  "v4_helper_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v5_source_sha256": "a5d874bb37d3760e6e51a80937d91eb6a6b41f694e9b460b1ecacada2cc21ba9",
+  "v5_helper_sha256": "1352b1d3fa36d3140c299fed9ad6e06074dd6eb8e50ca8de7da56836be7f1fc7",
+  "v6_source_sha256": "c0bea7edf6e0a04d05e36c52b188b5a081c49489b2ec4f6f619ad85bf7a18905",
+  "checkpoint": "critical-value-occurrence-architecture-checkpoint-v1",
+  "prior_artifacts_modified": false,
+  "corrected_holdout": "CONSUMED_NOT_USED",
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0},
+  "production_selector": "baseline|v3_unchanged",
+  "production_activation": false
+}

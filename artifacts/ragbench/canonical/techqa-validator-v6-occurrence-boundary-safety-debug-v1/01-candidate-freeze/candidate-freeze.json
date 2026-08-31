@@ -1,0 +1,22 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V6_OCCURRENCE_BOUNDARY_SAFETY_DEBUG",
+  "base_candidate_id": "VALIDATOR_CANDIDATE_V5_MULTI_OCCURRENCE_POLARITY_DEBUG",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD_PLUS_CLAIM_POLARITY_GUARD_PLUS_MULTI_OCCURRENCE_ROLE_SEPARATION_PLUS_EXACT_OCCURRENCE_BOUNDARY_SAFETY",
+  "debug_only": true,
+  "source_file": "app/evaluation/critical_values.py",
+  "source_file_sha256": "c0bea7edf6e0a04d05e36c52b188b5a081c49489b2ec4f6f619ad85bf7a18905",
+  "v3_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v4_helper_region_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v5_helper_region_sha256": "1352b1d3fa36d3140c299fed9ad6e06074dd6eb8e50ca8de7da56836be7f1fc7",
+  "v6_helper_region_sha256": "0b9216ff010c3cd02e02d012db67fa650641ca59e9d71985ab11376522f47410",
+  "entry_function": "claim_local_critical_value_audit_v6",
+  "v5_delegate": "claim_local_critical_value_audit_v5",
+  "v3_delegate": "claim_local_critical_value_audit",
+  "occurrence_identity": "typed non-overlapping lexical span with explicit sign/full-identifier ownership",
+  "overlap_policy": "extractor-owned full lexical literal wins; unresolved overlap is validation-safe",
+  "masking": "length-preserving exact-span masking only",
+  "production_selector": "baseline|v3 unchanged; v6 absent",
+  "production_default": "baseline",
+  "frozen_before_execution": true,
+  "candidate_mutation_forbidden_after_freeze": true
+}

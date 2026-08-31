@@ -1,0 +1,12 @@
+{
+  "executable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "profile": "/tmp/knowledge-base-rag-smoke-chrome.gm7Tb5",
+  "endpoint": "http://127.0.0.1:9222",
+  "json_version": "PASS",
+  "browser": "Chrome/151.0.7922.174",
+  "protocol": "1.3",
+  "browser_webSocketDebuggerUrl": "PRESENT",
+  "json_list": "PASS",
+  "target_creation_fallback": "SUPPORTED",
+  "external_connector_required": false
+}

@@ -1,0 +1,19 @@
+{
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "mode": "experimental_debug_only",
+  "production_selector": "baseline|v3",
+  "entry_points": {
+    "extract": "app.evaluation.critical_occurrences.extract_critical_occurrences",
+    "roles": "app.evaluation.critical_roles.classify_occurrence_roles",
+    "validation": "app.evaluation.critical_occurrence_validation.validate_occurrences_v3",
+    "orchestrator": "app.evaluation.critical_validator_architecture_v2.audit_claim_architecture_v2"
+  },
+  "forbidden_paths": [
+    "raw-text masking",
+    "post-role answer re-extraction",
+    "normalized-value global role mask",
+    "role-layer occurrence rediscovery"
+  ],
+  "v3_comparison_owner": "app.evaluation.critical_values",
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+}

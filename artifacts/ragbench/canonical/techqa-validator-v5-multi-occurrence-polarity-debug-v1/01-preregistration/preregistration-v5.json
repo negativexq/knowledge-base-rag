@@ -1,0 +1,86 @@
+{
+  "experiment": "VALIDATOR_V5_MULTI_OCCURRENCE_POLARITY_DEBUG_V1",
+  "objective": "Add occurrence-local role separation to frozen V4 so duplicate surface/normalized literals can receive independent SKIP or VALIDATE decisions, including differing extracted types.",
+  "base_candidates": {
+    "v3": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+    "v4": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+    "v4_helper_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6"
+  },
+  "allowed_scope": [
+    "occurrence-local identity",
+    "span-specific masking",
+    "claim/local unit association",
+    "same-surface duplicate role separation",
+    "cross-type sibling role separation"
+  ],
+  "forbidden_scope": [
+    "V4 mutation",
+    "BOOLEAN_NORMALIZATION",
+    "UNIT_EQUIVALENCE",
+    "VERSION_SEMANTICS",
+    "LOCALE",
+    "SIGNED_IDENTIFIERS",
+    "SECURITY",
+    "RETRIEVAL",
+    "BGE",
+    "TOP_N",
+    "SECTIONAWARE",
+    "PROMPTS",
+    "PROVIDER",
+    "HOLDOUT",
+    "PRODUCTION_SELECTOR"
+  ],
+  "occurrence_identity": [
+    "occurrence_id",
+    "raw_literal",
+    "normalized_value",
+    "type",
+    "span_start",
+    "span_end",
+    "claim_unit_id"
+  ],
+  "population_plan": {
+    "target_cases": "50-80",
+    "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+    "case_level_secondary": true,
+    "fresh_not_v4_primary": true,
+    "historical_c50_anchor_not_sole_proof": true,
+    "labels": [
+      "VALIDATE",
+      "SKIP_REJECTED_PREMISE",
+      "AMBIGUOUS_KEEP_VALIDATING"
+    ]
+  },
+  "gates": {
+    "G1_security": "zero regressions",
+    "G2_real_assertion_safety": "zero unsafe skips",
+    "G3_ambiguous_safety": "zero ambiguous skips",
+    "G4_v4_polarity_safety": "no regression in V4 single-occurrence behavior",
+    "G5_multi_occurrence_safety": "V5 role errors < V4",
+    "G6_global_collapse": "zero duplicate literal global collapse",
+    "G7_type_mismatch_role_separation": "zero type-mismatch role errors",
+    "G8_corrective_availability": "V5 rejected-premise misses <= V4",
+    "G9_v3_v4_regression": "no locale/sign/identifier/version/numeric/query-echo/negation regression",
+    "G10_c50_anchor": "C50-like first SKIP, second VALIDATE"
+  },
+  "priority": [
+    "SECURITY",
+    "REAL_ASSERTION_SAFETY",
+    "AMBIGUOUS_SAFETY",
+    "OCCURRENCE_IDENTITY",
+    "V4_REGRESSION",
+    "CORRECTIVE_AVAILABILITY"
+  ],
+  "no_tuning": true,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  },
+  "production": {
+    "selector": "baseline|v3",
+    "v5_primary": false
+  }
+}

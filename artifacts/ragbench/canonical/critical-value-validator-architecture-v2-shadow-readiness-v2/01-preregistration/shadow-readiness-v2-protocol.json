@@ -1,0 +1,70 @@
+{
+  "work_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_SHADOW_READINESS_V2",
+  "purpose": "Full local runtime verification of a baseline-authoritative Architecture V2 diagnostic shadow.",
+  "frozen_architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "semantic_source_digest": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "raw_freeze_manifest_sha256": "c797556bff29669cdafdb165646b601e94ce4a1573969dd69b9e452f2d080d23",
+  "authoritative_validator": "baseline",
+  "shadow_validator": "architecture_v2",
+  "provider": "ollama",
+  "model": "qwen3.5:4b",
+  "browser": "direct_chrome_cdp",
+  "cdp_endpoint": "http://127.0.0.1:9222",
+  "runtime_config": {
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED": true,
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": false,
+    "RAG_PIPELINE_V2": true,
+    "SUPPORT_IDS_ENABLED": true,
+    "RAG_FORENSIC_CAPTURE_ENABLED": false,
+    "RAG_FORENSIC_CAPTURE_RAW_TEXT": false
+  },
+  "primary_matrix": [
+    {"case_id": "UI-01", "class": "STRAIGHTFORWARD_GROUNDED_FACT", "query": "What is the Nimbus API request limit for the standard window?", "validator_capable": "UNKNOWN_PRE_RUN"},
+    {"case_id": "UI-02", "class": "CORRECTIVE_WRONG_PREMISE", "query": "I thought the Nimbus API limit was 500 per minute; what limit is documented now?", "validator_capable": "UNKNOWN_PRE_RUN"},
+    {"case_id": "UI-03", "class": "MULTI_OCCURRENCE_SAME_VALUE_SIBLING", "query": "Compare the legacy and current Nimbus limits, including the old value if the documentation mentions both.", "validator_capable": "UNKNOWN_PRE_RUN"},
+    {"case_id": "UI-04", "class": "SIGNED_OR_IDENTIFIER_VALUE", "query": "Which documented Nimbus error code is returned for a duplicate resource, and what does it mean?", "validator_capable": "UNKNOWN_PRE_RUN"},
+    {"case_id": "UI-05", "class": "AMBIGUOUS_CONSERVATIVE", "query": "Does Nimbus version 3.1 definitely mean the current supported API version?", "validator_capable": "UNKNOWN_PRE_RUN"},
+    {"case_id": "UI-06", "class": "INSUFFICIENT_EVIDENCE", "query": "How many team members can a personal Nimbus account add?", "validator_capable": "UNKNOWN_PRE_RUN"}
+  ],
+  "case_freeze_rule": "Freeze exact browser-originated questions and observed validator-capable status before first matrix request; do not alter questions after output inspection.",
+  "telemetry_contract": {
+    "required_per_shadow": [
+      "authoritative validator",
+      "authoritative outcome",
+      "validator.shadow.architecture_v2.executed",
+      "validator.shadow.architecture_v2.architecture",
+      "validator.shadow.architecture_v2.outcome",
+      "validator.shadow.architecture_v2.disagreement",
+      "validator.shadow.architecture_v2_error",
+      "validator.shadow.architecture_v2.duration_ms",
+      "validator.shadow.architecture_v2.occurrence_count",
+      "validator.shadow.architecture_v2.validate_count",
+      "validator.shadow.architecture_v2.skip_rejected_premise_count",
+      "validator.shadow.architecture_v2.ambiguous_count"
+    ],
+    "coverage_denominator": "validator-capable primary browser requests",
+    "coverage_target_percent": 100
+  },
+  "disagreement_taxonomy": [
+    "SAME",
+    "EXPECTED_CORRECTIVE_RECOVERY",
+    "AUTHORITATIVE_OVER_REJECT",
+    "ARCHV2_MORE_CONSERVATIVE",
+    "ARCHV2_UNSAFE_SUSPECT",
+    "UNEXPECTED_V3_SEMANTIC_DIFFERENCE",
+    "INFRA_ERROR",
+    "UNKNOWN"
+  ],
+  "failure_injection": "Test-only deterministic shadow exception; baseline response, support IDs, citations, forced-abstain, and visible output must remain unchanged.",
+  "privacy_gates": ["raw query=0", "raw answer=0", "raw evidence=0", "raw literal=0", "occurrence IDs=0", "secrets=0", "forbidden high-cardinality attributes=0"],
+  "security_gates": ["tenant isolation unchanged", "authorized evidence boundary unchanged", "support-ID security unchanged", "citation ownership unchanged"],
+  "stopping_rule": "Run exactly the six frozen primary browser cases plus preregistered deterministic checks; stop when SR1-SR21 are decidable.",
+  "pass_rule": "All SR1-SR21 pass, validator-capable shadow coverage is 100%, unresolved ARCHV2_UNSAFE_SUSPECT is zero, and no task-caused critical stack failure exists.",
+  "no_tuning": true,
+  "no_readiness_v1_rewrite": true,
+  "activation": {"production_shadow": false, "architecture_v2_authoritative": false, "canary": false, "primary": false},
+  "provider_call_budget": {"primary_ui_cases": 6, "normal_retries": 0, "infrastructure_retry_only": true},
+  "holdout": {"corrected_techqa_used": false, "status": "CONSUMED"},
+  "git": {"commit": false, "push": false}
+}

@@ -1,0 +1,91 @@
+{
+  "cases": 70,
+  "true_conflict_detected": 25,
+  "true_conflict_total": 27,
+  "true_conflict_recall": 0.9259,
+  "corrective_answer_allowed": 2,
+  "corrective_total": 13,
+  "corrective_false_conflict_count": 11,
+  "unsupported_positive_claim_allowed_count": 0,
+  "ambiguous_polarity_preserved": 2,
+  "ambiguous_polarity_total": 2,
+  "false_positive_count": 16,
+  "false_reject_count": 2,
+  "forced_abstain_proxy": 11,
+  "security_regressions": 0,
+  "forced_abstain_count": 45,
+  "type_metrics": {
+    "DATE": {
+      "correct": 1,
+      "total": 1,
+      "rate": 1.0
+    },
+    "DURATION": {
+      "correct": 12,
+      "total": 18,
+      "rate": 0.6667
+    },
+    "IDENTIFIER": {
+      "correct": 8,
+      "total": 9,
+      "rate": 0.8889
+    },
+    "NUMBER": {
+      "correct": 16,
+      "total": 24,
+      "rate": 0.6667
+    },
+    "PERCENTAGE": {
+      "correct": 3,
+      "total": 4,
+      "rate": 0.75
+    },
+    "VERSION": {
+      "correct": 12,
+      "total": 14,
+      "rate": 0.8571
+    }
+  },
+  "polarity_metrics": {
+    "COMPARISON_VALUE": {
+      "correct": 5,
+      "total": 5,
+      "rate": 1.0
+    },
+    "CORRECTIVE_REFERENCE": {
+      "correct": 0,
+      "total": 7,
+      "rate": 0.0
+    },
+    "NEGATED_ASSERTION": {
+      "correct": 7,
+      "total": 9,
+      "rate": 0.7778
+    },
+    "POSITIVE_ASSERTION": {
+      "correct": 26,
+      "total": 26,
+      "rate": 1.0
+    },
+    "QUOTED_VALUE": {
+      "correct": 4,
+      "total": 4,
+      "rate": 1.0
+    },
+    "REJECTED_PREMISE": {
+      "correct": 2,
+      "total": 11,
+      "rate": 0.1818
+    },
+    "UNKNOWN": {
+      "correct": 8,
+      "total": 8,
+      "rate": 1.0
+    }
+  },
+  "outcome_distribution": {
+    "PASS": 25,
+    "REJECT": 40,
+    "INDETERMINATE": 5
+  }
+}

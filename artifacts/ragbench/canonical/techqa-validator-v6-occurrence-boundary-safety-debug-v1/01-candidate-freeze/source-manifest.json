@@ -1,0 +1,13 @@
+{
+  "hash_type": "RAW_FILE_BYTES_SHA256",
+  "files": {
+    "app/evaluation/critical_values.py": "c0bea7edf6e0a04d05e36c52b188b5a081c49489b2ec4f6f619ad85bf7a18905",
+    "scripts/run_validator_calibration_debug_v3.py": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1"
+  },
+  "frozen_regions": {
+    "v4_helper": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+    "v5_helper": "1352b1d3fa36d3140c299fed9ad6e06074dd6eb8e50ca8de7da56836be7f1fc7",
+    "v6_helper": "0b9216ff010c3cd02e02d012db67fa650641ca59e9d71985ab11376522f47410"
+  },
+  "candidate_identity": "VALIDATOR_CANDIDATE_V6_OCCURRENCE_BOUNDARY_SAFETY_DEBUG"
+}

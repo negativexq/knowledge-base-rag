@@ -1,0 +1,14 @@
+{
+  "adjudication_sha256": "83042309b2de51fbf932cfe37f00864402cb265411b776cb6130fa2b809ec09c",
+  "annotation_inversion_check": "PASS",
+  "case_count": 118,
+  "extractor_ownership_check": "PASS",
+  "frozen_before_execution": true,
+  "labels_frozen_before_execution": true,
+  "manifest_sha256": "8c2cfbb35695a2a15f0c9e94e7d080886751c5baf852d702e320f505b37a3329",
+  "occurrence_count": 221,
+  "population_sha256": "153d2e60005a219d44fab6e36efacf581cdfd380e8c3f5854d533619441fa821",
+  "rationale_completeness": "PASS",
+  "reviewer_a_sha256": "d64c829e39308f8e47db81fb532cf02503bd87e34cc693e2846bb42ad7663459",
+  "reviewer_b_sha256": "cecf9a018d0986046153ce8eddf74ac2be016f4cecbd24ec89a60f4827086fc4"
+}

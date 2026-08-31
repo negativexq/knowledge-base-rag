@@ -1,0 +1,23 @@
+{
+  "expected_occurrences": 154,
+  "observed_occurrences": 120,
+  "missing_occurrences": 34,
+  "spurious_nested_occurrences": 34,
+  "overlap_resolution_errors": 0,
+  "sign_boundary_collision_errors": 34,
+  "prefix_collision_errors": 0,
+  "real_assertion_incorrectly_skipped": 0,
+  "ambiguous_incorrectly_skipped": 0,
+  "rejected_premise_not_skipped": 12,
+  "correct_rejected_premise_skips": 25,
+  "corrective_recovery_rate": 67.57,
+  "multi_occurrence_role_errors": 12,
+  "global_collapse_errors": 4,
+  "type_mismatch_role_errors": 23,
+  "security_regressions": 0,
+  "forced_abstain_proxy": 25,
+  "behavior_distribution": {
+    "VALIDATE": 129,
+    "SKIP": 25
+  }
+}

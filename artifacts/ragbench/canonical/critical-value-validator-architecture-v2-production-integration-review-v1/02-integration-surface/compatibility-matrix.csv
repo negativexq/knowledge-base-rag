@@ -1,0 +1,13 @@
+surface,current_contract,architecture_v2_requirement,review
+API request,/chat request unchanged,none,PASS
+API response,SSE answer/events unchanged,none,PASS
+SSE,existing event names/payloads,none,PASS
+structured output,answer_parts plus support_ids,existing fields sufficient,PASS
+support IDs,authorized support-unit IDs,occurrence filtering is internal,PASS
+citations,application-owned support IDs,rendering remains unchanged,PASS
+database,no validator state stored,no migration,PASS
+Qdrant,no validator state in Qdrant,no migration,PASS
+indexing,unchanged retrieval/indexing,no reindex,PASS
+embeddings,unchanged embedding path,no regeneration,PASS
+frontend,existing SSE parsing,none,PASS
+operator UI,server-owned configuration only,no client selector,PASS

@@ -1,0 +1,11 @@
+{
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "architecture_source_manifest_sha256_expected": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "architecture_source_manifest_sha256_verified": true,
+  "v3_candidate": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "v3_source_sha256_expected": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "architecture_v2_mutated": false,
+  "prior_canonical_artifacts_modified": false,
+  "corrected_holdout": "CONSUMED_NOT_USED",
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED"
+}

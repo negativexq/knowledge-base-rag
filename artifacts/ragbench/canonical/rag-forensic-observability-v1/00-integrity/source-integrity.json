@@ -1,0 +1,16 @@
+{
+  "experiment": "RAG_FORENSIC_OBSERVABILITY_V1",
+  "scope": "local_debug_controlled_capture_only",
+  "prior_artifacts_modified": false,
+  "production_defaults_changed": false,
+  "v3_semantics_changed": false,
+  "holdout_used": false,
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0},
+  "capture_defaults": {
+    "RAG_FORENSIC_CAPTURE_ENABLED": false,
+    "RAG_FORENSIC_CAPTURE_RAW_TEXT": false,
+    "capture_directory": null
+  },
+  "frozen_candidate": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "notes": "Only bounded local artifacts are eligible for capture. OTel remains metadata-only."
+}

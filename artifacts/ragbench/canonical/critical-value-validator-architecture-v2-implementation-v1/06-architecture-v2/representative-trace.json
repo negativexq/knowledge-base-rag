@@ -1,0 +1,23 @@
+{
+  "claim": "The legacy value is 30. The 30 in your question is incorrect; retention is 30 days.",
+  "canonical_extraction_passes": 1,
+  "occurrences": [
+    {"occurrence_id": "representative.O1", "raw_literal": "30", "span": [20, 22], "type": "NUMBER"},
+    {"occurrence_id": "representative.O2", "raw_literal": "30", "span": [28, 30], "type": "NUMBER"},
+    {"occurrence_id": "representative.O3", "raw_literal": "30 days", "span": [75, 82], "type": "DURATION"}
+  ],
+  "role_decisions": [
+    {"occurrence_id": "representative.O1", "role": "VALIDATE"},
+    {"occurrence_id": "representative.O2", "role": "SKIP_REJECTED_PREMISE"},
+    {"occurrence_id": "representative.O3", "role": "VALIDATE"}
+  ],
+  "filtered_validate_occurrence_ids": ["representative.O1", "representative.O3"],
+  "v3": {
+    "outcome": "INDETERMINATE",
+    "validated_occurrence_ids": ["representative.O1", "representative.O3"]
+  },
+  "raw_text_masked": false,
+  "post_role_reextraction": false,
+  "role_layer_occurrence_rediscovery": false,
+  "global_value_role_mask": false
+}

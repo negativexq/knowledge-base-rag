@@ -1,0 +1,19 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V5_MULTI_OCCURRENCE_POLARITY_DEBUG",
+  "base_candidate_id": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD_PLUS_CLAIM_POLARITY_GUARD_PLUS_MULTI_OCCURRENCE_ROLE_SEPARATION",
+  "debug_only": true,
+  "source_file": "app/evaluation/critical_values.py",
+  "source_file_sha256": "a5d874bb37d3760e6e51a80937d91eb6a6b41f694e9b460b1ecacada2cc21ba9",
+  "v3_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v4_helper_region_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v5_helper_region_sha256": "1352b1d3fa36d3140c299fed9ad6e06074dd6eb8e50ca8de7da56836be7f1fc7",
+  "entry_function": "claim_local_critical_value_audit_v5",
+  "v4_delegate": "claim_local_critical_value_audit_v4",
+  "v3_delegate": "claim_local_critical_value_audit",
+  "occurrence_identity": "exact span plus claim-local token record; no value-level mask",
+  "production_selector": "baseline|v3 unchanged; v5 absent",
+  "production_default": "baseline",
+  "frozen_before_population_execution": true,
+  "candidate_mutation_forbidden_after_freeze": true
+}

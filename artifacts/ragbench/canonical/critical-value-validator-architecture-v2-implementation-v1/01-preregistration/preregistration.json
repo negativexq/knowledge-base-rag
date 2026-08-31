@@ -1,0 +1,67 @@
+{
+  "task": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_IMPLEMENTATION_V1",
+  "objective": "Replace polarity-time mask-and-reextract with one canonical immutable occurrence ledger, occurrence-local roles, structured validation filtering, and behavior-preserving frozen V3 delegation.",
+  "architecture_id_prefix": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_",
+  "allowed_scope": [
+    "canonical critical-value extraction",
+    "exact lexical occurrence identity",
+    "immutable occurrence ledger",
+    "claim-local occurrence role decisions",
+    "structured VALIDATE filtering",
+    "behavior-preserving V3 adapter"
+  ],
+  "excluded_scope": [
+    "V4/V5/V6 mutation",
+    "T4 boolean normalization",
+    "T6 unit equivalence",
+    "T10 version semantics",
+    "INDETERMINATE policy",
+    "new broad polarity heuristics",
+    "retrieval/reranking/BGE/Top-N/SectionAware/evidence budget",
+    "prompt/provider/model changes",
+    "production selector/default changes",
+    "corrected HOLDOUT"
+  ],
+  "occurrence_model": {
+    "identity": "occurrence_id plus exact source span within one extraction execution",
+    "immutable": ["occurrence_id", "span_start", "span_end", "raw_literal", "normalized_value", "lexical_type", "unit", "claim_unit_id", "extraction_source", "overlap_group_id", "parent_occurrence_id"],
+    "same_value_policy": "different spans remain distinct occurrences"
+  },
+  "overlap_policy": [
+    "extractor-owned full literal wins",
+    "nested non-independent substring is not emitted as a role-bearing occurrence",
+    "non-overlapping sibling remains independent",
+    "unresolved overlap remains VALIDATE"
+  ],
+  "role_model": ["VALIDATE", "SKIP_REJECTED_PREMISE", "AMBIGUOUS_KEEP_VALIDATING"],
+  "role_default": "VALIDATE",
+  "structured_filter": "only deterministic SKIP_REJECTED_PREMISE is excluded; ambiguous remains in V3 validation",
+  "v3_delegation": "reuse frozen V3 comparison primitives with canonical occurrence tokens; no masked text and no post-role re-extraction",
+  "population": {
+    "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+    "secondary_unit": "case",
+    "target": "80-120 fresh cases with extraction, role, boundary, regression, and security slices",
+    "historical_anchors_are_independent_proof": false
+  },
+  "hard_gates": {
+    "architecture": ["A1_ONE_CANONICAL_EXTRACTION", "A2_NO_MASKING", "A3_NO_REEXTRACTION", "A4_NO_ROLE_REDISCOVERY", "A5_OCCURRENCE_IDENTITY", "A6_NO_GLOBAL_VALUE_ROLE", "A7_CLAIM_LOCALITY", "A8_NESTED_OWNERSHIP", "A9_AMBIGUITY_FAIL_SAFE", "A10_V3_SEMANTICS_PRESERVED"],
+    "safety": ["S1_SECURITY", "S2_REAL_ASSERTION_SAFETY", "S3_AMBIGUOUS_SAFETY", "S4_QUERY_ECHO_SAFETY", "S5_SAME_VALUE_SIBLING_SAFETY", "S6_SIGNED_BOUNDARY_SAFETY", "S7_VERSION_IDENTIFIER_SAFETY", "S8_LOCALE_SAFETY"],
+    "availability": ["Q1_CORRECTIVE_IMPROVEMENT", "Q2_NO_WORSE_THAN_BEST_SAFE_PROTOTYPE"],
+    "historical": ["H1_V4_SAME_VALUE_COLLAPSE", "H2_V5_C57_COLLISION", "H3_V6_ROLE_REJOIN_ZERO"]
+  },
+  "execution_protocol": {
+    "implementation_debugging_before_final_freeze": true,
+    "freeze_before_final_execution": true,
+    "no_tuning_after_freeze": true,
+    "legacy_arm": "LEGACY_MASK_REEXTRACT",
+    "challenger_arm": "CANONICAL_LEDGER",
+    "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+  },
+  "production": {
+    "selector": "baseline|v3",
+    "default": "baseline",
+    "architecture_v2_activation": false
+  },
+  "holdout": {"corrected_techqa": "CONSUMED", "used": false, "modified": false},
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED"
+}

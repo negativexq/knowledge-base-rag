@@ -1,0 +1,50 @@
+{
+  "v4": {
+    "occurrences": 134,
+    "real_assertion_incorrectly_skipped": 0,
+    "ambiguous_incorrectly_skipped": 0,
+    "rejected_premise_not_skipped": 23,
+    "correct_rejected_premise_skips": 18,
+    "corrective_recovery_rate": 43.9,
+    "multi_occurrence_role_errors": 22,
+    "duplicate_literal_global_collapse_errors": 18,
+    "type_mismatch_role_errors": 7,
+    "security_regressions": 0,
+    "forced_abstain_proxy": 18,
+    "behavior_distribution": {
+      "VALIDATE": 116,
+      "SKIP": 18
+    }
+  },
+  "v5": {
+    "occurrences": 134,
+    "real_assertion_incorrectly_skipped": 1,
+    "ambiguous_incorrectly_skipped": 0,
+    "rejected_premise_not_skipped": 1,
+    "correct_rejected_premise_skips": 40,
+    "corrective_recovery_rate": 97.56,
+    "multi_occurrence_role_errors": 1,
+    "duplicate_literal_global_collapse_errors": 0,
+    "type_mismatch_role_errors": 0,
+    "security_regressions": 0,
+    "forced_abstain_proxy": 41,
+    "behavior_distribution": {
+      "VALIDATE": 93,
+      "SKIP": 41
+    }
+  },
+  "delta": {
+    "real_assertion_incorrectly_skipped": 1,
+    "ambiguous_incorrectly_skipped": 0,
+    "rejected_premise_not_skipped": -22,
+    "multi_occurrence_role_errors": -21,
+    "type_mismatch_role_errors": -7
+  },
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

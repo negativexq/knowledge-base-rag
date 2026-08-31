@@ -1,0 +1,12 @@
+{
+  "v5_source_sha256_expected": "a5d874bb37d3760e6e51a80937d91eb6a6b41f694e9b460b1ecacada2cc21ba9",
+  "v5_helper_sha256_expected": "1352b1d3fa36d3140c299fed9ad6e06074dd6eb8e50ca8de7da56836be7f1fc7",
+  "v5_candidate_status": "CLOSED_UNSELECTED_FAILED_HARD_SAFETY_GATES",
+  "v5_blocking_case": "C57.O2",
+  "v5_artifacts_modified": false,
+  "v4_candidate_id": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+  "v3_candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "corrected_holdout": "CONSUMED",
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+}

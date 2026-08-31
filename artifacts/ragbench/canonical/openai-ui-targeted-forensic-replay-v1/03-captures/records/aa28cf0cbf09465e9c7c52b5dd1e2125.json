@@ -1,0 +1,1165 @@
+{
+  "schema_version": "rag_forensic_capture_v1",
+  "forensic_request_id": "aa28cf0cbf09465e9c7c52b5dd1e2125",
+  "query_hash": "82e87c0ed70c25f3d7b6b9ce3749ad4c3ba13ca76f8a60f7ebd6335bbe1fe334",
+  "raw_text_enabled": true,
+  "stages": {
+    "retrieval": {
+      "candidate_count": 15,
+      "authorized_candidate_count": 15,
+      "configured_top_k": 15,
+      "rrf_top20_observed": [
+        {
+          "rank": 1,
+          "chunk_id": "4817766f-f27d-54c5-ad6d-84892318d085",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Rate Limits"
+          ],
+          "score": 1.0,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 2,
+          "chunk_id": "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Authentication"
+          ],
+          "score": 0.53333336,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 3,
+          "chunk_id": "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "API Versioning"
+          ],
+          "score": 0.4166667,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 4,
+          "chunk_id": "aacc4334-f695-5a1c-aeba-40fb81391c12",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Search Endpoint"
+          ],
+          "score": 0.38596493,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 5,
+          "chunk_id": "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Pagination"
+          ],
+          "score": 0.32692307,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 6,
+          "chunk_id": "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Sandbox Environment"
+          ],
+          "score": 0.325,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 7,
+          "chunk_id": "9cc455c4-c405-51e1-a75c-8be1c3fddd39",
+          "source_id": "nimbus_handbook_pdf",
+          "section_key": [],
+          "score": 0.25396827,
+          "document_version": "cec6424af77e2a2b37238ad221db39717431cf74e7beae037f28a3bae8109930",
+          "authorized": true
+        },
+        {
+          "rank": 8,
+          "chunk_id": "074e58a2-544e-5a01-985d-3336e4df3d2b",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Webhook Event Types"
+          ],
+          "score": 0.23376624,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 9,
+          "chunk_id": "6d591d7b-9f4e-5e2e-8f68-a7cfcce758b1",
+          "source_id": "nimbus_kurumsal_sss_md",
+          "section_key": [
+            "Özel Entegrasyonlar"
+          ],
+          "score": 0.21111111,
+          "document_version": "092ae15e016d11d767d6feef9fb1f0167ee6a2a56e52270d1e46aa29f347b914",
+          "authorized": true
+        },
+        {
+          "rank": 10,
+          "chunk_id": "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Webhooks"
+          ],
+          "score": 0.17261904,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 11,
+          "chunk_id": "ae16f59c-ce7c-5cdb-a755-a9e6181da754",
+          "source_id": "nimbus_handbook_pdf",
+          "section_key": [],
+          "score": 0.16666667,
+          "document_version": "cec6424af77e2a2b37238ad221db39717431cf74e7beae037f28a3bae8109930",
+          "authorized": true
+        },
+        {
+          "rank": 12,
+          "chunk_id": "032d0e3b-c551-5bbf-b0f3-5a050d8f247c",
+          "source_id": "nimbus_cli_md",
+          "section_key": [
+            "Kurulum"
+          ],
+          "score": 0.15882353,
+          "document_version": "da1b89a519d7bf7c091ac98cff0cb2a870591fd3954f82faf81af0fa7cb90d6b",
+          "authorized": true
+        },
+        {
+          "rank": 13,
+          "chunk_id": "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Idempotency"
+          ],
+          "score": 0.13392857,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 14,
+          "chunk_id": "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Timezone Handling"
+          ],
+          "score": 0.10555556,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 15,
+          "chunk_id": "e2a38574-444e-5491-a0b7-c70fbd0887c0",
+          "source_id": "nimbus_cli_md",
+          "section_key": [
+            "Kimlik Doğrulama"
+          ],
+          "score": 0.10555556,
+          "document_version": "da1b89a519d7bf7c091ac98cff0cb2a870591fd3954f82faf81af0fa7cb90d6b",
+          "authorized": true
+        }
+      ],
+      "stage_timings_ms": {
+        "query_embedding": 301.7307920381427,
+        "sparse_encoding": 0.5900829564779997,
+        "hybrid_retrieval": 15.719874994829297,
+        "rerank": 1310.7306249439716
+      }
+    },
+    "reranker": {
+      "input_candidate_ids": [
+        "4817766f-f27d-54c5-ad6d-84892318d085",
+        "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+        "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+        "aacc4334-f695-5a1c-aeba-40fb81391c12",
+        "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+        "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+        "9cc455c4-c405-51e1-a75c-8be1c3fddd39",
+        "074e58a2-544e-5a01-985d-3336e4df3d2b",
+        "6d591d7b-9f4e-5e2e-8f68-a7cfcce758b1",
+        "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+        "ae16f59c-ce7c-5cdb-a755-a9e6181da754",
+        "032d0e3b-c551-5bbf-b0f3-5a050d8f247c",
+        "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+        "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+        "e2a38574-444e-5491-a0b7-c70fbd0887c0"
+      ],
+      "output_candidate_ids": [
+        "4817766f-f27d-54c5-ad6d-84892318d085",
+        "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+        "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+        "aacc4334-f695-5a1c-aeba-40fb81391c12",
+        "43011ead-d4be-5896-9be7-c89fc88dbc3e"
+      ],
+      "bge_top5_observed": [
+        {
+          "rank": 1,
+          "chunk_id": "4817766f-f27d-54c5-ad6d-84892318d085",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Rate Limits"
+          ],
+          "score": 0.9876565933227539,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 2,
+          "chunk_id": "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Authentication"
+          ],
+          "score": 0.060171183198690414,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 3,
+          "chunk_id": "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "API Versioning"
+          ],
+          "score": 0.051522377878427505,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 4,
+          "chunk_id": "aacc4334-f695-5a1c-aeba-40fb81391c12",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Search Endpoint"
+          ],
+          "score": 0.033788539469242096,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        },
+        {
+          "rank": 5,
+          "chunk_id": "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "Sandbox Environment"
+          ],
+          "score": 0.016502493992447853,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true
+        }
+      ]
+    },
+    "evidence_build": {
+      "input_chunk_ids": [
+        "4817766f-f27d-54c5-ad6d-84892318d085",
+        "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+        "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+        "aacc4334-f695-5a1c-aeba-40fb81391c12",
+        "43011ead-d4be-5896-9be7-c89fc88dbc3e"
+      ],
+      "contributing_chunk_ids": [
+        "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+        "4817766f-f27d-54c5-ad6d-84892318d085",
+        "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+        "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+        "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+        "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+        "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+        "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+        "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+        "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+        "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+        "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+        "aacc4334-f695-5a1c-aeba-40fb81391c12",
+        "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+        "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+        "074e58a2-544e-5a01-985d-3336e4df3d2b",
+        "528cc3e3-95d0-508e-a483-787432e0448c",
+        "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+        "87abd30a-9eb9-5b37-add5-e28f13313851",
+        "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+      ],
+      "blocks_count": 1,
+      "context_tokens": "[REDACTED]",
+      "expanded": true,
+      "budget_exhausted": false,
+      "truncated_block_count": 0,
+      "dropped_expansion_count": 0,
+      "final_blocks": [
+        {
+          "rank": 1,
+          "chunk_id": "evidence-032e22d939be247ec3cb041d",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "heading",
+            [
+              "Rate Limits"
+            ],
+            0
+          ],
+          "score": 0.9876565933227539,
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "authorized": true,
+          "text": "All Nimbus API requests must include an `Authorization: Bearer <token>`\nheader. Tokens are obtained via the `/oauth/token` endpoint and expire\nafter 60 minutes; there is no refresh-token grant for the public API,\nso a client must request a new token on expiry.\n\nThe default rate limit is 120 requests per minute per API key. A request\nthat exceeds the limit receives a 429 status code with a `Retry-After`\nheader indicating how many seconds to wait before retrying.\n\nList endpoints return at most 50 items per page by default, controlled\nby the `limit` query parameter (maximum 200). The response includes a\n`next_cursor` field; passing it as the `cursor` query parameter on the\nnext request continues the listing.\n\nWebhook payloads are signed with HMAC-SHA256 using the webhook secret\nshown in the dashboard. The signature is sent in the\n`X-Nimbus-Signature` header, and Nimbus retries a failed delivery up to\n5 times with exponential backoff before giving up.\n\nA 409 Conflict response means the requested operation would violate a\nuniqueness constraint, most commonly creating a folder whose name\nalready exists at the same path. A 422 Unprocessable Entity means the\nrequest body was valid JSON but failed schema validation.\n\nThe current API version is v3, specified via the `Nimbus-Version`\nrequest header. Omitting the header defaults to v2 for backward\ncompatibility, but v2 is deprecated and scheduled for removal;\nnew integrations should always send `Nimbus-Version: v3` explicitly.\n\nThe direct upload endpoint accepts files up to 5GB. Files larger than\n5GB must use the multipart upload endpoint, which accepts individual\nparts of up to 500MB each and requires a final `/complete` call to\nassemble them.\n\nWrite endpoints (POST, PUT) accept an optional `Idempotency-Key` header.\nReplaying the same request with the same key within 24 hours returns\nthe original response without performing the operation again, which is\nthe recommended way to safely retry a request after a timeout.\n\nA sandbox environment is available at `https://sandbox-api.nimbuscloud.example`\nfor testing integrations without affecting production data. Sandbox API\nkeys are prefixed with `sk_test_` and never count against production\nrate limits.\n\nA deprecated endpoint remains available for at least 12 months after\nits replacement ships, and every response from a deprecated endpoint\nincludes a `Sunset` header with the exact removal date.\n\nOAuth tokens carry one or more scopes: `files:read`, `files:write`,\n`admin:users`, and `admin:billing`. A token missing the required scope\nfor an endpoint receives a 403 Forbidden, distinct from a 401\nUnauthorized (which means the token itself is invalid or expired).\n\nThe `/files/bulk-delete` endpoint accepts up to 1000 file IDs in a\nsingle request. Requests with more than 1000 IDs are rejected with a\n400 Bad Request before any deletion happens — bulk operations are\nall-or-nothing at the validation stage, though individual deletions\nwithin a valid batch can still fail independently.\n\nThe `/search` endpoint supports full-text query via the `q` parameter\nand accepts an optional `filetype` filter (e.g. `pdf`, `docx`, `png`).\nSearch results are capped at 100 matches per request regardless of the\n`limit` parameter; retrieving more requires narrowing the query.\n\nEvery file object includes `created_at`, `modified_at`, and\n`content_hash` (a SHA-256 hex digest of the file's raw bytes, used by\nclients to detect whether a local copy is stale without downloading\nthe full file).\n\nClient libraries should retry on 502, 503, and 504 responses using\nexponential backoff starting at 1 second, capped at 30 seconds, for up\nto 5 attempts. A 500 Internal Server Error should NOT be retried\nautomatically — it usually indicates a bug that a retry won't resolve.\n\nWebhook events include `file.created`, `file.deleted`,\n`file.shared`, and `quota.exceeded`. The `quota.exceeded` event fires\nonce per billing period the first time an account crosses 90% of its\nstorage limit, not on every subsequent write past that threshold.\n\nThe `/files/upload` endpoint requires `Content-Type:\nmultipart/form-data` — a JSON body for this endpoint is rejected with\na 415 Unsupported Media Type. All other write endpoints require\n`Content-Type: application/json`.\n\nAll timestamps returned by the API are in UTC, formatted as ISO 8601\nwith a trailing `Z` (e.g. `2024-03-01T12:00:00Z`). The API never\nreturns timestamps in a client's local timezone; conversion is the\nclient's responsibility.\n\nAn account can have up to 2 active API keys simultaneously,\nspecifically to support zero-downtime rotation: generate a new key,\nupdate the client, then revoke the old key. A third key cannot be\ncreated until one of the existing two is revoked.\n\n`/health` requires no authentication and returns a 200 status with\n`{\"status\": \"ok\"}` when the API is reachable. It does not verify\ndownstream storage or database connectivity — a 200 from `/health`\ndoes not guarantee that file operations will succeed."
+        }
+      ],
+      "evidence_build_ms": 14.595
+    },
+    "visible_pipeline": {
+      "pipeline_version": "pipeline_support_ids",
+      "output_contract_version": "output_contract_support_ids",
+      "validator_version": "baseline",
+      "shadow_enabled": true,
+      "final_evidence_blocks": [
+        {
+          "rank": 1,
+          "chunk_id": "evidence-032e22d939be247ec3cb041d",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": [
+            "heading",
+            [
+              "Rate Limits"
+            ],
+            0
+          ],
+          "evidence_id": "E1",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "truncated": false,
+          "text": "All Nimbus API requests must include an `Authorization: Bearer <token>`\nheader. Tokens are obtained via the `/oauth/token` endpoint and expire\nafter 60 minutes; there is no refresh-token grant for the public API,\nso a client must request a new token on expiry.\n\nThe default rate limit is 120 requests per minute per API key. A request\nthat exceeds the limit receives a 429 status code with a `Retry-After`\nheader indicating how many seconds to wait before retrying.\n\nList endpoints return at most 50 items per page by default, controlled\nby the `limit` query parameter (maximum 200). The response includes a\n`next_cursor` field; passing it as the `cursor` query parameter on the\nnext request continues the listing.\n\nWebhook payloads are signed with HMAC-SHA256 using the webhook secret\nshown in the dashboard. The signature is sent in the\n`X-Nimbus-Signature` header, and Nimbus retries a failed delivery up to\n5 times with exponential backoff before giving up.\n\nA 409 Conflict response means the requested operation would violate a\nuniqueness constraint, most commonly creating a folder whose name\nalready exists at the same path. A 422 Unprocessable Entity means the\nrequest body was valid JSON but failed schema validation.\n\nThe current API version is v3, specified via the `Nimbus-Version`\nrequest header. Omitting the header defaults to v2 for backward\ncompatibility, but v2 is deprecated and scheduled for removal;\nnew integrations should always send `Nimbus-Version: v3` explicitly.\n\nThe direct upload endpoint accepts files up to 5GB. Files larger than\n5GB must use the multipart upload endpoint, which accepts individual\nparts of up to 500MB each and requires a final `/complete` call to\nassemble them.\n\nWrite endpoints (POST, PUT) accept an optional `Idempotency-Key` header.\nReplaying the same request with the same key within 24 hours returns\nthe original response without performing the operation again, which is\nthe recommended way to safely retry a request after a timeout.\n\nA sandbox environment is available at `https://sandbox-api.nimbuscloud.example`\nfor testing integrations without affecting production data. Sandbox API\nkeys are prefixed with `sk_test_` and never count against production\nrate limits.\n\nA deprecated endpoint remains available for at least 12 months after\nits replacement ships, and every response from a deprecated endpoint\nincludes a `Sunset` header with the exact removal date.\n\nOAuth tokens carry one or more scopes: `files:read`, `files:write`,\n`admin:users`, and `admin:billing`. A token missing the required scope\nfor an endpoint receives a 403 Forbidden, distinct from a 401\nUnauthorized (which means the token itself is invalid or expired).\n\nThe `/files/bulk-delete` endpoint accepts up to 1000 file IDs in a\nsingle request. Requests with more than 1000 IDs are rejected with a\n400 Bad Request before any deletion happens — bulk operations are\nall-or-nothing at the validation stage, though individual deletions\nwithin a valid batch can still fail independently.\n\nThe `/search` endpoint supports full-text query via the `q` parameter\nand accepts an optional `filetype` filter (e.g. `pdf`, `docx`, `png`).\nSearch results are capped at 100 matches per request regardless of the\n`limit` parameter; retrieving more requires narrowing the query.\n\nEvery file object includes `created_at`, `modified_at`, and\n`content_hash` (a SHA-256 hex digest of the file's raw bytes, used by\nclients to detect whether a local copy is stale without downloading\nthe full file).\n\nClient libraries should retry on 502, 503, and 504 responses using\nexponential backoff starting at 1 second, capped at 30 seconds, for up\nto 5 attempts. A 500 Internal Server Error should NOT be retried\nautomatically — it usually indicates a bug that a retry won't resolve.\n\nWebhook events include `file.created`, `file.deleted`,\n`file.shared`, and `quota.exceeded`. The `quota.exceeded` event fires\nonce per billing period the first time an account crosses 90% of its\nstorage limit, not on every subsequent write past that threshold.\n\nThe `/files/upload` endpoint requires `Content-Type:\nmultipart/form-data` — a JSON body for this endpoint is rejected with\na 415 Unsupported Media Type. All other write endpoints require\n`Content-Type: application/json`.\n\nAll timestamps returned by the API are in UTC, formatted as ISO 8601\nwith a trailing `Z` (e.g. `2024-03-01T12:00:00Z`). The API never\nreturns timestamps in a client's local timezone; conversion is the\nclient's responsibility.\n\nAn account can have up to 2 active API keys simultaneously,\nspecifically to support zero-downtime rotation: generate a new key,\nupdate the client, then revoke the old key. A third key cannot be\ncreated until one of the existing two is revoked.\n\n`/health` requires no authentication and returns a 200 status with\n`{\"status\": \"ok\"}` when the API is reachable. It does not verify\ndownstream storage or database connectivity — a 200 from `/health`\ndoes not guarantee that file operations will succeed."
+        }
+      ]
+    },
+    "generation": {
+      "provider_model": "gpt-5.6-luna",
+      "structured_output": true,
+      "support_id_contract_enabled": true,
+      "support_units": [
+        {
+          "position": 1,
+          "support_id": "E1.S1",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "All Nimbus API requests must include an `Authorization: Bearer <token>`\nheader. Tokens are obtained via the `/oauth/token` endpoint and expire\nafter 60 minutes; there is no refresh-token grant for the public API,\nso a client must request a new token on expiry."
+        },
+        {
+          "position": 2,
+          "support_id": "E1.S2",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "The default rate limit is 120 requests per minute per API key. A request\nthat exceeds the limit receives a 429 status code with a `Retry-After`\nheader indicating how many seconds to wait before retrying."
+        },
+        {
+          "position": 3,
+          "support_id": "E1.S3",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "List endpoints return at most 50 items per page by default, controlled\nby the `limit` query parameter (maximum 200). The response includes a\n`next_cursor` field; passing it as the `cursor` query parameter on the\nnext request continues the listing."
+        },
+        {
+          "position": 4,
+          "support_id": "E1.S4",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "Webhook payloads are signed with HMAC-SHA256 using the webhook secret\nshown in the dashboard. The signature is sent in the\n`X-Nimbus-Signature` header, and Nimbus retries a failed delivery up to\n5 times with exponential backoff before giving up."
+        },
+        {
+          "position": 5,
+          "support_id": "E1.S5",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "A 409 Conflict response means the requested operation would violate a\nuniqueness constraint, most commonly creating a folder whose name\nalready exists at the same path. A 422 Unprocessable Entity means the\nrequest body was valid JSON but failed schema validation."
+        },
+        {
+          "position": 6,
+          "support_id": "E1.S6",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "The current API version is v3, specified via the `Nimbus-Version`\nrequest header. Omitting the header defaults to v2 for backward\ncompatibility, but v2 is deprecated and scheduled for removal;\nnew integrations should always send `Nimbus-Version: v3` explicitly."
+        },
+        {
+          "position": 7,
+          "support_id": "E1.S7",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "The direct upload endpoint accepts files up to 5GB. Files larger than\n5GB must use the multipart upload endpoint, which accepts individual\nparts of up to 500MB each and requires a final `/complete` call to\nassemble them."
+        },
+        {
+          "position": 8,
+          "support_id": "E1.S8",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "Write endpoints (POST, PUT) accept an optional `Idempotency-Key` header.\nReplaying the same request with the same key within 24 hours returns\nthe original response without performing the operation again, which is\nthe recommended way to safely retry a request after a timeout."
+        },
+        {
+          "position": 9,
+          "support_id": "E1.S9",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "A sandbox environment is available at `https://sandbox-api.nimbuscloud.example`\nfor testing integrations without affecting production data. Sandbox API\nkeys are prefixed with `sk_test_` and never count against production\nrate limits."
+        },
+        {
+          "position": 10,
+          "support_id": "E1.S10",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "A deprecated endpoint remains available for at least 12 months after\nits replacement ships, and every response from a deprecated endpoint\nincludes a `Sunset` header with the exact removal date."
+        },
+        {
+          "position": 11,
+          "support_id": "E1.S11",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "OAuth tokens carry one or more scopes: `files:read`, `files:write`,\n`admin:users`, and `admin:billing`. A token missing the required scope\nfor an endpoint receives a 403 Forbidden, distinct from a 401\nUnauthorized (which means the token itself is invalid or expired)."
+        },
+        {
+          "position": 12,
+          "support_id": "E1.S12",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "The `/files/bulk-delete` endpoint accepts up to 1000 file IDs in a\nsingle request. Requests with more than 1000 IDs are rejected with a\n400 Bad Request before any deletion happens — bulk operations are\nall-or-nothing at the validation stage, though individual deletions\nwithin a valid batch can still fail independently."
+        },
+        {
+          "position": 13,
+          "support_id": "E1.S13",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "The `/search` endpoint supports full-text query via the `q` parameter\nand accepts an optional `filetype` filter (e.g. `pdf`, `docx`, `png`).\nSearch results are capped at 100 matches per request regardless of the\n`limit` parameter; retrieving more requires narrowing the query."
+        },
+        {
+          "position": 14,
+          "support_id": "E1.S14",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "Every file object includes `created_at`, `modified_at`, and\n`content_hash` (a SHA-256 hex digest of the file's raw bytes, used by\nclients to detect whether a local copy is stale without downloading\nthe full file)."
+        },
+        {
+          "position": 15,
+          "support_id": "E1.S15",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "Client libraries should retry on 502, 503, and 504 responses using\nexponential backoff starting at 1 second, capped at 30 seconds, for up\nto 5 attempts. A 500 Internal Server Error should NOT be retried\nautomatically — it usually indicates a bug that a retry won't resolve."
+        },
+        {
+          "position": 16,
+          "support_id": "E1.S16",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "Webhook events include `file.created`, `file.deleted`,\n`file.shared`, and `quota.exceeded`. The `quota.exceeded` event fires\nonce per billing period the first time an account crosses 90% of its\nstorage limit, not on every subsequent write past that threshold."
+        },
+        {
+          "position": 17,
+          "support_id": "E1.S17",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "The `/files/upload` endpoint requires `Content-Type:\nmultipart/form-data` — a JSON body for this endpoint is rejected with\na 415 Unsupported Media Type. All other write endpoints require\n`Content-Type: application/json`."
+        },
+        {
+          "position": 18,
+          "support_id": "E1.S18",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "All timestamps returned by the API are in UTC, formatted as ISO 8601\nwith a trailing `Z` (e.g. `2024-03-01T12:00:00Z`). The API never\nreturns timestamps in a client's local timezone; conversion is the\nclient's responsibility."
+        },
+        {
+          "position": 19,
+          "support_id": "E1.S19",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "An account can have up to 2 active API keys simultaneously,\nspecifically to support zero-downtime rotation: generate a new key,\nupdate the client, then revoke the old key. A third key cannot be\ncreated until one of the existing two is revoked."
+        },
+        {
+          "position": 20,
+          "support_id": "E1.S20",
+          "parent_evidence_block_id": "evidence-032e22d939be247ec3cb041d",
+          "evidence_id": "E1",
+          "source_id": "nimbus_api_reference_md",
+          "section_key": "['heading', ('Rate Limits',), 0]",
+          "document_version": "3ca423baeb9bb247a5142cec2a10bb539fb982b1403486083a1c34f36169ad74",
+          "contributing_chunk_ids": [
+            "c79faf52-4843-5b5e-afb1-8c6ab6586b9b",
+            "4817766f-f27d-54c5-ad6d-84892318d085",
+            "a565fb6c-21af-58ef-b4ff-935fa61b648a",
+            "5ff06d00-e51b-5de1-811f-41640f4cb05c",
+            "ff2742dc-ef8b-530c-bee0-b58011b7fc27",
+            "d2c81acd-2ce1-5f77-adb3-1b9dee5532c7",
+            "48c803ae-178b-55d0-9c7b-ca474a0e5c5b",
+            "c0aa40e4-4b9e-5efa-bd06-6914fae99660",
+            "43011ead-d4be-5896-9be7-c89fc88dbc3e",
+            "b3c4ac48-2a10-5530-88a6-a9fac60b2c6c",
+            "5a74fffa-7936-5ab8-b475-cd48dbe12e7e",
+            "fa47fccc-9b18-5951-ae4e-4fb67985b270",
+            "aacc4334-f695-5a1c-aeba-40fb81391c12",
+            "c7aff2e1-5d65-5c93-bce4-4b2f33524757",
+            "76f0af07-b389-5e79-a7ef-6bffcda49b0c",
+            "074e58a2-544e-5a01-985d-3336e4df3d2b",
+            "528cc3e3-95d0-508e-a483-787432e0448c",
+            "0d0e63df-8de4-538b-ad0a-bc2c98c21ac7",
+            "87abd30a-9eb9-5b37-add5-e28f13313851",
+            "fd75774e-39e5-53e1-a16b-fb95cb090a47"
+          ],
+          "authorized": true,
+          "model_visible": true,
+          "text": "`/health` requires no authentication and returns a 200 status with\n`{\"status\": \"ok\"}` when the API is reachable. It does not verify\ndownstream storage or database connectivity — a 200 from `/health`\ndoes not guarantee that file operations will succeed."
+        }
+      ],
+      "input_evidence_count": 20,
+      "structured_output_parse_status": "PARSED",
+      "generation_ms": 2034.123,
+      "model_support_ids": [
+        "E1.S2"
+      ],
+      "raw_model_output": "{\"answer_parts\":[{\"text\":\"The Nimbus API default limit is 120 requests per minute per API key, not 100. Requests exceeding the limit receive a 429 response with a Retry-After header.\",\"support_ids\":[\"E1.S2\"]}],\"abstain\":false}",
+      "parsed_model_result": {
+        "answer_parts": [
+          {
+            "text": "The Nimbus API default limit is 120 requests per minute per API key, not 100. Requests exceeding the limit receive a 429 response with a Retry-After header.",
+            "support_ids": [
+              "E1.S2"
+            ]
+          }
+        ],
+        "abstain": false
+      }
+    },
+    "support_id_validation": {
+      "requested_support_ids": [
+        "E1.S2"
+      ],
+      "accepted_support_ids": [],
+      "rejected_support_ids": [
+        "E1.S2"
+      ],
+      "reason_classes": [
+        "CRITICAL_VALUE_DIRECT_CONFLICT",
+        "NO_VALID_SUPPORT_BACKED_CLAIMS"
+      ],
+      "unknown_support_count": 0,
+      "unauthorized_support_count": 0,
+      "hidden_support_count": 0,
+      "critical_validator": {
+        "version": "baseline",
+        "shadow_enabled": true,
+        "invocations": 1,
+        "pass": 0,
+        "reject": 1,
+        "indeterminate": 0,
+        "forced_abstain": true,
+        "critical_value_count": 3,
+        "reason_classes": [
+          "CRITICAL_VALUE_DIRECT_CONFLICT"
+        ],
+        "critical_value_types": [
+          "NUMBER"
+        ],
+        "locale_ambiguity": false,
+        "version_ambiguity": false,
+        "version_specificity_reject": false,
+        "identifier_reject": false,
+        "duration_ms": 2.544,
+        "baseline_duration_ms": 0.648,
+        "shadow_v3_duration_ms": 1.581,
+        "shadow_errors": 0,
+        "shadow_error_classes": [],
+        "shadow_disagreements": [
+          "SAME"
+        ],
+        "critical_inputs": [
+          {
+            "part_index": 0,
+            "support_ids": [
+              "E1.S2"
+            ],
+            "audit": {
+              "answer_critical_tokens": "[REDACTED]",
+              "token_traces": "[REDACTED]",
+              "failure_codes": [
+                "CRITICAL_VALUE_DIRECT_CONFLICT"
+              ],
+              "status": "CRITICAL_VALUE_DIRECT_CONFLICT",
+              "pass": false,
+              "validator_version": "baseline",
+              "validator_outcome": "REJECT",
+              "validator_reason_class": "CRITICAL_VALUE_DIRECT_CONFLICT",
+              "critical_value_type": "NUMBER",
+              "critical_value_count": 3,
+              "forced_abstain": true,
+              "indeterminate": false,
+              "locale_ambiguity": false,
+              "version_ambiguity": false,
+              "version_specificity_reject": false,
+              "identifier_reject": false,
+              "duration_ms": 2.544,
+              "baseline_duration_ms": 0.648,
+              "shadow_v3_duration_ms": 1.581,
+              "shadow_enabled": true,
+              "shadow_disagreement": "SAME",
+              "shadow_error": false,
+              "shadow_error_class": null,
+              "shadow_v3_outcome": "REJECT",
+              "shadow_v3_reason_class": "CRITICAL_VALUE_DIRECT_CONFLICT"
+            }
+          }
+        ],
+        "shadow_v3_outcomes": [
+          "REJECT"
+        ],
+        "shadow_v3_reasons": [
+          "CRITICAL_VALUE_DIRECT_CONFLICT"
+        ]
+      },
+      "pre_validation_model_result": {
+        "parsed": true,
+        "model_abstain": false
+      },
+      "post_validation_result": {
+        "application_abstain": true,
+        "forced_abstain": true,
+        "outcome": "UNAVAILABLE"
+      }
+    },
+    "citation_resolution": {
+      "model_support_ids": [
+        "E1.S2"
+      ],
+      "validated_support_ids": [],
+      "application_citation_ids": [],
+      "resolved_citation_ids": [],
+      "rejected_citation_ids": [
+        "E1.S2"
+      ],
+      "model_citation_like_text_present": false
+    },
+    "visible_response": {
+      "outcome": "ANSWER",
+      "citation_count": 0,
+      "support_id_count": 0,
+      "raw_visible_text": "I could not find this in the document."
+    }
+  },
+  "raw_query": "Is the Nimbus API default limit 120 or 100 requests per minute?"
+}

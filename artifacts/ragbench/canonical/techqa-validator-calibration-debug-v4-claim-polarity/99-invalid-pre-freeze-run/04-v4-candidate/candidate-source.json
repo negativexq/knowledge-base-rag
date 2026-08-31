@@ -1,0 +1,24 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_898ccff13179",
+  "base_candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD_PLUS_CLAIM_POLARITY_GUARD",
+  "debug_only": true,
+  "source_file": "app/evaluation/critical_values.py",
+  "source_file_sha256": "3fe519520346b9bcd6f38d59c431199f80565cb2d711a7f065def22a14cad1c0",
+  "v4_helper_region_sha256": "898ccff13179ab3caf33e8a9b06ad86df613b17dc8b7f87607a9ac6d3f1d5126",
+  "functions": [
+    "_v4_sentence_bounds",
+    "_v4_clause_window",
+    "_v4_same_kind_companion",
+    "_v4_classify_occurrence",
+    "_v4_mask_rejected_premises",
+    "claim_local_critical_value_audit_v4"
+  ],
+  "experimental_code_path": "claim_local_critical_value_audit_v4 -> frozen claim_local_critical_value_audit(..., validator_version=\"v3\")",
+  "production_selector_unchanged": true,
+  "production_allowed_versions": [
+    "baseline",
+    "v3"
+  ],
+  "frozen_before_execution": true
+}

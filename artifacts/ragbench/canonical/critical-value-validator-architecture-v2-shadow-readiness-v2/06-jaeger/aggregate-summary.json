@@ -1,0 +1,18 @@
+{
+  "cases": 6,
+  "validator_capable": 6,
+  "shadow_executed": 6,
+  "coverage_percent": 100,
+  "architecture_id_coverage_percent": 100,
+  "required_field_coverage_percent": 100,
+  "records": [
+    {"case_id":"UI-01","trace_id":"f841a040a29ab8f815dab5189a9d18c6","authority":"baseline","authority_outcome":"PASS","shadow_executed":true,"shadow_outcome":"PASS","disagreement":"SAME","occurrence_count":1,"validate_count":1,"skip_count":0,"ambiguous_count":0,"shadow_error":false,"duration_ms":8.72},
+    {"case_id":"UI-02","trace_id":"b09ef6cf086b4603430195491e11b585","authority":"baseline","authority_outcome":"PASS","shadow_executed":true,"shadow_outcome":"PASS","disagreement":"SAME","occurrence_count":1,"validate_count":1,"skip_count":0,"ambiguous_count":0,"shadow_error":false,"duration_ms":0.765},
+    {"case_id":"UI-03","trace_id":"5511da4cf7f046fbdf6c81f243fc75e1","authority":"baseline","authority_outcome":"MIXED","shadow_executed":true,"shadow_outcome":"MIXED","disagreement":"SAME","occurrence_count":2,"validate_count":2,"skip_count":0,"ambiguous_count":0,"shadow_error":false,"duration_ms":2.676},
+    {"case_id":"UI-04","trace_id":"f3a87eff3a05a38604636b3d9b055f36","authority":"baseline","authority_outcome":"MIXED","shadow_executed":true,"shadow_outcome":"MIXED","disagreement":"SAME","occurrence_count":1,"validate_count":1,"skip_count":0,"ambiguous_count":0,"shadow_error":false,"duration_ms":2.983},
+    {"case_id":"UI-05","trace_id":"732dd98084cd55a2233b0f493e87202b","authority":"baseline","authority_outcome":"INDETERMINATE","shadow_executed":true,"shadow_outcome":"INDETERMINATE","disagreement":"SAME","occurrence_count":1,"validate_count":1,"skip_count":0,"ambiguous_count":0,"shadow_error":false,"duration_ms":4.003},
+    {"case_id":"UI-06","trace_id":"2d4b50b286d390022ea89c3bec539c31","authority":"baseline","authority_outcome":"PASS","shadow_executed":true,"shadow_outcome":"PASS","disagreement":"SAME","occurrence_count":1,"validate_count":1,"skip_count":0,"ambiguous_count":0,"shadow_error":false,"duration_ms":2.506}
+  ],
+  "raw_content_leak_count": 0,
+  "forbidden_high_cardinality_attribute_count": 0
+}

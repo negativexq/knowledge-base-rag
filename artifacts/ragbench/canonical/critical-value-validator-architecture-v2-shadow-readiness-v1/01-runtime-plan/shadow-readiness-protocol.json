@@ -1,0 +1,42 @@
+{
+  "task": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_SHADOW_READINESS_V1",
+  "environment": "LOCAL",
+  "authoritative_validator": "baseline",
+  "shadow_validator": "architecture_v2",
+  "config": {
+    "RAG_PIPELINE_V2": true,
+    "SUPPORT_IDS_ENABLED": true,
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED": true,
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": false,
+    "RAG_FORENSIC_CAPTURE_ENABLED": false,
+    "RAG_FORENSIC_CAPTURE_RAW_TEXT": false
+  },
+  "provider": "ollama_fallback",
+  "model": "qwen3.5:4b",
+  "primary_case_classes": [
+    "grounded_factual",
+    "corrective_wrong_premise",
+    "same_value_sibling",
+    "signed_value",
+    "ambiguous_conservative",
+    "insufficient_evidence"
+  ],
+  "requirements": {
+    "same_request_inputs": true,
+    "baseline_authoritative": true,
+    "shadow_side_effect_free": true,
+    "bounded_otel_only": true,
+    "no_raw_otel_content": true,
+    "no_production_activation": true,
+    "no_tuning": true,
+    "no_holdout": true
+  },
+  "failure_injection": "deterministic monkeypatch only",
+  "rollback": [
+    "baseline + shadow=true -> baseline + shadow=false",
+    "architecture_v2 -> baseline",
+    "architecture_v2 -> v3"
+  ],
+  "frozen_before_first_real_request": true
+}

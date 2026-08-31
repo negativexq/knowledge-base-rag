@@ -1,0 +1,15 @@
+component,file,symbol,input,identity_behavior,loss_or_risk
+legacy extraction,app/evaluation/critical_values.py,extract_critical_values,text,CriticalValue(kind,value,unit) only,span and occurrence identity discarded
+local extraction,app/evaluation/critical_values.py,_local_tokens,text,temporary dict start/end/value/kind/unit,no immutable occurrence_id or claim_unit_id
+V3 tokenization,app/evaluation/critical_values.py,_v3_tokenized,text,mutates kind and retains temporary spans,type is reinterpreted in place; identity remains dict-local
+baseline validation,app/evaluation/critical_values.py,_baseline_claim_local_critical_value_audit,claim/support text,compares kind/value/unit plus local words,re-tokenizes support inside answer-token loop; no occurrence ledger
+V3 validation,app/evaluation/critical_values.py,_v3_relation_audit,claim/support text,iterates token arrays and value/type comparisons,span identity is not part of comparison result
+V4 role,app/evaluation/critical_values.py,_v4_classify_occurrence,token dicts plus full text,same-kind companion and clause windows,role is coupled to type/value companion rather than stable occurrence ID
+V4 filtering,app/evaluation/critical_values.py,_v4_mask_rejected_premises,claim,exact temporary spans,masking is followed by downstream re-extraction
+V5 role,app/evaluation/critical_values.py,_v5_classify_occurrence,token dicts plus full text,full-answer same-surface sibling scan,normalized value can rejoin distinct roles; no claim-unit relation
+V5 filtering,app/evaluation/critical_values.py,_v5_mask_rejected_premises,claim,span-specific length-preserving mask,re-extraction loses original ledger
+V6 extraction,app/evaluation/critical_values.py,_v6_tokenized,text,typed non-overlapping spans plus diagnostic O IDs,IDs are not carried into validator delegation
+V6 filtering,app/evaluation/critical_values.py,_v6_mask_rejected_premises,claim,exact V6 spans,delegates masked string to V3 and reconstructs tokens
+relevance consumer,app/evidence/support_relevance.py,audit_support_relevance,claim/support units,passes plain strings to critical audit,no occurrence-level API
+answer consumer,app/llm/structured_output.py,validate_support_unit_answer,structured model parts/support units,part-level valid/rejected output,occurrence decisions are nested diagnostics not authoritative objects
+renderer,app/llm/structured_output.py,render_support_unit_answer,validated parts,application-owned support IDs,does not repair prior identity loss

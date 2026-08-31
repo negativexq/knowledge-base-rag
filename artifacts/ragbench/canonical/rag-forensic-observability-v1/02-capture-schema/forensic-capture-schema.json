@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RAG forensic capture V1",
+  "type": "object",
+  "required": ["schema_version", "forensic_request_id", "query_hash", "raw_text_enabled", "stages"],
+  "properties": {
+    "schema_version": {"const": "rag_forensic_capture_v1", "privacy": "BOUNDED_METADATA"},
+    "forensic_request_id": {"type": "string", "pattern": "^[0-9a-f]{32}$", "privacy": "BOUNDED_METADATA"},
+    "query_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$", "privacy": "BOUNDED_METADATA"},
+    "raw_text_enabled": {"type": "boolean", "privacy": "BOUNDED_METADATA"},
+    "raw_query": {"type": "string", "privacy": "LOCAL_RAW_TEXT"},
+    "stages": {"type": "object", "privacy": "BOUNDED_METADATA"}
+  },
+  "privacy_classes": {
+    "BOUNDED_METADATA": "Enums, counts, hashes, timings, safe IDs, and booleans; suitable for local records and bounded OTel attributes.",
+    "LOCAL_RAW_TEXT": "Only local task-owned artifacts when both explicit forensic switches are true; never OTel.",
+    "SECURITY_SENSITIVE_FORBIDDEN": "API keys, authorization/cookie headers, passwords, secrets, credentials, and unrestricted tenant evidence."
+  },
+  "stage_fields": {
+    "retrieval": ["candidate_count", "authorized_candidate_count", "configured_top_k", "rrf_top20_observed", "stage_timings_ms"],
+    "reranker": ["input_candidate_ids", "output_candidate_ids", "bge_top5_observed"],
+    "evidence_build": ["input_chunk_ids", "contributing_chunk_ids", "blocks_count", "context_tokens", "expanded", "budget_exhausted", "truncated_block_count", "dropped_expansion_count", "final_blocks", "evidence_build_ms"],
+    "generation": ["provider_model", "structured_output", "support_id_contract_enabled", "support_units", "input_evidence_count", "structured_output_parse_status", "model_support_ids", "parsed_model_result", "raw_model_output", "generation_ms"],
+    "support_id_validation": ["requested_support_ids", "accepted_support_ids", "rejected_support_ids", "reason_classes", "unknown_support_count", "unauthorized_support_count", "hidden_support_count", "critical_validator", "pre_validation_model_result", "post_validation_result"],
+    "citation_resolution": ["model_support_ids", "validated_support_ids", "application_citation_ids", "resolved_citation_ids", "rejected_citation_ids", "model_citation_like_text_present"],
+    "visible_response": ["outcome", "citation_count", "support_id_count", "raw_visible_text"]
+  },
+  "security_sensitive_forbidden_fields": ["api_key", "authorization", "cookie", "password", "secret", "database_url"]
+}

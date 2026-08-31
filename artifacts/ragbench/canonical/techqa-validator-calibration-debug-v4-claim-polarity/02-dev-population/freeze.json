@@ -1,0 +1,16 @@
+{
+  "population_frozen": true,
+  "freeze_stage": "before_implementation_and_execution",
+  "population_sha256": "eef94e10fbed296d54da2d6f126149d2e2f2ecf970ec306552f11b0ae578bc2b",
+  "manifest_sha256": "b39c67c989f61b2154d6ee1b774e426136acfa62f994bdffc1a6b358b34f9f20",
+  "adjudication_sha256": "f7a89ee48687eda838dbbd5ad6b99d672597968e396e7dd8cef3b1587b22b796",
+  "case_count": 70,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  },
+  "holdout_used": false
+}

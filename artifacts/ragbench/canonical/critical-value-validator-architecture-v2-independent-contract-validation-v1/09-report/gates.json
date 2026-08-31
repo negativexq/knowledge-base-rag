@@ -1,0 +1,55 @@
+{
+  "decision": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_INDEPENDENT_CONTRACT_VALIDATION_FAILED",
+  "failure_class": "TEST_ANNOTATION_DEFECT",
+  "architecture_gates": {
+    "A1_one_canonical_extraction": "PASS",
+    "A2_no_masking": "PASS",
+    "A3_no_re_extraction": "PASS",
+    "A4_no_role_rediscovery": "PASS",
+    "A5_immutable_occurrence_identity": "PASS",
+    "A6_no_global_value_role": "PASS",
+    "A7_claim_locality": "PASS",
+    "A8_nested_ownership": "PASS",
+    "A9_ambiguity_fail_safe": "PASS",
+    "A10_frozen_v3_delegation": "PASS"
+  },
+  "safety_gates": {
+    "S1_security": "PASS",
+    "S2_real_assertion_safety": "FAIL",
+    "S3_ambiguous_safety": "PASS",
+    "S4_query_echo_safety": "PASS",
+    "S5_same_value_sibling_safety": "PASS_UNDER_CORRECTED_INTERPRETATION",
+    "S6_signed_boundary_safety": "PASS",
+    "S7_version_identifier_safety": "PASS",
+    "S8_locale_safety": "PASS"
+  },
+  "identity_gates": {
+    "IG1_global_value_collapse": "PASS",
+    "IG2_sibling_contamination": "FAIL_UNDER_FROZEN_LABELS",
+    "IG3_type_identity_loss": "PASS",
+    "IG4_occurrence_id_collision": "PASS",
+    "IG5_nested_occurrence": "PASS",
+    "IG6_role_to_value_rejoin": "PASS",
+    "IG7_claim_association": "PASS"
+  },
+  "availability": {
+    "q1_threshold_percent": 80.0,
+    "corrective_recovery_percent": 86.0,
+    "Q1": "PASS"
+  },
+  "blocking_occurrence": {
+    "case_id": "CORR13",
+    "occurrence_id": "CORR13.O2",
+    "answer": "The signed result is -312 rather than -311.",
+    "frozen_expected_role": "VALIDATE",
+    "observed_role": "SKIP_REJECTED_PREMISE",
+    "observed_occurrences": [
+      {"occurrence_id": "CORR13.O1", "raw_literal": "-312", "span": [21, 25], "role": "VALIDATE"},
+      {"occurrence_id": "CORR13.O2", "raw_literal": "-311", "span": [38, 42], "role": "SKIP_REJECTED_PREMISE"}
+    ],
+    "disposition": "FROZEN_LABELS_CANNOT_BE_CHANGED_AFTER_EXECUTION"
+  },
+  "calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0},
+  "holdout": {"used": false, "modified": false, "status": "CONSUMED"},
+  "production": {"integrated": false, "activated": false, "selector_changed": false}
+}

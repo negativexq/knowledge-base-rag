@@ -1,0 +1,10 @@
+{
+  "payload_source": "Jaeger API actual trace response",
+  "controlled_distinctive_string_match_count": 0,
+  "raw_query": false,
+  "raw_answer": false,
+  "raw_evidence": false,
+  "raw_critical_literal": false,
+  "raw_occurrence_text": false,
+  "secrets": false
+}

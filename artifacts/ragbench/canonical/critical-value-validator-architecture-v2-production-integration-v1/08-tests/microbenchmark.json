@@ -1,0 +1,16 @@
+{
+  "benchmark_type": "LOCAL_MICROBENCHMARK_ONLY",
+  "iterations": 1000,
+  "synthetic": true,
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0},
+  "results_ms": {
+    "baseline": {"p50": 0.149125, "p95": 0.165375, "max": 0.320708},
+    "v3": {"p50": 0.230208, "p95": 0.249792, "max": 0.438042},
+    "architecture_v2": {"p50": 0.129833, "p95": 0.145667, "max": 0.966166},
+    "canonical_extraction": {"p50": 0.026709, "p95": 0.028792, "max": 0.050208},
+    "role_classification": {"p50": 0.036125, "p95": 0.037583, "max": 0.065291},
+    "v3_delegation": {"p50": 0.064292, "p95": 0.070667, "max": 0.153292}
+  },
+  "material_adapter_blocker": false,
+  "production_latency_claim": false
+}

@@ -1,0 +1,22 @@
+{
+  "SR1_source_integrity": "PASS",
+  "SR2_baseline_authoritative": "PASS",
+  "SR3_shadow_execution": "PASS_FOR_VALIDATOR_CAPABLE_HTTP_REQUESTS",
+  "SR4_shadow_isolation": "PASS_API_AND_DETERMINISTIC; UI_UNASSESSED",
+  "SR5_shadow_error_isolation": "PASS",
+  "SR6_telemetry_coverage": "FAIL",
+  "SR7_telemetry_privacy": "PASS",
+  "SR8_forensic_compatibility": "PASS",
+  "SR9_forensic_default_safety": "PASS",
+  "SR10_security": "PASS",
+  "SR11_rollback": "PASS",
+  "SR12_performance": "PASS_LOCAL_ONLY",
+  "SR13_stack_e2e": "FAIL_BROWSER_CONNECTOR_UNAVAILABLE",
+  "SR14_no_semantic_mutation": "PASS",
+  "SR15_tests": "PASS",
+  "primary_decision": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_SHADOW_READINESS_FAILED",
+  "blockers": [
+    "Chrome/in-app browser control unavailable; real browser UI path not verified",
+    "V2 shadow architecture/occurrence role telemetry not promoted to OTel aggregate span"
+  ]
+}

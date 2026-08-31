@@ -1,0 +1,13 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V6_OCCURRENCE_BOUNDARY_SAFETY_DEBUG",
+  "base_candidate_id": "VALIDATOR_CANDIDATE_V5_MULTI_OCCURRENCE_POLARITY_DEBUG",
+  "source_file": "app/evaluation/critical_values.py",
+  "source_file_sha256_before_execution": "c0bea7edf6e0a04d05e36c52b188b5a081c49489b2ec4f6f619ad85bf7a18905",
+  "source_file_sha256_after_execution": "c0bea7edf6e0a04d05e36c52b188b5a081c49489b2ec4f6f619ad85bf7a18905",
+  "v5_helper_region_sha256": "1352b1d3fa36d3140c299fed9ad6e06074dd6eb8e50ca8de7da56836be7f1fc7",
+  "v6_helper_region_sha256": "0b9216ff010c3cd02e02d012db67fa650641ca59e9d71985ab11376522f47410",
+  "mutation_after_freeze": false,
+  "mutation_after_execution": false,
+  "debug_only": true,
+  "production_selector": "baseline|v3 unchanged"
+}

@@ -1,0 +1,61 @@
+{
+  "decision": "VALIDATOR_V4_CLAIM_POLARITY_INDEPENDENT_CONTRACT_VALIDATION_FAILED",
+  "v3": {
+    "occurrences": 100,
+    "validate_total": 66,
+    "validate_kept": 66,
+    "real_assertion_incorrectly_skipped": 0,
+    "ambiguous_total": 8,
+    "ambiguous_conservatively_validated": 8,
+    "ambiguous_incorrectly_skipped": 0,
+    "rejected_premise_total": 26,
+    "correct_rejected_premise_skips": 0,
+    "rejected_premise_not_skipped": 26,
+    "corrective_recovery_rate": 0.0,
+    "unsafe_skip_rate": 0.0,
+    "correct_total": 74,
+    "outcome_behavior_distribution": {
+      "VALIDATE": 100
+    }
+  },
+  "v4": {
+    "occurrences": 100,
+    "validate_total": 66,
+    "validate_kept": 66,
+    "real_assertion_incorrectly_skipped": 0,
+    "ambiguous_total": 8,
+    "ambiguous_conservatively_validated": 8,
+    "ambiguous_incorrectly_skipped": 0,
+    "rejected_premise_total": 26,
+    "correct_rejected_premise_skips": 14,
+    "rejected_premise_not_skipped": 12,
+    "corrective_recovery_rate": 0.5385,
+    "unsafe_skip_rate": 0.0,
+    "correct_total": 88,
+    "outcome_behavior_distribution": {
+      "VALIDATE": 86,
+      "SKIP": 14
+    }
+  },
+  "gates": {
+    "G1_REAL_ASSERTION_SAFETY": true,
+    "G2_AMBIGUOUS_SAFETY": true,
+    "G3_UNSUPPORTED_POSITIVE_CLAIM_SAFETY": true,
+    "G4_CORRECTIVE_IMPROVEMENT": true,
+    "G5_CORRECTIVE_RECOVERY": true,
+    "G6_V3_REGRESSION_PROTECTION": true,
+    "G7_QUERY_ECHO_SAFETY": true,
+    "G8_NEGATION_SAFETY": true,
+    "G9_MULTI_OCCURRENCE_SAFETY": false,
+    "G10_SECURITY": true
+  },
+  "secondary_effect": "REGRESSION",
+  "historical_anchors_not_independent_proof": true,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "occurrences": 100,
+  "validate_total": 66,
+  "validate_kept": 66,
+  "real_assertion_incorrectly_skipped": 0,
+  "ambiguous_total": 8,
+  "ambiguous_conservatively_validated": 8,
+  "ambiguous_incorrectly_skipped": 0,
+  "rejected_premise_total": 26,
+  "correct_rejected_premise_skips": 14,
+  "rejected_premise_not_skipped": 12,
+  "corrective_recovery_rate": 0.5385,
+  "unsafe_skip_rate": 0.0,
+  "correct_total": 88,
+  "outcome_behavior_distribution": {
+    "VALIDATE": 86,
+    "SKIP": 14
+  }
+}

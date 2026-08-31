@@ -1,0 +1,26 @@
+{
+  "candidate": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "dual_review_before_freeze": true,
+  "fresh_population": true,
+  "hard_gates": [
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L5",
+    "A1-A10",
+    "S1-S8",
+    "I-G1-I-G7",
+    "V3_SEMANTIC_MISMATCHES=0",
+    "REAL_ASSERTION_INCORRECTLY_SKIPPED=0",
+    "AMBIGUOUS_INCORRECTLY_SKIPPED=0",
+    "CORRECTIVE_RECOVERY>=80%",
+    "TASK_CAUSED_REGRESSIONS=0"
+  ],
+  "holdout": "CONSUMED_NOT_USED",
+  "no_candidate_output_before_freeze": true,
+  "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+  "production_activation": false,
+  "stopping_rule": "PASS permits production integration review eligibility; no third validation population by default.",
+  "task": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_INDEPENDENT_CONTRACT_VALIDATION_V2"
+}

@@ -1,0 +1,19 @@
+{
+  "case_count": 103,
+  "legacy_ambiguous_incorrectly_skipped": 0,
+  "legacy_correct_rejected_premise_skips": 31,
+  "legacy_global_value_collapse_errors": 5,
+  "legacy_nested_occurrence_errors": 0,
+  "legacy_real_assertion_incorrectly_skipped": 1,
+  "legacy_rejected_premise_not_skipped": 21,
+  "legacy_sibling_contamination": 21,
+  "legacy_type_reinterpretation_identity_errors": 5,
+  "occurrence_count": 195,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "ollama": 0,
+    "openai": 0,
+    "retrieval": 0
+  }
+}

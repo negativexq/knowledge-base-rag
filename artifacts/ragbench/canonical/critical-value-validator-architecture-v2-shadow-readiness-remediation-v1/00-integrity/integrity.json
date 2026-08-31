@@ -1,0 +1,30 @@
+{
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "architecture_semantic_source_digest_expected": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "architecture_semantic_files_unchanged": true,
+  "architecture_semantic_files": {
+    "app/evaluation/critical_occurrences.py": "d00423ab6f7f9777ff7bd20161f1372a263a6d78127ee670418e178eadbb005f",
+    "app/evaluation/critical_roles.py": "e74a7c63c0f132fe390aacd4bf7a1bb51aceeedd0d81673cd6230b252378b83f",
+    "app/evaluation/critical_occurrence_validation.py": "17adc1b0c76ea83c5a596e9bc19b0f4ec4fe1101f13145d4cf687cf9c74f2ad8",
+    "app/evaluation/critical_validator_architecture_v2.py": "b83657326f67533c0e3b4b854e7682cb3559452a7dc97caf65fe332ecc9ebc35",
+    "scripts/run_validator_calibration_debug_v3.py": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1"
+  },
+  "v3_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "telemetry_changed_files_after_remediation": {
+    "app/evaluation/critical_validator_runtime.py": "9243211cd55432ee734bccd01bb5c8fe2ddd22d28bfcd53ba7f2dcaad861fecd",
+    "app/llm/structured_output.py": "4a059fe4d4afc13727e54ddc02aadda80d1dad875472f977cc8330862a4a6a24",
+    "tests/test_critical_validator_architecture_v2_integration.py": "02e903131b764986c134c167573af91cea1fade483f177890fe9fdc23716817a",
+    "scripts/direct_chrome_cdp_smoke.py": "a63bbff775a395f22bc02eaf6d6a2542879548a8e7d52ef984a1dd4042b0c591"
+  },
+  "historical_readiness_v1_root_modified": false,
+  "historical_readiness_v1_verdict": "FAILED",
+  "historical_integration_v1_root_modified": false,
+  "historical_artifacts_modified": false,
+  "allowed_current_changes": [
+    "app/evaluation/critical_validator_runtime.py",
+    "app/llm/structured_output.py",
+    "tests/test_critical_validator_architecture_v2_integration.py",
+    "scripts/direct_chrome_cdp_smoke.py",
+    "new remediation artifacts"
+  ]
+}

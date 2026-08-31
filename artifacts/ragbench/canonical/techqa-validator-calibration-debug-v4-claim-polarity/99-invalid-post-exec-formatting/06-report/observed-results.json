@@ -1,0 +1,432 @@
+{
+  "decision": "VALIDATOR_V4_CLAIM_POLARITY_DEBUG_CANDIDATE_SELECTED",
+  "v3": {
+    "cases": 70,
+    "true_conflict_detected": 25,
+    "true_conflict_total": 27,
+    "true_conflict_recall": 0.9259,
+    "corrective_answer_allowed": 2,
+    "corrective_total": 13,
+    "corrective_false_conflict_count": 11,
+    "unsupported_positive_claim_allowed_count": 0,
+    "ambiguous_polarity_preserved": 2,
+    "ambiguous_polarity_total": 2,
+    "false_positive_count": 16,
+    "false_reject_count": 2,
+    "forced_abstain_proxy": 11,
+    "security_regressions": 0,
+    "forced_abstain_count": 45,
+    "type_metrics": {
+      "DATE": {
+        "correct": 1,
+        "total": 1,
+        "rate": 1.0
+      },
+      "DURATION": {
+        "correct": 12,
+        "total": 18,
+        "rate": 0.6667
+      },
+      "IDENTIFIER": {
+        "correct": 8,
+        "total": 9,
+        "rate": 0.8889
+      },
+      "NUMBER": {
+        "correct": 16,
+        "total": 24,
+        "rate": 0.6667
+      },
+      "PERCENTAGE": {
+        "correct": 3,
+        "total": 4,
+        "rate": 0.75
+      },
+      "VERSION": {
+        "correct": 12,
+        "total": 14,
+        "rate": 0.8571
+      }
+    },
+    "polarity_metrics": {
+      "COMPARISON_VALUE": {
+        "correct": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "CORRECTIVE_REFERENCE": {
+        "correct": 0,
+        "total": 7,
+        "rate": 0.0
+      },
+      "NEGATED_ASSERTION": {
+        "correct": 7,
+        "total": 9,
+        "rate": 0.7778
+      },
+      "POSITIVE_ASSERTION": {
+        "correct": 26,
+        "total": 26,
+        "rate": 1.0
+      },
+      "QUOTED_VALUE": {
+        "correct": 4,
+        "total": 4,
+        "rate": 1.0
+      },
+      "REJECTED_PREMISE": {
+        "correct": 2,
+        "total": 11,
+        "rate": 0.1818
+      },
+      "UNKNOWN": {
+        "correct": 8,
+        "total": 8,
+        "rate": 1.0
+      }
+    },
+    "outcome_distribution": {
+      "PASS": 25,
+      "REJECT": 40,
+      "INDETERMINATE": 5
+    }
+  },
+  "v4": {
+    "cases": 70,
+    "true_conflict_detected": 25,
+    "true_conflict_total": 27,
+    "true_conflict_recall": 0.9259,
+    "corrective_answer_allowed": 12,
+    "corrective_total": 13,
+    "corrective_false_conflict_count": 1,
+    "unsupported_positive_claim_allowed_count": 0,
+    "ambiguous_polarity_preserved": 2,
+    "ambiguous_polarity_total": 2,
+    "false_positive_count": 2,
+    "false_reject_count": 2,
+    "forced_abstain_proxy": 1,
+    "security_regressions": 0,
+    "forced_abstain_count": 31,
+    "type_metrics": {
+      "DATE": {
+        "correct": 1,
+        "total": 1,
+        "rate": 1.0
+      },
+      "DURATION": {
+        "correct": 17,
+        "total": 18,
+        "rate": 0.9444
+      },
+      "IDENTIFIER": {
+        "correct": 8,
+        "total": 9,
+        "rate": 0.8889
+      },
+      "NUMBER": {
+        "correct": 23,
+        "total": 24,
+        "rate": 0.9583
+      },
+      "PERCENTAGE": {
+        "correct": 4,
+        "total": 4,
+        "rate": 1.0
+      },
+      "VERSION": {
+        "correct": 13,
+        "total": 14,
+        "rate": 0.9286
+      }
+    },
+    "polarity_metrics": {
+      "COMPARISON_VALUE": {
+        "correct": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "CORRECTIVE_REFERENCE": {
+        "correct": 6,
+        "total": 7,
+        "rate": 0.8571
+      },
+      "NEGATED_ASSERTION": {
+        "correct": 7,
+        "total": 9,
+        "rate": 0.7778
+      },
+      "POSITIVE_ASSERTION": {
+        "correct": 26,
+        "total": 26,
+        "rate": 1.0
+      },
+      "QUOTED_VALUE": {
+        "correct": 4,
+        "total": 4,
+        "rate": 1.0
+      },
+      "REJECTED_PREMISE": {
+        "correct": 10,
+        "total": 11,
+        "rate": 0.9091
+      },
+      "UNKNOWN": {
+        "correct": 8,
+        "total": 8,
+        "rate": 1.0
+      }
+    },
+    "outcome_distribution": {
+      "PASS": 39,
+      "REJECT": 26,
+      "INDETERMINATE": 5
+    }
+  },
+  "gates": {
+    "G1_SECURITY": true,
+    "G2_TRUE_CONFLICT_SAFETY": true,
+    "G3_UNSUPPORTED_POSITIVE_CLAIM_SAFETY": true,
+    "G4_CORRECTIVE_AVAILABILITY": true,
+    "G5_POLARITY_SAFETY": true,
+    "G6_AMBIGUOUS_POLARITY": true,
+    "G7_V3_REGRESSION_PROTECTION": true,
+    "G8_FORCED_ABSTAIN": true,
+    "G9_T3_T5_REGRESSION_ANCHORS": true
+  },
+  "changed_cases": [
+    {
+      "case_id": "C01",
+      "category": "CORRECTIVE",
+      "polarity_class": "CORRECTIVE_REFERENCE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C03",
+      "category": "CORRECTIVE",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C05",
+      "category": "CORRECTIVE",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C06",
+      "category": "CORRECTIVE",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C07",
+      "category": "CORRECTIVE",
+      "polarity_class": "CORRECTIVE_REFERENCE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C08",
+      "category": "CORRECTIVE",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C09",
+      "category": "CORRECTIVE",
+      "polarity_class": "CORRECTIVE_REFERENCE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C11",
+      "category": "CORRECTIVE",
+      "polarity_class": "CORRECTIVE_REFERENCE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C12",
+      "category": "CORRECTIVE",
+      "polarity_class": "CORRECTIVE_REFERENCE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "C13",
+      "category": "CORRECTIVE",
+      "polarity_class": "CORRECTIVE_REFERENCE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "M05",
+      "category": "COMPARISON",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "M07",
+      "category": "COMPARISON",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "M08",
+      "category": "COMPARISON",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    },
+    {
+      "case_id": "Q04",
+      "category": "QUOTED_REPORTED",
+      "polarity_class": "REJECTED_PREMISE",
+      "expected_class": "EQUIVALENT_PASS",
+      "expected_behavior": "PASS",
+      "v3_outcome": "REJECT",
+      "v4_outcome": "PASS",
+      "v3_correct": false,
+      "v4_correct": true,
+      "v3_forced_abstain": true,
+      "v4_forced_abstain": false,
+      "change_type": "FIXED_CORRECTIVE_FALSE_CONFLICT",
+      "safety_effect": "POLARITY_GUARD_EXPECTED",
+      "notes": ""
+    }
+  ],
+  "provider_calls": {
+    "OpenAI": 0,
+    "Ollama": 0,
+    "Embedding": 0,
+    "BGE": 0,
+    "Retrieval": 0
+  },
+  "holdout_used": false,
+  "preliminary_invalid_run_excluded": true,
+  "valid_execution": true
+}

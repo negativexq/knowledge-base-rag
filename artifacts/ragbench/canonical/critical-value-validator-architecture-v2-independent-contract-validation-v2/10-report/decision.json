@@ -1,0 +1,75 @@
+{
+  "decision": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_INDEPENDENT_CONTRACT_VALIDATION_V2_PASSED",
+  "secondary_effect": "CLEAR_IMPROVEMENT",
+  "failure_class": "NONE",
+  "candidate": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "case_count": 118,
+  "occurrence_count": 221,
+  "labels": {
+    "VALIDATE": 157,
+    "SKIP_REJECTED_PREMISE": 57,
+    "AMBIGUOUS_KEEP_VALIDATING": 7
+  },
+  "review": {
+    "reviewer_a_complete": true,
+    "reviewer_b_complete": true,
+    "extraction_agreement_percent": 100.0,
+    "role_agreement_percent": 100.0,
+    "span_agreement_percent": 100.0,
+    "disagreements": 0,
+    "disputed_excluded": 0,
+    "corrective_pair_inversions": 0,
+    "non_extractor_owned_spans": 0,
+    "missing_rationales": 0
+  },
+  "extraction_identity": {
+    "missing": 0,
+    "spurious": 0,
+    "spurious_nested": 0,
+    "boundary_ownership_errors": 0,
+    "occurrence_id_collisions": 0,
+    "global_value_collapse": 0,
+    "sibling_contamination": 0,
+    "type_identity_loss": 0,
+    "claim_association_loss": 0,
+    "role_to_value_rejoin": 0
+  },
+  "role": {
+    "real_assertion_incorrectly_skipped": 0,
+    "ambiguous_incorrectly_skipped": 0,
+    "rejected_premises": 57,
+    "correct_skips": 49,
+    "misses": 8,
+    "recovery_percent": 86.0
+  },
+  "v3_semantic_mismatches": {
+    "numeric": 0,
+    "duration": 0,
+    "percentage": 0,
+    "date": 0,
+    "locale": 0,
+    "version": 0,
+    "identifier_sign": 0,
+    "indeterminate": 0
+  },
+  "gates": {
+    "L1_double_review_complete": "PASS",
+    "L2_no_unresolved_disputes": "PASS",
+    "L3_corrective_pair_consistency": "PASS",
+    "L4_extractor_ownership": "PASS",
+    "L5_rationale_completeness": "PASS",
+    "A1_A10": "PASS",
+    "S1_S8": "PASS",
+    "IG1_IG7": "PASS",
+    "Q1_corrective_recovery": "PASS",
+    "task_caused_deterministic_regressions": 0
+  },
+  "stopping_rule_satisfied": true,
+  "production_integration_review_eligible": true,
+  "production_integrated": false,
+  "production_activated": false,
+  "selector_changed": false,
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0},
+  "holdout": {"used": false, "modified": false, "status": "CONSUMED"},
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED"
+}

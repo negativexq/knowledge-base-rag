@@ -1,0 +1,38 @@
+{
+  "case_count": 103,
+  "categories": {
+    "AMBIGUOUS_POLARITY": 3,
+    "CONTEXT_SAFETY": 8,
+    "CORRECTIVE": 12,
+    "DATE": 4,
+    "DECIMAL": 6,
+    "DURATION": 8,
+    "IDENTIFIER": 6,
+    "PERCENTAGE": 6,
+    "PLUS_UNSIGNED": 6,
+    "POSITIVE": 12,
+    "SAME_VALUE_SIBLING": 10,
+    "SECURITY": 4,
+    "SIGNED_UNSIGNED": 8,
+    "VERSION": 10
+  },
+  "fresh_population": true,
+  "historical_anchors_only": true,
+  "holdout_used": false,
+  "labels": {
+    "AMBIGUOUS_KEEP_VALIDATING": 6,
+    "SKIP_REJECTED_PREMISE": 52,
+    "VALIDATE": 137
+  },
+  "occurrence_count": 195,
+  "population_id": "CRITICAL_VALUE_ARCHITECTURE_V2_DEBUG_DEV",
+  "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "ollama": 0,
+    "openai": 0,
+    "retrieval": 0
+  },
+  "secondary_unit": "case"
+}

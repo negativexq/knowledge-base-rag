@@ -1,0 +1,6 @@
+{
+  "status": "INVALID_NOT_USED_FOR_DECISION",
+  "reason": "V4 helper source was corrected after preliminary arm outputs were produced; those outputs are preserved for audit and excluded from final metrics.",
+  "provider_calls": 0,
+  "replacement_required": true
+}

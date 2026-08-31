@@ -1,0 +1,24 @@
+{
+  "experiment": "OPENAI_UI_ADVERSARIAL_FAILURE_FORENSIC_V1",
+  "source_root": "artifacts/ragbench/canonical/openai-ui-adversarial-browser-e2e-v1",
+  "matrix_path": "artifacts/ragbench/canonical/openai-ui-adversarial-browser-e2e-v1/01-preregistration/test-matrix.json",
+  "matrix_sha256": "a8f7f721d35727aea8bc304280496f7dbbf50c7dd8b12c7ec1c34041dc763ef0",
+  "matrix_verified": true,
+  "original_artifacts_modified": false,
+  "raw_model_output_persisted": false,
+  "retrieval_top20_persisted": false,
+  "reranked_top5_persisted": false,
+  "final_evidence_snapshot_persisted": false,
+  "support_id_validation_trace_persisted": false,
+  "bounded_ui_results_available": true,
+  "bounded_jaeger_validator_attributes_available": true,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  },
+  "holdout_used": false,
+  "notes": "Forensic reconstruction uses frozen UI summaries, frozen representative traces, and bounded validator tags only. Missing chain stages are explicitly marked NOT_RECOVERABLE_FROM_FROZEN_ARTIFACTS."
+}

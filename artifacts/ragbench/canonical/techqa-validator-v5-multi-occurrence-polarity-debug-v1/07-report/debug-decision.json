@@ -1,0 +1,20 @@
+{
+  "decision": "NO_VALIDATOR_V5_MULTI_OCCURRENCE_POLARITY_CANDIDATE_SELECTED",
+  "selection_requires_all_gates": true,
+  "gates": {
+    "G1_security": "PASS",
+    "G2_real_assertion_safety": "FAIL",
+    "G3_ambiguous_safety": "PASS",
+    "G4_v4_polarity_safety": "PASS",
+    "G5_multi_occurrence_safety": "PASS",
+    "G6_global_collapse": "PASS",
+    "G7_type_mismatch_role_separation": "PASS",
+    "G8_corrective_availability": "PASS",
+    "G9_v3_v4_regression_protection": "FAIL",
+    "G10_c50_regression_anchor": "PASS"
+  },
+  "blocking_occurrence": "C57.O2",
+  "blocking_class": "REAL_ASSERTION_INCORRECTLY_SKIPPED",
+  "future_track": "V6",
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+}

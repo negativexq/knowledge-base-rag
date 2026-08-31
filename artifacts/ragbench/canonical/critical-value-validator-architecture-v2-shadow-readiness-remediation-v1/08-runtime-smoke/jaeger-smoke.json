@@ -1,0 +1,23 @@
+{
+  "runtime": "local controlled smoke",
+  "requests": 1,
+  "validator_capable": 1,
+  "v2_shadow_executed": 1,
+  "selected_trace_id": "eda99f300e83b054fb01eb032a1bb466",
+  "observed": {
+    "validator.version": "baseline",
+    "validator.shadow.architecture_v2_enabled": true,
+    "validator.shadow.architecture_v2.architecture": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+    "validator.shadow.architecture_v2.executed": true,
+    "validator.shadow.architecture_v2.occurrence_count": 1,
+    "validator.shadow.architecture_v2.validate_count": 1,
+    "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+    "validator.shadow.architecture_v2.ambiguous_count": 0,
+    "validator.shadow.architecture_v2.outcome": "PASS",
+    "validator.shadow.architecture_v2.disagreement": "SAME",
+    "validator.shadow.architecture_v2.duration_ms": 5.253,
+    "validator.shadow.architecture_v2_error": false
+  },
+  "raw_content_leak_count": 0,
+  "note": "Values are bounded span attributes copied from the actual Jaeger payload; no query, answer, evidence, or literal is stored."
+}

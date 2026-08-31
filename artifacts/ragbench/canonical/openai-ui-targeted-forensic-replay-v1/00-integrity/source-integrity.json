@@ -1,0 +1,29 @@
+{
+  "original_matrix": {
+    "path": "artifacts/ragbench/canonical/openai-ui-adversarial-browser-e2e-v1/01-preregistration/test-matrix.json",
+    "sha256": "a8f7f721d35727aea8bc304280496f7dbbf50c7dd8b12c7ec1c34041dc763ef0",
+    "target_questions_verified_unchanged": true
+  },
+  "forensic_observability": {
+    "path": "artifacts/ragbench/canonical/rag-forensic-observability-v1/05-report/report.md",
+    "verdict": "RAG_FORENSIC_OBSERVABILITY_V1_PASSED",
+    "sample_record_questions_answerable": "13/13"
+  },
+  "candidate": {
+    "id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+    "sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1"
+  },
+  "replay_protocol": {
+    "path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/01-preregistration/replay-protocol-v1.json",
+    "sha256": "0128d058b6889abc760f3cf6d4d90c47cbbb270c8a1e50d4106115b539b819c9"
+  },
+  "original_artifacts_mutated": false,
+  "holdout_used": false,
+  "provider_calls_before_replay": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

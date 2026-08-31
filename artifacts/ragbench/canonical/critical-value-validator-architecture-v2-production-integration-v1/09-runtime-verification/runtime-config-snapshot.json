@@ -1,0 +1,11 @@
+{
+  "critical_validator_version_default": "baseline",
+  "critical_validator_allowed_values": ["baseline", "v3", "architecture_v2"],
+  "critical_validator_arch_v2_shadow_enabled_default": false,
+  "critical_validator_v3_shadow_enabled_default": false,
+  "rag_forensic_capture_enabled_default": false,
+  "rag_forensic_capture_raw_text_default": false,
+  "production_activation": false,
+  "production_shadow_enabled": false,
+  "canary": false
+}

@@ -1,0 +1,17 @@
+{
+  "raw_content_persisted": false,
+  "traces": {
+    "T1": {"trace_id":"f16d3f6b813f6183dd3c08d1d3c4de41","validator_outcome":"PASS","reason_class":"CRITICAL_VALUE_SUPPORTED","critical_value_type":"NUMBER","shadow_disagreement":"SAME","forced_abstain":false,"shadow_error":false},
+    "T4": {"trace_id":"22b162fd515a335dce739c34636b97a5","validator_outcome":"INDETERMINATE","reason_class":"CRITICAL_VALUE_INDETERMINATE","critical_value_type":"BOOLEAN","shadow_disagreement":"SAME","forced_abstain":true,"shadow_error":false},
+    "T12": {"trace_id":"e4a5fbcaf1596fcfa1d68aefd13eb957","validator_outcome":"MIXED","reason_class":"CRITICAL_VALUE_SUPPORTED","critical_value_type":"DURATION,NUMBER","shadow_disagreement":"SAME","forced_abstain":false,"shadow_error":false},
+    "T15": {"trace_id":"79a420878f1d742062d1cdc550d2d13d","validator_outcome":"REJECT","reason_class":"CRITICAL_VALUE_DIRECT_CONFLICT","critical_value_type":"NUMBER","shadow_disagreement":"SAME","forced_abstain":true,"shadow_error":false},
+    "T17": {"trace_id":"bc6fd54dc4e2294102f1329760d19bdf","validator_outcome":"PASS","reason_class":"CRITICAL_VALUE_SUPPORTED","critical_value_type":"NUMBER","shadow_disagreement":"SAME","forced_abstain":false,"shadow_error":false}
+  },
+  "privacy_review": {
+    "raw_query": false,
+    "raw_claim": false,
+    "raw_support": false,
+    "raw_document": false,
+    "secret": false
+  }
+}

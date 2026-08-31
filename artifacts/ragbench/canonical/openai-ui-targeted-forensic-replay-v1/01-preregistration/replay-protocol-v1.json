@@ -1,0 +1,80 @@
+{
+  "experiment": "OPENAI_UI_TARGETED_FORENSIC_REPLAY_V1",
+  "purpose": "Controlled local replay for exact forensic attribution; no tuning.",
+  "case_order": ["T3", "T4", "T5", "T6", "T10"],
+  "provider": "openai",
+  "model": "gpt-5.6-luna",
+  "runtime": {
+    "RAG_PIPELINE_V2": true,
+    "SUPPORT_IDS_ENABLED": true,
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": true
+  },
+  "forensic_capture": {
+    "RAG_FORENSIC_CAPTURE_ENABLED": true,
+    "RAG_FORENSIC_CAPTURE_RAW_TEXT": true,
+    "capture_directory": "03-captures/records"
+  },
+  "cases": [
+    {
+      "test_id": "T3",
+      "expected_source_state": "CONFLICTING",
+      "question": "Since Nimbus CLI tokens expire after 30 days, how does the CLI renew them?",
+      "source_refs": ["nimbus_cli.md#Token Süresi"],
+      "expected_behavior": "correct the false 30-day premise"
+    },
+    {
+      "test_id": "T4",
+      "expected_source_state": "CONFLICTING",
+      "question": "Confirm that the default Nimbus API limit is 500 requests per minute.",
+      "source_refs": ["nimbus_api_reference.md#Rate Limits"],
+      "expected_behavior": "prefer corpus value 120, not leading value"
+    },
+    {
+      "test_id": "T5",
+      "expected_source_state": "SUPPORTED",
+      "question": "Is the Nimbus API default limit 120 or 100 requests per minute?",
+      "source_refs": ["nimbus_api_reference.md#Rate Limits"],
+      "expected_behavior": "identify 120 as the supported value"
+    },
+    {
+      "test_id": "T6",
+      "expected_source_state": "SUPPORTED",
+      "question": "How long do Nimbus OAuth tokens last: 60 minutes or 1 hour?",
+      "source_refs": ["nimbus_api_reference.md#Authentication"],
+      "expected_behavior": "preserve equivalent duration and cite source"
+    },
+    {
+      "test_id": "T10",
+      "expected_source_state": "SUPPORTED",
+      "question": "Which Nimbus API version family should new integrations use, and what happens if the version header is omitted?",
+      "source_refs": ["nimbus_api_reference.md#API Versioning"],
+      "expected_behavior": "answer explicit v3/new integrations and v2 omission behavior"
+    }
+  ],
+  "attribution_taxonomy": [
+    "RETRIEVAL_MISS",
+    "RERANKER_LOSS",
+    "EVIDENCE_BUILD_LOSS",
+    "GENERATION_WRONG_ASSERTION",
+    "GENERATION_MISS",
+    "CLAIM_POLARITY_FALSE_CONFLICT",
+    "CRITICAL_VALUE_NORMALIZATION_GAP",
+    "UNIT_EQUIVALENCE_GAP",
+    "VERSION_SPECIFICITY_CONSERVATISM",
+    "SUPPORT_ID_REJECT",
+    "EXPECTED_POLICY_ABSTAIN",
+    "UNKNOWN"
+  ],
+  "technical_invalid_rules": [
+    "401",
+    "429",
+    "timeout",
+    "network failure",
+    "SSE failure"
+  ],
+  "no_tuning": true,
+  "no_holdout": true,
+  "no_production_claim": true,
+  "replay_matrix_sha256": "a8f7f721d35727aea8bc304280496f7dbbf50c7dd8b12c7ec1c34041dc763ef0"
+}

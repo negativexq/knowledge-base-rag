@@ -1,0 +1,41 @@
+{
+  "task": "VALIDATOR_V6_OCCURRENCE_BOUNDARY_SAFETY_DEBUG_V1",
+  "candidate_type": "DEBUG_ONLY_CHALLENGER",
+  "base_candidate_id": "VALIDATOR_CANDIDATE_V5_MULTI_OCCURRENCE_POLARITY_DEBUG",
+  "objective": "Add exact lexical occurrence boundary safety without changing V5 polarity semantics.",
+  "allowed_scope": [
+    "exact lexical spans",
+    "sign ownership",
+    "overlap resolution",
+    "nested literal suppression",
+    "length-preserving exact-span masking",
+    "occurrence extraction diagnostics"
+  ],
+  "forbidden_scope": [
+    "V5 mutation",
+    "polarity redesign",
+    "boolean normalization",
+    "unit equivalence",
+    "version semantic changes",
+    "locale/sign/identifier safety weakening",
+    "RAG or retrieval changes",
+    "HOLDOUT use",
+    "production selector or default changes"
+  ],
+  "occurrence_identity": "typed lexical occurrence with exact start/end span; sign and enclosing typed literals own their extents",
+  "overlap_policy": "prefer extractor-owned full lexical literal; unresolved overlap remains VALIDATE",
+  "nested_literal_policy": "nested candidate is not an independent occurrence unless independently lexical",
+  "masking_policy": "only exact occurrence spans; length-preserving; never global string replacement",
+  "ambiguity_fallback": "VALIDATE",
+  "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+  "secondary_unit": "case",
+  "population_target": "60-90 fresh DEBUG cases with boundary diversity",
+  "hard_gates": ["G1_SECURITY", "G2_REAL_ASSERTION_SAFETY", "G3_AMBIGUOUS_SAFETY", "G4_SIGNED_BOUNDARY_SAFETY", "G5_NESTED_OCCURRENCE_SAFETY", "G6_PREFIX_COLLISION_SAFETY", "G7_MULTI_OCCURRENCE_ROLE_SAFETY", "G8_V5_CORRECTIVE_BEHAVIOR", "G9_V5_POLARITY_REGRESSION_PROTECTION", "G10_V3_REGRESSION_PROTECTION", "G11_C57_REGRESSION_ANCHOR", "G12_UNKNOWN_OVERLAP_FAIL_SAFE"],
+  "no_tuning": true,
+  "holdout_used": false,
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0},
+  "production_selector": "baseline|v3 unchanged",
+  "production_change": false,
+  "frozen_before_implementation": true,
+  "frozen_before_execution": true
+}

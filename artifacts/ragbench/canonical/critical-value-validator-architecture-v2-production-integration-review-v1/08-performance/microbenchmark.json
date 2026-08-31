@@ -1,0 +1,15 @@
+{
+  "benchmark_type": "LOCAL_MICROBENCHMARK_ONLY",
+  "iterations": 1000,
+  "synthetic_claim": "The documented timeout is 53 seconds, rather than 41 seconds. A separate retention window is 53 days.",
+  "results_ms": {
+    "baseline": {"p50": 0.12825, "p95": 0.145291, "max": 0.291042},
+    "v3": {"p50": 0.222875, "p95": 0.244583, "max": 0.421292},
+    "architecture_v2": {"p50": 0.137417, "p95": 0.156333, "max": 0.967292},
+    "canonical_extraction": {"p50": 0.026667, "p95": 0.027333, "max": 0.0375},
+    "role_classification": {"p50": 0.03575, "p95": 0.036292, "max": 0.070958},
+    "v3_delegation": {"p50": 0.081875, "p95": 0.087375, "max": 0.105333}
+  },
+  "material_blocker": false,
+  "production_latency_claim": false
+}

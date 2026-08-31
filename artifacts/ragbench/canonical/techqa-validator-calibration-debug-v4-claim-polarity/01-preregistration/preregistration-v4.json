@@ -1,0 +1,37 @@
+{
+  "experiment": "VALIDATOR_V4_CLAIM_POLARITY_DEBUG_PREREGISTRATION",
+  "objective": "Add a small deterministic claim-polarity guard to frozen V3 behavior so clearly rejected premise literals do not independently create support conflicts, while positive and substantive negative claims remain obligations.",
+  "base_candidate": {
+    "id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+    "source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1"
+  },
+  "scope": {
+    "included": ["CLAIM_POLARITY_FALSE_CONFLICT"],
+    "excluded": ["BOOLEAN_NORMALIZATION", "UNIT_EQUIVALENCE", "VERSION_SEMANTICS", "LOCALE_GUARD", "IDENTIFIER_SECURITY", "RETRIEVAL", "RERANKING", "PROMPTS", "PRODUCTION_ACTIVATION"],
+    "composition": "V3 + CLAIM_POLARITY_GUARD"
+  },
+  "taxonomy": ["POSITIVE_ASSERTION", "NEGATED_ASSERTION", "REJECTED_PREMISE", "CORRECTIVE_REFERENCE", "COMPARISON_VALUE", "QUOTED_VALUE", "UNKNOWN"],
+  "population": {
+    "kind": "fresh_debug_dev_population",
+    "target_cases": "40-70",
+    "holdout_used": false,
+    "prior_exact_cases_not_sole_proof": true,
+    "freeze_before_execution": true
+  },
+  "arms": ["V3_REPRODUCTION", "V4_CLAIM_POLARITY_GUARD"],
+  "gates": {
+    "G1_security": "V4 security regressions = 0",
+    "G2_true_conflict_safety": "V4 true-conflict recall >= V3",
+    "G3_unsupported_positive_claim_safety": "0 new unsupported positive-claim acceptances",
+    "G4_corrective_availability": "corrective false conflicts < V3",
+    "G5_polarity_safety": "negation/comparison context cannot suppress substantive validation obligations",
+    "G6_ambiguous_polarity": "ambiguous cases do not become unjustified PASS",
+    "G7_v3_regression_protection": "no regression in locale, signed values, identifiers, version specificity, numeric safety",
+    "G8_forced_abstain": "V4 corrective forced-abstain proxy <= V3 without unsafe positive acceptance",
+    "G9_regression_anchors": "T3-like and T5-like anchors resolve in expected direction"
+  },
+  "priority": ["SECURITY", "UNSUPPORTED_POSITIVE_CLAIM_SAFETY", "TRUE_CONFLICT_RECALL", "AMBIGUOUS_POLARITY_SAFETY", "CORRECTIVE_AVAILABILITY", "FORCED_ABSTAIN_REDUCTION"],
+  "forbidden": ["corrected HOLDOUT", "V3 mutation", "T4 boolean fix", "T6 unit conversion", "version change", "retrieval change", "BGE change", "Top-N change", "prompt change", "production selector change", "production promotion"],
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0},
+  "production": {"selector_remains": ["baseline", "v3"], "v4_primary": false, "promotion": false}
+}

@@ -1,0 +1,15 @@
+{
+  "v3_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v4_helper_region_sha256_expected": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v4_helper_region_sha256_actual": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v5_source_sha256_before": "a5d874bb37d3760e6e51a80937d91eb6a6b41f694e9b460b1ecacada2cc21ba9",
+  "v5_source_sha256_after": "a5d874bb37d3760e6e51a80937d91eb6a6b41f694e9b460b1ecacada2cc21ba9",
+  "v5_mutated": false,
+  "population_sha256": "46da3922f006161f1ec1ae21dc29906634231fdfc22bb5b9be8dc870d7085e19",
+  "adjudication_sha256": "28a4ec81076109dceee1965f5430dfaf7b3ea5fe0ebee8a9854f8a44ddd1bf94",
+  "manifest_sha256": "b3c2270abd2c11c56135d965f7a21de61f35821c7c8d97e9211fb0e9fd42f2ad",
+  "v4_artifacts_modified": false,
+  "holdout_used": false,
+  "bge_changed": false,
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+}

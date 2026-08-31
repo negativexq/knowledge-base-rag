@@ -1,0 +1,8 @@
+{
+  "status": "INVALID_NOT_SCORED",
+  "reason": "The first post-freeze comparison attempt evaluated the arms in memory but aborted before artifact emission because the comparison directory was not created.",
+  "replacement": "The subsequent complete run emitted all artifacts and is the only run used for metrics and gates.",
+  "candidate_mutation": false,
+  "population_mutation": false,
+  "included_in_final_metrics": false
+}

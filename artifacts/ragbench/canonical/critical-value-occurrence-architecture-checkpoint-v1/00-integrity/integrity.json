@@ -1,0 +1,51 @@
+{
+  "task": "CRITICAL_VALUE_OCCURRENCE_ARCHITECTURE_CHECKPOINT_V1",
+  "audit_only": true,
+  "v3": {
+    "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+    "source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+    "current_verification": "scripts/run_validator_calibration_debug_v3.py matches"
+  },
+  "v4": {
+    "candidate_id": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+    "historical_frozen_helper_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+    "historical_artifact_verification": "preserved in prior V4 freeze artifacts",
+    "note": "The current source file contains later V5/V6 append-only helpers; the V4 historical full-file hash is therefore not expected to equal the current full-file hash."
+  },
+  "v5": {
+    "source_sha256_at_freeze": "a5d874bb37d3760e6e51a80937d91eb6a6b41f694e9b460b1ecacada2cc21ba9",
+    "helper_sha256": "1352b1d3fa36d3140c299fed9ad6e06074dd6eb8e50ca8de7da56836be7f1fc7",
+    "status": "CLOSED_FAILED_SAFETY_C57",
+    "artifacts_preserved": true
+  },
+  "v6": {
+    "source_sha256": "c0bea7edf6e0a04d05e36c52b188b5a081c49489b2ec4f6f619ad85bf7a18905",
+    "current_source_sha256": "c0bea7edf6e0a04d05e36c52b188b5a081c49489b2ec4f6f619ad85bf7a18905",
+    "helper_sha256": "0b9216ff010c3cd02e02d012db67fa650641ca59e9d71985ab11376522f47410",
+    "status": "CLOSED_FAILED_DEBUG_G7",
+    "blocking_metrics": {
+      "global_collapse_errors": 4,
+      "type_mismatch_role_errors": 4,
+      "multi_occurrence_role_errors": 12
+    },
+    "artifacts_preserved": true
+  },
+  "prior_roots": {
+    "v4_debug": "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v4-claim-polarity",
+    "v4_independent": "artifacts/ragbench/canonical/techqa-validator-v4-claim-polarity-independent-contract-validation-v1",
+    "v5": "artifacts/ragbench/canonical/techqa-validator-v5-multi-occurrence-polarity-debug-v1",
+    "v6": "artifacts/ragbench/canonical/techqa-validator-v6-occurrence-boundary-safety-debug-v1"
+  },
+  "prior_artifacts_modified_by_checkpoint": false,
+  "corrected_holdout": "CONSUMED_NOT_USED",
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  },
+  "production_selector": "baseline|v3_unchanged",
+  "production_change": false
+}

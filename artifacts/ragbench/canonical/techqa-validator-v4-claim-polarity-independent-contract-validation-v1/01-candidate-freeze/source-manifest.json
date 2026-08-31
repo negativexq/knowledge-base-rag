@@ -1,0 +1,20 @@
+{
+  "candidate_id": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+  "base_candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "composition": "NUMERIC_PLUS_VERSION_PLUS_IDENTIFIER_NEGATIVE_PLUS_LOCALE_GUARD_PLUS_VERSION_SPECIFICITY_GUARD_PLUS_CLAIM_POLARITY_GUARD",
+  "helper_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "expected_helper_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "relevant_files_raw_file_bytes_sha256": {
+    "app/evaluation/critical_values.py": "8be14a4078ba5f11797d3ec2e5101c6d2d7e6b51aa81656ad48a0116a941f6ef",
+    "scripts/run_validator_calibration_debug_v3.py": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+    "artifacts/ragbench/canonical/techqa-validator-calibration-debug-v4-claim-polarity/06-report/selected-candidate-freeze-preview.json": "920b69afbbb8cdbc74243eadb829384866c1d083de3831cd74e52653ceee57c4"
+  },
+  "entry_functions": [
+    "claim_local_critical_value_audit_v4",
+    "_v4_classify_occurrence",
+    "_v4_mask_rejected_premises"
+  ],
+  "v3_delegate": "claim_local_critical_value_audit(..., validator_version=\"v3\")",
+  "production_selector": "baseline|v3",
+  "production_activation": false
+}

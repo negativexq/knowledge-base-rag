@@ -1,0 +1,17 @@
+{
+  "environment": "LOCAL_CONTROLLED",
+  "api_bind": "127.0.0.1:8001",
+  "frontend_bind": "127.0.0.1:5174",
+  "CRITICAL_VALIDATOR_VERSION": "baseline",
+  "CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED": true,
+  "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": false,
+  "RAG_PIPELINE_V2": true,
+  "SUPPORT_IDS_ENABLED": true,
+  "RAG_FORENSIC_CAPTURE_ENABLED": false,
+  "RAG_FORENSIC_CAPTURE_RAW_TEXT": false,
+  "provider": "ollama_fallback",
+  "model": "qwen3.5:4b",
+  "authorized_test_tenant": "tenant-a",
+  "selector_source": "server_environment_only",
+  "production_default_changed": false
+}

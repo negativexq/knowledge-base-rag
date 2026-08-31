@@ -1,0 +1,12 @@
+{
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "source_manifest_sha256": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "population_sha256": "82d74bcfedbd4a0be9ceeaa97171d7a9e0577845f95a2957478abe3f88ec22c1",
+  "adjudications_sha256": "cb84536bfb0ebb2f51e3d23511769707d8f06fa397ecd15ef3163986b3894f15",
+  "manifest_sha256": "cbd0648b4cf2bb8406f5be0b8b44570c2985f05e38603d3ed2d8d93c09ae0c02",
+  "source_mutated_after_freeze": false,
+  "population_mutated_after_freeze": false,
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0},
+  "holdout_used": false,
+  "production_activation": false
+}

@@ -1,0 +1,41 @@
+{
+  "boundary_ownership_errors": 0,
+  "case_count": 98,
+  "duration_ownership_errors": 0,
+  "expected_independent_occurrences": 187,
+  "identifier_ownership_errors": 0,
+  "legacy_identity": {
+    "global_value_collapse": 0,
+    "sibling_contamination": 16,
+    "type_identity_loss": 0
+  },
+  "missing_occurrences": 0,
+  "observed_independent_occurrences": 187,
+  "occurrence_count": 187,
+  "occurrence_id_collisions": 0,
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "ollama": 0,
+    "openai": 0,
+    "retrieval": 0
+  },
+  "sign_ownership_errors": 0,
+  "spurious_nested_occurrences": 0,
+  "spurious_occurrences": 0,
+  "v2_ambiguous_incorrectly_skipped": 0,
+  "v2_correct_rejected_premise_skips": 43,
+  "v2_identity": {
+    "global_value_collapse": 0,
+    "sibling_contamination": 1,
+    "type_identity_loss": 0
+  },
+  "v2_post_role_reextraction": 0,
+  "v2_raw_text_masking": 0,
+  "v2_real_assertion_incorrectly_skipped": 1,
+  "v2_rejected_premise_not_skipped": 7,
+  "v2_role_layer_rediscovery": 0,
+  "v3_outcome_mismatches": [],
+  "v3_semantic_mismatches": 0,
+  "version_ownership_errors": 0
+}

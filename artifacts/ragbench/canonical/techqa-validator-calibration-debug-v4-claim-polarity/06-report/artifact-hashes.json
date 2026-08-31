@@ -1,0 +1,13 @@
+{
+  "preregistration_sha256": "e98aff0f595d8feab97af14615cfa1f094f82f61a4362d174a1ef4318f3f1c7a",
+  "population_sha256": "eef94e10fbed296d54da2d6f126149d2e2f2ecf970ec306552f11b0ae578bc2b",
+  "manifest_sha256": "b39c67c989f61b2154d6ee1b774e426136acfa62f994bdffc1a6b358b34f9f20",
+  "adjudication_sha256": "f7a89ee48687eda838dbbd5ad6b99d672597968e396e7dd8cef3b1587b22b796",
+  "v3_results_sha256": "ebf0047cb38171e5de290110886de56e5b7150a05704ff625af916e2df65e707",
+  "v4_results_sha256": "c2a05061bf06ec5e105c4a177dc31414aa4e1fdfff6d4e608979d9c48e984524",
+  "comparison_sha256": "295e9bcc6832fd3d7dff200edc9cfdcac38b6745e375e4cdaacc298cf887e1d3",
+  "selected_preview_sha256": "920b69afbbb8cdbc74243eadb829384866c1d083de3831cd74e52653ceee57c4",
+  "candidate_source_sha256": "8be14a4078ba5f11797d3ec2e5101c6d2d7e6b51aa81656ad48a0116a941f6ef",
+  "candidate_helper_sha256": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "preliminary_invalid_runs_preserved": true
+}

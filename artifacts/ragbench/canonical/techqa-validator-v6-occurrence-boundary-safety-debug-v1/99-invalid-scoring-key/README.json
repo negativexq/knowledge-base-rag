@@ -1,0 +1,8 @@
+{
+  "status": "INVALID_NOT_SCORED",
+  "reason": "The first complete comparison output used the wrong V5 result key and therefore reported all V5 roles as VALIDATE.",
+  "replacement": "The corrected run is the sole run used for final metrics and gates.",
+  "source_mutated": false,
+  "population_mutated": false,
+  "included_in_final_metrics": false
+}

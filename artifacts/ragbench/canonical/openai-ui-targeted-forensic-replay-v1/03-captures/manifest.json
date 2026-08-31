@@ -1,0 +1,66 @@
+{
+  "experiment": "OPENAI_UI_TARGETED_FORENSIC_REPLAY_V1",
+  "case_order": [
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T10"
+  ],
+  "capture_count": 5,
+  "exactly_one_capture_per_case": true,
+  "raw_text_enabled": true,
+  "provider_calls": 5,
+  "captures": [
+    {
+      "order": 1,
+      "test_id": "T3",
+      "question_hash": "a0e8f0928b7bf441baffec060ff2ee2ecee18ec5a61296ba579db93f5bea68a8",
+      "forensic_request_id": "f5934c444ebe4b9fb6e9e4c703f95c1d",
+      "capture_path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/f5934c444ebe4b9fb6e9e4c703f95c1d.json",
+      "capture_sha256": "013fd6ad3a3406c4cf3a1dfdb63735b5e4c252b6032322f0d088eba4be71e751",
+      "capture_bytes": 88984,
+      "exactly_one_capture": true
+    },
+    {
+      "order": 2,
+      "test_id": "T4",
+      "question_hash": "27d57c7da78469645b6b74ce6d53f3255fb0839529053479986c3d081bafee73",
+      "forensic_request_id": "df37251feb374931b55858979ff0a0c0",
+      "capture_path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/df37251feb374931b55858979ff0a0c0.json",
+      "capture_sha256": "5c9f67e9df18eeefad2f872f6fbfed2640734edd8da471a50f7a325e4320955b",
+      "capture_bytes": 81306,
+      "exactly_one_capture": true
+    },
+    {
+      "order": 3,
+      "test_id": "T5",
+      "question_hash": "82e87c0ed70c25f3d7b6b9ce3749ad4c3ba13ca76f8a60f7ebd6335bbe1fe334",
+      "forensic_request_id": "aa28cf0cbf09465e9c7c52b5dd1e2125",
+      "capture_path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/aa28cf0cbf09465e9c7c52b5dd1e2125.json",
+      "capture_sha256": "cfe95bdf26afbf6916fd200a8da261e58cbbaa09acf1a9e764a8d1988e6e2eb0",
+      "capture_bytes": 63169,
+      "exactly_one_capture": true
+    },
+    {
+      "order": 4,
+      "test_id": "T6",
+      "question_hash": "f7b5b22acce69f5c215b0245c0ef4f011dce3d68ecdc59a79ec1b4dde16ae69f",
+      "forensic_request_id": "bedd3eebd5bb41a1a9bae3c6d2203a21",
+      "capture_path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/bedd3eebd5bb41a1a9bae3c6d2203a21.json",
+      "capture_sha256": "f7c428ba882ad7ea1aa7ecc410a2b10daa6a7286b3cdb79aeb60912ecb8aa701",
+      "capture_bytes": 77176,
+      "exactly_one_capture": true
+    },
+    {
+      "order": 5,
+      "test_id": "T10",
+      "question_hash": "d749a9d102e7870dd0e4f422430ce950f751024d71ebba77960e890992abddcc",
+      "forensic_request_id": "09d8d5bad509484b86028b6ef93ea1bd",
+      "capture_path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/09d8d5bad509484b86028b6ef93ea1bd.json",
+      "capture_sha256": "270c865f68eb75ba207e2bff7641b76e6112a66e459f9f38d7d0d02414b2ad4e",
+      "capture_bytes": 95988,
+      "exactly_one_capture": true
+    }
+  ]
+}

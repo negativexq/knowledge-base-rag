@@ -1,0 +1,14 @@
+{
+  "source_root": "artifacts/ragbench/canonical/openai-ui-adversarial-browser-e2e-v1",
+  "captured_after_forensic_review": true,
+  "files": {
+    "00-runtime/runtime-summary.json": "445c803f1d695e685ac28601df4346457e259c34e609ba916b98fd014431ecd1",
+    "01-preregistration/test-matrix.json": "a8f7f721d35727aea8bc304280496f7dbbf50c7dd8b12c7ec1c34041dc763ef0",
+    "02-browser-results/results.jsonl": "de2fbaf779f3493c630c5cc1c7890b946640090db62daee0a1f8406549c93292",
+    "03-traces/representative-traces.json": "427ab247f9a06a1c80b6c9761c130ecbc8fecdefdd8919bbc971b36724c91da3",
+    "04-failure-attribution/attribution.csv": "ff19c27d5c88a1f2929f9fdddbb7d37b0dae7eb1bd0c432f5cc53eccb936bc65",
+    "05-report/report.md": "45edd5dc870f2d94bf6a5842998fa8229e5e90ee411a74d5740a685774b29a89"
+  },
+  "matrix_sha256_verified": true,
+  "original_artifacts_modified": false
+}

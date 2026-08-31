@@ -1,0 +1,31 @@
+{
+  "arm": "CANONICAL_LEDGER",
+  "case_count": 103,
+  "occurrence_count": 195,
+  "expected_independent_occurrences": 195,
+  "observed_independent_occurrences": 195,
+  "missing_occurrences": 0,
+  "spurious_nested_occurrences": 0,
+  "boundary_ownership_errors": 0,
+  "sign_ownership_errors": 0,
+  "prefix_subspan_errors": 0,
+  "duplicate_occurrence_identity_collisions": 0,
+  "global_value_collapse_errors": 0,
+  "type_based_identity_loss": 0,
+  "same_value_sibling_contamination": 0,
+  "claim_association_loss": 0,
+  "role_to_value_rejoin_errors": 0,
+  "occurrence_id_collisions": 0,
+  "real_assertion_incorrectly_skipped": 0,
+  "ambiguous_incorrectly_skipped": 0,
+  "rejected_premise_not_skipped": 0,
+  "correct_rejected_premise_skips": 52,
+  "v3_semantic_mismatches": {
+    "numeric": 0,
+    "locale": 0,
+    "version": 0,
+    "identifier_sign": 0,
+    "indeterminate": 0
+  },
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+}

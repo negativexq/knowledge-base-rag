@@ -1,0 +1,9 @@
+identity_signal,production_use,V4_V6_use,what_it_can_prove,what_it_cannot_prove,architecture_conclusion
+normalized_value,comparison key and sibling matching,V5 full-answer same-surface companion,values are comparable,which textual occurrence owns a role,not sufficient identity
+critical_value_type,kind/unit comparison,V4 same-kind companion and V6 typed candidate,comparison semantics and lexical type,distinct spans with same value and role,attribute not identity
+raw_literal,not retained by production local token,V6 diagnostic field,lexical text and sign ownership,independent role by itself,immutable field should be retained
+substring match,not used by public legacy object,avoided in V4-V6 masking but equivalent risk in re-search,retrieves text fragments,lexical ownership or independent occurrence,forbidden as identity
+claim-local value,local context word overlap,V4/V5 clause/sentence context,limits comparisons to related text,stable association across masking,needs explicit claim_unit_id
+span,temporary start/end in _local_tokens,V4-V6 masks and V6 diagnostic IDs,exact position in original text,identity after re-extraction unless carried,primary identity signal
+query echo value,no occurrence object,role heuristics infer same value sibling,value appears in query or answer,why the occurrence is rejected,context signal only
+occurrence_id,absent,generated only in V6 output ledger-like dict,diagnostic row identity,downstream validator does not consume it,must become immutable contract key

@@ -1,0 +1,24 @@
+{
+  "provider_support_before_task": "PARTIAL",
+  "provider_support_basis": "OpenAIGeneratorClient existed for Responses API evaluation, but production generation_provider selector excluded openai",
+  "provider_implementation_added": false,
+  "selector_integration_added": true,
+  "provider": "openai",
+  "model": "gpt-5.6-luna",
+  "api_key_available": true,
+  "api_key_exposed": false,
+  "runtime_overrides": {
+    "GENERATION_PROVIDER": "openai",
+    "RAG_PIPELINE_V2": true,
+    "SUPPORT_IDS_ENABLED": true,
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": true
+  },
+  "committed_defaults_preserved": {
+    "generation_provider": "ollama",
+    "critical_validator_version": "baseline",
+    "critical_validator_v3_shadow_enabled": false
+  },
+  "openai_provider_calls": 18,
+  "embedding_provider_calls": "Ollama-backed retrieval embeddings remained unchanged"
+}

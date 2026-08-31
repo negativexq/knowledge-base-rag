@@ -1,0 +1,20 @@
+{
+  "task": "VALIDATOR_V4_CLAIM_POLARITY_DEBUG_PREREGISTRATION",
+  "v3_candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "v3_expected_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v3_actual_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v3_source_integrity": true,
+  "original_replay_matrix_sha256": "a8f7f721d35727aea8bc304280496f7dbbf50c7dd8b12c7ec1c34041dc763ef0",
+  "replay_protocol_sha256_expected": "0128d058b6889abc760f3cf6d4d90c47cbbb270c8a1e50d4106115b539b819c9",
+  "replay_protocol_sha256_actual": "0128d058b6889abc760f3cf6d4d90c47cbbb270c8a1e50d4106115b539b819c9",
+  "replay_protocol_integrity": true,
+  "prior_artifacts_modified": false,
+  "holdout_used": false,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

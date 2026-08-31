@@ -1,0 +1,34 @@
+{
+  "case_count": 98,
+  "categories": {
+    "CONTEXT_SAFETY": 10,
+    "CORRECTIVE": 18,
+    "IDENTIFIER_BOUNDARY": 8,
+    "ORDINARY_ASSERTION": 15,
+    "SAME_VALUE_SIBLING": 15,
+    "SECURITY": 4,
+    "SIGNED_BOUNDARY": 10,
+    "TYPE_BOUNDARY": 8,
+    "VERSION_BOUNDARY": 10
+  },
+  "disputed_excluded": 0,
+  "historical_anchors_not_scored": true,
+  "independently_authored": true,
+  "labels": {
+    "AMBIGUOUS_KEEP_VALIDATING": 6,
+    "SKIP_REJECTED_PREMISE": 50,
+    "VALIDATE": 131
+  },
+  "not_techqa_holdout": true,
+  "occurrence_count": 187,
+  "population_id": "CRITICAL_VALUE_ARCHITECTURE_V2_INDEPENDENT_CONTRACT_V1",
+  "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+  "provider_calls": {
+    "bge": 0,
+    "embedding": 0,
+    "ollama": 0,
+    "openai": 0,
+    "retrieval": 0
+  },
+  "secondary_unit": "CASE"
+}

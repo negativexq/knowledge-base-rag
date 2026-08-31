@@ -1,0 +1,18 @@
+{
+  "task": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_SHADOW_READINESS_V1",
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "architecture_semantic_source_digest": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "architecture_manifest_raw_file_sha256": "c797556bff29669cdafdb165646b601e94ce4a1573969dd69b9e452f2d080d23",
+  "hash_identity_disambiguated": true,
+  "architecture_source_manifest_verified": true,
+  "v3_candidate": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "v3_source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "architecture_semantics_changed": false,
+  "prior_canonical_artifacts_modified": false,
+  "browser_control": "unavailable",
+  "chrome_cdp_endpoint_observed": true,
+  "chrome_cdp_endpoint": "127.0.0.1:9222",
+  "controlled_runtime": "local",
+  "corrected_holdout": "CONSUMED_NOT_USED",
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED"
+}

@@ -1,0 +1,9 @@
+{
+  "v4_helper_sha256_expected": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v4_helper_sha256_actual": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "candidate_mutated": false,
+  "population_sha256": "cc2192e784a3ef56e0b6b3aec76374d58790b895d5af3fd49a8dc30c9b173aa4",
+  "adjudication_sha256": "52c02f0c2918f28828adb91a727ff31b80b59b10ce3cdfda00e4b4cc4798540d",
+  "protocol_sha256": "ef03d1bdc5542f144e2aac6abd653589ca6196efd6b021a2fec77762b8cc45d6",
+  "decision": "VALIDATOR_V4_CLAIM_POLARITY_INDEPENDENT_CONTRACT_VALIDATION_FAILED"
+}

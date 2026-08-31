@@ -1,0 +1,55 @@
+{
+  "task": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_PRODUCTION_INTEGRATION_V1",
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "selector": {
+    "allowed": ["baseline", "v3", "architecture_v2"],
+    "default": "baseline",
+    "source": "server_configuration_only",
+    "invalid_behavior": "fail_closed"
+  },
+  "shadow": {
+    "config": "CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED",
+    "default": false,
+    "authoritative_result_unchanged": true,
+    "visible_response_unchanged": true,
+    "shadow_errors_isolated": true,
+    "v3_shadow_and_architecture_v2_shadow": "allowed_independent_side_effect_free"
+  },
+  "failure_handling": {
+    "authoritative_architecture_v2_exception": "fail_closed_existing_abstain_path",
+    "shadow_exception": "continue_authoritative_path_with_bounded_shadow_error"
+  },
+  "telemetry": {
+    "bounded_metadata_only": true,
+    "raw_content_forbidden": true,
+    "occurrence_ids_forbidden_in_otel": true
+  },
+  "compatibility": {
+    "api_schema_change": false,
+    "sse_change": false,
+    "structured_output_schema_change": false,
+    "support_id_schema_change": false,
+    "citation_schema_change": false,
+    "database_migration": false,
+    "qdrant_migration": false,
+    "reindex": false,
+    "embedding_regeneration": false
+  },
+  "rollback": "config_only_to_baseline_or_v3",
+  "activation": {
+    "architecture_v2_authoritative": false,
+    "architecture_v2_shadow": false,
+    "canary": false,
+    "primary": false
+  },
+  "out_of_scope": [
+    "T4_boolean_normalization",
+    "T6_unit_equivalence",
+    "T10_version_semantics",
+    "INDETERMINATE_policy",
+    "new_polarity_heuristics",
+    "retrieval",
+    "BGE",
+    "provider_behavior"
+  ]
+}

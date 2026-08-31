@@ -1,0 +1,38 @@
+{
+  "population_id": "V6_OCCURRENCE_BOUNDARY_SAFETY_DEBUG_DEV",
+  "primary_unit": "CRITICAL_VALUE_OCCURRENCE",
+  "secondary_unit": "case",
+  "case_count": 76,
+  "occurrence_count": 154,
+  "nested_expectation_count": 84,
+  "labels": {
+    "AMBIGUOUS_KEEP_VALIDATING": 1,
+    "SKIP_REJECTED_PREMISE": 37,
+    "VALIDATE": 116
+  },
+  "categories": {
+    "DATE_SUBPART": 5,
+    "DECIMAL_PREFIX": 8,
+    "DURATION_COLLISION": 8,
+    "IDENTIFIER_SUFFIX": 8,
+    "PERCENT_COLLISION": 8,
+    "PLUS_UNSIGNED": 8,
+    "SIGNED_UNSIGNED": 15,
+    "V5_AMBIGUOUS_SIBLING": 1,
+    "V5_MULTI_OCCURRENCE": 2,
+    "V5_NEGATION": 1,
+    "V5_QUERY_ECHO": 1,
+    "V5_REVERSED_ORDER": 1,
+    "VERSION_PREFIX": 10
+  },
+  "fresh_population": true,
+  "v5_population_reused_as_primary": false,
+  "holdout_used": false,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "environment": "LOCAL",
+  "frontend": "http://127.0.0.1:5174",
+  "api": "http://127.0.0.1:8001",
+  "qdrant": "http://127.0.0.1:6333",
+  "jaeger": "http://127.0.0.1:16686",
+  "browser": "DIRECT_CHROME_CDP",
+  "cdp": "http://127.0.0.1:9222",
+  "provider": "ollama",
+  "model": "qwen3.5:4b",
+  "CRITICAL_VALIDATOR_VERSION": "baseline",
+  "CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED": true,
+  "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": false,
+  "RAG_PIPELINE_V2": true,
+  "SUPPORT_IDS_ENABLED": true,
+  "RAG_FORENSIC_CAPTURE_ENABLED": false,
+  "RAG_FORENSIC_CAPTURE_RAW_TEXT": false,
+  "production_activation": false
+}

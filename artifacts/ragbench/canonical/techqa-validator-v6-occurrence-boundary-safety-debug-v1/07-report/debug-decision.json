@@ -1,0 +1,26 @@
+{
+  "decision": "NO_VALIDATOR_V6_OCCURRENCE_BOUNDARY_SAFETY_CANDIDATE_SELECTED",
+  "blocking_gates": ["G7_MULTI_OCCURRENCE_ROLE_SAFETY"],
+  "gates": {
+    "G1_security": "PASS",
+    "G2_real_assertion_safety": "PASS",
+    "G3_ambiguous_safety": "PASS",
+    "G4_signed_boundary_safety": "PASS",
+    "G5_nested_occurrence_safety": "PASS",
+    "G6_prefix_collision_safety": "PASS",
+    "G7_multi_occurrence_role_safety": "FAIL",
+    "G8_v5_corrective_behavior": "PASS",
+    "G9_v5_polarity_regression_protection": "PASS",
+    "G10_v3_regression_protection": "PASS",
+    "G11_c57_regression_anchor": "PASS",
+    "G12_unknown_overlap_fail_safe": "PASS"
+  },
+  "blocking_observations": {
+    "v6_global_collapse_errors": 4,
+    "v6_type_mismatch_role_errors": 4,
+    "v6_role_errors": 12,
+    "v6_real_assertion_incorrectly_skipped": 0
+  },
+  "future_track": "V7",
+  "provider_calls": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+}

@@ -1,0 +1,21 @@
+{
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "frozen_before_final_execution": true,
+  "mutated_after_freeze": false,
+  "entry_point": "app.evaluation.critical_validator_architecture_v2.audit_claim_architecture_v2",
+  "canonical_extractor": "app.evaluation.critical_occurrences.extract_critical_occurrences",
+  "role_classifier": "app.evaluation.critical_roles.classify_occurrence_roles",
+  "v3_adapter": "app.evaluation.critical_occurrence_validation.validate_occurrences_v3",
+  "v3_dependency": {
+    "candidate_id": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+    "source_sha256": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1"
+  },
+  "source_files": {
+    "app/evaluation/critical_values.py": "564022d4d9a5db2d3f4430756de7b666b3ba67bd1600a4949eb073cd8f40a910",
+    "app/evaluation/critical_occurrences.py": "d00423ab6f7f9777ff7bd20161f1372a263a6d78127ee670418e178eadbb005f",
+    "app/evaluation/critical_roles.py": "e74a7c63c0f132fe390aacd4bf7a1bb51aceeedd0d81673cd6230b252378b83f",
+    "app/evaluation/critical_occurrence_validation.py": "17adc1b0c76ea83c5a596e9bc19b0f4ec4fe1101f13145d4cf687cf9c74f2ad8",
+    "app/evaluation/critical_validator_architecture_v2.py": "b83657326f67533c0e3b4b854e7682cb3559452a7dc97caf65fe332ecc9ebc35"
+  },
+  "manifest_sha256": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b"
+}

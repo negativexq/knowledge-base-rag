@@ -1,0 +1,518 @@
+{
+  "protocol_sha256": "0128d058b6889abc760f3cf6d4d90c47cbbb270c8a1e50d4106115b539b819c9",
+  "initial_dom": null,
+  "observations": [
+    {
+      "test_id": "T3",
+      "question": "Since Nimbus CLI tokens expire after 30 days, how does the CLI renew them?",
+      "expected_source_state": "CONFLICTING",
+      "set_result": null,
+      "click_result": null,
+      "elapsed_ms": 11778.3,
+      "capture_files": [
+        {
+          "path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/f5934c444ebe4b9fb6e9e4c703f95c1d.json",
+          "sha256": "013fd6ad3a3406c4cf3a1dfdb63735b5e4c252b6032322f0d088eba4be71e751",
+          "bytes": 88984
+        }
+      ],
+      "technical_invalid": null,
+      "http_statuses": [
+        200,
+        200
+      ],
+      "network_or_runtime_failures": [],
+      "ui_state": null
+    },
+    {
+      "test_id": "T4",
+      "question": "Confirm that the default Nimbus API limit is 500 requests per minute.",
+      "expected_source_state": "CONFLICTING",
+      "set_result": null,
+      "click_result": null,
+      "elapsed_ms": 5713.1,
+      "capture_files": [
+        {
+          "path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/df37251feb374931b55858979ff0a0c0.json",
+          "sha256": "5c9f67e9df18eeefad2f872f6fbfed2640734edd8da471a50f7a325e4320955b",
+          "bytes": 81306
+        }
+      ],
+      "technical_invalid": null,
+      "http_statuses": [
+        200,
+        200
+      ],
+      "network_or_runtime_failures": [],
+      "ui_state": null
+    },
+    {
+      "test_id": "T5",
+      "question": "Is the Nimbus API default limit 120 or 100 requests per minute?",
+      "expected_source_state": "SUPPORTED",
+      "set_result": null,
+      "click_result": null,
+      "elapsed_ms": 5703.3,
+      "capture_files": [
+        {
+          "path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/aa28cf0cbf09465e9c7c52b5dd1e2125.json",
+          "sha256": "cfe95bdf26afbf6916fd200a8da261e58cbbaa09acf1a9e764a8d1988e6e2eb0",
+          "bytes": 63169
+        }
+      ],
+      "technical_invalid": null,
+      "http_statuses": [
+        200
+      ],
+      "network_or_runtime_failures": [],
+      "ui_state": null
+    },
+    {
+      "test_id": "T6",
+      "question": "How long do Nimbus OAuth tokens last: 60 minutes or 1 hour?",
+      "expected_source_state": "SUPPORTED",
+      "set_result": null,
+      "click_result": null,
+      "elapsed_ms": 4697.3,
+      "capture_files": [
+        {
+          "path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/bedd3eebd5bb41a1a9bae3c6d2203a21.json",
+          "sha256": "f7c428ba882ad7ea1aa7ecc410a2b10daa6a7286b3cdb79aeb60912ecb8aa701",
+          "bytes": 77176
+        }
+      ],
+      "technical_invalid": null,
+      "http_statuses": [
+        200
+      ],
+      "network_or_runtime_failures": [],
+      "ui_state": null
+    },
+    {
+      "test_id": "T10",
+      "question": "Which Nimbus API version family should new integrations use, and what happens if the version header is omitted?",
+      "expected_source_state": "SUPPORTED",
+      "set_result": null,
+      "click_result": null,
+      "elapsed_ms": 4697.3,
+      "capture_files": [
+        {
+          "path": "artifacts/ragbench/canonical/openai-ui-targeted-forensic-replay-v1/03-captures/records/09d8d5bad509484b86028b6ef93ea1bd.json",
+          "sha256": "270c865f68eb75ba207e2bff7641b76e6112a66e459f9f38d7d0d02414b2ad4e",
+          "bytes": 95988
+        }
+      ],
+      "technical_invalid": null,
+      "http_statuses": [
+        200,
+        200
+      ],
+      "network_or_runtime_failures": [],
+      "ui_state": null
+    }
+  ],
+  "event_summary": [
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/playground",
+      "status": 200,
+      "mime": "text/html"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/main.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/@tanstack_react-query.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/rolldown-runtime-DC62tzP2.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react_jsx-runtime.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/@vite/client",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/App.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/@react-refresh",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/index.css",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/vite/dist/client/env.mjs",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-router-dom.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/AppShell.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/api/auth.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/Knowledge.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/Overview.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/lucide-react.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/Evaluations.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/Playground.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/SignIn.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/Settings.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/SyncRuns.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/Sidebar.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/TopBar.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/pages/Traces.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/api/client.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/api/sources.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/EmptyState.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/ErrorState.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/LoadingSkeleton.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/StatusBadge.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/ui/card.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/lib/utils.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/clsx.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/tailwind-merge.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/api/health.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/api/ui.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/MetricCard.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/RetrievalPipeline.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/api/chat.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/EvaluationMetric.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/ui/badge.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/node_modules/.vite/deps/class-variance-authority.js?v=54da6492",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/SourceCard.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/TraceWaterfall.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/SecurityInspector.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/ui/tabs.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/api/sync.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/lib/citations.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/CitationChip.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/SyncRunTable.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/hooks/useIdentity.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/components/ui/button.tsx",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://127.0.0.1:5173/src/lib/sse.ts",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/ui/identity",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/health/ready",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/chat",
+      "status": 200,
+      "mime": "text/plain"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/chat",
+      "status": 200,
+      "mime": "text/event-stream"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/chat",
+      "status": 200,
+      "mime": "text/event-stream"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/health/ready",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/chat",
+      "status": 200,
+      "mime": "text/event-stream"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/chat",
+      "status": 200,
+      "mime": "text/event-stream"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/chat",
+      "status": 200,
+      "mime": "text/event-stream"
+    },
+    {
+      "kind": "response",
+      "url": "http://localhost:8000/health/ready",
+      "status": 200,
+      "mime": "application/json"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "adjudication_sha256": "c99265ef0af32581efae240455616c459e079e862ffc820c809c50d8edc939a7",
+  "case_count": 98,
+  "frozen_before_execution": true,
+  "labels_frozen_before_execution": true,
+  "manifest_sha256": "cb9d88284666bde648adf422e4233ae16f609a18444a42b44c1258ec50c42b78",
+  "occurrence_count": 187,
+  "population_sha256": "89a64a68a0e09ec9f17737c1215f0cfaa2a0488f22f185da8fa75f2ee3f2900e",
+  "primary_unit": "CRITICAL_VALUE_OCCURRENCE"
+}

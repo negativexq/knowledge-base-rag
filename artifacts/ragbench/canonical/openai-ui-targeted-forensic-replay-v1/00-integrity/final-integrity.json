@@ -1,0 +1,58 @@
+{
+  "original_matrix_sha256": "a8f7f721d35727aea8bc304280496f7dbbf50c7dd8b12c7ec1c34041dc763ef0",
+  "expected_original_matrix_sha256": "a8f7f721d35727aea8bc304280496f7dbbf50c7dd8b12c7ec1c34041dc763ef0",
+  "replay_protocol_sha256": "0128d058b6889abc760f3cf6d4d90c47cbbb270c8a1e50d4106115b539b819c9",
+  "expected_replay_protocol_sha256": "0128d058b6889abc760f3cf6d4d90c47cbbb270c8a1e50d4106115b539b819c9",
+  "capture_count": 5,
+  "exactly_one_capture_per_case": true,
+  "captures_unchanged_after_replay": true,
+  "original_artifacts_modified": false,
+  "production_code_modified_by_replay": false,
+  "holdout_used": false,
+  "openai_calls": 5,
+  "technical_retries": 0,
+  "provider_calls_from_analysis": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  },
+  "capture_hashes": [
+    {
+      "test_id": "T3",
+      "request_id": "f5934c444ebe4b9fb6e9e4c703f95c1d",
+      "sha256": "013fd6ad3a3406c4cf3a1dfdb63735b5e4c252b6032322f0d088eba4be71e751",
+      "bytes": 88984,
+      "exactly_one_capture": "True"
+    },
+    {
+      "test_id": "T4",
+      "request_id": "df37251feb374931b55858979ff0a0c0",
+      "sha256": "5c9f67e9df18eeefad2f872f6fbfed2640734edd8da471a50f7a325e4320955b",
+      "bytes": 81306,
+      "exactly_one_capture": "True"
+    },
+    {
+      "test_id": "T5",
+      "request_id": "aa28cf0cbf09465e9c7c52b5dd1e2125",
+      "sha256": "cfe95bdf26afbf6916fd200a8da261e58cbbaa09acf1a9e764a8d1988e6e2eb0",
+      "bytes": 63169,
+      "exactly_one_capture": "True"
+    },
+    {
+      "test_id": "T6",
+      "request_id": "bedd3eebd5bb41a1a9bae3c6d2203a21",
+      "sha256": "f7c428ba882ad7ea1aa7ecc410a2b10daa6a7286b3cdb79aeb60912ecb8aa701",
+      "bytes": 77176,
+      "exactly_one_capture": "True"
+    },
+    {
+      "test_id": "T10",
+      "request_id": "09d8d5bad509484b86028b6ef93ea1bd",
+      "sha256": "270c865f68eb75ba207e2bff7641b76e6112a66e459f9f38d7d0d02414b2ad4e",
+      "bytes": 95988,
+      "exactly_one_capture": "True"
+    }
+  ]
+}

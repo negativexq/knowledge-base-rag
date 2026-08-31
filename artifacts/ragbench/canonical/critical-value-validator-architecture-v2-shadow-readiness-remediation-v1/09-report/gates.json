@@ -1,0 +1,18 @@
+{
+  "RMD1_source_integrity": "PASS",
+  "RMD2_telemetry_propagation": "PASS",
+  "RMD3_executed_vs_zero_distinction": "PASS",
+  "RMD4_disagreement_contract": "PASS",
+  "RMD5_otel_privacy": "PASS",
+  "RMD6_forensic_separation": "PASS",
+  "RMD7_cdp_endpoint": "PASS",
+  "RMD8_direct_cdp_control": "PASS",
+  "RMD9_ui_smoke": "PASS",
+  "RMD10_default_safety": "PASS",
+  "RMD11_shadow_isolation_regression": "PASS",
+  "RMD12_authoritative_fail_closed_regression": "PASS",
+  "RMD13_tests": "PASS",
+  "RMD14_no_semantic_mutation": "PASS",
+  "readiness_v1_verdict_rewritten": false,
+  "shadow_readiness_v2_decided": false
+}

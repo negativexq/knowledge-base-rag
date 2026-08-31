@@ -1,0 +1,4 @@
+test_id,application_owned_ids,model_citation_like_text,accepted_as_authoritative,ui_visually_confusing,citation_resolution
+T8,"E1.S5",YES,YES,YES,"E1.S5 resolved; model-like source string was not authoritative"
+T12,"E2.S4;E1.S2",YES,YES,YES,"E2.S4 and E1.S2 resolved; model-like source strings were not authoritative"
+T17,"E1.S2",YES,NO,NO,"E99.S99 was not accepted; E1.S2 was the valid application citation"

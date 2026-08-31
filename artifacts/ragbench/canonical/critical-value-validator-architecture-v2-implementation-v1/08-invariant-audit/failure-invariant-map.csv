@@ -1,0 +1,8 @@
+failure_id,source_version,root_cause,violated_invariant,evidence,confidence
+V4-same-value,V4,VALUE_LEVEL_COLLAPSE,I2;I13,mask/re-extract path shared normalized value, HIGH
+V4-claim-local,V4,CLAIM_ASSOCIATION_LOSS,I7;I11,claim-level value remap after masking, HIGH
+V5-C57,V5,NESTED_LITERAL_COLLISION,I4;I5,"204 matched inside -204 during re-entry", HIGH
+V5-span,V5,SPAN_IDENTITY_LOSS,I1;I12,span-derived role was not preserved through re-extraction, HIGH
+V6-role-rejoin,V6,ROLE_TO_VALUE_REJOIN,I2;I13,V6 IDs remained diagnostic before V3 re-extraction, HIGH
+V6-sibling,V6,SIBLING_CONTAMINATION,I10;I11,remaining value/type rejoin in 12 role errors, HIGH
+V6-type,V6,TYPE_REINTERPRETATION,I2;I7,type was used while rejoining filtered values, HIGH

@@ -1,0 +1,25 @@
+{
+  "cdp_target_type": "page",
+  "final_url": "http://127.0.0.1:5174/playground",
+  "title": "Knowledge Base \u2014 Operations Console",
+  "page_loaded": true,
+  "chat_input_found": true,
+  "input_and_click_succeeded": true,
+  "ui_response_rendered": true,
+  "response_body_length": 1921,
+  "citation_signal_count": 0,
+  "network": [
+    {
+      "method": "POST",
+      "path": "/chat",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/src/api/chat.ts",
+      "status": 200
+    }
+  ],
+  "console_fatal_error_count": 0,
+  "resource_failure_count": 0
+}

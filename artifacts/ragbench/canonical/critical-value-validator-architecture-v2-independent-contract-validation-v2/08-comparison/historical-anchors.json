@@ -1,0 +1,111 @@
+[
+  {
+    "anchor": "T3-like",
+    "answer": "The validity is 90 days, not 30 days.",
+    "occurrences": [
+      {
+        "id": "T3-like.O1",
+        "raw": "90 days",
+        "span": [
+          16,
+          23
+        ],
+        "role": "VALIDATE"
+      },
+      {
+        "id": "T3-like.O2",
+        "raw": "30 days",
+        "span": [
+          29,
+          36
+        ],
+        "role": "SKIP_REJECTED_PREMISE"
+      }
+    ],
+    "used_as_independent_proof": false
+  },
+  {
+    "anchor": "T5-like",
+    "answer": "The documented limit is 120, rather than 100.",
+    "occurrences": [
+      {
+        "id": "T5-like.O1",
+        "raw": "120",
+        "span": [
+          24,
+          27
+        ],
+        "role": "VALIDATE"
+      },
+      {
+        "id": "T5-like.O2",
+        "raw": "100",
+        "span": [
+          41,
+          44
+        ],
+        "role": "SKIP_REJECTED_PREMISE"
+      }
+    ],
+    "used_as_independent_proof": false
+  },
+  {
+    "anchor": "C50-like",
+    "answer": "The old value is 100. The 100 in the question is wrong; current value is 120.",
+    "occurrences": [
+      {
+        "id": "C50-like.O1",
+        "raw": "100",
+        "span": [
+          17,
+          20
+        ],
+        "role": "VALIDATE"
+      },
+      {
+        "id": "C50-like.O2",
+        "raw": "100",
+        "span": [
+          26,
+          29
+        ],
+        "role": "SKIP_REJECTED_PREMISE"
+      },
+      {
+        "id": "C50-like.O3",
+        "raw": "120",
+        "span": [
+          73,
+          76
+        ],
+        "role": "VALIDATE"
+      }
+    ],
+    "used_as_independent_proof": false
+  },
+  {
+    "anchor": "C57-like",
+    "answer": "The signed result is -204, not 204.",
+    "occurrences": [
+      {
+        "id": "C57-like.O1",
+        "raw": "-204",
+        "span": [
+          21,
+          25
+        ],
+        "role": "VALIDATE"
+      },
+      {
+        "id": "C57-like.O2",
+        "raw": "204",
+        "span": [
+          31,
+          34
+        ],
+        "role": "SKIP_REJECTED_PREMISE"
+      }
+    ],
+    "used_as_independent_proof": false
+  }
+]

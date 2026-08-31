@@ -1,0 +1,93 @@
+{
+  "work_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_SHADOW_READINESS_REMEDIATION_V1",
+  "objective": "Remediate only aggregate Architecture V2 shadow telemetry promotion and provide a direct local Chrome CDP control path; do not decide Shadow Readiness V2 here.",
+  "frozen_architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "frozen_semantic_source_digest": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "authoritative_runtime": "baseline",
+  "shadow_runtime": "architecture_v2",
+  "allowed_source_scope": [
+    "app/evaluation/critical_validator_runtime.py",
+    "app/llm/structured_output.py"
+  ],
+  "allowed_test_debug_scope": [
+    "tests/test_critical_validator_architecture_v2_integration.py",
+    "scripts/direct_chrome_cdp_smoke.py",
+    "remediation_artifacts"
+  ],
+  "forbidden_semantic_scope": [
+    "app/evaluation/critical_values.py",
+    "app/evaluation/critical_occurrences.py",
+    "app/evaluation/critical_roles.py",
+    "app/evaluation/critical_occurrence_validation.py",
+    "app/evaluation/critical_validator_architecture_v2.py",
+    "V3 comparison semantics",
+    "polarity semantics",
+    "T4",
+    "T6",
+    "T10",
+    "INDETERMINATE policy",
+    "retrieval",
+    "BGE",
+    "provider behavior"
+  ],
+  "telemetry_fields": {
+    "shadow_architecture": "bounded architecture ID",
+    "shadow_executed": "boolean",
+    "shadow_occurrence_count": "integer",
+    "shadow_validate_count": "integer",
+    "shadow_skip_rejected_premise_count": "integer",
+    "shadow_ambiguous_count": "integer",
+    "shadow_outcome": "bounded PASS|REJECT|INDETERMINATE|MIXED|NO_VALIDATOR_RESULT",
+    "shadow_disagreement": "bounded normalized outcome-pair enum or SAME",
+    "shadow_duration_ms": "non-negative float",
+    "shadow_error": "boolean"
+  },
+  "disagreement_contract": {
+    "comparison_unit": "request-level aggregate outcome",
+    "states": ["PASS", "REJECT", "INDETERMINATE", "MIXED", "NO_VALIDATOR_RESULT"],
+    "same_definition": "SAME only when authoritative and shadow normalized aggregate states are equal",
+    "error_definition": "SHADOW_ERROR when shadow execution fails before a comparable outcome"
+  },
+  "telemetry_privacy": {
+    "raw_content_in_otel": false,
+    "occurrence_ids_in_otel": false,
+    "span_coordinates_in_otel": false,
+    "free_form_exception_text_in_otel": false,
+    "bounded_primitives_only": true
+  },
+  "cdp_recovery": {
+    "endpoint": "http://127.0.0.1:9222",
+    "executable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "isolated_profile": "/tmp/chrome-cdp-profile",
+    "connector_dependency": false,
+    "tooling": "small local helper using already-installed websocket runtime"
+  },
+  "verification_scope": {
+    "runtime_smoke_requests": "1-2",
+    "direct_cdp_ui_smoke": true,
+    "actual_jaeger_payload_check": true,
+    "raw_content_leak_check": true,
+    "shadow_readiness_verdict": "not decided in this work"
+  },
+  "activation": {
+    "architecture_v2_authoritative": false,
+    "architecture_v2_production_shadow": false,
+    "canary": false,
+    "production_default": "baseline"
+  },
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  },
+  "holdout": {
+    "corrected_techqa_used": false,
+    "status": "CONSUMED"
+  },
+  "git": {
+    "commit": false,
+    "push": false
+  }
+}

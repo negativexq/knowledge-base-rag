@@ -1,0 +1,10 @@
+{
+  "population_cases": 103,
+  "comparison": "all canonical occurrences versus frozen V3 comparison primitives",
+  "numeric_mismatches": 0,
+  "locale_mismatches": 0,
+  "version_mismatches": 0,
+  "identifier_sign_mismatches": 0,
+  "indeterminate_mismatches": 0,
+  "result": "PASS"
+}

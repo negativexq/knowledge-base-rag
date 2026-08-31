@@ -1,0 +1,19 @@
+{
+  "population_frozen": true,
+  "freeze_stage": "after_authoring_and_adjudication_before_execution",
+  "case_count": 50,
+  "occurrence_count": 100,
+  "population_sha256": "cc2192e784a3ef56e0b6b3aec76374d58790b895d5af3fd49a8dc30c9b173aa4",
+  "adjudication_sha256": "52c02f0c2918f28828adb91a727ff31b80b59b10ce3cdfda00e4b4cc4798540d",
+  "manifest_sha256": "495d88e172c5fd0d5c13205451a9d0e213e5c71e356b6ca53a3df1c99569bd8c",
+  "labels_frozen_before_execution": true,
+  "disputed_excluded_count": 0,
+  "holdout_used": false,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

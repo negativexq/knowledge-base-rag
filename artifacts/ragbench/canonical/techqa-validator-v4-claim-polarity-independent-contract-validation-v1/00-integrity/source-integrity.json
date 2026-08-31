@@ -1,0 +1,18 @@
+{
+  "v3_candidate": "VALIDATOR_CANDIDATE_V3_44dd8bdd2c0b",
+  "v3_sha256_expected": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v3_sha256_actual": "44dd8bdd2c0b5468248870563d305773d1931ef7709ecf2ed145188b708a54b1",
+  "v4_candidate": "VALIDATOR_CANDIDATE_V4_CLAIM_POLARITY_a04edc0bfd64",
+  "v4_helper_sha256_expected": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "v4_helper_sha256_actual": "a04edc0bfd6430af89077e1ef9a961fad2edeccb0e14bcd3a106a16a58adebf6",
+  "replay_protocol_sha256": "0128d058b6889abc760f3cf6d4d90c47cbbb270c8a1e50d4106115b539b819c9",
+  "prior_v4_invalid_runs_preserved": true,
+  "holdout_used": false,
+  "provider_calls": {
+    "openai": 0,
+    "ollama": 0,
+    "embedding": 0,
+    "bge": 0,
+    "retrieval": 0
+  }
+}

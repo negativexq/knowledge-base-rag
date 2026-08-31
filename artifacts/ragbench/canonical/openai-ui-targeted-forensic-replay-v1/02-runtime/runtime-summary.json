@@ -1,0 +1,26 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.6-luna",
+  "RAG_PIPELINE_V2": true,
+  "SUPPORT_IDS_ENABLED": true,
+  "CRITICAL_VALIDATOR_VERSION": "baseline",
+  "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": true,
+  "RAG_FORENSIC_CAPTURE_ENABLED": true,
+  "RAG_FORENSIC_CAPTURE_RAW_TEXT": true,
+  "case_order": [
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T10"
+  ],
+  "openai_calls": 5,
+  "technical_retries": 0,
+  "all_http_statuses_2xx": true,
+  "sse_completed_all_cases": true,
+  "capture_count": 5,
+  "technical_invalid_cases": [],
+  "frontend": "http://127.0.0.1:5173/playground",
+  "api": "http://127.0.0.1:8000",
+  "chrome_cdp": "ws target on 127.0.0.1:9222"
+}
