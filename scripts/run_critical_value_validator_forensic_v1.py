@@ -12,11 +12,10 @@ import json
 import re
 import subprocess
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
-
 
 REPO = Path(__file__).resolve().parents[1]
 RUN = REPO / "artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2"
@@ -285,7 +284,7 @@ def main() -> None:
         (OUT / name).mkdir()
     source_integrity = {
         "forensic_identity": "TECHQA_CRITICAL_VALUE_VALIDATOR_FORENSIC_V1",
-        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+        "created_at_utc": datetime.now(UTC).isoformat(),
         "starting_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip(),
         "source_artifacts": sources,
         "final_verdict": "BGE_REMOVAL_NOT_SUPPORTED",

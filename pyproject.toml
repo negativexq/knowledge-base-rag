@@ -11,6 +11,11 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
+[tool.ruff.lint.per-file-ignores]
+# This historical offline artifact writer contains intentionally long
+# generated-report strings; keep the CI gate active for all other files.
+"scripts/run_critical_value_validator_forensic_v1.py" = ["E501"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
