@@ -62,11 +62,24 @@ general serving performance.
 | Candidate evidence recall | **95.9%** | Required evidence was usually found in the candidate set. |
 | Useful-answer rate | **70%** | Correct + Partial; this is not an accuracy claim. |
 | Materially incorrect answers | **2%** | Wrong or materially misleading visible answers. |
-| Unavailable / abstained | **28%** | The system did not provide a useful supported answer. |
+| Unavailable / abstained | **28%** | No useful supported answer was released; this combines model self-abstention and deterministic forced abstention. |
 | Strict fully-correct | **30%** | Separate full-completeness scoring, stricter than useful-answer rate. |
 
 The 70% useful-answer rate is Correct + Partial, not accuracy. The 30% result
 is a separate strict full-completeness metric rather than another outcome bucket.
+
+| Abstention mode | Result | Meaning |
+| --- | ---: | --- |
+| Model self-abstain | 18% (9/50) | The generator declined to provide a supported answer. |
+| Deterministic forced abstain | 10% (5/50) | Runtime validation prevented release of a visible answer. |
+
+The 28% unavailable outcome is an intentional fail-closed behavior when support
+cannot be established. An abstention is not automatically a safety success or a
+quality failure; whether it was appropriate is a separate case-level question.
+Candidate evidence recall is measured at an earlier retrieval boundary and is
+not used here to classify the appropriateness of individual abstentions.
+Appropriateness is evaluated through the same layer-wise failure-attribution
+view used elsewhere in this repository.
 
 ### Reranker Selection Benchmark
 
