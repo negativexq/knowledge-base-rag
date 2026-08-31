@@ -9,7 +9,12 @@ from pydantic import BaseModel
 
 from app.api.deps import get_current_user
 from app.evaluation.answerability import extract_answerability_observation
-from app.evaluation.critical_values import CriticalValidatorVersion
+from app.evaluation.critical_validator_runtime import ValidatorSelector
+from app.evaluation.forensic_capture import (
+    ForensicCapture,
+    reset_current_capture,
+    set_current_capture,
+)
 from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
@@ -110,8 +115,12 @@ class ChatDependencies:
     evidence_fn: EvidenceFn | None = None
     pipeline_version: str = "pipeline_v1"
     output_contract_version: str = "legacy"
-    critical_validator_version: CriticalValidatorVersion = "baseline"
+    critical_validator_version: ValidatorSelector = "baseline"
     critical_validator_v3_shadow_enabled: bool = False
+    critical_validator_arch_v2_shadow_enabled: bool = False
+    forensic_capture_enabled: bool = False
+    forensic_capture_raw_text: bool = False
+    forensic_capture_dir: str | None = None
 
 
 async def _sse_event_stream(
@@ -121,6 +130,12 @@ async def _sse_event_stream(
     tracer: trace.Tracer | None = None,
 ) -> AsyncIterator[str]:
     tracer = tracer or get_tracer(__name__)
+    capture = (
+        ForensicCapture.create(question, raw_text=deps.forensic_capture_raw_text)
+        if deps.forensic_capture_enabled
+        else None
+    )
+    capture_token = set_current_capture(capture)
     # Wraps the whole request (search + generate), including every yield
     # below — a Python context manager stays entered across a generator's
     # yields, only closing once the generator is exhausted. This is the
@@ -130,16 +145,21 @@ async def _sse_event_stream(
     # since it's guaranteed to close last.
     with tracer.start_as_current_span("chat_request") as span:
         span.set_attribute("chat.question_char_count", len(question))
-        report = RetrievalReport()
+        report = RetrievalReport(forensic_capture=capture)
         report.prompt_policy_version = deps.prompt_version
         report.untrusted_context_enabled = deps.prompt_version == "v3"
         report.security_validation_mode = deps.security_validation_mode
         report.validator = {
             "version": deps.critical_validator_version,
             "shadow_enabled": deps.critical_validator_v3_shadow_enabled,
+            "architecture_v2_shadow_enabled": deps.critical_validator_arch_v2_shadow_enabled,
         }
         span.set_attribute("validator.version", deps.critical_validator_version)
         span.set_attribute("validator.shadow_enabled", deps.critical_validator_v3_shadow_enabled)
+        span.set_attribute(
+            "validator.shadow.architecture_v2_enabled",
+            deps.critical_validator_arch_v2_shadow_enabled,
+        )
         chunks = await deps.search_fn(question, context, report)
         anchor_chunks = chunks
         authorized_candidate_count = report.authorized_candidate_count
@@ -207,14 +227,49 @@ async def _sse_event_stream(
             chunks = await deps.evidence_fn(anchor_chunks, context)
             span.set_attribute("pipeline.evidence_block_count", len(chunks))
         token_counts = [chunk.payload.get("token_count") for chunk in chunks]
-        report.context = {
+        report.context.update({
             "retrieved_chunk_count": len(chunks),
             "top_context_tokens": (
                 sum(token_counts)
                 if token_counts and all(isinstance(value, int) for value in token_counts)
                 else None
             ),
-        }
+        })
+        if capture is not None:
+            capture.merge_stage(
+                "retrieval",
+                {
+                    "stage_timings_ms": {
+                        stage.name: stage.duration_ms for stage in report.stages
+                    }
+                },
+            )
+            capture.merge_stage(
+                "visible_pipeline",
+                {
+                    "pipeline_version": deps.pipeline_version,
+                    "output_contract_version": deps.output_contract_version,
+                    "validator_version": deps.critical_validator_version,
+                    "shadow_enabled": deps.critical_validator_v3_shadow_enabled,
+                    "architecture_v2_shadow_enabled": (
+                        deps.critical_validator_arch_v2_shadow_enabled
+                    ),
+                    "final_evidence_blocks": [
+                        {
+                            "rank": index,
+                            "chunk_id": str(chunk.id or chunk.payload.get("chunk_id", "")),
+                            "source_id": chunk.payload.get("source_id"),
+                            "section_key": chunk.payload.get("section_key")
+                            or chunk.payload.get("heading_path"),
+                            "evidence_id": chunk.payload.get("evidence_id", f"E{index}"),
+                            "document_version": chunk.payload.get("document_version"),
+                            "truncated": bool(chunk.payload.get("truncated", False)),
+                            "text": chunk.payload.get("text", ""),
+                        }
+                        for index, chunk in enumerate(chunks, 1)
+                    ],
+                },
+            )
 
         # Sprint 24: the authorized context is emitted BEFORE the first
         # token, so the Evidence Inspector is populated while the answer
@@ -254,6 +309,9 @@ async def _sse_event_stream(
                 yield f"event: grounding\ndata: {json.dumps(payload)}\n\n"
 
         yield "event: done\ndata: {}\n\n"
+    if capture is not None:
+        capture.write(deps.forensic_capture_dir)
+    reset_current_capture(capture_token)
 
 
 @router.post("/chat")

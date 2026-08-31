@@ -3,13 +3,14 @@ from typing import Literal, Self, cast
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.evaluation.critical_values import validate_critical_validator_version
+from app.evaluation.critical_validator_runtime import validate_validator_selector
 from app.ingestion.chunking_config import (
     BOUNDARY_STRATEGY,
     QWEN3_EMBEDDING_TOKENIZER,
     QWEN3_TOKENIZER_REVISION,
     ChunkingConfig,
 )
+from app.llm.openai_client import OPENAI_MODEL
 from app.reranker.config import (
     MULTILINGUAL_RERANKER_MODEL,
     RERANKER_BACKEND,
@@ -66,8 +67,23 @@ class Settings(BaseSettings):
 
     # Server-owned critical-value validator rollout controls.  Baseline is
     # deliberately the default; requests cannot select this version.
-    critical_validator_version: Literal["baseline", "v3"] = "baseline"
+    critical_validator_version: Literal["baseline", "v3", "architecture_v2"] = "baseline"
     critical_validator_v3_shadow_enabled: bool = False
+    critical_validator_arch_v2_shadow_enabled: bool = False
+
+    # Explicit local/debug forensic capture.  Both switches are required for
+    # raw text; normal production telemetry remains bounded and unaffected.
+    rag_forensic_capture_enabled: bool = False
+    rag_forensic_capture_raw_text: bool = False
+    rag_forensic_capture_dir: str | None = None
+
+    @model_validator(mode="after")
+    def validate_forensic_capture(self) -> Self:
+        if self.rag_forensic_capture_raw_text and not self.rag_forensic_capture_enabled:
+            raise ValueError(
+                "RAG_FORENSIC_CAPTURE_RAW_TEXT requires RAG_FORENSIC_CAPTURE_ENABLED"
+            )
+        return self
 
     # Qwen3-Embedding-4B benchmark configuration — served
     # via the same Ollama instance as everything else (no new transport),
@@ -105,7 +121,7 @@ class Settings(BaseSettings):
     # than folded into generation_provider so a second embedding backend
     # can be added later without touching call sites that only care about
     # embedding.
-    generation_provider: Literal["ollama", "claude"] = "ollama"
+    generation_provider: Literal["ollama", "claude", "openai"] = "ollama"
     embedding_provider: Literal["ollama"] = "ollama"
 
     # The single source of truth for which embedding model
@@ -201,6 +217,8 @@ class Settings(BaseSettings):
     claude_api_key: str | None = None
     claude_model: str = "claude-haiku-4-5-20251001"
     claude_max_tokens: int = 2048
+    openai_api_key: str | None = None
+    openai_model: str = OPENAI_MODEL
 
     qdrant_url: str = "http://localhost:6333"
     qdrant_collection_name: str = "kb_chunks"
@@ -308,7 +326,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_critical_validator(self) -> Self:
-        validate_critical_validator_version(self.critical_validator_version)
+        validate_validator_selector(self.critical_validator_version)
         return self
 
     @model_validator(mode="after")

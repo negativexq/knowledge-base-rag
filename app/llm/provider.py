@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 from typing import Protocol, runtime_checkable
 
+from app.llm.openai_client import OpenAIGeneratorClient
 from app.shared.config import Settings
 
 
@@ -33,6 +34,8 @@ class EmbeddingProvider(Protocol):
 def default_chat_model(settings: Settings) -> str:
     if settings.generation_provider == "claude":
         return settings.claude_model
+    if settings.generation_provider == "openai":
+        return settings.openai_model
     return settings.ollama_model
 
 
@@ -53,6 +56,12 @@ def get_chat_provider(settings: Settings) -> ChatProvider:
         return ClaudeProvider(
             api_key=settings.claude_api_key, max_tokens=settings.claude_max_tokens
         )
+    if settings.generation_provider == "openai":
+        if not settings.openai_api_key:
+            raise ValueError(
+                "settings.openai_api_key must be set to use generation_provider='openai'"
+            )
+        return OpenAIGeneratorClient(api_key=settings.openai_api_key)
 
     from app.llm.ollama_provider import OllamaProvider
 

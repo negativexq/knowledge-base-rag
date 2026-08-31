@@ -5,6 +5,7 @@ from opentelemetry import trace
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
+from app.evaluation.forensic_capture import metadata_for_chunks
 from app.llm.provider import EmbeddingProvider
 from app.reranker.config import RERANKER_CANDIDATE_K, RERANKER_TOP_N
 from app.retrieval.filters import build_acl_filter, build_filter, filter_authorized_candidates
@@ -160,6 +161,21 @@ async def search(
         if report is not None:
             report.pre_acl_candidate_count = len(raw_candidates)
             report.authorized_candidate_count = len(candidates)
+            if report.forensic_capture is not None:
+                top20_metadata = metadata_for_chunks(raw_candidates)
+                for item, candidate in zip(top20_metadata, raw_candidates, strict=True):
+                    item["authorized"] = context.is_system or (
+                        candidate.payload.get("tenant_id") == context.tenant_id
+                    )
+                report.forensic_capture.stage(
+                    "retrieval",
+                    {
+                        "candidate_count": len(raw_candidates),
+                        "authorized_candidate_count": len(candidates),
+                        "configured_top_k": top_k,
+                        "rrf_top20_observed": top20_metadata,
+                    },
+                )
         span.set_attribute("retrieve.raw_candidate_count", len(raw_candidates))
         span.set_attribute("retrieve.candidate_count", len(candidates))
         if candidates:
@@ -190,6 +206,15 @@ async def search(
                 timer.top_score = results[0].score if results else None
             if results:
                 span.set_attribute("rerank.top_score", results[0].score)
+            if report is not None and report.forensic_capture is not None:
+                report.forensic_capture.merge_stage(
+                    "reranker",
+                    {
+                        "input_candidate_ids": [item.id for item in candidates],
+                        "output_candidate_ids": [item.id for item in results],
+                        "bge_top5_observed": metadata_for_chunks(results),
+                    },
+                )
         return results
 
     # No reranker configured — the report gets NO "rerank" stage at all
@@ -200,4 +225,13 @@ async def search(
         timer.candidates_in = len(candidates)
         timer.candidates_out = len(results)
         timer.top_score = results[0].score if results else None
+    if report is not None and report.forensic_capture is not None:
+        report.forensic_capture.merge_stage(
+            "reranker",
+            {
+                "input_candidate_ids": [item.id for item in candidates],
+                "output_candidate_ids": [item.id for item in results],
+                "bge_top5_observed": metadata_for_chunks(results),
+            },
+        )
     return results

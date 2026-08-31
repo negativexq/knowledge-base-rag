@@ -388,8 +388,17 @@ def _v3_claim_version_specificity(claim: str) -> str:
     return "AMBIGUOUS"
 
 
-def _v3_version_guard_status(claim: str, support: str) -> str | None:
-    claim_versions = _v3_version_values(claim)
+def _v3_version_guard_status(
+    claim: str,
+    support: str,
+    *,
+    claim_versions: Sequence[tuple[int, ...]] | None = None,
+) -> str | None:
+    claim_versions = (
+        list(claim_versions)
+        if claim_versions is not None
+        else _v3_version_values(claim)
+    )
     support_versions = _v3_version_values(support)
     if not claim_versions or not support_versions:
         return None
@@ -507,7 +516,13 @@ def _v3_tokenized(text: str) -> list[dict[str, Any]]:
     return tokens
 
 
-def _v3_relation_audit(claim: str, support: Sequence[str]) -> list[str]:
+def _v3_relation_audit(
+    claim: str,
+    support: Sequence[str],
+    *,
+    claim_tokens: Sequence[dict[str, Any]] | None = None,
+    support_tokens: Sequence[Sequence[dict[str, Any]]] | None = None,
+) -> list[str]:
     """Return frozen V3 relation statuses for non-version critical values."""
     support_text = " ".join(support)
     claim_cve = re.search(r"CVE[- ](\d{4})[- ](\d+)", claim, re.IGNORECASE)
@@ -526,8 +541,12 @@ def _v3_relation_audit(claim: str, support: Sequence[str]) -> list[str]:
             return ["DIRECT_CONFLICT"]
         return ["INDETERMINATE"]
 
-    claim_tokens = _v3_tokenized(claim)
-    support_tokens = [_v3_tokenized(text) for text in support]
+    claim_tokens = list(claim_tokens) if claim_tokens is not None else _v3_tokenized(claim)
+    support_tokens = (
+        [list(tokens) for tokens in support_tokens]
+        if support_tokens is not None
+        else [_v3_tokenized(text) for text in support]
+    )
     statuses: list[str] = []
     for index, token in enumerate(claim_tokens):
         claim_context = token.get("local_context", "")
@@ -625,6 +644,382 @@ def _v3_critical_type(claim: str) -> str | None:
     return tokens[0].get("kind") if tokens else None
 
 
+# V4 DEBUG-only challenger.  This helper is intentionally not part of the
+# server-owned selector (which remains baseline|v3).  It masks only a literal
+# that is deterministically identified as a rejected premise and leaves the
+# frozen V3 validator responsible for every remaining comparison.
+_V4_CORRECTION_WORDS = re.compile(
+    r"\b(?:correct|incorrect|wrong|accurate|inaccurate|documented|supported|actual|valid)\b",
+    re.IGNORECASE,
+)
+_V4_NEGATION_WORDS = re.compile(
+    r"\b(?:does\s+not|doesn't|do\s+not|don't|never|cannot|can't|isn't|is\s+not|was\s+not)\b",
+    re.IGNORECASE,
+)
+_V4_COMPARISON_WORDS = re.compile(
+    r"\b(?:greater|less|higher|lower|versus|different|either|or)\b",
+    re.IGNORECASE,
+)
+
+
+def _v4_clause_window(
+    text: str, start: int, end: int
+) -> tuple[str, str, str, int, int]:
+    left_boundary = max(
+        text.rfind(".", 0, start),
+        text.rfind("!", 0, start),
+        text.rfind("?", 0, start),
+        text.rfind(";", 0, start),
+    )
+    right_candidates = [
+        position
+        for position in (
+            text.find(".", end),
+            text.find("!", end),
+            text.find("?", end),
+            text.find(";", end),
+        )
+        if position >= 0
+    ]
+    right_boundary = min(right_candidates, default=len(text))
+    clause = text[left_boundary + 1 : right_boundary]
+    return (
+        clause,
+        text[left_boundary + 1 : start],
+        text[end:right_boundary],
+        left_boundary + 1,
+        right_boundary,
+    )
+
+
+def _v4_sentence_bounds(text: str, start: int, end: int) -> tuple[int, int]:
+    """Return conservative sentence bounds for pairing corrective literals."""
+    # A bare period is not necessarily a sentence boundary: decimal and
+    # version literals contain periods too.  Require whitespace/end after a
+    # period so ``8.1.3`` and ``1.000`` stay inside the same sentence.
+    boundaries = [
+        match.start()
+        for match in re.finditer(r"[!?]|\.(?=\s|$)", text)
+    ]
+    left_boundary = max(
+        (position for position in boundaries if position < start),
+        default=-1,
+    )
+    right_candidates = [
+        position
+        for position in boundaries
+        if position >= end
+    ]
+    return left_boundary + 1, min(right_candidates, default=len(text))
+
+
+def _v4_same_kind_companion(
+    token: dict[str, Any],
+    tokens: Sequence[dict[str, Any]],
+    clause_start: int,
+    clause_end: int,
+) -> bool:
+    kind = token.get("kind")
+    unit = token.get("unit")
+    companions = [
+        other
+        for other in tokens
+        if other is not token
+        and other.get("kind") == kind
+        and other.get("unit") == unit
+        and str(other.get("value")) != str(token.get("value"))
+        and clause_start <= int(other["start"]) < int(other["end"]) <= clause_end
+    ]
+    return bool(companions)
+
+
+def _v4_classify_occurrence(
+    text: str, token: dict[str, Any], tokens: Sequence[dict[str, Any]]
+) -> str:
+    clause, left, right, clause_start, clause_end = _v4_clause_window(
+        text, int(token["start"]), int(token["end"])
+    )
+    lower_clause = clause.lower()
+    sentence_start, sentence_end = _v4_sentence_bounds(
+        text, int(token["start"]), int(token["end"])
+    )
+    has_companion = _v4_same_kind_companion(
+        token, tokens, sentence_start, sentence_end
+    )
+    left_for_match = left.rstrip()
+    explicit_rejection_separator = bool(
+        re.search(
+            r"[,;]\s*(?:not(?:\s+(?:the|a|an))?|\brather\s+than\b|\binstead\s+of\b)\s*$",
+            left_for_match,
+            re.IGNORECASE,
+        )
+    )
+    immediate_rejection = bool(
+        re.search(
+            r"(?:\brather\s+than\b|\binstead\s+of\b)\s*$",
+            left_for_match,
+            re.IGNORECASE,
+        )
+        or re.search(
+            r"\b(?:is|was)\s+(?:not\s+)?(?:correct|incorrect|wrong|accurate|inaccurate)\b",
+            right,
+            re.IGNORECASE,
+        )
+        or re.search(
+            r"\b(?:you|user)\s+(?:mentioned|said|gave|provided)\s*$",
+            left_for_match,
+            re.IGNORECASE,
+        )
+        and re.search(r"\bbut\b", right, re.IGNORECASE)
+        or re.search(
+            r"\b(?:in|from)\s+(?:the\s+)?question\b.*\b(?:wrong|incorrect)\b",
+            right,
+            re.IGNORECASE,
+        )
+    )
+    if (
+        (immediate_rejection or explicit_rejection_separator)
+        and has_companion
+        and (
+            explicit_rejection_separator
+            or _V4_CORRECTION_WORDS.search(clause + " " + right)
+        )
+    ):
+        return "REJECTED_PREMISE"
+    # A substantive negative claim remains a validation obligation.  It is
+    # deliberately checked after rejected-premise detection and is never
+    # discarded merely because a negation word is nearby.
+    if _V4_NEGATION_WORDS.search(left) and not immediate_rejection:
+        return "NEGATED_ASSERTION"
+    if _V4_COMPARISON_WORDS.search(lower_clause):
+        return "COMPARISON_VALUE"
+    if re.search(r"[\"']", clause):
+        return "QUOTED_VALUE"
+    if _V4_CORRECTION_WORDS.search(clause):
+        return "CORRECTIVE_REFERENCE"
+    if re.search(r"\b(?:could|might|may|possibly)\b", clause, re.IGNORECASE):
+        return "UNKNOWN"
+    return "POSITIVE_ASSERTION"
+
+
+def _v4_mask_rejected_premises(
+    claim: str,
+) -> tuple[str, list[dict[str, Any]]]:
+    tokens = _v3_tokenized(claim)
+    occurrences = [
+        {
+            **token,
+            "polarity": _v4_classify_occurrence(claim, token, tokens),
+        }
+        for token in tokens
+    ]
+    spans = [
+        (int(item["start"]), int(item["end"]))
+        for item in occurrences
+        if item["polarity"] == "REJECTED_PREMISE"
+    ]
+    if not spans:
+        return claim, occurrences
+    chars = list(claim)
+    for start, end in reversed(spans):
+        chars[start:end] = [" "] * (end - start)
+    return "".join(chars), occurrences
+
+
+def claim_local_critical_value_audit_v4(
+    claim: str, support_texts: Sequence[str]
+) -> dict[str, Any]:
+    """Evaluate the V4 DEBUG challenger without changing the V3 selector.
+
+    Only deterministic rejected-premise occurrences are removed from the
+    candidate claim.  The frozen V3 implementation then performs the actual
+    numeric/version/identifier/locale comparison, preserving its contract for
+    positive, substantive negative, quoted, comparison, and unknown values.
+    """
+    v3_result = claim_local_critical_value_audit(
+        claim, support_texts, validator_version="v3"
+    )
+    masked_claim, occurrences = _v4_mask_rejected_premises(claim)
+    guarded_result = (
+        claim_local_critical_value_audit(
+            masked_claim, support_texts, validator_version="v3"
+        )
+        if masked_claim != claim
+        else v3_result
+    )
+    result = dict(guarded_result)
+    result.update(
+        {
+            "validator_version": "v4-debug",
+            "v3_outcome": v3_result.get("validator_outcome"),
+            "v3_reason_class": v3_result.get("validator_reason_class"),
+            "polarity_guard_applied": masked_claim != claim,
+            "polarity_guard_suppressed_count": sum(
+                item["polarity"] == "REJECTED_PREMISE" for item in occurrences
+            ),
+            "polarity_occurrences": occurrences,
+        }
+    )
+    return result
+
+
+# V5 DEBUG-only challenger.  This is deliberately appended outside the frozen
+# V4 helper region so the V4 candidate identity remains immutable.  V5 keeps
+# occurrence spans as the identity of a polarity decision and never performs
+# value-level replacement.
+def _v5_same_surface_companion(
+    token: dict[str, Any],
+    tokens: Sequence[dict[str, Any]],
+    sentence_start: int,
+    sentence_end: int,
+) -> bool:
+    value = str(token.get("value"))
+    return any(
+        other is not token
+        and str(other.get("value")) == value
+        and sentence_start <= int(other["start"]) < int(other["end"]) <= sentence_end
+        for other in tokens
+    )
+
+
+def _v5_tokenized(text: str) -> list[dict[str, Any]]:
+    """Tokenize V5 occurrences without dropping bare numbers beside durations.
+
+    The frozen local tokenizer intentionally uses a union-style fallback: when
+    a duration exists, its numeric component is not also emitted as a NUMBER.
+    V5 needs the bare sibling occurrence for span-local role separation, while
+    retaining the existing duration token and all V3 classification rules.
+    """
+    normalized = unicodedata.normalize("NFKC", text or "")
+    tokens = _v3_tokenized(normalized)
+    occupied = [(int(token["start"]), int(token["end"])) for token in tokens]
+    for match in _NUMBER.finditer(normalized):
+        if any(start < match.end() and match.start() < end for start, end in occupied):
+            continue
+        tokens.append(
+            _local_token("NUMBER", match.group(0), None, match.start(), match.end(), normalized)
+        )
+    return sorted(tokens, key=lambda token: (int(token["start"]), int(token["end"])))
+
+
+def _v5_classify_occurrence(
+    text: str, token: dict[str, Any], tokens: Sequence[dict[str, Any]]
+) -> str:
+    """Classify one token without collapsing same-value sibling occurrences."""
+    base_polarity = _v4_classify_occurrence(text, token, tokens)
+    if base_polarity == "REJECTED_PREMISE":
+        return base_polarity
+
+    clause, left, right, _, _ = _v4_clause_window(
+        text, int(token["start"]), int(token["end"])
+    )
+    # A rejected premise and its corrective/assertive sibling may be in
+    # separate clauses or sentences.  The exact span remains the identity;
+    # the full-answer search only supplies the existence of a same-surface
+    # sibling and never creates a value-level mask.
+    sentence_start, sentence_end = 0, len(text)
+    has_companion = _v5_same_surface_companion(
+        token, tokens, sentence_start, sentence_end
+    )
+    left_for_match = left.rstrip()
+    explicit_rejection_separator = bool(
+        re.search(
+            r"[,;]\s*(?:not(?:\s+(?:the|a|an))?|\brather\s+than\b|\binstead\s+of\b)\s*$",
+            left_for_match,
+            re.IGNORECASE,
+        )
+    )
+    immediate_rejection = bool(
+        re.search(
+            r"\b(?:is|was)\s+(?:not\s+)?(?:correct|incorrect|wrong|accurate|inaccurate)\b",
+            right,
+            re.IGNORECASE,
+        )
+        or (
+            re.search(
+                r"\b(?:you|user)\s+(?:mentioned|said|gave|provided)\s*$",
+                left_for_match,
+                re.IGNORECASE,
+            )
+            and re.search(r"\bbut\b", right, re.IGNORECASE)
+        )
+        or re.search(
+            r"\b(?:in|from)\s+(?:(?:the|your)\s+)?question\b.*"
+            r"\b(?:not|unsupported|wrong|incorrect)\b",
+            right,
+            re.IGNORECASE,
+        )
+        or re.search(
+            r"\b(?:you|user)\s+(?:mentioned|said|gave|provided|cited)\b.*"
+            r"\b(?:not|unsupported|wrong|incorrect)\b",
+            right,
+            re.IGNORECASE,
+        )
+    )
+    if (
+        (immediate_rejection or explicit_rejection_separator)
+        and has_companion
+        and (
+            explicit_rejection_separator
+            or _V4_CORRECTION_WORDS.search(clause + " " + right)
+            or re.search(r"\b(?:not|unsupported)\b", right, re.IGNORECASE)
+        )
+    ):
+        return "REJECTED_PREMISE"
+    return base_polarity
+
+
+def _v5_mask_rejected_premises(
+    claim: str,
+) -> tuple[str, list[dict[str, Any]]]:
+    tokens = _v5_tokenized(claim)
+    occurrences = [
+        {
+            **token,
+            "polarity": _v5_classify_occurrence(claim, token, tokens),
+        }
+        for token in tokens
+    ]
+    chars = list(claim)
+    spans = [
+        (int(item["start"]), int(item["end"]))
+        for item in occurrences
+        if item["polarity"] == "REJECTED_PREMISE"
+    ]
+    for start, end in sorted(spans, reverse=True):
+        chars[start:end] = [" "] * (end - start)
+    return "".join(chars), occurrences
+
+
+def claim_local_critical_value_audit_v5(
+    claim: str, support_texts: Sequence[str]
+) -> dict[str, Any]:
+    """Evaluate V5 occurrence-local polarity without changing production V3/V4."""
+    v4_result = claim_local_critical_value_audit_v4(claim, support_texts)
+    masked_claim, occurrences = _v5_mask_rejected_premises(claim)
+    result = (
+        claim_local_critical_value_audit(
+            masked_claim, support_texts, validator_version="v3"
+        )
+        if masked_claim != claim
+        else v4_result
+    )
+    result = dict(result)
+    result.update(
+        {
+            "validator_version": "v5-debug",
+            "v4_outcome": v4_result.get("validator_outcome"),
+            "v4_reason_class": v4_result.get("validator_reason_class"),
+            "v5_occurrence_guard_applied": masked_claim != claim,
+            "v5_occurrence_guard_suppressed_count": sum(
+                item["polarity"] == "REJECTED_PREMISE" for item in occurrences
+            ),
+            "v5_polarity_occurrences": occurrences,
+        }
+    )
+    return result
+
+
 def _validator_disagreement(baseline: dict[str, Any], candidate: dict[str, Any]) -> str:
     left = baseline.get("validator_outcome")
     right = candidate.get("validator_outcome")
@@ -697,12 +1092,16 @@ def claim_local_critical_value_audit(
     shadow_v3_duration_ms = 0.0
     shadow_error = False
     shadow_error_class: str | None = None
+    shadow_v3_outcome: str | None = None
+    shadow_v3_reason: str | None = None
     if shadow_enabled and version == "baseline":
         shadow_started = time.perf_counter()
         try:
             candidate = claim_local_critical_value_audit(
                 claim, support_texts, validator_version="v3", shadow_enabled=False
             )
+            shadow_v3_outcome = _audit_outcome(candidate)
+            shadow_v3_reason = candidate.get("validator_reason_class") or candidate.get("status")
             shadow = _validator_disagreement(
                 {"validator_outcome": _audit_outcome(result)},
                 {"validator_outcome": _audit_outcome(candidate)},
@@ -740,6 +1139,159 @@ def claim_local_critical_value_audit(
             "shadow_disagreement": shadow,
             "shadow_error": shadow_error,
             "shadow_error_class": shadow_error_class,
+            "shadow_v3_outcome": shadow_v3_outcome,
+            "shadow_v3_reason_class": shadow_v3_reason,
+        }
+    )
+    return result
+
+
+# V6 DEBUG-only challenger.  It preserves V5 polarity decisions while making
+# lexical ownership explicit: signs and typed identifiers own their complete
+# spans, and overlapping/nested candidates are not emitted as siblings.
+_V6_CVE = re.compile(r"\bCVE[- ]\d{4}[- ]\d+\b", re.IGNORECASE)
+
+
+def _v6_token(
+    kind: str, value: str, start: int, end: int, text: str, *, raw_literal: str
+) -> dict[str, Any]:
+    return {
+        "kind": kind,
+        "value": unicodedata.normalize("NFKC", value).replace(",", "."),
+        "unit": None,
+        "start": start,
+        "end": end,
+        "raw_literal": raw_literal,
+        "local_context": text[max(0, start - 64) : min(len(text), end + 64)],
+    }
+
+
+def _v6_tokenized(text: str) -> list[dict[str, Any]]:
+    """Return non-overlapping, extractor-owned V6 occurrence candidates."""
+    normalized = unicodedata.normalize("NFKC", text or "")
+    candidates = [dict(token) for token in _v5_tokenized(normalized)]
+
+    # A sign belongs to a numeric occurrence when it is lexically separate
+    # from the preceding word.  The numeric value is retained for V5 polarity
+    # sibling matching; raw_literal and the span preserve sign ownership.
+    for token in candidates:
+        start = int(token["start"])
+        if (
+            token.get("kind") == "NUMBER"
+            and start > 0
+            and normalized[start - 1] in "+-"
+            and (
+                start == 1
+                or not (normalized[start - 2].isalnum() or normalized[start - 2] == "_")
+            )
+        ):
+            token["start"] = start - 1
+            token["signed_prefix_owned"] = True
+            token["raw_literal"] = normalized[token["start"] : int(token["end"])]
+
+    # Typed identifier literals own their complete lexical spans.  This
+    # removes number candidates inside CVE/SQLCODE identifiers while allowing
+    # later standalone suffix-like numbers to remain independent.
+    identifier_candidates: list[dict[str, Any]] = []
+    for match in _V6_CVE.finditer(normalized):
+        identifier_candidates.append(
+            _v6_token(
+                "IDENTIFIER",
+                match.group(0).upper(),
+                match.start(),
+                match.end(),
+                normalized,
+                raw_literal=match.group(0),
+            )
+        )
+    for match in _V3_SQLCODE.finditer(normalized):
+        identifier_candidates.append(
+            _v6_token(
+                "IDENTIFIER",
+                match.group(0).upper(),
+                match.start(),
+                match.end(),
+                normalized,
+                raw_literal=match.group(0),
+            )
+        )
+    candidates = [
+        token
+        for token in candidates
+        if not any(
+            start < int(token["end"]) and int(token["start"]) < end
+            for start, end in (
+                (int(item["start"]), int(item["end"]))
+                for item in identifier_candidates
+            )
+        )
+    ] + identifier_candidates
+
+    # Deterministic overlap resolution: typed full literals win; unresolved
+    # overlaps stay validation obligations by retaining only the owning span.
+    candidates.sort(key=lambda token: (int(token["start"]), -int(token["end"])))
+    resolved: list[dict[str, Any]] = []
+    for token in candidates:
+        start, end = int(token["start"]), int(token["end"])
+        if any(
+            start < int(existing["end"]) and int(existing["start"]) < end
+            for existing in resolved
+        ):
+            continue
+        token.setdefault("raw_literal", normalized[start:end])
+        resolved.append(token)
+    for index, token in enumerate(resolved, start=1):
+        token["occurrence_id"] = f"O{index}"
+        token["lexical_boundary"] = "typed_full_span"
+    return resolved
+
+
+def _v6_mask_rejected_premises(
+    claim: str,
+) -> tuple[str, list[dict[str, Any]]]:
+    tokens = _v6_tokenized(claim)
+    occurrences = [
+        {
+            **token,
+            "polarity": _v5_classify_occurrence(claim, token, tokens),
+        }
+        for token in tokens
+    ]
+    chars = list(claim)
+    for item in sorted(
+        (item for item in occurrences if item["polarity"] == "REJECTED_PREMISE"),
+        key=lambda item: int(item["start"]),
+        reverse=True,
+    ):
+        start, end = int(item["start"]), int(item["end"])
+        chars[start:end] = [" "] * (end - start)
+    return "".join(chars), occurrences
+
+
+def claim_local_critical_value_audit_v6(
+    claim: str, support_texts: Sequence[str]
+) -> dict[str, Any]:
+    """Evaluate exact-boundary V6 behavior without changing production V3/V4."""
+    masked_claim, occurrences = _v6_mask_rejected_premises(claim)
+    result = (
+        claim_local_critical_value_audit(
+            masked_claim, support_texts, validator_version="v3"
+        )
+        if masked_claim != claim
+        else claim_local_critical_value_audit_v5(claim, support_texts)
+    )
+    result = dict(result)
+    result.update(
+        {
+            "validator_version": "v6-debug",
+            "v5_outcome": claim_local_critical_value_audit_v5(
+                claim, support_texts
+            ).get("validator_outcome"),
+            "v6_occurrence_guard_applied": masked_claim != claim,
+            "v6_occurrence_guard_suppressed_count": sum(
+                item["polarity"] == "REJECTED_PREMISE" for item in occurrences
+            ),
+            "v6_polarity_occurrences": occurrences,
         }
     )
     return result

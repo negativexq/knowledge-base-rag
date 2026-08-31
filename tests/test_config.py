@@ -173,10 +173,17 @@ def test_generation_provider_overridable_to_claude(monkeypatch):
     assert Settings().generation_provider == "claude"
 
 
+def test_generation_provider_overridable_to_openai(monkeypatch):
+    monkeypatch.setenv("GENERATION_PROVIDER", "openai")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+
+    assert Settings().generation_provider == "openai"
+
+
 def test_generation_provider_rejects_unknown_value(monkeypatch):
     import pytest
 
-    monkeypatch.setenv("GENERATION_PROVIDER", "openai")
+    monkeypatch.setenv("GENERATION_PROVIDER", "invalid-provider")
 
     with pytest.raises(Exception):
         Settings()

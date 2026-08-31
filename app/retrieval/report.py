@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -67,6 +68,8 @@ class RetrievalReport:
     validator: dict | None = None
     pre_acl_candidate_count: int | None = None
     authorized_candidate_count: int | None = None
+    forensic_capture: Any = field(default=None, repr=False, compare=False)
+    forensic_capture: Any = field(default=None, repr=False, compare=False)
 
     def record(self, stage: RetrievalStage) -> None:
         self.stages.append(stage)

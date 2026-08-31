@@ -2,6 +2,7 @@ import pytest
 
 from app.llm.claude_provider import ClaudeProvider
 from app.llm.ollama_provider import OllamaProvider
+from app.llm.openai_client import OPENAI_MODEL, OpenAIGeneratorClient
 from app.llm.provider import (
     ChatProvider,
     EmbeddingProvider,
@@ -43,6 +44,14 @@ def test_default_chat_model_is_claude_model_for_claude_provider():
     assert default_chat_model(settings) == "claude-haiku-4-5-20251001"
 
 
+def test_default_chat_model_is_openai_model_for_openai_provider():
+    settings = Settings(
+        generation_provider="openai", openai_api_key="sk-test", openai_model=OPENAI_MODEL
+    )
+
+    assert default_chat_model(settings) == OPENAI_MODEL
+
+
 def test_default_embed_model_follows_the_active_embedding_model_key():
     # Sprint 22: default_embed_model no longer reads ollama_embed_model
     # directly — it resolves through active_embedding_config(), whose
@@ -78,6 +87,21 @@ def test_get_chat_provider_returns_claude_provider_when_configured():
 
 def test_get_chat_provider_raises_when_claude_selected_without_api_key():
     settings = Settings(generation_provider="claude", claude_api_key=None)
+
+    with pytest.raises(ValueError):
+        get_chat_provider(settings)
+
+
+def test_get_chat_provider_returns_openai_provider_when_configured():
+    settings = Settings(generation_provider="openai", openai_api_key="sk-test")
+
+    provider = get_chat_provider(settings)
+
+    assert isinstance(provider, OpenAIGeneratorClient)
+
+
+def test_get_chat_provider_raises_when_openai_selected_without_api_key():
+    settings = Settings(generation_provider="openai", openai_api_key=None)
 
     with pytest.raises(ValueError):
         get_chat_provider(settings)

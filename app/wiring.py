@@ -1,4 +1,5 @@
 import logging
+import time
 
 from fastapi import FastAPI
 from qdrant_client import QdrantClient
@@ -7,6 +8,7 @@ from app.api.chat import ChatDependencies
 from app.connectors.base import Connector
 from app.connectors.filesystem import LocalFilesystemConnector
 from app.connectors.notion import NotionConnector
+from app.evaluation.forensic_capture import current_capture, metadata_for_chunks
 from app.evaluation.semantic_answerability import OllamaSemanticEvaluator
 from app.evidence.section_aware import SectionAwareEvidenceBuilder, serialize_section_aware_context
 from app.ingestion.fingerprint import build_pipeline_fingerprint
@@ -151,7 +153,27 @@ def build_chat_dependencies(
     ) -> list[SearchResult]:
         if evidence_builder is None:
             return chunks
+        started = time.perf_counter()
         result = await evidence_builder.build(chunks, context)
+        capture = current_capture()
+        if capture is not None:
+            capture.stage(
+                "evidence_build",
+                {
+                    "input_chunk_ids": result.input_chunk_ids,
+                    "contributing_chunk_ids": result.contributing_chunk_ids,
+                    "blocks_count": len(result.blocks),
+                    "context_tokens": result.context_tokens,
+                    "expanded": result.expanded,
+                    "budget_exhausted": result.budget_exhausted,
+                    "truncated_block_count": result.truncated_block_count,
+                    "dropped_expansion_count": result.dropped_expansion_count,
+                    "final_blocks": metadata_for_chunks(
+                        result.blocks, include_text=capture.raw_text
+                    ),
+                    "evidence_build_ms": round((time.perf_counter() - started) * 1000, 3),
+                },
+            )
         return result.blocks
 
     async def stream_fn(question: str, chunks: list[SearchResult]):
@@ -166,6 +188,7 @@ def build_chat_dependencies(
                 num_ctx=settings.ollama_num_ctx,
                 validator_version=settings.critical_validator_version,
                 shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+                architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
             ):
                 yield event
             return
@@ -219,6 +242,10 @@ def build_chat_dependencies(
             ),
             critical_validator_version=settings.critical_validator_version,
             critical_validator_v3_shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+            critical_validator_arch_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+            forensic_capture_enabled=settings.rag_forensic_capture_enabled,
+            forensic_capture_raw_text=settings.rag_forensic_capture_raw_text,
+            forensic_capture_dir=settings.rag_forensic_capture_dir,
         ),
         chat_provider,
     )

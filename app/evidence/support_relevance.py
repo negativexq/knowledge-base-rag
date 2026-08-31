@@ -12,10 +12,7 @@ import unicodedata
 from collections.abc import Sequence
 from typing import Any
 
-from app.evaluation.critical_values import (
-    CriticalValidatorVersion,
-    claim_local_critical_value_audit,
-)
+from app.evaluation.critical_validator_runtime import ValidatorSelector, audit_critical_value
 
 _TOKEN = re.compile(r"[\w]+(?:[./:+#-][\w]+)*", re.UNICODE)
 
@@ -105,8 +102,9 @@ def audit_support_relevance(
     support_texts: Sequence[str],
     *,
     coverage_threshold: float,
-    validator_version: CriticalValidatorVersion = "baseline",
+    validator_version: ValidatorSelector = "baseline",
     shadow_enabled: bool = False,
+    architecture_v2_shadow_enabled: bool = False,
 ) -> dict[str, Any]:
     """Audit lexical support coverage plus critical-value consistency.
 
@@ -119,11 +117,13 @@ def audit_support_relevance(
     support_tokens = set(content_tokens("\n".join(support_texts)))
     matched = claim_tokens & support_tokens
     coverage = len(matched) / len(claim_tokens) if claim_tokens else 0.0
-    critical = claim_local_critical_value_audit(
+    critical = audit_critical_value(
         claim,
         support_texts,
-        validator_version=validator_version,
-        shadow_enabled=shadow_enabled,
+        selector=validator_version,
+        v3_shadow_enabled=shadow_enabled,
+        architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+        claim_id="support_relevance",
     )
     failures: list[str] = []
     if not claim_tokens or coverage < coverage_threshold:

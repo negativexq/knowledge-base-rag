@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -10,10 +11,8 @@ from typing import Any
 
 from opentelemetry import trace
 
-from app.evaluation.critical_values import (
-    CriticalValidatorVersion,
-    claim_local_critical_value_audit,
-)
+from app.evaluation.critical_validator_runtime import ValidatorSelector
+from app.evaluation.forensic_capture import current_capture, metadata_for_support_units
 from app.evidence.support_relevance import audit_support_relevance
 from app.evidence.support_units import (
     SupportUnit,
@@ -580,7 +579,7 @@ def validate_answerability_output(
     units: list[SupportUnit],
     *,
     coverage_threshold: float,
-    validator_version: CriticalValidatorVersion = "baseline",
+    validator_version: ValidatorSelector = "baseline",
     shadow_enabled: bool = False,
 ) -> AnswerabilityValidation:
     """Validate support identity and deterministic relevance part by part."""
@@ -684,8 +683,9 @@ def validate_support_unit_answer(
     answer: SupportUnitAnswer,
     units: list[SupportUnit],
     *,
-    validator_version: CriticalValidatorVersion = "baseline",
+    validator_version: ValidatorSelector = "baseline",
     shadow_enabled: bool = False,
+    architecture_v2_shadow_enabled: bool = False,
 ) -> SupportUnitValidation:
     available = support_unit_map(units)
     if answer.abstain:
@@ -718,6 +718,25 @@ def validate_support_unit_answer(
                 "shadow_errors": 0,
                 "shadow_error_classes": [],
                 "shadow_disagreements": [],
+                "architecture_id": None,
+                "architecture_v2_shadow_enabled": architecture_v2_shadow_enabled,
+                "architecture_v2_shadow_executed": False,
+                "architecture_v2_shadow_execution_count": 0,
+                "architecture_v2_shadow_architecture_id": None,
+                "architecture_v2_shadow_occurrence_count": 0,
+                "architecture_v2_shadow_validate_role_count": 0,
+                "architecture_v2_shadow_skip_rejected_premise_count": 0,
+                "architecture_v2_shadow_ambiguous_keep_validating_count": 0,
+                "architecture_v2_shadow_duration_ms": 0.0,
+                "architecture_v2_shadow_outcomes": [],
+                "architecture_v2_shadow_disagreements": [],
+                "architecture_v2_shadow_errors": 0,
+                "occurrence_count": 0,
+                "validate_role_count": 0,
+                "skip_rejected_premise_count": 0,
+                "ambiguous_keep_validating_count": 0,
+                "occurrence_identity_error_count": 0,
+                "role_classification_error_count": 0,
             },
         )
     valid: list[SupportUnitAnswerPart] = []
@@ -744,6 +763,28 @@ def validate_support_unit_answer(
         "shadow_errors": 0,
         "shadow_error_classes": [],
         "shadow_disagreements": [],
+        "critical_inputs": [],
+        "shadow_v3_outcomes": [],
+        "shadow_v3_reasons": [],
+        "architecture_id": None,
+        "architecture_v2_shadow_enabled": architecture_v2_shadow_enabled,
+        "architecture_v2_shadow_executed": False,
+        "architecture_v2_shadow_execution_count": 0,
+        "architecture_v2_shadow_architecture_id": None,
+        "architecture_v2_shadow_occurrence_count": 0,
+        "architecture_v2_shadow_validate_role_count": 0,
+        "architecture_v2_shadow_skip_rejected_premise_count": 0,
+        "architecture_v2_shadow_ambiguous_keep_validating_count": 0,
+        "architecture_v2_shadow_duration_ms": 0.0,
+        "architecture_v2_shadow_outcomes": [],
+        "architecture_v2_shadow_disagreements": [],
+        "architecture_v2_shadow_errors": 0,
+        "occurrence_count": 0,
+        "validate_role_count": 0,
+        "skip_rejected_premise_count": 0,
+        "ambiguous_keep_validating_count": 0,
+        "occurrence_identity_error_count": 0,
+        "role_classification_error_count": 0,
     }
     for index, part in enumerate(answer.answer_parts):
         part_codes: list[str] = []
@@ -759,16 +800,114 @@ def validate_support_unit_answer(
         if any(unit is not None and not unit.authorized for unit in selected):
             part_codes.append("UNAUTHORIZED_SUPPORT_ID")
         support_texts = [unit.text for unit in selected if unit is not None]
-        value_audit = claim_local_critical_value_audit(
-            part.text,
-            support_texts,
-            validator_version=validator_version,
-            shadow_enabled=shadow_enabled,
+        try:
+            from app.evaluation.critical_validator_runtime import audit_critical_value
+
+            value_audit = audit_critical_value(
+                part.text,
+                support_texts,
+                selector=validator_version,
+                v3_shadow_enabled=shadow_enabled,
+                architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+                claim_id=f"support_part_{index}",
+            )
+        except Exception:
+            # A selected validator infrastructure failure must never fail open.
+            # Keep the existing application-abstain path and expose only a
+            # bounded diagnostic code; raw exception details stay out of all
+            # user-visible and telemetry structures.
+            value_audit = {
+                "validator_version": validator_version,
+                "validator_outcome": "REJECT",
+                "validator_reason_class": "CRITICAL_VALIDATOR_INFRASTRUCTURE_FAILURE",
+                "pass": False,
+                "failure_codes": ["CRITICAL_VALIDATOR_INFRASTRUCTURE_FAILURE"],
+                "status": "REJECT",
+                "critical_value_count": 0,
+                "critical_value_type": None,
+                "locale_ambiguity": False,
+                "version_ambiguity": False,
+                "version_specificity_reject": False,
+                "identifier_reject": False,
+                "duration_ms": 0.0,
+                "baseline_duration_ms": 0.0,
+                "shadow_v3_duration_ms": 0.0,
+                "shadow_error": False,
+                "shadow_error_class": None,
+                "shadow_disagreement": None,
+                "architecture_id": None,
+                "architecture_v2_shadow_enabled": False,
+                "architecture_v2_shadow_executed": False,
+                "architecture_v2_shadow_execution_count": 0,
+                "architecture_v2_shadow_architecture_id": None,
+                "architecture_v2_shadow_occurrence_count": 0,
+                "architecture_v2_shadow_validate_role_count": 0,
+                "architecture_v2_shadow_skip_rejected_premise_count": 0,
+                "architecture_v2_shadow_ambiguous_keep_validating_count": 0,
+                "architecture_v2_shadow_duration_ms": 0.0,
+                "architecture_v2_shadow_outcome": None,
+                "architecture_v2_shadow_disagreement": None,
+                "architecture_v2_shadow_error": False,
+                "occurrence_count": 0,
+                "validate_role_count": 0,
+                "skip_rejected_premise_count": 0,
+                "ambiguous_keep_validating_count": 0,
+                "occurrence_identity_error_count": 0,
+                "role_classification_error_count": 0,
+            }
+        validator_telemetry["critical_inputs"].append(
+            {
+                "part_index": index,
+                "support_ids": list(part.support_ids),
+                "audit": value_audit,
+            }
         )
         validator_telemetry["invocations"] += 1
         outcome = value_audit["validator_outcome"]
         validator_telemetry[outcome.lower()] += 1
         validator_telemetry["critical_value_count"] += value_audit["critical_value_count"]
+        if value_audit.get("architecture_id"):
+            validator_telemetry["architecture_id"] = value_audit["architecture_id"]
+        validator_telemetry["architecture_v2_shadow_enabled"] |= bool(
+            value_audit.get("architecture_v2_shadow_enabled", False)
+        )
+        if value_audit.get("architecture_v2_shadow_executed"):
+            validator_telemetry["architecture_v2_shadow_executed"] = True
+            validator_telemetry["architecture_v2_shadow_execution_count"] += 1
+            validator_telemetry["architecture_v2_shadow_architecture_id"] = value_audit.get(
+                "architecture_v2_shadow_architecture_id"
+            )
+            for shadow_field in (
+                "occurrence_count",
+                "validate_role_count",
+                "skip_rejected_premise_count",
+                "ambiguous_keep_validating_count",
+            ):
+                validator_telemetry[f"architecture_v2_shadow_{shadow_field}"] += int(
+                    value_audit.get(f"architecture_v2_shadow_{shadow_field}", 0)
+                )
+            validator_telemetry["architecture_v2_shadow_duration_ms"] += float(
+                value_audit.get("architecture_v2_shadow_duration_ms", 0.0)
+            )
+        if value_audit.get("architecture_v2_shadow_outcome"):
+            validator_telemetry["architecture_v2_shadow_outcomes"].append(
+                value_audit["architecture_v2_shadow_outcome"]
+            )
+        if value_audit.get("architecture_v2_shadow_disagreement"):
+            validator_telemetry["architecture_v2_shadow_disagreements"].append(
+                value_audit["architecture_v2_shadow_disagreement"]
+            )
+        if value_audit.get("architecture_v2_shadow_error"):
+            validator_telemetry["architecture_v2_shadow_errors"] += 1
+        for field_name in (
+            "occurrence_count",
+            "validate_role_count",
+            "skip_rejected_premise_count",
+            "ambiguous_keep_validating_count",
+            "occurrence_identity_error_count",
+            "role_classification_error_count",
+        ):
+            validator_telemetry[field_name] += int(value_audit.get(field_name, 0))
         if value_audit["critical_value_type"]:
             validator_telemetry["critical_value_types"].append(value_audit["critical_value_type"])
         validator_telemetry["reason_classes"].append(value_audit["validator_reason_class"])
@@ -789,6 +928,12 @@ def validate_support_unit_answer(
                 )
         if value_audit["shadow_disagreement"]:
             validator_telemetry["shadow_disagreements"].append(value_audit["shadow_disagreement"])
+        if value_audit.get("shadow_v3_outcome"):
+            validator_telemetry["shadow_v3_outcomes"].append(value_audit["shadow_v3_outcome"])
+        if value_audit.get("shadow_v3_reason_class"):
+            validator_telemetry["shadow_v3_reasons"].append(
+                value_audit["shadow_v3_reason_class"]
+            )
         value_status = value_audit["status"]
         if not value_audit["pass"]:
             part_codes.extend(value_audit["failure_codes"])
@@ -822,6 +967,35 @@ def validate_support_unit_answer(
     validator_telemetry["shadow_disagreements"] = sorted(
         set(validator_telemetry["shadow_disagreements"])
     )
+    validator_telemetry["shadow_v3_outcomes"] = sorted(
+        set(validator_telemetry["shadow_v3_outcomes"])
+    )
+    validator_telemetry["shadow_v3_reasons"] = sorted(
+        set(validator_telemetry["shadow_v3_reasons"])
+    )
+    validator_telemetry["architecture_v2_shadow_outcomes"] = sorted(
+        set(validator_telemetry["architecture_v2_shadow_outcomes"])
+    )
+    validator_telemetry["architecture_v2_shadow_disagreements"] = sorted(
+        set(validator_telemetry["architecture_v2_shadow_disagreements"])
+    )
+    shadow_outcomes = validator_telemetry["architecture_v2_shadow_outcomes"]
+    shadow_execution_count = validator_telemetry["architecture_v2_shadow_execution_count"]
+    validator_telemetry["architecture_v2_shadow_aggregate_outcome"] = (
+        shadow_outcomes[0]
+        if shadow_execution_count == 1 and len(shadow_outcomes) == 1
+        else "MIXED"
+        if shadow_execution_count > 1
+        else "NO_VALIDATOR_RESULT"
+    )
+    validator_telemetry["architecture_v2_shadow_aggregate_disagreement"] = (
+        _normalized_shadow_disagreement(
+            _aggregate_validator_outcome(validator_telemetry),
+            validator_telemetry["architecture_v2_shadow_aggregate_outcome"],
+        )
+        if validator_telemetry["architecture_v2_shadow_executed"]
+        else "NOT_EXECUTED"
+    )
     return SupportUnitValidation(
         answer,
         valid,
@@ -843,6 +1017,34 @@ def render_support_unit_answer(parts: list[SupportUnitAnswerPart], *, abstain: b
     )
 
 
+_BOUNDED_VALIDATOR_OUTCOMES = ("PASS", "REJECT", "INDETERMINATE")
+
+
+def _aggregate_validator_outcome(
+    telemetry: dict[str, Any], *, no_result: str = "NO_CRITICAL_VALUE"
+) -> str:
+    """Return the request-level outcome used by both validator arms."""
+    present = [
+        outcome
+        for outcome in _BOUNDED_VALIDATOR_OUTCOMES
+        if int(telemetry.get(outcome.lower(), 0)) > 0
+    ]
+    if not present:
+        return no_result
+    invocation_count = sum(
+        int(telemetry.get(outcome.lower(), 0))
+        for outcome in _BOUNDED_VALIDATOR_OUTCOMES
+    )
+    return present[0] if invocation_count == 1 else "MIXED"
+
+
+def _normalized_shadow_disagreement(authoritative: str, shadow: str) -> str:
+    """Compare bounded request-level states, never occurrence-level states."""
+    if authoritative == shadow:
+        return "SAME"
+    return f"AUTHORITATIVE_{authoritative}_ARCHV2_{shadow}"
+
+
 def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
     """Attach bounded validator metadata to the current request span."""
     try:
@@ -856,22 +1058,7 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
             "validator.pass": int(telemetry.get("pass", 0)),
             "validator.reject": int(telemetry.get("reject", 0)),
             "validator.indeterminate": int(telemetry.get("indeterminate", 0)),
-            "validator.outcome": (
-                next(
-                    (
-                        outcome
-                        for outcome in ("PASS", "REJECT", "INDETERMINATE")
-                        if telemetry.get(outcome.lower(), 0)
-                    ),
-                    "NO_CRITICAL_VALUE",
-                )
-                if sum(
-                    int(telemetry.get(outcome.lower(), 0))
-                    for outcome in ("PASS", "REJECT", "INDETERMINATE")
-                )
-                <= 1
-                else "MIXED"
-            ),
+            "validator.outcome": _aggregate_validator_outcome(telemetry),
             "validator.forced_abstain": bool(telemetry.get("forced_abstain", False)),
             "validator.critical_value_count": int(telemetry.get("critical_value_count", 0)),
             "validator.locale_ambiguity": bool(telemetry.get("locale_ambiguity", False)),
@@ -888,6 +1075,51 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
                 telemetry.get("shadow_v3_duration_ms", 0.0)
             ),
             "validator.shadow_error": int(telemetry.get("shadow_errors", 0)) > 0,
+            "validator.architecture_id": telemetry.get("architecture_id") or "none",
+            "validator.occurrence_count": int(telemetry.get("occurrence_count", 0)),
+            "validator.validate_role_count": int(
+                telemetry.get("validate_role_count", 0)
+            ),
+            "validator.skip_rejected_premise_count": int(
+                telemetry.get("skip_rejected_premise_count", 0)
+            ),
+            "validator.ambiguous_keep_validating_count": int(
+                telemetry.get("ambiguous_keep_validating_count", 0)
+            ),
+            "validator.occurrence_identity_error_count": int(
+                telemetry.get("occurrence_identity_error_count", 0)
+            ),
+            "validator.role_classification_error_count": int(
+                telemetry.get("role_classification_error_count", 0)
+            ),
+            "validator.shadow.architecture_v2_enabled": bool(
+                telemetry.get("architecture_v2_shadow_enabled", False)
+            ),
+            "validator.shadow.architecture_v2.executed": bool(
+                telemetry.get("architecture_v2_shadow_executed", False)
+            ),
+            "validator.shadow.architecture_v2.architecture": (
+                telemetry.get("architecture_v2_shadow_architecture_id") or "none"
+            ),
+            "validator.shadow.architecture_v2.occurrence_count": int(
+                telemetry.get("architecture_v2_shadow_occurrence_count", 0)
+            ),
+            "validator.shadow.architecture_v2.validate_count": int(
+                telemetry.get("architecture_v2_shadow_validate_role_count", 0)
+            ),
+            "validator.shadow.architecture_v2.skip_rejected_premise_count": int(
+                telemetry.get("architecture_v2_shadow_skip_rejected_premise_count", 0)
+            ),
+            "validator.shadow.architecture_v2.ambiguous_count": int(
+                telemetry.get("architecture_v2_shadow_ambiguous_keep_validating_count", 0)
+            ),
+            "validator.shadow.architecture_v2.duration_ms": float(
+                telemetry.get("architecture_v2_shadow_duration_ms", 0.0)
+            ),
+            "validator.shadow.architecture_v2_error": int(
+                telemetry.get("architecture_v2_shadow_errors", 0)
+            )
+            > 0,
         }
         for name, value in scalar_fields.items():
             span.set_attribute(name, value)
@@ -898,7 +1130,27 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
         span.set_attribute("validator.reason_class", ",".join(reason_classes))
         span.set_attribute("validator.critical_value_type", ",".join(critical_value_types))
         span.set_attribute("validator.shadow_disagreement", ",".join(disagreements))
+        span.set_attribute(
+            "validator.shadow_v3.outcome",
+            ",".join(telemetry.get("shadow_v3_outcomes", [])),
+        )
+        span.set_attribute(
+            "validator.shadow_v3.reason_class",
+            ",".join(telemetry.get("shadow_v3_reasons", [])),
+        )
         span.set_attribute("validator.shadow_error_class", ",".join(shadow_error_classes))
+        span.set_attribute(
+            "validator.shadow.architecture_v2.outcome",
+            telemetry.get(
+                "architecture_v2_shadow_aggregate_outcome", "NO_VALIDATOR_RESULT"
+            ),
+        )
+        span.set_attribute(
+            "validator.shadow.architecture_v2.disagreement",
+            telemetry.get(
+                "architecture_v2_shadow_aggregate_disagreement", "NOT_EXECUTED"
+            ),
+        )
     except Exception:
         # Tracing/exporter failures must never change answer delivery.
         return
@@ -916,11 +1168,24 @@ async def stream_support_unit_answer(
     think: bool = False,
     num_ctx: int = 4096,
     seed: int | None = None,
-    validator_version: CriticalValidatorVersion = "baseline",
+    validator_version: ValidatorSelector = "baseline",
     shadow_enabled: bool = False,
+    architecture_v2_shadow_enabled: bool = False,
 ):
     """Generate an answer whose citations are request-scoped support IDs."""
     units = build_support_units(blocks)
+    capture = current_capture()
+    if capture is not None:
+        capture.stage(
+            "generation",
+            {
+                "provider_model": model,
+                "structured_output": True,
+                "support_id_contract_enabled": True,
+                "support_units": metadata_for_support_units(units),
+                "input_evidence_count": len(units),
+            },
+        )
     yield {
         "type": "metadata",
         "prompt_version": prompt_version,
@@ -947,7 +1212,9 @@ async def stream_support_unit_answer(
     }
     if seed is not None:
         generation_kwargs["seed"] = seed
+    generation_started = time.perf_counter()
     raw = await provider.chat_json(messages, **generation_kwargs)
+    generation_ms = round((time.perf_counter() - generation_started) * 1000, 3)
     try:
         parsed = parse_support_unit_answer(raw)
         validation = validate_support_unit_answer(
@@ -955,6 +1222,7 @@ async def stream_support_unit_answer(
             units,
             validator_version=validator_version,
             shadow_enabled=shadow_enabled,
+            architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
         )
     except (ValueError, json.JSONDecodeError):
         parsed = None
@@ -968,11 +1236,133 @@ async def stream_support_unit_answer(
             True,
             {"version": validator_version, "shadow_enabled": shadow_enabled},
         )
+    except Exception:
+        # Validator infrastructure failures are fail-closed. Do not expose
+        # exception details and do not silently switch validator semantics.
+        parsed = None
+        validation = SupportUnitValidation(
+            None,
+            [],
+            [],
+            ["CRITICAL_VALIDATOR_INFRASTRUCTURE_FAILURE"],
+            False,
+            False,
+            True,
+            {
+                "version": validator_version,
+                "shadow_enabled": shadow_enabled,
+                "architecture_v2_shadow_enabled": architecture_v2_shadow_enabled,
+                "invocations": 0,
+                "pass": 0,
+                "reject": 0,
+                "indeterminate": 0,
+                "forced_abstain": True,
+                "reason_classes": ["CRITICAL_VALIDATOR_INFRASTRUCTURE_FAILURE"],
+                "shadow_errors": 0,
+                "shadow_error_classes": [],
+                "shadow_disagreements": [],
+                "architecture_v2_shadow_errors": 0,
+                "architecture_v2_shadow_executed": False,
+                "architecture_v2_shadow_architecture_id": None,
+                "architecture_v2_shadow_occurrence_count": 0,
+                "architecture_v2_shadow_validate_role_count": 0,
+                "architecture_v2_shadow_skip_rejected_premise_count": 0,
+                "architecture_v2_shadow_ambiguous_keep_validating_count": 0,
+                "architecture_v2_shadow_duration_ms": 0.0,
+                "architecture_v2_shadow_outcomes": [],
+                "architecture_v2_shadow_disagreements": [],
+            },
+        )
     final_abstain = validation.model_abstain or validation.application_abstain
     telemetry = validation.validator_telemetry
+    if capture is not None:
+        parsed_payload = (
+            {
+                "answer_parts": [
+                    {"text": part.text, "support_ids": list(part.support_ids)}
+                    for part in parsed.answer_parts
+                ],
+                "abstain": parsed.abstain,
+            }
+            if parsed
+            else None
+        )
+        model_support_ids = (
+            [
+                item
+                for part in parsed_payload["answer_parts"]
+                for item in part["support_ids"]
+            ]
+            if parsed_payload
+            else []
+        )
+        accepted_ids = [
+            item for part in validation.valid_parts for item in part.support_ids
+        ]
+        rejected_ids = [
+            item for part in validation.rejected_parts for item in part.get("support_ids", [])
+        ]
+        capture.merge_stage(
+            "generation",
+            {
+                "structured_output_parse_status": "PARSED" if parsed else "INVALID",
+                "generation_ms": generation_ms,
+                "model_support_ids": model_support_ids,
+                "raw_model_output": raw,
+                "parsed_model_result": parsed_payload,
+            },
+        )
+        capture.stage(
+            "support_id_validation",
+            {
+                "requested_support_ids": model_support_ids,
+                "accepted_support_ids": accepted_ids,
+                "rejected_support_ids": rejected_ids,
+                "reason_classes": validation.failure_codes,
+                "unknown_support_count": validation.failure_codes.count("UNKNOWN_SUPPORT_ID"),
+                "unauthorized_support_count": validation.failure_codes.count(
+                    "UNAUTHORIZED_SUPPORT_ID"
+                ),
+                "hidden_support_count": validation.failure_codes.count("HIDDEN_SUPPORT_ID"),
+                "critical_validator": telemetry,
+                "pre_validation_model_result": {
+                    "parsed": bool(parsed),
+                    "model_abstain": validation.model_abstain,
+                },
+                "post_validation_result": {
+                    "application_abstain": validation.application_abstain,
+                    "forced_abstain": validation.application_abstain
+                    and not validation.model_abstain,
+                    "outcome": "UNAVAILABLE" if final_abstain else "ANSWER",
+                },
+            },
+        )
+        capture.stage(
+            "citation_resolution",
+            {
+                "model_support_ids": model_support_ids,
+                "validated_support_ids": accepted_ids,
+                "application_citation_ids": accepted_ids,
+                "resolved_citation_ids": accepted_ids,
+                "rejected_citation_ids": rejected_ids,
+                "model_citation_like_text_present": bool(
+                    parsed
+                    and any("[s." in part.text for part in parsed.answer_parts)
+                ),
+            },
+        )
     _record_validator_telemetry(telemetry)
     rendered = render_support_unit_answer(validation.valid_parts, abstain=final_abstain)
     user_visible = validation.top_level_valid and bool(rendered)
+    if capture is not None:
+        capture.set_visible_outcome(
+            {
+                "outcome": "ANSWER" if user_visible else "UNAVAILABLE",
+                "citation_count": len(accepted_ids),
+                "support_id_count": len(accepted_ids),
+                "raw_visible_text": rendered,
+            }
+        )
     if evaluation_observation is not None:
         evaluation_observation.raw_candidate_available = True
         evaluation_observation.raw_candidate_output = raw
