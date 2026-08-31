@@ -70,7 +70,7 @@ flowchart TD
     Rerank --> Evidence[SectionAware Evidence Builder]
     Evidence --> Units[Support Units]
     Units --> LLM[LLM]
-    LLM --> Answer[text + support_ids[]]
+    LLM --> Answer["text + support_ids[]"]
     Answer --> Support[Support-ID validation]
     Support --> Critical[Architecture V2 critical-value validator]
     Critical --> Citation[Citation resolution]
