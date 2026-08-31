@@ -1,8 +1,8 @@
 # Knowledge Base RAG
 
-Production-style, evidence-grounded RAG with hybrid retrieval, deterministic
-support validation, occurrence-aware critical-value checking, privacy-safe
-observability, and reproducible evaluation.
+Production-style multilingual RAG platform with secure tenant boundaries,
+hybrid retrieval, explicit evidence provenance, deterministic validation,
+privacy-safe observability, and reproducible evaluation.
 
 **Python** · **FastAPI** · **Qdrant** · **OpenAI / Ollama** · **React** ·
 **OpenTelemetry** · **pytest**
@@ -39,23 +39,48 @@ The system goes beyond “upload a PDF, search vectors, call an LLM” with:
 - an evaluation harness that separates retrieval, evidence, generation,
   validation, citation, and security failures.
 
+## Engineering Highlights
+
+| Engineering problem | System response |
+| --- | --- |
+| Cross-tenant retrieval | Server-owned ACL is enforced before reranking and generation. |
+| Citation is not grounding | Request-scoped support IDs separate provenance from semantic correctness. |
+| RAG failures are hard to diagnose | Retrieval → reranking → evidence → generation → validation → citation attribution. |
+| Critical-value ambiguity | An immutable occurrence ledger keeps role decisions local to each occurrence. |
+| Benchmark-driven tuning risk | Frozen datasets, hashes, preregistered gates, and preserved rejected experiments. |
+
 ## Key Results
 
 The headline numbers below are from the canonical TechQA BGE-ON evaluation
 record. They are benchmark results, not claims about live customer traffic or
-general production accuracy.
+general serving performance.
 
 | Metric | Result | Interpretation |
 | --- | ---: | --- |
 | Candidate evidence recall | **95.9%** | Required evidence was usually found in the candidate set. |
 | Useful-answer rate | **70%** | Correct + Partial; this is not an accuracy claim. |
 | Materially incorrect answers | **2%** | Wrong or materially misleading visible answers. |
-| Strict fully-correct | **30%** | Full-completeness scoring, stricter than useful-answer rate. |
+| Unavailable / abstained | **28%** | The system did not provide a useful supported answer. |
+| Strict fully-correct | **30%** | Separate full-completeness scoring, stricter than useful-answer rate. |
 
-The retained BGE reranker improves the system's selection story only when the
-full evidence and semantic decision rules are considered; its measured
-corrected-run latency remains expensive. The preregistered removal decision
-was therefore `BGE_REMOVAL_NOT_SUPPORTED`. See the
+### Safety Evidence
+
+Within the corrected TechQA evaluation, the support-ID and citation contracts
+accepted no unknown, cross-query, hidden, or unauthorized support IDs, and had
+zero citation contract failures:
+
+| Safety check | Observed |
+| --- | ---: |
+| Unknown / cross-query / hidden / unauthorized support IDs accepted | **0** |
+| Citation contract failures | **0** |
+
+These are deterministic contract results from the evaluated corpus, not a
+claim of formally proven system security.
+
+Disabling BGE materially improved evidence completeness, but no robust
+directional semantic advantage was distinguishable between the arms. Because
+the preregistered semantic non-regression gate still failed, removal was not
+authorized (`BGE_REMOVAL_NOT_SUPPORTED`). See the
 [canonical evaluation report](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/)
 for the evidence and score definitions.
 
@@ -64,10 +89,14 @@ for the evidence and score definitions.
 ```mermaid
 flowchart TD
     Query[Query] --> ACL[Tenant / ACL boundary]
-    ACL --> Retrieve[Hybrid Retrieval]
-    Retrieve --> Dense[Dense + BM25 + RRF]
-    Dense --> Rerank[BGE reranking]
-    Rerank --> Evidence[SectionAware Evidence Builder]
+    ACL --> Dense[Dense retrieval]
+    ACL --> BM25[BM25 retrieval]
+    Dense --> RRF[RRF fusion]
+    BM25 --> RRF
+    RRF --> Candidates["Authorized Top-20"]
+    Candidates --> Rerank["BGE reranking"]
+    Rerank --> Top5["Top-5"]
+    Top5 --> Evidence[SectionAware Evidence Builder]
     Evidence --> Units[Support Units]
     Units --> LLM[LLM]
     LLM --> Answer["text + support_ids[]"]
@@ -78,13 +107,35 @@ flowchart TD
 
     Critical -. bounded metadata .-> OTel[OTel / Jaeger]
     Critical -. controlled local details .-> Forensic[Forensic capture]
-    Retrieve -. frozen measurements .-> Eval[Evaluation harness]
+    RRF -. frozen measurements .-> Eval[Evaluation harness]
 ```
 
-FastAPI owns authentication, authorization, retrieval, generation, SSE, and
-citation resolution. Qdrant serves the active index. The React Operations
-Console presents the resulting evidence and trace state; it is not an
-authorization boundary.
+The runtime starts with an authenticated `UserContext` and server-owned tenant
+ACL; unauthorized candidates never reach reranking or generation. FastAPI
+owns authentication, authorization, retrieval, generation, SSE, and citation
+resolution. Qdrant serves the active index. The React Operations Console
+presents the resulting evidence and trace state; it is not an authorization
+boundary.
+
+## Failure Attribution
+
+When an answer fails, the useful question is not only “was it wrong?” but “at
+which boundary did it become wrong?” The runtime and evaluation records keep
+these classes distinct:
+
+```text
+retrieval miss
+  → reranker loss
+  → evidence-packing loss
+  → generation error
+  → validator over-rejection
+  → citation failure
+```
+
+The goal is to identify the first responsible system boundary, not merely to
+assign a final pass/fail label. This makes it possible to improve the right
+layer without hiding a retrieval limitation behind a validator metric or
+calling a citation identity check semantic grounding.
 
 ## Architecture V2: Occurrence-Aware Validation
 
@@ -159,7 +210,7 @@ reason about.
 
 | Experiment | What it taught us | Decision |
 | --- | --- | --- |
-| BGE removal | Evidence completeness alone did not pass the preregistered semantic non-regression gate. | Keep BGE; `BGE_REMOVAL_NOT_SUPPORTED`. |
+| BGE removal | Disabling BGE materially improved evidence completeness, but the preregistered semantic non-regression gate still failed. | Keep BGE; `BGE_REMOVAL_NOT_SUPPORTED`. |
 | Validator V1 | Improved metrics did not compensate for a locale-safety hard-gate failure. | Reject the candidate. |
 | Validator V4/V5/V6 | Incremental polarity and masking fixes kept exposing occurrence-identity failures. | Stop patching; redesign the contract. |
 | Architecture V2 | Fresh independent contract validation and runtime integration passed with identity and privacy gates intact. | Integrate the occurrence-ledger architecture. |
@@ -244,7 +295,10 @@ npm ci
 npm run dev
 ```
 
-Open the frontend URL printed by Vite, normally `http://localhost:5173`.
+The copied environment enables the default evidence-backed support-unit path:
+`RAG_PIPELINE_V2=true`, `SUPPORT_IDS_ENABLED=true`, and
+`CRITICAL_VALIDATOR_VERSION=architecture_v2`. Open the frontend URL printed by
+Vite, normally `http://localhost:5173`.
 The compose backend normally serves on `http://localhost:8000`, Qdrant on
 `6333`, and Jaeger on `16686`. A fresh installation must ingest documents
 before retrieval can return evidence. An operator identity can trigger sync
@@ -262,8 +316,8 @@ field, or frontend preference cannot select a validator.
 
 | Setting | Portfolio default | Purpose |
 | --- | --- | --- |
-| `RAG_PIPELINE_V2` | `false` | Enables the evidence-backed RAG pipeline where used. |
-| `SUPPORT_IDS_ENABLED` | `false` | Enables request-scoped support-unit output. |
+| `RAG_PIPELINE_V2` | `true` | Default portfolio path for evidence-backed construction. |
+| `SUPPORT_IDS_ENABLED` | `true` | Default support-unit output and application-owned support validation. |
 | `CRITICAL_VALIDATOR_VERSION` | `architecture_v2` | `baseline`, `v3`, or `architecture_v2`. |
 | `CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED` | `false` | Diagnostic V2 shadow; off by default. |
 | `CRITICAL_VALIDATOR_V3_SHADOW_ENABLED` | `false` | Optional diagnostic V3 shadow. |
@@ -280,6 +334,8 @@ reindexing, embedding, or document migration is required.
 The normal trace contains bounded metadata such as validator version, outcome,
 reason class, occurrence and role counts, duration, forced-abstain state, and
 shadow status. It does not contain raw user content or per-occurrence IDs.
+Normal telemetry stays bounded and content-free; deeper occurrence-level
+diagnostics require explicit controlled local forensic capture.
 
 When controlled local forensic capture is enabled, the artifact can expose the
 occurrence ledger, role decisions, filtered `VALIDATE` IDs, and frozen V3
@@ -332,35 +388,16 @@ Curated entry points:
 - [Shadow readiness V2](artifacts/ragbench/canonical/critical-value-validator-architecture-v2-shadow-readiness-v2/)
 - [Canonical RAGBench index](artifacts/ragbench/canonical/)
 
-## Failure Attribution
-
-When an answer fails, the useful question is not only “was it wrong?” but “at
-which boundary did it become wrong?” The runtime and evaluation records keep
-these classes distinct:
-
-```text
-retrieval miss
-  → reranker loss
-  → evidence-packing loss
-  → generation error
-  → validator over-rejection
-  → citation failure
-```
-
-This makes it possible to improve the responsible layer without hiding a
-retrieval limitation behind a validator metric or calling a citation identity
-check semantic grounding.
-
 ## Reviewer Fast Path
 
 For a 10-minute technical review:
 
 1. Start with the diagram and [Architecture V2: Occurrence-Aware Validation](#architecture-v2-occurrence-aware-validation).
-2. Read the reusable contracts in [`tests/test_critical_validator_architecture_v2_integration.py`](tests/test_critical_validator_architecture_v2_integration.py).
-3. Inspect the frozen implementation in [`app/evaluation/`](app/evaluation/).
-4. Read one [canonical TechQA report](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/).
-5. Run the local UI and inspect a trace in Jaeger.
-6. Compare the concise [rollout note](docs/critical-validator-architecture-v2-rollout.md) with the preserved canonical evidence.
+2. Review the [system architecture](docs/architecture.md) and [security boundary](docs/security.md).
+3. Inspect the [Architecture V2 adapter](app/evaluation/critical_validator_architecture_v2.py), [occurrence ledger](app/evaluation/critical_occurrences.py), and [role classifier](app/evaluation/critical_roles.py).
+4. Read the reusable [integration contract tests](tests/test_critical_validator_architecture_v2_integration.py).
+5. Read one [canonical TechQA report](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/).
+6. Run the local UI, inspect a trace in Jaeger, and compare the concise [rollout note](docs/critical-validator-architecture-v2-rollout.md) with the preserved canonical evidence.
 
 ## Limitations
 
