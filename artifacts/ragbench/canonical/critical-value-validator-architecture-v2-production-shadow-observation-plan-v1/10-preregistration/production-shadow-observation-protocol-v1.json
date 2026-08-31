@@ -1,0 +1,129 @@
+{
+  "work_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_PRODUCTION_SHADOW_OBSERVATION_PLAN_V1",
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "source_digest": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "raw_freeze_manifest_sha256": "c797556bff29669cdafdb165646b601e94ce4a1573969dd69b9e452f2d080d23",
+  "authoritative_validator": "baseline",
+  "shadow_validator": "architecture_v2",
+  "runtime_defaults": {
+    "CRITICAL_VALIDATOR_VERSION": "baseline",
+    "CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED": false,
+    "CRITICAL_VALIDATOR_V3_SHADOW_ENABLED": false
+  },
+  "traffic_eligibility": {
+    "include": [
+      "server-side RAG request",
+      "support-ID validation enabled",
+      "authorized evidence context",
+      "validator-capable structured output"
+    ],
+    "exclude": [
+      "health probe",
+      "readiness probe",
+      "static asset",
+      "admin/bootstrap",
+      "non-RAG request",
+      "support-ID bypass",
+      "non-validator-capable output",
+      "unlabeled synthetic monitor",
+      "test/debug traffic"
+    ],
+    "denominator": "eligible_validator_requests"
+  },
+  "observation_window": {
+    "minimum_eligible_shadow_executions": 1000,
+    "minimum_duration_hours": 24,
+    "maximum_duration_days": 7,
+    "stopping_rule": "both minimum count and minimum duration are required; stop at maximum duration if both are not met"
+  },
+  "required_telemetry_fields": [
+    "authoritative_validator",
+    "authoritative_normalized_outcome",
+    "architecture_v2_shadow_executed",
+    "architecture_v2_shadow_architecture_id",
+    "architecture_v2_shadow_normalized_outcome",
+    "architecture_v2_shadow_disagreement",
+    "architecture_v2_shadow_error",
+    "architecture_v2_shadow_duration_ms",
+    "architecture_v2_shadow_occurrence_count",
+    "architecture_v2_shadow_validate_count",
+    "architecture_v2_shadow_skip_rejected_premise_count",
+    "architecture_v2_shadow_ambiguous_count"
+  ],
+  "comparison": {
+    "level": "REQUEST_AGGREGATE",
+    "normalized_states": ["PASS", "REJECT", "INDETERMINATE", "MIXED", "NO_VALIDATOR_RESULT"],
+    "taxonomy": [
+      "SAME",
+      "EXPECTED_CORRECTIVE_RECOVERY",
+      "AUTHORITATIVE_OVER_REJECT",
+      "ARCHV2_MORE_CONSERVATIVE",
+      "ARCHV2_UNSAFE_SUSPECT",
+      "UNEXPECTED_V3_SEMANTIC_DIFFERENCE",
+      "INFRA_ERROR",
+      "UNKNOWN"
+    ],
+    "review_rule": "review every non-SAME event when volume is small; otherwise use a predeclared stratified sample across all outcome pairs"
+  },
+  "privacy": {
+    "raw_production_content": false,
+    "forbidden": [
+      "raw query",
+      "raw answer",
+      "raw evidence",
+      "raw support/document text",
+      "critical literal",
+      "normalized literal",
+      "occurrence ID or span",
+      "claim text",
+      "provider prompt",
+      "authorization header",
+      "cookie",
+      "API key",
+      "user identity",
+      "unnecessary tenant/document identifiers",
+      "free-form exception text"
+    ],
+    "hard_thresholds": {"raw_content_leaks": 0, "secret_leaks": 0, "forbidden_high_cardinality_attributes": 0}
+  },
+  "gates": {
+    "shadow_coverage_percent": 100,
+    "telemetry_completeness_percent": 100,
+    "visible_mutation_count": 0,
+    "security_regression_count": 0,
+    "unresolved_unsafe_suspect_count": 0,
+    "unresolved_unknown_disagreement_count": 0,
+    "unexplained_validator_shadow_error_rate_percent": 0,
+    "architecture_v2_shadow_p95_ms_lt": 25,
+    "architecture_v2_shadow_p99_ms_lt": 50,
+    "resource_rule": "no sustained Architecture V2-attributable CPU or memory increase above 10 percent, no event-loop/blocking alert, and no material throughput regression"
+  },
+  "error_policy": {
+    "attribution_classes": ["ARCHITECTURE_V2", "AUTHORITATIVE_VALIDATOR", "RETRIEVAL", "QDRANT", "PROVIDER", "APPLICATION", "TELEMETRY", "ENVIRONMENT", "UNKNOWN"],
+    "validator_caused_shadow_errors": "zero unexplained allowed",
+    "environment_transient": "track separately; any missed eligible execution pauses the window and prevents a 100 percent coverage claim",
+    "unknown_at_close": 0
+  },
+  "rollback": {
+    "triggers": [
+      "confirmed security regression",
+      "raw telemetry/privacy leak",
+      "visible behavior mutation",
+      "fail-open behavior",
+      "repeated validator-caused shadow exceptions",
+      "material or unbounded latency/resource regression"
+    ],
+    "disable_setting": "CRITICAL_VALIDATOR_ARCH_V2_SHADOW_ENABLED=false",
+    "type": "CONFIG_ONLY",
+    "process_restart_required": true,
+    "migrations_required": false
+  },
+  "production_shadow_pass_rule": "PS1-PS18 all pass, minimum count and duration are met, baseline is authoritative for 100 percent, shadow coverage and telemetry completeness are 100 percent, and all hard safety/privacy/unknown/error gates are zero",
+  "canary_review_eligibility_rule": "production shadow pass plus complete attribution, verified rollback, and zero unresolved unsafe/security/privacy/unknown conditions; does not enable canary",
+  "no_tuning": true,
+  "no_holdout": true,
+  "holdout_status": "CONSUMED",
+  "bge_verdict": "BGE_REMOVAL_NOT_SUPPORTED",
+  "production_activation_in_this_task": false,
+  "calls_in_this_task": {"openai": 0, "ollama": 0, "embedding": 0, "bge": 0, "retrieval": 0}
+}

@@ -1,0 +1,14 @@
+{
+  "architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+  "semantic_source_digest": "09d94bb7c9d1769bd79e18c0beaa75c653477d3127605fdbcaddc5e9cf7ed33b",
+  "raw_freeze_manifest_sha256": "c797556bff29669cdafdb165646b601e94ce4a1573969dd69b9e452f2d080d23",
+  "head": "b3714f065ce9be65beaed000dde544648b68c860",
+  "upstream": "b3714f065ce9be65beaed000dde544648b68c860",
+  "working_tree_clean": true,
+  "prior_readiness_v1": "FAILED",
+  "remediation_v1": "PASSED",
+  "readiness_v2": "PASSED_LOCAL_SHADOW_RUNTIME_VERIFIED",
+  "semantic_source_changed": false,
+  "historical_artifacts_modified": false,
+  "production_shadow_activated": false
+}
