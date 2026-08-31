@@ -52,10 +52,10 @@ class Settings(BaseSettings):
     ollama_overall_timeout_seconds: float = Field(default=240.0, gt=0)
     ollama_embed_model: str = "nomic-embed-text"
 
-    # Evidence-backed generation is opt-in so the historical local profile
-    # remains reproducible while the support-ID path is promoted separately.
-    rag_pipeline_v2: bool = False
-    support_ids_enabled: bool = False
+    # The evidence-backed/support-unit path is the default portfolio profile.
+    # Explicit false values remain available for legacy regression/debug runs.
+    rag_pipeline_v2: bool = True
+    support_ids_enabled: bool = True
     pipeline_v2_context_token_budget: int = Field(default=1200, gt=0)
 
     # Phase 6C is opt-in shadow telemetry. It never suppresses generation.

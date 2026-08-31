@@ -50,9 +50,10 @@ def _chunk(chunk_id: str, text: str, *, section: str = "Policy", tenant: str = "
     )
 
 
-def test_pipeline_v2_is_opt_in_and_num_ctx_is_locked():
+def test_portfolio_pipeline_defaults_and_num_ctx_are_locked():
     settings = Settings(_env_file=None)
-    assert settings.rag_pipeline_v2 is False
+    assert settings.rag_pipeline_v2 is True
+    assert settings.support_ids_enabled is True
     assert settings.ollama_model == "qwen3.5:4b"
     assert settings.ollama_num_ctx == 4096
     assert settings.ollama_thinking is False
