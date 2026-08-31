@@ -51,6 +51,8 @@ The system goes beyond “upload a PDF, search vectors, call an LLM” with:
 
 ## Key Results
 
+### End-to-End Evaluation
+
 The headline numbers below are from the canonical TechQA BGE-ON evaluation
 record. They are benchmark results, not claims about live customer traffic or
 general serving performance.
@@ -62,6 +64,33 @@ general serving performance.
 | Materially incorrect answers | **2%** | Wrong or materially misleading visible answers. |
 | Unavailable / abstained | **28%** | The system did not provide a useful supported answer. |
 | Strict fully-correct | **30%** | Separate full-completeness scoring, stricter than useful-answer rate. |
+
+The 70% useful-answer rate is Correct + Partial, not accuracy. The 30% result
+is a separate strict full-completeness metric rather than another outcome bucket.
+
+### Reranker Selection Benchmark
+
+The [frozen reranker selection benchmark](docs/reranking.md) contains 220
+multilingual questions and measures retrieval/ranking quality with Recall@5,
+Mean Reciprocal Rank (MRR), and normalized Discounted Cumulative Gain at 5
+(nDCG@5). It is separate from the final-answer evaluation above.
+
+| Configuration | TR→EN Recall@5 | EN→TR Recall@5 | Cross MRR | Cross nDCG@5 |
+| --- | ---: | ---: | ---: | ---: |
+| Hybrid retrieval, no reranker | 0.9259 | 0.9867 | 0.7448 | 0.7988 |
+| Existing English reranker | 0.2222 | 0.6800 | 0.3670 | 0.3880 |
+| Multilingual BGE | **1.0000** | **1.0000** | **0.9558** | **0.9672** |
+
+On this frozen benchmark, `BAAI/bge-reranker-v2-m3` reached Recall@5 of 1.0000
+in both TR→EN and EN→TR slices, with Cross MRR 0.9558 and Cross nDCG@5
+0.9672. These are retrieval/ranking metrics, not final-answer accuracy.
+
+The selection question was which reranker should serve multilingual retrieval;
+the multilingual model materially outperformed the prior English reranker. A
+later, separate experiment asked whether reranking could be removed entirely.
+Its preregistered semantic non-regression gate failed, so removal was not
+authorized. There is no contradiction between selecting BGE over the English
+reranker and retaining `BGE_REMOVAL_NOT_SUPPORTED`.
 
 ### Safety Evidence
 
