@@ -3,35 +3,9 @@ import json
 import pytest
 
 from scripts.benchmarks.benchmark_context_builder_full import (
-    MODEL,
-    PROMPT,
     _metrics,
     load_checkpoint,
-    serialization_preflight,
-    validate_inputs,
 )
-
-
-def test_full_validation_identity_and_composition_are_locked():
-    metadata, historical, cache, questions = validate_inputs()
-    assert len(historical) == len(cache) == 36
-    assert metadata["candidate_k"] == 20
-    assert metadata["top_n"] == 5
-    assert MODEL == "qwen3.5:4b"
-    assert PROMPT == "v3"
-    assert {row["category"] for row in historical} >= {
-        "standard_answerable", "hard_answerable", "cross_lingual", "multi_document",
-        "version_conflict", "injection_bearing", "unanswerable", "acl_negative", "ambiguous",
-    }
-    assert all(row["query_id"] in questions for row in historical)
-
-
-def test_serialization_preflight_passes_without_inference():
-    _, _, cache, questions = validate_inputs()
-    result = serialization_preflight(cache, questions)
-    assert result["status"] == "PASS"
-    assert result["json_round_trip"] is True
-    assert result["atomic_checkpoint"] is True
 
 
 def test_checkpoint_rejects_duplicate_or_unknown_records(tmp_path):

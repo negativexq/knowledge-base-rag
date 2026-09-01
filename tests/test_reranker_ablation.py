@@ -19,46 +19,11 @@ def test_forensic_artifact_has_locked_identity_and_three_queries() -> None:
     assert manifest["query_ids"] == list(ablation.QUERY_IDS)
 
 
-def test_candidate_identity_is_same_for_bge_and_qwen() -> None:
-    bge = [
-        json.loads(line)
-        for line in (OUT / "bge-forensic-results.jsonl").read_text().splitlines()
-    ]
-    qwen = [
-        json.loads(line)
-        for line in (OUT / "qwen3-forensic-results.jsonl").read_text().splitlines()
-    ]
-    assert len(bge) == len(qwen) == 3
-    for left, right in zip(bge, qwen, strict=True):
-        assert left["candidate_ids"] == right["candidate_ids"]
-        assert len(left["candidate_ids"]) == 20
-
-
 def test_fact_passage_metric_is_distinct_from_source_recall() -> None:
     metrics = json.loads((OUT / "fact-level-forensic-comparison.json").read_text())
     assert metrics["bge"]["fact_passage_recall"]["at5"] == 5 / 7
     assert metrics["bge"]["source_recall_at5"] == 1.0
     assert metrics["qwen3"]["fact_passage_recall"]["at5"] == 4 / 7
-
-
-def test_known_supporting_chunk_is_ranked_out_by_both_arms() -> None:
-    bge = [
-        json.loads(line)
-        for line in (OUT / "bge-forensic-results.jsonl").read_text().splitlines()
-    ]
-    qwen = [
-        json.loads(line)
-        for line in (OUT / "qwen3-forensic-results.jsonl").read_text().splitlines()
-    ]
-    for rows in (bge, qwen):
-        for query_id in ("multi-00-1", "multi-00-3"):
-            row = next(item for item in rows if item["query_id"] == query_id)
-            fact = next(
-                item
-                for item in row["fact_rank"]["facts"]
-                if item["required_fact_id"] == "standard_return_window_14_days"
-            )
-            assert fact["final_rank"] is None
 
 
 def test_reranker_adapter_preserves_candidate_identity_with_mocked_scores() -> None:

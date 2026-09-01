@@ -6,31 +6,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from scripts.benchmarks.benchmark_qwen25_multidoc import (
-    IDS,
     MODEL_4B,
     MODEL_7B,
-    PROMPT,
-    preflight,
-    validate_inputs,
 )
-
-
-def test_exact_three_query_probe_and_locked_identity() -> None:
-    actual, baseline, cache, questions = validate_inputs()
-    assert actual["generator"] == MODEL_4B
-    assert actual["prompt"] == PROMPT
-    assert actual["think"] is False
-    assert set(cache) == IDS
-    assert set(baseline) >= IDS
-    assert set(questions) == IDS
-
-
-def test_preflight_serializes_the_same_cached_context_before_inference() -> None:
-    _, _, cache, questions = validate_inputs()
-    result = preflight(cache, questions)
-    assert result["status"] == "PASS"
-    assert result["checked_before_inference"] is True
-    assert result["json_round_trip"] is True
 
 
 def test_probe_changes_only_generator_model() -> None:

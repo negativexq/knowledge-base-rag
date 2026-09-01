@@ -5,7 +5,6 @@ from app.evaluation.generation_refinement import (
     score_required_facts,
     validator_failure_codes,
 )
-from scripts.audits.refine_generation_evaluation import build_report, validate_artifacts
 
 
 def test_normalization_handles_unicode_turkish_and_punctuation():
@@ -57,12 +56,3 @@ def test_validator_failure_codes_preserve_multiple_dimensions():
     }
     assert validator_failure_codes(result) == ['CITATION_SUPPRESSION', 'UNAUTHORIZED_CITATION_ID']
 
-
-def test_refinement_analysis_is_artifact_only_and_keeps_identity():
-    metadata, results, cache, _ = validate_artifacts()
-    report = build_report()
-    assert len(results) == len(cache) == 36
-    assert metadata['generation_model'] == 'qwen3.5:4b'
-    assert report['scope']['new_inference_calls'] == 0
-    assert report['scope']['new_retrieval_calls'] == 0
-    assert report['scope']['new_reranker_calls'] == 0

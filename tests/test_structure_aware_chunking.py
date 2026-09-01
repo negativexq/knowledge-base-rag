@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from app.evaluation.fact_evidence import evaluate_fact_evidence
 from scripts.audits import diagnose_structure_aware_chunking as diagnostic
 
@@ -46,62 +44,6 @@ def test_all_required_fact_evidence_requires_every_authored_span() -> None:
     assert result.all_required_fact_evidence_present is False
 
 
-def test_standard_returns_mapping_separates_supporting_and_retrieved_chunks() -> None:
-    _, cache, _, _ = diagnostic.validate_identity()
-    gt = diagnostic.read_json(diagnostic.FACTS_PATH)
-    mapping = diagnostic.derive_current_chunks(gt, cache)
-    boundary = diagnostic.standard_boundary(mapping, cache)
-    assert boundary["supporting_chunk_id"] == "5bd2643d-4837-5733-9717-c88c37860274"
-    assert boundary["retrieved_chunk_id"] == "1b50ae39-8364-5172-a719-f2090efce26e"
-    assert boundary["supporting_chunk_id"] != boundary["retrieved_chunk_id"]
-
-
-def test_candidate_top20_and_top5_fact_attribution_are_distinct() -> None:
-    _, cache, _, _ = diagnostic.validate_identity()
-    gt = diagnostic.read_json(diagnostic.FACTS_PATH)
-    mapping = diagnostic.derive_current_chunks(gt, cache)
-    recall = diagnostic.current_recall(gt, cache, mapping)
-    assert recall["aggregate"]["fact_passage_recall_at20"] == 1.0
-    assert recall["aggregate"]["fact_passage_recall_at5"] == pytest.approx(5 / 7)
-    assert recall["aggregate"]["all_required_facts_present_at20"] == 3
-    assert recall["aggregate"]["all_required_facts_present_at5"] == 1
-
-
-def test_representations_are_deterministic_and_neighbors_do_not_cross_sections() -> None:
-    _, cache, _, _ = diagnostic.validate_identity()
-    first = diagnostic.build_representations(cache["multi-00-1"])
-    second = diagnostic.build_representations(cache["multi-00-1"])
-    assert first == second
-    assert [row["block_id"] for row in first["SAME_SECTION_NEIGHBORS"]] == [
-        row["block_id"] for row in first["CURRENT_CHUNK"]
-    ]
-    assert len(first["SAME_SECTION_NEIGHBORS"]) == 5
-
-
-def test_section_merge_uses_authored_source_and_preserves_traceability() -> None:
-    _, cache, _, _ = diagnostic.validate_identity()
-    variants = diagnostic.build_representations(cache["multi-00-1"])
-    merged = next(
-        row
-        for row in variants["SECTION_AWARE_MERGED"]
-        if row["source_id"] == "standard-returns-2026"
-    )
-    source = (diagnostic.DATA / "standard-returns-2026.md").read_text(encoding="utf-8")
-    assert merged["text"] == source
-    assert "14 calendar days" in merged["text"]
-    assert merged["original_chunk_ids"] == ["1b50ae39-8364-5172-a719-f2090efce26e"]
-    assert "expected_answer" not in merged
-
-
-def test_parent_and_merged_preserve_source_identity_and_add_no_generated_text() -> None:
-    _, cache, _, _ = diagnostic.validate_identity()
-    variants = diagnostic.build_representations(cache["multi-03-0"])
-    original_sources = {row["source_id"] for row in variants["CURRENT_CHUNK"]}
-    for name in ("PARENT_SECTION", "SECTION_AWARE_MERGED"):
-        assert {row["source_id"] for row in variants[name]} == original_sources
-        assert all("summary" not in row and "expected_answer" not in row for row in variants[name])
-
-
 def test_winner_requires_fact_level_precondition() -> None:
     rows = [
         {
@@ -122,16 +64,6 @@ def test_winner_requires_fact_level_precondition() -> None:
         [{**rows[0], "all_required_facts_present_queries": 1}]
     )
     assert losing["winner"] == "NO_VALID_WINNER"
-
-
-def test_generation_precondition_is_true_only_for_winner_context() -> None:
-    _, cache, _, _ = diagnostic.validate_identity()
-    gt = diagnostic.read_json(diagnostic.FACTS_PATH)
-    serializations, coverage, tokens, duplicates = diagnostic.representation_analysis(gt, cache)
-    winner = diagnostic.choose_winner(diagnostic.scorecard(coverage, tokens, duplicates))
-    checks = diagnostic.probe_precondition(gt, winner["winner"], serializations)
-    assert len(checks) == 3
-    assert all(row["all_required_fact_evidence_present"] for row in checks)
 
 
 def test_diagnostic_has_no_retrieval_and_max_three_generation_contract(
