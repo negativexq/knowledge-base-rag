@@ -15,6 +15,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
       - run: ruff check app tests scripts
+      - run: mypy app/
 
   test:
     runs-on: ubuntu-latest
