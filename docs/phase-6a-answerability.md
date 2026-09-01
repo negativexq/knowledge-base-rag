@@ -31,7 +31,7 @@ The development split is the default and the export contains no query text or
 document content:
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.export_answerability_features \
+PYTHONPATH=. .venv/bin/python -m scripts.calibration.export_answerability_features \
   --split development \
   --collection kb_eval_phase55_0175aa4a2f9b \
   --output artifacts/phase-6/answerability-features/development.jsonl

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import inspect
 
-from scripts import diagnose_multidoc_oracle_context as oracle
+from scripts.audits import diagnose_multidoc_oracle_context as oracle
 
 
 def _loaded():

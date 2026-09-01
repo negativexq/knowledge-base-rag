@@ -6,10 +6,10 @@ from app.evaluation.dataset_fingerprint import (
     evaluation_corpus_fingerprint,
     evaluation_dataset_fingerprint,
 )
-from scripts.build_evaluation_artifacts import build_artifacts
-from scripts.evaluation_corpus_quality import quality_metrics
-from scripts.render_evaluation_pdfs import render_all
-from scripts.validate_evaluation_corpus import expected_evidence_language, validate
+from scripts.operations.build_evaluation_artifacts import build_artifacts
+from scripts.operations.evaluation_corpus_quality import quality_metrics
+from scripts.operations.render_evaluation_pdfs import render_all
+from scripts.operations.validate_evaluation_corpus import expected_evidence_language, validate
 
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = ROOT / "data/evaluation/evaluation-corpus-v2"
@@ -51,7 +51,7 @@ def test_corpus_v2_fingerprints_are_deterministic():
         if path.suffix == ".md":
             text = path.read_text(encoding="utf-8")
         else:
-            from scripts.validate_evaluation_corpus import _read_document
+            from scripts.operations.validate_evaluation_corpus import _read_document
 
             text = _read_document(path, "pdf")
         documents.append({**document, "text": text})

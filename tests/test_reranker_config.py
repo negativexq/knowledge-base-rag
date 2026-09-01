@@ -7,7 +7,7 @@ from app.reranker.config import (
 )
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.shared.config import Settings
-from scripts.benchmark_rerankers import classify_case
+from scripts.benchmarks.benchmark_rerankers import classify_case
 
 
 def test_benchmark_configs_are_explicit_and_keep_candidate_contract():

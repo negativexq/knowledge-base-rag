@@ -37,7 +37,7 @@ Run a deterministic development-only smoke or full pass against the isolated,
 fingerprint-validated Qdrant collection:
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.benchmark_candidate_k \
+PYTHONPATH=. .venv/bin/python -m scripts.benchmarks.benchmark_candidate_k \
   --split development --candidate-k 20 15 10 --limit 20 \
   --qdrant-url http://localhost:6333 \
   --ollama-url http://localhost:11434 \

@@ -61,7 +61,7 @@ benchmark sprint'inin yan etkisi olmamalı. Mekanizma inşa edildi ve
 test edildi, PRODUCTION'a bağlanması ayrı, bilinçli bir karar.
 
 **Benchmark izolasyonu: ayrı Qdrant collection + ayrı SQLite registry,
-production'a hiç dokunmuyor.** `scripts/benchmark_embeddings.py`,
+production'a hiç dokunmuyor.** `scripts/benchmarks/benchmark_embeddings.py`,
 `kb_benchmark_{model_key}` collection'ları ve geçici bir dizindeki
 SQLite dosyalarını kullanıyor — `app/wiring.py`'nin gerçek
 `settings.qdrant_collection_name`/`settings.registry_db_path`'ine hiç
@@ -115,6 +115,6 @@ gerçek bellek kullanımını izole ölçecek bir mekanizma yok") `null`/
 
 Yukarıdaki kullanıcı talimatındaki DoD birebir geçerli — 8 gerçek
 retrieval hücresi + operasyonel metrikler, `artifacts/embedding-
-benchmark/{results.json,report.md}`, `scripts/benchmark_embeddings.py`
+benchmark/{results.json,report.md}`, `scripts/benchmarks/benchmark_embeddings.py`
 CLI, en az 9 test kategorisi, README/PLANNING güncellemesi (sonuç
 kanıtlanmadan iddia yok), açık bir KEEP/ADOPT/NEED-MORE-DATA önerisi.

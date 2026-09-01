@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 from io import StringIO
 
-from scripts.run_techqa_reranker_decision_v1 import assign_blind_arms
+from scripts.experiments.run_techqa_reranker_decision_v1 import assign_blind_arms
 
 
 def test_blind_mapping_is_deterministic_and_balanced() -> None:

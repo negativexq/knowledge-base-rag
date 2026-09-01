@@ -5,7 +5,7 @@ from pathlib import Path
 
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.retrieval.hybrid_search import SearchResult
-from scripts import benchmark_reranker_ablation as ablation
+from scripts.benchmarks import benchmark_reranker_ablation as ablation
 
 OUT = Path("artifacts/phase-7/reranker-ablation")
 

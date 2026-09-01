@@ -61,7 +61,7 @@ async def search(
 ) -> list[SearchResult]:
     # Sprint 18: query_prefix is a parameter (defaulting to nomic's own
     # SEARCH_QUERY_PREFIX, so every existing caller is unaffected) rather
-    # than a hardcoded constant, so scripts/benchmark_embeddings.py can
+    # than a hardcoded constant, so scripts/benchmarks/benchmark_embeddings.py can
     # reuse this EXACT retrieval code path for a challenger embedding
     # model with its own instruction format
     # (app/llm/embedding_models.py::EmbeddingModelConfig.query_prefix())

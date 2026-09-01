@@ -174,7 +174,7 @@ the tenant filter. The benchmark result and latency trade-off are recorded in
 `artifacts/reranker-benchmark-sprint26/` and `docs/reranking.md`.
 
 The reproducible suite is `tests/fixtures/security_sprint25/adversarial.json`
-and the CLI is `python -m scripts.evaluate_prompt_injection`. Its security
+and the CLI is `python -m scripts.experiments.evaluate_prompt_injection`. Its security
 rates are deterministic checks, not a claim of provable model security.
 
 **Verified, not just designed:** `tests/test_cross_tenant_e2e.py` proves

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.benchmark_balanced_semantic import (
+from scripts.benchmarks.benchmark_balanced_semantic import (
     MODEL,
     _expected_action,
     _load_questions,
@@ -78,7 +78,7 @@ class _FakeClient:
 
 @pytest.mark.asyncio
 async def test_balanced_evaluator_reads_cache_only_and_never_retrieves(monkeypatch):
-    import scripts.benchmark_balanced_semantic as module
+    import scripts.benchmarks.benchmark_balanced_semantic as module
     from app.evaluation.semantic_answerability import AMBIGUITY_PROMPT_V2_VERSION
 
     monkeypatch.setattr(module, "search", lambda *args, **kwargs: pytest.fail("retrieval called"))

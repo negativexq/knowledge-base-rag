@@ -880,7 +880,7 @@ bölünecek şekilde) aynı izleme deseniyle doğrulandı — sadece
 `ingest_connector`'a değil, tüm zincire (config → SyncManager →
 ingest_connector) gerçekten ulaştığı kanıtlandı.
 
-**Benchmark GERÇEK native Ollama'ya karşı çalıştırıldı** (`scripts/benchmark_embedding_concurrency.py`,
+**Benchmark GERÇEK native Ollama'ya karşı çalıştırıldı** (`scripts/benchmarks/benchmark_embedding_concurrency.py`,
 `nomic-embed-text`, M2), concurrency=1,2,4,8 × 10/100/1000 chunk:
 
 ```
@@ -1110,7 +1110,7 @@ numarasını alması nedeniyle stretch-connector sprint'i
 `docs/PLANNING.md`'de Sprint 17'ye kaydırıldı).
 
 **8. Benchmark metodolojisi güçlendirildi VE gerçek Ollama'ya karşı
-yeniden koşuldu (skip edilmedi).** `scripts/benchmark_embedding_concurrency.py`:
+yeniden koşuldu (skip edilmedi).** `scripts/benchmarks/benchmark_embedding_concurrency.py`:
 her chunk sayısı için 1 ısınma koşumu, her (chunk_count, concurrency)
 çifti için 3 tekrar, her tekrarda concurrency sırası `random.shuffle`
 ile karıştırılıyor, mean/median/stddev raporlanıyor. Gerçek koşum
@@ -2096,7 +2096,7 @@ Scope:
    `nimbus_kurumsal_sss.md`)
 5. Rank-aware metrikler (Recall@1/3/5, MRR, nDCG@5) — daha önce hiç
    yoktu
-6. `scripts/benchmark_embeddings.py` CLI — operasyonel metriklerle
+6. `scripts/benchmarks/benchmark_embeddings.py` CLI — operasyonel metriklerle
    birlikte, `artifacts/embedding-benchmark/{results.json,report.md}`
    üretiyor
 
@@ -2268,7 +2268,7 @@ isteğini SESSİZCE native boyuta clamp'liyor (hata vermiyor) — bu yüzden
 `OllamaClient.embed()`'e eklenen `dimensions` parametresi hiçbir
 doğrulama yapmıyor, sadece backend'den ne dönerse onu veriyor;
 GERÇEKTEN desteklenip desteklenmediğini anlamak için
-`scripts/benchmark_embeddings.py::probe_dimension_support()` her
+`scripts/benchmarks/benchmark_embeddings.py::probe_dimension_support()` her
 configuration için GERÇEK bir çağrı yapıp dönen vektörün uzunluğunu
 istenenle karşılaştırıyor. `dimensions=None` (mevcut TÜM production
 çağrı yerleri) eski `/api/embeddings` endpoint'ini KULLANMAYA DEVAM
@@ -2446,7 +2446,7 @@ için de çekiyor (bağımsız resampling yerine). Deterministic:
 `random.Random(seed)`, global random state'e dokunmuyor — testle
 kanıtlandı (aynı seed → bit-bit aynı sonuç). Sentetik örneklerle
 kanıtlandı: sabit +0.5 fark → CI kesinlikle sıfırı içermiyor; sıfır
-gerçek fark → CI sıfırı içeriyor. `scripts/benchmark_embeddings.py::
+gerçek fark → CI sıfırı içeriyor. `scripts/benchmarks/benchmark_embeddings.py::
 compute_bootstrap_report`, per-question metrikleri SORU ID'siyle
 eşleştiriyor (liste pozisyonuyla değil) — iki config'in sonuçları
 farklı sırada saklansa bile doğru eşleşme garantili, testle kanıtlandı.
@@ -2708,7 +2708,7 @@ collection'ı serve ederken registry YENİ fingerprint'i "sağlıklı" sanardı.
 semantics'inden BEDAVA idempotency/resume sağlıyor: yarıda kesilen bir
 migration'ı tekrar çalıştırmak sadece eksik kalan dokümanları tamamlıyor.
 
-**Yeni CLI: `python -m scripts.migrate_embedding_index {plan,migrate,validate,activate,rollback,status,cleanup-old}`**
+**Yeni CLI: `python -m scripts.operations.migrate_embedding_index {plan,migrate,validate,activate,rollback,status,cleanup-old}`**
 — tam operatör kılavuzu `docs/embedding-migration.md`.
 
 **Gerçek local migration çalıştırıldı** (Docker Qdrant + native Ollama,

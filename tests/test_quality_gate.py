@@ -173,7 +173,7 @@ async def test_run_smoke_fails_below_min_hit_rate():
 @pytest.mark.asyncio
 async def test_run_smoke_not_found_question_is_a_miss_against_a_non_empty_collection():
     """A "hit" for a not-found question requires an EMPTY result set
-    (matching the same convention scripts/benchmark_embeddings.py's
+    (matching the same convention scripts/benchmarks/benchmark_embeddings.py's
     golden-set eval already uses) — since Qdrant's hybrid search always
     returns its top-k ranked candidates from a non-empty collection
     regardless of how weak the match is, a real deployment's "I don't

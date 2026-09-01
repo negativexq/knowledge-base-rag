@@ -28,11 +28,11 @@ round.
 ## Reproduce the stages
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.benchmark_semantic_models \
+PYTHONPATH=. .venv/bin/python -m scripts.benchmarks.benchmark_semantic_models \
   --build-cache --build-cache-only \
   --collection kb_eval_phase55_0175aa4a2f9b
 
-PYTHONPATH=. .venv/bin/python -m scripts.benchmark_semantic_models \
+PYTHONPATH=. .venv/bin/python -m scripts.benchmarks.benchmark_semantic_models \
   --collection kb_eval_phase55_0175aa4a2f9b \
   --models qwen3.5:4b qwen2.5:3b-instruct gemma2:2b
 ```

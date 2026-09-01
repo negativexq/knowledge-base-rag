@@ -1,6 +1,6 @@
 import numpy as np
 
-from scripts.calibrate_answerability import (
+from scripts.calibration.calibrate_answerability import (
     ABSTAIN_REASONS,
     ALL_FEATURES,
     LEAKAGE_FIELDS,

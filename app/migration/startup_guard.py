@@ -20,7 +20,7 @@ class EmbeddingSchemaMismatchError(Exception):
     """Raised at startup when the configured embedding dimension doesn't
     match the active Qdrant collection's real dense vector dimension.
     Fix: run the Sprint 22 migration CLI (`python -m
-    scripts.migrate_embedding_index plan`) before serving traffic, or
+    scripts.operations.migrate_embedding_index plan`) before serving traffic, or
     correct EMBEDDING_MODEL_KEY/EMBEDDING_OUTPUT_DIMENSION back to match
     what's actually indexed.
     """
@@ -45,5 +45,5 @@ def ensure_embedding_schema_match(qdrant_client: QdrantClient, settings: Setting
             f"Configured embedding dimension {configured_dimension} does not match active "
             f"collection {active_collection!r} dimension {active_dimension}. "
             "Run embedding migration before serving traffic: "
-            "`python -m scripts.migrate_embedding_index plan`."
+            "`python -m scripts.operations.migrate_embedding_index plan`."
         )

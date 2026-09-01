@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from scripts.benchmark_qwen25_multidoc import (
+from scripts.benchmarks.benchmark_qwen25_multidoc import (
     IDS,
     MODEL_4B,
     MODEL_7B,
@@ -34,7 +34,7 @@ def test_preflight_serializes_the_same_cached_context_before_inference() -> None
 
 
 def test_probe_changes_only_generator_model() -> None:
-    source = Path("scripts/benchmark_qwen25_multidoc.py").read_text(encoding="utf-8")
+    source = Path("scripts/benchmarks/benchmark_qwen25_multidoc.py").read_text(encoding="utf-8")
     assert MODEL_4B in source
     assert MODEL_7B in source
     assert '"prompt": PROMPT' in source
@@ -44,7 +44,7 @@ def test_probe_changes_only_generator_model() -> None:
 
 
 def test_probe_guards_no_full_run_or_frozen_split() -> None:
-    source = Path("scripts/benchmark_qwen25_multidoc.py").read_text(encoding="utf-8")
+    source = Path("scripts/benchmarks/benchmark_qwen25_multidoc.py").read_text(encoding="utf-8")
     assert "development=200" not in source
     assert '"frozen_test_touched": False' in source
     assert '"calibration": False' in source

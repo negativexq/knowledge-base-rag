@@ -1,6 +1,6 @@
 """Sprint 22: centralized physical Qdrant collection naming for production
 embedding migrations — deliberately separate from
-scripts/benchmark_embeddings.py's own `kb_benchmark_*` naming (a distinct,
+scripts/benchmarks/benchmark_embeddings.py's own `kb_benchmark_*` naming (a distinct,
 never-serves-traffic namespace), so a benchmark run and a real migration
 can never collide on a collection name even if run against the same
 Qdrant instance.
@@ -21,7 +21,7 @@ _FINGERPRINT_PREFIX_LEN = 8
 
 def sanitize_label(label: str) -> str:
     """"qwen3-4b@1024" -> "qwen3_4b_1024" — matches
-    scripts/benchmark_embeddings.py's own _sanitize_label rule (`.` ->
+    scripts/benchmarks/benchmark_embeddings.py's own _sanitize_label rule (`.` ->
     `_`, not dropped, so "qwen3-0.6b" reads as "qwen3_0_6b", never
     "qwen306b"), kept here as an independent copy rather than importing
     from the benchmark script — that script is a standalone CLI entry

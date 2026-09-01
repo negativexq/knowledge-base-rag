@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.benchmark_context_builder import SELECTION, _cache, selection_artifact
+from scripts.benchmarks.benchmark_context_builder import SELECTION, _cache, selection_artifact
 
 
 def test_context_builder_probe_selection_is_fixed_and_balanced():
@@ -19,7 +19,7 @@ def test_context_builder_probe_selection_is_fixed_and_balanced():
 
 
 def test_context_builder_probe_has_no_retrieval_or_semantic_stage():
-    source = Path("scripts/benchmark_context_builder.py").read_text(encoding="utf-8")
+    source = Path("scripts/benchmarks/benchmark_context_builder.py").read_text(encoding="utf-8")
     assert "QdrantClient" not in source
     assert "CrossEncoderReranker" not in source
     assert "from app.evaluation.semantic_answerability" not in source

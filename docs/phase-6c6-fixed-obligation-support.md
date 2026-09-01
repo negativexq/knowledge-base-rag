@@ -45,7 +45,7 @@ violated the support schema/status contract, predominantly by combining
 The reproducible runner is:
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.benchmark_fixed_obligation_support
+PYTHONPATH=. .venv/bin/python -m scripts.benchmarks.benchmark_fixed_obligation_support
 ```
 
 It reads the fingerprint-validated cache at

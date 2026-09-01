@@ -50,7 +50,7 @@ thread so it does not block the event loop.
 ## Reproduction and artifacts
 
 ```bash
-python -m scripts.benchmark_rerankers \
+python -m scripts.benchmarks.benchmark_rerankers \
   --configs off existing multilingual \
   --output artifacts/reranker-benchmark-sprint26
 ```

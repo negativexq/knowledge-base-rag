@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.benchmark_semantic_models import (
+from scripts.benchmarks.benchmark_semantic_models import (
     DEFAULT_MODELS,
     build_cache_metadata,
     evaluate_model,

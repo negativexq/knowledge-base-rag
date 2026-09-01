@@ -1,4 +1,4 @@
-from scripts.benchmark_model_capacity import (
+from scripts.benchmarks.benchmark_model_capacity import (
     MODEL,
     SELECTION,
     build_selection_artifact,

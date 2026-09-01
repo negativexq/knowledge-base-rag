@@ -1,4 +1,4 @@
-from scripts.compare_ambiguity_versions import (
+from scripts.experiments.compare_ambiguity_versions import (
     _ambiguous_retention,
     _false_clarify_transitions,
 )

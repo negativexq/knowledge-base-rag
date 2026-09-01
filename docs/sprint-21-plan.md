@@ -40,8 +40,8 @@ analysis SONUCUNA göre gerekirse minimum ek soru planı öneriyor
   hesaplaması bu sprintin zaman bütçesinde ek karmaşıklık/risk katardı,
   percentile method delta dağılımı aşırı çarpık olmadığında (burada
   gerçekten kontrol edildi) yeterli ve standart bir yöntem.
-- **`scripts/benchmark_stability.py`** (yeni script, mevcut
-  `scripts/benchmark_embeddings.py`'nin fonksiyonlarını yeniden
+- **`scripts/benchmarks/benchmark_stability.py`** (yeni script, mevcut
+  `scripts/benchmarks/benchmark_embeddings.py`'nin fonksiyonlarını yeniden
   kullanıyor — yeniden yazmıyor) — nondeterminism ölçümü, frozen/live
   mode, multi-run stability, retrieval determinism check, non-
   inferiority + power analysis + production decision.

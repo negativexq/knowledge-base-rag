@@ -1,6 +1,6 @@
 import pytest
 
-import scripts.benchmark_candidate_k as benchmark_module
+import scripts.benchmarks.benchmark_candidate_k as benchmark_module
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import Settings
 

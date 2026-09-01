@@ -48,7 +48,7 @@ configuration (model, dimension, instruction, index schema version).
 
 `app/ingestion/fingerprint.py::PipelineFingerprint` covers embedding
 model, revision, backend, dimension, query/document instruction, and the
-index schema version. `python -m scripts.migrate_embedding_index plan`
+index schema version. `python -m scripts.operations.migrate_embedding_index plan`
 compares the fingerprint of what's currently active against the
 fingerprint implied by `EMBEDDING_MODEL_KEY`/`EMBEDDING_OUTPUT_DIMENSION`
 right now — if they match, it prints `NO MIGRATION REQUIRED` and does
@@ -61,41 +61,41 @@ no mock mode.
 
 ```bash
 # Read-only: what would change, and what documents/chunks are involved.
-python -m scripts.migrate_embedding_index plan
+python -m scripts.operations.migrate_embedding_index plan
 
 # Re-index the full corpus into a new, isolated target collection.
 # Production keeps serving the OLD collection throughout — this never
 # touches the active alias/collection. Safe to re-run after a crash —
 # already-completed documents are skipped, not re-embedded.
-python -m scripts.migrate_embedding_index migrate
-python -m scripts.migrate_embedding_index migrate --dry-run   # plan only
+python -m scripts.operations.migrate_embedding_index migrate
+python -m scripts.operations.migrate_embedding_index migrate --dry-run   # plan only
 
 # Structural checks (counts, dimension, schema, no duplicates) + the
 # full frozen 220-question golden-set quality gate against the target
 # collection. Refuses to let you activate if either fails.
-python -m scripts.migrate_embedding_index validate
+python -m scripts.operations.migrate_embedding_index validate
 
 # Atomically repoints kb_active at the (now-validated) target collection,
 # then runs a fast post-switch smoke check. If the smoke check fails,
 # the alias is AUTOMATICALLY switched back before this command exits
 # non-zero — production is never left pointed at an unverified target.
-python -m scripts.migrate_embedding_index activate
+python -m scripts.operations.migrate_embedding_index activate
 
 # Atomically repoints kb_active back at whatever it pointed to before
 # the last activate/rollback. Symmetric: running this twice in a row
 # re-activates the collection you just rolled back from. Neither
 # collection is ever deleted by this command.
-python -m scripts.migrate_embedding_index rollback
+python -m scripts.operations.migrate_embedding_index rollback
 
 # What's active right now, what the rollback target is, and the latest
 # migration's status — safe to run any time, including after a restart.
-python -m scripts.migrate_embedding_index status
+python -m scripts.operations.migrate_embedding_index status
 
 # EXPLICIT, human-invoked only — never called automatically by any other
 # command. Deletes the collection currently recorded as the rollback
 # target and clears that slot. Refuses if that collection is somehow
 # still the active one.
-python -m scripts.migrate_embedding_index cleanup-old
+python -m scripts.operations.migrate_embedding_index cleanup-old
 ```
 
 ## Failure and cancellation semantics
@@ -163,7 +163,7 @@ into `ingest_connector`. This closes a real gap: a document whose
 OLDER pipeline's fingerprint (e.g. a document synced before a migration
 activated) is treated as stale and re-embedded under the CURRENTLY
 active model — exactly the same reconciliation logic
-`scripts/migrate_embedding_index.py`'s own indexing phase already
+`scripts/operations/migrate_embedding_index.py`'s own indexing phase already
 relies on (Sprint 18), now also protecting ordinary production syncs.
 
 Verified for real: after activating `qwen3-4b@1024`, the first
@@ -181,7 +181,7 @@ re-embed loop. Every point written landed at 1024 dimensions; the old
 Only do this once you're confident you'll never need to roll back:
 
 ```bash
-python -m scripts.migrate_embedding_index cleanup-old
+python -m scripts.operations.migrate_embedding_index cleanup-old
 ```
 
 This permanently deletes the previous collection and clears the

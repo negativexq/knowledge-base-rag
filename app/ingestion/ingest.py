@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 EmbedFn = Callable[[str], Awaitable[list[float]]]
 
 # Chosen from a real benchmark against native Ollama (nomic-embed-text on
-# an M2), not guessed (scripts/benchmark_embedding_concurrency.py; see
+# an M2), not guessed (scripts/benchmarks/benchmark_embedding_concurrency.py; see
 # docs/PLANNING.md Sprint 14 closing note and the README's throughput
 # section for the full table). The real result was a plateau, not
 # unbounded scaling: concurrency=1 -> ~30 chunks/sec, concurrency=2 ->

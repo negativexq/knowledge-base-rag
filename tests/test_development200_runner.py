@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from scripts.run_development200 import (
+from scripts.experiments.run_development200 import (
     EXPECTED_CONFIG_FINGERPRINT,
     canonical_hash,
     run_key,
@@ -36,7 +36,7 @@ def test_canonical_hash_is_stable_for_manifest_payload() -> None:
 
 
 def test_config_identity_drift_is_fail_closed() -> None:
-    from scripts.run_development200 import load_and_assert_identity
+    from scripts.experiments.run_development200 import load_and_assert_identity
 
     config, _fingerprints, questions, fingerprint, _plan, _sample, split_hash = load_and_assert_identity()
     assert config["config_fingerprint"] == EXPECTED_CONFIG_FINGERPRINT

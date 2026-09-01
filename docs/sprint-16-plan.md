@@ -67,7 +67,7 @@ Confirmed directly against code (not assumed) for the other items:
   Confluence has never been started (Sprint 16 stretch, not this sprint).
   Separately, `## Status` still says "Sprints 0–11 complete" even though
   Sprints 12–15 are done and this plan is Sprint 16.
-- `scripts/benchmark_embedding_concurrency.py`'s current methodology: one
+- `scripts/benchmarks/benchmark_embedding_concurrency.py`'s current methodology: one
   run per (chunk_count, concurrency) pair, no warmup, concurrency levels
   always tested in the same fixed order `[1, 2, 4, 8]` (so any
   monotonic warm-up/cache effect across the whole run gets misread as a
@@ -213,7 +213,7 @@ fixed, not a rewrite).
 
 ### 8. Benchmark methodology hardening
 
-`scripts/benchmark_embedding_concurrency.py`: add one untimed warmup
+`scripts/benchmarks/benchmark_embedding_concurrency.py`: add one untimed warmup
 call per chunk-count before the timed runs (rules out first-request
 connection/model-load overhead skewing concurrency=1's numbers low);
 run each (chunk_count, concurrency) pair 3 times and report

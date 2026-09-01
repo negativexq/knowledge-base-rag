@@ -55,7 +55,7 @@ kapanış notu):
   18) — aynı model, farklı `output_dimension` (`qwen3-4b@2560` vs
   `qwen3-4b@1024`) otomatik olarak FARKLI fingerprint üretiyor, ek bir
   değişiklik gerekmedi, sadece testle kanıtlandı.
-- `scripts/benchmark_embeddings.py` multi-candidate hale getirildi:
+- `scripts/benchmarks/benchmark_embeddings.py` multi-candidate hale getirildi:
   `--models`/`--dimensions` (kartezyen çarpım, desteklenmeyenler açıkça
   `unsupported` işaretleniyor) — CLI tasarımı, mevcut argparse stiline
   uygun.

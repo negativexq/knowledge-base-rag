@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from app.evaluation.fact_evidence import evaluate_fact_evidence
-from scripts import diagnose_structure_aware_chunking as diagnostic
+from scripts.audits import diagnose_structure_aware_chunking as diagnostic
 
 
 def _fact(fact_id: str = "window") -> dict[str, str]:

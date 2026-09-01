@@ -1,4 +1,4 @@
-from scripts.diagnose_citation_validator import build_diagnosis, validate_inputs
+from scripts.audits.diagnose_citation_validator import build_diagnosis, validate_inputs
 
 
 def test_diagnosis_validates_existing_identity_without_inference():

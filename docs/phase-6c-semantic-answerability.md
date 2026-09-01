@@ -59,7 +59,7 @@ top-n=5, Qwen3-Embedding-4B at 1024, BM25+dense+RRF, and BGE reranking). It
 does not call answer generation:
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.evaluate_semantic_answerability \
+PYTHONPATH=. .venv/bin/python -m scripts.experiments.evaluate_semantic_answerability \
   --split development \
   --collection kb_eval_phase55_0175aa4a2f9b \
   --limit 25 \

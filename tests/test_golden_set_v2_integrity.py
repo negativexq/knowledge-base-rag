@@ -36,7 +36,7 @@ def _load_questions() -> list[dict]:
 def _real_locations(tmp_path) -> set[tuple[str, str, str]]:
     """Builds the real chunk set from the actual fixture-building
     functions and the actual chunkers — the same functions
-    scripts/benchmark_embeddings.py uses to build the benchmark corpus —
+    scripts/benchmarks/benchmark_embeddings.py uses to build the benchmark corpus —
     and derives their real (source_type, source_id, location) triples.
     "filesystem" is hardcoded here because that's the source_type
     LocalFilesystemConnector always passes, overriding chunk_document's/

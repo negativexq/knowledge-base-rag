@@ -1,4 +1,4 @@
-from scripts.analyze_answerability_failures import (
+from scripts.audits.analyze_answerability_failures import (
     _gold_presence,
     _taxonomy_row,
 )

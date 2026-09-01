@@ -76,7 +76,7 @@ address sufficiency behavior while preserving this boundary as a candidate.
 Run the comparison with:
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.benchmark_query_scope_boundary \
+PYTHONPATH=. .venv/bin/python -m scripts.benchmarks.benchmark_query_scope_boundary \
   --cache-dir artifacts/phase-6/semantic-balanced-smoke \
   --output-dir artifacts/phase-6/query-scope-boundary \
   --collection kb_eval_phase55_0175aa4a2f9b

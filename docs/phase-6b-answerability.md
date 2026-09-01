@@ -33,7 +33,7 @@ used.
 First export the independent calibration features with the Phase 6A exporter:
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.export_answerability_features \
+PYTHONPATH=. .venv/bin/python -m scripts.calibration.export_answerability_features \
   --split calibration --allow-calibration \
   --collection kb_eval_phase55_0175aa4a2f9b \
   --output artifacts/phase-6/answerability-features/calibration.jsonl
@@ -42,7 +42,7 @@ PYTHONPATH=. .venv/bin/python -m scripts.export_answerability_features \
 Then run the deterministic development-fit/calibration-confirmation pass:
 
 ```bash
-PYTHONPATH=. .venv/bin/python scripts/calibrate_answerability.py
+PYTHONPATH=. .venv/bin/python scripts/calibration/calibrate_answerability.py
 ```
 
 The script reads the committed feature exports and writes derived evidence to
@@ -67,7 +67,7 @@ that later, locked final evaluation.
 Phase 6B.1 failure analysis is available through:
 
 ```bash
-PYTHONPATH=. .venv/bin/python scripts/analyze_answerability_failures.py
+PYTHONPATH=. .venv/bin/python scripts/audits/analyze_answerability_failures.py
 ```
 
 It separates retrieval failures from false abstentions where all required

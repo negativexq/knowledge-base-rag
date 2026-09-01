@@ -14,7 +14,7 @@ from app.evaluation.semantic_answerability import (
     authorized_context,
 )
 from app.retrieval.hybrid_search import SearchResult
-from scripts.benchmark_fixed_obligation_support import _evaluate_candidate
+from scripts.benchmarks.benchmark_fixed_obligation_support import _evaluate_candidate
 
 
 def _chunk(chunk_id: str = "c1", text: str = "The policy explicitly states the rule."):

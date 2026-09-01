@@ -5,7 +5,7 @@ import pytest
 from app.evaluation.embedding_cache import EmbeddingCache, cache_key
 from app.llm.embedding_models import get_embedding_model_config
 from app.shared.config import Settings
-from scripts.benchmark_stability import (
+from scripts.benchmarks.benchmark_stability import (
     BOOTSTRAP_ITERATIONS,
     NON_INFERIORITY_MARGINS,
     _embed_query,

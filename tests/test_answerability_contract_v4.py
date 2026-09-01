@@ -9,7 +9,7 @@ from app.llm.structured_output import (
     support_unit_answerability_schema,
     validate_answerability_output,
 )
-from scripts.run_techqa_answerability_contract_v4 import preflight_allows_official
+from scripts.experiments.run_techqa_answerability_contract_v4 import preflight_allows_official
 
 
 def unit(support_id: str, text: str) -> SupportUnit:

@@ -10,7 +10,7 @@ from app.evaluation.candidate_sweep import (
     recommend_candidate_k,
     validate_candidate_k,
 )
-from scripts.benchmark_candidate_k import _load_questions, select_questions
+from scripts.benchmarks.benchmark_candidate_k import _load_questions, select_questions
 
 
 def _record(query_id: str, family: str, **metrics):

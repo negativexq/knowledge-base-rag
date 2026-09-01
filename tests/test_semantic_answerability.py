@@ -23,7 +23,7 @@ from app.evaluation.semantic_answerability import (
 )
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import Settings
-from scripts.evaluate_semantic_answerability import load_questions
+from scripts.experiments.evaluate_semantic_answerability import load_questions
 
 
 def _chunk(chunk_id: str = "c1", source_id: str = "policy", text: str = "Refunds are allowed."):

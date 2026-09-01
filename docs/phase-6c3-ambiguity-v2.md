@@ -16,7 +16,7 @@ instructions to the evaluator.
 Run the evaluator-only comparison with:
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.compare_ambiguity_versions \
+PYTHONPATH=. .venv/bin/python -m scripts.experiments.compare_ambiguity_versions \
   --cache-dir artifacts/phase-6/semantic-balanced-smoke \
   --output-dir artifacts/phase-6/ambiguity-v2 \
   --collection kb_eval_phase55_0175aa4a2f9b \

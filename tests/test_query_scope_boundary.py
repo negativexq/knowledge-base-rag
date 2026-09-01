@@ -1,4 +1,4 @@
-from scripts.benchmark_query_scope_boundary import compact_scope_metadata
+from scripts.benchmarks.benchmark_query_scope_boundary import compact_scope_metadata
 
 
 def test_compact_scope_metadata_keeps_only_runtime_safe_applicability_fields():

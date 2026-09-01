@@ -4,7 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from scripts.create_techqa_corrected_holdout_amendment_v2 import write_once_bytes, writer_self_test
+from scripts.operations.create_techqa_corrected_holdout_amendment_v2 import (
+    write_once_bytes,
+    writer_self_test,
+)
 
 
 def test_write_once_fails_closed_on_existing_target(tmp_path: Path) -> None:

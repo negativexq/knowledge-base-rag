@@ -1,4 +1,4 @@
-from scripts.measurement_lock_m0 import IDENTITY, run_key
+from scripts.experiments.measurement_lock_m0 import IDENTITY, run_key
 
 
 def test_run_key_binds_query_seed_snapshot_and_pipeline():

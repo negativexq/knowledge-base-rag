@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from app.llm.embedding_models import get_embedding_model_config
 from app.shared.config import Settings
-from scripts.benchmark_embeddings import (
+from scripts.benchmarks.benchmark_embeddings import (
     DEFAULT_CONFIGS,
     DEFAULT_GOLDEN_SET,
     _measure_real_collection_disk_bytes,
@@ -77,7 +77,7 @@ def test_collection_name_for_is_isolated_per_config():
 
 def test_collection_names_are_isolated_across_all_default_configs():
     settings = Settings()
-    from scripts.benchmark_embeddings import parse_config_token
+    from scripts.benchmarks.benchmark_embeddings import parse_config_token
 
     names = {collection_name_for(parse_config_token(t, settings)) for t in DEFAULT_CONFIGS}
 
@@ -233,7 +233,7 @@ def test_storage_measurement_uses_block_based_du_not_apparent_size():
     differed between configs when checked directly against the running
     container. This test locks in that the command uses -sk, not -sb.
     """
-    with patch("scripts.benchmark_embeddings.subprocess.run") as mock_run:
+    with patch("scripts.benchmarks.benchmark_embeddings.subprocess.run") as mock_run:
         mock_run.return_value.returncode = 0
         mock_run.return_value.stdout = "2444\t/qdrant/storage/collections/x\n"
 
@@ -246,12 +246,15 @@ def test_storage_measurement_uses_block_based_du_not_apparent_size():
 
 
 def test_storage_measurement_returns_none_when_docker_is_unavailable():
-    with patch("scripts.benchmark_embeddings.subprocess.run", side_effect=FileNotFoundError):
+    with patch(
+        "scripts.benchmarks.benchmark_embeddings.subprocess.run",
+        side_effect=FileNotFoundError,
+    ):
         assert _measure_real_collection_disk_bytes("x") is None
 
 
 def test_storage_measurement_returns_none_on_nonzero_exit():
-    with patch("scripts.benchmark_embeddings.subprocess.run") as mock_run:
+    with patch("scripts.benchmarks.benchmark_embeddings.subprocess.run") as mock_run:
         mock_run.return_value.returncode = 1
         mock_run.return_value.stdout = ""
 

@@ -19,11 +19,11 @@ failure on complete multi-document evidence is a blocker for the full 200-query
 run, even when false-answer safety is perfect.
 
 ```bash
-PYTHONPATH=. .venv/bin/python -m scripts.benchmark_balanced_semantic \
+PYTHONPATH=. .venv/bin/python -m scripts.benchmarks.benchmark_balanced_semantic \
   --build-cache --build-cache-only \
   --collection kb_eval_phase55_0175aa4a2f9b
 
-PYTHONPATH=. .venv/bin/python -m scripts.benchmark_balanced_semantic \
+PYTHONPATH=. .venv/bin/python -m scripts.benchmarks.benchmark_balanced_semantic \
   --collection kb_eval_phase55_0175aa4a2f9b \
   --model qwen3.5:4b
 ```

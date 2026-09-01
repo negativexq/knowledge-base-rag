@@ -31,7 +31,7 @@ class EmbeddingModelConfig:
     # The dimension THIS config expects to get back — for a native config
     # this is the model's own real output size; for a truncated config
     # (Sprint 19) it's the requested size, assumed honored until a real
-    # probe call (scripts/benchmark_embeddings.py) proves otherwise.
+    # probe call (scripts/benchmarks/benchmark_embeddings.py) proves otherwise.
     # Qdrant collection sizing and PipelineFingerprint both use this
     # field, not output_dimension, so a config whose probe turns out
     # unsupported never silently sizes a collection wrong.
@@ -169,7 +169,7 @@ def active_embedding_config(settings: Settings) -> EmbeddingModelConfig:
 def parse_config_token(token: str, settings: Settings) -> EmbeddingModelConfig:
     """Parses a "model@dimension" CLI token (e.g. "qwen3-4b@1024",
     "qwen3-0.6b@native", "nomic@native") into a resolved
-    EmbeddingModelConfig — the format scripts/benchmark_embeddings.py's
+    EmbeddingModelConfig — the format scripts/benchmarks/benchmark_embeddings.py's
     --configs flag uses. "native" (or a bare "model" with no "@") means
     output_dimension=None.
     """

@@ -39,7 +39,7 @@ def _chunk() -> SearchResult:
 
 
 def test_generation_smoke_selection_is_deterministic_and_balanced():
-    from scripts.benchmark_generation_smoke import _load_questions
+    from scripts.benchmarks.benchmark_generation_smoke import _load_questions
 
     first = select_generation_smoke_questions(_load_questions())
     second = select_generation_smoke_questions(_load_questions())

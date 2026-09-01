@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from app.llm.openai_client import canonical_hash
-from scripts.run_ragbench_techqa_canonical import (
+from scripts.benchmarks.run_ragbench_techqa_canonical import (
     DATASET_PATH,
     DATASET_REVISION,
     RERANKER_MODEL,
@@ -52,7 +52,7 @@ def test_techqa_deduplication_retains_first_pinned_parquet_row() -> None:
 
 
 def test_techqa_runner_uses_frozen_canonical_model_settings() -> None:
-    from scripts.run_ragbench_techqa_canonical import GENERATOR_MODEL
+    from scripts.benchmarks.run_ragbench_techqa_canonical import GENERATOR_MODEL
 
     assert GENERATOR_MODEL == "gpt-5.6-luna"
     assert RERANKER_MODEL == "BAAI/bge-reranker-v2-m3"

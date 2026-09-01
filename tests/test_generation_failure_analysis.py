@@ -1,4 +1,4 @@
-from scripts.analyze_generation_failures import build_analysis, validate_inputs
+from scripts.audits.analyze_generation_failures import build_analysis, validate_inputs
 
 
 def test_phase7_failure_analysis_validates_existing_identity_without_inference():

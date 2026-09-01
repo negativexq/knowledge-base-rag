@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.benchmark_context_builder_full import (
+from scripts.benchmarks.benchmark_context_builder_full import (
     MODEL,
     PROMPT,
     _metrics,

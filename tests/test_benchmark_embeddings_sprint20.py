@@ -1,4 +1,4 @@
-from scripts.benchmark_embeddings import (
+from scripts.benchmarks.benchmark_embeddings import (
     SPRINT20_CONFIGS,
     SPRINT20_GOLDEN_SET,
     _subset_question_ids,

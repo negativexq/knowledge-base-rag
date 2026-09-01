@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.diagnose_offline_failure import (
+from scripts.audits.diagnose_offline_failure import (
     classify_acl,
     classify_validator_rejections,
     dataset_questions,
@@ -19,7 +19,7 @@ from scripts.diagnose_offline_failure import (
 def _artifacts() -> tuple[dict[str, dict], dict[str, dict], list[dict], dict[tuple[str, str, str], dict]]:
     _, _, cache_rows, b_rows = identity_check()
     questions = dataset_questions([row["query_id"] for row in cache_rows])
-    from scripts.diagnose_offline_failure import chunk_index
+    from scripts.audits.diagnose_offline_failure import chunk_index
 
     return questions, b_rows, cache_rows, chunk_index(cache_rows)
 
@@ -49,7 +49,7 @@ def test_phase_7_6_required_diagnostic_slices_are_exact() -> None:
 
 
 def test_phase_7_6_no_inference_or_retrieval_clients_in_script() -> None:
-    source = Path("scripts/diagnose_offline_failure.py").read_text(encoding="utf-8")
+    source = Path("scripts/audits/diagnose_offline_failure.py").read_text(encoding="utf-8")
     forbidden = ("ollama", "qdrant", "reranker", "openai", "anthropic", "deep_eval")
     lowered = source.casefold()
     assert not any(f"import {name}" in lowered or f"from {name}" in lowered for name in forbidden)

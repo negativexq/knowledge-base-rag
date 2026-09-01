@@ -6,7 +6,7 @@ from app.evaluation.answerability import (
 )
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import Settings
-from scripts.export_answerability_features import _config_snapshot, load_questions
+from scripts.calibration.export_answerability_features import _config_snapshot, load_questions
 
 
 def _result(score: float, source_id: str, doc_id: str = "doc") -> SearchResult:

@@ -92,7 +92,7 @@ async def test_search_applies_search_query_prefix_to_dense_embedding():
 
 @pytest.mark.asyncio
 async def test_search_accepts_a_query_prefix_override_for_a_different_embedding_model():
-    """Sprint 18: scripts/benchmark_embeddings.py needs to reuse this
+    """Sprint 18: scripts/benchmarks/benchmark_embeddings.py needs to reuse this
     exact function for a challenger embedding model with its own
     instruction format — asserting the override actually reaches
     ollama.embed() (not silently ignored, not blended with

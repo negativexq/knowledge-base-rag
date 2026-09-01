@@ -1,4 +1,4 @@
-from scripts.ragbench_emanual_common import (
+from scripts.benchmarks.ragbench_emanual_common import (
     canonical_hash,
     choose_sample,
     normalize_text,

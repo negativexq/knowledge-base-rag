@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     # \nQuery: " prefix, documents get none) — see
     # app/llm/embedding_models.py. Not used by the production default
     # embedding path (settings.embedding_provider/ollama_embed_model
-    # unchanged); only scripts/benchmark_embeddings.py reads these.
+    # unchanged); only scripts/benchmarks/benchmark_embeddings.py reads these.
     qwen3_embed_model: str = "qwen3-embedding:4b"
     qwen3_embed_revision: str = "latest"
     # Verified against a real /api/embeddings call before use, not

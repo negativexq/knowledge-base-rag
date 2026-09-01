@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from scripts.audit_canonical_support_validator_failures import (
+from scripts.audits.audit_canonical_support_validator_failures import (
     classify_critical_part,
     safe_subset_exists,
 )
@@ -51,6 +51,6 @@ def test_production_like_numeric_mismatch_does_not_get_subset_rescue() -> None:
 
 def test_forensic_runner_has_no_provider_or_retrieval_imports() -> None:
     root = Path(__file__).resolve().parents[1]
-    source = (root / "scripts/audit_canonical_support_validator_failures.py").read_text()
+    source = (root / "scripts/audits/audit_canonical_support_validator_failures.py").read_text()
     for forbidden in ("openai", "ollama", "qdrant", "reranker", "embedding"):
         assert f"import {forbidden}" not in source.lower()

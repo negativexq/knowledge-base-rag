@@ -57,7 +57,7 @@ serving `nomic-embed-text` might not get faster past some concurrency
 level — it could plateau (single model, likely serializing internally)
 or even get worse (request queuing/context-switching overhead exceeding
 any real parallelism gain). The benchmark script
-(`scripts/benchmark_embedding_concurrency.py`, not part of the automated
+(`scripts/benchmarks/benchmark_embedding_concurrency.py`, not part of the automated
 test suite — same reasoning as Sprint 12's CI decision: no Ollama in CI,
 and a benchmark isn't a correctness test) runs concurrency levels 1, 2,
 4, 8 against real chunk counts 10, 100, 1000, each combination timed with

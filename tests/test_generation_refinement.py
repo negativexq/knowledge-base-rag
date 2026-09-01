@@ -5,7 +5,7 @@ from app.evaluation.generation_refinement import (
     score_required_facts,
     validator_failure_codes,
 )
-from scripts.refine_generation_evaluation import build_report, validate_artifacts
+from scripts.audits.refine_generation_evaluation import build_report, validate_artifacts
 
 
 def test_normalization_handles_unicode_turkish_and_punctuation():
