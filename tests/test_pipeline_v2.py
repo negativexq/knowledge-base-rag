@@ -5,26 +5,14 @@ import pytest
 from app.evidence.section_aware import SectionAwareEvidenceBuilder, serialize_section_aware_context
 from app.llm.observability import GenerationObservation
 from app.llm.structured_output import (
-    AnswerPart,
     EvidenceBackedAnswer,
     EvidenceBackedAnswerPart,
     EvidenceQuote,
-    HardenedAnswer,
-    HardenedAnswerPart,
-    StructuredAnswer,
     normalize_evidence_quote,
     parse_evidence_backed_answer,
-    parse_hardened_answer,
-    parse_structured_answer,
-    render_answer_parts,
     render_evidence_backed_answer,
-    render_hardened_answer_parts,
     stream_evidence_backed_answer,
-    stream_hardened_answer,
-    stream_structured_answer,
     validate_evidence_backed_answer,
-    validate_hardened_answer,
-    validate_structured_answer,
 )
 from app.retrieval.hybrid_search import SearchResult
 from app.security.models import RetrievalContext
@@ -244,161 +232,12 @@ def test_section_key_never_crosses_source_or_tenant():
     assert [item.id for item in section] == ["anchor"]
 
 
-def test_structured_output_parser_and_renderer_do_not_invent_text():
-    raw = json.dumps(
-        {
-            "answer_parts": [
-                {
-                    "text": "14 calendar days",
-                    "citations": ["[s.filesystem:returns/Policy]"],
-                }
-            ],
-            "abstain": False,
-        }
-    )
-    parsed = parse_structured_answer(raw)
-    assert render_answer_parts(parsed.answer_parts) == (
-        "14 calendar days [s.filesystem:returns/Policy]"
-    )
-    assert "invented" not in render_answer_parts(parsed.answer_parts)
-
-
-def test_structured_validator_rejects_unknown_and_unauthorized_citations():
-    chunks = [_chunk("chunk", "14 calendar days")]
-    valid = SectionAwareEvidenceBuilder._block(chunks[0], chunks)
-    answer = StructuredAnswer(
-        [
-            AnswerPart("good", ["[s.filesystem:returns/Policy]"]),
-            AnswerPart("bad", ["[s.filesystem:other/Policy]"]),
-        ],
-        False,
-    )
-    result = validate_structured_answer(answer, [valid])
-    assert len(result.valid_parts) == 1
-    assert result.rejected_parts[0]["failure_codes"] == ["UNKNOWN_CITATION_ID"]
-
-
 class _StructuredProvider:
     def __init__(self, value):
         self.value = value
 
     async def chat_json(self, messages, *, model, think, temperature, schema, num_ctx):
         return json.dumps(self.value, ensure_ascii=False)
-
-
-@pytest.mark.asyncio
-async def test_claim_level_validation_preserves_valid_parts_but_not_invalid_parts():
-    chunk = _chunk("chunk", "14 calendar days")
-    block = SectionAwareEvidenceBuilder._block(chunk, [chunk])
-    observation = GenerationObservation()
-    events = [
-        event
-        async for event in stream_structured_answer(
-            "How long?",
-            [block],
-            _StructuredProvider(
-                {
-                    "answer_parts": [
-                        {
-                            "text": "14 calendar days",
-                            "citations": ["[s.filesystem:returns/Policy]"],
-                        },
-                        {"text": "unsupported", "citations": ["[s.filesystem:other/Policy]"]},
-                    ],
-                    "abstain": False,
-                }
-            ),
-            model="qwen3.5:4b",
-            context_serializer=lambda chunks: "context",
-            evaluation_observation=observation,
-        )
-    ]
-    tokens = [event["content"] for event in events if event["type"] == "token"]
-    assert tokens == ["14 calendar days [s.filesystem:returns/Policy]"]
-    assert observation.validator_pass is False
-    assert observation.user_visible_output_available is True
-
-
-@pytest.mark.asyncio
-async def test_structured_top_level_schema_failure_remains_fail_closed():
-    observation = GenerationObservation()
-    events = [
-        event
-        async for event in stream_structured_answer(
-            "How long?",
-            [_chunk("chunk", "14 calendar days")],
-            _StructuredProvider({"not_answer_parts": []}),
-            model="qwen3.5:4b",
-            context_serializer=lambda chunks: "context",
-            evaluation_observation=observation,
-        )
-    ]
-    assert not [event for event in events if event["type"] == "token"]
-    assert observation.validator_pass is False
-    assert observation.user_visible_output_available is False
-
-
-def test_hardened_evidence_ids_are_local_and_resolve_to_provenance():
-    source = _chunk("chunk", "14 days")
-    block = SectionAwareEvidenceBuilder._block(source, [source])
-    block.payload["evidence_id"] = "E1"
-    result = validate_hardened_answer(
-        HardenedAnswer([HardenedAnswerPart("14 days", ["E1"])], False), [block]
-    )
-    assert result.failure_codes == []
-    assert render_hardened_answer_parts(result.valid_parts) == "14 days [E1]"
-
-
-def test_hardened_unknown_evidence_rejects_only_the_bad_part():
-    source = _chunk("chunk", "14 days")
-    block = SectionAwareEvidenceBuilder._block(source, [source])
-    answer = HardenedAnswer(
-        [HardenedAnswerPart("14 days", ["E1"]), HardenedAnswerPart("other", ["E9"])], False
-    )
-    result = validate_hardened_answer(answer, [block])
-    assert [part.text for part in result.valid_parts] == ["14 days"]
-    assert result.rejected_parts[0]["failure_codes"] == ["UNKNOWN_EVIDENCE_ID"]
-
-
-def test_hardened_parser_allows_only_conservative_json_fence_and_abstention():
-    parsed = parse_hardened_answer(
-        '```json\n{"answer_parts":[],"abstain":true,' '"reason_code":"INSUFFICIENT_EVIDENCE"}\n```'
-    )
-    assert parsed.abstain is True
-    invalid = parse_hardened_answer('{"answer_parts":[],"abstain":false}')
-    assert "ABSTAIN_CONTRACT_INVALID" in validate_hardened_answer(invalid, []).failure_codes
-
-
-@pytest.mark.asyncio
-async def test_hardened_stream_exposes_raw_and_keeps_invalid_part_hidden():
-    chunk = _chunk("chunk", "14 calendar days")
-    block = SectionAwareEvidenceBuilder._block(chunk, [chunk])
-    observation = GenerationObservation()
-    events = [
-        event
-        async for event in stream_hardened_answer(
-            "How long?",
-            [block],
-            _StructuredProvider(
-                {
-                    "answer_parts": [
-                        {"text": "14 calendar days", "evidence_ids": ["E1"]},
-                        {"text": "bad", "evidence_ids": ["E9"]},
-                    ],
-                    "abstain": False,
-                }
-            ),
-            model="qwen3.5:4b",
-            context_serializer=lambda chunks: "context",
-            evaluation_observation=observation,
-        )
-    ]
-    assert [event["content"] for event in events if event["type"] == "token"] == [
-        "14 calendar days [E1]"
-    ]
-    assert observation.raw_candidate_available is True
-    assert observation.validator_pass is False
-    assert observation.user_visible_output_available is True
 
 
 @pytest.mark.asyncio

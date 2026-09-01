@@ -29,14 +29,12 @@ from app.llm.ollama_client import OllamaClient
 from app.llm.output_policy import check_output_policy
 from app.llm.prompt import load_system_prompt
 from app.llm.structured_output import (
-    PIPELINE_VERSION,
-    STRUCTURED_OUTPUT_CONTRACT_VERSION,
-    AnswerPart,
-    StructuredValidation,
-    parse_structured_answer,
-    render_answer_parts,
-    stream_structured_answer,
-    validate_structured_answer,
+    EVIDENCE_BACKED_OUTPUT_CONTRACT_VERSION,
+    EVIDENCE_BACKED_PIPELINE_VERSION,
+    parse_evidence_backed_answer,
+    render_evidence_backed_answer,
+    stream_evidence_backed_answer,
+    validate_evidence_backed_answer,
 )
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import Settings
@@ -70,6 +68,9 @@ SELECTED = (
     "cross-00-0",
     "cross-06-0",
 )
+
+PIPELINE_VERSION = EVIDENCE_BACKED_PIPELINE_VERSION
+OUTPUT_CONTRACT_VERSION = EVIDENCE_BACKED_OUTPUT_CONTRACT_VERSION
 
 
 def read_json(path: Path) -> Any:
@@ -323,24 +324,37 @@ def fact_score(question: dict[str, Any], answer: str, observable: bool = True) -
     return score_required_facts(question.get("expected_answer"), answer, observable=observable)
 
 
+def render_candidate(candidate: dict[str, Any] | None) -> str:
+    if not candidate or candidate.get("abstain"):
+        return ""
+    return "\n\n".join(
+        str(part.get("text", "")).strip()
+        for part in candidate.get("answer_parts", [])
+        if isinstance(part, dict) and part.get("text")
+    )
+
+
 def rescore_validator_record(
     row: dict[str, Any], blocks: list[SearchResult]
 ) -> dict[str, Any]:
     """Re-evaluate stored candidates without crossing the inference boundary."""
     raw = row.get("raw_candidate") or ""
     try:
-        parsed = parse_structured_answer(raw)
-        validation = validate_structured_answer(parsed, blocks)
-        rendered = render_answer_parts(validation.valid_parts, abstain=validation.abstain)
+        parsed = parse_evidence_backed_answer(raw)
+        validation = validate_evidence_backed_answer(parsed, blocks)
+        rendered = render_evidence_backed_answer(
+            validation.valid_parts,
+            abstain=validation.application_abstain,
+        )
         top_level_valid = True
     except (ValueError, json.JSONDecodeError):
         parsed = None
-        validation = StructuredValidation(None, [], [], ["OUTPUT_SCHEMA_FAILURE"], False, False)
+        validation = None
         rendered = ""
         top_level_valid = False
     policy = check_output_policy(rendered, blocks, load_system_prompt("v3"))
     codes = sorted(
-        set(validation.failure_codes)
+        set(validation.failure_codes if validation else ["OUTPUT_SCHEMA_FAILURE"])
         | set(normalize_validator_failure_codes(policy.violations))
     )
     user_visible = (
@@ -349,7 +363,9 @@ def rescore_validator_record(
         and policy.passed
         and "UNAUTHORIZED_CITATION_ID" not in codes
     )
-    row["validator_pass"] = bool(policy.passed and not validation.failure_codes and top_level_valid)
+    row["validator_pass"] = bool(
+        policy.passed and not (validation and validation.failure_codes) and top_level_valid
+    )
     row["validator_failure_codes"] = codes
     row["validated_output"] = rendered if user_visible else None
     row["user_visible_output"] = rendered if user_visible else ""
@@ -357,7 +373,13 @@ def rescore_validator_record(
     row["structured_candidate"] = (
         {
             "answer_parts": [
-                {"text": part.text, "citations": list(part.citations)}
+                {
+                    "text": part.text,
+                    "evidence": [
+                        {"evidence_id": item.evidence_id, "quote": item.quote}
+                        for item in part.evidence
+                    ],
+                }
                 for part in parsed.answer_parts
             ],
             "abstain": parsed.abstain,
@@ -381,13 +403,7 @@ async def run_closure(cache: dict[str, dict[str, Any]], historical: dict[str, di
         raw = row.get("raw_candidate", "")
         content_text = raw
         if row.get("structured_candidate"):
-            content_text = render_answer_parts(
-                [
-                    AnswerPart(part["text"], part.get("citations", []))
-                    for part in row["structured_candidate"].get("answer_parts", [])
-                ],
-                abstain=bool(row["structured_candidate"].get("abstain")),
-            )
+            content_text = render_candidate(row["structured_candidate"])
         row["fact_score"] = fact_score(
             questions[query_id], content_text, row.get("raw_candidate_available", False)
         )
@@ -399,7 +415,7 @@ async def run_closure(cache: dict[str, dict[str, Any]], historical: dict[str, di
         observation = GenerationObservation()
         events: list[dict[str, Any]] = []
         started = time.perf_counter()
-        async for event in stream_structured_answer(
+        async for event in stream_evidence_backed_answer(
             questions[query_id]["question"], blocks, client, model=settings.ollama_model,
             prompt_version="v3", validation_mode="strict", context_serializer=serialize_section_aware_context,
             evaluation_observation=observation,
@@ -412,17 +428,11 @@ async def run_closure(cache: dict[str, dict[str, Any]], historical: dict[str, di
         # determined by the strict claim validator.
         content_text = raw
         if observation.structured_candidate:
-            content_text = render_answer_parts(
-                [
-                    type("Part", (), {"text": part["text"], "citations": part.get("citations", [])})()
-                    for part in observation.structured_candidate.get("answer_parts", [])
-                ],
-                abstain=bool(observation.structured_candidate.get("abstain")),
-            )
+            content_text = render_candidate(observation.structured_candidate)
         score = fact_score(questions[query_id], content_text, observation.raw_candidate_available)
         rows.append({
             "query_id": query_id, "category": questions[query_id]["category"], "question": questions[query_id]["question"],
-            "pipeline_version": PIPELINE_VERSION, "output_contract_version": STRUCTURED_OUTPUT_CONTRACT_VERSION,
+            "pipeline_version": PIPELINE_VERSION, "output_contract_version": OUTPUT_CONTRACT_VERSION,
             "generation_calls": 1, "provider_status": "COMPLETED" if observation.raw_candidate_available else "FAILED",
             "generation_latency_ms": round(latency, 3), "context": context_metrics,
             "raw_candidate": raw, "raw_candidate_available": observation.raw_candidate_available,
@@ -472,7 +482,7 @@ async def run_smoke36(cache: dict[str, dict[str, Any]], questions: dict[str, dic
         observation = GenerationObservation()
         events: list[dict[str, Any]] = []
         started = time.perf_counter()
-        async for event in stream_structured_answer(
+        async for event in stream_evidence_backed_answer(
             questions[query_id]["question"], blocks, client,
             model="qwen3.5:4b", prompt_version="v3", validation_mode="strict",
             context_serializer=serialize_section_aware_context,
@@ -482,13 +492,7 @@ async def run_smoke36(cache: dict[str, dict[str, Any]], questions: dict[str, dic
         raw = observation.raw_candidate_output or ""
         content_text = raw
         if observation.structured_candidate:
-            content_text = render_answer_parts(
-                [
-                    AnswerPart(part["text"], part.get("citations", []))
-                    for part in observation.structured_candidate.get("answer_parts", [])
-                ],
-                abstain=bool(observation.structured_candidate.get("abstain")),
-            )
+            content_text = render_candidate(observation.structured_candidate)
         score = fact_score(questions[query_id], content_text, observation.raw_candidate_available)
         row = {
             "query_id": query_id, "category": questions[query_id]["category"],
@@ -561,13 +565,7 @@ def rescore_existing_artifacts(
             row = rescore_validator_record(rows_by_id[query_id], blocks)
             content_text = row.get("raw_candidate") or ""
             if row.get("structured_candidate"):
-                content_text = render_answer_parts(
-                    [
-                        AnswerPart(part["text"], part.get("citations", []))
-                        for part in row["structured_candidate"].get("answer_parts", [])
-                    ],
-                    abstain=bool(row["structured_candidate"].get("abstain")),
-                )
+                content_text = render_candidate(row["structured_candidate"])
             row["fact_score"] = fact_score(
                 questions[query_id], content_text, row.get("raw_candidate_available", False)
             )
@@ -610,8 +608,8 @@ def main() -> None:
     if args.rescore_existing:
         print(json.dumps(rescore_existing_artifacts(cache, questions), ensure_ascii=False, indent=2))
         return
-    write_json(OUT / "pipeline-version.json", {"pipeline_version": PIPELINE_VERSION, "output_contract_version": STRUCTURED_OUTPUT_CONTRACT_VERSION, "default_enabled": False})
-    write_json(OUT / "implementation-config.json", {**EXPECTED, "pipeline_version": PIPELINE_VERSION, "output_contract_version": STRUCTURED_OUTPUT_CONTRACT_VERSION, "rag_pipeline_v2": False, "context_builder": "section_aware", "validator": "claim_level_strict"})
+    write_json(OUT / "pipeline-version.json", {"pipeline_version": PIPELINE_VERSION, "output_contract_version": OUTPUT_CONTRACT_VERSION, "default_enabled": False})
+    write_json(OUT / "implementation-config.json", {**EXPECTED, "pipeline_version": PIPELINE_VERSION, "output_contract_version": OUTPUT_CONTRACT_VERSION, "rag_pipeline_v2": False, "context_builder": "section_aware", "validator": "claim_level_strict"})
     write_json(OUT / "fact-annotation-manifest.json", {"query_ids": list(SELECTED), "counts": {"queries": len(SELECTED), "facts": len(facts["facts"])}})
     write_json(OUT / "fact-ground-truth-expanded.json", facts)
     write_json(OUT / "closure-gate-manifest.json", {"query_ids": list(SELECTED), "composition": {"multi_document": 3, "hard": 3, "version": 2, "cross_lingual": 2}, "historical_a_generation_calls": 0, "preflight": preflight, "run_tag": RUN_TAG})
