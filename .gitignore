@@ -26,3 +26,16 @@ artifacts/embedding-benchmark-sprint21/cache/
 artifacts/embedding-migration-sprint22/work/
 artifacts/chunking-benchmark-sprint27/work/
 artifacts/chunking-benchmark-sprint27/*.partial.json
+
+# Raw, reproducible artifact outputs are kept locally but not committed.
+artifacts/**/*.jsonl
+!artifacts/phase-6/answerability-features/development.jsonl
+!artifacts/phase-6/answerability-features/calibration.jsonl
+!artifacts/phase-6/semantic-model-smoke/evaluator-inputs.jsonl
+!artifacts/phase-6/semantic-balanced-smoke/evaluator-inputs.jsonl
+artifacts/**/raw-generation-checkpoints/
+artifacts/**/scored-checkpoints/
+artifacts/**/evidence-snapshots/
+artifacts/**/03-captures/records/
+artifacts/chunking-benchmark-sprint27/cases.json
+artifacts/reranker-benchmark-sprint26/cases.json
