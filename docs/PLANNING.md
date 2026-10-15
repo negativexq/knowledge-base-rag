@@ -3382,6 +3382,40 @@ timing was about 1 ms for a 2000-character input and about 2.6 ms for a
   enforcement or redaction.
 - Consider a model-based injection classifier if the rules miss too much.
 
+## Fix — "generate" span on the support-ID answer path (closing note)
+
+**Problem.** The default production answer path
+(`settings.support_ids_enabled`, `stream_support_unit_answer`) called the LLM
+without opening a span. The other two generation paths did open one. On the
+live stack this meant:
+
+- LLM time (about 20 s per request) was missing from Jaeger: `chat_request`
+  showed only retrieval and rerank.
+- The `metadata` event had no `trace_id`, so the console Playground's trace
+  tab was always empty.
+- `mark_llm_generation` was never applied, so Langfuse (when enabled) would
+  see no generation.
+
+**Change.** `stream_support_unit_answer` now wraps the existing body
+(`_support_unit_answer_events`) in a `generate` span:
+
+- model and prompt version, GenAI/Langfuse attributes, context chunk count,
+  and pipeline version;
+- outcome flags: `security.output_policy_passed`, `generate.abstain`,
+  `generate.application_forced_abstention`, and validator failure codes.
+
+It also adds `trace_id` to the metadata event. No question, evidence or
+answer text goes on the span.
+
+**Tests.** `tests/test_support_unit_generate_span.py` covers:
+
+- the span and its GenAI attributes;
+- `trace_id` matching the span;
+- nesting under the caller's span;
+- answer, model-abstain and forced-abstain outcomes;
+- no text on the span;
+- a provider failure ending the span as an error.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
