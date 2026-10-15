@@ -3685,6 +3685,62 @@ gündür.") and the table tests pass inside the container (12 passed).
 
 A real-Tesseract test runs where Tesseract is installed and skips elsewhere.
 
+## Fix — invalid or empty answers when the prompt fills the context window (closing note)
+
+**Problem.** "Peki Nimbus CLI'de token ne kadar süre geçerlidir?" returned an
+empty answer. Calling Ollama directly showed the cause:
+
+- The prompt was 4079 tokens in a 4096-token window, leaving 17 output tokens.
+- The model stopped mid-JSON with `done_reason=length`.
+- The validator reported only `TOP_LEVEL_SCHEMA_INVALID`, and the user saw
+  nothing.
+- With num_ctx 8192, the same request produced valid JSON in 40 tokens.
+
+The structured-output schema itself was not the problem. The evidence builder's
+1200-token budget counts words, which undercounts Turkish by about 2.5–3×, and it
+does not count the support-unit headers.
+
+**Fix.**
+
+- `stream_support_unit_answer(count_tokens=...)` fits the prompt to the window
+  before the call: prompt + `SUPPORT_ID_MAX_OUTPUT_TOKENS` ≤ `num_ctx`.
+  - Lowest-ranked support units are dropped until it fits, and the top unit is
+    always kept.
+  - The schema's ID enum is built from the units that were actually sent.
+  - Production counts tokens with the Qwen3 tokenizer already loaded for
+    chunking (`wiring.count_prompt_tokens`), plus a fixed per-message framing
+    allowance.
+- The Ollama client records `done_reason`, `prompt_eval_count` and `eval_count`
+  in its call observation.
+- A parse failure with `done_reason=length` is reported as `OUTPUT_TRUNCATED`.
+- An answer that cannot be released (truncated, unparseable, or rejected by the
+  validator) now shows `UNVERIFIED_ANSWER_PHRASE` instead of an empty answer.
+  Partial model text is never shown.
+- New `generate` span attributes: `generate.support_units_dropped`,
+  `generate.prompt_token_estimate`, `generate.done_reason`,
+  `generate.provider_prompt_tokens` and `generate.provider_output_tokens`.
+
+**Live check.**
+
+- The same follow-up sent 28 of 37 units, in 3026 prompt tokens.
+- The model returned valid JSON: "… 90 gün geçerlidir. [E1.S4]".
+
+**Not done.**
+
+- The evidence builder still estimates its budget by word count, so it selects
+  more than fits and the fitting step trims the result.
+- Merged small sources still label every unit with the anchor's section.
+- num_ctx stays at 4096.
+
+**Tests.**
+
+- `tests/test_support_unit_context_fit.py` covers:
+  - fitting the prompt and dropping units;
+  - keeping the top unit;
+  - restricting the enum to the IDs that were sent;
+  - truncated and unparseable output.
+- New tests in the Ollama client and wiring tests.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

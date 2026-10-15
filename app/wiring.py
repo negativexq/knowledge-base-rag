@@ -11,8 +11,10 @@ from app.connectors.notion import NotionConnector
 from app.evaluation.forensic_capture import current_capture, metadata_for_chunks
 from app.evaluation.semantic_answerability import OllamaSemanticEvaluator
 from app.evidence.section_aware import SectionAwareEvidenceBuilder, serialize_section_aware_context
+from app.ingestion.chunking_config import QWEN3_EMBEDDING_TOKENIZER, QWEN3_TOKENIZER_REVISION
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.ingestion.qdrant_store import QdrantStore
+from app.ingestion.tokenizer import token_count
 from app.llm.embedding_models import active_embedding_config
 from app.llm.generate import stream_answer
 from app.llm.ollama_client import OllamaClient
@@ -43,6 +45,13 @@ from app.sync.manager import SyncManager
 from app.sync.scheduler import SyncScheduler, sync_intervals_from_settings
 
 logger = logging.getLogger(__name__)
+
+
+def count_prompt_tokens(text: str) -> int:
+    """Token count for fitting the answer prompt into num_ctx. The Qwen3
+    embedding tokenizer shares the Qwen3 chat models' vocabulary, is already
+    loaded for chunking, and counts Turkish far closer than a word split."""
+    return token_count(text, QWEN3_EMBEDDING_TOKENIZER, QWEN3_TOKENIZER_REVISION)
 
 
 def build_reranker(settings: Settings):
@@ -202,6 +211,7 @@ def build_chat_dependencies(
                 validator_version=settings.critical_validator_version,
                 shadow_enabled=settings.critical_validator_v3_shadow_enabled,
                 architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+                count_tokens=count_prompt_tokens,
             ):
                 yield event
             return
