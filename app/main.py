@@ -156,6 +156,7 @@ def create_app(
         if runtime_settings.chat_rate_limit_per_minute > 0
         else None
     )
+    app.state.content_screening_mode = runtime_settings.content_screening_mode
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)

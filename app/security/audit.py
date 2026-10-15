@@ -15,6 +15,7 @@ AUTHENTICATION_FAILED = "authentication_failed"
 AUTHORIZATION_DENIED = "authorization_denied"
 SYNC_DENIED = "sync_denied"
 RATE_LIMITED = "rate_limited"
+CONTENT_SCREENING_FLAGGED = "content_screening_flagged"
 
 
 def log_audit_event(event: str, **fields: object) -> None:

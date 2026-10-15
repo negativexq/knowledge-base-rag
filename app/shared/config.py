@@ -250,6 +250,11 @@ class Settings(BaseSettings):
     # sliding 60-second window; 0 disables it.
     chat_max_question_chars: int = Field(default=2000, gt=0)
     chat_rate_limit_per_minute: int = Field(default=30, ge=0)
+    # Rule-based screening of chat questions (prompt injection, PII) and
+    # answers (PII), app/security/content_screening.py. "shadow" only
+    # detects and records findings on spans and in the audit log; nothing
+    # is blocked. There is deliberately no enforcing mode yet.
+    content_screening_mode: Literal["off", "shadow"] = "shadow"
 
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 

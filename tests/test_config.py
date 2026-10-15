@@ -350,3 +350,17 @@ def test_chat_guardrails_reject_nonsensical_values():
         Settings(_env_file=None, chat_max_question_chars=0)
     with pytest.raises(ValidationError):
         Settings(_env_file=None, chat_rate_limit_per_minute=-1)
+
+
+def test_content_screening_defaults_to_shadow(monkeypatch):
+    monkeypatch.delenv("CONTENT_SCREENING_MODE", raising=False)
+
+    assert Settings(_env_file=None).content_screening_mode == "shadow"
+
+
+def test_content_screening_mode_rejects_unknown_values():
+    import pytest
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, content_screening_mode="enforce")

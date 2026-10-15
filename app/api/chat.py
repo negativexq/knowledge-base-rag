@@ -19,7 +19,8 @@ from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
-from app.security.audit import RATE_LIMITED, log_audit_event
+from app.security.audit import CONTENT_SCREENING_FLAGGED, RATE_LIMITED, log_audit_event
+from app.security.content_screening import ScreeningResult, screen_input, screen_output
 from app.security.models import RetrievalContext, UserContext
 from app.security.rate_limit import SlidingWindowRateLimiter
 from app.shared.config import SecurityValidationMode
@@ -125,11 +126,36 @@ class ChatDependencies:
     forensic_capture_dir: str | None = None
 
 
+@dataclass(frozen=True)
+class _ContentScreening:
+    """Shadow-mode screening state for one request: who asked (for the
+    audit log) and the already-computed input findings. The answer is
+    screened at the end of the stream."""
+
+    mode: str
+    user_id: str
+    tenant_id: str
+    input_result: ScreeningResult
+
+    def audit(self, direction: str, result: ScreeningResult) -> None:
+        if result.flagged:
+            log_audit_event(
+                CONTENT_SCREENING_FLAGGED,
+                direction=direction,
+                mode=self.mode,
+                user_id=self.user_id,
+                tenant_id=self.tenant_id,
+                endpoint="/chat",
+                **result.audit_fields(),
+            )
+
+
 async def _sse_event_stream(
     question: str,
     deps: ChatDependencies,
     context: RetrievalContext,
     tracer: trace.Tracer | None = None,
+    screening: _ContentScreening | None = None,
 ) -> AsyncIterator[str]:
     tracer = tracer or get_tracer(__name__)
     capture = (
@@ -147,6 +173,11 @@ async def _sse_event_stream(
     # since it's guaranteed to close last.
     with tracer.start_as_current_span("chat_request") as span:
         span.set_attribute("chat.question_char_count", len(question))
+        if screening is not None:
+            span.set_attribute("guardrail.mode", screening.mode)
+            span.set_attributes(screening.input_result.span_attributes("guardrail.input"))
+        # Only what the user is actually shown, for output screening.
+        shown_tokens: list[str] = []
         report = RetrievalReport(forensic_capture=capture)
         report.prompt_policy_version = deps.prompt_version
         report.untrusted_context_enabled = deps.prompt_version == "v3"
@@ -296,6 +327,8 @@ async def _sse_event_stream(
         # override it here.
         async for event in deps.stream_fn(question, chunks):
             if event["type"] == "token":
+                if screening is not None:
+                    shown_tokens.append(event["content"])
                 yield f"data: {json.dumps({'token': event['content']})}\n\n"
             elif event["type"] == "metadata":
                 payload = {k: v for k, v in event.items() if k != "type"}
@@ -309,6 +342,11 @@ async def _sse_event_stream(
             else:
                 payload = {k: v for k, v in event.items() if k != "type"}
                 yield f"event: grounding\ndata: {json.dumps(payload)}\n\n"
+
+        if screening is not None:
+            output_result = screen_output("".join(shown_tokens))
+            span.set_attributes(output_result.span_attributes("guardrail.output"))
+            screening.audit("output", output_result)
 
         yield "event: done\ndata: {}\n\n"
     if capture is not None:
@@ -367,6 +405,27 @@ async def chat(
     question = _validated_question(request, chat_request.question)
     deps: ChatDependencies = request.app.state.chat_deps
     context = RetrievalContext.for_user(user)
+    screening = _screen_question(request, user, question)
     return StreamingResponse(
-        _sse_event_stream(question, deps, context), media_type="text/event-stream"
+        _sse_event_stream(question, deps, context, screening=screening),
+        media_type="text/event-stream",
     )
+
+
+def _screen_question(
+    request: Request, user: UserContext, question: str
+) -> _ContentScreening | None:
+    """Shadow mode: record prompt-injection and PII findings for the question,
+    never block. Runs after the length check, so the regexes only ever see a
+    bounded input."""
+    mode = getattr(request.app.state, "content_screening_mode", "off")
+    if mode == "off":
+        return None
+    screening = _ContentScreening(
+        mode=mode,
+        user_id=user.user_id,
+        tenant_id=user.tenant_id,
+        input_result=screen_input(question),
+    )
+    screening.audit("input", screening.input_result)
+    return screening
