@@ -25,7 +25,7 @@ from app.evaluation.index_validation import validate_evaluation_index
 from app.llm.embedding_models import active_embedding_config
 from app.llm.ollama_client import OllamaClient
 from app.reranker.cross_encoder import CrossEncoderReranker
-from app.retrieval.filters import filter_authorized_candidates
+from app.retrieval.filters import build_acl_filter, filter_authorized_candidates
 from app.retrieval.hybrid_search import hybrid_search
 from app.retrieval.sparse import SparseEncoder
 from app.security.models import RetrievalContext
@@ -284,22 +284,24 @@ async def export(args: argparse.Namespace) -> dict:
                 )
                 sparse_vector = sparse.embed_query(question["question"])
                 context = RetrievalContext(tenant_id=question["tenant_id"])
-                raw_candidates = hybrid_search(
+                # Same retrieval as production search(): tenant ACL inside
+                # the Qdrant query, post-filter only as defense in depth.
+                retrieved = hybrid_search(
                     qdrant,
                     collection,
                     dense_vector,
                     sparse_vector,
                     top_k=REFERENCE_CANDIDATE_K,
-                    filters=None,
+                    filters=build_acl_filter(context),
                 )
-                authorized = filter_authorized_candidates(raw_candidates, context)
+                authorized = filter_authorized_candidates(retrieved, context)
                 ranked = await reranker.async_rerank(
                     question["question"], authorized, TOP_N
                 )
                 observation = extract_answerability_observation(
                     ranked,
                     authorized_candidate_count=len(authorized),
-                    pre_acl_candidate_count=len(raw_candidates),
+                    pre_acl_candidate_count=None,
                 )
                 records.append(_build_record(question, observation))
         finally:

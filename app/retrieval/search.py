@@ -8,7 +8,12 @@ from qdrant_client.http import models as qmodels
 from app.evaluation.forensic_capture import metadata_for_chunks
 from app.llm.provider import EmbeddingProvider
 from app.reranker.config import RERANKER_CANDIDATE_K, RERANKER_TOP_N
-from app.retrieval.filters import build_acl_filter, build_filter, filter_authorized_candidates
+from app.retrieval.filters import (
+    build_acl_filter,
+    build_filter,
+    combine_filters,
+    filter_authorized_candidates,
+)
 from app.retrieval.hybrid_search import DEFAULT_PREFETCH_LIMIT, SearchResult, hybrid_search
 from app.retrieval.report import RetrievalReport, stage_timer
 from app.retrieval.sparse import SparseVector
@@ -105,17 +110,22 @@ async def search(
             sparse_vector = sparse_encoder.embed_query(query)
             timer.candidates_out = len(sparse_vector.indices)
 
-    # The ACL is built from `context` alone — never from request filters.
-    # One bounded raw candidate list is retrieved using only additional user
-    # filters, then the server-owned ACL is applied immediately below. This
-    # provides a safe raw count without a second retrieval call; unauthorized
-    # payloads are discarded before reranking.
+    # The ACL is built from `context` alone — never from request filters —
+    # and AND-ed with the user filters inside the Qdrant query itself
+    # (combine_filters), so candidate_k and the per-branch prefetch limits
+    # are spent only on this tenant's points. User filters can only narrow
+    # the result further, never widen it past the ACL. The post-retrieval
+    # filter_authorized_candidates() below is defense in depth, not the
+    # boundary. No pre-ACL count is collected: that would need a second,
+    # tenant-unrestricted query in the request path, and exposing it would
+    # tell a caller whether other tenants hold matching content.
     with tracer.start_as_current_span("build_acl_filter") as span:
         acl_filter = build_acl_filter(context)
         span.set_attribute("acl.is_system", context.is_system)
         span.set_attribute("acl.tenant_scoped", acl_filter is not None)
 
     user_filters = filters or build_filter(doc_ids, source_types, source_ids, page_numbers)
+    resolved_filters = combine_filters(acl_filter, user_filters)
     if report is not None:
         report.acl_applied = acl_filter is not None
         report.acl_tenant_id = context.tenant_id
@@ -146,37 +156,30 @@ async def search(
             configured_prefetch_limit_per_branch=DEFAULT_PREFETCH_LIMIT,
             fusion_performed_by="qdrant",
         ) as timer:
-            raw_candidates = hybrid_search(
+            retrieved = hybrid_search(
                 qdrant_client,
                 collection_name,
                 dense_vector,
                 sparse_vector,
                 top_k=top_k,
-                filters=user_filters,
+                filters=resolved_filters,
             )
-            candidates = filter_authorized_candidates(raw_candidates, context)
-            timer.candidates_in = len(raw_candidates)
+            candidates = filter_authorized_candidates(retrieved, context)
             timer.candidates_out = len(candidates)
             timer.top_score = candidates[0].score if candidates else None
         if report is not None:
-            report.pre_acl_candidate_count = len(raw_candidates)
             report.authorized_candidate_count = len(candidates)
             if report.forensic_capture is not None:
-                top20_metadata = metadata_for_chunks(raw_candidates)
-                for item, candidate in zip(top20_metadata, raw_candidates, strict=True):
-                    item["authorized"] = context.is_system or (
-                        candidate.payload.get("tenant_id") == context.tenant_id
-                    )
+                top20_metadata = metadata_for_chunks(candidates)
                 report.forensic_capture.stage(
                     "retrieval",
                     {
-                        "candidate_count": len(raw_candidates),
+                        "candidate_count": len(candidates),
                         "authorized_candidate_count": len(candidates),
                         "configured_top_k": top_k,
                         "rrf_top20_observed": top20_metadata,
                     },
                 )
-        span.set_attribute("retrieve.raw_candidate_count", len(raw_candidates))
         span.set_attribute("retrieve.candidate_count", len(candidates))
         if candidates:
             span.set_attribute("retrieve.top_score", candidates[0].score)

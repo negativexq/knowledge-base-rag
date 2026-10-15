@@ -3187,6 +3187,66 @@ on this machine at the time). Starlette 1.8 warns that `starlette.testclient`
 with `httpx` is deprecated in favor of `httpx2`. The test client still works,
 but this needs a follow-up.
 
+## Fix — Tenant ACL back inside the Qdrant query (closing note)
+
+Commit `06b3318` ("answerability shadow mode") replaced the Sprint 23
+`combine_filters(acl, user)` query filter with a tenant-unrestricted
+retrieval followed by `filter_authorized_candidates()`, so that answerability
+could record a pre-ACL candidate count without a second query. That kept
+content isolation (foreign chunks were dropped before reranking), but it had
+three problems:
+- **Retrieval correctness.** `candidate_k=20` and the per-branch
+  `prefetch_limit=20` were shared across all tenants. Other tenants' points
+  took the slots, so a tenant could get fewer of its own candidates, or none.
+- **Cross-tenant existence oracle.** The client-visible SSE `retrieval`
+  report exposed the pre-ACL count (`hybrid_retrieval.candidates_in`,
+  `answerability.pre_acl_candidate_count`, and `NO_AUTHORIZED_EVIDENCE`
+  versus `NO_RETRIEVAL_CANDIDATES`). That told a caller whether another tenant
+  held matching content.
+- **Forensic capture.** When enabled, the capture wrote foreign tenants'
+  `source_id` and `chunk_id` values to disk.
+
+`docs/security.md` and the answerability docstring still described the
+Sprint 23 design.
+
+`search()` again AND-s the ACL with the user filters inside the single Qdrant
+query. `filter_authorized_candidates()` stays as defense in depth.
+`pre_acl_candidate_count` is `None`, so `NO_AUTHORIZED_EVIDENCE` is never
+produced on the request path. A second count-only query was considered and
+rejected:
+- with the ACL in the query, an authorized count of zero only means the tenant
+  has no indexed points (dense retrieval has no score threshold), so the extra
+  count adds no answerability signal;
+- answerability is shadow-only;
+- it would put a tenant-unrestricted query back in the request path.
+
+`scripts/calibration/export_answerability_features.py` copied the same
+post-filter pattern and now retrieves exactly as production does.
+
+Tests were written first. `tests/test_search.py` asserts that the filter
+passed to `hybrid_search` is the tenant ACL, AND-ed with any user filters.
+System context stays unrestricted. A foreign-tenant point returned by Qdrant
+is still dropped, and the client report carries no pre-ACL count. Those unit
+tests prove only that the filter is sent, because qdrant-client's `:memory:`
+mode drops `query_filter` on prefetch+fusion queries.
+
+To check real Qdrant behaviour, the native Qdrant 1.12.4 binary (the version
+in `docker-compose.yml`) was run without Docker, with temporary storage, using
+about 49 MB of RAM. The existing 12 tests in `tests/test_cross_tenant_e2e.py`
+and the test in `tests/test_filters_e2e.py` pass. Those tests check isolation
+only, and isolation also held under the post-filter.
+
+The new
+`test_other_tenants_cannot_crowd_a_tenant_out_of_its_own_candidates` checks
+the correctness bug itself, on one shared collection:
+- tenant B has 30 chunks that beat tenant A's 3 matching chunks on both the
+  dense and the BM25 branch;
+- with the old `main` `search.py` the test fails, and tenant A gets `[]`;
+- with the fix it gets all three of its chunks.
+
+With Qdrant up, the full suite is `1222 passed, 3 skipped`. The skips need a
+Notion key or the TechQA fixture. ruff and mypy are clean.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
