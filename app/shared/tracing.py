@@ -31,8 +31,12 @@ class LangfuseExport:
 
 
 def langfuse_export_from(settings: "Settings") -> LangfuseExport | None:
-    """Langfuse export is opt-in: both keys must be set."""
-    if not settings.langfuse_public_key or not settings.langfuse_secret_key:
+    """Langfuse export is opt-in: LANGFUSE_ENABLED and both keys."""
+    if (
+        not settings.langfuse_enabled
+        or not settings.langfuse_public_key
+        or not settings.langfuse_secret_key
+    ):
         return None
     return LangfuseExport(
         host=settings.langfuse_host,

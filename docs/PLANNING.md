@@ -3145,8 +3145,22 @@ ADR 0004 still holds for that subtree.
 
 Langfuse is an optional second exporter (OTLP HTTP,
 `{LANGFUSE_HOST}/api/public/otel/v1/traces`, Basic auth from the public and
-secret keys), on only when both `LANGFUSE_PUBLIC_KEY` and
-`LANGFUSE_SECRET_KEY` are set. A scope filter keeps `app.ingestion`,
+secret keys) targeting a self-hosted instance, not Langfuse Cloud. It is
+configured but deactivated: export needs `LANGFUSE_ENABLED=true` (default
+`false`) plus both keys. `docker-compose.langfuse.yml` is adapted from
+upstream's v4 compose (web, worker, Postgres, ClickHouse, Redis, MinIO). It is
+a separate compose project started only by `make langfuse-up`, so `make up`
+never starts it. Web runs on `127.0.0.1:3001` because 3000 is often taken.
+Postgres, ClickHouse, Redis and the worker publish no host ports. Headless init
+seeds a project whose keys (`pk-lf-kb-rag-local`/`sk-lf-kb-rag-local`) are
+already in `.env.example`, and Langfuse's own product telemetry is off. The
+stack was not started: the machine was short on RAM and disk, and the six
+containers (ClickHouse included) are too heavy for it now. The backend
+container gets a fixed `LANGFUSE_HOST=http://host.docker.internal:3001`;
+`docker compose config` showed that `.env`'s host-side `localhost:3001` would
+otherwise be interpolated into it. deepeval loads `.env` into `os.environ` on
+import, so Langfuse config tests clear those variables explicitly. A scope
+filter keeps `app.ingestion`,
 `app.sync` and `app.migration` spans in Jaeger only, because scheduled syncs
 emit one span per batch every few minutes. Both `generate` spans (legacy
 stream and evidence-backed pipeline) now carry `gen_ai.operation.name`,

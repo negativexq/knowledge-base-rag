@@ -179,16 +179,26 @@ def test_langfuse_receives_query_path_spans_but_not_sync_or_ingestion(monkeypatc
     assert sorted(langfuse.exported) == ["chat_request", "generate"]
 
 
-def test_langfuse_export_from_settings_requires_both_keys():
+def test_langfuse_export_from_settings_requires_the_flag_and_both_keys(monkeypatch):
     from app.shared.config import Settings
+
+    # deepeval loads .env into os.environ on import, which would leak the
+    # local stack's keys into Settings(_env_file=None).
+    for name in ("LANGFUSE_ENABLED", "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_HOST"):
+        monkeypatch.delenv(name, raising=False)
     from app.shared.tracing import LangfuseExport, langfuse_export_from
 
-    assert langfuse_export_from(Settings(_env_file=None, langfuse_public_key="pk")) is None
-    assert langfuse_export_from(
-        Settings(
-            _env_file=None,
-            langfuse_public_key="pk",
-            langfuse_secret_key="sk",
-            langfuse_host="http://lf",
+    keys = {"langfuse_public_key": "pk", "langfuse_secret_key": "sk", "langfuse_host": "http://lf"}
+
+    # Keys alone do not turn export on: the local stack is configured but
+    # deactivated until LANGFUSE_ENABLED=true.
+    assert langfuse_export_from(Settings(_env_file=None, **keys)) is None
+    assert (
+        langfuse_export_from(
+            Settings(_env_file=None, langfuse_enabled=True, langfuse_public_key="pk")
         )
+        is None
+    )
+    assert langfuse_export_from(
+        Settings(_env_file=None, langfuse_enabled=True, **keys)
     ) == LangfuseExport(host="http://lf", public_key="pk", secret_key="sk")

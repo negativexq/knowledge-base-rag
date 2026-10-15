@@ -244,10 +244,13 @@ class Settings(BaseSettings):
 
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
-    # Optional second trace destination next to Jaeger, via OTLP HTTP.
-    # Export is enabled only when both keys are set; spans carry metadata
-    # only (no prompt/answer text), see app/shared/tracing.py.
-    langfuse_host: str = "https://cloud.langfuse.com"
+    # Optional second trace destination next to Jaeger, via OTLP HTTP, to the
+    # self-hosted stack in docker-compose.langfuse.yml (web on :3001).
+    # Deactivated by default: export needs langfuse_enabled AND both keys.
+    # Spans carry metadata only (no prompt/answer text), see
+    # app/shared/tracing.py.
+    langfuse_enabled: bool = False
+    langfuse_host: str = "http://localhost:3001"
     langfuse_public_key: str | None = None
     langfuse_secret_key: str | None = None
 

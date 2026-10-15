@@ -305,24 +305,28 @@ def test_qdrant_active_alias_overridable_via_env(monkeypatch):
     assert Settings().qdrant_active_alias == "kb_prod"
 
 
-def test_langfuse_export_is_disabled_by_default(monkeypatch):
-    for name in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_HOST"):
+def test_langfuse_export_is_disabled_by_default_and_points_at_local_self_host(monkeypatch):
+    for name in ("LANGFUSE_ENABLED", "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_HOST"):
         monkeypatch.delenv(name, raising=False)
 
     settings = Settings(_env_file=None)
 
+    assert settings.langfuse_enabled is False
     assert settings.langfuse_public_key is None
     assert settings.langfuse_secret_key is None
-    assert settings.langfuse_host == "https://cloud.langfuse.com"
+    # docker-compose.langfuse.yml publishes langfuse-web on 3001.
+    assert settings.langfuse_host == "http://localhost:3001"
 
 
 def test_langfuse_settings_are_read_from_env(monkeypatch):
+    monkeypatch.setenv("LANGFUSE_ENABLED", "true")
     monkeypatch.setenv("LANGFUSE_PUBLIC_KEY", "pk-lf-test")
     monkeypatch.setenv("LANGFUSE_SECRET_KEY", "sk-lf-test")
     monkeypatch.setenv("LANGFUSE_HOST", "http://localhost:3000")
 
     settings = Settings(_env_file=None)
 
+    assert settings.langfuse_enabled is True
     assert settings.langfuse_public_key == "pk-lf-test"
     assert settings.langfuse_secret_key == "sk-lf-test"
     assert settings.langfuse_host == "http://localhost:3000"
