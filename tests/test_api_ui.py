@@ -282,7 +282,7 @@ def test_trace_detail_offloads_sync_client_to_a_worker_thread(tmp_path, monkeypa
         return []
 
     monkeypatch.setattr("asyncio.to_thread", fake_to_thread)
-    monkeypatch.setattr("app.ui.trace_client.fetch_trace_spans", fake_fetch)
+    monkeypatch.setattr("app.shared.trace_client.fetch_trace_spans", fake_fetch)
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     client = _client(tmp_path, docs_dir)
@@ -372,7 +372,7 @@ def test_sync_runs_scoped_to_the_callers_tenant_when_no_source_type_given(tmp_pa
 
 
 def test_trace_detail_reports_unavailable_when_jaeger_unreachable(tmp_path, monkeypatch):
-    import app.ui.trace_client as trace_client_module
+    import app.shared.trace_client as trace_client_module
 
     def _raise(*args, **kwargs):
         raise ConnectionError("no jaeger here")

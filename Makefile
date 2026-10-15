@@ -1,7 +1,6 @@
-.PHONY: dev test test-ollama lint up down ui langfuse-up langfuse-down
+.PHONY: dev test test-ollama lint up down langfuse-up langfuse-down
 
 VENV := .venv/bin
-VENV_UI := .venv-ui/bin
 
 dev:
 	$(VENV)/uvicorn app.server:app --reload --host 0.0.0.0 --port 8000
@@ -28,6 +27,3 @@ langfuse-up:
 
 langfuse-down:
 	docker compose -f docker-compose.langfuse.yml down
-
-ui:
-	PYTHONPATH=. $(VENV_UI)/streamlit run app/ui/streamlit_app.py

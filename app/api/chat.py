@@ -141,7 +141,7 @@ async def _sse_event_stream(
     # Wraps the whole request (search + generate), including every yield
     # below — a Python context manager stays entered across a generator's
     # yields, only closing once the generator is exhausted. This is the
-    # trace's root span: app/ui/trace_client.py (Sprint 10, ported from
+    # trace's root span: app/shared/trace_client.py (Sprint 10, ported from
     # production-rag-platform's Sprint 8/12) waits specifically for a span
     # named "chat_request" as the signal that a trace is fully indexed,
     # since it's guaranteed to close last.

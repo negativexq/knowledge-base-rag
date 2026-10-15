@@ -24,7 +24,6 @@ from app.registry.store import DocumentRegistry
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseVector
 from app.security.models import RetrievalContext
-from app.ui.citation_formatting import highlight_citations
 
 COLLECTION = "test_pipeline_connector_e2e_hermetic"
 
@@ -132,7 +131,7 @@ async def test_mixed_pdf_and_markdown_folder_end_to_end(sample_pdf, tmp_path):
     assert pdf_grounding["grounded"] is True
     assert pdf_grounding["citations_found"] == [("filesystem", "handbook_pdf", pdf_location)]
     assert check_grounding(pdf_tokens, pdf_results).grounded is True
-    assert f"**{pdf_tag}**" in highlight_citations(pdf_tokens)
+    assert pdf_tag in pdf_tokens
 
     # --- Markdown chunk: retrieve, generate, ground a heading-path citation ---
     md_results = await search(
@@ -163,6 +162,6 @@ async def test_mixed_pdf_and_markdown_folder_end_to_end(sample_pdf, tmp_path):
     assert md_grounding["grounded"] is True
     assert md_grounding["citations_found"] == [("filesystem", "readme_md", "Kurulum")]
     assert check_grounding(md_tokens, md_results).grounded is True
-    assert f"**{md_tag}**" in highlight_citations(md_tokens)
+    assert md_tag in md_tokens
 
     client.delete_collection(COLLECTION)

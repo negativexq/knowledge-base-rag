@@ -1,5 +1,5 @@
-// Sprint 24: SSE client for POST /chat — mirrors app/ui/sse_client.py's
-// parsing rule exactly (an optional `event: <name>` line, one or more
+// Sprint 24: SSE client for POST /chat — follows the SSE parsing rule
+// exactly (an optional `event: <name>` line, one or more
 // `data:` lines, terminated by a blank line) and app/api/chat.py's real
 // event set: sources, retrieval, metadata, token (unnamed/"message"),
 // grounding, done, plus an `error` this client synthesizes itself on a

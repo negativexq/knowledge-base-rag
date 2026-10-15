@@ -6,7 +6,7 @@ Asıl fark: çoklu doküman tipi (PDF/Markdown/web/Notion/Confluence) + otomatik
 
 LLM stratejisi: provider-agnostic — ortak bir interface üzerinden Ollama (local-first, varsayılan) + Claude API/OpenAI (bulut) desteklenir.
 
-UI: Streamlit, multi-page (`st.navigation`) — Chat / Sources / Sync Status ayrı sayfalar (dbt-feature-lineage'daki desenin aynısı; `st.tabs()` lazy olmadığı için pahalı işlemler sayfa olmalı, tab değil).
+UI: `frontend/` altındaki React RAG Operations Console (Sprint 24). Sprint 10'daki çok sayfalı Streamlit UI, console'a geçildikten sonra kaldırıldı (bkz. "Remove the Streamlit UI" closing note).
 
 Connector modeli: Local filesystem, Notion, Confluence hepsi aynı `Connector` interface'ini implemente eder (`list_documents()`, `fetch_content()`, `get_content_hash()`). Filesystem connector en basit ve en kolay test edilebilir olduğu için önce o, incremental sync mantığı onun üzerinde doğrulanıp sonra uzak connector'lara uygulanır.
 
@@ -3138,8 +3138,9 @@ Without a provider, `create_app()` turns FastAPI telemetry fully off, so the
 pure test factory keeps no global side effects. The trace root is now
 `POST /chat`, with `chat_request` under it. In a streaming response
 `chat_request` runs after the endpoint returns, so it is a direct child of the
-HTTP span, not of `fastapi.endpoint`. The Streamlit trace panel
-(`app/ui/trace_client.py`) now returns only the `chat_request` subtree, so the
+HTTP span, not of `fastapi.endpoint`. The trace client behind the console's
+trace panel (`app/shared/trace_client.py`, served by `GET /ui/traces/{trace_id}`)
+now returns only the `chat_request` subtree, so the
 pipeline chart is unchanged. The "wait for `chat_request`" readiness rule from
 ADR 0004 still holds for that subtree.
 
@@ -3296,6 +3297,34 @@ Known limits:
   similar.
 - The length check is on the parsed question, not the raw body size.
 - There is no tenant-level or token/cost budget.
+
+## Chore — Remove the Streamlit UI (closing note)
+
+The React console in `frontend/` replaced the Streamlit UI from Sprint 10,
+so the Streamlit code is removed: `app/ui/streamlit_app.py`, `app/ui/pages/`,
+the `make ui` target, `VENV_UI`, `requirements-ui.txt`, and the mypy entries
+for those modules. The single `.venv` from `requirements.txt` is now the only
+Python environment. `.venv-ui/` stays in `.gitignore` and `.dockerignore` so
+existing local copies don't show up as untracked.
+
+Before deleting, each `app/ui/` module was grepped for importers in `app/`,
+`tests/` and `scripts/`:
+- `trace_client.py` is still used by `GET /ui/traces/{trace_id}`, so it moved
+  to `app/shared/trace_client.py`. The tests were pointed at the new path
+  first and failed on import before the move.
+- `citation_formatting.py` (Streamlit bold markdown and `$` escaping) was only
+  called by three e2e tests. Two of them now assert the raw citation tag in
+  the streamed answer, next to the grounding checks they already had. The
+  third, in `test_cross_tenant_e2e.py`, was a no-op (`... or True`) and is
+  deleted.
+- `sse_client.py`, `sources_client.py` and `dev_auth.py` were Streamlit-only.
+  They are deleted with their tests.
+
+The suite drops from `1220 passed` to `1202 passed, 17 skipped` without real
+Qdrant. The 18 missing tests are exactly the ones in
+`test_citation_formatting.py`, `test_sse_client.py` and
+`test_sources_client.py`. ruff and mypy are clean. Streamlit is still
+mentioned in older sprint notes and plans, which are historical.
 
 ## Future — İkinci Connector (Confluence)
 

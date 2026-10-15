@@ -67,3 +67,8 @@ HTTP span (`POST /chat`), and `chat_request` is its child. A manual
 while scheduled syncs keep `sync_run` as their root. "Wait for the root
 span" on the read side now means waiting for `chat_request`, the root of
 the pipeline subtree that `fetch_trace_spans` returns.
+
+The read-side client now lives at `app/shared/trace_client.py`. It moved
+out of `app/ui/` when the Streamlit UI was removed; `GET /ui/traces/{trace_id}`
+calls it for the React console's trace panel. The `app/ui/trace_client.py`
+paths above are where it lived when the bug was found.
