@@ -364,3 +364,25 @@ def test_content_screening_mode_rejects_unknown_values():
 
     with pytest.raises(ValidationError):
         Settings(_env_file=None, content_screening_mode="enforce")
+
+
+def test_chat_history_defaults():
+    settings = Settings(_env_file=None)
+
+    assert settings.chat_history_max_turns == 6
+    assert settings.chat_history_turn_max_chars == 2000
+    assert settings.query_rewrite_enabled is True
+    assert settings.query_rewrite_timeout_seconds == 20.0
+
+
+def test_chat_history_settings_reject_invalid_values():
+    import pytest
+    from pydantic import ValidationError
+
+    for overrides in (
+        {"chat_history_max_turns": -1},
+        {"chat_history_turn_max_chars": 0},
+        {"query_rewrite_timeout_seconds": 0},
+    ):
+        with pytest.raises(ValidationError):
+            Settings(_env_file=None, **overrides)

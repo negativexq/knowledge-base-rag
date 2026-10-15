@@ -47,6 +47,13 @@ export function parseSSEChunk(buffer: string): { events: SSEEvent[]; rest: strin
   return { events, rest }
 }
 
+// One earlier turn of the conversation, oldest first. The backend uses
+// these only to rewrite a follow-up into a standalone search query.
+export interface ChatHistoryTurn {
+  role: "user" | "assistant"
+  content: string
+}
+
 export interface ChatStreamHandlers {
   onToken: (content: string) => void
   onSources: (sources: unknown) => void
@@ -74,6 +81,7 @@ export async function streamChat(
   question: string,
   handlers: ChatStreamHandlers,
   signal?: AbortSignal,
+  history: ChatHistoryTurn[] = [],
 ): Promise<void> {
   const headers = new Headers({ "Content-Type": "application/json" })
   if (token) headers.set("Authorization", `Bearer ${token}`)
@@ -83,7 +91,7 @@ export async function streamChat(
     response = await fetch(url, {
       method: "POST",
       headers,
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({ question, history }),
       signal,
     })
   } catch {

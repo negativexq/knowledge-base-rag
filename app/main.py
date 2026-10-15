@@ -157,6 +157,8 @@ def create_app(
         else None
     )
     app.state.content_screening_mode = runtime_settings.content_screening_mode
+    app.state.chat_history_max_turns = runtime_settings.chat_history_max_turns
+    app.state.chat_history_turn_max_chars = runtime_settings.chat_history_turn_max_chars
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)

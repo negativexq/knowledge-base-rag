@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from opentelemetry import trace
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.api.deps import get_current_user
 from app.evaluation.answerability import extract_answerability_observation
@@ -18,8 +18,9 @@ from app.evaluation.forensic_capture import (
 from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.llm.citation_location import location_for
 from app.llm.prompt import NOT_FOUND_PHRASE
+from app.llm.query_rewrite import ChatTurn, RewriteResult
 from app.retrieval.hybrid_search import SearchResult
-from app.retrieval.report import RetrievalReport
+from app.retrieval.report import RetrievalReport, RetrievalStage
 from app.security.audit import CONTENT_SCREENING_FLAGGED, RATE_LIMITED, log_audit_event
 from app.security.content_screening import ScreeningResult, screen_input, screen_output
 from app.security.models import RetrievalContext, UserContext
@@ -36,8 +37,18 @@ router = APIRouter()
 SNIPPET_CHAR_LIMIT = 600
 
 
+# Hard cap on what the request body may carry; the configured
+# chat_history_max_turns (usually far lower) is what is actually used.
+MAX_HISTORY_TURNS_IN_REQUEST = 50
+
+
 class ChatRequest(BaseModel):
     question: str
+    # Recent turns of this conversation, oldest first. Client-supplied and
+    # therefore untrusted: used only to rewrite a follow-up question into a
+    # standalone query (app/llm/query_rewrite.py), never sent to the answer
+    # model as conversation.
+    history: list[ChatTurn] = Field(default_factory=list, max_length=MAX_HISTORY_TURNS_IN_REQUEST)
 
 
 # Sprint 23: search_fn takes the caller's RetrievalContext alongside the
@@ -51,6 +62,7 @@ class ChatRequest(BaseModel):
 SearchFn = Callable[[str, RetrievalContext, RetrievalReport], Awaitable[list[SearchResult]]]
 StreamFn = Callable[[str, list[SearchResult]], AsyncIterator[dict]]
 EvidenceFn = Callable[[list[SearchResult], RetrievalContext], Awaitable[list[SearchResult]]]
+RewriteFn = Callable[[str, list[ChatTurn]], Awaitable[RewriteResult]]
 
 
 def _snippet(text: str) -> str:
@@ -125,6 +137,7 @@ class ChatDependencies:
     forensic_capture_enabled: bool = False
     forensic_capture_raw_text: bool = False
     forensic_capture_dir: str | None = None
+    rewrite_fn: RewriteFn | None = None
 
 
 @dataclass(frozen=True)
@@ -195,6 +208,7 @@ async def _sse_event_stream(
     context: RetrievalContext,
     tracer: trace.Tracer | None = None,
     screening: _ContentScreening | None = None,
+    history: list[ChatTurn] | None = None,
 ) -> AsyncIterator[str]:
     tracer = tracer or get_tracer(__name__)
     capture = (
@@ -232,7 +246,23 @@ async def _sse_event_stream(
             "validator.shadow.architecture_v2_enabled",
             deps.critical_validator_arch_v2_shadow_enabled,
         )
+        history = history or []
+        span.set_attribute("chat.history_turns", len(history))
+        rewrite: RewriteResult | None = None
+        if history and deps.rewrite_fn is not None:
+            rewrite = await deps.rewrite_fn(question, history)
+            span.set_attribute("query_rewrite.outcome", rewrite.outcome)
+            # From here on the standalone question is the question: search,
+            # answerability and the answer model all see the same text.
+            question = rewrite.question
         chunks = await deps.search_fn(question, context, report)
+        if rewrite is not None:
+            detail: dict = {"outcome": rewrite.outcome, "history_turns": len(history)}
+            if rewrite.rewritten:
+                detail["search_query"] = rewrite.question
+            report.stages.insert(
+                0, RetrievalStage("query_rewrite", rewrite.duration_ms, detail=detail)
+            )
         anchor_chunks = chunks
         authorized_candidate_count = report.authorized_candidate_count
         if authorized_candidate_count is None:
@@ -443,6 +473,21 @@ def _validated_question(request: Request, question: str) -> str:
     return question
 
 
+def _bounded_history(request: Request, history: list[ChatTurn]) -> list[ChatTurn]:
+    """The most recent configured number of non-blank turns, each cut to
+    the per-turn character limit, so the rewrite prompt stays bounded."""
+    max_turns: int = getattr(request.app.state, "chat_history_max_turns", 0)
+    max_chars: int = getattr(request.app.state, "chat_history_turn_max_chars", 2000)
+    if max_turns <= 0:
+        return []
+    turns = [
+        ChatTurn(role=turn.role, content=turn.content.strip()[:max_chars])
+        for turn in history
+        if turn.content.strip()
+    ]
+    return turns[-max_turns:]
+
+
 @router.post("/chat")
 async def chat(
     chat_request: ChatRequest,
@@ -454,8 +499,9 @@ async def chat(
     deps: ChatDependencies = request.app.state.chat_deps
     context = RetrievalContext.for_user(user)
     screening = _screen_question(request, user, question)
+    history = _bounded_history(request, chat_request.history)
     return StreamingResponse(
-        _sse_event_stream(question, deps, context, screening=screening),
+        _sse_event_stream(question, deps, context, screening=screening, history=history),
         media_type="text/event-stream",
     )
 
