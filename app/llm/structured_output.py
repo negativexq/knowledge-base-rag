@@ -1111,6 +1111,7 @@ async def _support_unit_answer_events(
         "prompt_version": prompt_version,
         "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
         "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
+        "support_units": support_unit_citation_map(units, blocks),
     }
     generation_kwargs = {
         "model": model,
@@ -1330,6 +1331,33 @@ async def _support_unit_answer_events(
         "application_forced_abstention": validation.application_abstain
         and not validation.model_abstain,
     }
+
+
+def support_unit_citation_map(
+    units: list[SupportUnit], blocks: list[SearchResult]
+) -> list[dict[str, Any]]:
+    """What the UI needs to resolve a support-ID citation: the source card it
+    belongs to (``source_rank``, the block's 1-based position, which is its
+    rank in the ``sources`` event), plus the unit's own section and text.
+    Only the units the model was given are listed."""
+    rank_by_evidence = {
+        str(block.payload.get("evidence_id", f"E{index}")): (index, block)
+        for index, block in enumerate(blocks, 1)
+    }
+    entries = []
+    for unit in units:
+        rank, block = rank_by_evidence[unit.evidence_id]
+        entries.append(
+            {
+                "support_id": unit.support_unit_id,
+                "source_rank": rank,
+                "source_type": block.payload.get("source_type"),
+                "source_id": unit.source_id,
+                "section_label": unit.section_label,
+                "text": unit.text,
+            }
+        )
+    return entries
 
 
 def _fit_to_context(

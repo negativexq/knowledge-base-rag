@@ -366,11 +366,33 @@ export interface RetrievalReportPayload {
   }
 }
 
+// One support unit the model was given on the support-ID answer path
+// (app/llm/structured_output.py::support_unit_citation_map). An "[E1.S4]"
+// citation resolves to it; source_rank is its card's rank in `sources`.
+export interface SupportUnitRef {
+  support_id: string
+  source_rank: number
+  source_type: string | null
+  source_id: string | null
+  section_label: string | null
+  text: string
+}
+
 export interface ChatMetadata {
   prompt_version: string
   trace_id: string
   untrusted_context_enabled?: boolean
   security_validation_mode?: string
+  support_units?: SupportUnitRef[]
+}
+
+// The answer-level validation verdict (the `security` event that carries
+// `passed`, emitted after the answer). Distinct from the retrieval-time
+// `security` event, which carries output_policy_* fields instead.
+export interface AnswerValidation {
+  passed: boolean
+  abstain: boolean
+  validator_failure_codes: string[]
 }
 
 export interface GroundingResult {
