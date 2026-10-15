@@ -3818,6 +3818,46 @@ validator or PDF-evidence issue, not a budget issue.
 - A new wiring test.
 - A config test that checks the default budget fits the default window.
 
+## Fix — critical values: storage units and Turkish-suffixed durations (closing note)
+
+**Problem.** Two golden-set questions were answered correctly in Turkish from
+English PDF evidence, but the critical-value validator returned
+`CRITICAL_VALUE_INDETERMINATE` and the user saw "not found":
+
+- "15 GB" against "Free accounts include 15GB of storage."
+- "30 gündür" against "defaults to 30 days".
+
+The value extractor had three gaps:
+
+1. A glued literal ("15GB") produced no value, because the number pattern needs
+   a word boundary after the digits.
+2. GB/TB were not units, so "15 GB" was a bare number.
+3. Only "gün"/"günlük" and bare "saat" were durations. Suffixed forms
+   ("gündür", "günde", "güne", "saattir", "saatte") were missed.
+
+The relation check also requires a shared context word between claim and
+evidence, and the glued "15gb" never shared "15" or "gb".
+
+**Fix** (`app/evaluation/critical_values.py`, shared by every validator
+version through `_local_tokens`):
+
+- `_LOCAL_SIZE` reads KB/MB/GB/TB/PB, spaced or glued, as a number with a unit,
+  so 15 GB and 15 TB never match.
+- Turkish day and hour suffixes are listed explicitly. Words that merely start
+  with the unit, such as "güncelleme", are not durations.
+- `_token_words` adds a token's own value and unit to its context words, so a
+  glued literal relates exactly as its spaced form already did.
+
+**Result.**
+
+- The golden set is now 12/12 at the production budget (1600 tokens), up from
+  10/12.
+- A different value or unit is still never supported (20 GB, 15 TB, 45 gün and
+  30 saat against the same evidence).
+- All existing validator regression tests pass unchanged.
+
+**Tests.** `tests/test_critical_value_units.py`.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
