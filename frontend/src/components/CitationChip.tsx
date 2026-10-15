@@ -4,10 +4,13 @@ import { cn } from "@/lib/utils"
 
 export function CitationChip({
   rank,
+  supportId,
   valid,
   onClick,
 }: {
   rank: number | undefined
+  // Set for a support-ID citation ("E1.S4"); shown in place of the rank.
+  supportId?: string
   valid: boolean
   onClick: () => void
 }) {
@@ -31,9 +34,9 @@ export function CitationChip({
       className={cn(
         "mx-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded bg-[var(--color-accent-muted)] px-1 align-middle text-[10px] font-semibold text-[var(--color-accent)] transition-colors hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
       )}
-      aria-label={`Jump to source ${rank}`}
+      aria-label={supportId ? `Jump to ${supportId} in source ${rank}` : `Jump to source ${rank}`}
     >
-      {rank}
+      {supportId ?? rank}
     </button>
   )
 }

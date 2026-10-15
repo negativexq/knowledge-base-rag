@@ -3,10 +3,12 @@ import { ArrowUp, CheckCircle2, MessageSquarePlus, Square, XCircle } from "lucid
 
 import { chatApi } from "@/api/chat"
 import type {
+  AnswerValidation,
   ChatMetadata,
   GroundingResult,
   RetrievalReportPayload,
   RetrievedSource,
+  SupportUnitRef,
 } from "@/api/types"
 import { RetrievalPipeline } from "@/components/RetrievalPipeline"
 import { SecurityInspector } from "@/components/SecurityInspector"
@@ -14,7 +16,7 @@ import { SourceCard } from "@/components/SourceCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TraceWaterfall } from "@/components/TraceWaterfall"
 import { useIdentity } from "@/hooks/useIdentity"
-import { splitAnswerIntoSegments } from "@/lib/citations"
+import { type AnswerSegment, splitAnswerIntoSegments } from "@/lib/citations"
 import { CitationChip } from "@/components/CitationChip"
 import { formatMs } from "@/lib/utils"
 import { EmptyState } from "@/components/EmptyState"
@@ -40,12 +42,47 @@ function searchedAs(report: RetrievalReportPayload | null): string | null {
   return typeof query === "string" ? query : null
 }
 
+function segmentsOf(turn: Turn): AnswerSegment[] {
+  return splitAnswerIntoSegments(turn.answer, turn.sources, turn.metadata?.support_units ?? [])
+}
+
+// Support units the answer actually cites, by source card rank.
+function citedUnitsByRank(turn: Turn | undefined): Map<number, SupportUnitRef[]> {
+  const byRank = new Map<number, SupportUnitRef[]>()
+  if (!turn) return byRank
+  for (const segment of segmentsOf(turn)) {
+    const unit = segment.valid ? segment.unit : undefined
+    if (!unit) continue
+    const units = byRank.get(unit.source_rank) ?? []
+    if (!units.some((u) => u.support_id === unit.support_id)) units.push(unit)
+    byRank.set(unit.source_rank, units)
+  }
+  return byRank
+}
+
+// The legacy path reports citation integrity in a `grounding` event; the
+// support-ID path in the answer-level `security` event. A clean not-found
+// answer (abstained, nothing cited) gets no badge.
+function citationVerdict(turn: Turn): "verified" | "failed" | null {
+  if (turn.streaming) return null
+  if (turn.grounding) return turn.grounding.grounded ? "verified" : "failed"
+  if (!turn.validation) return null
+  if (!turn.validation.passed) return "failed"
+  if (turn.validation.abstain) return null
+  return segmentsOf(turn).some((segment) => segment.unit && segment.valid) ? "verified" : null
+}
+
+function isAnswerValidation(payload: unknown): payload is AnswerValidation {
+  return typeof (payload as { passed?: unknown } | null)?.passed === "boolean"
+}
+
 interface Turn {
   question: string
   answer: string
   sources: RetrievedSource[]
   report: RetrievalReportPayload | null
   grounding: GroundingResult | null
+  validation: AnswerValidation | null
   metadata: ChatMetadata | null
   streaming: boolean
   errorMessage: string | null
@@ -67,6 +104,7 @@ export default function Playground() {
   const [question, setQuestion] = useState("")
   const [activeTab, setActiveTab] = useState("sources")
   const [highlightedRank, setHighlightedRank] = useState<number | null>(null)
+  const [highlightedUnit, setHighlightedUnit] = useState<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const sourceRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
@@ -100,6 +138,7 @@ export default function Playground() {
         sources: [],
         report: null,
         grounding: null,
+        validation: null,
         metadata: null,
         streaming: true,
         errorMessage: null,
@@ -111,6 +150,7 @@ export default function Playground() {
     ])
     setActiveTab("sources")
     setHighlightedRank(null)
+    setHighlightedUnit(null)
 
     const controller = new AbortController()
     abortRef.current = controller
@@ -123,7 +163,10 @@ export default function Playground() {
       {
         onSources: (sources) => updateCurrent({ sources: sources as RetrievedSource[] }),
         onRetrieval: (report) => updateCurrent({ report: report as RetrievalReportPayload }),
-        onSecurity: (security) =>
+        onSecurity: (security) => {
+          if (isAnswerValidation(security)) {
+            updateCurrent({ validation: security, groundingAt: performance.now() })
+          }
           setTurns((prev) => {
             const copy = [...prev]
             const currentTurn = copy[copy.length - 1]
@@ -136,7 +179,8 @@ export default function Playground() {
               },
             }
             return copy
-          }),
+          })
+        },
         onMetadata: (metadata) => updateCurrent({ metadata: metadata as ChatMetadata }),
         onToken: (token) => {
           if (firstTokenAt === null) firstTokenAt = performance.now()
@@ -156,6 +200,7 @@ export default function Playground() {
     abortRef.current?.abort()
     setTurns([])
     setHighlightedRank(null)
+    setHighlightedUnit(null)
     setActiveTab("sources")
   }
 
@@ -164,13 +209,16 @@ export default function Playground() {
     updateCurrent({ streaming: false, errorMessage: "Cancelled." })
   }
 
-  function focusSource(rank: number) {
+  function focusSource(rank: number, supportId: string | null = null) {
     setActiveTab("sources")
     setHighlightedRank(rank)
+    setHighlightedUnit(supportId)
     requestAnimationFrame(() => {
       sourceRefs.current.get(rank)?.scrollIntoView({ behavior: "smooth", block: "center" })
     })
   }
+
+  const citedUnits = citedUnitsByRank(current)
 
   const perf = current?.report
     ? {
@@ -220,15 +268,18 @@ export default function Playground() {
                         <span className="text-[var(--color-error)]">{turn.errorMessage}</span>
                       ) : (
                         <>
-                          {splitAnswerIntoSegments(turn.answer, turn.sources).map((seg, j) =>
+                          {segmentsOf(turn).map((seg, j) =>
                             seg.type === "text" ? (
                               <span key={j}>{seg.text}</span>
                             ) : (
                               <CitationChip
                                 key={j}
                                 rank={seg.source?.rank}
+                                supportId={seg.unit?.support_id}
                                 valid={seg.valid}
-                                onClick={() => seg.source && focusSource(seg.source.rank)}
+                                onClick={() =>
+                                  seg.source && focusSource(seg.source.rank, seg.unit?.support_id ?? null)
+                                }
                               />
                             ),
                           )}
@@ -238,20 +289,20 @@ export default function Playground() {
                         </>
                       )}
                     </div>
-                    {turn.grounding && !turn.streaming && (
+                    {citationVerdict(turn) && (
                       <div
                         className={`flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-xs ${
-                          turn.grounding.grounded
+                          citationVerdict(turn) === "verified"
                             ? "bg-[var(--color-success-muted)] text-[var(--color-success)]"
                             : "bg-[var(--color-error-muted)] text-[var(--color-error)]"
                         }`}
                       >
-                        {turn.grounding.grounded ? (
+                        {citationVerdict(turn) === "verified" ? (
                           <CheckCircle2 className="h-3 w-3" />
                         ) : (
                           <XCircle className="h-3 w-3" />
                         )}
-                        {turn.grounding.grounded
+                        {citationVerdict(turn) === "verified"
                           ? "Citation integrity verified"
                           : "Citation validation failed"}
                       </div>
@@ -333,10 +384,14 @@ export default function Playground() {
                         key={source.rank}
                         source={source}
                         cited={
-                          current.grounding?.citations_found.some(
+                          (current.grounding?.citations_found.some(
                             ([, sid]) => sid === source.source_id,
-                          ) ?? false
+                          ) ??
+                            false) ||
+                          (citedUnits.get(source.rank)?.length ?? 0) > 0
                         }
+                        citedUnits={citedUnits.get(source.rank)}
+                        highlightedUnitId={highlightedRank === source.rank ? highlightedUnit : null}
                         highlighted={highlightedRank === source.rank}
                         cardRef={(el) => {
                           if (el) sourceRefs.current.set(source.rank, el)

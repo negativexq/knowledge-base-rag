@@ -3858,6 +3858,53 @@ version through `_local_tokens`):
 
 **Tests.** `tests/test_critical_value_units.py`.
 
+## Feature — Playground understands support-ID citations (closing note)
+
+**Problem.** The production answer path cites request-scoped support IDs
+(`[E1.S4]`), but the Playground only parsed legacy
+`[s.type:id/location]` tags. As a result:
+
+- support IDs showed as plain text;
+- no source card was ever marked as cited;
+- the "Citation integrity verified" badge never appeared, because it read the
+  legacy `grounding` event and the support-ID path reports in `security`.
+
+**Fix.**
+
+- Backend: the support path's `metadata` event carries `support_units`, from
+  `support_unit_citation_map`. Each unit the model was actually given is listed
+  with:
+  - its `support_id`;
+  - its `source_rank` (its card's rank in `sources`);
+  - its source;
+  - its own `section_label`;
+  - its own text.
+
+  Units dropped to fit the context window are not listed.
+- Frontend:
+  - `splitAnswerIntoSegments` resolves `[E1.S4]` to its unit and card. An ID
+    the model was not given is shown as an invalid citation.
+  - The chip shows the support ID and jumps to the card.
+  - The card lists its cited passages, each with its own section and text, and
+    highlights the clicked one.
+  - The badge comes from the answer-level `security` event:
+    - verified when the answer passed and cites units;
+    - failed when it did not pass;
+    - no badge for a clean not-found answer.
+
+**Live check.** The question "Nimbus CLI erişim token'ları kaç gün geçerlidir?"
+on the running stack produced:
+
+- an `E1.S4` chip and the verified badge;
+- card #1 marked as cited, showing the passage under "Kimlik Doğrulama > Token
+  Süresi";
+- no console errors.
+
+**Tests.**
+
+- `tests/test_support_unit_citation_map.py`.
+- Frontend `citations.test.ts` and `playground.test.tsx` (29 tests passing).
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

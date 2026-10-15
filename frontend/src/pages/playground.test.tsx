@@ -179,3 +179,131 @@ describe("Playground evidence flow", () => {
     expect(await screen.findByText("Searched as: How do I roll back a deploy?")).toBeInTheDocument()
   })
 })
+
+
+describe("Playground support-ID citations", () => {
+  function supportIdStream(security: Record<string, unknown>, answer: string) {
+    return async (_question: string, _history: unknown, handlers: Parameters<typeof chatApi.ask>[2]) => {
+      handlers.onSources([
+        {
+          rank: 1,
+          source_type: "filesystem",
+          source_id: "nimbus_cli_md",
+          citation_location: "Kimlik Doğrulama/Token Süresi",
+          page_number: 1,
+          paragraph_index: 1,
+          heading_path: ["Kimlik Doğrulama", "Token Süresi"],
+          snippet: "Nimbus CLI pip ile kurulur.",
+          score: 0.9,
+          document_version: "v1",
+          tenant_id: "tenant-a",
+          visibility: "tenant",
+        },
+        {
+          rank: 2,
+          source_type: "filesystem",
+          source_id: "nimbus_handbook_pdf",
+          citation_location: "3/0",
+          page_number: 3,
+          paragraph_index: 0,
+          heading_path: [],
+          snippet: "Free accounts include 15GB of storage.",
+          score: 0.4,
+          document_version: "v1",
+          tenant_id: "tenant-a",
+          visibility: "tenant",
+        },
+      ])
+      handlers.onMetadata({
+        prompt_version: "v1",
+        trace_id: "trace-1",
+        support_units: [
+          {
+            support_id: "E1.S1",
+            source_rank: 1,
+            source_type: "filesystem",
+            source_id: "nimbus_cli_md",
+            section_label: "Kurulum",
+            text: "Nimbus CLI pip ile kurulur.",
+          },
+          {
+            support_id: "E1.S2",
+            source_rank: 1,
+            source_type: "filesystem",
+            source_id: "nimbus_cli_md",
+            section_label: "Kimlik Doğrulama > Token Süresi",
+            text: "Erişim token'ları 90 gün geçerlidir.",
+          },
+        ],
+      })
+      handlers.onToken(answer)
+      handlers.onSecurity?.(security)
+      handlers.onDone()
+    }
+  }
+
+  async function askQuestion() {
+    renderPlayground()
+    fireEvent.change(screen.getByPlaceholderText("Ask anything…"), {
+      target: { value: "Token ne kadar geçerli?" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useIdentity).mockReturnValue({ data: identity } as ReturnType<typeof useIdentity>)
+  })
+
+  it("turns a support ID into a chip that opens the unit on its source card", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(
+      supportIdStream(
+        { passed: true, abstain: false, validator_failure_codes: [] },
+        "Erişim token'ları 90 gün geçerlidir. [E1.S2]",
+      ),
+    )
+    await askQuestion()
+
+    const chip = await screen.findByRole("button", { name: "Jump to E1.S2 in source 1" })
+    expect(screen.queryByText(/\[E1\.S2\]/)).not.toBeInTheDocument()
+    expect(screen.getByText("Citation integrity verified")).toBeInTheDocument()
+
+    fireEvent.click(chip)
+
+    const passage = screen.getByRole("note", { name: "Cited passage E1.S2" })
+    expect(passage).toHaveTextContent("Kimlik Doğrulama > Token Süresi")
+    expect(passage).toHaveTextContent("Erişim token'ları 90 gün geçerlidir.")
+    expect(passage).toHaveAttribute("data-highlighted", "true")
+    const card = screen.getByText("nimbus_cli_md").closest("[class*='border']")
+    expect(card).toHaveClass("border-[var(--color-accent)]")
+    // Uncited units and sources stay unmarked.
+    expect(screen.queryByRole("note", { name: "Cited passage E1.S1" })).not.toBeInTheDocument()
+    expect(screen.getAllByText("cited")).toHaveLength(1)
+  })
+
+  it("shows a failed badge when the answer did not pass validation", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(
+      supportIdStream(
+        { passed: false, abstain: true, validator_failure_codes: ["OUTPUT_TRUNCATED"] },
+        "I could not produce a verified answer from the documents.",
+      ),
+    )
+    await askQuestion()
+
+    expect(await screen.findByText("Citation validation failed")).toBeInTheDocument()
+  })
+
+  it("shows no badge for a clean not-found answer", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(
+      supportIdStream(
+        { passed: true, abstain: true, validator_failure_codes: [] },
+        "I could not find this in the document.",
+      ),
+    )
+    await askQuestion()
+
+    await screen.findByText("I could not find this in the document.")
+    expect(screen.queryByText("Citation integrity verified")).not.toBeInTheDocument()
+    expect(screen.queryByText("Citation validation failed")).not.toBeInTheDocument()
+  })
+})
