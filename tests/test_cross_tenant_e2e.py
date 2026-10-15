@@ -378,3 +378,71 @@ async def test_system_context_can_see_both_tenants_but_is_never_used_for_a_real_
 
     tenants_seen = {r.payload["tenant_id"] for r in results}
     assert tenants_seen == {"tenant-a", "tenant-b"}
+
+
+STARVATION_COLLECTION = "test_cross_tenant_e2e_starvation"
+STARVATION_QUERY = "kangaroo export tariff"
+
+
+@pytest.fixture
+def crowded_shared_collection():
+    """Tenant B owns 30 chunks that match the query better than any of
+    tenant A's 3 matching chunks, on both branches: identical dense vector
+    to the query, and more query terms for BM25. 30 is above both the
+    candidate_k (20) and the per-branch prefetch limit (20)."""
+    client = QdrantClient(url="http://localhost:6333")
+    if client.collection_exists(STARVATION_COLLECTION):
+        client.delete_collection(STARVATION_COLLECTION)
+    store = QdrantStore(client=client, collection_name=STARVATION_COLLECTION)
+    store.ensure_collection()
+    sparse_encoder = SparseEncoder()
+    ollama = _FakeOllama()
+
+    import asyncio
+
+    query_vector = asyncio.run(ollama.embed(STARVATION_QUERY, model="fake"))
+    other_vector = [0.0] * EMBEDDING_DIM
+    other_vector[(query_vector.index(1.0) + 1) % EMBEDDING_DIM] = 1.0
+
+    tenant_b_chunks = [
+        _chunk("tenant-b", f"tariffs-b-{i}", f"kangaroo export tariff kangaroo tariff note {i}")
+        for i in range(30)
+    ]
+    tenant_a_chunks = [
+        _chunk("tenant-a", f"tariffs-a-{i}", f"kangaroo export guidance for tenant a, item {i}")
+        for i in range(3)
+    ]
+    chunks = tenant_b_chunks + tenant_a_chunks
+    dense = [query_vector] * len(tenant_b_chunks) + [other_vector] * len(tenant_a_chunks)
+    sparse = [sparse_encoder.embed_document(c.text) for c in chunks]
+    store.upsert_chunks(chunks, dense, sparse)
+
+    yield client, sparse_encoder, ollama
+
+    client.delete_collection(STARVATION_COLLECTION)
+
+
+async def test_other_tenants_cannot_crowd_a_tenant_out_of_its_own_candidates(
+    crowded_shared_collection,
+):
+    """Regression for the post-retrieval ACL (commit 06b3318): Qdrant
+    returned the global top 20, all tenant B, and the Python filter then
+    left tenant A with nothing. With the ACL inside the Qdrant query,
+    tenant A's own matching chunks are retrieved."""
+    client, sparse_encoder, ollama = crowded_shared_collection
+
+    results = await search(
+        STARVATION_QUERY,
+        ollama=ollama,
+        sparse_encoder=sparse_encoder,
+        qdrant_client=client,
+        collection_name=STARVATION_COLLECTION,
+        embed_model="fake",
+        context=RetrievalContext(tenant_id="tenant-a"),
+    )
+
+    assert sorted(r.payload["source_id"] for r in results) == [
+        "tariffs-a-0",
+        "tariffs-a-1",
+        "tariffs-a-2",
+    ]

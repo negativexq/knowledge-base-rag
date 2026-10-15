@@ -3226,12 +3226,26 @@ post-filter pattern and now retrieves exactly as production does.
 Tests were written first. `tests/test_search.py` asserts that the filter
 passed to `hybrid_search` is the tenant ACL, AND-ed with any user filters.
 System context stays unrestricted. A foreign-tenant point returned by Qdrant
-is still dropped, and the client report carries no pre-ACL count. The suite
-is `1208 passed, 16 skipped`; ruff and mypy are clean. Not verified: real
-Qdrant behaviour. `tests/test_cross_tenant_e2e.py` and
-`tests/test_filters_e2e.py` need a server on :6333, and qdrant-client's
-`:memory:` mode drops `query_filter` on prefetch+fusion queries, so the unit
-tests prove that the filter is sent, not that Qdrant applies it.
+is still dropped, and the client report carries no pre-ACL count. Those unit
+tests prove only that the filter is sent, because qdrant-client's `:memory:`
+mode drops `query_filter` on prefetch+fusion queries.
+
+To check real Qdrant behaviour, the native Qdrant 1.12.4 binary (the version
+in `docker-compose.yml`) was run without Docker, with temporary storage, using
+about 49 MB of RAM. The existing 12 tests in `tests/test_cross_tenant_e2e.py`
+and the test in `tests/test_filters_e2e.py` pass. Those tests check isolation
+only, and isolation also held under the post-filter.
+
+The new
+`test_other_tenants_cannot_crowd_a_tenant_out_of_its_own_candidates` checks
+the correctness bug itself, on one shared collection:
+- tenant B has 30 chunks that beat tenant A's 3 matching chunks on both the
+  dense and the BM25 branch;
+- with the old `main` `search.py` the test fails, and tenant A gets `[]`;
+- with the fix it gets all three of its chunks.
+
+With Qdrant up, the full suite is `1222 passed, 3 skipped`. The skips need a
+Notion key or the TechQA fixture. ruff and mypy are clean.
 
 ## Future — İkinci Connector (Confluence)
 
