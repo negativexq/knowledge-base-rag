@@ -11,11 +11,40 @@ class SpanSummary:
     start_time_us: int
 
 
+def _chat_request_subtree(spans: list[dict]) -> list[dict]:
+    """Since FastAPI's native telemetry the trace root is the HTTP span
+    ("POST /chat") with FastAPI's own operation spans around
+    chat_request; the pipeline chart only wants chat_request and its
+    descendants. Spans without Jaeger span IDs are returned unchanged."""
+    root_id = next(
+        (s.get("spanID") for s in spans if s.get("operationName") == _ROOT_SPAN_NAME), None
+    )
+    if root_id is None:
+        return spans
+    parent_of = {
+        s["spanID"]: next(
+            (r["spanID"] for r in s.get("references") or [] if r.get("refType") == "CHILD_OF"),
+            None,
+        )
+        for s in spans
+        if "spanID" in s
+    }
+
+    def in_subtree(span_id: str | None) -> bool:
+        while span_id is not None:
+            if span_id == root_id:
+                return True
+            span_id = parent_of.get(span_id)
+        return False
+
+    return [s for s in spans if in_subtree(s.get("spanID"))]
+
+
 def _parse_spans(payload: dict) -> list[SpanSummary]:
     traces = payload.get("data") or []
     if not traces:
         return []
-    spans = traces[0].get("spans") or []
+    spans = _chat_request_subtree(traces[0].get("spans") or [])
     return sorted(
         (
             SpanSummary(

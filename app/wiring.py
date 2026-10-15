@@ -36,7 +36,7 @@ from app.retrieval.sparse import SparseEncoder
 from app.security.auth import build_token_authenticator
 from app.security.models import RetrievalContext
 from app.shared.config import Settings
-from app.shared.tracing import setup_tracing
+from app.shared.tracing import langfuse_export_from, setup_tracing
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
 from app.sync.scheduler import SyncScheduler, sync_intervals_from_settings
@@ -258,7 +258,10 @@ def build_app(settings: Settings) -> FastAPI:
     real Qdrant/Ollama/SQLite at import time. See
     docs/adr/0005-real-wiring-pulled-forward.md.
     """
-    setup_tracing(endpoint=settings.otel_exporter_otlp_endpoint)
+    tracer_provider = setup_tracing(
+        endpoint=settings.otel_exporter_otlp_endpoint,
+        langfuse=langfuse_export_from(settings),
+    )
 
     ollama = OllamaClient(
         base_url=settings.ollama_base_url,
@@ -376,4 +379,5 @@ def build_app(settings: Settings) -> FastAPI:
         qdrant_client=qdrant_client,
         cors_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
         settings=settings,
+        tracer_provider=tracer_provider,
     )

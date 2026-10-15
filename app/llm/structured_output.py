@@ -25,7 +25,7 @@ from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import SecurityValidationMode
-from app.shared.tracing import get_tracer
+from app.shared.tracing import get_tracer, mark_llm_generation
 
 EVIDENCE_BACKED_OUTPUT_CONTRACT_VERSION = "output_contract_v2_2"
 EVIDENCE_BACKED_PIPELINE_VERSION = "pipeline_v2_2_evidence_backed"
@@ -1372,6 +1372,7 @@ async def stream_evidence_backed_answer(
     tracer = get_tracer(__name__)
     with tracer.start_as_current_span("generate") as span:
         span.set_attribute("generate.model", model)
+        mark_llm_generation(span, model)
         span.set_attribute("security.validation_mode", validation_mode)
         span.set_attribute("pipeline.version", EVIDENCE_BACKED_PIPELINE_VERSION)
         yield {

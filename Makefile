@@ -1,4 +1,4 @@
-.PHONY: dev test test-ollama lint up down ui
+.PHONY: dev test test-ollama lint up down ui langfuse-up langfuse-down
 
 VENV := .venv/bin
 VENV_UI := .venv-ui/bin
@@ -20,6 +20,14 @@ up:
 
 down:
 	docker compose down
+
+# Optional, heavy (6 containers): self-hosted Langfuse on http://localhost:3001.
+# The backend exports to it only with LANGFUSE_ENABLED=true in .env.
+langfuse-up:
+	docker compose -f docker-compose.langfuse.yml up -d
+
+langfuse-down:
+	docker compose -f docker-compose.langfuse.yml down
 
 ui:
 	PYTHONPATH=. $(VENV_UI)/streamlit run app/ui/streamlit_app.py

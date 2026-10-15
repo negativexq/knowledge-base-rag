@@ -117,3 +117,38 @@ def test_fetch_trace_spans_handles_no_data_at_all():
     )
 
     assert result == []
+
+
+def _linked_span(
+    name: str, span_id: str, parent_id: str | None, start_time_us: int, duration_us: int
+) -> dict:
+    span = _span(name, start_time_us, duration_us)
+    span["spanID"] = span_id
+    span["references"] = (
+        [{"refType": "CHILD_OF", "traceID": _TRACE_ID, "spanID": parent_id}]
+        if parent_id
+        else []
+    )
+    return span
+
+
+def test_fetch_trace_spans_keeps_only_the_chat_request_subtree():
+    """Since FastAPI's native telemetry, "POST /chat" is the trace root and
+    FastAPI adds its own operation spans (dependency resolution, endpoint)
+    around chat_request. The UI's pipeline-step chart is about the RAG
+    pipeline, so only chat_request and its descendants are returned."""
+    spans = [
+        _linked_span("POST /chat", "a", None, 10, 9000),
+        _linked_span("resolve dependencies", "b", "a", 20, 100),
+        _linked_span("run endpoint", "c", "a", 50, 8000),
+        _linked_span("chat_request", "d", "c", 90, 6000),
+        _linked_span("embed_query", "e", "d", 100, 2000),
+        _linked_span("generate", "f", "d", 200, 5000),
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=_jaeger_response(spans))
+
+    result = fetch_trace_spans(_TRACE_ID, client=_client_for(handler))
+
+    assert [s.name for s in result] == ["chat_request", "embed_query", "generate"]

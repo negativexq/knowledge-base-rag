@@ -296,3 +296,22 @@ async def test_v3_strict_releases_only_after_policy_passes():
         next(event for event in events if event["type"] == "security_validation")["passed"]
         is True
     )
+
+
+@pytest.mark.asyncio
+async def test_generate_span_is_marked_as_an_llm_generation_for_langfuse():
+    """Langfuse maps OTel GenAI semantic-convention attributes onto its
+    generation view (model, latency). Content stays out of the span, as
+    the test above requires."""
+    chunks = [_chunk(2, 0, "Refunds take 30 days.")]
+    ollama = _FakeOllama(["Refunds take 30 days [s.pdf:doc/2/0]."])
+    tracer, exporter = _local_tracer_with_exporter()
+
+    await _collect("How long?", chunks, ollama, model="qwen", tracer=tracer)
+
+    attrs = next(s for s in exporter.get_finished_spans() if s.name == "generate").attributes
+    assert attrs["gen_ai.operation.name"] == "chat"
+    assert attrs["gen_ai.request.model"] == "qwen"
+    assert attrs["langfuse.observation.type"] == "generation"
+    assert "gen_ai.prompt" not in attrs
+    assert "gen_ai.completion" not in attrs

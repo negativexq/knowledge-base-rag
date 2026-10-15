@@ -1,4 +1,6 @@
-fastapi==0.115.6
+# 0.142+ ships native OpenTelemetry (HTTP spans, traceparent propagation),
+# wired to our own TracerProvider in app/main.py.
+fastapi==0.143.1
 uvicorn[standard]==0.34.0
 httpx==0.28.1
 anthropic==0.120.2
@@ -12,9 +14,12 @@ sentence-transformers==5.6.1
 # Qwen3-Embedding-4B token-aware chunking (sentence-transformers also uses
 # this package transitively, but chunking imports it directly).
 transformers==5.14.1
-opentelemetry-api==1.29.0
-opentelemetry-sdk==1.29.0
-opentelemetry-exporter-otlp-proto-grpc==1.29.0
+# fastapi>=0.142 requires opentelemetry-api>=1.44. gRPC exporter feeds
+# Jaeger; the HTTP exporter feeds Langfuse (optional, see .env.example).
+opentelemetry-api==1.45.1
+opentelemetry-sdk==1.45.1
+opentelemetry-exporter-otlp-proto-grpc==1.45.1
+opentelemetry-exporter-otlp-proto-http==1.45.1
 deepeval==4.1.5
 ollama==0.6.2
 openai==2.53.0

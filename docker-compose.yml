@@ -45,6 +45,17 @@ services:
       # Optional — unset means the Notion connector simply isn't wired in
       # (app/wiring.py::build_connectors), same as running on the host.
       - NOTION_API_KEY=${NOTION_API_KEY:-}
+      # Optional — Langfuse export is off unless LANGFUSE_ENABLED=true and
+      # both keys are set (app/shared/tracing.py::langfuse_export_from). The
+      # self-hosted stack (docker-compose.langfuse.yml, `make langfuse-up`)
+      # is a separate compose project on host port 3001, reached from this
+      # container via host.docker.internal. Fixed here (like the Jaeger
+      # endpoint above) because .env's LANGFUSE_HOST=http://localhost:3001
+      # is for a host-run backend and would not resolve inside the container.
+      - LANGFUSE_ENABLED=${LANGFUSE_ENABLED:-false}
+      - LANGFUSE_HOST=http://host.docker.internal:3001
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY:-}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY:-}
     extra_hosts:
       # host.docker.internal resolves natively on Docker Desktop (macOS);
       # this makes the same compose file work on Linux hosts too.

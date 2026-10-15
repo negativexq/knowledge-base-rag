@@ -35,7 +35,8 @@ The system goes beyond “upload a PDF, search vectors, call an LLM” with:
 - deterministic validation of support identity and critical literal consistency;
 - a frozen occurrence-ledger architecture for negation, corrections, signed
   values, versions, and repeated siblings;
-- bounded OpenTelemetry/Jaeger signals plus controlled local forensic capture;
+- bounded OpenTelemetry signals (FastAPI native HTTP spans, Jaeger, optional
+  metadata-only Langfuse export) plus controlled local forensic capture;
 - an evaluation harness that separates retrieval, evidence, generation,
   validation, citation, and security failures.
 
