@@ -3767,6 +3767,57 @@ shorter labels fit 30 units where 28 fit before, and the answer is
 
 **Tests.** `tests/test_support_unit_sections.py`.
 
+## Fix — evidence budget counted in real tokens (closing note)
+
+**Problem.** `SectionAwareEvidenceBuilder` measured its 1200 "token" budget as
+whitespace words. Turkish averages about 2.5–3 tokens per word, so the builder
+selected 3000+ tokens of evidence. The answer-call fitting step then had to
+throw units away (in 11 of 12 golden-set questions).
+
+**Fix.**
+
+- The builder takes `count_tokens`, and production passes
+  `wiring.count_prompt_tokens` (the Qwen3 tokenizer).
+- Every budget decision uses it:
+  - merging a small source in full;
+  - anchor allocation;
+  - section expansion;
+  - the reported `context_tokens`.
+- Counts are cached per text, because expansion re-measures the whole output
+  for each candidate.
+- Truncation keeps the longest whole-word prefix that fits the token limit.
+- Without a counter, the builder still counts words.
+- The default `PIPELINE_V2_CONTEXT_TOKEN_BUDGET` is now **1600** tokens.
+
+**Sweep.** The 12-question golden set (`tests/fixtures/golden_set.json`) ran on
+the production path with num_ctx 4096. The DeepEval judge model is not
+installed, so an answer counted as correct when it contained the expected
+values (numbers, identifiers).
+
+| budget | correct | units built → sent | questions trimmed by fitting | max prompt | avg s |
+|---|---|---|---|---|---|
+| 1200 words (old) | 10/12 | 35.3 → 28.0 | 11 | 3069 | 30.5 |
+| 1200 tokens | 9/12 | 19.8 → 19.8 | 0 | 2184 | 27.9 |
+| **1600 tokens** | **10/12** | 25.2 → 25.2 | **0** | 2697 | 30.2 |
+| 2000 tokens | 10/12 | 30.3 → 28.0 | 11 | 3069 | 33.7 |
+
+1600 matches the old accuracy, sends exactly what the builder selected, and
+stays under the 3072-token prompt limit.
+
+**num_ctx decision.** It stays at 4096. With a token-counted budget the
+largest prompt is 2697 tokens, so the window is no longer the bottleneck.
+
+**Open.** `pdf-free-storage` and `pdf-shared-link-expiry` fail at every budget.
+The model answers, but the validator rejects the claim
+(`CRITICAL_VALUE_INDETERMINATE`, `NO_VALID_SUPPORT_BACKED_CLAIMS`). This is a
+validator or PDF-evidence issue, not a budget issue.
+
+**Tests.**
+
+- `tests/test_section_aware_token_count.py`.
+- A new wiring test.
+- A config test that checks the default budget fits the default window.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

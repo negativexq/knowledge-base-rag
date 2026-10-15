@@ -56,7 +56,12 @@ class Settings(BaseSettings):
     # Explicit false values remain available for legacy regression/debug runs.
     rag_pipeline_v2: bool = True
     support_ids_enabled: bool = True
-    pipeline_v2_context_token_budget: int = Field(default=1200, gt=0)
+    # Evidence text budget in generation-tokenizer tokens (wiring passes the
+    # Qwen tokenizer). 1600 is the golden-set sweep result for num_ctx 4096:
+    # largest prompt 2697 tokens, within 4096 - 1024 reserved output, so the
+    # answer-call fitting step drops nothing; accuracy equal to the old
+    # 1200-word budget (docs/PLANNING.md).
+    pipeline_v2_context_token_budget: int = Field(default=1600, gt=0)
 
     # Phase 6C is opt-in shadow telemetry. It never suppresses generation.
     semantic_answerability_enabled: bool = False

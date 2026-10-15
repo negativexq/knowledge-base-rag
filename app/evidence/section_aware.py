@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -59,6 +60,7 @@ def _sort_key(result: SearchResult) -> tuple[Any, ...]:
 
 
 def _estimate_tokens(text: str) -> int:
+    """Fallback budget unit when no tokenizer is given: whitespace words."""
     return len(text.split())
 
 
@@ -75,18 +77,36 @@ def _identity_alias(result: SearchResult) -> dict[str, Any]:
 class SectionAwareEvidenceBuilder:
     """Expand BGE anchors within their already-authorized logical sections."""
 
+    # Replaced per instance in __init__; the class default keeps instances
+    # made without __init__ (tests) on the word-count fallback.
+    _count: Callable[[str], int] = staticmethod(_estimate_tokens)
+
     def __init__(
         self,
         client: QdrantClient,
         collection_name: str,
         *,
         token_budget: int = 1200,
+        count_tokens: Callable[[str], int] | None = None,
     ) -> None:
+        """``count_tokens`` is the unit of ``token_budget``; production passes
+        the generation model's tokenizer. Without it the budget counts words,
+        which undercounts Turkish by about 2.5-3x."""
         if token_budget <= 0:
             raise ValueError("token_budget must be positive")
         self._client = client
         self._collection_name = collection_name
         self._token_budget = token_budget
+        counter = count_tokens or _estimate_tokens
+        cache: dict[str, int] = {}
+
+        def cached(text: str) -> int:
+            # Expansion re-measures the whole output for every candidate.
+            if text not in cache:
+                cache[text] = counter(text)
+            return cache[text]
+
+        self._count = cached
 
     def _scroll_source(self, anchor: SearchResult, context: RetrievalContext) -> list[SearchResult]:
         payload = anchor.payload
@@ -156,7 +176,7 @@ class SectionAwareEvidenceBuilder:
         ordered = sorted(candidates, key=_sort_key)
         if not ordered:
             return [anchor]
-        total = sum(_estimate_tokens(str(item.payload.get("text", ""))) for item in ordered)
+        total = sum(self._count(str(item.payload.get("text", ""))) for item in ordered)
         if total <= self._token_budget:
             return ordered
         same = self._same_section(anchor, ordered)
@@ -191,23 +211,40 @@ class SectionAwareEvidenceBuilder:
         return result
 
     @staticmethod
-    def _truncate_block(block: SearchResult, token_limit: int) -> SearchResult:
-        """Truncate only content, retaining the block's provenance metadata."""
+    def _truncate_block(
+        block: SearchResult,
+        token_limit: int,
+        count_tokens: Callable[[str], int] = _estimate_tokens,
+    ) -> SearchResult:
+        """Truncate only content, retaining the block's provenance metadata.
+        Keeps the longest whole-word prefix that fits ``token_limit``."""
         text = str(block.payload.get("text", ""))
-        original_count = _estimate_tokens(text)
-        visible_words = text.split()[: max(0, token_limit)]
-        visible_text = " ".join(visible_words)
+        original_count = count_tokens(text)
+        words = text.split()
+        low, high = 0, min(len(words), max(0, token_limit))
+        while low < high:
+            middle = (low + high + 1) // 2
+            if count_tokens(" ".join(words[:middle])) <= token_limit:
+                low = middle
+            else:
+                high = middle - 1
+        visible_text = " ".join(words[:low])
+        visible_count = count_tokens(visible_text)
         block.payload["text"] = visible_text
         # The words no longer map back onto chunk boundaries.
         block.payload.pop("section_chunks", None)
-        block.payload["token_count"] = len(visible_words)
+        block.payload["token_count"] = visible_count
         block.payload["truncated"] = True
         block.payload["original_token_count"] = original_count
-        block.payload["visible_token_count"] = len(visible_words)
+        block.payload["visible_token_count"] = visible_count
         return block
 
     @staticmethod
-    def _block(anchor: SearchResult, section_chunks: list[SearchResult]) -> SearchResult:
+    def _block(
+        anchor: SearchResult,
+        section_chunks: list[SearchResult],
+        count_tokens: Callable[[str], int] = _estimate_tokens,
+    ) -> SearchResult:
         ordered = sorted(section_chunks, key=_sort_key)
         ids = [_chunk_id(item) for item in ordered]
         text = "\n\n".join(str(item.payload.get("text", "")) for item in ordered)
@@ -234,7 +271,7 @@ class SectionAwareEvidenceBuilder:
                 "section_aware": True,
                 "section_key": list(_section_key(anchor_payload)),
                 "anchor_chunk_id": _chunk_id(anchor),
-                "token_count": _estimate_tokens(text),
+                "token_count": count_tokens(text),
                 # Per-chunk provenance, in text order: the block section is the
                 # anchor's, but a merged small source spans several sections.
                 "section_chunks": [
@@ -297,10 +334,10 @@ class SectionAwareEvidenceBuilder:
         # initial token and the remaining budget is distributed round-robin,
         # preventing the first large source from starving later anchors.
         full_anchor_blocks = [
-            self._block(group["anchor"], group["selected"]) for group in groups
+            self._block(group["anchor"], group["selected"], self._count) for group in groups
         ]
         full_anchor_sizes = [
-            _estimate_tokens(str(block.payload.get("text", "")))
+            self._count(str(block.payload.get("text", "")))
             for block in full_anchor_blocks
         ]
         allocations = list(full_anchor_sizes)
@@ -334,7 +371,7 @@ class SectionAwareEvidenceBuilder:
             if allocation <= 0:
                 continue
             if full_size > allocation:
-                self._truncate_block(block, allocation)
+                self._truncate_block(block, allocation, self._count)
                 truncated_count += 1
             output_index_by_group[id(group)] = len(output)
             output.append(block)
@@ -365,11 +402,11 @@ class SectionAwareEvidenceBuilder:
                 if _chunk_id(candidate) in selected_ids:
                     continue
                 trial_chunks = current_chunks + [candidate]
-                trial_block = self._block(group["anchor"], trial_chunks)
+                trial_block = self._block(group["anchor"], trial_chunks, self._count)
                 trial_output = list(output)
                 trial_output[output_index] = trial_block
                 trial_tokens = sum(
-                    _estimate_tokens(str(item.payload.get("text", "")))
+                    self._count(str(item.payload.get("text", "")))
                     for item in trial_output
                 )
                 if trial_tokens <= self._token_budget:
@@ -383,9 +420,7 @@ class SectionAwareEvidenceBuilder:
 
             group["selected"] = current_chunks
 
-        context_tokens = sum(
-            _estimate_tokens(str(block.payload.get("text", ""))) for block in output
-        )
+        context_tokens = sum(self._count(str(block.payload.get("text", ""))) for block in output)
         for index, block in enumerate(output, 1):
             block.payload["evidence_id"] = f"E{index}"
         return EvidenceBuildResult(
