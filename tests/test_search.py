@@ -7,7 +7,7 @@ from qdrant_client import QdrantClient
 import app.retrieval.search as search_module
 from app.ingestion.models import Chunk
 from app.ingestion.qdrant_store import QdrantStore
-from app.retrieval.filters import build_filter
+from app.retrieval.filters import build_acl_filter, build_filter, combine_filters
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.retrieval.search import RERANK_CANDIDATE_K, SEARCH_QUERY_PREFIX, search
@@ -231,10 +231,51 @@ async def test_search_builds_and_passes_filter_from_doc_ids(monkeypatch):
         doc_ids=["doc-a", "doc-b"],
     )
 
-    # User filters remain applied by Qdrant; the server-owned ACL is applied
-    # immediately after this one raw retrieval and before reranking.
-    expected_user = build_filter(doc_ids=["doc-a", "doc-b"])
-    assert captured["filters"] == expected_user
+    # The server-owned ACL is AND-ed with the user filters and enforced by
+    # Qdrant itself, so other tenants' points never take candidate slots.
+    expected = combine_filters(
+        build_acl_filter(RetrievalContext(tenant_id="default")),
+        build_filter(doc_ids=["doc-a", "doc-b"]),
+    )
+    assert captured["filters"] == expected
+
+
+async def _captured_filters(monkeypatch, context: RetrievalContext):
+    captured = {}
+
+    def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
+        captured.update(kwargs)
+        return []
+
+    monkeypatch.setattr(search_module, "hybrid_search", fake_hybrid_search)
+    await search(
+        "hello",
+        ollama=_FakeOllama(),
+        sparse_encoder=_FakeSparseEncoder(),
+        qdrant_client=QdrantClient(":memory:"),
+        collection_name=COLLECTION,
+        embed_model="nomic-embed-text",
+        context=context,
+    )
+    return captured["filters"]
+
+
+@pytest.mark.asyncio
+async def test_search_pushes_tenant_acl_into_the_qdrant_query_without_user_filters(monkeypatch):
+    """Regression: the ACL was once applied only after a tenant-unrestricted
+    top-k retrieval, so other tenants' points consumed the candidate_k
+    slots and a tenant could get fewer (or zero) of its own candidates."""
+    filters = await _captured_filters(monkeypatch, RetrievalContext(tenant_id="tenant-a"))
+
+    assert filters == build_acl_filter(RetrievalContext(tenant_id="tenant-a"))
+    condition = filters.must[0]
+    assert condition.key == "tenant_id"
+    assert condition.match.value == "tenant-a"
+
+
+@pytest.mark.asyncio
+async def test_search_system_context_without_user_filters_queries_unrestricted(monkeypatch):
+    assert await _captured_filters(monkeypatch, RetrievalContext.system()) is None
 
 
 class _FakeReranker:
@@ -280,7 +321,9 @@ async def test_search_uses_reranker_when_provided(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_search_records_raw_and_authorized_counts_without_second_retrieval(monkeypatch):
+async def test_search_post_filter_still_drops_foreign_tenant_points_as_defense_in_depth(
+    monkeypatch,
+):
     raw_candidates = [
         SearchResult(
             score=0.9,
@@ -319,8 +362,11 @@ async def test_search_records_raw_and_authorized_counts_without_second_retrieval
         report=report,
     )
 
+    # One retrieval only, and no tenant-unrestricted count: with the ACL in
+    # the Qdrant query a pre-ACL count is unknowable without a second
+    # unrestricted query, which the request path deliberately never runs.
     assert calls == 1
-    assert report.pre_acl_candidate_count == 2
+    assert report.pre_acl_candidate_count is None
     assert report.authorized_candidate_count == 1
     assert [result.payload["source_id"] for result in reranker.calls[0]["candidates"]] == ["a"]
     assert [result.payload["source_id"] for result in results] == ["a"]
@@ -352,12 +398,12 @@ async def test_search_records_zero_counts_for_empty_raw_retrieval(monkeypatch):
         == []
     )
     assert calls == 1
-    assert report.pre_acl_candidate_count == 0
+    assert report.pre_acl_candidate_count is None
     assert report.authorized_candidate_count == 0
 
 
 @pytest.mark.asyncio
-async def test_search_reports_unauthorized_only_without_exposing_raw_metadata(monkeypatch):
+async def test_search_never_reports_foreign_tenant_matches_to_the_caller(monkeypatch):
     raw_candidates = [
         SearchResult(
             score=0.9,
@@ -393,11 +439,19 @@ async def test_search_reports_unauthorized_only_without_exposing_raw_metadata(mo
 
     assert calls == 1
     assert results == []
-    assert report.pre_acl_candidate_count == 1
+    assert report.pre_acl_candidate_count is None
     assert report.authorized_candidate_count == 0
-    report_json = str(report.as_dict())
+    report_dict = report.as_dict()
+    report_json = str(report_dict)
     assert "private-source" not in report_json
     assert "must-not-leak" not in report_json
+    # The client-visible stage counts must not reveal that another tenant
+    # had a matching point (cross-tenant existence oracle).
+    # Hybrid retrieval is the first candidate-producing stage, so it has no
+    # input count (as before the regression).
+    hybrid = next(s for s in report_dict["stages"] if s["name"] == "hybrid_retrieval")
+    assert hybrid["candidates_in"] is None
+    assert hybrid["candidates_out"] == 0
 
 
 @pytest.mark.asyncio

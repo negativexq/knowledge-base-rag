@@ -274,9 +274,9 @@ def extract_answerability_observation(
 ) -> AnswerabilityObservation:
     """Extract features from only the authorized final result list.
 
-    ``pre_acl_candidate_count`` is optional because the production Qdrant
-    query pushes ACL into retrieval and intentionally does not perform a
-    second unrestricted query merely to count unauthorized points.
+    ``pre_acl_candidate_count`` is optional and is ``None`` in production:
+    the Qdrant query pushes the ACL into retrieval and intentionally does not
+    perform a second unrestricted query merely to count unauthorized points.
     """
     started = time.perf_counter()
     top = reranked_results[:5]

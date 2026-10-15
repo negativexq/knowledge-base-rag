@@ -44,19 +44,22 @@ Phase 6A.
 
 ## Signals and limitations
 
-Features include pre-ACL/authorized candidate and reranked counts, raw top-score and
+Features include authorized candidate and reranked counts, raw top-score and
 margin signals, top-k score aggregates, source/document diversity, duplicate
 source chunk count, and score concentration. The current single Qdrant RRF
 query exposes only the fused result. Dense rank, sparse rank, fused rank,
 dense/sparse agreement, and fused/rerank agreement are therefore nullable
-rather than estimated. Retrieval makes one bounded raw candidate query,
-records its integer count, then applies the server-owned tenant ACL before
-reranking. No second query is made, and unauthorized source IDs/content
-cannot enter the observation.
+rather than estimated. Retrieval makes one Qdrant query with the server-owned
+tenant ACL inside it (see `docs/security.md`), so no pre-ACL count exists and
+`pre_acl_candidate_count` is `None` in production. Unauthorized source
+IDs/content cannot enter the observation.
 
-When the raw count is positive and authorized candidates are zero, the
-deterministic reason is `NO_AUTHORIZED_EVIDENCE`; when both are zero it is
-`NO_RETRIEVAL_CANDIDATES`.
+`NO_AUTHORIZED_EVIDENCE` (pre-ACL count positive, authorized zero) is
+therefore never produced by the request path. An earlier version retrieved
+without the ACL and filtered afterwards to obtain that count. That cost
+tenants candidate slots and revealed in the client-visible report whether
+other tenants held matching content, so it was reverted. When authorized
+candidates are zero, the reason is `NO_RETRIEVAL_CANDIDATES`.
 
 ## Descriptive analysis
 

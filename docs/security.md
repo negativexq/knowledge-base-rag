@@ -111,6 +111,14 @@ never widen it. There is no "no context = return everything" path:
 `build_acl_filter` raises `MissingTenantContextError` for a
 non-system context with no tenant_id.
 
+The ACL is part of the Qdrant query (`query_filter`, pushed into both the
+dense and the sparse prefetch), not a step after retrieval. Candidate slots
+(`candidate_k`, per-branch prefetch limits) therefore go only to the caller's
+tenant. `filter_authorized_candidates()` still runs after retrieval, as
+defense in depth. Retrieval collects no pre-ACL candidate count: that would
+need a second, tenant-unrestricted query, and reporting it would tell a caller
+whether other tenants hold content matching their query.
+
 Internal, non-request-driven code (benchmark scripts, the migration engine's
 quality gate, and the evaluation CLI) explicitly
 constructs `RetrievalContext.system()` — a privileged, tenant-unrestricted
