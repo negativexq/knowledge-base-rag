@@ -7,63 +7,40 @@ Sprint 9 closing note; a 12-question x 7B-judge run is too slow for every
 test invocation.
 """
 
-import json
-import socket
-import urllib.request
-
 import pytest
 from qdrant_client import QdrantClient
 
 from app.connectors.filesystem import LocalFilesystemConnector
+from app.evaluation.cli import evaluation_callables
 from app.evaluation.generation_metrics import build_default_metrics, compute_generation_metrics
 from app.evaluation.harness import GoldenQuestion, build_report, run_evaluation
 from app.ingestion.ingest import ingest_connector
 from app.ingestion.qdrant_store import QdrantStore
-from app.llm.generate import stream_answer
+from app.llm.embedding_models import active_embedding_config
 from app.llm.ollama_client import OllamaClient
 from app.registry.store import DocumentRegistry
-from app.retrieval.hybrid_search import SearchResult
-from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
-from app.security.models import RetrievalContext
 from app.shared.config import settings
+from app.wiring import build_chat_dependencies
 from tests.fixtures.golden_markdown_source import build_golden_markdown_source
 from tests.fixtures.golden_source import build_golden_source_pdf
+from tests.live_services import ollama_has, production_embed_fn, production_embed_model, qdrant_up
 
 pytestmark = pytest.mark.ollama_e2e
 
 COLLECTION = "test_evaluation_e2e"
 
-
-def _port_open(host: str, port: int) -> bool:
-    try:
-        with socket.create_connection((host, port), timeout=0.5):
-            return True
-    except OSError:
-        return False
-
-
-
-
-def _configured_model_available() -> bool:
-    try:
-        with urllib.request.urlopen("http://localhost:11434/api/tags", timeout=0.5) as response:
-            models = json.load(response).get("models", [])
-        return any(model.get("name") == settings.ollama_model for model in models)
-    except (OSError, ValueError):
-        return False
-
-
-_services_up = (
-    _port_open("localhost", 11434)
-    and _port_open("localhost", 6333)
-    and _configured_model_available()
+_services_up = qdrant_up() and ollama_has(
+    production_embed_model(), settings.ollama_model, settings.eval_judge_model
 )
 
 
 @pytest.mark.skipif(
     not _services_up,
-    reason="requires Qdrant and the configured native Ollama generation model",
+    reason=(
+        "requires Qdrant and the production embedding, generation and judge "
+        "models in native Ollama"
+    ),
 )
 @pytest.mark.asyncio
 async def test_real_golden_set_run_reports_metrics_by_content_type(tmp_path):
@@ -76,15 +53,19 @@ async def test_real_golden_set_run_reports_metrics_by_content_type(tmp_path):
     qdrant_client = QdrantClient(url=settings.qdrant_url)
     if qdrant_client.collection_exists(COLLECTION):
         qdrant_client.delete_collection(COLLECTION)
-    store = QdrantStore(client=qdrant_client, collection_name=COLLECTION)
+    store = QdrantStore(
+        client=qdrant_client,
+        collection_name=COLLECTION,
+        dense_dimension=active_embedding_config(settings).dimension,
+    )
     registry = DocumentRegistry(tmp_path / "registry.db")
     ollama = OllamaClient(base_url=settings.ollama_base_url)
     sparse_encoder = SparseEncoder()
 
-    async def embed_fn(text: str) -> list[float]:
-        return await ollama.embed(
-            text, model=settings.ollama_embed_model, prefix="search_document: "
-        )
+    embed_fn = production_embed_fn(ollama)
+    deps, chat_provider = build_chat_dependencies(
+        settings, qdrant_client, ollama, sparse_encoder, COLLECTION
+    )
 
     questions = [
         GoldenQuestion(
@@ -106,25 +87,7 @@ async def test_real_golden_set_run_reports_metrics_by_content_type(tmp_path):
     try:
         await ingest_connector(connector, store, registry, embed_fn, sparse_encoder)
 
-        async def search_fn(question: str) -> list[SearchResult]:
-            return await search(
-                question,
-                ollama,
-                sparse_encoder,
-                qdrant_client,
-                COLLECTION,
-                settings.ollama_embed_model,
-                RetrievalContext(tenant_id="default"),
-            )
-
-        async def generate_fn(question: str, chunks: list[SearchResult]) -> str:
-            parts = []
-            async for event in stream_answer(
-                question, chunks, ollama, settings.ollama_model, settings.active_prompt_version
-            ):
-                if event["type"] == "token":
-                    parts.append(event["content"])
-            return "".join(parts)
+        search_fn, generate_fn = evaluation_callables(deps)
 
         metrics = build_default_metrics(
             judge_model_name=settings.eval_judge_model, base_url=settings.ollama_base_url
@@ -142,5 +105,6 @@ async def test_real_golden_set_run_reports_metrics_by_content_type(tmp_path):
         assert report["mean_answer_relevancy"] is not None
     finally:
         await ollama.aclose()
+        await chat_provider.aclose()
         registry.close()
         qdrant_client.delete_collection(COLLECTION)

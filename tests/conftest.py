@@ -1,6 +1,30 @@
 import fitz
 import pytest
 
+from tests.run_lock import acquire_run_lock
+
+_run_lock = None
+
+
+def pytest_configure(config):
+    """Refuse to start while another pytest run in this checkout is going.
+    Two overlapping runs each load torch, the reranker and the live models,
+    which on a 16 GB machine pushed the system into heavy swap."""
+    global _run_lock
+    _run_lock = acquire_run_lock(config.rootpath / ".pytest_cache" / "run.lock")
+    if _run_lock is None:
+        pytest.exit(
+            "another pytest run is already in progress in this checkout",
+            returncode=pytest.ExitCode.USAGE_ERROR,
+        )
+
+
+def pytest_unconfigure(config):
+    global _run_lock
+    if _run_lock is not None:
+        _run_lock.close()
+        _run_lock = None
+
 
 def _sentence(marker: str, sentence_index: int, word_count: int) -> str:
     words = [f"{marker}-s{sentence_index}w{i}" for i in range(word_count)]

@@ -3416,6 +3416,67 @@ answer text goes on the span.
 - no text on the span;
 - a provider failure ending the span as an error.
 
+## Chore — Stale live-service tests and the golden-set CLI (closing note)
+
+**Problem.** Once Ollama and Qdrant ran locally again, the `ollama_e2e` tests
+that had been skipping started failing. They (and the golden-set CLI) were
+still wired to paths production no longer uses:
+
+- **Embedding model.** Embeddings used `nomic-embed-text` through
+  `settings.ollama_embed_model`, the nomic query/document prefixes, and the
+  768-dim store default. Production embeds with the active config
+  (`qwen3-embedding:4b` at 1024 dims).
+- **Golden-set CLI (`app/evaluation/cli.py`).** It searched a qwen3-indexed
+  collection with nomic query vectors. It generated through the legacy
+  `stream_answer` path with a `qwen2.5:3b-instruct` default, not through the
+  support-ID answer path, and it read the raw collection name, not the
+  active alias. In practice it did not measure what `/chat` serves.
+- **Generation e2e test.** It exercised the legacy fast streaming path. The
+  production path buffers and validates the whole answer before release, so
+  the "tokens arrive incrementally" assertion tested a path users never hit.
+
+**Change.**
+
+- **Golden-set CLI.** It now builds its callables from
+  `app/wiring.py::build_chat_dependencies`: production search, then the
+  evidence step, then the support-ID answer, with the active collection alias
+  resolved.
+  - `evaluation_settings` applies only the CLI overrides
+    (`--generation-model`, `--no-reranker`). The generation model now defaults
+    to the production model.
+  - `evaluation_callables` adapts `ChatDependencies` to the harness.
+- **Shared test helpers.** New `tests/live_services.py` provides service and
+  model checks plus the production document-embedding function.
+- **`test_ingest_e2e`.** Uses the production embedding config and dimension.
+  It skips unless that model is present.
+- **`test_evaluation_e2e`.** Uses the CLI's production callables. It skips
+  unless the embedding, generation and judge models are all present.
+- **`test_generation_e2e`.** Runs the support-ID path:
+  - the answer cites `E1.*` evidence;
+  - an out-of-context question abstains with `NOT_FOUND_PHRASE`.
+
+  The incremental-streaming test was removed. The three legacy-path tests took
+  about 5 minutes; the two new ones take about 20 seconds.
+- **Left unchanged:**
+  - unit tests that use `nomic-embed-text` or `qwen2.5` only as opaque strings
+    against fakes;
+  - the Claude comparison e2e test, which skips without an API key;
+  - historical sprint docs.
+- **No overlapping or accidental heavy test runs.** Two pytest processes ran
+  at once, each with torch, the reranker and live models loaded, and pushed
+  this 16 GB machine into about 17 GB of swap. Two guards prevent it now:
+  - `addopts` deselects `ollama_e2e` by default; opt in with
+    `make test-ollama` or `-m ollama_e2e`.
+  - `tests/conftest.py` takes an advisory lock (`tests/run_lock.py`, on
+    `.pytest_cache/run.lock`), and a second concurrent run exits immediately.
+
+**Tests.** `tests/test_evaluation_cli.py` covers:
+
+- the system-context search;
+- evidence-then-generate with only visible tokens joined;
+- the no-evidence-step fallback;
+- that the override settings leave the base settings untouched.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

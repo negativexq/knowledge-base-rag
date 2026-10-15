@@ -1,55 +1,44 @@
-"""Generation tests against the REAL native Ollama (qwen2.5:7b-instruct) —
-mocking isn't enough here: we need to prove real token-by-token streaming
-latency and real model citation behavior, not just that our code calls an
-API correctly.
+"""Generation tests against the REAL native Ollama and the production
+generation model, on the production answer path (support-ID contract,
+app/wiring.py's default stream_fn). Mocking isn't enough here: these prove
+the real model follows the structured-output contract, cites the evidence
+it was given, and abstains instead of answering from world knowledge.
 
-Skipped automatically if Ollama isn't reachable, so it doesn't break
-CI/offline runs.
+The answer is buffered and validated before release by design, so there is
+no token-by-token streaming assertion here.
+
+Skipped automatically if Ollama or the configured model isn't available.
 """
-
-import json
-import socket
-import time
-import urllib.request
 
 import pytest
 
-from app.llm.generate import stream_answer
-from app.llm.grounding import check_grounding
-from app.llm.ollama_client import OllamaClient
 from app.llm.prompt import NOT_FOUND_PHRASE
+from app.llm.provider import default_chat_model, get_chat_provider
+from app.llm.structured_output import stream_support_unit_answer
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import settings
+from tests.live_services import ollama_has
 
 pytestmark = pytest.mark.ollama_e2e
 
-
-def _ollama_up() -> bool:
-    try:
-        with socket.create_connection(("localhost", 11434), timeout=0.5):
-            return True
-    except OSError:
-        return False
-
-
-def _configured_model_available() -> bool:
-    try:
-        with urllib.request.urlopen("http://localhost:11434/api/tags", timeout=0.5) as response:
-            models = json.load(response).get("models", [])
-        return any(model.get("name") == settings.ollama_model for model in models)
-    except (OSError, ValueError):
-        return False
+requires_generation_model = pytest.mark.skipif(
+    not (settings.generation_provider == "ollama" and ollama_has(settings.ollama_model)),
+    reason="requires native Ollama and the configured generation model",
+)
 
 
 def _chunk(page: int, paragraph: int, text: str) -> SearchResult:
     return SearchResult(
         score=0.9,
+        id=f"handbook-{page}-{paragraph}",
         payload={
             "page_number": page,
             "paragraph_index": paragraph,
             "text": text,
             "source_type": "pdf",
             "source_id": "handbook",
+            "authorized": True,
+            "model_visible": True,
         },
     )
 
@@ -59,89 +48,45 @@ CONTEXT_CHUNKS = [
 ]
 
 
-@pytest.mark.skipif(
-    not (_ollama_up() and _configured_model_available()),
-    reason="requires native Ollama and the configured generation model",
-)
-@pytest.mark.asyncio
-async def test_answer_streams_as_multiple_incremental_events_not_one_blob():
-    ollama = OllamaClient(base_url=settings.ollama_base_url)
+async def _answer(question: str) -> tuple[str, dict]:
+    provider = get_chat_provider(settings)
     try:
-        arrival_times = []
-        async for event in stream_answer(
-            "What is the return policy for a defective product?",
+        answer_parts: list[str] = []
+        validation: dict = {}
+        async for event in stream_support_unit_answer(
+            question,
             CONTEXT_CHUNKS,
-            ollama,
-            model=settings.ollama_model,
+            provider,
+            model=default_chat_model(settings),
             prompt_version=settings.active_prompt_version,
-            # This test verifies the explicit low-latency FAST path. The
-            # production/default path is STRICT and intentionally buffers.
-            validation_mode="fast",
-        ):
-            if event["type"] == "token":
-                arrival_times.append(time.monotonic())
-
-        assert len(arrival_times) > 3  # real streaming produces several separate tokens
-        # genuine streaming spreads token arrivals over time; a buffered
-        # "fake stream" would deliver everything at ~the same instant
-        spread = arrival_times[-1] - arrival_times[0]
-        assert spread > 0.05
-    finally:
-        await ollama.aclose()
-
-
-@pytest.mark.skipif(
-    not (_ollama_up() and _configured_model_available()),
-    reason="requires native Ollama and the configured generation model",
-)
-@pytest.mark.asyncio
-async def test_answer_citations_are_grounded_in_real_context():
-    ollama = OllamaClient(base_url=settings.ollama_base_url)
-    try:
-        answer_parts = []
-        grounding_event = None
-        async for event in stream_answer(
-            "What is the return policy for a defective product?",
-            CONTEXT_CHUNKS,
-            ollama,
-            model=settings.ollama_model,
-            prompt_version=settings.active_prompt_version,
+            think=settings.ollama_thinking,
+            num_ctx=settings.ollama_num_ctx,
+            validator_version=settings.critical_validator_version,
         ):
             if event["type"] == "token":
                 answer_parts.append(event["content"])
-            elif event["type"] == "grounding":
-                grounding_event = event
-
-        answer = "".join(answer_parts)
-        assert grounding_event is not None
-        assert grounding_event["citations_found"], f"model produced no citations: {answer!r}"
-        assert grounding_event["grounded"] is True
-        # cross-check with the standalone function too, not just the event
-        assert check_grounding(answer, CONTEXT_CHUNKS).grounded is True
+            elif event["type"] == "security_validation":
+                validation = event
+        return "".join(answer_parts), validation
     finally:
-        await ollama.aclose()
+        await provider.aclose()
 
 
-@pytest.mark.skipif(
-    not (_ollama_up() and _configured_model_available()),
-    reason="requires native Ollama and the configured generation model",
-)
+@requires_generation_model
 @pytest.mark.asyncio
-async def test_out_of_context_question_gets_not_found_reply_not_a_hallucination():
-    ollama = OllamaClient(base_url=settings.ollama_base_url)
-    try:
-        answer_parts = []
-        async for event in stream_answer(
-            "What is the capital of France?",  # unrelated to CONTEXT_CHUNKS
-            CONTEXT_CHUNKS,
-            ollama,
-            model=settings.ollama_model,
-            prompt_version=settings.active_prompt_version,
-        ):
-            if event["type"] == "token":
-                answer_parts.append(event["content"])
+async def test_answer_cites_the_evidence_it_was_given():
+    answer, validation = await _answer("What is the return policy for a defective product?")
 
-        answer = "".join(answer_parts)
-        assert NOT_FOUND_PHRASE in answer
-    finally:
-        await ollama.aclose()
+    assert validation["passed"] is True, validation
+    assert validation["abstain"] is False, answer
+    assert "30" in answer
+    assert "[E1." in answer, f"answer carries no support-ID citation: {answer!r}"
+
+
+@requires_generation_model
+@pytest.mark.asyncio
+async def test_out_of_context_question_abstains_instead_of_hallucinating():
+    answer, validation = await _answer("What is the capital of France?")
+
+    assert validation["abstain"] is True, answer
+    assert answer == NOT_FOUND_PHRASE
