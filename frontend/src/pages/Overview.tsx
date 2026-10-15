@@ -23,7 +23,7 @@ export default function Overview() {
 
   if (overview.isLoading) {
     return (
-      <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
         <div className="grid grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <LoadingSkeleton key={i} className="h-24" />
@@ -36,7 +36,7 @@ export default function Overview() {
 
   if (overview.isError) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <ErrorState kind={classifyError(overview.error)} detail={(overview.error as Error).message} />
       </div>
     )
@@ -45,7 +45,7 @@ export default function Overview() {
   const data = overview.data!
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <MetricCard label="Documents" value={data.document_count} icon={FileStack} />
         <MetricCard

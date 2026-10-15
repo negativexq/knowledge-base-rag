@@ -32,14 +32,14 @@ export default function Traces() {
 
   if (runs.isLoading) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <LoadingRows rows={5} />
       </div>
     )
   }
   if (runs.isError) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <ErrorState kind={classifyError(runs.error)} detail={(runs.error as Error).message} />
       </div>
     )
@@ -51,13 +51,12 @@ export default function Traces() {
   const statuses = Array.from(new Set(tracedRuns.map((r) => r.status)))
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-[var(--color-foreground)]">Traces</h1>
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
+      <div className="flex items-center justify-end">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2 py-1 text-xs text-[var(--color-foreground)] outline-none"
+          className="h-8 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 text-xs text-[var(--color-foreground)] outline-none"
         >
           <option value="all">All statuses</option>
           {statuses.map((s) => (

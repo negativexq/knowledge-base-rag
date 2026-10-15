@@ -40,7 +40,7 @@ export function TabsList({ children, className }: { children: ReactNode; classNa
     <div
       role="tablist"
       className={cn(
-        "flex items-center gap-1 border-b border-[var(--color-border)] px-1",
+        "inline-flex items-center gap-0.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-0.5",
         className,
       )}
     >
@@ -82,17 +82,14 @@ export function TabsTrigger({
         }
       }}
       className={cn(
-        "relative px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none",
+        "rounded-md px-3 py-1 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
         active
-          ? "text-[var(--color-foreground)]"
+          ? "bg-[var(--color-surface)] text-[var(--color-foreground)] shadow-card"
           : "text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]",
         className,
       )}
     >
       {children}
-      {active && (
-        <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--color-accent)]" />
-      )}
     </button>
   )
 }
