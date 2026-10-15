@@ -3326,6 +3326,62 @@ Qdrant. The 18 missing tests are exactly the ones in
 `test_sources_client.py`. ruff and mypy are clean. Streamlit is still
 mentioned in older sprint notes and plans, which are historical.
 
+## Content Screening — prompt injection and PII, shadow mode (closing note)
+
+These are guardrail items 3 and 4 from the review: direct prompt injection in
+the user's question, and PII. Both use our own deterministic rules and run in
+shadow mode, which means detect and record only, never block. Shadow first
+follows the answerability precedent: flag rates and false positives should be
+measured on real traffic before anything enforces.
+
+**Implementation.** `app/security/content_screening.py`, with no new
+dependency.
+- `screen_input()` covers the question: injection rules in four groups
+  (instruction override, system-prompt extraction, jailbreak persona,
+  delimiter injection, in English and Turkish phrasings) plus PII.
+- `screen_output()` covers the answer: PII only. Disclosure checks remain
+  `output_policy.py`'s job.
+- PII types are email, phone (Turkish national format and `+` E.164), IBAN
+  (mod-97), TCKN (checksum) and payment cards (Luhn). A whole digit run is
+  classified at once, never in pieces, and emails and IBANs are blanked
+  before the digit runs are scanned, so nothing is counted twice.
+
+**Wiring.** `/chat` screens the question after auth, the rate limit and the
+length check. It screens the answer the user was actually shown when the
+stream ends.
+- Findings go on the `chat_request` span.
+- When something is flagged, a `content_screening_flagged` audit event is
+  logged with direction, user, tenant, rule IDs and PII counts.
+- The matched text never goes on the span or into the event.
+- `CONTENT_SCREENING_MODE` takes `shadow` (the default) or `off`. There is
+  deliberately no enforce value yet.
+
+**Not done.** Content moderation (toxicity and similar). Rule-based keyword
+lists are too inaccurate for it, especially across languages, so it needs a
+model-based classifier and a separate decision.
+
+**Tests**, written first:
+- `tests/test_content_screening.py` covers positive and negative injection
+  cases in both languages. Benign phrases such as "installation
+  instructions", "kurulum talimatları" and "developer access" are not
+  flagged. It also covers checksum-valid and invalid IBAN, TCKN and card
+  numbers, phone formats, and a check that results never carry the matched
+  text.
+- `tests/test_chat_content_screening.py` checks that a flagged request is
+  still served, and covers the input and output span and audit findings,
+  that no text is recorded, that clean requests are not audited, and `off`
+  mode.
+- Config tests cover the default and reject unknown modes.
+
+**Results.** `1237 passed, 17 skipped`; ruff and mypy clean. Worst-case
+timing was about 1 ms for a 2000-character input and about 2.6 ms for a
+20 KB answer, with no catastrophic regex backtracking.
+
+**Next steps.**
+- Read the flag rates from the audit log and spans before deciding on
+  enforcement or redaction.
+- Consider a model-based injection classifier if the rules miss too much.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

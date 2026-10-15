@@ -293,6 +293,53 @@ Limitations:
   body size. The ASGI server or a reverse proxy should cap request bodies.
 - There is no per-tenant aggregate limit and no token/cost budget.
 
+## Content screening (shadow mode)
+
+`app/security/content_screening.py` applies deterministic rules on two
+sides of `POST /chat`. Its default mode is `CONTENT_SCREENING_MODE=shadow`:
+findings are recorded, nothing is blocked or redacted, and the user gets
+exactly the same response.
+
+- **Question: direct prompt injection.** English and Turkish rules in four
+  groups:
+  - `instruction_override`, e.g. "ignore all previous instructions" or
+    "önceki talimatları yok say";
+  - `system_prompt_extraction`;
+  - `jailbreak_persona`, e.g. "you are now DAN" or "developer mode";
+  - `delimiter_injection`, e.g. `</retrieved_context>`, `<|im_start|>` or
+    `[INST]`.
+- **Question and answer: PII.** Email, phone (Turkish national format and
+  `+` E.164), IBAN, TCKN and payment card numbers. Each structured number
+  is reported only if its checksum holds (IBAN mod-97, the TCKN checksum,
+  Luhn), so order numbers and other long digit strings are not reported.
+  The answer is screened as the user saw it, once the stream ends.
+
+Findings go on the `chat_request` span (`guardrail.mode`,
+`guardrail.{input,output}.flagged`, `.injection_rules`, `.pii_types`,
+`.pii_count`). When anything is flagged, a `content_screening_flagged` audit
+event is also logged, with direction, user, tenant, rule IDs and PII type
+counts. The matched text never goes on the span or into the audit event.
+
+This sits alongside the structural defenses and does not replace them:
+- the question already reaches the model as escaped JSON, so delimiter
+  injection is inert;
+- `app/llm/output_policy.py` still checks answers;
+- tenant ACL still bounds what can be retrieved.
+
+The rules check the question only after the length guardrail, so their input
+is bounded. They take about 1 ms on a 2000-character question.
+
+**Limitations:**
+- **Rules miss things.** Paraphrased or obfuscated injection, other
+  languages, and encodings are not caught.
+- **False positives.** For example, a legitimate question that mentions
+  "jailbreak".
+- **No content moderation.** Toxicity, harassment and similar categories
+  are not covered, because a keyword list would be too inaccurate,
+  especially across languages.
+- **No enforcing mode.** Moving to one should be decided from the measured
+  shadow-mode flag rates.
+
 ## Known limitations
 
 - **Prompt injection is not "solved."** The documented trust
