@@ -3741,6 +3741,32 @@ does not count the support-unit headers.
   - truncated and unparseable output.
 - New tests in the Ollama client and wiring tests.
 
+## Fix — every support unit labelled with its own section (closing note)
+
+**Problem.** When a small source is merged into one evidence block, every
+support unit inherited the anchor's section. The model saw the installation
+paragraph as `section: Kimlik Doğrulama/Token Süresi`. The label was also a
+Python repr: `['heading', ('Kimlik Doğrulama', 'Token Süresi'), 0]`.
+
+**Fix.**
+
+- `SectionAwareEvidenceBuilder._block` records each chunk's provenance in text
+  order in `section_chunks`: chunk ID, text, section key, heading path and page.
+- `build_support_units` splits each chunk on its own. Every unit gets its
+  chunk's `section_id`, its contributing chunk ID, and a readable
+  `section_label`: `Kurulum > Sistem Gereksinimleri`, or `page 3` for PDFs.
+- Unit IDs and texts are unchanged.
+- A truncated block no longer maps onto chunk boundaries. Truncation drops
+  `section_chunks`, and the block falls back to its own (now readable) label.
+
+**Live check.** The same follow-up shows each unit under its real heading. The
+shorter labels fit 30 units where 28 fit before, and the answer is
+"… 90 gün geçerlidir. [E1.S4]".
+
+**Not done.** The `sources` event still shows a merged block's anchor location.
+
+**Tests.** `tests/test_support_unit_sections.py`.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

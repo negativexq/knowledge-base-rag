@@ -28,6 +28,8 @@ class SupportUnit:
     authorized: bool
     model_visible: bool
     text: str
+    # Human-readable section shown to the model ("Kurulum > Adım 1", "page 3").
+    section_label: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -42,6 +44,7 @@ class SupportUnit:
             "authorized": self.authorized,
             "model_visible": self.model_visible,
             "text": self.text,
+            "section_label": self.section_label,
         }
 
 
@@ -51,26 +54,64 @@ def _units_for_text(text: str) -> list[str]:
     return parts or ([text.strip()] if text.strip() else [])
 
 
+def section_label(payload: dict[str, Any]) -> str | None:
+    heading_path = payload.get("heading_path") or []
+    if heading_path:
+        return " > ".join(str(heading) for heading in heading_path)
+    if payload.get("page_number") is not None:
+        return f"page {payload['page_number']}"
+    return None
+
+
+def _sections(
+    payload: dict[str, Any], block_id: str | None
+) -> list[tuple[str, Any, str | None, tuple[str, ...]]]:
+    """(text, section id, label, chunk ids) per chunk of the block, in order.
+
+    A section-aware block records its chunks in ``section_chunks``; they are
+    used only while they still reproduce the block text exactly (a truncated
+    block does not), so unit IDs and texts are the same either way.
+    """
+    text = str(payload.get("text", ""))
+    chunks = payload.get("section_chunks") or []
+    if chunks and "\n\n".join(str(chunk["text"]) for chunk in chunks) == text:
+        return [
+            (
+                str(chunk["text"]),
+                chunk["section_key"],
+                section_label(chunk),
+                (str(chunk["chunk_id"]),),
+            )
+            for chunk in chunks
+        ]
+    contributing = tuple(str(value) for value in payload.get("contributing_chunk_ids", []))
+    if not contributing and block_id:
+        contributing = (block_id,)
+    section = payload.get("section_key") or payload.get("heading_path") or None
+    return [(text, section, section_label(payload), contributing)]
+
+
 def build_support_units(blocks: list[SearchResult]) -> list[SupportUnit]:
     units: list[SupportUnit] = []
     for block_index, block in enumerate(blocks, 1):
         payload = block.payload
         evidence_id = str(payload.get("evidence_id", f"E{block_index}"))
         parent_id = str(payload.get("evidence_block_id", block.id or evidence_id))
-        section = payload.get("section_key") or payload.get("heading_path") or None
-        contributing = tuple(str(value) for value in payload.get("contributing_chunk_ids", []))
-        if not contributing and block.id:
-            contributing = (str(block.id),)
-        for unit_index, text in enumerate(_units_for_text(str(payload.get("text", ""))), 1):
+        unit_texts = [
+            (text, section, label, contributing)
+            for chunk_text, section, label, contributing in _sections(
+                payload, str(block.id) if block.id else None
+            )
+            for text in _units_for_text(chunk_text)
+        ]
+        for unit_index, (text, section, label, contributing) in enumerate(unit_texts, 1):
             units.append(
                 SupportUnit(
                     support_unit_id=f"{evidence_id}.S{unit_index}",
                     parent_evidence_block_id=parent_id,
                     evidence_id=evidence_id,
                     source_id=(
-                        str(payload["source_id"])
-                        if payload.get("source_id") is not None
-                        else None
+                        str(payload["source_id"]) if payload.get("source_id") is not None else None
                     ),
                     document_version=(
                         str(payload["document_version"])
@@ -80,13 +121,12 @@ def build_support_units(blocks: list[SearchResult]) -> list[SupportUnit]:
                     section_id=str(section) if section is not None else None,
                     contributing_chunk_ids=contributing,
                     tenant_id=(
-                        str(payload["tenant_id"])
-                        if payload.get("tenant_id") is not None
-                        else None
+                        str(payload["tenant_id"]) if payload.get("tenant_id") is not None else None
                     ),
                     authorized=bool(payload.get("authorized", True)),
                     model_visible=bool(payload.get("model_visible", True)),
                     text=text,
+                    section_label=label,
                 )
             )
     return units
@@ -97,7 +137,7 @@ def serialize_support_units(units: list[SupportUnit]) -> str:
         "[SUPPORT UNIT {id}]\nsource_id: {source}\nsection: {section}\ncontent:\n{text}".format(
             id=unit.support_unit_id,
             source=unit.source_id or "unknown",
-            section=unit.section_id or "unknown",
+            section=unit.section_label or "unknown",
             text=unit.text,
         )
         for unit in units

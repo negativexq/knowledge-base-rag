@@ -198,6 +198,8 @@ class SectionAwareEvidenceBuilder:
         visible_words = text.split()[: max(0, token_limit)]
         visible_text = " ".join(visible_words)
         block.payload["text"] = visible_text
+        # The words no longer map back onto chunk boundaries.
+        block.payload.pop("section_chunks", None)
         block.payload["token_count"] = len(visible_words)
         block.payload["truncated"] = True
         block.payload["original_token_count"] = original_count
@@ -233,6 +235,18 @@ class SectionAwareEvidenceBuilder:
                 "section_key": list(_section_key(anchor_payload)),
                 "anchor_chunk_id": _chunk_id(anchor),
                 "token_count": _estimate_tokens(text),
+                # Per-chunk provenance, in text order: the block section is the
+                # anchor's, but a merged small source spans several sections.
+                "section_chunks": [
+                    {
+                        "chunk_id": _chunk_id(item),
+                        "text": str(item.payload.get("text", "")),
+                        "section_key": list(_section_key(item.payload)),
+                        "heading_path": list(item.payload.get("heading_path") or []),
+                        "page_number": item.payload.get("page_number"),
+                    }
+                    for item in ordered
+                ],
             }
         )
         return SearchResult(score=anchor.score, id=block_id, payload=anchor_payload)
