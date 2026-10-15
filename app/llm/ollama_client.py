@@ -120,7 +120,14 @@ class OllamaClient:
                         response_bytes.extend(chunk)
             observation["response_bytes"] = len(response_bytes)
             self._finish_observation(observation, started, status="COMPLETE")
-            return json.loads(bytes(response_bytes)), bytes(response_bytes)
+            data = json.loads(bytes(response_bytes))
+            if isinstance(data, dict):
+                # "length" means a context or num_predict limit cut the
+                # output short; the counts show which one.
+                observation["done_reason"] = data.get("done_reason")
+                observation["prompt_tokens"] = data.get("prompt_eval_count")
+                observation["output_tokens"] = data.get("eval_count")
+            return data, bytes(response_bytes)
         except TimeoutError as exc:
             observation["response_bytes"] = len(response_bytes)
             observation["timeout_type"] = "OVERALL"

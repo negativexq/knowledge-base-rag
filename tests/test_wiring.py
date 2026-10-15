@@ -110,6 +110,7 @@ async def test_default_wiring_uses_support_unit_architecture_v2_path(monkeypatch
 
     assert calls["path"] == "support_units"
     assert calls["kwargs"]["validator_version"] == "architecture_v2"
+    assert calls["kwargs"]["count_tokens"] is wiring.count_prompt_tokens
     assert dependencies.pipeline_version == "pipeline_support_ids"
     assert dependencies.output_contract_version == "output_contract_support_ids"
 

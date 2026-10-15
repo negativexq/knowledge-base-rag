@@ -278,6 +278,31 @@ async def test_chat_json_forwards_bounded_output_option_when_requested():
 
 
 @pytest.mark.asyncio
+async def test_chat_json_records_why_and_how_much_the_model_generated():
+    """done_reason "length" is how a context or output limit cutting the
+    JSON short becomes visible to the caller."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "message": {"content": '{"answer_parts":[{"text":"Tok'},
+                "done_reason": "length",
+                "prompt_eval_count": 4079,
+                "eval_count": 17,
+            },
+        )
+
+    client = OllamaClient(http_client=_mock_client(handler))
+    await client.chat_json([], model="qwen3.5:4b", num_ctx=4096)
+
+    observation = client.last_call_observation
+    assert observation["done_reason"] == "length"
+    assert observation["prompt_tokens"] == 4079
+    assert observation["output_tokens"] == 17
+
+
+@pytest.mark.asyncio
 async def test_chat_json_raises_when_unreachable():
     def handler(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectError("connection refused", request=request)

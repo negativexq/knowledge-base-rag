@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import time
 import unicodedata
+from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any
@@ -35,6 +36,16 @@ EVIDENCE_BACKED_PIPELINE_VERSION = "pipeline_v2_2_evidence_backed"
 SUPPORT_ID_OUTPUT_CONTRACT_VERSION = "output_contract_support_ids"
 SUPPORT_ID_PIPELINE_VERSION = "pipeline_support_ids"
 SUPPORT_ID_MAX_OUTPUT_TOKENS = 1024
+# Shown when the model's answer cannot be released (unparseable, cut off by
+# a context/output limit, validator failure): never the partial model text,
+# never an empty answer.
+UNVERIFIED_ANSWER_PHRASE = (
+    "I could not produce a verified answer from the documents. "
+    "Please try rephrasing the question."
+)
+# Chat-template framing added around each message that plain text counting
+# does not see (role markers, separators); a small fixed allowance.
+_MESSAGE_FRAMING_TOKENS = 8
 
 EVIDENCE_BACKED_OUTPUT_INSTRUCTIONS = """
 Return only a JSON object with this exact shape:
@@ -985,8 +996,14 @@ async def stream_support_unit_answer(
     shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
     tracer: trace.Tracer | None = None,
+    count_tokens: Callable[[str], int] | None = None,
 ):
     """Generate an answer whose citations are request-scoped support IDs.
+
+    With ``count_tokens``, the prompt is fitted to the context window first:
+    prompt plus SUPPORT_ID_MAX_OUTPUT_TOKENS must not exceed ``num_ctx``, so
+    lowest-ranked support units are dropped until it does (the top unit is
+    always kept). Otherwise the model can run out of room mid-JSON.
 
     Runs inside a "generate" span like the other generation paths, so LLM
     latency shows up in the trace, Langfuse sees a generation, and the
@@ -1002,6 +1019,7 @@ async def stream_support_unit_answer(
         span.set_attribute("generate.context_chunk_count", len(blocks))
         span.set_attribute("pipeline.version", SUPPORT_ID_PIPELINE_VERSION)
         trace_id = format(span.get_span_context().trace_id, "032x")
+        telemetry: dict[str, Any] = {}
         async for event in _support_unit_answer_events(
             query,
             blocks,
@@ -1016,7 +1034,12 @@ async def stream_support_unit_answer(
             validator_version=validator_version,
             shadow_enabled=shadow_enabled,
             architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+            count_tokens=count_tokens,
+            telemetry=telemetry,
         ):
+            for name, value in telemetry.items():
+                if value is not None:
+                    span.set_attribute(f"generate.{name}", value)
             if event["type"] == "metadata":
                 event = {**event, "trace_id": trace_id}
             elif event["type"] == "security_validation":
@@ -1049,8 +1072,28 @@ async def _support_unit_answer_events(
     validator_version: ValidatorSelector,
     shadow_enabled: bool,
     architecture_v2_shadow_enabled: bool,
+    count_tokens: Callable[[str], int] | None = None,
+    telemetry: dict[str, Any] | None = None,
 ):
+    telemetry = telemetry if telemetry is not None else {}
+
+    def messages_for(selected: list[SupportUnit]) -> list[dict]:
+        return build_messages(
+            query,
+            selected,
+            version=prompt_version,
+            context_serializer=context_serializer,
+            system_prompt_suffix=SUPPORT_ID_OUTPUT_INSTRUCTIONS,
+        )
+
     units = build_support_units(blocks)
+    messages = messages_for(units)
+    if count_tokens is not None:
+        units, messages, prompt_tokens = _fit_to_context(
+            units, messages, messages_for, count_tokens, num_ctx
+        )
+        telemetry["support_units_dropped"] = len(build_support_units(blocks)) - len(units)
+        telemetry["prompt_token_estimate"] = prompt_tokens
     capture = current_capture()
     if capture is not None:
         capture.stage(
@@ -1069,13 +1112,6 @@ async def _support_unit_answer_events(
         "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
         "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
     }
-    messages = build_messages(
-        query,
-        units,
-        version=prompt_version,
-        context_serializer=context_serializer,
-        system_prompt_suffix=SUPPORT_ID_OUTPUT_INSTRUCTIONS,
-    )
     generation_kwargs = {
         "model": model,
         "think": think,
@@ -1092,6 +1128,12 @@ async def _support_unit_answer_events(
     generation_started = time.perf_counter()
     raw = await provider.chat_json(messages, **generation_kwargs)
     generation_ms = round((time.perf_counter() - generation_started) * 1000, 3)
+    # Best effort: the provider's record of its most recent call.
+    observation = getattr(provider, "last_call_observation", None) or {}
+    done_reason = observation.get("done_reason")
+    telemetry["done_reason"] = done_reason
+    telemetry["provider_prompt_tokens"] = observation.get("prompt_tokens")
+    telemetry["provider_output_tokens"] = observation.get("output_tokens")
     try:
         parsed = parse_support_unit_answer(raw)
         validation = validate_support_unit_answer(
@@ -1107,7 +1149,7 @@ async def _support_unit_answer_events(
             None,
             [],
             [],
-            ["TOP_LEVEL_SCHEMA_INVALID"],
+            ["OUTPUT_TRUNCATED" if done_reason == "length" else "TOP_LEVEL_SCHEMA_INVALID"],
             False,
             False,
             True,
@@ -1275,6 +1317,8 @@ async def _support_unit_answer_events(
         evaluation_observation.rejected_answer_parts = validation.rejected_parts
     if user_visible:
         yield {"type": "token", "content": rendered}
+    else:
+        yield {"type": "token", "content": UNVERIFIED_ANSWER_PHRASE}
     yield {
         "type": "security_validation",
         "passed": user_visible,
@@ -1286,6 +1330,28 @@ async def _support_unit_answer_events(
         "application_forced_abstention": validation.application_abstain
         and not validation.model_abstain,
     }
+
+
+def _fit_to_context(
+    units: list[SupportUnit],
+    messages: list[dict],
+    messages_for: Callable[[list[SupportUnit]], list[dict]],
+    count_tokens: Callable[[str], int],
+    num_ctx: int,
+) -> tuple[list[SupportUnit], list[dict], int]:
+    """Drop lowest-ranked units until prompt + output budget fits num_ctx.
+    Units are ordered by block rank, so the tail is the least relevant."""
+
+    def prompt_tokens(candidate: list[dict]) -> int:
+        return sum(count_tokens(m["content"]) + _MESSAGE_FRAMING_TOKENS for m in candidate)
+
+    limit = num_ctx - SUPPORT_ID_MAX_OUTPUT_TOKENS
+    tokens = prompt_tokens(messages)
+    while tokens > limit and len(units) > 1:
+        units = units[:-1]
+        messages = messages_for(units)
+        tokens = prompt_tokens(messages)
+    return units, messages, tokens
 
 
 def _quote_validation(evidence: EvidenceQuote, blocks: dict[str, SearchResult]) -> dict[str, Any]:
