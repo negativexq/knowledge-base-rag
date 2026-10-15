@@ -3636,6 +3636,55 @@ between the header row and the data rows, the value lost its meaning.
 
 Fingerprint tests cover the parser-version field.
 
+## Ingestion — OCR for scanned PDF pages (closing note)
+
+**Problem.** A PDF page with no text layer, such as a scan, yielded no
+paragraphs and was skipped silently. Its content could not be retrieved, and
+nothing said so.
+
+**Change.**
+
+- **Scanned-page OCR.** `app/parsing/pdf_parser.py` treats a page as scanned
+  when it has no extractable text but contains an image. Such a page is read
+  with Tesseract through PyMuPDF (`get_textpage_ocr`, `tur+eng`, 300 dpi, full
+  page). The OCR blocks then go through the same table and block pipeline as
+  any other page.
+- **Text pages untouched.** Pages with a text layer are never OCR'd, so
+  output for text PDFs is unchanged.
+- **Failures are logged.** When Tesseract is missing, or OCR fails on a
+  page, that page is skipped with a warning naming the file and page number;
+  it is no longer silent.
+- **Re-indexing.** `pdf_parser_version()` feeds the pipeline fingerprint and
+  appends `+ocr_tesseract_tur+eng` when OCR is available. Gaining or losing
+  OCR therefore re-indexes PDFs. On the live stack the next sync re-processed
+  all 6 files (0 skipped).
+- **Backend image.** Adds `tesseract-ocr`, `tesseract-ocr-eng` and
+  `tesseract-ocr-tur`, with `TESSDATA_PREFIX` set. The image is now about
+  3.0 GB. The apt layer sits before the pip layer, so changing it rebuilds
+  the pip layer too (about 8 minutes).
+- **Developer Mac.** Tesseract is deliberately not installed there.
+
+**Live check (backend container).** A rendered "Iade suresi 30 gundur." page
+was read in about 150 ms as "lade suresi 30 gundur.". Tesseract's capital
+I/l confusion shows up here. The real-Tesseract test ("İade süresi 30
+gündür.") and the table tests pass inside the container (12 passed).
+
+**Limitations.**
+
+- OCR runs only on pages with no text layer at all. A PDF with a broken or
+  partial text layer is not OCR'd.
+- OCR text has no confidence score attached to its chunks.
+- Charts and images inside text pages are still not read.
+
+**Tests.** `tests/test_pdf_ocr.py` uses a fake OCR call to cover:
+
+- an image-only page OCR'd and placed in page order;
+- text pages never OCR'd;
+- the warning and skip without OCR or on OCR failure;
+- the parser version reflecting OCR availability.
+
+A real-Tesseract test runs where Tesseract is installed and skips elsewhere.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

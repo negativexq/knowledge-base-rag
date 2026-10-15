@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass
 
 from app.ingestion.chunking_config import ChunkingConfig
 from app.llm.embedding_models import EmbeddingModelConfig
-from app.parsing.pdf_parser import PDF_PARSER_VERSION
+from app.parsing.pdf_parser import pdf_parser_version
 from app.registry.store import CURRENT_INDEX_SCHEMA_VERSION
 
 
@@ -81,5 +81,5 @@ def build_pipeline_fingerprint(
         overlap_tokens=chunking.overlap_tokens,
         hard_max_tokens=chunking.hard_max_tokens,
         boundary_strategy=chunking.boundary_strategy,
-        pdf_parser_version=PDF_PARSER_VERSION,
+        pdf_parser_version=pdf_parser_version(),
     )
