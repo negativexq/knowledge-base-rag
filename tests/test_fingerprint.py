@@ -135,3 +135,19 @@ def test_qwen3_0_6b_and_qwen3_4b_at_the_same_dimension_still_differ():
 
     assert small.dimension == large.dimension == 1024
     assert build_pipeline_fingerprint(small).digest() != build_pipeline_fingerprint(large).digest()
+
+
+def test_different_pdf_parser_version_changes_the_digest():
+    """Parser output changes (e.g. table extraction) change chunk text
+    without changing point identity, so they go through the fingerprint and
+    incremental re-indexing, not an index schema bump."""
+    assert _fp(pdf_parser_version="a").digest() != _fp(pdf_parser_version="b").digest()
+
+
+def test_build_pipeline_fingerprint_records_the_current_pdf_parser_version():
+    from app.parsing.pdf_parser import PDF_PARSER_VERSION
+
+    fingerprint = build_pipeline_fingerprint(qwen3_4b_config(Settings()))
+
+    assert fingerprint.pdf_parser_version == PDF_PARSER_VERSION
+    assert PDF_PARSER_VERSION == "pymupdf_blocks_ruled_tables_v2"
