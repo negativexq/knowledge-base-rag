@@ -244,6 +244,13 @@ class Settings(BaseSettings):
 
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
+    # Optional second trace destination next to Jaeger, via OTLP HTTP.
+    # Export is enabled only when both keys are set; spans carry metadata
+    # only (no prompt/answer text), see app/shared/tracing.py.
+    langfuse_host: str = "https://cloud.langfuse.com"
+    langfuse_public_key: str | None = None
+    langfuse_secret_key: str | None = None
+
     # v3 is the production trust-boundary prompt. v1/v2 remain
     # loadable for reproducible baseline comparisons.
     active_prompt_version: str = "v3"

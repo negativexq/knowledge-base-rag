@@ -1,9 +1,10 @@
 # Streamlit UI — a deliberately separate, minimal dependency set, installed
-# into its own venv (.venv-ui), not requirements.txt's venv. Real reason,
-# not tidiness: streamlit==1.61.1 requires starlette>=0.46, but
-# fastapi==0.115.6 (the backend's pin) requires starlette<0.42 — a genuine,
-# unresolvable conflict if both land in the same environment (confirmed via
-# `pip install`, not assumed — see docs/sprint-10-plan.md).
+# into its own venv (.venv-ui), not requirements.txt's venv. Original
+# reason: streamlit==1.61.1 requires starlette>=0.46, while the backend's
+# old fastapi==0.115.6 pin required starlette<0.42 (see
+# docs/sprint-10-plan.md). The backend now pins fastapi==0.143.1
+# (starlette>=0.46), so that conflict is gone; the split is kept because
+# the UI still needs none of the backend's heavy dependencies.
 #
 # This UI is a pure HTTP client to the backend (POST /chat, GET/POST
 # /sync/..., GET /sources) and to Jaeger's own HTTP API — it never imports

@@ -1,10 +1,12 @@
 import logging
-from collections.abc import AsyncIterator, Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable, MutableMapping
 from contextlib import asynccontextmanager
-from typing import Protocol
+from typing import Any, Protocol
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.telemetry import TelemetryConfig
+from opentelemetry.trace import TracerProvider
 
 from app.api.chat import ChatDependencies
 from app.api.chat import router as chat_router
@@ -32,6 +34,26 @@ class SchedulerProtocol(Protocol):
     async def stop(self) -> None: ...
 
 
+def _is_health_probe(scope: MutableMapping[str, Any]) -> bool:
+    path = scope.get("path", "")
+    return bool(path == "/health" or path.startswith("/health/"))
+
+
+def _telemetry_config(tracer_provider: TracerProvider | None) -> TelemetryConfig:
+    """FastAPI native telemetry (0.142+), always fed the application's own
+    provider from app/shared/tracing.py::setup_tracing — never FastAPI's
+    env-driven auto-configured exporter, which would export every span a
+    second time. Without a provider (tests, pure factory use) it is fully
+    off, so create_app() keeps no global side effects."""
+    if tracer_provider is None:
+        return {"tracing": False, "metrics": False, "logs": False, "auto_configure": False}
+    return {
+        "tracer_provider": tracer_provider,
+        "auto_configure": False,
+        "exclude": _is_health_probe,
+    }
+
+
 def create_app(
     sync_manager: SyncManager,
     sync_history: SyncHistory,
@@ -47,6 +69,7 @@ def create_app(
     qdrant_client: object | None = None,
     cors_origins: list[str] | None = None,
     settings: Settings | None = None,
+    tracer_provider: TracerProvider | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -97,7 +120,11 @@ def create_app(
             except Exception:
                 logger.exception("on_shutdown hook %r failed", hook)
 
-    app = FastAPI(title="Knowledge Base RAG", lifespan=lifespan)
+    app = FastAPI(
+        title="Knowledge Base RAG",
+        lifespan=lifespan,
+        telemetry=_telemetry_config(tracer_provider),
+    )
     app.state.sync_manager = sync_manager
     app.state.sync_history = sync_history
     app.state.registry = registry

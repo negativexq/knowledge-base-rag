@@ -45,6 +45,11 @@ services:
       # Optional — unset means the Notion connector simply isn't wired in
       # (app/wiring.py::build_connectors), same as running on the host.
       - NOTION_API_KEY=${NOTION_API_KEY:-}
+      # Optional — Langfuse export is on only when both keys are set
+      # (app/shared/tracing.py::langfuse_export_from).
+      - LANGFUSE_HOST=${LANGFUSE_HOST:-https://cloud.langfuse.com}
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY:-}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY:-}
     extra_hosts:
       # host.docker.internal resolves natively on Docker Desktop (macOS);
       # this makes the same compose file work on Linux hosts too.

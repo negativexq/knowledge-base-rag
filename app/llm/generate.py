@@ -13,7 +13,7 @@ from app.shared.config import (
     SecurityValidationMode,
     validate_security_validation_mode,
 )
-from app.shared.tracing import get_tracer
+from app.shared.tracing import get_tracer, mark_llm_generation
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,7 @@ async def stream_answer(
 
     with tracer.start_as_current_span("generate") as span:
         span.set_attribute("generate.model", model)
+        mark_llm_generation(span, model)
         span.set_attribute("generate.prompt_version", prompt_version)
         span.set_attribute("generate.context_chunk_count", len(chunks))
         span.set_attribute("security.untrusted_context_enabled", prompt_version == "v3")

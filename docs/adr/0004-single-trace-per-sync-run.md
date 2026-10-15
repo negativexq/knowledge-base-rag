@@ -58,3 +58,12 @@ finishes, since `SyncHistory.start_run()` is called early.
   *reading* a trace after the fact, not about how sync spans are
   produced, but the same "wait for the root span specifically" principle
   applies to both.
+
+## Addendum (Sprint 28)
+
+With FastAPI native telemetry (0.142+), the query-side trace root is the
+HTTP span (`POST /chat`), and `chat_request` is its child. A manual
+`POST /sync/{source_type}` likewise nests `sync_run` under the HTTP span,
+while scheduled syncs keep `sync_run` as their root. "Wait for the root
+span" on the read side now means waiting for `chat_request`, the root of
+the pipeline subtree that `fetch_trace_spans` returns.

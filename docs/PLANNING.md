@@ -3119,6 +3119,60 @@ production build passed. The final backend gate was `844 passed, 2 skipped, 6
 warnings`; the skips were the optional Notion API and provider-comparison tests
 without their external credentials.
 
+## Sprint 28 — FastAPI Native Telemetry & Langfuse Export (closing note)
+
+FastAPI 0.142.0 added native OpenTelemetry support (HTTP/WebSocket spans,
+operation spans, `traceparent` propagation, request metrics). The backend was
+pinned to `fastapi==0.115.6`, had no OTel HTTP middleware, and opened every
+span by hand, so incoming trace context was ignored. FastAPI 0.143.1 requires
+`opentelemetry-api>=1.44`, so the upgrade moved all OTel packages from 1.29.0
+to 1.45.1 and Starlette from 0.41.3 to 1.8.0; `pip check` was clean, and
+deepeval's OTel range (`>=1.24,<2`) still fits.
+
+The OTel structure was kept, not rebuilt. `setup_tracing()` still owns the one
+`TracerProvider` and the Jaeger OTLP gRPC exporter; it now returns that
+provider, and `create_app(tracer_provider=...)` hands it to
+`FastAPI(telemetry=...)` with `auto_configure=False` (FastAPI's env-driven
+exporter would otherwise export every span twice) and `/health*` excluded.
+Without a provider, `create_app()` turns FastAPI telemetry fully off, so the
+pure test factory keeps no global side effects. The trace root is now
+`POST /chat`, with `chat_request` under it. In a streaming response
+`chat_request` runs after the endpoint returns, so it is a direct child of the
+HTTP span, not of `fastapi.endpoint`. The Streamlit trace panel
+(`app/ui/trace_client.py`) now returns only the `chat_request` subtree, so the
+pipeline chart is unchanged. The "wait for `chat_request`" readiness rule from
+ADR 0004 still holds for that subtree.
+
+Langfuse is an optional second exporter (OTLP HTTP,
+`{LANGFUSE_HOST}/api/public/otel/v1/traces`, Basic auth from the public and
+secret keys), on only when both `LANGFUSE_PUBLIC_KEY` and
+`LANGFUSE_SECRET_KEY` are set. A scope filter keeps `app.ingestion`,
+`app.sync` and `app.migration` spans in Jaeger only, because scheduled syncs
+emit one span per batch every few minutes. Both `generate` spans (legacy
+stream and evidence-backed pipeline) now carry `gen_ai.operation.name`,
+`gen_ai.request.model` and `langfuse.observation.type=generation`. Prompt and
+answer text are still never put on spans (the existing
+`test_stream_answer_generate_span_does_not_contain_full_answer_text` rule), so
+Langfuse sees model, latency and counts, not content. Token usage is not
+reported: `ChatProvider.stream_chat` yields text deltas, and their count is
+not a token count for Claude/OpenAI.
+
+Verification: tests were written first (`tests/test_app_telemetry.py`, plus
+additions to the tracing, trace-client, generate and config tests). The
+pre-upgrade baseline was `1191 passed, 16 skipped`; after the upgrade the
+suite is `1206 passed, 16 skipped` (15 new tests), and ruff and mypy are clean.
+`test_tracing.py` no longer installs a real gRPC exporter on the global
+provider. That exporter had been retrying `localhost:4317` for about a minute
+at interpreter exit, and the suite went from 5m10s to 22s. A wire check with
+the real OTLP HTTP exporter against a local fake Langfuse receiver confirmed
+the path, Basic auth header, protobuf payload, the single-trace
+`POST /chat → chat_request → generate` hierarchy, the GenAI attributes, no
+question or answer text in any span, and no `sync_run` or `/health` spans.
+Not verified: a live Jaeger, a real Langfuse project, and Docker (not running
+on this machine at the time). Starlette 1.8 warns that `starlette.testclient`
+with `httpx` is deprecated in favor of `httpx2`. The test client still works,
+but this needs a follow-up.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
