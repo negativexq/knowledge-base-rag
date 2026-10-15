@@ -3929,6 +3929,24 @@ paragraph.
 - `tests/test_source_card_payload.py`.
 - Two new `SourceCard` tests in `inspectors.test.tsx`.
 
+## Chore — TestClient on httpx2 (closing note)
+
+**Problem.** Every test run warned: "Using `httpx` with `starlette.testclient`
+is deprecated; install `httpx2` instead". Starlette 1.8's TestClient prefers
+`httpx2` and falls back to plain `httpx` with a deprecation warning.
+
+**Fix.**
+
+- `requirements-dev.txt` pins `httpx2==2.13.1` with its dependencies
+  `httpcore2==2.13.1` and `truststore==0.10.5`. CI installs these. They are
+  test-only, so the backend image is unchanged.
+- The application keeps using `httpx`.
+- `pyproject.toml` turns `StarletteDeprecationWarning` into an error, so a
+  future Starlette deprecation fails the run instead of scrolling past.
+
+**Result.** 1359 tests pass. The Starlette warning is gone; the remaining
+warnings come from SWIG inside a dependency.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
