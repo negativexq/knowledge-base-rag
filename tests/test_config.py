@@ -330,3 +330,23 @@ def test_langfuse_settings_are_read_from_env(monkeypatch):
     assert settings.langfuse_public_key == "pk-lf-test"
     assert settings.langfuse_secret_key == "sk-lf-test"
     assert settings.langfuse_host == "http://localhost:3000"
+
+
+def test_chat_guardrail_defaults(monkeypatch):
+    monkeypatch.delenv("CHAT_MAX_QUESTION_CHARS", raising=False)
+    monkeypatch.delenv("CHAT_RATE_LIMIT_PER_MINUTE", raising=False)
+
+    settings = Settings(_env_file=None)
+
+    assert settings.chat_max_question_chars == 2000
+    assert settings.chat_rate_limit_per_minute == 30
+
+
+def test_chat_guardrails_reject_nonsensical_values():
+    import pytest
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, chat_max_question_chars=0)
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, chat_rate_limit_per_minute=-1)
