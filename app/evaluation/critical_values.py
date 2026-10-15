@@ -44,10 +44,22 @@ _CURRENCY = re.compile(
 )
 _BOOLEAN = re.compile(r"\b(true|false|yes|no|evet|hayır|hayir)\b", re.IGNORECASE)
 _NUMBER = re.compile(r"\b\d+(?:[.,]\d+)?\b")
+# Turkish units take case and copula suffixes ("30 gündür", "24 saatte").
+# The suffixes are listed rather than matched as \w* so words that merely
+# start with the unit ("güncelleme", update) are not durations.
+_TR_DAY = r"gün(?:lük(?:tür|tir)?|ler(?:dir|de|den|e|i)?|dür|dir|de|den|e|ü|ün|le)?"
+_TR_HOUR = r"saat(?:lik|tir|te|ten|e|i|ler)?"
 _LOCAL_DURATION = re.compile(
-    r"\b(\d+(?:[.,]\d+)?)\s*(calendar\s+days?|days?|day|hours?|hour|minutes?|minute|mins?|min|seconds?|second|secs?|sec|h|m|s|gün(?:lük)?|saat)\b",
+    r"\b(\d+(?:[.,]\d+)?)\s*(calendar\s+days?|days?|day|hours?|hour|minutes?|minute|mins?|min|seconds?|second|secs?|sec|h|m|s|"
+    + _TR_DAY
+    + "|"
+    + _TR_HOUR
+    + r")\b",
     re.IGNORECASE,
 )
+# Storage sizes, spaced or glued ("15 GB", "15GB"): a number with a unit, so
+# 15 GB and 15 TB never match each other.
+_LOCAL_SIZE = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(KB|MB|GB|TB|PB)\b", re.IGNORECASE)
 _LOCAL_VERSION = re.compile(r"\b(?:v(?:ersion)?\s*)?(\d+(?:\.\d+)+)\b", re.IGNORECASE)
 _CITATION = re.compile(r"\s*\[s\.filesystem:[^\]]+\]", re.IGNORECASE)
 _LOCAL_WORD = re.compile(r"[\w]+", re.UNICODE)
@@ -149,6 +161,10 @@ def critical_value_status(claim: str, support_text: str) -> str | None:
 
 def _local_unit(unit: str) -> str:
     unit = unit.lower().replace(" ", "_")
+    if unit.startswith("gün"):
+        return "day"
+    if unit.startswith("saat"):
+        return "hour"
     return {
         "s": "second",
         "sec": "second",
@@ -202,6 +218,13 @@ def _local_tokens(text: str) -> list[dict[str, Any]]:
             _local_token(
                 "DURATION", match.group(1), match.group(2), match.start(), match.end(), text
             )
+        )
+        occupied.append(match.span())
+    for match in _LOCAL_SIZE.finditer(text):
+        if any(start < match.end() and match.start() < end for start, end in occupied):
+            continue
+        values.append(
+            _local_token("NUMBER", match.group(1), match.group(2), match.start(), match.end(), text)
         )
         occupied.append(match.span())
     for pattern, kind in ((_PERCENT, "PERCENTAGE"), (_LOCAL_VERSION, "VERSION"), (_DATE, "DATE")):
@@ -516,6 +539,13 @@ def _v3_tokenized(text: str) -> list[dict[str, Any]]:
     return tokens
 
 
+def _token_words(token: dict[str, Any]) -> set[str]:
+    """The token's own value and unit as context words. A spaced literal
+    ("15 GB") already contributes them through its context; a glued one
+    ("15GB") reads as the single word "15gb", so add them explicitly."""
+    return {str(part).lower() for part in (token.get("value"), token.get("unit")) if part}
+
+
 def _v3_relation_audit(
     claim: str,
     support: Sequence[str],
@@ -550,7 +580,9 @@ def _v3_relation_audit(
     statuses: list[str] = []
     for index, token in enumerate(claim_tokens):
         claim_context = token.get("local_context", "")
-        claim_words = set(re.findall(r"[A-Za-z0-9_]+", claim_context.lower()))
+        claim_words = set(re.findall(r"[A-Za-z0-9_]+", claim_context.lower())) | _token_words(
+            token
+        )
         has_support = False
         has_conflict = False
         signed_claim = _v3_signed_numeric(claim_context)
@@ -568,7 +600,11 @@ def _v3_relation_audit(
                 } and _v3_number_equivalent(str(token.get("value")), str(other.get("value")))
                 other_context = other.get("local_context", "")
                 context_related = bool(
-                    claim_words & set(re.findall(r"[A-Za-z0-9_]+", other_context.lower()))
+                    claim_words
+                    & (
+                        set(re.findall(r"[A-Za-z0-9_]+", other_context.lower()))
+                        | _token_words(other)
+                    )
                 )
                 if same_kind and (same_value or equivalent) and context_related:
                     has_support = True
