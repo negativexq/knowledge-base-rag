@@ -3,3 +3,8 @@ pytest==8.3.4
 pytest-asyncio==0.25.2
 ruff==0.8.6
 mypy==1.14.1
+# starlette>=1.8's TestClient runs on httpx2 and deprecates plain httpx;
+# test-only, so the backend image does not carry it.
+httpx2==2.13.1
+httpcore2==2.13.1
+truststore==0.10.5

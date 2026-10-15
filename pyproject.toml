@@ -180,3 +180,8 @@ addopts = "-m 'not ollama_e2e'"
 markers = [
     "ollama_e2e: tests requiring a live local Ollama/provider service",
 ]
+# Starlette deprecations (e.g. TestClient on plain httpx instead of httpx2)
+# fail the run instead of scrolling past in the warnings summary.
+filterwarnings = [
+    "error::starlette.exceptions.StarletteDeprecationWarning",
+]
