@@ -2,9 +2,16 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# tesseract-ocr(-eng/-tur): OCR for scanned PDF pages, called through
+# PyMuPDF (app/parsing/pdf_parser.py). Without it scanned pages are skipped
+# with a warning.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-tur \
     && rm -rf /var/lib/apt/lists/*
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
 
 COPY requirements.txt .
 # sentence-transformers (app/reranker/cross_encoder.py) pulls torch as a

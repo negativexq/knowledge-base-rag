@@ -145,9 +145,10 @@ def test_different_pdf_parser_version_changes_the_digest():
 
 
 def test_build_pipeline_fingerprint_records_the_current_pdf_parser_version():
-    from app.parsing.pdf_parser import PDF_PARSER_VERSION
+    from app.parsing.pdf_parser import PDF_PARSER_VERSION, pdf_parser_version
 
     fingerprint = build_pipeline_fingerprint(qwen3_4b_config(Settings()))
 
-    assert fingerprint.pdf_parser_version == PDF_PARSER_VERSION
+    assert fingerprint.pdf_parser_version == pdf_parser_version()
+    assert fingerprint.pdf_parser_version.startswith(PDF_PARSER_VERSION)
     assert PDF_PARSER_VERSION == "pymupdf_blocks_ruled_tables_v2"
