@@ -3513,6 +3513,72 @@ support-ID contract and validator handle abstention.
 The content-screening tests' fake search now returns one chunk so their
 stubbed model is still reached.
 
+## Chat — conversation history and standalone-query rewriting (closing note)
+
+**Problem.** `/chat` was single-turn. A follow-up like "and how long is the
+token valid?" was retrieved on its own words, without the subject from the
+previous turn, so it usually found the wrong evidence.
+
+**Change.**
+
+- **Request.** `ChatRequest.history` takes up to 50 `{role: user|assistant,
+  content}` turns; any other role is a 422. The server keeps the last
+  `CHAT_HISTORY_MAX_TURNS` (default 6) non-blank turns, each cut to
+  `CHAT_HISTORY_TURN_MAX_CHARS` (2000). Setting max turns to 0 disables
+  history.
+- **Rewrite.** `app/llm/query_rewrite.py::rewrite_query` makes one structured
+  call (`{"standalone_question"}`, at most 128 output tokens, timeout
+  `QUERY_REWRITE_TIMEOUT_SECONDS`, default 20 s) that turns the follow-up
+  into a standalone query.
+  - History is client-supplied, so it goes in as escaped untrusted data
+    (`_safe_json`), and the prompt says to ignore instructions inside it.
+  - No history means no call.
+  - A provider error, timeout or unusable output falls back to the user's
+    question, so the rewrite never blocks a request.
+- **What the rewritten query is used for.** It is the question for search,
+  answerability and the answer model. History itself is never sent to the
+  answer model.
+- **Observability.**
+  - The retrieval report gets a first `query_rewrite` stage with outcome,
+    turn count and `search_query` (only when the question was rewritten).
+  - `chat_request` gets `chat.history_turns` and `query_rewrite.outcome`.
+  - A `rewrite_query` GenAI span records the outcome and turn count, with no
+    text.
+- **Configuration.** `QUERY_REWRITE_ENABLED` (default true) turns rewriting
+  off.
+- **Console.** The Playground sends earlier successful turns as history,
+  shows "Searched as: …" under a rewritten follow-up, and has a "New chat"
+  button.
+
+**Live check (local stack, qwen3.5:4b).** "Peki token ne kadar süre
+geçerli?" after a login question was rewritten in about 5 s and answered
+"Erişim token'ları 90 gün geçerlidir. [E1.S4]".
+
+The first rewrite kept the "Peki" filler, and the answer model then produced
+invalid JSON (`TOP_LEVEL_SCHEMA_INVALID`). The same question sent without
+history failed the same way, so the failure is in generation, not in the
+rewrite. The prompt now drops connective filler.
+
+**Known gaps.**
+
+- When the answer model's JSON is invalid, the user sees an empty answer with
+  no message. This is pre-existing and needs its own fix.
+- Content screening still screens only the user's own question, not history
+  or the rewritten query.
+- The rewrite adds one LLM call to every follow-up.
+
+**Tests.**
+
+- `tests/test_query_rewrite.py`: untrusted-data serialization, rewritten,
+  unchanged and no-history outcomes, every fallback, and a span with no text.
+- `tests/test_chat_history.py`: no-history passthrough, the standalone
+  question reaching search and generation, the report stage and span
+  attributes, fallback, the rewrite not wired, last-N kept,
+  truncation/blank drop, disabled history, and 422s.
+- Wiring and config tests.
+- Frontend: the SSE body carries history; the Playground sends prior turns,
+  skips failed ones, resets on New chat, and shows "Searched as".
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

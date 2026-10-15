@@ -196,3 +196,50 @@ def test_real_chat_wiring_keeps_semantic_gate_disabled_by_default(monkeypatch):
     )
 
     assert dependencies.semantic_evaluator is None
+
+
+def _wire_with_fake_provider(monkeypatch, provider, **settings):
+    import app.wiring as wiring
+
+    monkeypatch.setattr(wiring, "build_reranker", lambda settings: object())
+    monkeypatch.setattr(wiring, "get_chat_provider", lambda settings: provider)
+    monkeypatch.setattr(
+        wiring,
+        "active_embedding_config",
+        lambda settings: SimpleNamespace(query_prefix=lambda: "", output_dimension=1024),
+    )
+    dependencies, _ = build_chat_dependencies(
+        Settings(_env_file=None, **settings),
+        qdrant_client=object(),
+        ollama=object(),
+        sparse_encoder=object(),
+        collection_name="test",
+    )
+    return dependencies
+
+
+@pytest.mark.asyncio
+async def test_query_rewrite_is_wired_to_the_chat_provider_and_model(monkeypatch):
+    from app.llm.query_rewrite import ChatTurn
+
+    calls = []
+
+    class _Provider:
+        async def chat_json(self, messages, model, **kwargs):
+            calls.append(model)
+            return '{"standalone_question": "How do I log out of the Nimbus CLI?"}'
+
+    dependencies = _wire_with_fake_provider(monkeypatch, _Provider(), ollama_model="gen-model")
+
+    result = await dependencies.rewrite_fn(
+        "and log out?", [ChatTurn(role="user", content="How do I install the Nimbus CLI?")]
+    )
+
+    assert result.question == "How do I log out of the Nimbus CLI?"
+    assert calls == ["gen-model"]
+
+
+def test_query_rewrite_can_be_turned_off(monkeypatch):
+    dependencies = _wire_with_fake_provider(monkeypatch, object(), query_rewrite_enabled=False)
+
+    assert dependencies.rewrite_fn is None

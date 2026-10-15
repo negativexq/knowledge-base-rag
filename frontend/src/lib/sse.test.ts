@@ -66,6 +66,32 @@ describe("chat SSE contract", () => {
     expect(onDone).toHaveBeenCalledOnce()
   })
 
+  it("posts the question together with the conversation history", async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(async () => responseFor('event: done\ndata: {}\n\n'))
+    const handlers = {
+      onToken: vi.fn(),
+      onSources: vi.fn(),
+      onRetrieval: vi.fn(),
+      onMetadata: vi.fn(),
+      onGrounding: vi.fn(),
+      onDone: vi.fn(),
+      onError: vi.fn(),
+    }
+    const history = [
+      { role: "user" as const, content: "How do I install it?" },
+      { role: "assistant" as const, content: "Run brew install nimbus." },
+    ]
+
+    await streamChat("http://api.test/chat", "token", "And log out?", handlers, undefined, history)
+    await streamChat("http://api.test/chat", "token", "Fresh question", handlers)
+
+    const bodies = fetchSpy.mock.calls.slice(-2).map(([, init]) => JSON.parse(String(init?.body)))
+    expect(bodies[0]).toEqual({ question: "And log out?", history })
+    expect(bodies[1]).toEqual({ question: "Fresh question", history: [] })
+  })
+
   it("reports an interrupted transport as an error instead of throwing", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("network down"))
     const onError = vi.fn()

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { ArrowUp, CheckCircle2, Square, XCircle } from "lucide-react"
+import { ArrowUp, CheckCircle2, MessageSquarePlus, Square, XCircle } from "lucide-react"
 
 import { chatApi } from "@/api/chat"
 import type {
@@ -20,6 +20,25 @@ import { formatMs } from "@/lib/utils"
 import { EmptyState } from "@/components/EmptyState"
 import { uiApi } from "@/api/ui"
 import { useQuery } from "@tanstack/react-query"
+import type { ChatHistoryTurn } from "@/lib/sse"
+
+// Completed, successful turns only: a failed or cancelled turn has no
+// answer worth resolving a follow-up against. The backend keeps only the
+// most recent few anyway.
+function historyFrom(turns: Turn[]): ChatHistoryTurn[] {
+  return turns
+    .filter((turn) => !turn.streaming && !turn.errorMessage && turn.answer)
+    .flatMap((turn) => [
+      { role: "user" as const, content: turn.question },
+      { role: "assistant" as const, content: turn.answer },
+    ])
+}
+
+function searchedAs(report: RetrievalReportPayload | null): string | null {
+  const stage = report?.stages.find((s) => s.name === "query_rewrite")
+  const query = stage?.detail?.search_query
+  return typeof query === "string" ? query : null
+}
 
 interface Turn {
   question: string
@@ -71,6 +90,7 @@ export default function Playground() {
   async function ask() {
     const q = question.trim()
     if (!q || current?.streaming) return
+    const history = historyFrom(turns)
     setQuestion("")
     setTurns((prev) => [
       ...prev,
@@ -99,6 +119,7 @@ export default function Playground() {
     let firstTokenAt: number | null = null
     await chatApi.ask(
       q,
+      history,
       {
         onSources: (sources) => updateCurrent({ sources: sources as RetrievedSource[] }),
         onRetrieval: (report) => updateCurrent({ report: report as RetrievalReportPayload }),
@@ -129,6 +150,13 @@ export default function Playground() {
       },
       controller.signal,
     )
+  }
+
+  function newChat() {
+    abortRef.current?.abort()
+    setTurns([])
+    setHighlightedRank(null)
+    setActiveTab("sources")
   }
 
   function cancel() {
@@ -182,6 +210,11 @@ export default function Playground() {
                     <div className="ml-auto max-w-[85%] rounded-lg bg-[var(--color-surface-raised)] px-3.5 py-2 text-sm text-[var(--color-foreground)]">
                       {turn.question}
                     </div>
+                    {searchedAs(turn.report) && (
+                      <div className="ml-auto max-w-[85%] text-xs text-[var(--color-muted-foreground)]">
+                        Searched as: {searchedAs(turn.report)}
+                      </div>
+                    )}
                     <div className="max-w-[95%] text-sm leading-relaxed text-[var(--color-foreground)]">
                       {turn.errorMessage && turn.answer === "" ? (
                         <span className="text-[var(--color-error)]">{turn.errorMessage}</span>
@@ -230,7 +263,18 @@ export default function Playground() {
           </div>
 
           <div className="border-t border-[var(--color-border)] p-3">
-            <div className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={newChat}
+                disabled={turns.length === 0}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] disabled:opacity-40"
+                aria-label="New chat"
+                title="New chat"
+              >
+                <MessageSquarePlus className="h-4 w-4" />
+              </button>
+            <div className="flex flex-1 items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-3 py-2">
               <input
                 className="flex-1 bg-transparent text-sm text-[var(--color-foreground)] outline-none placeholder:text-[var(--color-subtle-foreground)]"
                 placeholder="Ask anything…"
@@ -264,6 +308,7 @@ export default function Playground() {
                   <ArrowUp className="h-3.5 w-3.5" />
                 </button>
               )}
+            </div>
             </div>
           </div>
         </section>

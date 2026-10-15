@@ -22,6 +22,7 @@ from app.llm.provider import (
     default_embed_model,
     get_chat_provider,
 )
+from app.llm.query_rewrite import ChatTurn, RewriteResult, rewrite_query
 from app.llm.structured_output import stream_evidence_backed_answer, stream_support_unit_answer
 from app.main import create_app
 from app.migration.aliasing import resolve_active_collection_name
@@ -176,6 +177,18 @@ def build_chat_dependencies(
             )
         return result.blocks
 
+    async def rewrite_fn(question: str, history: list[ChatTurn]) -> RewriteResult:
+        return await rewrite_query(
+            chat_provider,
+            question,
+            history,
+            model=default_chat_model(settings),
+            timeout_seconds=settings.query_rewrite_timeout_seconds,
+            max_chars=settings.chat_max_question_chars,
+            think=settings.ollama_thinking,
+            num_ctx=settings.ollama_num_ctx,
+        )
+
     async def stream_fn(question: str, chunks: list[SearchResult]):
         if settings.support_ids_enabled:
             async for event in stream_support_unit_answer(
@@ -246,6 +259,7 @@ def build_chat_dependencies(
             forensic_capture_enabled=settings.rag_forensic_capture_enabled,
             forensic_capture_raw_text=settings.rag_forensic_capture_raw_text,
             forensic_capture_dir=settings.rag_forensic_capture_dir,
+            rewrite_fn=rewrite_fn if settings.query_rewrite_enabled else None,
         ),
         chat_provider,
     )

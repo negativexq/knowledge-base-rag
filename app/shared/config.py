@@ -255,6 +255,15 @@ class Settings(BaseSettings):
     # detects and records findings on spans and in the audit log; nothing
     # is blocked. There is deliberately no enforcing mode yet.
     content_screening_mode: Literal["off", "shadow"] = "shadow"
+    # Conversation history on POST /chat (app/llm/query_rewrite.py). The
+    # client sends recent turns; the server keeps at most this many, each
+    # cut to this many characters, and rewrites a follow-up question into a
+    # standalone search query with one small LLM call. 0 turns disables
+    # history; a failed or slow rewrite falls back to the user's question.
+    chat_history_max_turns: int = Field(default=6, ge=0)
+    chat_history_turn_max_chars: int = Field(default=2000, gt=0)
+    query_rewrite_enabled: bool = True
+    query_rewrite_timeout_seconds: float = Field(default=20.0, gt=0)
 
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
