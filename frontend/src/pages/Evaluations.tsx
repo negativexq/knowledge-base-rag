@@ -41,14 +41,14 @@ export default function Evaluations() {
 
   if (query.isLoading) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <LoadingRows rows={4} />
       </div>
     )
   }
   if (query.isError) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <ErrorState kind={classifyError(query.error)} detail={(query.error as Error).message} />
       </div>
     )
@@ -57,8 +57,7 @@ export default function Evaluations() {
   const data = query.data!
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
-      <h1 className="text-lg font-semibold text-[var(--color-foreground)]">Evaluations</h1>
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
 
       <Card>
         <CardHeader>

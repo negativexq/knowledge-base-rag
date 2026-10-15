@@ -4017,6 +4017,82 @@ warnings come from SWIG inside a dependency.
 - Frontend `answerStatus.test.ts`.
 - Seven new Playground tests. 44 frontend tests pass.
 
+## Feature — Modern console refresh (closing note)
+
+**Problem.** The console worked but looked dated:
+
+- dark-only;
+- a flat list of six links;
+- a page title repeated in every page body;
+- small square cards;
+- a single-line Playground input pinned under a 55/45 split.
+
+There was no quick way to move between pages from the keyboard.
+
+**Theme.**
+
+- Light and dark themes defined by the same CSS tokens (`:root[data-theme]`),
+  so no component branches on the theme.
+- The theme is chosen in the top bar or the command palette and saved in
+  `localStorage`.
+- An inline script in `index.html` applies the theme before first paint (the
+  saved choice, else the system preference), so a light theme never flashes
+  dark.
+
+**Shell.**
+
+- `lib/nav.ts` is the one source for the sidebar, the page title and the
+  palette.
+- The sidebar has the brand mark, Ask / Data / Quality groups, an active
+  indicator and the signed-in identity. It collapses to an icon rail and keeps
+  that state.
+- The top bar is sticky and translucent. It shows the page's `h1` and
+  description, a "Search or jump to…" button (⌘K / Ctrl+K), a health pill and
+  the theme toggle. Pages no longer repeat their own `h1`.
+
+**Command palette.** Built on Radix Dialog as an ARIA combobox and listbox:
+
+- filters by label;
+- arrow keys and Enter;
+- goes to any page or switches the theme.
+
+**Components.**
+
+- Cards: radius `xl` with a soft shadow.
+- Tabs: a segmented control.
+- Metric cards: an accent icon tile and larger figures.
+- Empty states: an icon tile.
+- Pages: wider (`max-w-6xl`) with more breathing room.
+
+**Playground.**
+
+- The conversation is a centered column: question bubbles, an assistant avatar,
+  and a "thinking" indicator until the first token.
+- The composer is an auto-growing textarea: Enter asks, Shift+Enter adds a line
+  (and IME composition is respected). "New chat" and the send button sit in the
+  composer.
+- The inspector panel is `min(500px, 46%)` wide, with timings as a compact grid.
+  The LLM and grounding times keep their "client-measured" note as a tooltip.
+
+**Bundle.** The first-load bundle grows from 350 KB to 398 KB, because Radix
+Dialog is now on every page. The Playground chunk is 233 KB.
+
+**Live check.** Checked at an 800 px viewport:
+
+- every page in dark and light themes;
+- ⌘K → "eval" → Enter opens Evaluations;
+- the sidebar collapses and expands, and the choice persists;
+- there is one `h1` per page;
+- no runtime errors after a fresh load.
+
+**Tests.**
+
+- `components/shell.test.tsx` (5 tests): grouped navigation and page title,
+  theme switch and persistence, sidebar collapse, the palette from ⌘K, and the
+  theme switch from the palette.
+- One Playground composer test.
+- 50 frontend tests pass.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

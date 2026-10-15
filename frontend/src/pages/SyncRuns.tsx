@@ -85,25 +85,21 @@ export default function SyncRuns() {
 
   if (runs.isLoading) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <LoadingRows rows={5} />
       </div>
     )
   }
   if (runs.isError) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <ErrorState kind={classifyError(runs.error)} detail={(runs.error as Error).message} />
       </div>
     )
   }
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-[var(--color-foreground)]">Sync Runs</h1>
-      </div>
-
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
       <div className="flex flex-wrap gap-2">
         {(sources.data ?? []).map((source) => (
           <div

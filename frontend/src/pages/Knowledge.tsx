@@ -62,14 +62,14 @@ export default function Knowledge() {
 
   if (sources.isLoading) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <LoadingRows rows={3} />
       </div>
     )
   }
   if (sources.isError) {
     return (
-      <div className="mx-auto max-w-5xl p-6">
+      <div className="mx-auto max-w-6xl px-6 py-8">
         <ErrorState kind={classifyError(sources.error)} detail={(sources.error as Error).message} />
       </div>
     )
@@ -80,8 +80,7 @@ export default function Knowledge() {
   )
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
-      <h1 className="text-lg font-semibold text-[var(--color-foreground)]">Knowledge Sources</h1>
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
 
       {sources.data!.length === 0 ? (
         <EmptyState
@@ -95,7 +94,7 @@ export default function Knowledge() {
             <button
               key={source.source_type}
               onClick={() => setSelectedSourceType(source.source_type)}
-              className="flex items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-left transition-colors hover:border-[var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
+              className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left shadow-card transition-all hover:-translate-y-px hover:border-[var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
             >
               <div>
                 <div className="flex items-center gap-2">
@@ -122,7 +121,7 @@ export default function Knowledge() {
               placeholder="Filter by name…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-48 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-2 py-1 text-xs text-[var(--color-foreground)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
+              className="w-48 h-8 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 text-xs text-[var(--color-foreground)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
             />
           </CardHeader>
           <CardContent>

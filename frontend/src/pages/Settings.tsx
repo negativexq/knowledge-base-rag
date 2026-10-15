@@ -25,14 +25,14 @@ export default function SettingsPage() {
 
   if (query.isLoading) {
     return (
-      <div className="mx-auto max-w-3xl p-6">
+      <div className="mx-auto max-w-3xl px-6 py-8">
         <LoadingRows rows={5} />
       </div>
     )
   }
   if (query.isError) {
     return (
-      <div className="mx-auto max-w-3xl p-6">
+      <div className="mx-auto max-w-3xl px-6 py-8">
         <ErrorState kind={classifyError(query.error)} detail={(query.error as Error).message} />
       </div>
     )
@@ -50,8 +50,7 @@ export default function SettingsPage() {
         : "Not available"
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
-      <h1 className="text-lg font-semibold text-[var(--color-foreground)]">Settings</h1>
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-8">
       <p className="text-xs text-[var(--color-muted-foreground)]">
         Read-only view of the active configuration. The console cannot modify backend settings.
       </p>

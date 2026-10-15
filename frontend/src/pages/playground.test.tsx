@@ -504,4 +504,20 @@ describe("Playground answer confidence and why-this-answer", () => {
     fireEvent.click(screen.getByRole("button", { name: "New chat" }))
     expect(sessionStorage.length).toBe(0)
   })
+
+  it("composes multi-line questions: Enter asks, Shift+Enter adds a line", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(stream({ answer: "Use --force-local. [E1.S2]", security: verified }))
+    renderPlayground()
+    const composer = screen.getByRole("textbox", { name: "Question" })
+
+    fireEvent.change(composer, { target: { value: "First line" } })
+    fireEvent.keyDown(composer, { key: "Enter", shiftKey: true })
+    expect(chatApi.ask).not.toHaveBeenCalled()
+
+    fireEvent.change(composer, { target: { value: "First line\nSecond line" } })
+    fireEvent.keyDown(composer, { key: "Enter" })
+
+    expect(vi.mocked(chatApi.ask).mock.calls[0][0]).toBe("First line\nSecond line")
+    expect(await screen.findByText("Citation integrity verified")).toBeInTheDocument()
+  })
 })
