@@ -2,7 +2,7 @@ import json
 from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from opentelemetry import trace
 from pydantic import BaseModel
@@ -19,7 +19,9 @@ from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
+from app.security.audit import RATE_LIMITED, log_audit_event
 from app.security.models import RetrievalContext, UserContext
+from app.security.rate_limit import SlidingWindowRateLimiter
 from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer
 
@@ -314,14 +316,57 @@ async def _sse_event_stream(
     reset_current_capture(capture_token)
 
 
+def _enforce_chat_rate_limit(request: Request, user: UserContext) -> None:
+    """Per-user limit, checked before the question itself so that rejected
+    (e.g. oversized or blank) questions still count. Runs after
+    authentication: unauthenticated callers get 401, never a rate-limit
+    slot."""
+    limiter: SlidingWindowRateLimiter | None = getattr(
+        request.app.state, "chat_rate_limiter", None
+    )
+    if limiter is None:
+        return
+    retry_after = limiter.check(f"{user.tenant_id}:{user.user_id}")
+    if retry_after is not None:
+        log_audit_event(
+            RATE_LIMITED,
+            user_id=user.user_id,
+            tenant_id=user.tenant_id,
+            endpoint=request.url.path,
+            retry_after_seconds=retry_after,
+        )
+        raise HTTPException(
+            status_code=429,
+            detail="Too many chat requests; retry later.",
+            headers={"Retry-After": str(retry_after)},
+        )
+
+
+def _validated_question(request: Request, question: str) -> str:
+    """Trimmed, non-empty and bounded, so no retrieval or LLM work is spent
+    on an empty or oversized question."""
+    question = question.strip()
+    if not question:
+        raise HTTPException(status_code=422, detail="Question must not be empty.")
+    max_chars: int | None = getattr(request.app.state, "chat_max_question_chars", None)
+    if max_chars is not None and len(question) > max_chars:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Question is too long: {len(question)} characters, maximum is {max_chars}.",
+        )
+    return question
+
+
 @router.post("/chat")
 async def chat(
     chat_request: ChatRequest,
     request: Request,
     user: UserContext = Depends(get_current_user),
 ) -> StreamingResponse:
+    _enforce_chat_rate_limit(request, user)
+    question = _validated_question(request, chat_request.question)
     deps: ChatDependencies = request.app.state.chat_deps
     context = RetrievalContext.for_user(user)
     return StreamingResponse(
-        _sse_event_stream(chat_request.question, deps, context), media_type="text/event-stream"
+        _sse_event_stream(question, deps, context), media_type="text/event-stream"
     )

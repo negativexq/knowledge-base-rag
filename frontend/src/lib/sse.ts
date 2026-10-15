@@ -59,6 +59,15 @@ export interface ChatStreamHandlers {
   onUnknownEvent?: (event: SSEEvent) => void
 }
 
+async function errorDetail(response: Response): Promise<string | null> {
+  try {
+    const body = (await response.json()) as { detail?: unknown }
+    return typeof body.detail === "string" ? body.detail : null
+  } catch {
+    return null
+  }
+}
+
 export async function streamChat(
   url: string,
   token: string | null,
@@ -88,6 +97,17 @@ export async function streamChat(
       handlers.onError("Not authenticated — sign in with a development identity.")
     } else if (response.status === 403) {
       handlers.onError("You do not have permission to do this.")
+    } else if (response.status === 429) {
+      const retryAfter = response.headers.get("Retry-After")
+      handlers.onError(
+        retryAfter
+          ? `Too many chat requests. Try again in ${retryAfter} seconds.`
+          : "Too many chat requests. Try again shortly.",
+      )
+    } else if (response.status === 422) {
+      // Backend input guardrails (empty or too-long question) explain
+      // themselves in `detail`; show that instead of a bare status code.
+      handlers.onError((await errorDetail(response)) ?? "The question was rejected.")
     } else {
       handlers.onError(`Request failed (${response.status}).`)
     }

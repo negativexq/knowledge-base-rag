@@ -263,6 +263,36 @@ is disabled because the console sends an Authorization header rather than
 cookies. Production deployments must set their own exact frontend origin(s);
 `*` is not a permitted authenticated-browser default.
 
+## Chat input guardrails
+
+`POST /chat` rejects two kinds of requests before any retrieval, reranking
+or LLM work runs (`app/api/chat.py`):
+
+- **Question length.** The question is trimmed. An empty question gets 422,
+  and so does one longer than `CHAT_MAX_QUESTION_CHARS` characters (default
+  2000); the `detail` message gives the limit.
+- **Per-user rate limit.** Each authenticated user (`tenant_id:user_id`)
+  gets at most `CHAT_RATE_LIMIT_PER_MINUTE` requests (default 30) in a
+  sliding 60-second window. Over the limit, the response is 429 with a
+  `Retry-After` header, and a `rate_limited` audit event is logged. `0`
+  disables the limit.
+  - The check runs after authentication, so unauthenticated callers get 401
+    and never use a slot.
+  - It runs before the length check, so rejected oversized questions still
+    count.
+  - Rejected attempts do not extend the window.
+
+The React chat shows the 429 retry delay and the 422 reason to the user
+(`frontend/src/lib/sse.ts`).
+
+Limitations:
+- The limiter lives in process memory (`app/security/rate_limit.py`). Each
+  uvicorn worker counts separately and counters reset on restart. A
+  multi-worker deployment needs a shared store such as Redis.
+- The length limit applies to the parsed `question`, not to the raw HTTP
+  body size. The ASGI server or a reverse proxy should cap request bodies.
+- There is no per-tenant aggregate limit and no token/cost budget.
+
 ## Known limitations
 
 - **Prompt injection is not "solved."** The documented trust

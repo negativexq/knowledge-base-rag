@@ -17,6 +17,7 @@ from app.api.sync import router as sync_router
 from app.api.ui import router as ui_router
 from app.registry.store import DocumentRegistry
 from app.security.auth import TokenAuthenticator
+from app.security.rate_limit import SlidingWindowRateLimiter
 from app.shared.config import Settings
 from app.sync.history import SyncHistory
 from app.sync.manager import SyncManager
@@ -148,6 +149,13 @@ def create_app(
     # degrade to `available: false` rather than failing.
     app.state.qdrant_client = qdrant_client
     app.state.settings = runtime_settings
+    # POST /chat input guardrails (app/api/chat.py). None = rate limit off.
+    app.state.chat_max_question_chars = runtime_settings.chat_max_question_chars
+    app.state.chat_rate_limiter = (
+        SlidingWindowRateLimiter(runtime_settings.chat_rate_limit_per_minute)
+        if runtime_settings.chat_rate_limit_per_minute > 0
+        else None
+    )
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)

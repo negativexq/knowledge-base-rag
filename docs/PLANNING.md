@@ -3247,6 +3247,56 @@ the correctness bug itself, on one shared collection:
 With Qdrant up, the full suite is `1222 passed, 3 skipped`. The skips need a
 Notion key or the TechQA fixture. ruff and mypy are clean.
 
+## Chat Input Guardrails — question length and per-user rate limit (closing note)
+
+A guardrail review found strong output-side controls: tenant ACL, the
+untrusted-context envelope, output policy, the strict release gate, and
+grounding. On the input side, though, `POST /chat` accepted a question of
+any length and any number of requests. Every request paid for query
+embedding, BM25, the cross-encoder and the LLM, so this was open to cost
+abuse and resource exhaustion. This change adds the two cheapest controls.
+Both reject before any retrieval or generation work.
+
+- **Question length.** The question is trimmed. An empty question gets 422,
+  and a question over `CHAT_MAX_QUESTION_CHARS` (default 2000 characters)
+  also gets 422, with a `detail` that names the limit.
+- **Per-user rate limit.** `CHAT_RATE_LIMIT_PER_MINUTE` (default 30, `0`
+  disables it) uses an in-process sliding 60-second window keyed by
+  `tenant_id:user_id` (`app/security/rate_limit.py`, no new dependency).
+  - Over the limit, the response is 429 with `Retry-After`, plus a
+    `rate_limited` audit event.
+  - The check runs after authentication (unauthenticated callers get 401,
+    not a slot) and before the length check (oversized questions still
+    count).
+  - Rejected attempts do not extend the window, and idle keys are evicted.
+
+The React chat (`frontend/src/lib/sse.ts`) previously showed only
+`Request failed (429).` It now shows the retry delay for 429 and the
+backend's reason for 422. I first changed the Streamlit chat page too, then
+reverted that because the UI has moved to React. The Streamlit code
+(`app/ui/`, `make ui`, `requirements-ui.txt`) is still in the repository.
+
+Tests were written first. `tests/test_chat_guardrails.py` covers:
+- the length limit: at the limit, over it, blank, and trimming;
+- the rate limit: 429 with `Retry-After`, per user rather than global,
+  oversized questions counting, 401 before 429, and `0` disabling it;
+- the limiter itself, with a fake clock: window expiry, rejected attempts
+  not extending the window, and idle-key eviction.
+
+`tests/test_config.py` covers defaults and validation. Two vitest cases
+cover the React messages.
+
+Results: backend `1222 passed, 17 skipped` (the Qdrant e2e tests were
+skipped because no server was running); ruff and mypy clean (the new module
+is under strict). Frontend: 20 vitest tests pass, and typecheck and lint
+are clean.
+
+Known limits:
+- Counters are per worker and reset on restart; multi-worker needs Redis or
+  similar.
+- The length check is on the parsed question, not the raw body size.
+- There is no tenant-level or token/cost budget.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

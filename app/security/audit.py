@@ -14,6 +14,7 @@ logger = logging.getLogger("app.security.audit")
 AUTHENTICATION_FAILED = "authentication_failed"
 AUTHORIZATION_DENIED = "authorization_denied"
 SYNC_DENIED = "sync_denied"
+RATE_LIMITED = "rate_limited"
 
 
 def log_audit_event(event: str, **fields: object) -> None:

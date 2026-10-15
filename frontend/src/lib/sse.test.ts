@@ -83,4 +83,48 @@ describe("chat SSE contract", () => {
 
     expect(onError).toHaveBeenCalledWith("Could not reach the backend. Is the API running?")
   })
+
+  it("shows the retry delay when the backend rate-limits the user", async () => {
+    const onError = vi.fn()
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ detail: "Too many chat requests; retry later." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", "Retry-After": "42" },
+      }),
+    )
+
+    await streamChat("http://api.test/chat", "token", "hi", handlersWith(onError))
+
+    expect(onError).toHaveBeenCalledWith(
+      "Too many chat requests. Try again in 42 seconds.",
+    )
+  })
+
+  it("shows the backend's reason when the question is rejected", async () => {
+    const onError = vi.fn()
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ detail: "Question is too long: 2500 characters, maximum is 2000." }),
+        { status: 422, headers: { "Content-Type": "application/json" } },
+      ),
+    )
+
+    await streamChat("http://api.test/chat", "token", "x", handlersWith(onError))
+
+    expect(onError).toHaveBeenCalledWith(
+      "Question is too long: 2500 characters, maximum is 2000.",
+    )
+  })
 })
+
+function handlersWith(onError: (message: string) => void) {
+  return {
+    onToken: vi.fn(),
+    onSources: vi.fn(),
+    onRetrieval: vi.fn(),
+    onMetadata: vi.fn(),
+    onGrounding: vi.fn(),
+    onDone: vi.fn(),
+    onError,
+  }
+}

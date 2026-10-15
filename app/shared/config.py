@@ -242,6 +242,15 @@ class Settings(BaseSettings):
     filesystem_sync_interval_seconds: float = Field(default=300.0, gt=0)
     notion_sync_interval_seconds: float = Field(default=1800.0, gt=0)
 
+    # POST /chat input guardrails, enforced before any retrieval/LLM work
+    # (app/api/chat.py). Question length is in characters after trimming;
+    # 2000 is far above a normal question and far below what would strain
+    # query embedding, BM25 or the reranker. The rate limit is per
+    # authenticated user, in-process (one counter per worker), over a
+    # sliding 60-second window; 0 disables it.
+    chat_max_question_chars: int = Field(default=2000, gt=0)
+    chat_rate_limit_per_minute: int = Field(default=30, ge=0)
+
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
     # Optional second trace destination next to Jaeger, via OTLP HTTP, to the
