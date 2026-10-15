@@ -1,5 +1,5 @@
-import { useRef, useState } from "react"
-import { ArrowUp, CheckCircle2, MessageSquarePlus, Square, XCircle } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { ArrowUp, Check, Copy, MessageSquarePlus, Square } from "lucide-react"
 
 import { chatApi } from "@/api/chat"
 import type {
@@ -17,7 +17,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TraceWaterfall } from "@/components/TraceWaterfall"
 import { useIdentity } from "@/hooks/useIdentity"
 import { type AnswerSegment, splitAnswerIntoSegments } from "@/lib/citations"
-import { CitationChip } from "@/components/CitationChip"
+import { AnswerBody } from "@/components/AnswerBody"
+import { AnswerStatusLine } from "@/components/AnswerStatusLine"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { WhyPanel } from "@/components/WhyPanel"
+import { type AnswerStatus, answerStatus } from "@/lib/answerStatus"
 import { formatMs } from "@/lib/utils"
 import { EmptyState } from "@/components/EmptyState"
 import { uiApi } from "@/api/ui"
@@ -60,16 +64,39 @@ function citedUnitsByRank(turn: Turn | undefined): Map<number, SupportUnitRef[]>
   return byRank
 }
 
-// The legacy path reports citation integrity in a `grounding` event; the
-// support-ID path in the answer-level `security` event. A clean not-found
-// answer (abstained, nothing cited) gets no badge.
-function citationVerdict(turn: Turn): "verified" | "failed" | null {
-  if (turn.streaming) return null
-  if (turn.grounding) return turn.grounding.grounded ? "verified" : "failed"
-  if (!turn.validation) return null
-  if (!turn.validation.passed) return "failed"
-  if (turn.validation.abstain) return null
-  return segmentsOf(turn).some((segment) => segment.unit && segment.valid) ? "verified" : null
+function statusOf(turn: Turn): AnswerStatus | null {
+  return answerStatus({
+    streaming: turn.streaming,
+    grounding: turn.grounding,
+    validation: turn.validation,
+    metadata: turn.metadata,
+    citesUnits: segmentsOf(turn).some((segment) => segment.unit && segment.valid),
+  })
+}
+
+// The conversation survives a page reload within the tab (sessionStorage,
+// per tab, cleared by "New chat"). Only finished turns are kept; storage
+// can be unavailable (private mode, blocked site data), so every access is
+// guarded and the page works without it.
+const CONVERSATION_KEY = "kb-console.playground-conversation"
+
+function loadConversation(): Turn[] {
+  try {
+    const raw = sessionStorage.getItem(CONVERSATION_KEY)
+    return raw ? (JSON.parse(raw) as Turn[]) : []
+  } catch {
+    return []
+  }
+}
+
+function saveConversation(turns: Turn[]): void {
+  try {
+    const finished = turns.filter((turn) => !turn.streaming)
+    if (finished.length === 0) sessionStorage.removeItem(CONVERSATION_KEY)
+    else sessionStorage.setItem(CONVERSATION_KEY, JSON.stringify(finished))
+  } catch {
+    // Storage unavailable: the conversation just won't survive a reload.
+  }
 }
 
 function isAnswerValidation(payload: unknown): payload is AnswerValidation {
@@ -100,7 +127,8 @@ interface Turn {
 
 export default function Playground() {
   const { data: identity } = useIdentity()
-  const [turns, setTurns] = useState<Turn[]>([])
+  const [turns, setTurns] = useState<Turn[]>(loadConversation)
+  const [copiedTurn, setCopiedTurn] = useState<number | null>(null)
   const [question, setQuestion] = useState("")
   const [activeTab, setActiveTab] = useState("sources")
   const [highlightedRank, setHighlightedRank] = useState<number | null>(null)
@@ -109,6 +137,18 @@ export default function Playground() {
   const sourceRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const current = turns[turns.length - 1]
+
+  useEffect(() => saveConversation(turns), [turns])
+
+  async function copyAnswer(index: number, answer: string) {
+    try {
+      await navigator.clipboard.writeText(answer)
+      setCopiedTurn(index)
+      setTimeout(() => setCopiedTurn((value) => (value === index ? null : value)), 1500)
+    } catch {
+      // Clipboard blocked: nothing to report beyond the unchanged button.
+    }
+  }
 
   const traceQuery = useQuery({
     queryKey: ["trace", current?.metadata?.trace_id],
@@ -268,43 +308,34 @@ export default function Playground() {
                         <span className="text-[var(--color-error)]">{turn.errorMessage}</span>
                       ) : (
                         <>
-                          {segmentsOf(turn).map((seg, j) =>
-                            seg.type === "text" ? (
-                              <span key={j}>{seg.text}</span>
-                            ) : (
-                              <CitationChip
-                                key={j}
-                                rank={seg.source?.rank}
-                                supportId={seg.unit?.support_id}
-                                valid={seg.valid}
-                                onClick={() =>
-                                  seg.source && focusSource(seg.source.rank, seg.unit?.support_id ?? null)
-                                }
-                              />
-                            ),
-                          )}
+                          <AnswerBody
+                            answer={turn.answer}
+                            sources={turn.sources}
+                            supportUnits={turn.metadata?.support_units ?? []}
+                            onCite={focusSource}
+                          />
                           {turn.streaming && (
                             <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse bg-[var(--color-accent)]" />
                           )}
                         </>
                       )}
                     </div>
-                    {citationVerdict(turn) && (
-                      <div
-                        className={`flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-xs ${
-                          citationVerdict(turn) === "verified"
-                            ? "bg-[var(--color-success-muted)] text-[var(--color-success)]"
-                            : "bg-[var(--color-error-muted)] text-[var(--color-error)]"
-                        }`}
-                      >
-                        {citationVerdict(turn) === "verified" ? (
-                          <CheckCircle2 className="h-3 w-3" />
-                        ) : (
-                          <XCircle className="h-3 w-3" />
-                        )}
-                        {citationVerdict(turn) === "verified"
-                          ? "Citation integrity verified"
-                          : "Citation validation failed"}
+                    {!turn.streaming && turn.answer && (
+                      <div className="flex items-start justify-between gap-2">
+                        {statusOf(turn) ? <AnswerStatusLine status={statusOf(turn)!} /> : <span />}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => copyAnswer(i, turn.answer)}
+                              aria-label={copiedTurn === i ? "Copied" : "Copy answer"}
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[var(--color-subtle-foreground)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
+                            >
+                              {copiedTurn === i ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>{copiedTurn === i ? "Copied" : "Copy answer"}</TooltipContent>
+                        </Tooltip>
                       </div>
                     )}
                   </div>
@@ -369,6 +400,7 @@ export default function Playground() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex h-full flex-col">
             <TabsList>
               <TabsTrigger value="sources">Sources</TabsTrigger>
+              <TabsTrigger value="why">Why</TabsTrigger>
               <TabsTrigger value="retrieval">Retrieval</TabsTrigger>
               <TabsTrigger value="security">Security</TabsTrigger>
               <TabsTrigger value="trace">Trace</TabsTrigger>
@@ -399,6 +431,20 @@ export default function Playground() {
                       />
                     ))}
                   </div>
+                )}
+              </TabsContent>
+              <TabsContent value="why">
+                {!current ? (
+                  <EmptyState title="Nothing to explain yet" description="Ask a question to see how the answer was made." />
+                ) : (
+                  <WhyPanel
+                    question={current.question}
+                    report={current.report}
+                    sources={current.sources}
+                    metadata={current.metadata}
+                    validation={current.validation}
+                    status={statusOf(current)}
+                  />
                 )}
               </TabsContent>
               <TabsContent value="retrieval">

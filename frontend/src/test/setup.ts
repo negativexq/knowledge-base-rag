@@ -1,3 +1,4 @@
+import { beforeEach } from "vitest"
 import "@testing-library/jest-dom/vitest"
 
 const localStorageData = new Map<string, string>()
@@ -22,3 +23,17 @@ Object.defineProperty(window, "requestAnimationFrame", {
 })
 
 HTMLElement.prototype.scrollIntoView = () => undefined
+
+// Pages may keep state in sessionStorage (the Playground conversation);
+// every test starts from an empty one.
+beforeEach(() => {
+  sessionStorage.clear()
+})
+
+// Radix popovers measure their anchor; jsdom has no ResizeObserver.
+class ResizeObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+Object.defineProperty(globalThis, "ResizeObserver", { configurable: true, value: ResizeObserverStub })

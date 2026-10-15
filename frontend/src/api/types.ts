@@ -387,6 +387,17 @@ export interface ChatMetadata {
   untrusted_context_enabled?: boolean
   security_validation_mode?: string
   support_units?: SupportUnitRef[]
+  // How the answer prompt was fitted to the context window (support-ID path).
+  prompt_fit?: PromptFit | null
+  // Set when the model was not called at all (no evidence), with the reason.
+  generation_skipped?: string
+}
+
+export interface PromptFit {
+  prompt_tokens: number
+  prompt_token_limit: number
+  units_sent: number
+  units_dropped: number
 }
 
 // The answer-level validation verdict (the `security` event that carries
@@ -396,6 +407,12 @@ export interface AnswerValidation {
   passed: boolean
   abstain: boolean
   validator_failure_codes: string[]
+  // How the model call ended, as the provider reported it.
+  generation?: {
+    done_reason: string | null
+    prompt_tokens: number | null
+    output_tokens: number | null
+  }
 }
 
 export interface GroundingResult {

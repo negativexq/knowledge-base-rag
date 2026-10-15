@@ -1088,12 +1088,20 @@ async def _support_unit_answer_events(
 
     units = build_support_units(blocks)
     messages = messages_for(units)
+    prompt_fit: dict[str, int] | None = None
     if count_tokens is not None:
+        built_count = len(units)
         units, messages, prompt_tokens = _fit_to_context(
             units, messages, messages_for, count_tokens, num_ctx
         )
-        telemetry["support_units_dropped"] = len(build_support_units(blocks)) - len(units)
+        telemetry["support_units_dropped"] = built_count - len(units)
         telemetry["prompt_token_estimate"] = prompt_tokens
+        prompt_fit = {
+            "prompt_tokens": prompt_tokens,
+            "prompt_token_limit": num_ctx - SUPPORT_ID_MAX_OUTPUT_TOKENS,
+            "units_sent": len(units),
+            "units_dropped": built_count - len(units),
+        }
     capture = current_capture()
     if capture is not None:
         capture.stage(
@@ -1112,6 +1120,7 @@ async def _support_unit_answer_events(
         "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
         "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
         "support_units": support_unit_citation_map(units, blocks),
+        "prompt_fit": prompt_fit,
     }
     generation_kwargs = {
         "model": model,
@@ -1330,6 +1339,11 @@ async def _support_unit_answer_events(
         "abstain": final_abstain,
         "application_forced_abstention": validation.application_abstain
         and not validation.model_abstain,
+        "generation": {
+            "done_reason": done_reason,
+            "prompt_tokens": observation.get("prompt_tokens"),
+            "output_tokens": observation.get("output_tokens"),
+        },
     }
 
 

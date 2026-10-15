@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, beforeEach, it, vi } from "vitest"
 
 import { chatApi } from "@/api/chat"
@@ -305,5 +305,203 @@ describe("Playground support-ID citations", () => {
     await screen.findByText("I could not find this in the document.")
     expect(screen.queryByText("Citation integrity verified")).not.toBeInTheDocument()
     expect(screen.queryByText("Citation validation failed")).not.toBeInTheDocument()
+  })
+})
+
+describe("Playground answer confidence and why-this-answer", () => {
+  const unit = {
+    support_id: "E1.S2",
+    source_rank: 1,
+    source_type: "filesystem",
+    source_id: "nimbus_cli_md",
+    section_label: "Senkronizasyon Komutları > Çakışma Çözümü",
+    text: "Yerel sürümü zorla yüklemek için --force-local bayrağı kullanılır.",
+  }
+
+  function stream(options: {
+    answer: string
+    security: Record<string, unknown>
+    metadata?: Record<string, unknown>
+  }) {
+    return async (_question: string, _history: unknown, handlers: Parameters<typeof chatApi.ask>[2]) => {
+      handlers.onSources([
+        {
+          rank: 1,
+          source_type: "filesystem",
+          source_id: "nimbus_cli_md",
+          citation_location: "Senkronizasyon Komutları/Çakışma Çözümü",
+          page_number: 1,
+          paragraph_index: 5,
+          heading_path: ["Senkronizasyon Komutları", "Çakışma Çözümü"],
+          snippet: unit.text,
+          score: 0.9,
+          document_version: "v1",
+          tenant_id: "tenant-a",
+          visibility: "tenant",
+        },
+      ])
+      handlers.onRetrieval({
+        stages: [
+          {
+            name: "query_rewrite",
+            duration_ms: 900,
+            candidates_in: null,
+            candidates_out: null,
+            top_score: null,
+            detail: { outcome: "REWRITTEN", history_turns: 2, search_query: "Çakışmada yerel sürüm nasıl yüklenir?" },
+          },
+          { name: "hybrid_retrieval", duration_ms: 30, candidates_in: null, candidates_out: 24, top_score: null, detail: {} },
+          { name: "rerank", duration_ms: 7000, candidates_in: 24, candidates_out: 5, top_score: 0.9, detail: {} },
+        ],
+        authorization: { acl_applied: true, tenant_id: "tenant-a", is_system_context: false, user_filters_applied: false },
+        total_duration_ms: 8000,
+        reranker: null,
+        security: {
+          prompt_policy_version: null,
+          untrusted_context_enabled: true,
+          security_validation_mode: "strict",
+          output_policy_passed: null,
+          output_policy_violations: [],
+        },
+      })
+      handlers.onMetadata({
+        prompt_version: "v1",
+        trace_id: "trace-1",
+        support_units: [unit],
+        prompt_fit: { prompt_tokens: 2697, prompt_token_limit: 3072, units_sent: 25, units_dropped: 3 },
+        ...options.metadata,
+      })
+      handlers.onToken(options.answer)
+      handlers.onSecurity?.(options.security)
+      handlers.onDone()
+    }
+  }
+
+  const verified = {
+    passed: true,
+    abstain: false,
+    validator_failure_codes: [],
+    generation: { done_reason: "stop", prompt_tokens: 2702, output_tokens: 41 },
+  }
+
+  async function ask(question = "Çakışmada yerel sürüm?") {
+    fireEvent.change(screen.getByPlaceholderText("Ask anything…"), { target: { value: question } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    sessionStorage.clear()
+    vi.mocked(useIdentity).mockReturnValue({ data: identity } as ReturnType<typeof useIdentity>)
+  })
+
+  it("renders inline code, bold text and lists in the answer", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(
+      stream({
+        answer: "Use **one** flag:\n\n- `--force-local` uploads yours [E1.S2]\n- `--force-remote` keeps theirs",
+        security: verified,
+      }),
+    )
+    renderPlayground()
+    await ask()
+
+    expect(await screen.findByText("--force-local", { selector: "code" })).toBeInTheDocument()
+    expect(screen.getByText("one", { selector: "strong" })).toBeInTheDocument()
+    expect(screen.getAllByRole("listitem")).toHaveLength(2)
+    expect(screen.getByRole("button", { name: "Jump to E1.S2 in source 1" })).toBeInTheDocument()
+  })
+
+  it("previews the cited passage on hover", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(stream({ answer: "Use --force-local. [E1.S2]", security: verified }))
+    renderPlayground()
+    await ask()
+
+    const chip = await screen.findByRole("button", { name: "Jump to E1.S2 in source 1" })
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument()
+    fireEvent.pointerEnter(chip)
+    const preview = await screen.findByRole("tooltip", { name: "Preview of E1.S2" })
+    expect(preview).toHaveTextContent("Senkronizasyon Komutları > Çakışma Çözümü")
+    expect(preview).toHaveTextContent(unit.text)
+    fireEvent.pointerLeave(chip)
+    await waitFor(() => expect(screen.queryByRole("tooltip", { name: "Preview of E1.S2" })).not.toBeInTheDocument())
+  })
+
+  it("copies the answer", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, { clipboard: { writeText } })
+    vi.mocked(chatApi.ask).mockImplementation(stream({ answer: "Use --force-local. [E1.S2]", security: verified }))
+    renderPlayground()
+    await ask()
+
+    fireEvent.click(await screen.findByRole("button", { name: "Copy answer" }))
+
+    expect(writeText).toHaveBeenCalledWith("Use --force-local. [E1.S2]")
+    expect(await screen.findByRole("button", { name: "Copied" })).toBeInTheDocument()
+  })
+
+  it("explains why an answer was not verified", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(
+      stream({
+        answer: "I could not produce a verified answer from the documents.",
+        security: {
+          passed: false,
+          abstain: true,
+          validator_failure_codes: ["OUTPUT_TRUNCATED"],
+          generation: { done_reason: "length", prompt_tokens: 4079, output_tokens: 17 },
+        },
+      }),
+    )
+    renderPlayground()
+    await ask()
+
+    expect(await screen.findByText("Citation validation failed")).toBeInTheDocument()
+    expect(screen.getByText(/ran out of room/)).toBeInTheDocument()
+  })
+
+  it("says when the model was not called for lack of evidence", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(
+      stream({
+        answer: "I could not find this in the document.",
+        security: { passed: true, abstain: true, validator_failure_codes: [] },
+        metadata: { generation_skipped: "EMPTY_RERANK_RESULT", support_units: [], prompt_fit: null },
+      }),
+    )
+    renderPlayground()
+    await ask()
+
+    expect(await screen.findByText("No matching evidence")).toBeInTheDocument()
+  })
+
+  it("walks through why this answer came out the way it did", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(stream({ answer: "Use --force-local. [E1.S2]", security: verified }))
+    renderPlayground()
+    await ask()
+    await screen.findByText("Citation integrity verified")
+
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "Why" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Why" }))
+
+    const panel = await screen.findByRole("list", { name: "Why this answer" })
+    expect(panel).toHaveTextContent("Searched as: Çakışmada yerel sürüm nasıl yüklenir?")
+    expect(panel).toHaveTextContent("24 candidates → 5 after reranking")
+    expect(panel).toHaveTextContent("2,697 / 3,072 prompt tokens")
+    expect(panel).toHaveTextContent("25 passages sent, 3 lowest-ranked left out to fit")
+    expect(panel).toHaveTextContent("Finished normally · 41 output tokens")
+    expect(panel).toHaveTextContent("Citation integrity verified")
+  })
+
+  it("keeps the conversation across a reload and New chat clears it", async () => {
+    vi.mocked(chatApi.ask).mockImplementation(stream({ answer: "Use --force-local. [E1.S2]", security: verified }))
+    const first = renderPlayground()
+    await ask("Kept question?")
+    await screen.findByText("Citation integrity verified")
+    first.unmount()
+
+    renderPlayground()
+    expect(screen.getByText("Kept question?")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Jump to E1.S2 in source 1" })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("button", { name: "New chat" }))
+    expect(sessionStorage.length).toBe(0)
   })
 })
