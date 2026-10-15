@@ -112,6 +112,23 @@ describe("Evidence Inspector", () => {
     expect(screen.getByText("Deploy safely.")).toBeInTheDocument()
   })
 
+  it("says when a source card spans several sections", () => {
+    render(
+      <SourceCard
+        source={{ ...source, section_labels: ["Kurulum", "Kimlik Doğrulama > Token Süresi", "Senkronizasyon"] }}
+        cited={false}
+        highlighted={false}
+      />,
+    )
+    const note = screen.getByText("+2 more sections")
+    expect(note).toHaveAttribute("title", "Kurulum · Kimlik Doğrulama > Token Süresi · Senkronizasyon")
+  })
+
+  it("adds no section note for a single-section source", () => {
+    render(<SourceCard source={{ ...source, section_labels: ["Operations > Deploy"] }} cited={false} highlighted={false} />)
+    expect(screen.queryByText(/more section/)).not.toBeInTheDocument()
+  })
+
   it("calls the focus handler for the clicked citation rank", () => {
     const onClick = vi.fn()
     render(<CitationChip rank={2} valid onClick={onClick} />)

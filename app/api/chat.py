@@ -16,6 +16,7 @@ from app.evaluation.forensic_capture import (
     set_current_capture,
 )
 from app.evaluation.semantic_answerability import SemanticEvaluator
+from app.evidence.support_units import section_label
 from app.llm.citation_location import location_for
 from app.llm.prompt import NOT_FOUND_PHRASE
 from app.llm.query_rewrite import ChatTurn, RewriteResult
@@ -96,6 +97,18 @@ def source_payload(rank: int, result: SearchResult) -> dict:
         citation_location = location_for(payload)
     except KeyError:
         citation_location = None
+    # A merged evidence block (a small source taken in full) is located at
+    # its anchor, the chunk retrieval actually hit, so the snippet is the
+    # anchor's text rather than the start of the document; the block's
+    # sections are listed so the card can show it spans more than one.
+    section_chunks = payload.get("section_chunks") or []
+    anchor = next(
+        (c for c in section_chunks if c.get("chunk_id") == payload.get("anchor_chunk_id")),
+        None,
+    )
+    snippet_text = anchor["text"] if anchor is not None else payload.get("text", "")
+    labels = [section_label(c) for c in section_chunks] or [section_label(payload)]
+    section_labels = list(dict.fromkeys(label for label in labels if label))
     return {
         "rank": rank,
         "source_type": payload.get("source_type"),
@@ -104,7 +117,8 @@ def source_payload(rank: int, result: SearchResult) -> dict:
         "page_number": payload.get("page_number"),
         "paragraph_index": payload.get("paragraph_index"),
         "heading_path": payload.get("heading_path") or [],
-        "snippet": _snippet(payload.get("text", "")),
+        "snippet": _snippet(snippet_text),
+        "section_labels": section_labels,
         "score": result.score,
         "document_version": payload.get("document_version"),
         "tenant_id": payload.get("tenant_id"),

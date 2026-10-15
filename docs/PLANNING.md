@@ -3905,6 +3905,30 @@ on the running stack produced:
 - `tests/test_support_unit_citation_map.py`.
 - Frontend `citations.test.ts` and `playground.test.tsx` (29 tests passing).
 
+## Fix — source card header and preview agree for merged blocks (closing note)
+
+**Problem.** A small source merged in full is one evidence block located at its
+anchor, the chunk retrieval hit. Its card showed the anchor's section in the
+header but the start of the document as the preview, for example "Token Süresi"
+above "pip install nimbus-cli …". Nothing said the card covers more than one
+section.
+
+**Fix.**
+
+- `source_payload` takes the snippet from the anchor chunk's own text in
+  `section_chunks`. A truncated block or a plain chunk keeps its own text.
+- It adds `section_labels`: the block's readable sections in document order.
+- `SourceCard` shows "+N more sections", and hovering lists them all.
+
+**Live check.** The token-lifetime question shows card #1 as "Kimlik Doğrulama /
+Token Süresi · +7 more sections", with a preview that starts at the token
+paragraph.
+
+**Tests.**
+
+- `tests/test_source_card_payload.py`.
+- Two new `SourceCard` tests in `inspectors.test.tsx`.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

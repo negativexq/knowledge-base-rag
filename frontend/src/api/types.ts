@@ -291,6 +291,9 @@ export interface RetrievedSource {
   tenant_id: string | null
   visibility: string | null
   token_count?: number | null
+  // Readable section labels the evidence block spans, in document order
+  // (more than one when a small source was merged in full).
+  section_labels?: string[]
 }
 
 export interface RetrievalStageInfo {

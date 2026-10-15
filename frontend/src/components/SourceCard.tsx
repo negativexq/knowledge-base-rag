@@ -26,6 +26,8 @@ export function SourceCard({
       ? source.heading_path.join(" / ")
       : source.citation_location
 
+  const sectionLabels = source.section_labels ?? []
+
   return (
     <div
       ref={cardRef}
@@ -49,6 +51,11 @@ export function SourceCard({
       <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-[var(--color-muted-foreground)]">
         <span className="capitalize">{source.source_type}</span>
         {location && <span className="font-technical">{location}</span>}
+        {sectionLabels.length > 1 && (
+          <span title={sectionLabels.join(" · ")}>
+            +{sectionLabels.length - 1} more {sectionLabels.length === 2 ? "section" : "sections"}
+          </span>
+        )}
         {source.token_count !== null && source.token_count !== undefined && (
           <span className="font-technical">{source.token_count} tokens</span>
         )}
