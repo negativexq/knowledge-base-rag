@@ -386,3 +386,15 @@ def test_chat_history_settings_reject_invalid_values():
     ):
         with pytest.raises(ValidationError):
             Settings(_env_file=None, **overrides)
+
+
+def test_evidence_budget_default_fits_the_default_context_window():
+    from app.llm.structured_output import SUPPORT_ID_MAX_OUTPUT_TOKENS
+    from app.shared.config import Settings
+
+    settings = Settings(_env_file=None)
+
+    assert settings.pipeline_v2_context_token_budget == 1600
+    assert settings.pipeline_v2_context_token_budget < (
+        settings.ollama_num_ctx - SUPPORT_ID_MAX_OUTPUT_TOKENS
+    )

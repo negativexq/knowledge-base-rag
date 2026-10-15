@@ -134,6 +134,7 @@ def build_chat_dependencies(
             qdrant_client,
             collection_name,
             token_budget=settings.pipeline_v2_context_token_budget,
+            count_tokens=count_prompt_tokens,
         )
         if settings.rag_pipeline_v2 or settings.support_ids_enabled
         else None

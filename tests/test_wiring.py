@@ -244,3 +244,34 @@ def test_query_rewrite_can_be_turned_off(monkeypatch):
     dependencies = _wire_with_fake_provider(monkeypatch, object(), query_rewrite_enabled=False)
 
     assert dependencies.rewrite_fn is None
+
+
+def test_evidence_budget_is_counted_with_the_generation_tokenizer(monkeypatch):
+    import app.wiring as wiring
+
+    built = {}
+
+    class RecordingBuilder:
+        def __init__(self, client, collection_name, **kwargs):
+            built.update(kwargs)
+
+    monkeypatch.setattr(wiring, "SectionAwareEvidenceBuilder", RecordingBuilder)
+    monkeypatch.setattr(wiring, "build_reranker", lambda settings: object())
+    monkeypatch.setattr(wiring, "get_chat_provider", lambda settings: object())
+    monkeypatch.setattr(
+        wiring,
+        "active_embedding_config",
+        lambda settings: SimpleNamespace(query_prefix=lambda: "", output_dimension=1024),
+    )
+
+    settings = Settings(_env_file=None)
+    build_chat_dependencies(
+        settings,
+        qdrant_client=object(),
+        ollama=object(),
+        sparse_encoder=object(),
+        collection_name="test",
+    )
+
+    assert built["count_tokens"] is wiring.count_prompt_tokens
+    assert built["token_budget"] == settings.pipeline_v2_context_token_budget
