@@ -984,8 +984,72 @@ async def stream_support_unit_answer(
     validator_version: ValidatorSelector = "architecture_v2",
     shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
+    tracer: trace.Tracer | None = None,
 ):
-    """Generate an answer whose citations are request-scoped support IDs."""
+    """Generate an answer whose citations are request-scoped support IDs.
+
+    Runs inside a "generate" span like the other generation paths, so LLM
+    latency shows up in the trace, Langfuse sees a generation, and the
+    metadata event carries the trace_id the console's trace view looks up.
+    The span records outcome flags and validator failure codes only, never
+    question, evidence or answer text.
+    """
+    tracer = tracer or get_tracer(__name__)
+    with tracer.start_as_current_span("generate") as span:
+        span.set_attribute("generate.model", model)
+        mark_llm_generation(span, model)
+        span.set_attribute("generate.prompt_version", prompt_version)
+        span.set_attribute("generate.context_chunk_count", len(blocks))
+        span.set_attribute("pipeline.version", SUPPORT_ID_PIPELINE_VERSION)
+        trace_id = format(span.get_span_context().trace_id, "032x")
+        async for event in _support_unit_answer_events(
+            query,
+            blocks,
+            provider,
+            model=model,
+            prompt_version=prompt_version,
+            context_serializer=context_serializer,
+            evaluation_observation=evaluation_observation,
+            think=think,
+            num_ctx=num_ctx,
+            seed=seed,
+            validator_version=validator_version,
+            shadow_enabled=shadow_enabled,
+            architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+        ):
+            if event["type"] == "metadata":
+                event = {**event, "trace_id": trace_id}
+            elif event["type"] == "security_validation":
+                span.set_attribute("security.output_policy_passed", event["passed"])
+                span.set_attribute("generate.abstain", event["abstain"])
+                span.set_attribute(
+                    "generate.application_forced_abstention",
+                    event["application_forced_abstention"],
+                )
+                if event["validator_failure_codes"]:
+                    span.set_attribute(
+                        "generate.validator_failure_codes",
+                        tuple(event["validator_failure_codes"]),
+                    )
+            yield event
+
+
+async def _support_unit_answer_events(
+    query: str,
+    blocks: list[SearchResult],
+    provider: ChatProvider,
+    *,
+    model: str,
+    prompt_version: str,
+    context_serializer: Any,
+    evaluation_observation: Any,
+    think: bool,
+    num_ctx: int,
+    seed: int | None,
+    validator_version: ValidatorSelector,
+    shadow_enabled: bool,
+    architecture_v2_shadow_enabled: bool,
+):
     units = build_support_units(blocks)
     capture = current_capture()
     if capture is not None:
