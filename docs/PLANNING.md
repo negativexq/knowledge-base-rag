@@ -3947,6 +3947,76 @@ is deprecated; install `httpx2` instead". Starlette 1.8's TestClient prefers
 **Result.** 1359 tests pass. The Starlette warning is gone; the remaining
 warnings come from SWIG inside a dependency.
 
+## Feature — Playground answer confidence and "Why this answer" (closing note)
+
+**Problem.**
+
+- Answers rendered as plain text, so lists and inline code were lost.
+- A citation could only be read by jumping to its source card.
+- An unverified answer showed a red badge with no reason, and a not-found
+  answer was indistinguishable from a skipped model call.
+- Why an answer came out the way it did was spread over four tabs, and the most
+  useful facts were only in traces: prompt fill, dropped passages, and how the
+  model call ended.
+- The conversation was lost on reload.
+
+**Backend.**
+
+- The support-ID `metadata` event carries `prompt_fit` (`null` without a token
+  counter): prompt tokens, limit, units sent and units dropped.
+- The validation event carries `generation`: `done_reason`, plus prompt and
+  output tokens as reported by Ollama.
+
+**Frontend.**
+
+- **Libraries.** Added by explicit decision, with exact versions: `radix-ui`
+  1.8.1, `react-markdown` 10.1.0 and `remark-gfm` 4.0.1.
+  - AI Elements was rejected: it requires Next.js and the AI SDK, and its
+    README announces deprecation.
+  - assistant-ui was rejected: its value is a runtime we do not use.
+- **Components.** shadcn `HoverCard`, `Tooltip` and `Collapsible` in
+  `components/ui/`, using the console's color tokens.
+- **Answer body.** `AnswerBody` renders Markdown. Citations are resolved first,
+  then stand in the Markdown as `#cite-<n>` links, so chips keep their place
+  inside lists.
+- **Citation preview.** Hovering or focusing a chip opens a preview card with
+  the unit's source, section and text.
+- **Answer status.** `lib/answerStatus.ts` has four states:
+  - verified;
+  - unverified, with each validator code explained in plain words;
+  - not found;
+  - no evidence, with the skip reason.
+- **Copy button.** Copies the answer, with a tooltip.
+- **"Why" tab.** A collapsible step list from data the stream reports. A missing
+  step says "Not reported" rather than guessing. The steps:
+  - search query;
+  - candidates → reranked;
+  - sources;
+  - prompt fill with a meter;
+  - how generation ended;
+  - validation.
+- **Persistence.** The conversation survives a reload through `sessionStorage`,
+  guarded so the page still works without storage. "New chat" clears it.
+- **Lazy loading.** The Playground is lazy-loaded. The first-load bundle is
+  350 KB, down from 374 KB on main, and the Playground chunk (250 KB) loads on
+  first visit.
+
+**Live check** ("Nimbus CLI nasıl kurulur…"):
+
+- inline `pip install nimbus-cli`;
+- the chip preview on mouse hover and keyboard focus;
+- the verified status;
+- the Why tab: 15 → 5 candidates, 2,658 / 3,072 prompt tokens, 26 passages,
+  finished normally with 57 output tokens;
+- the conversation intact after a reload;
+- no console errors.
+
+**Tests.**
+
+- `tests/test_support_unit_stream_facts.py`.
+- Frontend `answerStatus.test.ts`.
+- Seven new Playground tests. 44 frontend tests pass.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
