@@ -41,7 +41,9 @@ class _CountingSearch:
         self, question: str, context: RetrievalContext, report: RetrievalReport
     ) -> list[SearchResult]:
         self.calls += 1
-        return []
+        # One chunk, so the request reaches the (stubbed) model: with no
+        # evidence, /chat answers not-found without generating.
+        return [SearchResult(score=0.9, id="c1", payload={"text": "Refunds take 30 days."})]
 
 
 def _stream_of(tokens):
