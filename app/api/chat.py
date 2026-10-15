@@ -17,6 +17,7 @@ from app.evaluation.forensic_capture import (
 )
 from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.llm.citation_location import location_for
+from app.llm.prompt import NOT_FOUND_PHRASE
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.security.audit import CONTENT_SCREENING_FLAGGED, RATE_LIMITED, log_audit_event
@@ -150,6 +151,44 @@ class _ContentScreening:
             )
 
 
+def _generation_skip_reason(answerability_reason: str, chunks: list[SearchResult]) -> str | None:
+    """Why the model must not be called, or None when there is evidence.
+    Deterministic only: an empty evidence set, never a score threshold
+    (reranker scores rank, they do not measure sufficiency)."""
+    if answerability_reason != "FEATURES_AVAILABLE":
+        return answerability_reason
+    if not chunks:
+        return "NO_EVIDENCE_BLOCKS"
+    return None
+
+
+async def _no_evidence_answer(
+    deps: ChatDependencies, trace_id: str, reason: str
+) -> AsyncIterator[dict]:
+    """The same event shape a generation path yields for a clean model
+    abstention, without the model call. trace_id is the chat_request span's,
+    since no generate span exists."""
+    yield {
+        "type": "metadata",
+        "prompt_version": deps.prompt_version,
+        "pipeline_version": deps.pipeline_version,
+        "output_contract_version": deps.output_contract_version,
+        "trace_id": trace_id,
+        "generation_skipped": reason,
+    }
+    yield {"type": "token", "content": NOT_FOUND_PHRASE}
+    yield {
+        "type": "security_validation",
+        "passed": True,
+        "violations": [],
+        "validator_failure_codes": [],
+        "citation_suppressed": True,
+        "hidden_prompt_leaked": False,
+        "abstain": True,
+        "application_forced_abstention": False,
+    }
+
+
 async def _sse_event_stream(
     question: str,
     deps: ChatDependencies,
@@ -259,6 +298,8 @@ async def _sse_event_stream(
         if deps.evidence_fn is not None:
             chunks = await deps.evidence_fn(anchor_chunks, context)
             span.set_attribute("pipeline.evidence_block_count", len(chunks))
+        generation_skip_reason = _generation_skip_reason(observation.reason, chunks)
+        span.set_attribute("answerability.generation_skipped", generation_skip_reason is not None)
         token_counts = [chunk.payload.get("token_count") for chunk in chunks]
         report.context.update({
             "retrieved_chunk_count": len(chunks),
@@ -325,7 +366,14 @@ async def _sse_event_stream(
         # trace, OTel context propagation), that trace_id already
         # identifies this whole request; no need to re-extract or
         # override it here.
-        async for event in deps.stream_fn(question, chunks):
+        answer_events = (
+            _no_evidence_answer(
+                deps, format(span.get_span_context().trace_id, "032x"), generation_skip_reason
+            )
+            if generation_skip_reason is not None
+            else deps.stream_fn(question, chunks)
+        )
+        async for event in answer_events:
             if event["type"] == "token":
                 if screening is not None:
                     shown_tokens.append(event["content"])

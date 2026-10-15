@@ -3477,6 +3477,42 @@ still wired to paths production no longer uses:
 - the no-evidence-step fallback;
 - that the override settings leave the base settings untouched.
 
+## Answerability — skip generation when there is no evidence (closing note)
+
+**Problem.** The answerability observation already labels a request with no
+usable evidence (`NO_RETRIEVAL_CANDIDATES`, `EMPTY_RERANK_RESULT`). Even so,
+`/chat` still called the model with an empty context and relied on the model
+to say "not found". That spent a full LLM call (about 20 s locally) and left
+room for an answer invented from world knowledge.
+
+**Change.** `app/api/chat.py::_generation_skip_reason` returns the
+deterministic reason when there is no evidence: the observation's reason, or
+`NO_EVIDENCE_BLOCKS` when the evidence step produced nothing. In that case
+`_no_evidence_answer` replaces the model stream and emits the same event shape
+as a clean model abstention:
+
+- a metadata event with the `chat_request` `trace_id` and `generation_skipped`
+  set to the reason;
+- one `NOT_FOUND_PHRASE` token;
+- a security event with `abstain: true`.
+
+The `chat_request` span gets `answerability.generation_skipped`.
+
+There is still no score threshold: reranker scores rank chunks, they do not
+measure sufficiency. Weak-but-present evidence goes to the model, and the
+support-ID contract and validator handle abstention.
+
+**Tests.** `tests/test_chat_no_evidence.py` covers:
+
+- no evidence: the model is not called, the reply is the fixed not-found
+  phrase, the trace_id matches `chat_request`, the abstention event is sent
+  and there is no generate span;
+- an evidence step that returns nothing;
+- evidence present: the model is still called.
+
+The content-screening tests' fake search now returns one chunk so their
+stubbed model is still reached.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.
