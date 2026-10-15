@@ -3579,6 +3579,63 @@ rewrite. The prompt now drops connective filler.
 - Frontend: the SSE body carries history; the Playground sends prior turns,
   skips failed ones, resets on New chat, and shows "Searched as".
 
+## Ingestion — ruled tables in PDFs (closing note)
+
+**Problem.** `pdf_parser.py` read text blocks only. A table's cells came out
+as loose rows such as "Plan Storage Price" and "Free 15GB 0 TL", so the link
+between a value and its column header was lost. Once a chunk boundary fell
+between the header row and the data rows, the value lost its meaning.
+
+**Change.**
+
+- **Table extraction.** `extract_paragraphs` runs PyMuPDF's line-based
+  `page.find_tables()`, which is built in and needs no new dependency. Each
+  table becomes one paragraph, placed in reading order by its top edge.
+- **Row format.** A `Table: Plan | Storage | Price` line names the columns.
+  Each data row repeats its headers next to the values, for example
+  `Plan: Free | Storage: 15GB | Price: 0 TL`, so every row keeps its meaning
+  even if the table is split across chunks.
+  - The first row is treated as the header; a blank header becomes
+    `Column N`.
+  - Empty cells are left out.
+  - Multi-line cells are joined with spaces.
+- **No duplicates.** Text blocks whose centre falls inside a table are
+  dropped, so cells are not emitted twice.
+- **Re-indexing.** `PDF_PARSER_VERSION` (`pymupdf_blocks_ruled_tables_v2`) is
+  now part of the pipeline fingerprint. On the next sync, existing documents
+  are re-indexed through the normal fingerprint-mismatch path. Parser output
+  changes chunk text but not point identity, so `CURRENT_INDEX_SCHEMA_VERSION`
+  was deliberately not bumped; a bump would refuse startup until the index is
+  wiped.
+
+**Measured.**
+
+- On the 6 repo PDFs (nimbus handbook plus 5 evaluation-corpus-v2 PDFs):
+  - no false-positive tables;
+  - output identical to the previous parser;
+  - about 4–6 ms per page.
+- On a ruled test table, rows come out as above.
+
+**Limitations.**
+
+- Only ruled (line-bordered) tables are detected. Borderless, whitespace-
+  aligned tables still come out as text blocks. PyMuPDF's `text` strategy
+  would cover them but produces false positives on ordinary prose.
+- Merged cells, multi-row headers and tables spanning pages are not
+  reconstructed.
+- Charts and images are still not read.
+
+**Tests.** `tests/test_pdf_tables.py` covers:
+
+- header-repeating rows in reading order;
+- sequential paragraph indexes;
+- no duplicated cells;
+- unchanged non-table pages;
+- table rows reaching chunks;
+- joined multi-line cells.
+
+Fingerprint tests cover the parser-version field.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

@@ -4,6 +4,7 @@ from dataclasses import asdict, dataclass
 
 from app.ingestion.chunking_config import ChunkingConfig
 from app.llm.embedding_models import EmbeddingModelConfig
+from app.parsing.pdf_parser import PDF_PARSER_VERSION
 from app.registry.store import CURRENT_INDEX_SCHEMA_VERSION
 
 
@@ -43,6 +44,11 @@ class PipelineFingerprint:
     overlap_tokens: int = 50
     hard_max_tokens: int | None = None
     boundary_strategy: str = "legacy_word_sentence_heading_page_v1"
+    # PDF text extraction changes chunk text without changing point
+    # identity, so a new parser version re-indexes PDFs through the normal
+    # fingerprint mismatch path instead of an index schema bump (which
+    # would refuse to start until the index is wiped).
+    pdf_parser_version: str = "pymupdf_blocks_v1"
 
     def canonical(self) -> str:
         # sort_keys=True is what makes this deterministic across
@@ -75,4 +81,5 @@ def build_pipeline_fingerprint(
         overlap_tokens=chunking.overlap_tokens,
         hard_max_tokens=chunking.hard_max_tokens,
         boundary_strategy=chunking.boundary_strategy,
+        pdf_parser_version=PDF_PARSER_VERSION,
     )
