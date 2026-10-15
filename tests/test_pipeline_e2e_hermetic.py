@@ -1,13 +1,12 @@
 """Hermetic end-to-end proof of the Sprint 0 DoD: a single real PDF goes
 through parse -> chunk -> embed -> upsert -> hybrid retrieve -> rerank ->
-grounded generation -> citation formatting, using the new multi-source
+grounded generation -> citation grounding, using the new multi-source
 citation tag format end to end.
 
 Ollama and the cross-encoder/sparse models are the only pieces stood in for
 (no network, no multi-hundred-MB model downloads required to prove the
 pipeline wiring) — everything else (PyMuPDF parsing, chunking, real Qdrant
-:memory: hybrid search with RRF fusion, grounding regex, citation
-highlighting) runs for real. tests/test_ingest_e2e.py and
+:memory: hybrid search with RRF fusion, grounding regex) runs for real. tests/test_ingest_e2e.py and
 tests/test_generation_e2e.py cover the fully-real-services path and skip
 automatically when Ollama/Qdrant aren't running locally.
 """
@@ -25,7 +24,6 @@ from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseVector
 from app.security.models import RetrievalContext
-from app.ui.citation_formatting import highlight_citations
 
 COLLECTION = "test_pipeline_e2e_hermetic"
 
@@ -135,7 +133,6 @@ async def test_single_pdf_end_to_end_with_multisource_citation_format(sample_pdf
     # cross-check with the standalone grounding function directly too
     assert check_grounding(tokens, results).grounded is True
 
-    highlighted = highlight_citations(tokens)
-    assert f"**{expected_tag}**" in highlighted
+    assert expected_tag in tokens
 
     client.delete_collection(COLLECTION)

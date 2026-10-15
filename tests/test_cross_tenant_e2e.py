@@ -33,7 +33,6 @@ from app.retrieval.hybrid_search import dense_only_search, hybrid_search
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
 from app.security.models import RetrievalContext
-from app.ui.citation_formatting import highlight_citations
 
 COLLECTION = "test_cross_tenant_e2e"
 
@@ -319,10 +318,6 @@ async def test_citation_for_another_tenants_content_is_never_emitted(two_tenant_
     assert grounding_event["grounded"] is False
     assert ("filesystem", "handbook-b", "1/0") in grounding_event["ungrounded_citations"]
     assert check_grounding(tokens, results).grounded is False
-    # The highlighter still renders the raw tag text (it's not a content
-    # filter), but grounding — the actual security-relevant signal — is
-    # false, which is what a caller must act on.
-    assert "handbook-b" in highlight_citations(tokens) or True  # documents current behavior
 
 
 @pytest.mark.asyncio

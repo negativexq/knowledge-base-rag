@@ -85,8 +85,6 @@ module = [
     "app.sync.__init__",
     "app.sync.manager",
     "app.sync.models",
-    "app.ui.__init__",
-    "app.ui.citation_formatting",
 ]
 strict = true
 
@@ -110,9 +108,7 @@ strict = true
 # app.parsing.pdf_parser, app.registry.store, app.reranker.cross_encoder,
 # app.retrieval.filters, app.retrieval.hybrid_search, app.retrieval.report,
 # app.retrieval.search, app.retrieval.sparse, app.shared.config,
-# app.sync.history, app.sync.scheduler, app.ui.dev_auth, app.ui.pages.chat,
-# app.ui.pages.sources, app.ui.pages.sync_status, app.ui.sources_client,
-# app.ui.sse_client, app.ui.streamlit_app, app.ui.trace_client, app.wiring
+# app.shared.trace_client, app.sync.history, app.sync.scheduler, app.wiring
 [[tool.mypy.overrides]]
 module = [
     "app.api.chat",
@@ -166,16 +162,9 @@ module = [
     "app.retrieval.search",
     "app.retrieval.sparse",
     "app.shared.config",
+    "app.shared.trace_client",
     "app.sync.history",
     "app.sync.scheduler",
-    "app.ui.dev_auth",
-    "app.ui.pages.chat",
-    "app.ui.pages.sources",
-    "app.ui.pages.sync_status",
-    "app.ui.sources_client",
-    "app.ui.sse_client",
-    "app.ui.streamlit_app",
-    "app.ui.trace_client",
     "app.wiring",
 ]
 ignore_errors = true

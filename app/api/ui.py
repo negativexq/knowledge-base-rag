@@ -471,14 +471,14 @@ async def trace_detail(
     trace_id: str, request: Request, user: UserContext = Depends(get_current_user)
 ) -> dict:
     """Real span timings for one trace, fetched from Jaeger with the
-    same client app/ui/trace_client.py already uses. Returns
+    app/shared/trace_client.py client. Returns
     `available: false` (not a 500) when Jaeger is unreachable or the
     trace isn't indexed yet — both are ordinary, renderable states.
 
     Only span NAMES and timings are returned; span attributes (which can
     carry question text) are deliberately not forwarded to the browser.
     """
-    from app.ui.trace_client import fetch_trace_spans
+    from app.shared.trace_client import fetch_trace_spans
 
     settings = _runtime_settings(request)
     jaeger_url = settings.otel_exporter_otlp_endpoint.replace(":4317", ":16686")

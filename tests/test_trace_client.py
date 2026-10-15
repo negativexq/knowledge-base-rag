@@ -1,6 +1,6 @@
 import httpx
 
-from app.ui.trace_client import SpanSummary, fetch_trace_spans
+from app.shared.trace_client import SpanSummary, fetch_trace_spans
 
 _TRACE_ID = "6f3af6e0560f191c39f54f5e2e0ebd17"
 
