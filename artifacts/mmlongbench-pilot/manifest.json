@@ -1,0 +1,59 @@
+{
+  "dataset": "yubo2333/MMLongBench-Doc",
+  "revision": "2ff6aa9237fc777b6627dc57a486e9225ac5fb86",
+  "selection": "5 small PDFs covering all five evidence types; per PDF the first unanswerable question (by row index) plus answerable questions that add an evidence type not yet covered, filled in row order to 4.",
+  "files": [
+    {
+      "path": "documents/e79deb02a0c0e87511080836c5d4347b.pdf",
+      "size": 475553,
+      "git_oid": "2bf6e75c4e269bdbe11d0e37dcbe3b907c4db9a3"
+    },
+    {
+      "path": "documents/afe620b9beac86c1027b96d31d396407.pdf",
+      "size": 522738,
+      "git_oid": "56a5bef07fc2d8fb8b5b2a33c5b8fe9e0ffe90d3"
+    },
+    {
+      "path": "documents/PIP_Seniors-and-Tech-Use_040314.pdf",
+      "size": 525251,
+      "git_oid": "252652a4391fd7b439e7df9c0c519eedd4efda95"
+    },
+    {
+      "path": "documents/2023.acl-long.386.pdf",
+      "size": 712862,
+      "git_oid": "efc9dfb0a7b6435e66784c50c8246d54a8584ec3"
+    },
+    {
+      "path": "documents/DSA-278777.pdf",
+      "size": 771368,
+      "git_oid": "34e19adceb7580fd37f571532f51221615e2b192"
+    },
+    {
+      "path": "data/train-00000-of-00001.parquet",
+      "size": 82073,
+      "sha256": "bcdac3c96669634c34184814cede4fe57cf7ac0f98dde0e85936394f6a56a02d"
+    }
+  ],
+  "question_rows": [
+    218,
+    219,
+    220,
+    221,
+    364,
+    365,
+    370,
+    377,
+    383,
+    384,
+    385,
+    389,
+    634,
+    635,
+    636,
+    639,
+    658,
+    660,
+    661,
+    662
+  ]
+}

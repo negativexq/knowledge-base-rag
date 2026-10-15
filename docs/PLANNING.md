@@ -4093,6 +4093,131 @@ Dialog is now on every page. The Playground chunk is 233 KB.
 - One Playground composer test.
 - 50 frontend tests pass.
 
+## Benchmark — MMLongBench-Doc pilot (closing note)
+
+**Goal.** Before scaling up, prove a harness that measures the production
+path on an external, labelled document benchmark. Each stage is measured
+separately and sliced by evidence type (text, layout, table, chart, figure).
+The pilot uses 5 PDFs and 20 questions.
+
+**Data handling.** The dataset card states no license, and the PDFs are
+third-party documents, so none of them enter the repository.
+
+- `artifacts/mmlongbench-pilot/manifest.json` pins:
+  - the dataset (`yubo2333/MMLongBench-Doc`) and revision `2ff6aa92`;
+  - each file's size and content hash: the git blob id for git files, and the
+    sha256 for the LFS parquet, because the Hub tree's git id for an LFS file
+    is the pointer's, not the content's;
+  - the 20 question row ids.
+- `scripts/benchmarks/setup_mmlongbench_pilot.py` downloads the files into the
+  gitignored `data/benchmarks/mmlongbench-doc/<revision>/`:
+  - every file is verified before it is written;
+  - a verified file is not fetched again;
+  - a mismatch leaves nothing behind.
+- Total download: 3.1 MB.
+- Only the manifest, `report.json` (row ids and per-stage booleans) and
+  `report.md` are committed. `results.jsonl`, which holds the answers, stays
+  local.
+
+**Selection.** Five small PDFs that together cover all five evidence types.
+From each PDF:
+
+- the first unanswerable question;
+- answerable questions that add an evidence type not yet covered;
+- filled in row order up to 4 questions.
+
+That gives 20 questions: 5 unanswerable, plus Pure-text 8, Table 5,
+Figure 4, Chart 3 and Layout 3 labels. A question can carry several labels.
+Page numbers in `evidence_pages` were confirmed to be 1-based against the PDF
+text: question 370's answer is on page 9, not page 8.
+
+**Harness** (`scripts/benchmarks/run_mmlongbench_pilot.py`, pure logic in
+`app/evaluation/mmlongbench.py`):
+
+- **Ingestion** goes through `LocalFilesystemConnector` + `ingest_connector`
+  with the production chunking config. It writes to its own collection
+  (`kb_bench_mmlongbench`), tenant `bench-mmlongbench` and registry.
+- **Questions** go through `build_chat_dependencies`: the same search,
+  evidence and support-ID stream as POST /chat. Pre-rerank candidates come
+  from the forensic capture's candidate ids.
+
+| Stage | Metric |
+| --- | --- |
+| Ingestion | Every evidence page produced a chunk |
+| Retrieval | An evidence page of the right document is in the reranked top-5 / the 15 candidates |
+| Generation | Lenient deterministic contains-match (numbers within 1%); at least one cited unit on an evidence page |
+| Answerability | Refusals on unanswerable questions; coverage on answerable ones |
+| ACL | The same question asked as `tenant-a` must retrieve nothing |
+
+**Results** (`artifacts/mmlongbench-pilot/report.md`, `qwen3.5:4b`). With
+n = 20 these are pilot numbers, not conclusions.
+
+| Slice | n | Hit@5 | Hit@15 | Answer | Citation |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| all (15 answerable) | 20 | 53% | 80% | 20% | 22% (2/9) |
+| text | 8 | 62% | 100% | 12% | 25% |
+| layout | 3 | 33% | 67% | 0% | 0% |
+| table | 5 | 80% | 100% | 20% | 67% |
+| chart | 3 | 33% | 67% | 0% | 0% |
+| figure | 4 | 75% | 100% | 25% | 0% |
+
+Other results:
+
+- 2 of 5 unanswerable questions correctly refused.
+- 9 of 15 answerable questions answered.
+- 0 ACL leaks across 20 cross-tenant queries.
+- Ingestion took 583 s for 144 chunks. Questions took 38 s each (median).
+
+**What the pilot already shows.** These are leads, not conclusions.
+
+1. **The critical-value validator rejects correct, retrieved answers.**
+   Questions 219, 221, 383 and 639 had their evidence page retrieved, yet
+   each ended in an abstention:
+   - 219 failed with `CRITICAL_VALUE_DIRECT_CONFLICT`;
+   - 221, 383 and 639 failed with `CRITICAL_VALUE_INDETERMINATE`.
+
+   Question 383's gold answer ("Florida Department of Health") was produced
+   word for word for the unanswerable question 384 on the same page, and
+   passed there. This is the largest coverage loss.
+2. **The reranker drops evidence.** Four answerable questions had the
+   evidence page among the candidates but not in the top 5. Chart and
+   layout questions are the weakest slices.
+3. **The ingestion metric is too weak.** "The page produced a chunk" scored
+   100%, but some evidence pages carry very little text:
+   - question 364's page 8 has 60 characters, and its answer (bank names) is
+     not in the PDF text layer at all;
+   - question 383's page 2 has 135 characters.
+
+   The next version should check that the gold answer text appears in that
+   page's chunks, where the answer is textual.
+4. **Unanswerable questions are mostly answered from nearby content.**
+   Questions 384, 635 and 660 were answered. Question 220's correct refusal
+   was in fact `TOP_LEVEL_SCHEMA_INVALID` (malformed model output), not a
+   real abstention, so the 2 of 5 is optimistic.
+5. **Ingestion is slow.** 583 s for 109 pages points at the OCR fallback;
+   it needs profiling before a 20-PDF run.
+
+**Tests.** `tests/test_mmlongbench_pilot.py` has 20 tests:
+
+- git blob id;
+- manifest loading;
+- verified download, skip and refetch;
+- tamper rejection with nothing written;
+- LFS sha256;
+- question parsing;
+- answer matching (9 cases);
+- page hits;
+- cited pages;
+- the sliced report.
+
+`make test`: 1384 passed, 4 skipped.
+
+**Next.**
+
+- Fix finding 1, the validator abstentions.
+- Strengthen the ingestion metric.
+- Then scale to 20 PDFs and 60 questions.
+
 ## Future — İkinci Connector (Confluence)
 
 Amaç: Connector abstraction'ının gerçekten genellenebilir olduğunu kanıtlamak.

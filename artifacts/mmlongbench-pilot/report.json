@@ -1,0 +1,471 @@
+{
+  "meta": {
+    "dataset": "yubo2333/MMLongBench-Doc",
+    "revision": "2ff6aa9237fc777b6627dc57a486e9225ac5fb86",
+    "documents": 5,
+    "questions": 20,
+    "collection": "kb_bench_mmlongbench",
+    "tenant": "bench-mmlongbench",
+    "model": "qwen3.5:4b",
+    "top_n": 5,
+    "candidate_k": 15,
+    "ingest": {
+      "files_processed": 5,
+      "chunks_upserted": 144,
+      "files_skipped": 0,
+      "files_deleted": 0,
+      "seconds": 583.4
+    },
+    "median_seconds": 37.8
+  },
+  "overall": {
+    "questions": 20,
+    "ingestion_evidence_page_coverage": {
+      "rate": 1.0,
+      "n": 15
+    },
+    "retrieval_hit_at_5": {
+      "rate": 0.5333,
+      "n": 15
+    },
+    "retrieval_hit_at_15": {
+      "rate": 0.8,
+      "n": 15
+    },
+    "answer_accuracy": {
+      "rate": 0.2,
+      "n": 15
+    },
+    "citation_accuracy": {
+      "rate": 0.2222,
+      "n": 9
+    }
+  },
+  "slices": {
+    "text": {
+      "questions": 8,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 8
+      },
+      "retrieval_hit_at_5": {
+        "rate": 0.625,
+        "n": 8
+      },
+      "retrieval_hit_at_15": {
+        "rate": 1.0,
+        "n": 8
+      },
+      "answer_accuracy": {
+        "rate": 0.125,
+        "n": 8
+      },
+      "citation_accuracy": {
+        "rate": 0.25,
+        "n": 4
+      }
+    },
+    "layout": {
+      "questions": 3,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "retrieval_hit_at_5": {
+        "rate": 0.3333,
+        "n": 3
+      },
+      "retrieval_hit_at_15": {
+        "rate": 0.6667,
+        "n": 3
+      },
+      "answer_accuracy": {
+        "rate": 0.0,
+        "n": 3
+      },
+      "citation_accuracy": {
+        "rate": 0.0,
+        "n": 2
+      }
+    },
+    "table": {
+      "questions": 5,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 5
+      },
+      "retrieval_hit_at_5": {
+        "rate": 0.8,
+        "n": 5
+      },
+      "retrieval_hit_at_15": {
+        "rate": 1.0,
+        "n": 5
+      },
+      "answer_accuracy": {
+        "rate": 0.2,
+        "n": 5
+      },
+      "citation_accuracy": {
+        "rate": 0.6667,
+        "n": 3
+      }
+    },
+    "chart": {
+      "questions": 3,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "retrieval_hit_at_5": {
+        "rate": 0.3333,
+        "n": 3
+      },
+      "retrieval_hit_at_15": {
+        "rate": 0.6667,
+        "n": 3
+      },
+      "answer_accuracy": {
+        "rate": 0.0,
+        "n": 3
+      },
+      "citation_accuracy": {
+        "rate": 0.0,
+        "n": 1
+      }
+    },
+    "figure": {
+      "questions": 4,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 4
+      },
+      "retrieval_hit_at_5": {
+        "rate": 0.75,
+        "n": 4
+      },
+      "retrieval_hit_at_15": {
+        "rate": 1.0,
+        "n": 4
+      },
+      "answer_accuracy": {
+        "rate": 0.25,
+        "n": 4
+      },
+      "citation_accuracy": {
+        "rate": 0.0,
+        "n": 3
+      }
+    }
+  },
+  "answerability": {
+    "unanswerable_correctly_refused": {
+      "rate": 0.4,
+      "n": 5
+    },
+    "answerable_coverage": {
+      "rate": 0.6,
+      "n": 15
+    }
+  },
+  "acl_leaks": 0,
+  "per_question": [
+    {
+      "row_idx": 218,
+      "doc_id": "PIP_Seniors-and-Tech-Use_040314.pdf",
+      "evidence_types": [],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": false,
+      "hit_candidates": false,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": false,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 219,
+      "doc_id": "PIP_Seniors-and-Tech-Use_040314.pdf",
+      "evidence_types": [
+        "text",
+        "chart"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 220,
+      "doc_id": "PIP_Seniors-and-Tech-Use_040314.pdf",
+      "evidence_types": [],
+      "answerable": false,
+      "ingested": null,
+      "hit_top": null,
+      "hit_candidates": null,
+      "answered": false,
+      "correct": null,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 221,
+      "doc_id": "PIP_Seniors-and-Tech-Use_040314.pdf",
+      "evidence_types": [
+        "text",
+        "table",
+        "chart"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": false,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 364,
+      "doc_id": "afe620b9beac86c1027b96d31d396407.pdf",
+      "evidence_types": [
+        "text"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": false,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": false,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 365,
+      "doc_id": "afe620b9beac86c1027b96d31d396407.pdf",
+      "evidence_types": [],
+      "answerable": false,
+      "ingested": null,
+      "hit_top": null,
+      "hit_candidates": null,
+      "answered": false,
+      "correct": null,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 370,
+      "doc_id": "afe620b9beac86c1027b96d31d396407.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": true,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 377,
+      "doc_id": "afe620b9beac86c1027b96d31d396407.pdf",
+      "evidence_types": [
+        "chart"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": false,
+      "hit_candidates": false,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": false,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 383,
+      "doc_id": "e79deb02a0c0e87511080836c5d4347b.pdf",
+      "evidence_types": [
+        "text"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 384,
+      "doc_id": "e79deb02a0c0e87511080836c5d4347b.pdf",
+      "evidence_types": [],
+      "answerable": false,
+      "ingested": null,
+      "hit_top": null,
+      "hit_candidates": null,
+      "answered": true,
+      "correct": null,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 385,
+      "doc_id": "e79deb02a0c0e87511080836c5d4347b.pdf",
+      "evidence_types": [
+        "layout"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": false,
+      "hit_candidates": false,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 389,
+      "doc_id": "e79deb02a0c0e87511080836c5d4347b.pdf",
+      "evidence_types": [
+        "figure"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": false,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 634,
+      "doc_id": "2023.acl-long.386.pdf",
+      "evidence_types": [
+        "figure",
+        "text"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": false,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 635,
+      "doc_id": "2023.acl-long.386.pdf",
+      "evidence_types": [],
+      "answerable": false,
+      "ingested": null,
+      "hit_top": null,
+      "hit_candidates": null,
+      "answered": true,
+      "correct": null,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 636,
+      "doc_id": "2023.acl-long.386.pdf",
+      "evidence_types": [
+        "layout",
+        "text"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": false,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": false,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 639,
+      "doc_id": "2023.acl-long.386.pdf",
+      "evidence_types": [
+        "table",
+        "text"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 658,
+      "doc_id": "DSA-278777.pdf",
+      "evidence_types": [
+        "text",
+        "table"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": true,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 660,
+      "doc_id": "DSA-278777.pdf",
+      "evidence_types": [],
+      "answerable": false,
+      "ingested": null,
+      "hit_top": null,
+      "hit_candidates": null,
+      "answered": true,
+      "correct": null,
+      "citation_on_evidence": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 661,
+      "doc_id": "DSA-278777.pdf",
+      "evidence_types": [
+        "figure",
+        "table"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": false,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 662,
+      "doc_id": "DSA-278777.pdf",
+      "evidence_types": [
+        "figure",
+        "layout"
+      ],
+      "answerable": true,
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": false,
+      "acl_leaks": 0
+    }
+  ]
+}
