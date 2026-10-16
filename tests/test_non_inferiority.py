@@ -12,9 +12,13 @@ from app.evaluation.non_inferiority import (
 
 def _ci(lower, upper, observed=None, metric="recall_at_5"):
     return BootstrapCI(
-        metric=metric, subset="cross_lingual",
+        metric=metric,
+        subset="cross_lingual",
         observed_delta=observed if observed is not None else (lower + upper) / 2,
-        lower=lower, upper=upper, seed=1, iterations=10000,
+        lower=lower,
+        upper=upper,
+        seed=1,
+        iterations=10000,
     )
 
 
@@ -82,8 +86,9 @@ def test_known_synthetic_inferior_case():
 def test_production_decision_adopts_small_when_non_inferior():
     ni = evaluate_non_inferiority(_ci(lower=0.01, upper=0.03), margin=0.04)
 
-    decision = production_decision(ni, material_margin=0.04, small_label="qwen3-0.6b@768",
-                                     large_label="qwen3-4b@1024")
+    decision = production_decision(
+        ni, material_margin=0.04, small_label="qwen3-0.6b@768", large_label="qwen3-4b@1024"
+    )
 
     assert decision["verdict"] == "ADOPT_QWEN3_0_6B_768"
 
@@ -91,8 +96,9 @@ def test_production_decision_adopts_small_when_non_inferior():
 def test_production_decision_adopts_large_when_advantage_is_confident_and_material():
     ni = evaluate_non_inferiority(_ci(lower=0.10, upper=0.20, observed=0.15), margin=0.04)
 
-    decision = production_decision(ni, material_margin=0.04, small_label="qwen3-0.6b@768",
-                                     large_label="qwen3-4b@1024")
+    decision = production_decision(
+        ni, material_margin=0.04, small_label="qwen3-0.6b@768", large_label="qwen3-4b@1024"
+    )
 
     assert decision["verdict"] == "ADOPT_QWEN3_4B_1024"
 
@@ -104,8 +110,9 @@ def test_production_decision_is_need_more_data_when_neither_condition_is_met():
     """
     ni = evaluate_non_inferiority(_ci(lower=-0.01, upper=0.06, observed=0.02), margin=0.04)
 
-    decision = production_decision(ni, material_margin=0.04, small_label="qwen3-0.6b@768",
-                                     large_label="qwen3-4b@1024")
+    decision = production_decision(
+        ni, material_margin=0.04, small_label="qwen3-0.6b@768", large_label="qwen3-4b@1024"
+    )
 
     assert decision["verdict"] == "NEED_MORE_DATA"
 
@@ -116,8 +123,9 @@ def test_production_decision_is_need_more_data_when_confident_but_not_material()
     """
     ni = evaluate_non_inferiority(_ci(lower=0.005, upper=0.06, observed=0.02), margin=0.04)
 
-    decision = production_decision(ni, material_margin=0.04, small_label="qwen3-0.6b@768",
-                                     large_label="qwen3-4b@1024")
+    decision = production_decision(
+        ni, material_margin=0.04, small_label="qwen3-0.6b@768", large_label="qwen3-4b@1024"
+    )
 
     assert decision["verdict"] == "NEED_MORE_DATA"
 

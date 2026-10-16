@@ -15,40 +15,124 @@ from typing import Any
 MAX_FACTS = 8
 
 _NUMBER_WORDS = {
-    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
-    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
-    "twelve": 12, "fourteen": 14, "fifteen": 15, "thirty": 30,
-    "forty-eight": 48, "forty eight": 48,
-    "sıfır": 0, "bir": 1, "iki": 2, "üç": 3, "dört": 4, "beş": 5,
-    "altı": 6, "yedi": 7, "sekiz": 8, "dokuz": 9, "on iki": 12,
-    "on dört": 14, "on beş": 15, "otuz": 30, "kırk sekiz": 48,
+    "zero": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "twelve": 12,
+    "fourteen": 14,
+    "fifteen": 15,
+    "thirty": 30,
+    "forty-eight": 48,
+    "forty eight": 48,
+    "sıfır": 0,
+    "bir": 1,
+    "iki": 2,
+    "üç": 3,
+    "dört": 4,
+    "beş": 5,
+    "altı": 6,
+    "yedi": 7,
+    "sekiz": 8,
+    "dokuz": 9,
+    "on iki": 12,
+    "on dört": 14,
+    "on beş": 15,
+    "otuz": 30,
+    "kırk sekiz": 48,
 }
 _UNIT_ALIASES = {
-    "calendar day": "day", "calendar days": "day", "takvim gün": "day",
-    "takvim günleri": "day", "takvim günlük": "day", "gün": "day",
-    "days": "day", "day": "day",
-    "business hour": "business_hour", "business hours": "business_hour",
-    "working hours": "business_hour", "iş saati": "business_hour",
-    "iş saatleri": "business_hour", "hours": "hour", "hour": "hour",
-    "saat": "hour", "saatleri": "hour",
-    "business day": "business_day", "business days": "business_day",
-    "iş günü": "business_day", "iş günleri": "business_day",
-    "percent": "percent", "percentage": "percent", "%": "percent",
+    "calendar day": "day",
+    "calendar days": "day",
+    "takvim gün": "day",
+    "takvim günleri": "day",
+    "takvim günlük": "day",
+    "gün": "day",
+    "days": "day",
+    "day": "day",
+    "business hour": "business_hour",
+    "business hours": "business_hour",
+    "working hours": "business_hour",
+    "iş saati": "business_hour",
+    "iş saatleri": "business_hour",
+    "hours": "hour",
+    "hour": "hour",
+    "saat": "hour",
+    "saatleri": "hour",
+    "business day": "business_day",
+    "business days": "business_day",
+    "iş günü": "business_day",
+    "iş günleri": "business_day",
+    "percent": "percent",
+    "percentage": "percent",
+    "%": "percent",
 }
 _TOKEN_ALIASES = {
-    "calendar": "calendar", "takvim": "calendar", "days": "day", "day": "day",
-    "gün": "day", "günlük": "day", "business": "business", "working": "business",
-    "iş": "business", "hours": "hour", "hour": "hour", "saat": "hour",
-    "standard": "standard", "standart": "standard", "critical": "critical",
-    "kritik": "critical", "cancel": "cancel", "cancellation": "cancel",
-    "iptal": "cancel", "renewal": "renewal", "yenileme": "renewal",
-    "direct-sale": "directsale", "direct": "directsale", "doğrudan": "directsale",
-    "sale": "sale", "satış": "sale", "premium": "premium",
+    "calendar": "calendar",
+    "takvim": "calendar",
+    "days": "day",
+    "day": "day",
+    "gün": "day",
+    "günlük": "day",
+    "business": "business",
+    "working": "business",
+    "iş": "business",
+    "hours": "hour",
+    "hour": "hour",
+    "saat": "hour",
+    "standard": "standard",
+    "standart": "standard",
+    "critical": "critical",
+    "kritik": "critical",
+    "cancel": "cancel",
+    "cancellation": "cancel",
+    "iptal": "cancel",
+    "renewal": "renewal",
+    "yenileme": "renewal",
+    "direct-sale": "directsale",
+    "direct": "directsale",
+    "doğrudan": "directsale",
+    "sale": "sale",
+    "satış": "sale",
+    "premium": "premium",
 }
 _GENERIC = {
-    "a", "an", "and", "are", "be", "by", "days", "from", "in", "is", "it",
-    "of", "on", "or", "the", "to", "with", "for", "this", "that", "must",
-    "ve", "bir", "ile", "için", "olan", "olarak", "gün", "günlük",
+    "a",
+    "an",
+    "and",
+    "are",
+    "be",
+    "by",
+    "days",
+    "from",
+    "in",
+    "is",
+    "it",
+    "of",
+    "on",
+    "or",
+    "the",
+    "to",
+    "with",
+    "for",
+    "this",
+    "that",
+    "must",
+    "ve",
+    "bir",
+    "ile",
+    "için",
+    "olan",
+    "olarak",
+    "gün",
+    "günlük",
 }
 _NEGATION = re.compile(
     r"\b(?:not|never|no|without|değil|hayır|olmaz|geçmez|geçerli değildir)\b", re.I
@@ -56,16 +140,39 @@ _NEGATION = re.compile(
 _NUMERIC = re.compile(r"(?<![\w])\d+(?:[.,]\d+)?%?(?![\w])")
 _VERSION = re.compile(r"(?<![\w])v?\d+(?:\.\d+)+(?![\w])", re.I)
 _DATE = re.compile(
-    r"(?<!\w)(?:(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})|"
-    r"(\d{1,2})[-/.](\d{1,2})[-/.](\d{4}))(?!\w)"
+    r"(?<!\w)(?:(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})|" r"(\d{1,2})[-/.](\d{1,2})[-/.](\d{4}))(?!\w)"
 )
 _MONTHS = {
-    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5,
-    "june": 6, "july": 7, "august": 8, "september": 9, "october": 10,
-    "november": 11, "december": 12, "ocak": 1, "şubat": 2, "subat": 2,
-    "mart": 3, "nisan": 4, "mayıs": 5, "mayis": 5, "haziran": 6,
-    "temmuz": 7, "ağustos": 8, "agustos": 8, "eylül": 9, "eylul": 9,
-    "ekim": 10, "kasım": 11, "kasim": 11, "aralık": 12, "aralik": 12,
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+    "ocak": 1,
+    "şubat": 2,
+    "subat": 2,
+    "mart": 3,
+    "nisan": 4,
+    "mayıs": 5,
+    "mayis": 5,
+    "haziran": 6,
+    "temmuz": 7,
+    "ağustos": 8,
+    "agustos": 8,
+    "eylül": 9,
+    "eylul": 9,
+    "ekim": 10,
+    "kasım": 11,
+    "kasim": 11,
+    "aralık": 12,
+    "aralik": 12,
 }
 
 
@@ -80,8 +187,7 @@ def normalize_text(value: str) -> str:
 def _number_values(text: str) -> set[float]:
     normalized = normalize_text(text)
     values = {
-        float(value.replace(",", ".").replace("%", ""))
-        for value in _NUMERIC.findall(normalized)
+        float(value.replace(",", ".").replace("%", "")) for value in _NUMERIC.findall(normalized)
     }
     for phrase, value in sorted(_NUMBER_WORDS.items(), key=lambda item: -len(item[0])):
         if normalize_text(phrase) in normalized:
@@ -115,8 +221,8 @@ def _duration_signatures(text: str) -> list[tuple[float, str]]:
     for spelling, unit in units:
         unit_text = normalize_text(spelling)
         for match in re.finditer(re.escape(unit_text), normalized):
-            before = normalized[max(0, match.start() - 24):match.start()]
-            after = normalized[match.end():match.end() + 24]
+            before = normalized[max(0, match.start() - 24) : match.start()]
+            after = normalized[match.end() : match.end() + 24]
             before_candidates = _number_candidates(before)
             after_candidates = _number_candidates(after)
             if unit == "percent" and after_candidates:
@@ -185,7 +291,7 @@ def _contradicts(expected: str, answer: str) -> bool:
     if not expected_n:
         return False
     for match in re.finditer(re.escape(expected_n), answer_n):
-        if _NEGATION.search(answer_n[max(0, match.start() - 32):match.start()]):
+        if _NEGATION.search(answer_n[max(0, match.start() - 32) : match.start()]):
             return True
     return False
 
@@ -218,13 +324,11 @@ def match_authored_fact(expected: str, answer: str) -> dict[str, Any]:
     expected_versions = _version_signature(expected)
     if expected_versions:
         answer_versions = _version_signature(answer)
-        deprecated_required = (
-            "deprecated" in normalize_text(expected)
-            or "obsolete" in normalize_text(expected)
-        )
-        deprecated_present = (
-            "deprecated" in normalize_text(answer)
-            or "obsolete" in normalize_text(answer)
+        deprecated_required = "deprecated" in normalize_text(
+            expected
+        ) or "obsolete" in normalize_text(expected)
+        deprecated_present = "deprecated" in normalize_text(answer) or "obsolete" in normalize_text(
+            answer
         )
         return {
             "matched": bool(expected_versions & answer_versions)
@@ -261,8 +365,7 @@ def match_authored_fact(expected: str, answer: str) -> dict[str, Any]:
             if "15" in normalized_answer and ("percent" in normalized_answer or "%" in answer):
                 return {"matched": True, "reason": "authored_cross_lingual_alias"}
             if "paid period" in normalized_answer and (
-                "does not shorten" in normalized_answer
-                or "does not reverse" in normalized_answer
+                "does not shorten" in normalized_answer or "does not reverse" in normalized_answer
             ):
                 return {"matched": True, "reason": "authored_paraphrase_alias"}
     if len(expected_tokens & answer_tokens) >= 2:
@@ -285,14 +388,19 @@ def score_required_facts(
             "status": "UNOBSERVABLE",
             "required_fact_ids": [],
             "required_fact_count": len(components),
-            "matched_fact_ids": [], "missing_fact_ids": [], "fact_coverage": None,
+            "matched_fact_ids": [],
+            "missing_fact_ids": [],
+            "fact_coverage": None,
             "matches": [],
         }
     matches = [match_authored_fact(component, answer) for component in components]
     matched = [index for index, item in enumerate(matches) if item["matched"]]
     status = (
-        "FULLY_CORRECT_COMPLETE" if len(matched) == len(components) else
-        "CORRECT_BUT_INCOMPLETE" if matched else "INCORRECT"
+        "FULLY_CORRECT_COMPLETE"
+        if len(matched) == len(components)
+        else "CORRECT_BUT_INCOMPLETE"
+        if matched
+        else "INCORRECT"
     )
     if not matched and any(item["reason"] == "partial_authored_overlap" for item in matches):
         status = "CORRECT_BUT_INCOMPLETE" if len(components) > 1 else "PARTIALLY_CORRECT"

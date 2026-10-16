@@ -297,6 +297,7 @@ def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
         "text": chunk.text,
         "heading_path": list(chunk.heading_path),
         "heading_occurrence": chunk.heading_occurrence,
+        "section_path": list(chunk.section_path),
         "document_version": chunk.document_version,
         "token_count": None,
         "overlap_token_count": None,

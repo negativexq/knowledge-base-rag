@@ -15,7 +15,7 @@ TEXT_BLOCK_TYPE = 0
 # Recorded in the ingestion pipeline fingerprint (app/ingestion/fingerprint.py)
 # through pdf_parser_version(); bump it whenever extraction output changes so
 # existing PDFs are re-indexed.
-PDF_PARSER_VERSION = "pymupdf_elements_v3"
+PDF_PARSER_VERSION = "pymupdf_elements_v4"
 # Tesseract languages for scanned pages (installed in the backend image as
 # tesseract-ocr-tur / tesseract-ocr-eng) and the render resolution; 300 dpi
 # is Tesseract's recommended input resolution.
@@ -45,6 +45,9 @@ NUMBERED_HEADING_MAX_WORDS = 10
 # Cells of an unruled table row are separated by a visible gap.
 ROW_CELL_MIN_GAP = 6.0
 RUNNING_TEXT_MIN_PAGES = 3
+# Running text only counts as page furniture inside the top or bottom
+# margin band (this share of the page height).
+MARGIN_BAND = 0.1
 # A short "Label:" block is kept with the value printed directly under it.
 LABEL_MAX_WORDS = 5
 
@@ -337,13 +340,20 @@ def _toc_level(text: str, entries: list[tuple[int, str]]) -> int | None:
     return None
 
 
-def _running_texts(pages: list[list[_Item]]) -> set[str]:
-    """Texts repeated on at least half the pages (headers, footers)."""
+def _in_margin(item: _Item, page_height: float) -> bool:
+    return item.bbox[3] <= page_height * MARGIN_BAND or item.bbox[1] >= page_height * (
+        1 - MARGIN_BAND
+    )
+
+
+def _running_texts(pages: list[list[_Item]], heights: list[float]) -> set[str]:
+    """Margin texts repeated on at least half the pages (running headers,
+    footers, page numbers; digits are ignored when comparing)."""
     if len(pages) < RUNNING_TEXT_MIN_PAGES:
         return set()
     seen: Counter[str] = Counter()
-    for items in pages:
-        seen.update({_normalized(item.text) for item in items})
+    for items, height in zip(pages, heights):
+        seen.update({_normalized(item.text) for item in items if _in_margin(item, height)})
     threshold = max(RUNNING_TEXT_MIN_PAGES, len(pages) / 2)
     return {text for text, count in seen.items() if count >= threshold}
 
@@ -381,10 +391,13 @@ def extract_elements(pdf_path: str) -> list[DocumentElement]:
     or entirely bold at about body size; distinct styles become levels. A
     short block starting with section numbering ("2.", "3.1") is a heading
     too, nested by its numbering depth below the styled levels.
-    Text repeated on most pages (running headers, footers) is never a
-    heading. Every element records the heading path it sits under.
+    Text repeated on most pages inside the top or bottom margin (running
+    headers, footers, page numbers) becomes a "furniture" element with
+    index -1: never a heading, and left out of paragraphs and chunks. Every
+    other element records the heading path it sits under.
     """
     pages: list[list[_Item]] = []
+    heights: list[float] = []
     with fitz.open(pdf_path) as doc:
         toc = _toc_titles(doc)
         for page_index, page in enumerate(doc):
@@ -401,13 +414,31 @@ def extract_elements(pdf_path: str) -> list[DocumentElement]:
             ]
             items.sort(key=lambda item: (round(item.bbox[1], 1), item.bbox[0]))
             pages.append(_merge_labels(items))
+            heights.append(page.rect.height)
 
     levels = {} if toc else _heading_levels(pages)
-    running = _running_texts(pages)
+    running = _running_texts(pages, heights)
     elements: list[DocumentElement] = []
     stack: list[tuple[int, str]] = []
     for page_index, items in enumerate(pages):
-        for index, item in enumerate(items):
+        index = 0
+        for item in items:
+            if (
+                item.kind == "paragraph"
+                and _in_margin(item, heights[page_index])
+                and _normalized(item.text) in running
+            ):
+                elements.append(
+                    DocumentElement(
+                        kind="furniture",
+                        page_number=page_index + 1,
+                        index=-1,
+                        text=item.text,
+                        bbox=item.bbox,
+                        flags=item.flags,
+                    )
+                )
+                continue
             if item.kind != "paragraph" or item.label:
                 level = None
             elif toc:
@@ -438,14 +469,17 @@ def extract_elements(pdf_path: str) -> list[DocumentElement]:
                     flags=item.flags,
                 )
             )
+            index += 1
     return elements
 
 
 def extract_paragraphs(pdf_path: str) -> list[Paragraph]:
-    """The element texts as paragraphs, per page and in reading order."""
+    """The content element texts (page furniture left out) as paragraphs,
+    per page and in reading order."""
     return [
         Paragraph(page_number=element.page_number, paragraph_index=element.index, text=element.text)
         for element in extract_elements(pdf_path)
+        if element.kind != "furniture"
     ]
 
 

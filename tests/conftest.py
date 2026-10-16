@@ -32,9 +32,7 @@ def _sentence(marker: str, sentence_index: int, word_count: int) -> str:
 
 
 def _paragraph_text(marker: str, sentence_count: int, words_per_sentence: int) -> str:
-    return " ".join(
-        _sentence(marker, s, words_per_sentence) for s in range(sentence_count)
-    )
+    return " ".join(_sentence(marker, s, words_per_sentence) for s in range(sentence_count))
 
 
 @pytest.fixture

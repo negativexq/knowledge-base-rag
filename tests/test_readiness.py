@@ -34,7 +34,8 @@ def _client_with_dense_collection(name: str, dimension: int) -> QdrantClient:
 @pytest.mark.asyncio
 async def test_ready_when_everything_lines_up():
     settings = Settings(
-        embedding_model_key="qwen3-4b", embedding_output_dimension=1024,
+        embedding_model_key="qwen3-4b",
+        embedding_output_dimension=1024,
         qdrant_collection_name="kb_chunks",
     )
     model_name = active_embedding_config(settings).ollama_model
@@ -64,7 +65,8 @@ async def test_not_ready_when_collection_does_not_exist():
 @pytest.mark.asyncio
 async def test_not_ready_when_dimension_mismatches():
     settings = Settings(
-        embedding_model_key="qwen3-4b", embedding_output_dimension=1024,
+        embedding_model_key="qwen3-4b",
+        embedding_output_dimension=1024,
         qdrant_collection_name="kb_chunks",
     )
     client = _client_with_dense_collection("kb_chunks", 768)
@@ -105,9 +107,7 @@ async def test_does_not_make_a_real_embedding_inference_call():
     """Section 23's explicit cheap-readiness requirement — check_readiness
     must never invoke ollama.embed(), only list_models()."""
     settings = Settings(qdrant_collection_name="kb_chunks", embedding_output_dimension=1024)
-    client = _client_with_dense_collection(
-        "kb_chunks", active_embedding_config(settings).dimension
-    )
+    client = _client_with_dense_collection("kb_chunks", active_embedding_config(settings).dimension)
 
     class _NoEmbedOllama(_FakeOllama):
         async def embed(self, *a, **k):

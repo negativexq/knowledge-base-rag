@@ -418,9 +418,7 @@ def _v3_version_guard_status(
     claim_versions: Sequence[tuple[int, ...]] | None = None,
 ) -> str | None:
     claim_versions = (
-        list(claim_versions)
-        if claim_versions is not None
-        else _v3_version_values(claim)
+        list(claim_versions) if claim_versions is not None else _v3_version_values(claim)
     )
     support_versions = _v3_version_values(support)
     if not claim_versions or not support_versions:
@@ -580,9 +578,7 @@ def _v3_relation_audit(
     statuses: list[str] = []
     for index, token in enumerate(claim_tokens):
         claim_context = token.get("local_context", "")
-        claim_words = set(re.findall(r"[A-Za-z0-9_]+", claim_context.lower())) | _token_words(
-            token
-        )
+        claim_words = set(re.findall(r"[A-Za-z0-9_]+", claim_context.lower())) | _token_words(token)
         has_support = False
         has_conflict = False
         signed_claim = _v3_signed_numeric(claim_context)
@@ -698,9 +694,7 @@ _V4_COMPARISON_WORDS = re.compile(
 )
 
 
-def _v4_clause_window(
-    text: str, start: int, end: int
-) -> tuple[str, str, str, int, int]:
+def _v4_clause_window(text: str, start: int, end: int) -> tuple[str, str, str, int, int]:
     left_boundary = max(
         text.rfind(".", 0, start),
         text.rfind("!", 0, start),
@@ -733,19 +727,12 @@ def _v4_sentence_bounds(text: str, start: int, end: int) -> tuple[int, int]:
     # A bare period is not necessarily a sentence boundary: decimal and
     # version literals contain periods too.  Require whitespace/end after a
     # period so ``8.1.3`` and ``1.000`` stay inside the same sentence.
-    boundaries = [
-        match.start()
-        for match in re.finditer(r"[!?]|\.(?=\s|$)", text)
-    ]
+    boundaries = [match.start() for match in re.finditer(r"[!?]|\.(?=\s|$)", text)]
     left_boundary = max(
         (position for position in boundaries if position < start),
         default=-1,
     )
-    right_candidates = [
-        position
-        for position in boundaries
-        if position >= end
-    ]
+    right_candidates = [position for position in boundaries if position >= end]
     return left_boundary + 1, min(right_candidates, default=len(text))
 
 
@@ -776,12 +763,8 @@ def _v4_classify_occurrence(
         text, int(token["start"]), int(token["end"])
     )
     lower_clause = clause.lower()
-    sentence_start, sentence_end = _v4_sentence_bounds(
-        text, int(token["start"]), int(token["end"])
-    )
-    has_companion = _v4_same_kind_companion(
-        token, tokens, sentence_start, sentence_end
-    )
+    sentence_start, sentence_end = _v4_sentence_bounds(text, int(token["start"]), int(token["end"]))
+    has_companion = _v4_same_kind_companion(token, tokens, sentence_start, sentence_end)
     left_for_match = left.rstrip()
     explicit_rejection_separator = bool(
         re.search(
@@ -816,10 +799,7 @@ def _v4_classify_occurrence(
     if (
         (immediate_rejection or explicit_rejection_separator)
         and has_companion
-        and (
-            explicit_rejection_separator
-            or _V4_CORRECTION_WORDS.search(clause + " " + right)
-        )
+        and (explicit_rejection_separator or _V4_CORRECTION_WORDS.search(clause + " " + right))
     ):
         return "REJECTED_PREMISE"
     # A substantive negative claim remains a validation obligation.  It is
@@ -862,9 +842,7 @@ def _v4_mask_rejected_premises(
     return "".join(chars), occurrences
 
 
-def claim_local_critical_value_audit_v4(
-    claim: str, support_texts: Sequence[str]
-) -> dict[str, Any]:
+def claim_local_critical_value_audit_v4(claim: str, support_texts: Sequence[str]) -> dict[str, Any]:
     """Evaluate the V4 DEBUG challenger without changing the V3 selector.
 
     Only deterministic rejected-premise occurrences are removed from the
@@ -872,14 +850,10 @@ def claim_local_critical_value_audit_v4(
     numeric/version/identifier/locale comparison, preserving its contract for
     positive, substantive negative, quoted, comparison, and unknown values.
     """
-    v3_result = claim_local_critical_value_audit(
-        claim, support_texts, validator_version="v3"
-    )
+    v3_result = claim_local_critical_value_audit(claim, support_texts, validator_version="v3")
     masked_claim, occurrences = _v4_mask_rejected_premises(claim)
     guarded_result = (
-        claim_local_critical_value_audit(
-            masked_claim, support_texts, validator_version="v3"
-        )
+        claim_local_critical_value_audit(masked_claim, support_texts, validator_version="v3")
         if masked_claim != claim
         else v3_result
     )
@@ -946,17 +920,13 @@ def _v5_classify_occurrence(
     if base_polarity == "REJECTED_PREMISE":
         return base_polarity
 
-    clause, left, right, _, _ = _v4_clause_window(
-        text, int(token["start"]), int(token["end"])
-    )
+    clause, left, right, _, _ = _v4_clause_window(text, int(token["start"]), int(token["end"]))
     # A rejected premise and its corrective/assertive sibling may be in
     # separate clauses or sentences.  The exact span remains the identity;
     # the full-answer search only supplies the existence of a same-surface
     # sibling and never creates a value-level mask.
     sentence_start, sentence_end = 0, len(text)
-    has_companion = _v5_same_surface_companion(
-        token, tokens, sentence_start, sentence_end
-    )
+    has_companion = _v5_same_surface_companion(token, tokens, sentence_start, sentence_end)
     left_for_match = left.rstrip()
     explicit_rejection_separator = bool(
         re.search(
@@ -1027,16 +997,12 @@ def _v5_mask_rejected_premises(
     return "".join(chars), occurrences
 
 
-def claim_local_critical_value_audit_v5(
-    claim: str, support_texts: Sequence[str]
-) -> dict[str, Any]:
+def claim_local_critical_value_audit_v5(claim: str, support_texts: Sequence[str]) -> dict[str, Any]:
     """Evaluate V5 occurrence-local polarity without changing production V3/V4."""
     v4_result = claim_local_critical_value_audit_v4(claim, support_texts)
     masked_claim, occurrences = _v5_mask_rejected_premises(claim)
     result = (
-        claim_local_critical_value_audit(
-            masked_claim, support_texts, validator_version="v3"
-        )
+        claim_local_critical_value_audit(masked_claim, support_texts, validator_version="v3")
         if masked_claim != claim
         else v4_result
     )
@@ -1217,8 +1183,7 @@ def _v6_tokenized(text: str) -> list[dict[str, Any]]:
             and start > 0
             and normalized[start - 1] in "+-"
             and (
-                start == 1
-                or not (normalized[start - 2].isalnum() or normalized[start - 2] == "_")
+                start == 1 or not (normalized[start - 2].isalnum() or normalized[start - 2] == "_")
             )
         ):
             token["start"] = start - 1
@@ -1257,8 +1222,7 @@ def _v6_tokenized(text: str) -> list[dict[str, Any]]:
         if not any(
             start < int(token["end"]) and int(token["start"]) < end
             for start, end in (
-                (int(item["start"]), int(item["end"]))
-                for item in identifier_candidates
+                (int(item["start"]), int(item["end"])) for item in identifier_candidates
             )
         )
     ] + identifier_candidates
@@ -1270,8 +1234,7 @@ def _v6_tokenized(text: str) -> list[dict[str, Any]]:
     for token in candidates:
         start, end = int(token["start"]), int(token["end"])
         if any(
-            start < int(existing["end"]) and int(existing["start"]) < end
-            for existing in resolved
+            start < int(existing["end"]) and int(existing["start"]) < end for existing in resolved
         ):
             continue
         token.setdefault("raw_literal", normalized[start:end])
@@ -1304,15 +1267,11 @@ def _v6_mask_rejected_premises(
     return "".join(chars), occurrences
 
 
-def claim_local_critical_value_audit_v6(
-    claim: str, support_texts: Sequence[str]
-) -> dict[str, Any]:
+def claim_local_critical_value_audit_v6(claim: str, support_texts: Sequence[str]) -> dict[str, Any]:
     """Evaluate exact-boundary V6 behavior without changing production V3/V4."""
     masked_claim, occurrences = _v6_mask_rejected_premises(claim)
     result = (
-        claim_local_critical_value_audit(
-            masked_claim, support_texts, validator_version="v3"
-        )
+        claim_local_critical_value_audit(masked_claim, support_texts, validator_version="v3")
         if masked_claim != claim
         else claim_local_critical_value_audit_v5(claim, support_texts)
     )
@@ -1320,9 +1279,9 @@ def claim_local_critical_value_audit_v6(
     result.update(
         {
             "validator_version": "v6-debug",
-            "v5_outcome": claim_local_critical_value_audit_v5(
-                claim, support_texts
-            ).get("validator_outcome"),
+            "v5_outcome": claim_local_critical_value_audit_v5(claim, support_texts).get(
+                "validator_outcome"
+            ),
             "v6_occurrence_guard_applied": masked_claim != claim,
             "v6_occurrence_guard_suppressed_count": sum(
                 item["polarity"] == "REJECTED_PREMISE" for item in occurrences

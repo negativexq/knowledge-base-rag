@@ -16,7 +16,9 @@ def _text_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def serialize_ranked_item(item: dict[str, Any], *, rank: int, score: float | None = None) -> dict[str, Any]:
+def serialize_ranked_item(
+    item: dict[str, Any], *, rank: int, score: float | None = None
+) -> dict[str, Any]:
     text = str(item.get("text", item.get("content", "")))
     metadata = item.get("metadata") or {}
     return {
@@ -39,7 +41,13 @@ def serialize_retrieval_observation(
 ) -> dict[str, Any]:
     return {
         "schema_version": "retrieval-observability-v1",
-        "authorized_top20": [serialize_ranked_item(item, rank=i + 1) for i, item in enumerate(authorized_top20)],
-        "reranked_top20": [serialize_ranked_item(item, rank=i + 1) for i, item in enumerate(reranked_top20)],
-        "selected_top_n": [serialize_ranked_item(item, rank=i + 1) for i, item in enumerate(selected_top_n)],
+        "authorized_top20": [
+            serialize_ranked_item(item, rank=i + 1) for i, item in enumerate(authorized_top20)
+        ],
+        "reranked_top20": [
+            serialize_ranked_item(item, rank=i + 1) for i, item in enumerate(reranked_top20)
+        ],
+        "selected_top_n": [
+            serialize_ranked_item(item, rank=i + 1) for i, item in enumerate(selected_top_n)
+        ],
     }

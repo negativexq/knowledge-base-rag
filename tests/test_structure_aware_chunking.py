@@ -60,9 +60,7 @@ def test_winner_requires_fact_level_precondition() -> None:
         },
     ]
     assert diagnostic.choose_winner(rows)["winner"] == "SECTION_AWARE_MERGED"
-    losing = diagnostic.choose_winner(
-        [{**rows[0], "all_required_facts_present_queries": 1}]
-    )
+    losing = diagnostic.choose_winner([{**rows[0], "all_required_facts_present_queries": 1}])
     assert losing["winner"] == "NO_VALID_WINNER"
 
 

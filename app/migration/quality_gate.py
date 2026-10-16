@@ -98,7 +98,12 @@ async def _run_questions(
         # Sprint 23: migration validation reads a single isolated target
         # collection outside any real tenant boundary — system context.
         results = await search(
-            query, ollama, sparse_encoder, qdrant_client, collection_name, config.ollama_model,
+            query,
+            ollama,
+            sparse_encoder,
+            qdrant_client,
+            collection_name,
+            config.ollama_model,
             RetrievalContext.system(),
             reranker=None,
             query_prefix=config.query_prefix(),
@@ -246,9 +251,16 @@ async def run_smoke(
     for question in smoke_questions:
         try:
             results = await search(
-                question["query"], ollama, sparse_encoder, qdrant_client, collection_name,
-                config.ollama_model, RetrievalContext.system(), reranker=None,
-                query_prefix=config.query_prefix(), dimensions=config.output_dimension,
+                question["query"],
+                ollama,
+                sparse_encoder,
+                qdrant_client,
+                collection_name,
+                config.ollama_model,
+                RetrievalContext.system(),
+                reranker=None,
+                query_prefix=config.query_prefix(),
+                dimensions=config.output_dimension,
             )
         except Exception as exc:  # noqa: BLE001 - any failure here is a real smoke failure
             errors.append(f"{question['id']}: {exc}")

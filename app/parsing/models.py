@@ -12,8 +12,10 @@ class Paragraph:
 class DocumentElement:
     """One structural element of a parsed document, in reading order.
 
-    ``kind`` is "heading", "paragraph" or "table". ``index`` is the
-    element's position on its page (the paragraph index citations use).
+    ``kind`` is "heading", "paragraph", "table" or "furniture" (running
+    headers, footers and page numbers). ``index`` is the element's position
+    among its page's content elements (the paragraph index citations use);
+    furniture has index -1.
     ``heading_path`` is the stack of headings the element sits under; a
     heading's own path ends with itself. ``table_rows`` holds a table's
     cleaned cells, row by row. ``flags`` records how the text was obtained

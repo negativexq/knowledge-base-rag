@@ -27,8 +27,12 @@ def _config_result(
     supported=True,
 ):
     if not supported:
-        return {"label": label, "supported": False, "requested_dimension": dimension,
-                 "actual_dimension_returned": 0}
+        return {
+            "label": label,
+            "supported": False,
+            "requested_dimension": dimension,
+            "actual_dimension_returned": 0,
+        }
     return {
         "label": label,
         "supported": True,
@@ -129,12 +133,22 @@ def test_score_picks_the_highest_weighted_quality_config_as_quality_winner():
 
 def test_score_recommends_a_smaller_config_that_meets_acceptance_thresholds():
     ceiling = _config_result(
-        "qwen3-4b@native", cross_recall=0.97, cross_mrr=0.86, mono_recall=1.0,
-        ndcg=0.9, dimension=2560, p95=300,
+        "qwen3-4b@native",
+        cross_recall=0.97,
+        cross_mrr=0.86,
+        mono_recall=1.0,
+        ndcg=0.9,
+        dimension=2560,
+        p95=300,
     )
     small_and_close = _config_result(
-        "qwen3-0.6b@768", cross_recall=0.95, cross_mrr=0.85, mono_recall=1.0,
-        ndcg=0.88, dimension=768, p95=80,
+        "qwen3-0.6b@768",
+        cross_recall=0.95,
+        cross_mrr=0.85,
+        mono_recall=1.0,
+        ndcg=0.88,
+        dimension=768,
+        p95=80,
     )
 
     decision = score([ceiling, small_and_close])
@@ -145,10 +159,18 @@ def test_score_recommends_a_smaller_config_that_meets_acceptance_thresholds():
 
 def test_score_does_not_recommend_a_config_that_loses_too_much_cross_lingual_quality():
     ceiling = _config_result(
-        "qwen3-4b@native", cross_recall=0.97, cross_mrr=0.86, mono_recall=1.0, dimension=2560,
+        "qwen3-4b@native",
+        cross_recall=0.97,
+        cross_mrr=0.86,
+        mono_recall=1.0,
+        dimension=2560,
     )
     too_lossy = _config_result(
-        "qwen3-0.6b@768", cross_recall=0.70, cross_mrr=0.60, mono_recall=1.0, dimension=768,
+        "qwen3-0.6b@768",
+        cross_recall=0.70,
+        cross_mrr=0.60,
+        mono_recall=1.0,
+        dimension=768,
     )
 
     decision = score([ceiling, too_lossy])
@@ -158,10 +180,18 @@ def test_score_does_not_recommend_a_config_that_loses_too_much_cross_lingual_qua
 
 def test_score_does_not_recommend_a_config_with_material_mono_lingual_regression():
     ceiling = _config_result(
-        "qwen3-4b@native", cross_recall=0.97, cross_mrr=0.86, mono_recall=1.0, dimension=2560,
+        "qwen3-4b@native",
+        cross_recall=0.97,
+        cross_mrr=0.86,
+        mono_recall=1.0,
+        dimension=2560,
     )
     mono_regressed = _config_result(
-        "qwen3-0.6b@768", cross_recall=0.97, cross_mrr=0.86, mono_recall=0.80, dimension=768,
+        "qwen3-0.6b@768",
+        cross_recall=0.97,
+        cross_mrr=0.86,
+        mono_recall=0.80,
+        dimension=768,
     )
 
     decision = score([ceiling, mono_regressed])

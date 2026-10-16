@@ -265,15 +265,11 @@ class QdrantStore:
         offset = None
         scroll_filter = qmodels.Filter(
             must=[
-                qmodels.FieldCondition(
-                    key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
-                ),
+                qmodels.FieldCondition(key="tenant_id", match=qmodels.MatchValue(value=tenant_id)),
                 qmodels.FieldCondition(
                     key="source_type", match=qmodels.MatchValue(value=source_type)
                 ),
-                qmodels.FieldCondition(
-                    key="source_id", match=qmodels.MatchValue(value=source_id)
-                ),
+                qmodels.FieldCondition(key="source_id", match=qmodels.MatchValue(value=source_id)),
                 qmodels.FieldCondition(
                     key="document_version",
                     match=qmodels.MatchValue(value=document_version),
@@ -324,9 +320,7 @@ class QdrantStore:
         offset = None
         scroll_filter = qmodels.Filter(
             must=[
-                qmodels.FieldCondition(
-                    key="tenant_id", match=qmodels.MatchValue(value=tenant_id)
-                ),
+                qmodels.FieldCondition(key="tenant_id", match=qmodels.MatchValue(value=tenant_id)),
                 qmodels.FieldCondition(
                     key="source_type", match=qmodels.MatchValue(value=source_type)
                 ),
@@ -536,6 +530,7 @@ class QdrantStore:
                 "text": chunk.text,
                 "heading_path": list(chunk.heading_path),
                 "heading_occurrence": chunk.heading_occurrence,
+                "section_path": list(chunk.section_path),
                 "document_version": chunk.document_version,
                 "token_count": chunk.token_count,
                 "overlap_token_count": chunk.overlap_token_count,

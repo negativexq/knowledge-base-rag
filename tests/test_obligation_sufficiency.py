@@ -157,9 +157,7 @@ async def test_complete_and_partial_obligations_produce_deterministic_actions():
 
 @pytest.mark.asyncio
 async def test_unknown_obligation_support_id_fails_safe():
-    client = _FakeOllama(
-        _evaluation(_obligation(1, "SUPPORTED", ["not-authorized"]))
-    )
+    client = _FakeOllama(_evaluation(_obligation(1, "SUPPORTED", ["not-authorized"])))
     result = await OllamaSemanticEvaluator(client, "qwen3.5:4b").evaluate_obligation_sufficiency(
         "What is the rule?", [_chunk()]
     )

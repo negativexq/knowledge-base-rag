@@ -164,9 +164,7 @@ def test_v4_guard_allows_deterministic_corrective_pairs(claim: str, support: str
         ),
     ],
 )
-def test_v4_does_not_globally_suppress_non_corrective_literals(
-    claim: str, support: str
-) -> None:
+def test_v4_does_not_globally_suppress_non_corrective_literals(claim: str, support: str) -> None:
     v3 = claim_local_critical_value_audit(claim, [support], validator_version="v3")
     v4 = claim_local_critical_value_audit_v4(claim, [support])
     assert v4["polarity_guard_applied"] is False
@@ -232,9 +230,10 @@ def test_v5_type_mismatch_does_not_collapse_same_surface_literal() -> None:
 
 
 def test_v5_ambiguous_sibling_remains_validating() -> None:
-    assert _v5_polarities(
-        "30 is not correct; a separate policy may use 30 days."
-    ) == ["REJECTED_PREMISE", "UNKNOWN"]
+    assert _v5_polarities("30 is not correct; a separate policy may use 30 days.") == [
+        "REJECTED_PREMISE",
+        "UNKNOWN",
+    ]
 
 
 def test_v5_masks_only_exact_occurrence_span() -> None:
@@ -253,9 +252,7 @@ def test_v5_preserves_v4_single_occurrence_behavior() -> None:
     v5 = claim_local_critical_value_audit_v5(claim, support)
     assert v4["pass"] is True
     assert v5["pass"] is True
-    assert v5["v5_occurrence_guard_suppressed_count"] == v4[
-        "polarity_guard_suppressed_count"
-    ]
+    assert v5["v5_occurrence_guard_suppressed_count"] == v4["polarity_guard_suppressed_count"]
 
 
 def test_v6_signed_literal_owns_sign_and_standalone_sibling_is_separate() -> None:

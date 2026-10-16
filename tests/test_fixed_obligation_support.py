@@ -142,9 +142,7 @@ async def test_support_is_aggregated_deterministically(
 def test_support_aggregation_requires_exact_fixed_obligation_ids():
     obligations = [QueryObligation(id="o1", description="fact")]
     evaluation = SupportEvaluation(
-        results=[
-            {"obligation_id": "o2", "status": "SUPPORTED", "supporting_chunk_ids": ["c1"]}
-        ]
+        results=[{"obligation_id": "o2", "status": "SUPPORTED", "supporting_chunk_ids": ["c1"]}]
     )
 
     with pytest.raises(ValueError, match="exactly match"):

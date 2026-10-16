@@ -593,9 +593,7 @@ async def test_search_creates_embed_and_retrieve_spans_with_attributes():
 @pytest.mark.asyncio
 async def test_search_creates_rerank_span_only_when_reranker_provided():
     client = QdrantClient(":memory:")
-    hybrid_candidates = [
-        SearchResult(score=0.9, payload={"text": "first", "tenant_id": "default"})
-    ]
+    hybrid_candidates = [SearchResult(score=0.9, payload={"text": "first", "tenant_id": "default"})]
 
     def fake_hybrid_search(client_, collection_name, dense_vector, sparse_vector, **kwargs):
         return hybrid_candidates

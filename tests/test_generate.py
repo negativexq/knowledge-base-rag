@@ -229,8 +229,7 @@ async def test_v3_default_mode_is_strict_and_withholds_before_token_release():
 
     assert [event for event in events if event["type"] == "token"] == []
     assert (
-        next(event for event in events if event["type"] == "security_validation")["passed"]
-        is False
+        next(event for event in events if event["type"] == "security_validation")["passed"] is False
     )
     assert any(event["type"] == "error" for event in events)
 
@@ -293,8 +292,7 @@ async def test_v3_strict_releases_only_after_policy_passes():
         "Refunds take 30 days [s.pdf:doc/2/0]."
     ]
     assert (
-        next(event for event in events if event["type"] == "security_validation")["passed"]
-        is True
+        next(event for event in events if event["type"] == "security_validation")["passed"] is True
     )
 
 

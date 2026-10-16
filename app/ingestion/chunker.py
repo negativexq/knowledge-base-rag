@@ -1,12 +1,12 @@
 import hashlib
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from app.ingestion.chunking_config import ChunkingConfig
 from app.ingestion.models import Chunk
 from app.ingestion.tokenizer import token_offsets
-from app.parsing.models import Paragraph
-from app.parsing.pdf_parser import extract_paragraphs
+from app.parsing.models import DocumentElement, Paragraph
+from app.parsing.pdf_parser import extract_elements
 
 # Provisional defaults — a whitespace-split word count is used as a stand-in
 # for real LLM tokens. Not a final decision: revisit once evaluation
@@ -205,6 +205,49 @@ def _chunk_page_text(
     return spans
 
 
+def _page_sections(
+    elements: list[DocumentElement],
+) -> list[tuple[tuple[str, ...], list[Paragraph], int]]:
+    """Split one page's elements into its sections, in order: (section
+    path, paragraphs, char offset of the section in the page text).
+
+    A section is a run of elements under the same heading path. A run made
+    only of headings (a title with no body of its own before its first
+    subsection) joins the next section, so headings stay with content."""
+    runs: list[tuple[tuple[str, ...], list[DocumentElement]]] = []
+    for element in elements:
+        if runs and runs[-1][0] == element.heading_path:
+            runs[-1][1].append(element)
+        else:
+            runs.append((element.heading_path, [element]))
+
+    merged: list[tuple[tuple[str, ...], list[DocumentElement]]] = []
+    pending: list[DocumentElement] = []
+    for path, run in runs:
+        if all(element.kind == "heading" for element in run):
+            pending.extend(run)
+            continue
+        merged.append((path, pending + run))
+        pending = []
+    if pending:
+        merged.append((pending[-1].heading_path, pending))
+
+    sections = []
+    offset = 0
+    for path, run in merged:
+        paragraphs = [
+            Paragraph(page_number=e.page_number, paragraph_index=e.index, text=e.text) for e in run
+        ]
+        sections.append((path, paragraphs, offset))
+        offset += sum(len(paragraph.text) + 2 for paragraph in paragraphs)
+    return sections
+
+
+def _shift(span: ChunkSpan, offset: int) -> ChunkSpan:
+    start, end = span.char_range
+    return replace(span, char_range=(start + offset, end + offset))
+
+
 def chunk_document(
     pdf_path: str,
     source_id: str,
@@ -214,22 +257,29 @@ def chunk_document(
     doc_id: str | None = None,
     chunking_config: ChunkingConfig | None = None,
 ) -> list[Chunk]:
+    """Chunk a PDF section by section within each page: a chunk never mixes
+    two sections, and each chunk records its section path. char_range stays
+    relative to the whole page text, as citations expect."""
     doc_id = doc_id or compute_doc_id(pdf_path)
-    paragraphs = extract_paragraphs(pdf_path)
+    elements_by_page: dict[int, list[DocumentElement]] = {}
+    for element in extract_elements(pdf_path):
+        if element.kind == "furniture":
+            continue
+        elements_by_page.setdefault(element.page_number, []).append(element)
 
-    paragraphs_by_page: dict[int, list[Paragraph]] = {}
-    for paragraph in paragraphs:
-        paragraphs_by_page.setdefault(paragraph.page_number, []).append(paragraph)
-
-    spans: list[ChunkSpan] = []
-    for page_number, page_paragraphs in paragraphs_by_page.items():
-        page_text, offsets = _build_page_text(page_paragraphs)
-        if chunking_config is not None and chunking_config.token_aware:
-            spans.extend(_token_aware_spans(page_text, offsets, page_number, chunking_config))
-        else:
-            spans.extend(
-                _chunk_page_text(page_text, offsets, page_number, chunk_size_tokens, overlap_tokens)
-            )
+    spans: list[tuple[ChunkSpan, tuple[str, ...]]] = []
+    for page_number, elements in elements_by_page.items():
+        for section_path, paragraphs, offset in _page_sections(elements):
+            section_text, offsets = _build_page_text(paragraphs)
+            if chunking_config is not None and chunking_config.token_aware:
+                section_spans = _token_aware_spans(
+                    section_text, offsets, page_number, chunking_config
+                )
+            else:
+                section_spans = _chunk_page_text(
+                    section_text, offsets, page_number, chunk_size_tokens, overlap_tokens
+                )
+            spans.extend((_shift(span, offset), section_path) for span in section_spans)
 
     return [
         Chunk(
@@ -248,6 +298,7 @@ def chunk_document(
             sentence_split=span.sentence_split,
             heading_preserved=span.heading_preserved,
             page_crossing=span.page_crossing,
+            section_path=section_path,
         )
-        for span in spans
+        for span, section_path in spans
     ]

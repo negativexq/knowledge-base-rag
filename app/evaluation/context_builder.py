@@ -35,9 +35,20 @@ def _safe_json(value: object) -> str:
 def _metadata(chunk: SearchResult, location: str) -> dict[str, Any]:
     payload = chunk.payload
     fields = (
-        "source_type", "source_id", "title", "source_name", "heading_path",
-        "heading_occurrence", "page_number", "paragraph_index", "authority_role",
-        "authority_scope", "document_version", "effective_date", "version", "canonical",
+        "source_type",
+        "source_id",
+        "title",
+        "source_name",
+        "heading_path",
+        "heading_occurrence",
+        "page_number",
+        "paragraph_index",
+        "authority_role",
+        "authority_scope",
+        "document_version",
+        "effective_date",
+        "version",
+        "canonical",
     )
     result = {key: payload[key] for key in fields if payload.get(key) is not None}
     result["chunk_id"] = chunk.id or str(payload.get("chunk_id", ""))

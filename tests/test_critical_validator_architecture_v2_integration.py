@@ -31,8 +31,7 @@ def test_architecture_v2_is_default_and_rollback_selectors_remain_explicit() -> 
         == "baseline"
     )
     assert (
-        Settings(_env_file=None, critical_validator_version="v3").critical_validator_version
-        == "v3"
+        Settings(_env_file=None, critical_validator_version="v3").critical_validator_version == "v3"
     )
     assert (
         Settings(
@@ -143,9 +142,7 @@ def test_architecture_v2_result_exposes_structured_occurrence_counts_only_to_ada
     assert result["occurrence_count"] == 2
     assert result["validate_role_count"] == 1
     assert result["skip_rejected_premise_count"] == 1
-    assert result["architecture_v2_forensic"]["filtered_validate_occurrence_ids"] == [
-        "claim.O1"
-    ]
+    assert result["architecture_v2_forensic"]["filtered_validate_occurrence_ids"] == ["claim.O1"]
 
 
 def test_otel_redaction_excludes_raw_content() -> None:

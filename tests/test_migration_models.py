@@ -55,8 +55,14 @@ def test_touch_updates_updated_at():
 
 def test_status_enum_has_exactly_the_eight_specified_states():
     assert {s.value for s in MigrationStatus} == {
-        "PLANNED", "INDEXING", "VALIDATING", "READY_TO_SWITCH", "SWITCHING",
-        "ACTIVE", "ROLLED_BACK", "FAILED",
+        "PLANNED",
+        "INDEXING",
+        "VALIDATING",
+        "READY_TO_SWITCH",
+        "SWITCHING",
+        "ACTIVE",
+        "ROLLED_BACK",
+        "FAILED",
     }
 
 

@@ -17,7 +17,10 @@ def _client(tmp_path, list_ollama_models=None, readiness_check=None) -> TestClie
     history = SyncHistory(tmp_path / "registry.db")
     return TestClient(
         create_app(
-            _StubManager(), history, registry, list_ollama_models=list_ollama_models,
+            _StubManager(),
+            history,
+            registry,
+            list_ollama_models=list_ollama_models,
             readiness_check=readiness_check,
         )
     )

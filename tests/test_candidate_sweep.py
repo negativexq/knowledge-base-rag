@@ -210,10 +210,7 @@ def test_partial_20_15_comparison_does_not_require_k10():
     )
     slices = {
         "category": {
-            str(k): {
-                name: {"query_level": {"recall_at_5": 1.0}}
-                for name in critical_slices
-            }
+            str(k): {name: {"query_level": {"recall_at_5": 1.0}} for name in critical_slices}
             for k in (20, 15)
         }
     }

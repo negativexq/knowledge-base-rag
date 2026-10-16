@@ -303,7 +303,8 @@ async def run_indexing(
     manifest.save(manifest_path)
 
     store = QdrantStore(
-        client=qdrant_client, collection_name=manifest.target_collection,
+        client=qdrant_client,
+        collection_name=manifest.target_collection,
         dense_dimension=target_config.dimension,
     )
 
@@ -313,15 +314,18 @@ async def run_indexing(
         span.set_attribute("migration.target_collection", manifest.target_collection)
         for source_type, connector in connectors.items():
             stats = await ingest_connector(
-                connector, store, target_registry, embed_fn, sparse_encoder,
-                embedding_concurrency=embedding_concurrency, tracer=tracer,
+                connector,
+                store,
+                target_registry,
+                embed_fn,
+                sparse_encoder,
+                embedding_concurrency=embedding_concurrency,
+                tracer=tracer,
                 pipeline_fingerprint=target_fingerprint,
             )
             total.files_processed += stats.files_processed
             total.chunks_upserted += stats.chunks_upserted
-            manifest.documents_completed = sum(
-                1 for _ in target_registry.list_documents()
-            )
+            manifest.documents_completed = sum(1 for _ in target_registry.list_documents())
             manifest.chunks_completed += stats.chunks_upserted
             manifest.touch()
             manifest.save(manifest_path)
@@ -370,7 +374,8 @@ def validate_structural(
         )
 
     store = QdrantStore(
-        client=qdrant_client, collection_name=manifest.target_collection,
+        client=qdrant_client,
+        collection_name=manifest.target_collection,
         dense_dimension=target_config.dimension,
     )
 
@@ -475,7 +480,9 @@ async def activate(
                 logger.error(
                     "post-switch smoke failed for migration %s — automatically rolled back "
                     "alias %r to %r",
-                    manifest.migration_id, settings.qdrant_active_alias, previous_collection,
+                    manifest.migration_id,
+                    settings.qdrant_active_alias,
+                    previous_collection,
                 )
                 raise MigrationActivationFailedError(manifest.error)
 

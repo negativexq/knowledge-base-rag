@@ -188,9 +188,7 @@ def validate_responses_strict_schema_shape(schema: dict[str, Any]) -> None:
         if node_type == "array":
             items = node.get("items")
             if not isinstance(items, dict):
-                raise ValueError(
-                    f"array schema must declare items at {'.'.join(path) or '<root>'}"
-                )
+                raise ValueError(f"array schema must declare items at {'.'.join(path) or '<root>'}")
             visit(items, (*path, "items"))
         for keyword in ("anyOf", "allOf"):
             variants = node.get(keyword)

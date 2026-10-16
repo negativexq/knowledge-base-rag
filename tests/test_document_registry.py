@@ -334,7 +334,8 @@ def test_upsert_document_with_chunk_count_none_no_longer_raises_against_a_real_1
 
     registry = DocumentRegistry(db_path)  # must migrate the NOT NULL away
 
-    record = registry.upsert_document("t1", "filesystem", "new-doc", "hash-new", chunk_count=None
+    record = registry.upsert_document(
+        "t1", "filesystem", "new-doc", "hash-new", chunk_count=None
     )  # must not raise sqlite3.IntegrityError
 
     assert record.chunk_count is None

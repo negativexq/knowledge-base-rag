@@ -44,7 +44,10 @@ def _real_client(tmp_path, docs_dir) -> TestClient:
     # tenant so the ownership check doesn't 403 these tests.
     return TestClient(
         create_app(
-            manager, history, registry, auth_enabled=False,
+            manager,
+            history,
+            registry,
+            auth_enabled=False,
             tenant_ids={"filesystem": "local-dev"},
         )
     )
@@ -151,7 +154,9 @@ def _real_auth_client(tmp_path, docs_dir, tenant_ids) -> TestClient:
     )
     return TestClient(
         create_app(
-            manager, history, registry,
+            manager,
+            history,
+            registry,
             token_authenticator=TokenAuthenticator(DEFAULT_DEV_TOKENS),
             auth_enabled=True,
             tenant_ids=tenant_ids,
@@ -177,9 +182,7 @@ def test_sync_with_plain_user_role_is_forbidden(tmp_path):
     docs_dir.mkdir()
     client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
 
-    response = client.post(
-        "/sync/filesystem", headers={"Authorization": "Bearer token-user-a"}
-    )
+    response = client.post("/sync/filesystem", headers={"Authorization": "Bearer token-user-a"})
 
     assert response.status_code == 403
 
@@ -190,9 +193,7 @@ def test_sync_with_operator_role_for_the_owning_tenant_succeeds(tmp_path):
     (docs_dir / "readme.md").write_text("# A\n\nContent.")
     client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
 
-    response = client.post(
-        "/sync/filesystem", headers={"Authorization": "Bearer token-operator-a"}
-    )
+    response = client.post("/sync/filesystem", headers={"Authorization": "Bearer token-operator-a"})
 
     assert response.status_code == 200
 
@@ -206,9 +207,7 @@ def test_operator_for_a_different_tenant_cannot_sync_someone_elses_source(tmp_pa
     docs_dir.mkdir()
     client = _real_auth_client(tmp_path, docs_dir, {"filesystem": "tenant-a"})
 
-    response = client.post(
-        "/sync/filesystem", headers={"Authorization": "Bearer token-operator-b"}
-    )
+    response = client.post("/sync/filesystem", headers={"Authorization": "Bearer token-operator-b"})
 
     assert response.status_code == 403
 

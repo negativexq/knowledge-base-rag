@@ -167,16 +167,26 @@ async def test_shrinking_a_document_leaves_no_orphan_chunks(tmp_path):
     registry = _registry(tmp_path)
 
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
     )
     long_points_before = [p for p in _all_points(store) if p.payload["source_id"] == "long_md"]
     assert len(long_points_before) > 1  # sanity: it really did split into multiple chunks
 
     (docs_dir / "long.md").write_text("# Long\n\nJust one short sentence now.")
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
     )
 
     long_points_after = [p for p in _all_points(store) if p.payload["source_id"] == "long_md"]
@@ -298,8 +308,13 @@ async def test_partial_qdrant_point_loss_is_detected_and_triggers_reindex(tmp_pa
     registry = _registry(tmp_path)
 
     first = await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
     )
     assert first.files_processed == 1
     original_chunk_count = registry.get_document("default", "filesystem", "doc_md").chunk_count
@@ -312,22 +327,23 @@ async def test_partial_qdrant_point_loss_is_detected_and_triggers_reindex(tmp_pa
     # Delete only ONE point, not the whole document — a partial loss,
     # not a total one.
     store._client.delete(COLLECTION, points_selector=[doc_points[0].id])
-    remaining = [
-        p for p in _all_points(store) if p.payload["source_id"] == "doc_md"
-    ]
+    remaining = [p for p in _all_points(store) if p.payload["source_id"] == "doc_md"]
     assert len(remaining) == original_chunk_count - 1  # confirmed: genuinely partial
 
     second = await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
     )
 
     assert second.files_processed == 1  # re-indexed, not skipped
     assert second.files_skipped == 0
 
-    restored = [
-        p for p in _all_points(store) if p.payload["source_id"] == "doc_md"
-    ]
+    restored = [p for p in _all_points(store) if p.payload["source_id"] == "doc_md"]
     assert len(restored) == original_chunk_count  # full chunk count restored
 
 
@@ -626,7 +642,11 @@ async def test_pipeline_fingerprint_mismatch_forces_reindex_even_with_unchanged_
         index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
     )
     first = await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
         pipeline_fingerprint=fingerprint_v1,
     )
     assert first.files_processed == 1
@@ -645,7 +665,11 @@ async def test_pipeline_fingerprint_mismatch_forces_reindex_even_with_unchanged_
         index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
     )
     second = await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
         pipeline_fingerprint=fingerprint_v2,
     )
 
@@ -679,12 +703,20 @@ async def test_pipeline_fingerprint_match_is_skipped_normally(tmp_path):
         index_schema_version=CURRENT_INDEX_SCHEMA_VERSION,
     )
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
         pipeline_fingerprint=fingerprint,
     )
 
     second = await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
         pipeline_fingerprint=fingerprint,
     )
 

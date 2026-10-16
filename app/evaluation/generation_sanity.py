@@ -52,9 +52,7 @@ def aggregate_generation_sanity(records: list[dict]) -> dict:
     for record in records:
         validate_generation_sanity_record(record)
 
-    not_found_records = [
-        record for record in records if record["expected_behavior"] == "not_found"
-    ]
+    not_found_records = [record for record in records if record["expected_behavior"] == "not_found"]
     security_records = [
         record for record in records if record["expected_behavior"] == "security_control"
     ]
@@ -74,16 +72,12 @@ def aggregate_generation_sanity(records: list[dict]) -> dict:
     return {
         "record_count": len(records),
         "by_language_pair": dict(sorted(by_pair.items())),
-        "citation_integrity_pass_rate": rate(
-            [record["citation_integrity"] for record in records]
-        ),
+        "citation_integrity_pass_rate": rate([record["citation_integrity"] for record in records]),
         "not_found_accuracy": not_found_accuracy,
         "not_found_count": len(not_found_records),
         "strict_security_validation_pass_rate": rate(strict_values),
         "security_control_pass_rate": rate(security_values),
         "security_control_count": len(security_records),
-        "generation_success_rate": rate(
-            [record["generation_success"] for record in records]
-        ),
+        "generation_success_rate": rate([record["generation_success"] for record in records]),
         "answer_relevancy": "not measured",
     }

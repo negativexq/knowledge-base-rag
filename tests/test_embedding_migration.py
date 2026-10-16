@@ -56,13 +56,18 @@ def _target_config(settings: Settings):
     )
 
 
-async def _index(
-    qdrant_client, target_registry, connector, manifest, manifest_path, target_config
-):
+async def _index(qdrant_client, target_registry, connector, manifest, manifest_path, target_config):
     fingerprint = build_pipeline_fingerprint(target_config)
     return await engine.run_indexing(
-        manifest, qdrant_client, target_registry, {"filesystem": connector}, _fake_embed_fn,
-        _FakeSparseEncoder(), target_config, fingerprint, manifest_path,
+        manifest,
+        qdrant_client,
+        target_registry,
+        {"filesystem": connector},
+        _fake_embed_fn,
+        _FakeSparseEncoder(),
+        target_config,
+        fingerprint,
+        manifest_path,
     )
 
 
@@ -102,11 +107,15 @@ def test_migration_required_when_only_dimension_differs(tmp_path):
     native = get_embedding_model_config("qwen3-4b", settings)
     registry.set_metadata(
         engine.ACTIVE_STATE_KEY,
-        json.dumps({
-            "embedding_model_key": "qwen3-4b", "output_dimension": None,
-            "fingerprint_digest": build_pipeline_fingerprint(native).digest(),
-            "collection": "kb_qwen3_4b_native_x", "migration_id": None,
-        }),
+        json.dumps(
+            {
+                "embedding_model_key": "qwen3-4b",
+                "output_dimension": None,
+                "fingerprint_digest": build_pipeline_fingerprint(native).digest(),
+                "collection": "kb_qwen3_4b_native_x",
+                "migration_id": None,
+            }
+        ),
     )
 
     plan = engine.plan_migration(client, registry, settings)
@@ -117,18 +126,23 @@ def test_migration_required_when_only_dimension_differs(tmp_path):
 
 def test_migration_required_when_query_instruction_differs(tmp_path):
     settings = Settings(
-        embedding_model_key="qwen3-4b", embedding_output_dimension=1024,
+        embedding_model_key="qwen3-4b",
+        embedding_output_dimension=1024,
         qwen3_query_instruction="a different instruction",
     )
     client = QdrantClient(":memory:")
     registry = DocumentRegistry(tmp_path / "registry.db")
     registry.set_metadata(
         engine.ACTIVE_STATE_KEY,
-        json.dumps({
-            "embedding_model_key": "qwen3-4b", "output_dimension": 1024,
-            "fingerprint_digest": "stale-digest-from-before-instruction-changed",
-            "collection": "kb_qwen3_4b_1024_x", "migration_id": None,
-        }),
+        json.dumps(
+            {
+                "embedding_model_key": "qwen3-4b",
+                "output_dimension": 1024,
+                "fingerprint_digest": "stale-digest-from-before-instruction-changed",
+                "collection": "kb_qwen3_4b_1024_x",
+                "migration_id": None,
+            }
+        ),
     )
 
     plan = engine.plan_migration(client, registry, settings)
@@ -146,12 +160,17 @@ async def test_target_collection_name_matches_naming_module(tmp_path):
     fingerprint = build_pipeline_fingerprint(target_config)
 
     plan = engine.MigrationPlan(
-        no_migration_required=False, source_model="nomic-embed-text", source_dimension=768,
-        source_fingerprint="src", source_collection="kb_chunks",
-        target_model=target_config.ollama_model, target_dimension=DIMENSION,
+        no_migration_required=False,
+        source_model="nomic-embed-text",
+        source_dimension=768,
+        source_fingerprint="src",
+        source_collection="kb_chunks",
+        target_model=target_config.ollama_model,
+        target_dimension=DIMENSION,
         target_fingerprint=fingerprint.digest(),
         target_collection=collection_name_for(target_config, fingerprint),
-        expected_document_count=0, expected_chunk_count=0,
+        expected_document_count=0,
+        expected_chunk_count=0,
     )
     manifest = engine.new_manifest(plan)
 
@@ -164,9 +183,11 @@ async def test_old_collection_is_never_touched_by_indexing(tmp_path):
     client = QdrantClient(":memory:")
     client.create_collection(
         "kb_chunks",
-        vectors_config={"dense": __import__("qdrant_client").http.models.VectorParams(
-            size=768, distance=__import__("qdrant_client").http.models.Distance.COSINE
-        )},
+        vectors_config={
+            "dense": __import__("qdrant_client").http.models.VectorParams(
+                size=768, distance=__import__("qdrant_client").http.models.Distance.COSINE
+            )
+        },
     )
     old_count_before = client.count("kb_chunks").count
 
@@ -174,14 +195,21 @@ async def test_old_collection_is_never_touched_by_indexing(tmp_path):
     fingerprint = build_pipeline_fingerprint(target_config)
     connector = _write_docs(tmp_path)
     target_registry = DocumentRegistry(tmp_path / "target_registry.db")
-    manifest = engine.new_manifest(engine.MigrationPlan(
-        no_migration_required=False, source_model="nomic-embed-text", source_dimension=768,
-        source_fingerprint="src", source_collection="kb_chunks",
-        target_model=target_config.ollama_model, target_dimension=DIMENSION,
-        target_fingerprint=fingerprint.digest(),
-        target_collection=collection_name_for(target_config, fingerprint),
-        expected_document_count=2, expected_chunk_count=2,
-    ))
+    manifest = engine.new_manifest(
+        engine.MigrationPlan(
+            no_migration_required=False,
+            source_model="nomic-embed-text",
+            source_dimension=768,
+            source_fingerprint="src",
+            source_collection="kb_chunks",
+            target_model=target_config.ollama_model,
+            target_dimension=DIMENSION,
+            target_fingerprint=fingerprint.digest(),
+            target_collection=collection_name_for(target_config, fingerprint),
+            expected_document_count=2,
+            expected_chunk_count=2,
+        )
+    )
 
     await _index(client, target_registry, connector, manifest, tmp_path / "m.json", target_config)
 
@@ -200,14 +228,21 @@ async def test_full_migration_indexes_all_documents(tmp_path):
     fingerprint = build_pipeline_fingerprint(target_config)
     connector = _write_docs(tmp_path)
     target_registry = DocumentRegistry(tmp_path / "target_registry.db")
-    manifest = engine.new_manifest(engine.MigrationPlan(
-        no_migration_required=False, source_model="nomic-embed-text", source_dimension=768,
-        source_fingerprint="src", source_collection="kb_chunks",
-        target_model=target_config.ollama_model, target_dimension=DIMENSION,
-        target_fingerprint=fingerprint.digest(),
-        target_collection=collection_name_for(target_config, fingerprint),
-        expected_document_count=2, expected_chunk_count=2,
-    ))
+    manifest = engine.new_manifest(
+        engine.MigrationPlan(
+            no_migration_required=False,
+            source_model="nomic-embed-text",
+            source_dimension=768,
+            source_fingerprint="src",
+            source_collection="kb_chunks",
+            target_model=target_config.ollama_model,
+            target_dimension=DIMENSION,
+            target_fingerprint=fingerprint.digest(),
+            target_collection=collection_name_for(target_config, fingerprint),
+            expected_document_count=2,
+            expected_chunk_count=2,
+        )
+    )
 
     stats = await _index(
         client, target_registry, connector, manifest, tmp_path / "m.json", target_config
@@ -227,14 +262,21 @@ async def test_idempotent_rerun_does_not_duplicate_points(tmp_path):
     fingerprint = build_pipeline_fingerprint(target_config)
     connector = _write_docs(tmp_path)
     target_registry = DocumentRegistry(tmp_path / "target_registry.db")
-    manifest = engine.new_manifest(engine.MigrationPlan(
-        no_migration_required=False, source_model="nomic-embed-text", source_dimension=768,
-        source_fingerprint="src", source_collection="kb_chunks",
-        target_model=target_config.ollama_model, target_dimension=DIMENSION,
-        target_fingerprint=fingerprint.digest(),
-        target_collection=collection_name_for(target_config, fingerprint),
-        expected_document_count=2, expected_chunk_count=2,
-    ))
+    manifest = engine.new_manifest(
+        engine.MigrationPlan(
+            no_migration_required=False,
+            source_model="nomic-embed-text",
+            source_dimension=768,
+            source_fingerprint="src",
+            source_collection="kb_chunks",
+            target_model=target_config.ollama_model,
+            target_dimension=DIMENSION,
+            target_fingerprint=fingerprint.digest(),
+            target_collection=collection_name_for(target_config, fingerprint),
+            expected_document_count=2,
+            expected_chunk_count=2,
+        )
+    )
 
     await _index(client, target_registry, connector, manifest, tmp_path / "m.json", target_config)
     count_after_first = client.count(manifest.target_collection).count
@@ -256,14 +298,21 @@ async def test_resume_after_partial_run_only_completes_remaining_work(tmp_path):
     target_config = _target_config(settings)
     fingerprint = build_pipeline_fingerprint(target_config)
     target_registry = DocumentRegistry(tmp_path / "target_registry.db")
-    manifest = engine.new_manifest(engine.MigrationPlan(
-        no_migration_required=False, source_model="nomic-embed-text", source_dimension=768,
-        source_fingerprint="src", source_collection="kb_chunks",
-        target_model=target_config.ollama_model, target_dimension=DIMENSION,
-        target_fingerprint=fingerprint.digest(),
-        target_collection=collection_name_for(target_config, fingerprint),
-        expected_document_count=1, expected_chunk_count=1,
-    ))
+    manifest = engine.new_manifest(
+        engine.MigrationPlan(
+            no_migration_required=False,
+            source_model="nomic-embed-text",
+            source_dimension=768,
+            source_fingerprint="src",
+            source_collection="kb_chunks",
+            target_model=target_config.ollama_model,
+            target_dimension=DIMENSION,
+            target_fingerprint=fingerprint.digest(),
+            target_collection=collection_name_for(target_config, fingerprint),
+            expected_document_count=1,
+            expected_chunk_count=1,
+        )
+    )
 
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
@@ -296,14 +345,21 @@ async def _indexed_migration(tmp_path):
     fingerprint = build_pipeline_fingerprint(target_config)
     connector = _write_docs(tmp_path)
     target_registry = DocumentRegistry(tmp_path / "target_registry.db")
-    manifest = engine.new_manifest(engine.MigrationPlan(
-        no_migration_required=False, source_model="nomic-embed-text", source_dimension=768,
-        source_fingerprint="src", source_collection="kb_chunks",
-        target_model=target_config.ollama_model, target_dimension=DIMENSION,
-        target_fingerprint=fingerprint.digest(),
-        target_collection=collection_name_for(target_config, fingerprint),
-        expected_document_count=2, expected_chunk_count=2,
-    ))
+    manifest = engine.new_manifest(
+        engine.MigrationPlan(
+            no_migration_required=False,
+            source_model="nomic-embed-text",
+            source_dimension=768,
+            source_fingerprint="src",
+            source_collection="kb_chunks",
+            target_model=target_config.ollama_model,
+            target_dimension=DIMENSION,
+            target_fingerprint=fingerprint.digest(),
+            target_collection=collection_name_for(target_config, fingerprint),
+            expected_document_count=2,
+            expected_chunk_count=2,
+        )
+    )
     await _index(client, target_registry, connector, manifest, tmp_path / "m.json", target_config)
     return client, target_registry, manifest, target_config
 
@@ -333,7 +389,8 @@ async def test_validate_structural_fails_on_document_count_mismatch(tmp_path):
 async def test_validate_structural_fails_on_chunk_count_mismatch(tmp_path):
     client, target_registry, manifest, target_config = await _indexed_migration(tmp_path)
     store = QdrantStore(
-        client=client, collection_name=manifest.target_collection,
+        client=client,
+        collection_name=manifest.target_collection,
         dense_dimension=target_config.dimension,
     )
     doc = target_registry.list_documents()[0]
@@ -527,11 +584,15 @@ async def test_cleanup_old_collection_refuses_to_delete_the_active_one(tmp_path)
     # active collection, to prove cleanup refuses regardless.
     registry.set_metadata(
         engine.PREVIOUS_STATE_KEY,
-        json.dumps({
-            "embedding_model_key": "qwen3-4b", "output_dimension": DIMENSION,
-            "fingerprint_digest": manifest.target_fingerprint,
-            "collection": manifest.target_collection, "migration_id": manifest.migration_id,
-        }),
+        json.dumps(
+            {
+                "embedding_model_key": "qwen3-4b",
+                "output_dimension": DIMENSION,
+                "fingerprint_digest": manifest.target_fingerprint,
+                "collection": manifest.target_collection,
+                "migration_id": manifest.migration_id,
+            }
+        ),
     )
 
     with pytest.raises(ValueError, match="ACTIVE"):

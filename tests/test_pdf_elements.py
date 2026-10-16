@@ -92,22 +92,43 @@ def test_paragraphs_are_the_element_texts_in_order(report_pdf):
     paragraphs = extract_paragraphs(report_pdf)
 
     assert [(p.page_number, p.paragraph_index, p.text) for p in paragraphs] == [
-        (e.page_number, e.index, e.text) for e in elements
+        (e.page_number, e.index, e.text) for e in elements if e.kind != "furniture"
     ]
 
 
-def test_running_headers_are_not_headings(tmp_path):
+def _furniture_pdf(tmp_path) -> str:
     doc = fitz.open()
     for number in range(1, 4):
         page = doc.new_page()
         page.insert_text((72, 30), "ACME CORPORATION", fontsize=16)
-        page.insert_text((72, 80), f"Body text on page {number} of the report.", fontsize=11)
-    elements = extract_elements(_save(doc, tmp_path))
+        page.insert_text((72, 300), f"Body text on page {number} of the report.", fontsize=11)
+        page.insert_text((72, 400), "See the appendix for definitions.", fontsize=11)
+        page.insert_text((300, 820), str(number), fontsize=9)
+    return _save(doc, tmp_path, "furniture.pdf")
 
-    headers = [e for e in elements if e.text == "ACME CORPORATION"]
-    assert len(headers) == 3
-    assert all(e.kind == "paragraph" for e in headers)
+
+def test_running_headers_and_page_numbers_are_page_furniture(tmp_path):
+    elements = extract_elements(_furniture_pdf(tmp_path))
+
+    furniture = [e.text for e in elements if e.kind == "furniture"]
+    assert furniture == ["ACME CORPORATION", "1", "ACME CORPORATION", "2", "ACME CORPORATION", "3"]
     assert all(e.heading_path == () for e in elements)
+
+
+def test_text_repeated_in_the_body_is_not_furniture(tmp_path):
+    elements = extract_elements(_furniture_pdf(tmp_path))
+
+    repeated = [e for e in elements if e.text == "See the appendix for definitions."]
+    assert len(repeated) == 3
+    assert all(e.kind == "paragraph" for e in repeated)
+
+
+def test_page_furniture_is_left_out_of_paragraphs(tmp_path):
+    texts = [p.text for p in extract_paragraphs(_furniture_pdf(tmp_path))]
+
+    assert "ACME CORPORATION" not in texts
+    assert "2" not in texts
+    assert "Body text on page 2 of the report." in texts
 
 
 def test_a_label_is_kept_with_the_value_under_it(tmp_path):

@@ -23,6 +23,12 @@ class Chunk:
     # location, and app/parsing/markdown_parser.py::MarkdownBlock for
     # where it's computed.
     heading_occurrence: int = 0
+    # PDF-only: the heading path (from app/parsing/pdf_parser.py's
+    # document elements) of the section this chunk belongs to. Kept apart
+    # from heading_path so PDF citations stay page/paragraph based; it
+    # feeds the embedded text (index_text), the evidence section label and
+    # section-aware evidence grouping instead.
+    section_path: tuple[str, ...] = ()
     # Same value as doc_id (the content hash) today, but a separate,
     # explicitly-named field: doc_id's job is "one ingredient of a unique
     # point ID," document_version's job is the filter key
@@ -58,3 +64,14 @@ class Chunk:
     sentence_split: bool | None = None
     heading_preserved: bool | None = None
     page_crossing: bool | None = None
+
+
+def index_text(chunk: Chunk) -> str:
+    """The text that is embedded and sparse-indexed for a chunk: its section
+    path (PDF sections or markdown headings) as a context line, then the
+    chunk text. The stored payload text, which the model reads and
+    citations quote, stays the plain chunk text."""
+    path = chunk.section_path or chunk.heading_path
+    if not path:
+        return chunk.text
+    return " > ".join(path) + "\n\n" + chunk.text

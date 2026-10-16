@@ -145,15 +145,15 @@ def production_decision(
 ) -> dict:
     """Sprint 21's exactly-3-verdict production decision, deterministic:
 
-        if 0.6B (small) is non-inferior to 4B (large):
-            ADOPT small
-        elif 4B's advantage is BOTH statistically confident (CI lower
-             bound of (large - small) > 0, i.e. the interval doesn't
-             touch/cross zero) AND practically material (observed delta
-             > material_margin):
-            ADOPT large
-        else:
-            NEED_MORE_DATA
+    if 0.6B (small) is non-inferior to 4B (large):
+        ADOPT small
+    elif 4B's advantage is BOTH statistically confident (CI lower
+         bound of (large - small) > 0, i.e. the interval doesn't
+         touch/cross zero) AND practically material (observed delta
+         > material_margin):
+        ADOPT large
+    else:
+        NEED_MORE_DATA
     """
     if non_inferiority_result.is_non_inferior:
         return {

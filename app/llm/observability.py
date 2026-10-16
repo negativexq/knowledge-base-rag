@@ -80,9 +80,7 @@ class GenerationObservation:
         self.validator_failure_codes = normalize_validator_failure_codes(output_policy.violations)
         self.validated_output_available = output_policy.passed
         self.user_visible_output_available = (
-            prompt_version != "v3"
-            or validation_mode == "fast"
-            or output_policy.passed
+            prompt_version != "v3" or validation_mode == "fast" or output_policy.passed
         )
         if self.validated_output_available:
             self.citations_extracted_from_validated = list(grounding.citations_found)

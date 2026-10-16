@@ -67,8 +67,13 @@ async def test_embed_failure_mid_reindex_leaves_old_version_searchable(tmp_path)
     registry = _registry(tmp_path)
 
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
     )
     old_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     old_points_before = [p for p in _all_points(store) if p.payload["source_id"] == "doc_md"]
@@ -88,8 +93,13 @@ async def test_embed_failure_mid_reindex_leaves_old_version_searchable(tmp_path)
 
     try:
         await ingest_connector(
-            connector, store, registry, flaky_embed, _FakeSparseEncoder(),
-            chunk_size_tokens=15, overlap_tokens=5,
+            connector,
+            store,
+            registry,
+            flaky_embed,
+            _FakeSparseEncoder(),
+            chunk_size_tokens=15,
+            overlap_tokens=5,
         )
         raise AssertionError("expected the simulated embed failure to propagate")
     except SimulatedEmbedFailure:
@@ -129,12 +139,19 @@ async def test_multi_batch_partial_failure_rolls_back_the_partial_new_version(tm
     registry = _registry(tmp_path)
 
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
+        upsert_batch_size=2,
     )
     old_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     old_points_before = [
-        p for p in _all_points(store, "test_versioned_reindex_rollback")
+        p
+        for p in _all_points(store, "test_versioned_reindex_rollback")
         if p.payload["source_id"] == "doc_md"
     ]
     assert len(old_points_before) >= 6  # sanity: enough chunks for 3+ batches of 2
@@ -156,15 +173,22 @@ async def test_multi_batch_partial_failure_rolls_back_the_partial_new_version(tm
 
     try:
         await ingest_connector(
-            connector, store, registry, flaky_embed, _FakeSparseEncoder(),
-            chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+            connector,
+            store,
+            registry,
+            flaky_embed,
+            _FakeSparseEncoder(),
+            chunk_size_tokens=15,
+            overlap_tokens=5,
+            upsert_batch_size=2,
         )
         raise AssertionError("expected the simulated embed failure to propagate")
     except SimulatedEmbedFailure:
         pass
 
     points_after_failure = [
-        p for p in _all_points(store, "test_versioned_reindex_rollback")
+        p
+        for p in _all_points(store, "test_versioned_reindex_rollback")
         if p.payload["source_id"] == "doc_md"
     ]
 
@@ -313,8 +337,14 @@ async def test_multi_batch_duplicate_visibility_window_measured_from_first_upser
     registry = _registry(tmp_path)
 
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
+        upsert_batch_size=2,
     )
 
     new_sentences = [f"Completely rewritten sentence number {i} about oranges." for i in range(20)]
@@ -326,8 +356,15 @@ async def test_multi_batch_duplicate_visibility_window_measured_from_first_upser
     tracer = provider.get_tracer("test")
 
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2, tracer=tracer,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
+        upsert_batch_size=2,
+        tracer=tracer,
     )
 
     spans = exporter.get_finished_spans()
@@ -375,12 +412,19 @@ async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(
     registry = _registry(tmp_path)
 
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
+        upsert_batch_size=2,
     )
     old_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     old_points_before = [
-        p for p in _all_points(store, "test_versioned_reindex_cancellation")
+        p
+        for p in _all_points(store, "test_versioned_reindex_cancellation")
         if p.payload["source_id"] == "doc_md"
     ]
     assert len(old_points_before) >= 6  # sanity: enough chunks for 3+ batches of 2
@@ -402,8 +446,14 @@ async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(
 
     task = asyncio.ensure_future(
         ingest_connector(
-            connector, store, registry, embed_fn_that_hangs_in_batch_2, _FakeSparseEncoder(),
-            chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+            connector,
+            store,
+            registry,
+            embed_fn_that_hangs_in_batch_2,
+            _FakeSparseEncoder(),
+            chunk_size_tokens=15,
+            overlap_tokens=5,
+            upsert_batch_size=2,
         )
     )
     await batch_2_started.wait()
@@ -413,7 +463,8 @@ async def test_real_cancellation_mid_reindex_rolls_back_the_partial_new_version(
         await task
 
     points_after_cancel = [
-        p for p in _all_points(store, "test_versioned_reindex_cancellation")
+        p
+        for p in _all_points(store, "test_versioned_reindex_cancellation")
         if p.payload["source_id"] == "doc_md"
     ]
 
@@ -455,8 +506,14 @@ async def test_cancellation_rollback_failure_does_not_mask_the_original_cancelle
     registry = _registry(tmp_path)
 
     await ingest_connector(
-        connector, real_store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        connector,
+        real_store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
+        upsert_batch_size=2,
     )
 
     new_sentences = [f"Completely rewritten sentence number {i} about oranges." for i in range(20)]
@@ -484,8 +541,14 @@ async def test_cancellation_rollback_failure_does_not_mask_the_original_cancelle
 
     task = asyncio.ensure_future(
         ingest_connector(
-            connector, failing_store, registry, embed_fn_that_hangs_in_batch_2,
-            _FakeSparseEncoder(), chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+            connector,
+            failing_store,
+            registry,
+            embed_fn_that_hangs_in_batch_2,
+            _FakeSparseEncoder(),
+            chunk_size_tokens=15,
+            overlap_tokens=5,
+            upsert_batch_size=2,
         )
     )
     await batch_2_started.wait()
@@ -522,12 +585,19 @@ async def test_failed_reconciliation_repair_does_not_delete_previously_healthy_p
     registry = _registry(tmp_path)
 
     await ingest_connector(
-        connector, store, registry, _fake_embed, _FakeSparseEncoder(),
-        chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+        connector,
+        store,
+        registry,
+        _fake_embed,
+        _FakeSparseEncoder(),
+        chunk_size_tokens=15,
+        overlap_tokens=5,
+        upsert_batch_size=2,
     )
     doc_hash = registry.get_document("default", "filesystem", "doc_md").content_hash
     healthy_points_before = [
-        p for p in _all_points(store, "test_reconciliation_rollback_safety")
+        p
+        for p in _all_points(store, "test_reconciliation_rollback_safety")
         if p.payload["source_id"] == "doc_md"
     ]
     total_chunk_count = len(healthy_points_before)
@@ -539,7 +609,8 @@ async def test_failed_reconciliation_repair_does_not_delete_previously_healthy_p
     # hypothetical one.
     store.delete_points([healthy_points_before[0].id])
     points_after_loss = [
-        p for p in _all_points(store, "test_reconciliation_rollback_safety")
+        p
+        for p in _all_points(store, "test_reconciliation_rollback_safety")
         if p.payload["source_id"] == "doc_md"
     ]
     assert len(points_after_loss) == total_chunk_count - 1
@@ -559,8 +630,14 @@ async def test_failed_reconciliation_repair_does_not_delete_previously_healthy_p
 
     try:
         await ingest_connector(
-            connector, store, registry, flaky_embed, _FakeSparseEncoder(),
-            chunk_size_tokens=15, overlap_tokens=5, upsert_batch_size=2,
+            connector,
+            store,
+            registry,
+            flaky_embed,
+            _FakeSparseEncoder(),
+            chunk_size_tokens=15,
+            overlap_tokens=5,
+            upsert_batch_size=2,
         )
         raise AssertionError("expected the simulated embed failure to propagate")
     except SimulatedEmbedFailure:
@@ -572,7 +649,8 @@ async def test_failed_reconciliation_repair_does_not_delete_previously_healthy_p
     # version, including the N-1 points that were never touched by this
     # attempt.
     points_after_failed_repair = [
-        p for p in _all_points(store, "test_reconciliation_rollback_safety")
+        p
+        for p in _all_points(store, "test_reconciliation_rollback_safety")
         if p.payload["source_id"] == "doc_md"
     ]
     assert len(points_after_failed_repair) == total_chunk_count - 1

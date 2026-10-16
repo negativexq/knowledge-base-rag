@@ -20,7 +20,7 @@ _FINGERPRINT_PREFIX_LEN = 8
 
 
 def sanitize_label(label: str) -> str:
-    """"qwen3-4b@1024" -> "qwen3_4b_1024" — matches
+    """ "qwen3-4b@1024" -> "qwen3_4b_1024" — matches
     scripts/benchmarks/benchmark_embeddings.py's own _sanitize_label rule (`.` ->
     `_`, not dropped, so "qwen3-0.6b" reads as "qwen3_0_6b", never
     "qwen306b"), kept here as an independent copy rather than importing

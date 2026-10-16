@@ -43,7 +43,10 @@ def _real_client(tmp_path, docs_dir) -> TestClient:
     # ownership filter doesn't hide it.
     return TestClient(
         create_app(
-            manager, history, registry, auth_enabled=False,
+            manager,
+            history,
+            registry,
+            auth_enabled=False,
             tenant_ids={"filesystem": "local-dev"},
         )
     )
@@ -83,13 +86,21 @@ def test_sources_requires_authentication(tmp_path):
     registry = DocumentRegistry(tmp_path / "registry.db")
     history = SyncHistory(tmp_path / "registry.db")
     manager = SyncManager(
-        connectors={"filesystem": connector}, store=store, registry=registry, history=history,
-        embed_fn=_fake_embed, sparse_encoder=_FakeSparseEncoder(),
+        connectors={"filesystem": connector},
+        store=store,
+        registry=registry,
+        history=history,
+        embed_fn=_fake_embed,
+        sparse_encoder=_FakeSparseEncoder(),
         tenant_ids={"filesystem": "tenant-a"},
     )
     client = TestClient(
         create_app(
-            manager, history, registry, tenant_ids={"filesystem": "tenant-a"}, auth_enabled=True,
+            manager,
+            history,
+            registry,
+            tenant_ids={"filesystem": "tenant-a"},
+            auth_enabled=True,
         )
     )
 
@@ -113,15 +124,22 @@ def test_sources_only_shows_source_types_owned_by_the_callers_own_tenant(tmp_pat
     registry = DocumentRegistry(tmp_path / "registry.db")
     history = SyncHistory(tmp_path / "registry.db")
     manager = SyncManager(
-        connectors={"filesystem": connector}, store=store, registry=registry, history=history,
-        embed_fn=_fake_embed, sparse_encoder=_FakeSparseEncoder(),
+        connectors={"filesystem": connector},
+        store=store,
+        registry=registry,
+        history=history,
+        embed_fn=_fake_embed,
+        sparse_encoder=_FakeSparseEncoder(),
         tenant_ids={"filesystem": "tenant-a"},
     )
     client = TestClient(
         create_app(
-            manager, history, registry,
+            manager,
+            history,
+            registry,
             token_authenticator=TokenAuthenticator(DEFAULT_DEV_TOKENS),
-            tenant_ids={"filesystem": "tenant-a"}, auth_enabled=True,
+            tenant_ids={"filesystem": "tenant-a"},
+            auth_enabled=True,
         )
     )
     client.post("/sync/filesystem", headers={"Authorization": "Bearer token-operator-a"})
@@ -152,7 +170,10 @@ def test_get_sources_lists_multiple_connectors():
 
     client = TestClient(
         create_app(
-            _StubManager(), _StubHistory(), _StubRegistry(), auth_enabled=False,
+            _StubManager(),
+            _StubHistory(),
+            _StubRegistry(),
+            auth_enabled=False,
             tenant_ids={"filesystem": "local-dev", "notion": "local-dev"},
         )
     )

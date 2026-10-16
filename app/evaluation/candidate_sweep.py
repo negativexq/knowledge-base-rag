@@ -42,19 +42,29 @@ def recall(ranked: list[str], expected: list[str], limit: int | None = None) -> 
     return _hits(ranked, expected, limit) / len(set(expected))
 
 
-def pre_rerank_metrics(candidate_ids: list[str], expected_ids: list[str]) -> dict[str, float | None]:
+def pre_rerank_metrics(
+    candidate_ids: list[str], expected_ids: list[str]
+) -> dict[str, float | None]:
     """Return candidate-set recall plus top-10/15/20 views where available."""
     return {
         "candidate_recall": recall(candidate_ids, expected_ids),
         "recall_at_10": recall(candidate_ids, expected_ids, 10),
-        "recall_at_15": recall(candidate_ids, expected_ids, 15) if len(candidate_ids) >= 15 else None,
-        "recall_at_20": recall(candidate_ids, expected_ids, 20) if len(candidate_ids) >= 20 else None,
+        "recall_at_15": recall(candidate_ids, expected_ids, 15)
+        if len(candidate_ids) >= 15
+        else None,
+        "recall_at_20": recall(candidate_ids, expected_ids, 20)
+        if len(candidate_ids) >= 20
+        else None,
         "any_required_evidence": float(bool(set(candidate_ids) & set(expected_ids))),
-        "all_required_evidence": float(set(expected_ids) <= set(candidate_ids)) if expected_ids else 0.0,
+        "all_required_evidence": float(set(expected_ids) <= set(candidate_ids))
+        if expected_ids
+        else 0.0,
     }
 
 
-def post_rerank_metrics(ranked_ids: list[str], expected_ids: list[str], top_n: int = TOP_N) -> dict[str, float]:
+def post_rerank_metrics(
+    ranked_ids: list[str], expected_ids: list[str], top_n: int = TOP_N
+) -> dict[str, float]:
     expected = set(expected_ids)
     # Ground truth is source-level while retrieval returns chunks.  Count a
     # source only at its first ranked occurrence; duplicate chunks must not
@@ -62,13 +72,17 @@ def post_rerank_metrics(ranked_ids: list[str], expected_ids: list[str], top_n: i
     unique_ranked_ids = list(dict.fromkeys(ranked_ids))
     top = unique_ranked_ids[:top_n]
     hits = [source_id for source_id in top if source_id in expected]
-    dcg = sum(1 / math.log2(rank + 2) for rank, source_id in enumerate(top) if source_id in expected)
+    dcg = sum(
+        1 / math.log2(rank + 2) for rank, source_id in enumerate(top) if source_id in expected
+    )
     ideal_hits = min(len(expected), top_n)
     idcg = sum(1 / math.log2(rank + 2) for rank in range(ideal_hits))
     # MRR retains the existing chunk-rank semantics.  Only nDCG needs
     # source-level de-duplication because duplicate chunks would otherwise
     # receive duplicate relevance credit.
-    first_rank = next((rank for rank, source_id in enumerate(ranked_ids, start=1) if source_id in expected), None)
+    first_rank = next(
+        (rank for rank, source_id in enumerate(ranked_ids, start=1) if source_id in expected), None
+    )
     return {
         "recall_at_5": len(set(hits)) / len(expected) if expected else 0.0,
         "mrr": 1 / first_rank if first_rank else 0.0,
@@ -133,7 +147,14 @@ def aggregate_case_families(records: list[dict]) -> dict[str, Any]:
 
 def summarize_latency(values: list[float]) -> dict[str, float | int | None]:
     if not values:
-        return {"count": 0, "mean_ms": None, "median_ms": None, "p50_ms": None, "p95_ms": None, "max_ms": None}
+        return {
+            "count": 0,
+            "mean_ms": None,
+            "median_ms": None,
+            "p50_ms": None,
+            "p95_ms": None,
+            "max_ms": None,
+        }
     ordered = sorted(values)
     return {
         "count": len(values),
@@ -189,8 +210,7 @@ def recommend_candidate_k(
                         query["candidate_recall"] - reference_query["candidate_recall"], 6
                     ),
                     "all_required_evidence_recall": round(
-                        query["all_required_evidence"]
-                        - reference_query["all_required_evidence"],
+                        query["all_required_evidence"] - reference_query["all_required_evidence"],
                         6,
                     ),
                     "recall_at_5": round(query["recall_at_5"] - reference_query["recall_at_5"], 6),
@@ -213,7 +233,9 @@ def recommend_candidate_k(
                 ),
             }
         )
-    eligible = [candidate for candidate in candidates if not candidate["critical_slice_regressions"]]
+    eligible = [
+        candidate for candidate in candidates if not candidate["critical_slice_regressions"]
+    ]
     eligible = [
         candidate
         for candidate in eligible
@@ -229,7 +251,9 @@ def recommend_candidate_k(
     )
     return {
         "recommendation": recommendation,
-        "best_measured_candidate": min(eligible, key=lambda item: item["candidate_k"])["candidate_k"]
+        "best_measured_candidate": min(eligible, key=lambda item: item["candidate_k"])[
+            "candidate_k"
+        ]
         if eligible
         else REFERENCE_CANDIDATE_K,
         "candidates": candidates,

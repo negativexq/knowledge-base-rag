@@ -87,10 +87,14 @@ def test_stable_order_breaks_a_genuine_score_tie_deterministically():
     """
     tied_score = 0.5
     points_shuffle_a = [
-        _FakePoint("zzz", tied_score), _FakePoint("aaa", tied_score), _FakePoint("mmm", tied_score),
+        _FakePoint("zzz", tied_score),
+        _FakePoint("aaa", tied_score),
+        _FakePoint("mmm", tied_score),
     ]
     points_shuffle_b = [
-        _FakePoint("mmm", tied_score), _FakePoint("zzz", tied_score), _FakePoint("aaa", tied_score),
+        _FakePoint("mmm", tied_score),
+        _FakePoint("zzz", tied_score),
+        _FakePoint("aaa", tied_score),
     ]
 
     ordered_a = [p.id for p in stable_order(points_shuffle_a)]
@@ -109,7 +113,8 @@ def test_stable_order_preserves_score_ordering_for_genuinely_different_scores():
 
 def test_stable_order_mixes_score_priority_with_id_tiebreak_correctly():
     points = [
-        _FakePoint("b", 0.5), _FakePoint("a", 0.5),  # tied at 0.5 -> id breaks it
+        _FakePoint("b", 0.5),
+        _FakePoint("a", 0.5),  # tied at 0.5 -> id breaks it
         _FakePoint("c", 0.9),  # genuinely higher score -> always first regardless of id
     ]
 

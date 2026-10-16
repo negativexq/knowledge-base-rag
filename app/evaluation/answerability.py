@@ -201,9 +201,7 @@ def extract_structural_features(
         if source_id:
             source_counts[source_id] = source_counts.get(source_id, 0) + 1
             source_scores.setdefault(source_id, []).append(score)
-    source_max_scores = sorted(
-        (max(values) for values in source_scores.values()), reverse=True
-    )
+    source_max_scores = sorted((max(values) for values in source_scores.values()), reverse=True)
     source_top1 = source_max_scores[0] if source_max_scores else None
     source_top2 = source_max_scores[1] if len(source_max_scores) > 1 else None
     absolute_scores = [abs(score) for score in scores]
@@ -214,21 +212,11 @@ def extract_structural_features(
     unique_count = len(source_counts) if source_counts else None
     count = len(scores)
     return StructuralAnswerabilityFeatures(
-        score_decay_1_2=_rounded(
-            _relative_gap(scores[0], scores[1]) if len(scores) >= 2 else None
-        ),
-        score_decay_1_3=_rounded(
-            _relative_gap(scores[0], scores[2]) if len(scores) >= 3 else None
-        ),
-        score_decay_1_5=_rounded(
-            _relative_gap(scores[0], scores[4]) if len(scores) >= 5 else None
-        ),
-        top1_to_mean_top5_ratio=_rounded(
-            _safe_ratio(abs(scores[0]), sum(absolute_scores) / count)
-        ),
-        top1_to_median_top5_ratio=_rounded(
-            _safe_ratio(abs(scores[0]), abs(median_score))
-        ),
+        score_decay_1_2=_rounded(_relative_gap(scores[0], scores[1]) if len(scores) >= 2 else None),
+        score_decay_1_3=_rounded(_relative_gap(scores[0], scores[2]) if len(scores) >= 3 else None),
+        score_decay_1_5=_rounded(_relative_gap(scores[0], scores[4]) if len(scores) >= 5 else None),
+        top1_to_mean_top5_ratio=_rounded(_safe_ratio(abs(scores[0]), sum(absolute_scores) / count)),
+        top1_to_median_top5_ratio=_rounded(_safe_ratio(abs(scores[0]), abs(median_score))),
         top2_to_mean_top5_ratio=(
             _rounded(_safe_ratio(abs(scores[1]), sum(absolute_scores) / count))
             if len(scores) >= 2
@@ -258,9 +246,7 @@ def extract_structural_features(
             else None
         ),
         source_mean_score=(
-            _rounded(sum(source_max_scores) / len(source_max_scores))
-            if source_max_scores
-            else None
+            _rounded(sum(source_max_scores) / len(source_max_scores)) if source_max_scores else None
         ),
         source_count=unique_count,
     )
@@ -338,9 +324,7 @@ def extract_answerability_observation(
         fused_rerank_agreement=None,
         source_score_concentration=_rounded(concentration),
         duplicate_source_chunk_count_top5=(
-            len(valid_source_ids) - len(set(valid_source_ids))
-            if valid_source_ids
-            else None
+            len(valid_source_ids) - len(set(valid_source_ids)) if valid_source_ids else None
         ),
         structural=extract_structural_features(scores, source_ids),
         feature_latency_ms=(time.perf_counter() - started) * 1000,

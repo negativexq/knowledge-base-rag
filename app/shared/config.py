@@ -86,9 +86,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def validate_forensic_capture(self) -> Self:
         if self.rag_forensic_capture_raw_text and not self.rag_forensic_capture_enabled:
-            raise ValueError(
-                "RAG_FORENSIC_CAPTURE_RAW_TEXT requires RAG_FORENSIC_CAPTURE_ENABLED"
-            )
+            raise ValueError("RAG_FORENSIC_CAPTURE_RAW_TEXT requires RAG_FORENSIC_CAPTURE_ENABLED")
         return self
 
     # Qwen3-Embedding-4B benchmark configuration — served
