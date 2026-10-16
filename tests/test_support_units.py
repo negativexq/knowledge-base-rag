@@ -143,3 +143,21 @@ def test_application_resolves_only_current_request_ids() -> None:
     assert resolve_support_ids(units, ["E1.S1"])[0].text == "exact citation"
     with pytest.raises(ValueError, match="current request"):
         resolve_support_ids(units, ["E2.S1"])
+
+
+def test_abstain_with_parts_is_an_abstention_not_a_schema_failure() -> None:
+    units = build_support_units([evidence("14 calendar days")])
+    answer = parse_support_unit_answer(
+        json.dumps(
+            {"answer_parts": [{"text": "14 days", "support_ids": ["E1.S1"]}], "abstain": True}
+        )
+    )
+    validation = validate_support_unit_answer(answer, units)
+
+    assert answer.abstain is True
+    assert answer.answer_parts == []
+    assert validation.top_level_valid is True
+    assert validation.model_abstain is True
+    assert validation.valid_parts == []
+    assert validation.failure_codes == []
+    assert validation.validator_telemetry["discarded_abstain_parts"] == 1
