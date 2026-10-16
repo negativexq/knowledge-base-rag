@@ -577,3 +577,42 @@ def test_the_focused_set_keeps_text_table_and_layout_questions_and_few_refusals(
         4,
         6,
     ]
+
+
+def _numeric_question(gold: str, answer_format: str = "Float"):
+    return parse_question(
+        {
+            "doc_id": "a.pdf",
+            "doc_type": "x",
+            "question": "q",
+            "answer": gold,
+            "evidence_pages": "[38]",
+            "evidence_sources": "['Table']",
+            "answer_format": answer_format,
+        },
+        row_idx=1,
+    )
+
+
+@pytest.mark.parametrize(
+    ("gold", "page"),
+    [
+        ("18078", "ASSETS: Noncontrolling interests | 514 | 421 / TOTAL EQUITY | 18,078 | 18,705"),
+        ("1358000", "In 2021 and 2020 we repurchased 1,358,000 and 643,000 shares."),
+        ("495.00", "prices of $364.39 and $308.45, totaling approximately $495 and $198."),
+    ],
+)
+def test_a_numeric_gold_anywhere_in_the_page_text_is_visible(gold, page):
+    # v2 audit: gold_visible reused answer scoring, which reads only the
+    # first number an answer states, so a page counted as missing the gold
+    # unless the gold was the page's first number (11 of 23 losses).
+    from app.evaluation.mmlongbench import gold_visible
+
+    assert gold_visible(_numeric_question(gold), [page]) is True
+
+
+def test_a_page_number_only_close_to_the_gold_does_not_make_it_visible():
+    # A page is full of numbers; 1% tolerance would find 811 for 815.
+    from app.evaluation.mmlongbench import gold_visible
+
+    assert gold_visible(_numeric_question("815", "Int"), ["We operated 811 warehouses."]) is False
