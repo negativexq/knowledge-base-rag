@@ -4719,3 +4719,29 @@ reaches the index, at the cost of repeating the table's first row. Parser versio
 `pymupdf_elements_v7`; PDFs are re-parsed on the next sync.
 
 `make test`: 1573 passed, 4 skipped.
+
+## Feature — document-scoped retrieval, and the v2 baseline re-measured (closing note)
+
+A chat request may name the sources to answer from (`source_ids`, at most 50,
+non-empty): a user filter passed to `search()` and AND-ed with the tenant ACL inside
+the Qdrant query, so it only narrows; `RetrievalContext` stays server-owned and
+unchanged. An unscoped request calls `search_fn` exactly as before. MMLongBench is
+single-document QA, so the runner now scopes each question to its PDF (the protocol);
+`--open-corpus` keeps the old all-PDF search. The v2 audit had found all six Hit@14
+misses were chunks from other PDFs.
+
+Re-measured with parser v7 and the fixed gold scorer (retrieval-only, 100 answerable,
+12k evidence budget):
+
+| Run | Hit@top_n | Evidence page seen | Gold in page text | Gold in evidence |
+| --- | ---: | ---: | ---: | ---: |
+| scoped 15/5 | 90% | 92 | 35/49 | 32/49 |
+| scoped 40/14 | 100% | 100 | 35/49 | 35/49 |
+
+Scoped to one PDF, 40/14 saturates retrieval: the evidence page reaches the model for
+every answerable question, and the gold reaches it whenever the parsed text holds it.
+Hit@candidate_k is near 100% by construction for small PDFs (the Florida plan has 16
+chunks). The remaining 14 `not_in_page_text` are mostly computed answers. The next
+bottleneck is generation, measured next with luna at 40/14.
+
+`make test`: 1578 passed, 4 skipped.
