@@ -25,7 +25,7 @@ from app.evidence.support_units import (
 )
 from app.llm.calculation import Calculation, verify_calculation
 from app.llm.observability import GenerationObservation
-from app.llm.premise import missing_question_years
+from app.llm.premise import missing_question_dates, missing_question_years
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
 from app.retrieval.hybrid_search import SearchResult
@@ -105,6 +105,8 @@ Use only the provided authorized support units. Every answer_part must include o
 or more support_ids from the supplied list. Do not invent IDs or answer from general
 knowledge. If a material claim has no directly supporting unit, omit that claim; if
 no material claim can be supported, return {"answer_parts":[],"abstain":true}.
+If the question presupposes something no unit states (a date, name, version,
+function or property), abstain instead of answering about something nearby.
 Do not include reasoning, planning, or markdown fences.
 """.strip()
 
@@ -1318,8 +1320,10 @@ async def _support_unit_answer_events(
                 "architecture_v2_shadow_disagreements": [],
             },
         )
-    missing_years = missing_question_years(query, [unit.text for unit in units])
-    if missing_years and validation.valid_parts:
+    unit_texts = [unit.text for unit in units]
+    missing_years = missing_question_years(query, unit_texts)
+    missing_dates = missing_question_dates(query, unit_texts)
+    if (missing_years or missing_dates) and validation.valid_parts:
         # A false premise: the question pins a year no evidence mentions,
         # so any answer was drawn from nearby content. Withhold it.
         validation = replace(
@@ -1330,6 +1334,7 @@ async def _support_unit_answer_events(
             validator_telemetry={
                 **validation.validator_telemetry,
                 "premise_missing_years": missing_years,
+                "premise_missing_dates": missing_dates,
             },
         )
     final_abstain = validation.model_abstain or validation.application_abstain
