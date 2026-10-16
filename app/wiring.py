@@ -66,6 +66,7 @@ def build_reranker(settings: Settings):
         max_concurrency=settings.reranker_max_concurrency,
         device=settings.reranker_device,
         batch_size=settings.reranker_batch_size,
+        max_length=settings.reranker_max_length,
     )
 
 

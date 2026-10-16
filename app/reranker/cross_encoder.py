@@ -22,6 +22,7 @@ class CrossEncoderReranker:
         device: str | None = None,
         max_concurrency: int = 1,
         batch_size: int | None = None,
+        max_length: int | None = None,
     ) -> None:
         if max_concurrency < 1:
             raise ValueError("max_concurrency must be at least 1")
@@ -32,6 +33,8 @@ class CrossEncoderReranker:
         kwargs = {"trust_remote_code": True} if trust_remote_code else {}
         if device is not None:
             kwargs["device"] = device
+        if max_length is not None:
+            kwargs["max_length"] = max_length
         self.device = device
         self.batch_size = batch_size
         self._model = CrossEncoder(model_name, **kwargs)

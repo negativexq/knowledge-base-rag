@@ -22,6 +22,12 @@ def test_the_pilot_keeps_its_collection_and_v2_gets_its_own():
     assert runner.collection_for(v2) == "kb_bench_mmlongbench_v2"
 
 
+def test_a_chunking_challenger_gets_its_own_collection():
+    v2 = runner.ROOT / "artifacts" / "mmlongbench-v2" / "manifest.json"
+    assert runner.collection_for(v2, "baseline") == "kb_bench_mmlongbench_v2"
+    assert runner.collection_for(v2, "element_aware") == "kb_bench_mmlongbench_v2_element_aware"
+
+
 def test_a_manifest_reads_only_its_own_documents(tmp_path):
     documents = tmp_path / "documents"
     documents.mkdir()

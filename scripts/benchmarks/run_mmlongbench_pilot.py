@@ -77,12 +77,15 @@ OTHER_TENANT = "tenant-a"
 OUT = ROOT / "artifacts" / "mmlongbench-pilot"
 
 
-def collection_for(manifest_path: Path) -> str:
+def collection_for(manifest_path: Path, chunking_mode: str = "baseline") -> str:
     """The pilot keeps its collection; another manifest gets its own,
-    named after its folder (artifacts/mmlongbench-v2 → kb_bench_mmlongbench_v2)."""
+    named after its folder (artifacts/mmlongbench-v2 → kb_bench_mmlongbench_v2).
+    A chunking challenger gets its own index next to the baseline's."""
     if Path(manifest_path).resolve() == MANIFEST.resolve():
-        return COLLECTION
-    return "kb_bench_" + Path(manifest_path).parent.name.replace("-", "_")
+        name = "kb_bench_mmlongbench"
+    else:
+        name = "kb_bench_" + Path(manifest_path).parent.name.replace("-", "_")
+    return name if chunking_mode == "baseline" else f"{name}_{chunking_mode}"
 
 
 def manifest_documents(root: Path, manifest, collection: str) -> Path:
@@ -470,13 +473,18 @@ async def main() -> None:
         help="question set; a manifest other than the pilot gets its own collection",
     )
     parser.add_argument(
+        "--ingest-only",
+        action="store_true",
+        help="index the manifest's PDFs and stop (run it where OCR is installed)",
+    )
+    parser.add_argument(
         "--no-generation",
         action="store_true",
         help="measure retrieval and evidence only; every answer is an abstention",
     )
     args = parser.parse_args()
     global COLLECTION
-    COLLECTION = collection_for(args.manifest)
+    COLLECTION = collection_for(args.manifest, Settings().chunking_mode)
     if args.out:
         out = args.out
     elif Path(args.manifest).resolve() == MANIFEST.resolve():
@@ -489,6 +497,16 @@ async def main() -> None:
     root = data_dir(manifest.revision)
     table = pq.read_table(root / "data" / "train-00000-of-00001.parquet").to_pylist()
     questions = [parse_question(table[row], row) for row in manifest.question_rows]
+
+    if args.ingest_only:
+        client = QdrantClient(url=settings.qdrant_url)
+        ollama = OllamaClient(base_url=settings.ollama_base_url)
+        try:
+            print(COLLECTION, await ingest(settings, client, ollama, root, manifest), flush=True)
+        finally:
+            await ollama.aclose()
+            client.close()
+        return
 
     if args.from_results:
         raws = [

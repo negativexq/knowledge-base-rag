@@ -173,12 +173,16 @@ class Settings(BaseSettings):
     # (32). Attention memory grows with batch x length^2, so a smaller batch
     # caps peak memory on a 16 GB Mac without changing the scores.
     reranker_batch_size: int | None = Field(default=None, gt=0)
+    # Tokens per (query, chunk) pair the cross-encoder reads; None keeps the
+    # model's own limit (8192 for bge-reranker-v2-m3). 512 matches chunks
+    # sized for it (chunking_mode="element_aware") and truncates longer ones.
+    reranker_max_length: int | None = Field(default=None, gt=0)
 
     # Production keeps the legacy word-window as the explicit
     # benchmark baseline until a measured candidate is adopted. Switching
     # to token-aware mode is one server-owned setting; ingestion,
     # fingerprinting, and the Operations Console all read this method.
-    chunking_mode: Literal["baseline", "token_aware"] = "baseline"
+    chunking_mode: Literal["baseline", "token_aware", "element_aware"] = "baseline"
     chunk_target_tokens: int = Field(default=512, gt=0)
     chunk_overlap_tokens: int = Field(default=64, ge=0)
     chunk_hard_max_tokens: int | None = Field(default=576, gt=0)
@@ -189,6 +193,8 @@ class Settings(BaseSettings):
     def chunking_config(self) -> ChunkingConfig:
         if self.chunking_mode == "baseline":
             return ChunkingConfig.current_baseline()
+        if self.chunking_mode == "element_aware":
+            return ChunkingConfig.element_aware_candidate()
         return ChunkingConfig(
             name=f"{self.chunk_target_tokens}-{self.chunk_overlap_tokens}",
             mode="token_aware",
