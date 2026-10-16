@@ -4559,6 +4559,23 @@ carried the anchor's page, not their own.
 
 Replay of the pilot's 20 questions (same retrieval, no model call): units per prompt
 1–26 → 32–274; row 639's gold now in the units; an evidence page among the shown
-pages for 12 of 15 answerable questions (retrieval missed rows 218, 377, 385, 389).
+pages for 11 of 15 answerable questions (retrieval missed rows 218, 377, 385, 389).
 
 `make test`: 1523 passed, 4 skipped.
+
+## Fix — one citation contract on the support-ID path (closing note)
+
+The support-ID path used the shared v3 system prompt, which also told the model to
+copy a "CANONICAL CITATION" line such as `[s.filesystem:handbook/1/0]` — a line support
+units do not have. gpt-6-luna pasted the example (pilot row 221) or wrote its own
+`[doc, page 8]` (row 364), and that text reached the answer unchecked.
+
+- `prompts/answer_v4.txt` keeps v3's trust-boundary rules without a citation format;
+  the support-ID path uses it (`SUPPORT_ID_PROMPT_VERSION`, default v4). Legacy paths
+  keep `ACTIVE_PROMPT_VERSION` (v3).
+- Citation-like text the model writes itself (`[s.type:…]`, `[… page N …]`) is
+  removed when the output is parsed, before validation (its digits would otherwise be
+  read as claimed values), and again when rendering. Validated support IDs are the only
+  citations released.
+
+`make test`: 1530 passed, 4 skipped.

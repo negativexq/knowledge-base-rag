@@ -437,7 +437,9 @@ def parse_support_unit_answerability(raw: str) -> SupportUnitAnswer:
             raise ValueError(f"invalid answerability values {index}")
         if not all(isinstance(item, str) for item in support_ids):
             raise ValueError(f"invalid answerability support IDs {index}")
-        parsed.append(SupportUnitAnswerPart(text.strip(), list(support_ids)))
+        parsed.append(
+            SupportUnitAnswerPart(_without_self_written_citations(text.strip()), list(support_ids))
+        )
     return SupportUnitAnswer(parsed, False, None)
 
 
@@ -574,7 +576,7 @@ def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
             raise ValueError(f"invalid support-unit IDs {index}")
         parsed.append(
             SupportUnitAnswerPart(
-                part["text"].strip(),
+                _without_self_written_citations(part["text"].strip()),
                 list(part["support_ids"]),
                 _parse_calculation(part.get("calculation"), index),
             )
@@ -927,6 +929,17 @@ def validate_support_unit_answer(
     )
 
 
+# Citation-like text the model wrote itself — a source tag copied from a
+# prompt example ("[s.filesystem:handbook/1/0]") or a made-up "[doc, page 8]".
+# Only the validated support IDs appended by render cite anything.
+_SELF_WRITTEN_CITATION = re.compile(r"\s*\[(?:s\.[\w-]+:[^\]]*|[^\]]*\bpages?\s+\d+[^\]]*)\]")
+
+
+def _without_self_written_citations(text: str) -> str:
+    cleaned = _SELF_WRITTEN_CITATION.sub("", text)
+    return cleaned.strip() if cleaned != text else text
+
+
 def render_support_unit_answer(parts: list[SupportUnitAnswerPart], *, abstain: bool = False) -> str:
     if abstain or not parts:
         return NOT_FOUND_PHRASE
@@ -935,7 +948,7 @@ def render_support_unit_answer(parts: list[SupportUnitAnswerPart], *, abstain: b
             filter(
                 None,
                 [
-                    part.text,
+                    _without_self_written_citations(part.text),
                     f"(calculation: {part.calculation.fact()})" if part.calculation else "",
                     " ".join(f"[{item}]" for item in part.support_ids),
                 ],
