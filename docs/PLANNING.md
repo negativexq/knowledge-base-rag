@@ -4596,3 +4596,15 @@ question about a function the pins do not have (row 660) had no check at all.
   judgement: a deterministic term check would refuse paraphrased questions.
 
 `make test`: 1538 passed, 4 skipped.
+
+## Fix — words hyphenated across PDF line breaks are rejoined (closing note)
+
+PDF prose kept line-break hyphens ("consist pri- marily"), on the text layer and in
+OCR prose, which splits the word for embedding, sparse matching, the answer scorer and
+the model. `_join_lines` now removes a hyphen between a lowercase letter at a line end
+and a lowercase letter starting the next line; a capital or digit continuation keeps it
+("Covid-" / "19", "CAN-" / "Bus"). A real compound broken at its hyphen
+("fact-" / "checking") is joined without it — the rarer error. Parser version
+`pymupdf_elements_v6`; PDFs are re-parsed on the next sync.
+
+`make test`: 1544 passed, 4 skipped.
