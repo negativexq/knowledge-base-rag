@@ -205,19 +205,26 @@ def _chunk_page_text(
     return spans
 
 
-def _page_sections(
+def _document_sections(
     elements: list[DocumentElement],
-) -> list[tuple[tuple[str, ...], list[Paragraph], int]]:
-    """Split one page's elements into its sections, in order: (section
-    path, paragraphs, char offset of the section in the page text).
+) -> list[tuple[tuple[str, ...], list[DocumentElement]]]:
+    """Split a document's content elements into sections, in order.
 
-    A section is a run of elements under the same heading path. A run made
-    only of headings (a title with no body of its own before its first
-    subsection) joins the next section, so headings stay with content."""
+    A section is a run of elements under the same heading path; it may
+    continue across a page break. A run made only of headings (a title with
+    no body of its own before its first subsection) joins the next section,
+    so headings stay with content. Elements under no heading are kept
+    page-bound, since nothing says the text continues."""
     runs: list[tuple[tuple[str, ...], list[DocumentElement]]] = []
     for element in elements:
-        if runs and runs[-1][0] == element.heading_path:
-            runs[-1][1].append(element)
+        previous = runs[-1] if runs else None
+        continues = (
+            previous is not None
+            and previous[0] == element.heading_path
+            and (element.heading_path or previous[1][-1].page_number == element.page_number)
+        )
+        if continues:
+            previous[1].append(element)
         else:
             runs.append((element.heading_path, [element]))
 
@@ -231,21 +238,19 @@ def _page_sections(
         pending = []
     if pending:
         merged.append((pending[-1].heading_path, pending))
-
-    sections = []
-    offset = 0
-    for path, run in merged:
-        paragraphs = [
-            Paragraph(page_number=e.page_number, paragraph_index=e.index, text=e.text) for e in run
-        ]
-        sections.append((path, paragraphs, offset))
-        offset += sum(len(paragraph.text) + 2 for paragraph in paragraphs)
-    return sections
+    return merged
 
 
-def _shift(span: ChunkSpan, offset: int) -> ChunkSpan:
-    start, end = span.char_range
-    return replace(span, char_range=(start + offset, end + offset))
+def _page_offsets(elements: list[DocumentElement]) -> dict[tuple[int, int], int]:
+    """Char offset of every content element in its page text (paragraphs
+    joined by a blank line, as _build_page_text does)."""
+    offsets: dict[tuple[int, int], int] = {}
+    cursor: dict[int, int] = {}
+    for element in elements:
+        start = cursor.get(element.page_number, 0)
+        offsets[(element.page_number, element.index)] = start
+        cursor[element.page_number] = start + len(element.text) + 2
+    return offsets
 
 
 def chunk_document(
@@ -257,29 +262,63 @@ def chunk_document(
     doc_id: str | None = None,
     chunking_config: ChunkingConfig | None = None,
 ) -> list[Chunk]:
-    """Chunk a PDF section by section within each page: a chunk never mixes
-    two sections, and each chunk records its section path. char_range stays
-    relative to the whole page text, as citations expect."""
-    doc_id = doc_id or compute_doc_id(pdf_path)
-    elements_by_page: dict[int, list[DocumentElement]] = {}
-    for element in extract_elements(pdf_path):
-        if element.kind == "furniture":
-            continue
-        elements_by_page.setdefault(element.page_number, []).append(element)
+    """Chunk a PDF section by section: a chunk never mixes two sections, and
+    a section that continues on the next page is chunked as one text, so a
+    chunk may cross the page break (page_crossing, page_end).
 
-    spans: list[tuple[ChunkSpan, tuple[str, ...]]] = []
-    for page_number, elements in elements_by_page.items():
-        for section_path, paragraphs, offset in _page_sections(elements):
-            section_text, offsets = _build_page_text(paragraphs)
-            if chunking_config is not None and chunking_config.token_aware:
-                section_spans = _token_aware_spans(
-                    section_text, offsets, page_number, chunking_config
+    page_number, paragraph_index and char_range[0] name where a chunk starts
+    in its first page's text: that is the citation anchor. char_range[1] is
+    in the same page text for a chunk within one page; for a crossing chunk
+    it is char_range[0] plus the chunk's length in the section text."""
+    doc_id = doc_id or compute_doc_id(pdf_path)
+    elements = [e for e in extract_elements(pdf_path) if e.kind != "furniture"]
+    page_offsets = _page_offsets(elements)
+
+    rows: list[tuple[ChunkSpan, tuple[str, ...], int]] = []
+    for section_path, run in _document_sections(elements):
+        # Split the section as one text; paragraph keys are run positions.
+        keyed = [
+            Paragraph(page_number=0, paragraph_index=i, text=e.text) for i, e in enumerate(run)
+        ]
+        section_text, offsets = _build_page_text(keyed)
+        starts = {key: start for key, start, _ in offsets}
+        first_page = run[0].page_number
+        if chunking_config is not None and chunking_config.token_aware:
+            section_spans = _token_aware_spans(section_text, offsets, first_page, chunking_config)
+        else:
+            section_spans = _chunk_page_text(
+                section_text, offsets, first_page, chunk_size_tokens, overlap_tokens
+            )
+        for span in section_spans:
+            start, end = span.char_range
+            first = run[span.paragraph_index]
+            last_key = _paragraph_index_for_char(offsets, max(start, end - 1))
+            last = run[last_key]
+            local_start = page_offsets[(first.page_number, first.index)] + (
+                start - starts[span.paragraph_index]
+            )
+            crossing = last.page_number != first.page_number
+            local_end = (
+                local_start + (end - start)
+                if crossing
+                else page_offsets[(last.page_number, last.index)] + (end - starts[last_key])
+            )
+            rows.append(
+                (
+                    replace(
+                        span,
+                        page_number=first.page_number,
+                        paragraph_index=first.index,
+                        char_range=(local_start, local_end),
+                        page_crossing=crossing,
+                    ),
+                    section_path,
+                    last.page_number,
                 )
-            else:
-                section_spans = _chunk_page_text(
-                    section_text, offsets, page_number, chunk_size_tokens, overlap_tokens
-                )
-            spans.extend((_shift(span, offset), section_path) for span in section_spans)
+            )
+    rows.sort(key=lambda row: (row[0].page_number, row[0].char_range[0]))
+    spans = [(span, section_path) for span, section_path, _ in rows]
+    page_ends = [page_end for _, _, page_end in rows]
 
     return [
         Chunk(
@@ -299,6 +338,7 @@ def chunk_document(
             heading_preserved=span.heading_preserved,
             page_crossing=span.page_crossing,
             section_path=section_path,
+            page_end=page_end,
         )
-        for span, section_path in spans
+        for (span, section_path), page_end in zip(spans, page_ends)
     ]

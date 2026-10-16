@@ -285,6 +285,7 @@ class SectionAwareEvidenceBuilder:
                         "heading_path": list(item.payload.get("heading_path") or []),
                         "section_path": list(item.payload.get("section_path") or []),
                         "page_number": item.payload.get("page_number"),
+                        "page_end": item.payload.get("page_end"),
                     }
                     for item in ordered
                 ],

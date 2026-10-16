@@ -367,6 +367,13 @@ def outcome_from_result(
 _PAGE_LABEL = re.compile(r"^page (\d+)$")
 
 
+def payload_pages(payload: dict) -> list[int]:
+    """Every page a chunk covers: page_number through page_end."""
+    first = int(payload["page_number"])
+    last = int(payload.get("page_end") or first)
+    return list(range(first, max(first, last) + 1))
+
+
 def cited_pages(answer: str, support_units: list[dict]) -> list[tuple[str, int]]:
     """(source_id, page) of every support unit the answer cites, in citation
     order, read from the unit's "page N" section label. Units without a page

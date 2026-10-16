@@ -46,6 +46,7 @@ from app.evaluation.mmlongbench import (
     load_manifest,
     outcome_from_result,
     parse_question,
+    payload_pages,
     response_kind,
 )
 from app.ingestion.fingerprint import build_pipeline_fingerprint
@@ -115,13 +116,14 @@ def chunked_pages(client: QdrantClient) -> dict[str, dict[int, int]]:
             scroll_filter=models.Filter(
                 must=[models.FieldCondition(key="tenant_id", match=models.MatchValue(value=TENANT))]
             ),
-            with_payload=["source_id", "page_number", "text"],
+            with_payload=["source_id", "page_number", "page_end", "text"],
             limit=256,
             offset=offset,
         )
         for point in points:
             payload = point.payload or {}
-            pages[payload["source_id"]][int(payload["page_number"])] += len(payload.get("text", ""))
+            for page in payload_pages(payload):
+                pages[payload["source_id"]][page] += len(payload.get("text", ""))
         if offset is None:
             return pages
 
@@ -131,12 +133,15 @@ def locations(client: QdrantClient, ids: list) -> list[tuple[str, int]]:
         return []
     points = {
         str(point.id): point.payload or {}
-        for point in client.retrieve(COLLECTION, ids, with_payload=["source_id", "page_number"])
+        for point in client.retrieve(
+            COLLECTION, ids, with_payload=["source_id", "page_number", "page_end"]
+        )
     }
     return [
-        (points[str(i)]["source_id"], int(points[str(i)]["page_number"]))
+        (points[str(i)]["source_id"], page)
         for i in ids
         if str(i) in points
+        for page in payload_pages(points[str(i)])
     ]
 
 
@@ -149,7 +154,7 @@ async def ask(deps, client: QdrantClient, question) -> dict:
     stages = report.forensic_capture.record["stages"]
     candidate_ids = stages.get("reranker", {}).get("input_candidate_ids", [])
     candidates = locations(client, candidate_ids)
-    top = [(r.payload["source_id"], int(r.payload["page_number"])) for r in results]
+    top = [(r.payload["source_id"], page) for r in results for page in payload_pages(r.payload)]
 
     blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
     answer, metadata, validation = "", {}, {}

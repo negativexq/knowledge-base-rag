@@ -60,9 +60,9 @@ def section_label(payload: dict[str, Any]) -> str | None:
         return " > ".join(str(heading) for heading in heading_path)
     section_path = payload.get("section_path") or []
     if section_path and payload.get("page_number") is not None:
-        return " > ".join(str(heading) for heading in section_path) + (
-            f" (page {payload['page_number']})"
-        )
+        first, last = payload["page_number"], payload.get("page_end") or payload["page_number"]
+        pages = f"page {first}" if last == first else f"pages {first}–{last}"
+        return " > ".join(str(heading) for heading in section_path) + f" ({pages})"
     if payload.get("page_number") is not None:
         return f"page {payload['page_number']}"
     return None

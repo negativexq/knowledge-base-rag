@@ -292,6 +292,7 @@ def test_upsert_chunks_writes_one_point_per_chunk_with_correct_payload():
         "source_type": chunk.source_type,
         "source_id": chunk.source_id,
         "page_number": chunk.page_number,
+        "page_end": chunk.page_end,
         "paragraph_index": chunk.paragraph_index,
         "char_range": list(chunk.char_range),
         "text": chunk.text,

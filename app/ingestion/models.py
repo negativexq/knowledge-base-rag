@@ -29,6 +29,9 @@ class Chunk:
     # feeds the embedded text (index_text), the evidence section label and
     # section-aware evidence grouping instead.
     section_path: tuple[str, ...] = ()
+    # PDF-only: the page a chunk ends on. Equal to page_number unless the
+    # chunk crosses a page break inside its section (page_crossing).
+    page_end: int | None = None
     # Same value as doc_id (the content hash) today, but a separate,
     # explicitly-named field: doc_id's job is "one ingredient of a unique
     # point ID," document_version's job is the filter key
