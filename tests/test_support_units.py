@@ -161,3 +161,45 @@ def test_abstain_with_parts_is_an_abstention_not_a_schema_failure() -> None:
     assert validation.valid_parts == []
     assert validation.failure_codes == []
     assert validation.validator_telemetry["discarded_abstain_parts"] == 1
+
+
+def test_a_part_saying_not_found_is_an_abstention_not_an_answer() -> None:
+    units = build_support_units([evidence("14 calendar days")])
+    answer = parse_support_unit_answer(
+        json.dumps(
+            {
+                "answer_parts": [
+                    {
+                        "text": "I could not find this in the document. [E1.S1]",
+                        "support_ids": ["E1.S1"],
+                    }
+                ],
+                "abstain": False,
+            }
+        )
+    )
+    validation = validate_support_unit_answer(answer, units)
+
+    assert answer.abstain is True
+    assert answer.answer_parts == []
+    assert validation.model_abstain is True
+    assert validation.valid_parts == []
+    assert validation.validator_telemetry["discarded_not_found_parts"] == 1
+
+
+def test_a_not_found_part_beside_a_real_answer_is_dropped() -> None:
+    answer = parse_support_unit_answer(
+        json.dumps(
+            {
+                "answer_parts": [
+                    {"text": "Returns are accepted for 14 days.", "support_ids": ["E1.S1"]},
+                    {"text": "i could not find this in the document", "support_ids": ["E1.S1"]},
+                ],
+                "abstain": False,
+            }
+        )
+    )
+
+    assert answer.abstain is False
+    assert [part.text for part in answer.answer_parts] == ["Returns are accepted for 14 days."]
+    assert answer.discarded_not_found_parts == 1

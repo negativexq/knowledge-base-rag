@@ -4458,3 +4458,16 @@ up: an answer part whose text is the not-found phrase (row 639) was released as 
 answer. Next: treat such parts as abstention, then verifiable derived answers.
 
 `make test`: see the next note.
+
+## Fix — a not-found answer part is an abstention (closing note)
+
+A model can write the not-found phrase as an answer part, with support IDs, instead of
+abstaining (pilot row 639, gpt-6-luna). That part was released as an answer and the
+response counted as answered.
+
+`parse_support_unit_answer` now drops parts whose text is the not-found phrase (support-ID
+brackets, case and punctuation aside). A response with only such parts becomes an
+abstention; beside real parts, they are dropped. The count is in validator telemetry as
+`discarded_not_found_parts`.
+
+`make test`: 1474 passed, 4 skipped.
