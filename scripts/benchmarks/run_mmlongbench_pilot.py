@@ -14,6 +14,12 @@ stage separately, sliced by the question's evidence type:
   answered;
 - ACL: the same question asked as another tenant must retrieve nothing.
 
+It also records where a wrong answer lost the gold answer: whether the gold
+answer appears in the evidence pages' chunk text and in the evidence the
+model was given. With --evidence gold_page the model gets the evidence pages'
+chunks instead of the retrieved evidence (same generation and validation),
+which separates retrieval and assembly losses from generation losses.
+
 Run setup_mmlongbench_pilot.py first. Questions run one at a time.
 """
 
@@ -43,6 +49,7 @@ from app.evaluation.mmlongbench import (
     QuestionOutcome,
     build_report,
     cited_pages,
+    gold_visible,
     load_manifest,
     outcome_from_result,
     parse_question,
@@ -55,6 +62,7 @@ from app.ingestion.qdrant_store import QdrantStore
 from app.llm.embedding_models import active_embedding_config
 from app.llm.ollama_client import OllamaClient
 from app.registry.store import DocumentRegistry
+from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.retrieval.sparse import SparseEncoder
 from app.security.models import RetrievalContext
@@ -66,6 +74,18 @@ COLLECTION = "kb_bench_mmlongbench"
 TENANT = "bench-mmlongbench"
 OTHER_TENANT = "tenant-a"
 OUT = ROOT / "artifacts" / "mmlongbench-pilot"
+OUT_BY_EVIDENCE = {
+    "retrieved": OUT,
+    "gold_page": ROOT / "artifacts" / "mmlongbench-pilot-gold-page",
+}
+
+
+def generation_model(settings: Settings) -> str:
+    return {
+        "ollama": settings.ollama_model,
+        "claude": settings.claude_model,
+        "openai": settings.openai_model,
+    }[settings.generation_provider]
 
 
 def source_id_for(doc_id: str) -> str:
@@ -128,6 +148,37 @@ def chunked_pages(client: QdrantClient) -> dict[str, dict[int, int]]:
             return pages
 
 
+def gold_page_chunks(client: QdrantClient, question) -> list[SearchResult]:
+    """The question's evidence pages as indexed chunks, in page order."""
+    pages = set(question.evidence_pages)
+    must = [
+        models.FieldCondition(key="tenant_id", match=models.MatchValue(value=TENANT)),
+        models.FieldCondition(
+            key="source_id", match=models.MatchValue(value=source_id_for(question.doc_id))
+        ),
+    ]
+    chunks, offset = [], None
+    while True:
+        points, offset = client.scroll(
+            COLLECTION,
+            scroll_filter=models.Filter(must=must),
+            with_payload=True,
+            limit=256,
+            offset=offset,
+        )
+        chunks += [
+            SearchResult(score=1.0, id=str(point.id), payload=dict(point.payload or {}))
+            for point in points
+            if pages & set(payload_pages(point.payload or {}))
+        ]
+        if offset is None:
+            break
+    return sorted(
+        chunks,
+        key=lambda c: (c.payload["page_number"], (c.payload.get("char_range") or [0])[0]),
+    )
+
+
 def locations(client: QdrantClient, ids: list) -> list[tuple[str, int]]:
     if not ids:
         return []
@@ -145,7 +196,7 @@ def locations(client: QdrantClient, ids: list) -> list[tuple[str, int]]:
     ]
 
 
-async def ask(deps, client: QdrantClient, question) -> dict:
+async def ask(deps, client: QdrantClient, question, evidence: str = "retrieved") -> dict:
     context = RetrievalContext(tenant_id=TENANT)
     report = RetrievalReport()
     report.forensic_capture = ForensicCapture.create(question.question, raw_text=False)
@@ -156,7 +207,11 @@ async def ask(deps, client: QdrantClient, question) -> dict:
     candidates = locations(client, candidate_ids)
     top = [(r.payload["source_id"], page) for r in results for page in payload_pages(r.payload)]
 
-    blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
+    gold_chunks = gold_page_chunks(client, question) if question.answerable else []
+    if evidence == "gold_page":
+        blocks = gold_chunks
+    else:
+        blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
     answer, metadata, validation = "", {}, {}
     async for event in deps.stream_fn(question.question, blocks):
         if event["type"] == "token":
@@ -190,6 +245,11 @@ async def ask(deps, client: QdrantClient, question) -> dict:
         "top_pages": top,
         "candidate_pages": candidates,
         "cited_pages": cited,
+        "evidence": evidence,
+        "gold_in_page_text": gold_visible(
+            question, (c.payload.get("text", "") for c in gold_chunks)
+        ),
+        "gold_in_evidence": gold_visible(question, (b.payload.get("text", "") for b in blocks)),
         "acl_leaks": len(leaked),
         "seconds": seconds,
     }
@@ -232,13 +292,20 @@ def write_markdown(report: dict, meta: dict, path: Path) -> None:
         f"- Unanswerable correctly refused: {refused}",
         f"- Answerable questions answered (coverage): {coverage}",
         f"- ACL leaks (same questions as `{OTHER_TENANT}`): {report['acl_leaks']}",
+        f"- Evidence given to the model: {meta.get('evidence', 'retrieved')}",
+        f"- Gold answer in the evidence pages' text: "
+        f"{cell(report['overall']['gold_in_page_text'])}; in the evidence the model saw: "
+        f"{cell(report['overall']['gold_in_evidence'])}",
+        "- Wrong answers by the stage that lost the gold answer: "
+        + (", ".join(f"{stage} {n}" for stage, n in report["loss_stages"].items()) or "none"),
         "- Response kinds: "
         + ", ".join(f"{kind} {count}" for kind, count in sorted(report["response_kinds"].items())),
         f"- Ingestion: {ingest['chunks_upserted']} chunks in {ingest['seconds']} s; "
         f"questions: median {meta['median_seconds']} s each.",
         "",
         "Answer accuracy is a lenient, deterministic contains-match (numbers within 1%), "
-        "not the benchmark's official LLM-extracted score.",
+        "not the benchmark's official LLM-extracted score. Gold visibility uses the same "
+        "match, so an answer that has to be computed counts as not in the text.",
     ]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -251,7 +318,9 @@ def score(questions, raws: list[dict]) -> list[QuestionOutcome]:
     ]
 
 
-async def run_questions(settings: Settings, root: Path, questions, skip_ingest: bool):
+async def run_questions(
+    settings: Settings, root: Path, questions, skip_ingest: bool, evidence: str = "retrieved"
+):
     from app.wiring import build_chat_dependencies
 
     client = QdrantClient(url=settings.qdrant_url)
@@ -267,7 +336,7 @@ async def run_questions(settings: Settings, root: Path, questions, skip_ingest: 
         pages = chunked_pages(client)
         raws = []
         for index, question in enumerate(questions, 1):
-            raw = await ask(deps, client, question)
+            raw = await ask(deps, client, question, evidence)
             covered = pages.get(source_id_for(question.doc_id), {})
             raw["evidence_page_chars"] = {p: covered.get(p, 0) for p in question.evidence_pages}
             raws.append(raw)
@@ -291,7 +360,15 @@ async def main() -> None:
         action="store_true",
         help="re-score the saved results.jsonl without asking the model again",
     )
+    parser.add_argument(
+        "--evidence",
+        choices=sorted(OUT_BY_EVIDENCE),
+        default="retrieved",
+        help="give the model the retrieved evidence, or the evidence pages' chunks",
+    )
+    parser.add_argument("--out", type=Path, help="write results here instead of the default")
     args = parser.parse_args()
+    out = args.out or OUT_BY_EVIDENCE[args.evidence]
 
     settings = Settings()
     manifest = load_manifest(MANIFEST)
@@ -302,12 +379,14 @@ async def main() -> None:
     if args.from_results:
         raws = [
             json.loads(line)
-            for line in (OUT / "results.jsonl").read_text(encoding="utf-8").splitlines()
+            for line in (out / "results.jsonl").read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
-        meta = json.loads((OUT / "report.json").read_text(encoding="utf-8"))["meta"]
+        meta = json.loads((out / "report.json").read_text(encoding="utf-8"))["meta"]
     else:
-        raws, ingest_stats = await run_questions(settings, root, questions, args.skip_ingest)
+        raws, ingest_stats = await run_questions(
+            settings, root, questions, args.skip_ingest, args.evidence
+        )
         seconds = sorted(raw["seconds"] for raw in raws)
         meta = {
             "dataset": manifest.dataset,
@@ -316,15 +395,16 @@ async def main() -> None:
             "questions": len(questions),
             "collection": COLLECTION,
             "tenant": TENANT,
-            "model": settings.ollama_model,
+            "model": generation_model(settings),
             "top_n": settings.reranker_top_n,
             "candidate_k": settings.reranker_candidate_k,
             "ingest": ingest_stats,
             "median_seconds": seconds[len(seconds) // 2],
             "ocr_available": shutil.which("tesseract") is not None,
+            "evidence": args.evidence,
         }
-        OUT.mkdir(parents=True, exist_ok=True)
-        (OUT / "results.jsonl").write_text(
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "results.jsonl").write_text(
             "".join(json.dumps(raw, ensure_ascii=False) + "\n" for raw in raws), encoding="utf-8"
         )
 
@@ -343,16 +423,19 @@ async def main() -> None:
             "answered": o.answered,
             "correct": o.correct,
             "citation_on_evidence": o.citation_on_evidence,
+            "gold_in_page_text": o.gold_in_page_text,
+            "gold_in_evidence": o.gold_in_evidence,
+            "loss_stage": o.loss_stage,
             "acl_leaks": o.acl_leaks,
         }
         for o in outcomes
     ]
-    (OUT / "report.json").write_text(
+    (out / "report.json").write_text(
         json.dumps({"meta": meta, **report, "per_question": per_question}, indent=2) + "\n",
         encoding="utf-8",
     )
-    write_markdown(report, meta, OUT / "report.md")
-    print((OUT / "report.md").read_text(encoding="utf-8"))
+    write_markdown(report, meta, out / "report.md")
+    print((out / "report.md").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
