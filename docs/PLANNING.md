@@ -4339,3 +4339,25 @@ of being cut at the page break.
   runner counts every page a chunk spans (`payload_pages`) for page hit metrics.
 
 Covered by the stack-tip `make test` in the ingestion quality report note.
+
+## Ingestion — per-document parse quality report (closing note)
+
+Each PDF ingest now records how well it parsed, so a bad document is visible without
+reading chunks.
+
+- **`ParseReport`.** Pages, OCR'd pages by reason (`garbled`, `vector_text`,
+  `no_text_layer`), pages skipped, garbled blocks dropped, empty pages, heading, table and
+  furniture counts, and the heading source (bookmarks or style). `needs_review` is set when
+  pages were skipped or left empty, or garbled blocks were dropped.
+- **Storage.** The report is saved in the document registry's new `ingestion_quality`
+  JSON column (added by migration on existing databases) and served by `/ui/documents`.
+- **Console.** The Knowledge page has a Quality column: Not reported, OK, "OK · OCR n
+  pages" or Needs review, with the report rows in the document detail.
+
+Pilot in the rebuilt container (OCR available), against the audited baseline:
+Hit@5 53% → 73%, Hit@15 80% → 80%; answer accuracy 3/15 → 2/15 on 15 questions. Retrieval
+gains come from section context and OCR (364 now retrieves its evidence page); the
+remaining misses are generation errors on retrieved evidence and unanswerable questions
+answered from near-miss evidence. That run predates the two fixes above.
+
+`make test` on this stack: 1451 passed, 4 skipped.

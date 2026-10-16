@@ -5,7 +5,7 @@ from dataclasses import dataclass, replace
 from app.ingestion.chunking_config import ChunkingConfig
 from app.ingestion.models import Chunk
 from app.ingestion.tokenizer import token_offsets
-from app.parsing.models import DocumentElement, Paragraph
+from app.parsing.models import DocumentElement, Paragraph, ParseReport
 from app.parsing.pdf_parser import extract_elements
 
 # Provisional defaults — a whitespace-split word count is used as a stand-in
@@ -261,6 +261,7 @@ def chunk_document(
     overlap_tokens: int = DEFAULT_OVERLAP_TOKENS,
     doc_id: str | None = None,
     chunking_config: ChunkingConfig | None = None,
+    report: ParseReport | None = None,
 ) -> list[Chunk]:
     """Chunk a PDF section by section: a chunk never mixes two sections, and
     a section that continues on the next page is chunked as one text, so a
@@ -271,7 +272,7 @@ def chunk_document(
     in the same page text for a chunk within one page; for a crossing chunk
     it is char_range[0] plus the chunk's length in the section text."""
     doc_id = doc_id or compute_doc_id(pdf_path)
-    elements = [e for e in extract_elements(pdf_path) if e.kind != "furniture"]
+    elements = [e for e in extract_elements(pdf_path, report=report) if e.kind != "furniture"]
     page_offsets = _page_offsets(elements)
 
     rows: list[tuple[ChunkSpan, tuple[str, ...], int]] = []

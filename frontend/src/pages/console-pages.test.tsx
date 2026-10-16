@@ -150,6 +150,43 @@ describe("console page regression states", () => {
     fireEvent.click(await screen.findByRole("button", { name: /filesystem/i }))
     expect(await screen.findByText("tenant-a.md")).toBeInTheDocument()
     expect(screen.getByText("—")).toBeInTheDocument()
+    expect(screen.getByText("Not reported")).toBeInTheDocument()
+  })
+
+  it("flags a document whose parse lost text and lists the report", async () => {
+    vi.mocked(sourcesApi.list).mockResolvedValue([
+      { source_type: "filesystem", document_count: 1, is_running: false },
+    ])
+    vi.mocked(sourcesApi.documents).mockResolvedValue([
+      {
+        tenant_id: "tenant-a",
+        source_type: "filesystem",
+        source_id: "scan.pdf",
+        content_hash: "hash-s",
+        version: 1,
+        status: "healthy",
+        chunk_count: 4,
+        pipeline_fingerprint: null,
+        ingestion_quality: {
+          pages: 5,
+          ocr_pages: {},
+          skipped_pages: 2,
+          garbled_blocks_dropped: 0,
+          empty_pages: 2,
+          headings: 0,
+          tables: 0,
+          furniture: 0,
+          heading_source: "none",
+          needs_review: true,
+        },
+        last_synced_at: new Date().toISOString(),
+      },
+    ])
+    renderWithClient(<Knowledge />)
+    fireEvent.click(await screen.findByRole("button", { name: /filesystem/i }))
+    expect(await screen.findByText("Needs review")).toBeInTheDocument()
+    fireEvent.click(screen.getByText("scan.pdf"))
+    expect(screen.getByText("Skipped pages")).toBeInTheDocument()
   })
 
   it("keeps sync action hidden for USER and visible for OPERATOR", async () => {

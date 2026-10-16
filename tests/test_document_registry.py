@@ -223,6 +223,7 @@ def test_schema_creates_documents_table_with_expected_columns(tmp_path):
         "status",
         "chunk_count",
         "pipeline_fingerprint",
+        "ingestion_quality",
     }
 
 

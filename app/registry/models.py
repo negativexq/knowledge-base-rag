@@ -44,3 +44,7 @@ class DocumentRecord:
     # backfilled to this exact value by
     # _migrate_add_tenant_id_and_rebuild_pk.
     tenant_id: str = "default"
+    # The parser's quality report from the last real ingest
+    # (app/parsing/models.py::ParseReport.as_dict()); None for non-PDF
+    # documents and rows ingested before reports existed.
+    ingestion_quality: dict | None = None
