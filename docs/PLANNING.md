@@ -4494,3 +4494,19 @@ blocked as a conflict). So the flag stays off for small local models; the next c
 is the same run with gpt-6-luna.
 
 `make test`: 1502 passed, 4 skipped.
+
+## Fix — cloud generators get their own prompt budget (closing note)
+
+The answer prompt was fitted into `ollama_num_ctx` (4096) whatever the generator, so a
+cloud model got the local window: in the gold-page pilot with gpt-6-luna, 6 of 20
+questions lost evidence units before generation (row 662: 162 dropped). The budget now
+follows the provider — `default_context_tokens(settings)` returns `ollama_num_ctx` for
+Ollama and `CLOUD_CONTEXT_TOKENS` (default 32768, a cost bound) for Claude and OpenAI.
+
+Gold-page pilot, gpt-6-luna, derived answers on: no units dropped (largest prompt 13.6k
+tokens); 3/15 answerable correct (2/15 with the 4096 budget), 5/5 unanswerable refused.
+Full evidence alone does not unlock the rest: row 639 still abstains with the gold
+answer in the units, and row 218 does not use `100 - 59`. Next: see why luna abstains
+on answers that are in its evidence.
+
+`make test`: 1505 passed, 4 skipped.

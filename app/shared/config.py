@@ -227,6 +227,11 @@ class Settings(BaseSettings):
     claude_max_tokens: int = 2048
     openai_api_key: str | None = None
     openai_model: str = OPENAI_MODEL
+    # Prompt budget (input plus answer tokens) for a cloud generator. The
+    # Ollama budget is the local model's context window; reusing it for a
+    # cloud model dropped evidence units its window had room for. This bounds
+    # cost per question, not what the model can take.
+    cloud_context_tokens: int = Field(default=32768, gt=0)
 
     qdrant_url: str = "http://localhost:6333"
     qdrant_collection_name: str = "kb_chunks"
