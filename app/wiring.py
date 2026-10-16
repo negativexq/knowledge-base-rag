@@ -146,7 +146,10 @@ def build_chat_dependencies(
     )
 
     async def search_fn(
-        question: str, context: RetrievalContext, report: RetrievalReport
+        question: str,
+        context: RetrievalContext,
+        report: RetrievalReport,
+        source_ids: list[str] | None = None,
     ) -> list[SearchResult]:
         return await search(
             question,
@@ -162,6 +165,7 @@ def build_chat_dependencies(
             query_prefix=embed_config.query_prefix(),
             dimensions=embed_config.output_dimension,
             report=report,
+            source_ids=source_ids,
         )
 
     async def evidence_fn(
