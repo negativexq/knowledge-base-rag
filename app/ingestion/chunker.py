@@ -218,12 +218,11 @@ def _document_sections(
     runs: list[tuple[tuple[str, ...], list[DocumentElement]]] = []
     for element in elements:
         previous = runs[-1] if runs else None
-        continues = (
+        if (
             previous is not None
             and previous[0] == element.heading_path
             and (element.heading_path or previous[1][-1].page_number == element.page_number)
-        )
-        if continues:
+        ):
             previous[1].append(element)
         else:
             runs.append((element.heading_path, [element]))

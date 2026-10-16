@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -52,7 +53,7 @@ class ParseReport:
     furniture: int = 0
     heading_source: str = "none"
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> dict[str, Any]:
         return {
             "pages": self.pages,
             "ocr_pages": dict(self.ocr_pages),

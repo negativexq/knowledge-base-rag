@@ -12,7 +12,8 @@ test-ollama:
 	$(VENV)/pytest -q -m "ollama_e2e"
 
 lint:
-	$(VENV)/ruff check app tests
+	$(VENV)/ruff check app tests scripts
+	$(VENV)/mypy app/
 
 up:
 	docker compose up -d

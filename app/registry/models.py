@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 DEFAULT_STATUS = "active"
 
@@ -47,4 +48,4 @@ class DocumentRecord:
     # The parser's quality report from the last real ingest
     # (app/parsing/models.py::ParseReport.as_dict()); None for non-PDF
     # documents and rows ingested before reports existed.
-    ingestion_quality: dict | None = None
+    ingestion_quality: dict[str, Any] | None = None
