@@ -282,3 +282,89 @@ def test_cited_pages_resolve_support_ids_through_their_section_labels():
 
     assert cited_pages(answer, units) == [("b_pdf", 12), ("a_pdf", 3)]
     assert cited_pages("No citations here.", units) == []
+
+
+@pytest.mark.parametrize(
+    ("prediction", "gold", "answer_format", "expected"),
+    [
+        # Support-id markers are citations, not numbers in the answer.
+        ("No count is given. [E1.S2]", "2", "Int", False),
+        ("Two figures. [E1.S2]", "2", "Int", True),
+        # A hyphenated range is two positive numbers, not a negative one.
+        ("Data from 1981-1982.", "['1981', '1982']", "List", True),
+        ("Data from 1981-1982.", "-1982", "Int", False),
+    ],
+)
+def test_answer_matching_ignores_citations_and_reads_ranges(
+    prediction, gold, answer_format, expected
+):
+    assert answer_matches(prediction, gold, answer_format) is expected
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ({"abstain": False, "validator_failure_codes": []}, "answered"),
+        ({"abstain": True, "validator_failure_codes": []}, "model_abstained"),
+        (
+            {"abstain": True, "validator_failure_codes": ["CRITICAL_VALUE_INDETERMINATE"]},
+            "validator_blocked",
+        ),
+        (
+            {"abstain": True, "validator_failure_codes": ["TOP_LEVEL_SCHEMA_INVALID"]},
+            "output_invalid",
+        ),
+        ({"abstain": None, "validator_failure_codes": None}, "no_verdict"),
+    ],
+)
+def test_response_kind_separates_refusals_by_their_source(raw, expected):
+    from app.evaluation.mmlongbench import response_kind
+
+    assert response_kind(raw) == expected
+
+
+def test_an_invalid_output_is_not_a_correct_refusal():
+    def outcome(row_idx, kind):
+        return QuestionOutcome(
+            question=_q(row_idx, [], answerable=False),
+            ingested=None,
+            retrieved_top_k=None,
+            retrieved_candidates=None,
+            answered=kind == "answered",
+            correct=None,
+            citation_on_evidence=None,
+            acl_leaks=0,
+            response_kind=kind,
+        )
+
+    report = build_report(
+        [outcome(1, "model_abstained"), outcome(2, "output_invalid"), outcome(3, "answered")],
+        top_k=5,
+        candidate_k=15,
+    )
+
+    assert report["answerability"]["unanswerable_correctly_refused"] == {"rate": 0.3333, "n": 3}
+    assert report["response_kinds"] == {"answered": 1, "model_abstained": 1, "output_invalid": 1}
+
+
+def test_outcomes_can_be_rebuilt_from_saved_results():
+    from app.evaluation.mmlongbench import outcome_from_result
+
+    question = _q(1, ["Pure-text (Plain-text)"])
+    raw = {
+        "answer": "It is x. [E1.S1]",
+        "abstain": False,
+        "validator_failure_codes": [],
+        "top_pages": [["a_pdf", 1]],
+        "candidate_pages": [["a_pdf", 1]],
+        "cited_pages": [["a_pdf", 1]],
+        "acl_leaks": 0,
+        "evidence_page_chars": {"1": 120},
+    }
+
+    outcome = outcome_from_result(question, raw, source_id="a_pdf")
+
+    assert outcome.ingested is True
+    assert (outcome.retrieved_top_k, outcome.retrieved_candidates) == (True, True)
+    assert (outcome.answered, outcome.correct, outcome.citation_on_evidence) == (True, True, True)
+    assert outcome.response_kind == "answered"

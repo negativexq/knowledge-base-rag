@@ -11,9 +11,10 @@
 | chart | 3 | 100% (3/3) | 33% (1/3) | 67% (2/3) | 0% (0/3) | 0% (0/1) |
 | figure | 4 | 100% (4/4) | 75% (3/4) | 100% (4/4) | 25% (1/4) | 0% (0/3) |
 
-- Unanswerable correctly refused: 40% (2/5)
+- Unanswerable correctly refused: 20% (1/5)
 - Answerable questions answered (coverage): 60% (9/15)
 - ACL leaks (same questions as `tenant-a`): 0
+- Response kinds: answered 12, model_abstained 3, output_invalid 1, validator_blocked 4
 - Ingestion: 144 chunks in 583.4 s; questions: median 37.8 s each.
 
 Answer accuracy is a lenient, deterministic contains-match (numbers within 1%), not the benchmark's official LLM-extracted score.
