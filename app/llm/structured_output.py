@@ -7,7 +7,7 @@ import time
 import unicodedata
 from collections.abc import Callable
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from opentelemetry import trace
@@ -22,6 +22,7 @@ from app.evidence.support_units import (
     support_unit_map,
 )
 from app.llm.observability import GenerationObservation
+from app.llm.premise import missing_question_years
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
 from app.retrieval.hybrid_search import SearchResult
@@ -170,6 +171,9 @@ class SupportUnitAnswer:
     answer_parts: list[SupportUnitAnswerPart]
     abstain: bool
     reason_code: str | None = None
+    # Parts a model returned alongside abstain=true. The abstention wins
+    # (the fail-closed reading); the count is kept for telemetry.
+    discarded_abstain_parts: int = 0
 
 
 @dataclass(frozen=True)
@@ -475,7 +479,12 @@ def parse_support_unit_state_machine_answer(raw: str) -> SupportUnitAnswer:
     value = json.loads(_strip_json_fence(raw))
     if not isinstance(value, dict) or set(value) != {"result"}:
         raise ValueError("invalid support-unit state wrapper")
-    return parse_support_unit_answer(json.dumps(value["result"], ensure_ascii=False))
+    answer = parse_support_unit_answer(json.dumps(value["result"], ensure_ascii=False))
+    # The state-machine schema makes the two states mutually exclusive, so
+    # a mixed output is a contract violation there, not a soft abstention.
+    if answer.discarded_abstain_parts:
+        raise ValueError("abstain=true cannot carry support units")
+    return answer
 
 
 def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
@@ -499,7 +508,10 @@ def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
             raise ValueError(f"invalid support-unit IDs {index}")
         parsed.append(SupportUnitAnswerPart(part["text"].strip(), list(part["support_ids"])))
     if abstain and parsed:
-        raise ValueError("abstain=true cannot carry support units")
+        # A contradictory output: the model chose to abstain but still
+        # wrote parts. Honour the abstention instead of failing the whole
+        # response as malformed, and drop the parts unread.
+        return SupportUnitAnswer([], True, reason, discarded_abstain_parts=len(parsed))
     return SupportUnitAnswer(parsed, abstain, reason)
 
 
@@ -528,6 +540,7 @@ def validate_support_unit_answer(
                 "pass": 0,
                 "reject": 0,
                 "indeterminate": 0,
+                "discarded_abstain_parts": answer.discarded_abstain_parts,
                 "forced_abstain": False,
                 "critical_value_count": 0,
                 "reason_classes": [],
@@ -1185,6 +1198,20 @@ async def _support_unit_answer_events(
                 "architecture_v2_shadow_duration_ms": 0.0,
                 "architecture_v2_shadow_outcomes": [],
                 "architecture_v2_shadow_disagreements": [],
+            },
+        )
+    missing_years = missing_question_years(query, [unit.text for unit in units])
+    if missing_years and validation.valid_parts:
+        # A false premise: the question pins a year no evidence mentions,
+        # so any answer was drawn from nearby content. Withhold it.
+        validation = replace(
+            validation,
+            valid_parts=[],
+            failure_codes=[*validation.failure_codes, "QUESTION_PREMISE_NOT_IN_EVIDENCE"],
+            application_abstain=True,
+            validator_telemetry={
+                **validation.validator_telemetry,
+                "premise_missing_years": missing_years,
             },
         )
     final_abstain = validation.model_abstain or validation.application_abstain
