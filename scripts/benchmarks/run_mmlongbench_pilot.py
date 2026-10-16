@@ -271,12 +271,25 @@ def locations(client: QdrantClient, ids: list) -> list[tuple[str, int]]:
     ]
 
 
-async def ask(deps, client: QdrantClient, question, evidence: str = "retrieved") -> dict:
+def retrieval_scope(doc_id: str, open_corpus: bool) -> list[str] | None:
+    """MMLongBench is single-document QA: a question comes with its PDF and
+    says "the document". The protocol scopes retrieval to that PDF, as a
+    user asking about one document would; --open-corpus searches every
+    indexed PDF instead (the harder, non-protocol setting)."""
+    return None if open_corpus else [source_id_for(doc_id)]
+
+
+async def ask(
+    deps, client: QdrantClient, question, evidence: str = "retrieved", open_corpus: bool = False
+) -> dict:
     context = RetrievalContext(tenant_id=TENANT)
     report = RetrievalReport()
     report.forensic_capture = ForensicCapture.create(question.question, raw_text=False)
     started = time.perf_counter()
-    results = await deps.search_fn(question.question, context, report)
+    scope = retrieval_scope(question.doc_id, open_corpus)
+    results = await deps.search_fn(
+        question.question, context, report, **({"source_ids": scope} if scope else {})
+    )
     stages = report.forensic_capture.record["stages"]
     candidate_ids = stages.get("reranker", {}).get("input_candidate_ids", [])
     candidates = locations(client, candidate_ids)
@@ -374,6 +387,7 @@ def write_markdown(report: dict, meta: dict, path: Path) -> None:
         f"- Answerable questions answered (coverage): {coverage}",
         f"- ACL leaks (same questions as `{OTHER_TENANT}`): {report['acl_leaks']}",
         f"- Evidence given to the model: {meta.get('evidence', 'retrieved')}",
+        f"- Retrieval scope: {meta.get('retrieval_scope', 'open_corpus')}",
         f"- Gold answer in the evidence pages' text: "
         f"{cell(report['overall']['gold_in_page_text'])}; in the evidence the model saw: "
         f"{cell(report['overall']['gold_in_evidence'])}",
@@ -410,6 +424,7 @@ async def run_questions(
     evidence: str = "retrieved",
     generate: bool = True,
     checkpoint: Path | None = None,
+    open_corpus: bool = False,
 ):
     from app.wiring import build_chat_dependencies
 
@@ -432,7 +447,7 @@ async def run_questions(
             if question.row_idx in done:
                 raws.append(done[question.row_idx])
                 continue
-            raw = await ask(deps, client, question, evidence)
+            raw = await ask(deps, client, question, evidence, open_corpus)
             covered = pages.get(source_id_for(question.doc_id), {})
             raw["evidence_page_chars"] = {p: covered.get(p, 0) for p in question.evidence_pages}
             raws.append(raw)
@@ -471,6 +486,11 @@ async def main() -> None:
         type=Path,
         default=MANIFEST,
         help="question set; a manifest other than the pilot gets its own collection",
+    )
+    parser.add_argument(
+        "--open-corpus",
+        action="store_true",
+        help="search every indexed PDF instead of the question's own (not the protocol)",
     )
     parser.add_argument(
         "--ingest-only",
@@ -525,6 +545,7 @@ async def main() -> None:
             args.evidence,
             generate=not args.no_generation,
             checkpoint=out / "results.partial.jsonl",
+            open_corpus=args.open_corpus,
         )
         seconds = sorted(raw["seconds"] for raw in raws)
         meta = {
@@ -541,6 +562,7 @@ async def main() -> None:
             "median_seconds": seconds[len(seconds) // 2],
             "ocr_available": shutil.which("tesseract") is not None,
             "evidence": args.evidence,
+            "retrieval_scope": "open_corpus" if args.open_corpus else "question_document",
         }
         out.mkdir(parents=True, exist_ok=True)
         (out / "results.jsonl").write_text(

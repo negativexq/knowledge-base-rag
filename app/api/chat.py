@@ -1,11 +1,12 @@
 import json
 from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from opentelemetry import trace
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 from app.api.deps import get_current_user
 from app.evaluation.answerability import extract_answerability_observation
@@ -41,6 +42,8 @@ SNIPPET_CHAR_LIMIT = 600
 # Hard cap on what the request body may carry; the configured
 # chat_history_max_turns (usually far lower) is what is actually used.
 MAX_HISTORY_TURNS_IN_REQUEST = 50
+# Sources one request may scope its answer to.
+MAX_SCOPE_SOURCES = 50
 
 
 class ChatRequest(BaseModel):
@@ -50,6 +53,13 @@ class ChatRequest(BaseModel):
     # standalone query (app/llm/query_rewrite.py), never sent to the answer
     # model as conversation.
     history: list[ChatTurn] = Field(default_factory=list, max_length=MAX_HISTORY_TURNS_IN_REQUEST)
+    # Answer only from these sources ("ask this document"). A user filter:
+    # it narrows retrieval and is AND-ed with the tenant ACL in the Qdrant
+    # query (app/retrieval/search.py), so it can never reach another
+    # tenant's points. None searches every source the user may read.
+    source_ids: list[Annotated[str, StringConstraints(min_length=1)]] | None = Field(
+        default=None, min_length=1, max_length=MAX_SCOPE_SOURCES
+    )
 
 
 # Sprint 23: search_fn takes the caller's RetrievalContext alongside the
@@ -60,7 +70,10 @@ class ChatRequest(BaseModel):
 # the SSE stream can report what the retrieval pipeline REALLY did
 # (measured stage timings/counts) without changing search()'s return
 # type. See app/retrieval/report.py.
-SearchFn = Callable[[str, RetrievalContext, RetrievalReport], Awaitable[list[SearchResult]]]
+#
+# A request scoped to some sources passes them as the keyword source_ids;
+# an unscoped request calls with the three positional arguments only.
+SearchFn = Callable[..., Awaitable[list[SearchResult]]]
 StreamFn = Callable[[str, list[SearchResult]], AsyncIterator[dict]]
 EvidenceFn = Callable[[list[SearchResult], RetrievalContext], Awaitable[list[SearchResult]]]
 RewriteFn = Callable[[str, list[ChatTurn]], Awaitable[RewriteResult]]
@@ -223,6 +236,7 @@ async def _sse_event_stream(
     tracer: trace.Tracer | None = None,
     screening: _ContentScreening | None = None,
     history: list[ChatTurn] | None = None,
+    source_ids: list[str] | None = None,
 ) -> AsyncIterator[str]:
     tracer = tracer or get_tracer(__name__)
     capture = (
@@ -269,7 +283,8 @@ async def _sse_event_stream(
             # From here on the standalone question is the question: search,
             # answerability and the answer model all see the same text.
             question = rewrite.question
-        chunks = await deps.search_fn(question, context, report)
+        scope = {"source_ids": source_ids} if source_ids else {}
+        chunks = await deps.search_fn(question, context, report, **scope)
         if rewrite is not None:
             detail: dict = {"outcome": rewrite.outcome, "history_turns": len(history)}
             if rewrite.rewritten:
@@ -511,7 +526,14 @@ async def chat(
     screening = _screen_question(request, user, question)
     history = _bounded_history(request, chat_request.history)
     return StreamingResponse(
-        _sse_event_stream(question, deps, context, screening=screening, history=history),
+        _sse_event_stream(
+            question,
+            deps,
+            context,
+            screening=screening,
+            history=history,
+            source_ids=chat_request.source_ids,
+        ),
         media_type="text/event-stream",
     )
 
