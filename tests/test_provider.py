@@ -7,6 +7,7 @@ from app.llm.provider import (
     ChatProvider,
     EmbeddingProvider,
     default_chat_model,
+    default_context_tokens,
     default_embed_model,
     get_chat_provider,
     get_embedding_provider,
@@ -113,3 +114,20 @@ def test_get_embedding_provider_returns_ollama_provider():
     provider = get_embedding_provider(settings)
 
     assert isinstance(provider, OllamaProvider)
+
+
+def test_the_answer_prompt_budget_is_the_ollama_context_for_ollama():
+    settings = Settings(generation_provider="ollama", ollama_num_ctx=4096)
+
+    assert default_context_tokens(settings) == 4096
+
+
+@pytest.mark.parametrize("provider", ["claude", "openai"])
+def test_cloud_generators_get_their_own_prompt_budget_not_the_ollama_context(provider):
+    # The local 4096-token window dropped evidence units from gold pages
+    # when gpt-6-luna generated, although the cloud model has room for them.
+    settings = Settings(
+        generation_provider=provider, ollama_num_ctx=4096, cloud_context_tokens=32768
+    )
+
+    assert default_context_tokens(settings) == 32768

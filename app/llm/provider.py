@@ -39,6 +39,13 @@ def default_chat_model(settings: Settings) -> str:
     return settings.ollama_model
 
 
+def default_context_tokens(settings: Settings) -> int:
+    """Token budget the answer prompt is fitted into for the active generator."""
+    if settings.generation_provider == "ollama":
+        return settings.ollama_num_ctx
+    return settings.cloud_context_tokens
+
+
 def default_embed_model(settings: Settings) -> str:
     from app.llm.embedding_models import active_embedding_config
 

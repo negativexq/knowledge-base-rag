@@ -21,6 +21,7 @@ from app.llm.ollama_client import OllamaClient
 from app.llm.provider import (
     ChatProvider,
     default_chat_model,
+    default_context_tokens,
     default_embed_model,
     get_chat_provider,
 )
@@ -196,7 +197,7 @@ def build_chat_dependencies(
             timeout_seconds=settings.query_rewrite_timeout_seconds,
             max_chars=settings.chat_max_question_chars,
             think=settings.ollama_thinking,
-            num_ctx=settings.ollama_num_ctx,
+            num_ctx=default_context_tokens(settings),
         )
 
     async def stream_fn(question: str, chunks: list[SearchResult]):
@@ -208,7 +209,7 @@ def build_chat_dependencies(
                 model=default_chat_model(settings),
                 prompt_version=settings.active_prompt_version,
                 think=settings.ollama_thinking,
-                num_ctx=settings.ollama_num_ctx,
+                num_ctx=default_context_tokens(settings),
                 validator_version=settings.critical_validator_version,
                 shadow_enabled=settings.critical_validator_v3_shadow_enabled,
                 architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
@@ -227,7 +228,7 @@ def build_chat_dependencies(
                 validation_mode=settings.security_validation_mode,
                 context_serializer=serialize_section_aware_context,
                 think=settings.ollama_thinking,
-                num_ctx=settings.ollama_num_ctx,
+                num_ctx=default_context_tokens(settings),
             ):
                 yield event
             return
