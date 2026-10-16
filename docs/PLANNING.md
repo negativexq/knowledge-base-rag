@@ -4324,3 +4324,18 @@ Two answer-generation gaps found in the pilot audit.
   with 2013 figures.
 
 Covered by the stack-tip `make test` in the ingestion quality report note.
+
+## Ingestion — PDF sections across page breaks (closing note)
+
+A PDF section that continues on the next page is now chunked as one run of text instead
+of being cut at the page break.
+
+- **Sections.** Elements under the same non-empty heading path form one section across
+  pages; text with no heading path still splits per page.
+- **Anchors.** A chunk keeps its start page, paragraph and page-relative `char_range`, so
+  citations are unchanged. A chunk that crosses a page records `page_end` (stored in the
+  Qdrant payload) and `page_crossing`.
+- **Labels.** Support units for a crossing chunk read "A > B (pages 3–4)". The MMLongBench
+  runner counts every page a chunk spans (`payload_pages`) for page hit metrics.
+
+Covered by the stack-tip `make test` in the ingestion quality report note.
