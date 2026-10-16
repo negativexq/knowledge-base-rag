@@ -207,7 +207,7 @@ def build_chat_dependencies(
                 chunks,
                 chat_provider,
                 model=default_chat_model(settings),
-                prompt_version=settings.active_prompt_version,
+                prompt_version=settings.support_id_prompt_version,
                 think=settings.ollama_thinking,
                 num_ctx=default_context_tokens(settings),
                 validator_version=settings.critical_validator_version,

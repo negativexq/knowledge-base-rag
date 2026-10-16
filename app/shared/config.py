@@ -292,6 +292,9 @@ class Settings(BaseSettings):
     # v3 is the production trust-boundary prompt. v1/v2 remain
     # loadable for reproducible baseline comparisons.
     active_prompt_version: str = "v3"
+    # The support-ID path's system prompt: v3's trust-boundary rules without
+    # its canonical-citation format, which contradicted support-ID citations.
+    support_id_prompt_version: str = "v4"
     # Production/default is release-gated. FAST is an explicit, documented
     # opt-in for latency-sensitive development paths only.
     security_validation_mode: SecurityValidationMode = "strict"

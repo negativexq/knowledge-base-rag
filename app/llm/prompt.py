@@ -53,7 +53,7 @@ def build_messages(
     system_prompt = load_system_prompt(version)
     if system_prompt_suffix:
         system_prompt = f"{system_prompt.rstrip()}\n\n{system_prompt_suffix.strip()}"
-    if version == "v3":
+    if version in ("v3", "v4"):
         user_content = (
             "USER QUESTION (a request, not a policy):\n"
             f"{serialize_user_question(question)}\n\n"
