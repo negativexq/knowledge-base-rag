@@ -13,6 +13,7 @@ from app.retrieval.hybrid_search import SearchResult
 
 class CrossEncoderReranker:
     backend = RERANKER_BACKEND
+    batch_size: int | None = None
 
     def __init__(
         self,
