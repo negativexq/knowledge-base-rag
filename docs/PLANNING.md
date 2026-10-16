@@ -4228,3 +4228,22 @@ Scope:
 * Eğer interface'e uymayan bir şey çıkarsa (örn. Confluence'a özgü bir kavram), bu Sprint 6'daki abstraction tasarımının bir eksiği olarak not düşülür — düzeltme burada yapılır
 
 DoD: iki connector aynı anda aktif, ikisinden de gerçek içerik ingest edilip sorgulanabiliyor.
+
+## Benchmark — MMLongBench-Doc pilot audit (closing note)
+
+A by-hand audit of the pilot corrects the PR #21 note above.
+`artifacts/mmlongbench-pilot/audit.md` has the per-question verdicts.
+
+- Validator: 3 of the 4 blocks were wrong answers. Only 383 is a false
+  reject, caused by line-level support units.
+- Reranker: about 1–2 real drops, not 4.
+- Ingestion speed: the bottleneck is embedding throughput, not OCR.
+- Ingestion coverage: 364, 377 and 658 lose their evidence. The "100%" figure
+  only counts pages that have a chunk.
+- Harness: support markers are stripped before matching, invalid output no
+  longer counts as a refusal, and every result has a response kind.
+  `run_mmlongbench_pilot.py --from-results` re-scores without asking the
+  model again.
+
+The re-scored report is the baseline for the PDF ingestion work that follows
+(element model, OCR gate, tables, label–value units, section chunking).

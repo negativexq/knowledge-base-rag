@@ -15,6 +15,7 @@ import ast
 import hashlib
 import json
 import re
+from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
@@ -176,7 +177,10 @@ _NUMBER_WORDS = {
         "fourteen fifteen sixteen seventeen eighteen nineteen twenty".split()
     )
 }
-_NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
+# A minus sign counts only when it does not join two tokens, so a range like
+# "1981-1982" reads as two positive years.
+_NUMBER = re.compile(r"(?:(?<!\w)-)?\d+(?:\.\d+)?")
+_SUPPORT_ID = re.compile(r"\[(E\d+\.S\d+)\]")
 
 
 def _normalize(text: str) -> str:
@@ -210,6 +214,8 @@ def _item_matches(prediction: str, gold: str) -> bool:
 def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
     if gold == NOT_ANSWERABLE or answer_format == "None":
         return False
+    # Support-id citations ("[E1.S2]") carry digits that are not part of the answer.
+    prediction = _SUPPORT_ID.sub(" ", prediction)
     if answer_format in ("Int", "Float"):
         gold_numbers = _numbers(gold)
         return bool(gold_numbers) and _numeric_match(prediction, gold_numbers[0])
@@ -245,6 +251,37 @@ class QuestionOutcome:
     correct: bool | None
     citation_on_evidence: bool | None
     acl_leaks: int
+    # How the response ended (see response_kind); None derives it from
+    # `answered` for callers that only know that much.
+    response_kind: str | None = None
+
+    @property
+    def kind(self) -> str:
+        if self.response_kind is not None:
+            return self.response_kind
+        return "answered" if self.answered else "model_abstained"
+
+
+# A refusal is only credited when the system chose it: the model abstained,
+# or the validator blocked an unsupported answer. An output that failed to
+# parse is a failure, even when the user sees a refusal.
+REFUSAL_KINDS = ("model_abstained", "validator_blocked")
+
+
+def response_kind(result: dict) -> str:
+    """How a response ended, from its validation event fields."""
+    abstain = result.get("abstain")
+    codes = result.get("validator_failure_codes")
+    if abstain is None and codes is None:
+        return "no_verdict"
+    if not abstain:
+        return "answered"
+    codes = codes or []
+    if any(code.endswith("_INVALID") for code in codes):
+        return "output_invalid"
+    if codes:
+        return "validator_blocked"
+    return "model_abstained"
 
 
 def _rate(values: Iterable[bool | None]) -> dict:
@@ -278,14 +315,55 @@ def build_report(outcomes: list[QuestionOutcome], *, top_k: int, candidate_k: in
             for name in SLICES
         },
         "answerability": {
-            "unanswerable_correctly_refused": _rate(not o.answered for o in unanswerable),
+            "unanswerable_correctly_refused": _rate(o.kind in REFUSAL_KINDS for o in unanswerable),
             "answerable_coverage": _rate(o.answered for o in answerable),
         },
+        "response_kinds": dict(sorted(Counter(o.kind for o in outcomes).items())),
         "acl_leaks": sum(o.acl_leaks for o in outcomes),
     }
 
 
-_SUPPORT_ID = re.compile(r"\[(E\d+\.S\d+)\]")
+def _pages(values: Iterable) -> list[tuple[str, int]]:
+    return [(str(source_id), int(page)) for source_id, page in values or []]
+
+
+def outcome_from_result(
+    question: PilotQuestion, result: dict, *, source_id: str
+) -> QuestionOutcome:
+    """Score one saved result (a results.jsonl row), so a report can be
+    rebuilt without asking the model again."""
+    kind = response_kind(result)
+    answer = str(result.get("answer") or "")
+    answered = kind == "answered" and bool(answer.strip())
+    if not question.answerable:
+        return QuestionOutcome(
+            question=question,
+            ingested=None,
+            retrieved_top_k=None,
+            retrieved_candidates=None,
+            answered=answered,
+            correct=None,
+            citation_on_evidence=None,
+            acl_leaks=int(result.get("acl_leaks") or 0),
+            response_kind=kind,
+        )
+    chars = {int(page): count for page, count in (result.get("evidence_page_chars") or {}).items()}
+    pages = question.evidence_pages
+    return QuestionOutcome(
+        question=question,
+        ingested=all(chars.get(page, 0) > 0 for page in pages) if pages else None,
+        retrieved_top_k=page_hit(_pages(result.get("top_pages")), source_id, pages),
+        retrieved_candidates=page_hit(_pages(result.get("candidate_pages")), source_id, pages),
+        answered=answered,
+        correct=answered and answer_matches(answer, question.answer, question.answer_format),
+        citation_on_evidence=(
+            page_hit(_pages(result.get("cited_pages")), source_id, pages) if answered else None
+        ),
+        acl_leaks=int(result.get("acl_leaks") or 0),
+        response_kind=kind,
+    )
+
+
 _PAGE_LABEL = re.compile(r"^page (\d+)$")
 
 

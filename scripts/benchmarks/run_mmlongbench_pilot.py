@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import shutil
 import sys
 import time
 from collections import defaultdict
@@ -40,12 +41,12 @@ from app.connectors.filesystem import LocalFilesystemConnector
 from app.evaluation.forensic_capture import ForensicCapture
 from app.evaluation.mmlongbench import (
     QuestionOutcome,
-    answer_matches,
     build_report,
     cited_pages,
     load_manifest,
-    page_hit,
+    outcome_from_result,
     parse_question,
+    response_kind,
 )
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.ingestion.ingest import ingest_connector
@@ -139,7 +140,7 @@ def locations(client: QdrantClient, ids: list) -> list[tuple[str, int]]:
     ]
 
 
-async def ask(deps, client: QdrantClient, question) -> tuple[QuestionOutcome, dict]:
+async def ask(deps, client: QdrantClient, question) -> dict:
     context = RetrievalContext(tenant_id=TENANT)
     report = RetrievalReport()
     report.forensic_capture = ForensicCapture.create(question.question, raw_text=False)
@@ -165,27 +166,7 @@ async def ask(deps, client: QdrantClient, question) -> tuple[QuestionOutcome, di
         question.question, RetrievalContext(tenant_id=OTHER_TENANT), RetrievalReport()
     )
 
-    source_id = source_id_for(question.doc_id)
-    answered = bool(answer.strip()) and not validation.get("abstain", False)
     cited = cited_pages(answer, metadata.get("support_units") or [])
-    if question.answerable:
-        retrieved_top = page_hit(top, source_id, question.evidence_pages)
-        retrieved_candidates = page_hit(candidates, source_id, question.evidence_pages)
-        correct = answered and answer_matches(answer, question.answer, question.answer_format)
-        citation = page_hit(cited, source_id, question.evidence_pages) if answered else None
-    else:
-        retrieved_top = retrieved_candidates = correct = citation = None
-
-    outcome = QuestionOutcome(
-        question=question,
-        ingested=None,  # filled in from the chunk scan
-        retrieved_top_k=retrieved_top,
-        retrieved_candidates=retrieved_candidates,
-        answered=answered,
-        correct=correct,
-        citation_on_evidence=citation,
-        acl_leaks=len(leaked),
-    )
     raw = {
         "row_idx": question.row_idx,
         "doc_id": question.doc_id,
@@ -195,6 +176,7 @@ async def ask(deps, client: QdrantClient, question) -> tuple[QuestionOutcome, di
         "gold": question.answer,
         "answer": answer,
         "abstain": validation.get("abstain"),
+        "application_forced_abstention": validation.get("application_forced_abstention"),
         "passed": validation.get("passed"),
         "validator_failure_codes": validation.get("validator_failure_codes"),
         "generation": validation.get("generation"),
@@ -206,7 +188,7 @@ async def ask(deps, client: QdrantClient, question) -> tuple[QuestionOutcome, di
         "acl_leaks": len(leaked),
         "seconds": seconds,
     }
-    return outcome, raw
+    return raw
 
 
 def write_markdown(report: dict, meta: dict, path: Path) -> None:
@@ -245,6 +227,8 @@ def write_markdown(report: dict, meta: dict, path: Path) -> None:
         f"- Unanswerable correctly refused: {refused}",
         f"- Answerable questions answered (coverage): {coverage}",
         f"- ACL leaks (same questions as `{OTHER_TENANT}`): {report['acl_leaks']}",
+        "- Response kinds: "
+        + ", ".join(f"{kind} {count}" for kind, count in sorted(report["response_kinds"].items())),
         f"- Ingestion: {ingest['chunks_upserted']} chunks in {ingest['seconds']} s; "
         f"questions: median {meta['median_seconds']} s each.",
         "",
@@ -254,18 +238,16 @@ def write_markdown(report: dict, meta: dict, path: Path) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-async def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--skip-ingest", action="store_true")
-    args = parser.parse_args()
+def score(questions, raws: list[dict]) -> list[QuestionOutcome]:
+    by_row = {raw["row_idx"]: raw for raw in raws}
+    return [
+        outcome_from_result(q, by_row[q.row_idx], source_id=source_id_for(q.doc_id))
+        for q in questions
+    ]
 
+
+async def run_questions(settings: Settings, root: Path, questions, skip_ingest: bool):
     from app.wiring import build_chat_dependencies
-
-    settings = Settings()
-    manifest = load_manifest(MANIFEST)
-    root = data_dir(manifest.revision)
-    table = pq.read_table(root / "data" / "train-00000-of-00001.parquet").to_pylist()
-    questions = [parse_question(table[row], row) for row in manifest.question_rows]
 
     client = QdrantClient(url=settings.qdrant_url)
     ollama = OllamaClient(base_url=settings.ollama_base_url)
@@ -274,61 +256,82 @@ async def main() -> None:
     )
     try:
         ingest_stats = {"chunks_upserted": "existing", "seconds": 0}
-        if not args.skip_ingest:
+        if not skip_ingest:
             ingest_stats = await ingest(settings, client, ollama, root)
             print(f"ingested: {ingest_stats}", flush=True)
         pages = chunked_pages(client)
-
-        outcomes, raws = [], []
+        raws = []
         for index, question in enumerate(questions, 1):
-            outcome, raw = await ask(deps, client, question)
+            raw = await ask(deps, client, question)
             covered = pages.get(source_id_for(question.doc_id), {})
-            ingested = (
-                all(covered.get(page, 0) > 0 for page in question.evidence_pages)
-                if question.answerable and question.evidence_pages
-                else None
-            )
-            outcome = QuestionOutcome(**{**outcome.__dict__, "ingested": ingested})
             raw["evidence_page_chars"] = {p: covered.get(p, 0) for p in question.evidence_pages}
-            outcomes.append(outcome)
             raws.append(raw)
             print(
                 f"[{index}/{len(questions)}] row {question.row_idx} {raw['seconds']}s "
-                f"answered={outcome.answered} correct={outcome.correct} "
-                f"hit={outcome.retrieved_top_k}",
+                f"kind={response_kind(raw)}",
                 flush=True,
             )
     finally:
         await ollama.aclose()
         await chat_provider.aclose()
         client.close()
+    return raws, ingest_stats
 
-    top_n, candidate_k = settings.reranker_top_n, settings.reranker_candidate_k
-    report = build_report(outcomes, top_k=top_n, candidate_k=candidate_k)
-    seconds = sorted(raw["seconds"] for raw in raws)
-    meta = {
-        "dataset": manifest.dataset,
-        "revision": manifest.revision,
-        "documents": len({q.doc_id for q in questions}),
-        "questions": len(questions),
-        "collection": COLLECTION,
-        "tenant": TENANT,
-        "model": settings.ollama_model,
-        "top_n": top_n,
-        "candidate_k": candidate_k,
-        "ingest": ingest_stats,
-        "median_seconds": seconds[len(seconds) // 2],
-    }
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "results.jsonl").write_text(
-        "".join(json.dumps(raw, ensure_ascii=False) + "\n" for raw in raws), encoding="utf-8"
+
+async def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--skip-ingest", action="store_true")
+    parser.add_argument(
+        "--from-results",
+        action="store_true",
+        help="re-score the saved results.jsonl without asking the model again",
     )
+    args = parser.parse_args()
+
+    settings = Settings()
+    manifest = load_manifest(MANIFEST)
+    root = data_dir(manifest.revision)
+    table = pq.read_table(root / "data" / "train-00000-of-00001.parquet").to_pylist()
+    questions = [parse_question(table[row], row) for row in manifest.question_rows]
+
+    if args.from_results:
+        raws = [
+            json.loads(line)
+            for line in (OUT / "results.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        meta = json.loads((OUT / "report.json").read_text(encoding="utf-8"))["meta"]
+    else:
+        raws, ingest_stats = await run_questions(settings, root, questions, args.skip_ingest)
+        seconds = sorted(raw["seconds"] for raw in raws)
+        meta = {
+            "dataset": manifest.dataset,
+            "revision": manifest.revision,
+            "documents": len({q.doc_id for q in questions}),
+            "questions": len(questions),
+            "collection": COLLECTION,
+            "tenant": TENANT,
+            "model": settings.ollama_model,
+            "top_n": settings.reranker_top_n,
+            "candidate_k": settings.reranker_candidate_k,
+            "ingest": ingest_stats,
+            "median_seconds": seconds[len(seconds) // 2],
+            "ocr_available": shutil.which("tesseract") is not None,
+        }
+        OUT.mkdir(parents=True, exist_ok=True)
+        (OUT / "results.jsonl").write_text(
+            "".join(json.dumps(raw, ensure_ascii=False) + "\n" for raw in raws), encoding="utf-8"
+        )
+
+    outcomes = score(questions, raws)
+    report = build_report(outcomes, top_k=meta["top_n"], candidate_k=meta["candidate_k"])
     per_question = [
         {
             "row_idx": o.question.row_idx,
             "doc_id": o.question.doc_id,
             "evidence_types": list(o.question.evidence_types),
             "answerable": o.question.answerable,
+            "response_kind": o.kind,
             "ingested": o.ingested,
             "hit_top": o.retrieved_top_k,
             "hit_candidates": o.retrieved_candidates,
