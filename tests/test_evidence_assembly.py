@@ -113,3 +113,24 @@ def test_the_evidence_budget_follows_the_generator():
 
     assert default_evidence_tokens(local) == 1600
     assert default_evidence_tokens(cloud) == 12000
+
+
+def test_units_of_one_section_share_a_single_source_header():
+    # With per-unit headers, repeated source and section lines were 22-78%
+    # of the pilot prompts.
+    from app.evidence.support_units import serialize_support_units
+
+    first = chunk("p8", 8, "Rule one.\n\nRule two.")
+    other = chunk("p9", 9, "Rule three.")
+    other.payload["section_path"] = ["5 Results"]
+    block = SectionAwareEvidenceBuilder._block(first, [first, other])
+    block.payload["evidence_id"] = "E1"
+
+    text = serialize_support_units(build_support_units([block]))
+
+    assert text.count("source_id: paper_pdf") == 2
+    assert text.count("section: 4 Experiments (page 8)") == 1
+    assert text.count("section: 5 Results (page 9)") == 1
+    for unit_id in ("E1.S1", "E1.S2", "E1.S3"):
+        assert f"[SUPPORT UNIT {unit_id}]" in text
+    assert text.index("Rule two.") < text.index("section: 5 Results")

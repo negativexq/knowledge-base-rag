@@ -153,15 +153,17 @@ def build_support_units(blocks: list[SearchResult]) -> list[SupportUnit]:
 
 
 def serialize_support_units(units: list[SupportUnit]) -> str:
-    return "\n\n".join(
-        "[SUPPORT UNIT {id}]\nsource_id: {source}\nsection: {section}\ncontent:\n{text}".format(
-            id=unit.support_unit_id,
-            source=unit.source_id or "unknown",
-            section=unit.section_label or "unknown",
-            text=unit.text,
-        )
-        for unit in units
-    )
+    """Units in order; consecutive units of one source and section share a
+    single source/section header, so the prompt is mostly evidence text."""
+    parts: list[str] = []
+    header: tuple[str, str] | None = None
+    for unit in units:
+        current = (unit.source_id or "unknown", unit.section_label or "unknown")
+        if current != header:
+            header = current
+            parts.append("[SOURCE]\nsource_id: {}\nsection: {}".format(*current))
+        parts.append(f"[SUPPORT UNIT {unit.support_unit_id}]\ncontent:\n{unit.text}")
+    return "\n\n".join(parts)
 
 
 def support_unit_map(units: list[SupportUnit]) -> dict[str, SupportUnit]:
