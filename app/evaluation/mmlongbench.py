@@ -320,10 +320,18 @@ def _small_number_gold(question: PilotQuestion) -> bool:
 def gold_visible(question: PilotQuestion, texts: Iterable[str]) -> bool | None:
     """Whether the gold answer appears in the given text (the same lenient
     match answers are scored with). A lower bound: an answer the question
-    asks to compute (a difference, a count) is not in any text."""
+    asks to compute (a difference, a count) is not in any text.
+
+    A numeric gold is looked for among all of the text's numbers, exactly:
+    answer scoring reads only the first number an answer states, and its 1%
+    tolerance would find a near number on any page full of figures."""
     if not question.answerable or _small_number_gold(question):
         return None
-    return answer_matches("\n".join(texts), question.answer, question.answer_format)
+    text = "\n".join(texts)
+    if question.answer_format in ("Int", "Float"):
+        gold = _numbers(question.answer)
+        return bool(gold) and gold[0] in _numbers(text)
+    return answer_matches(text, question.answer, question.answer_format)
 
 
 def page_hit(

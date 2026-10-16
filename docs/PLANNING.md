@@ -4689,3 +4689,18 @@ Reports: `artifacts/mmlongbench-v2/{baseline-retrieval,baseline-retrieval-k40,
 element-aware-retrieval,element-aware-retrieval-equal-text}/`.
 
 `make test`: 1565 passed, 4 skipped.
+
+## Fix — numeric gold visibility, and the v2 loss audit (closing note)
+
+The audit of the 40/14 baseline (`artifacts/mmlongbench-v2/audit.md`) found that
+`gold_visible` reused answer scoring, which reads only the first number an answer
+states (PR #35); on a page that meant only the page's first number, so 10 of 23
+`not_in_page_text` losses were the scorer's. Numeric golds are now looked up exactly
+among all of the text's numbers (exact, since a 1% tolerance finds a near number on any
+page of figures). Gold-in-text figures reported since PR #35 undercount and need a
+re-run. The other findings are open: retrieval is not scoped to the question's
+document (all 6 Hit@14 misses are cross-document), two parser text-layer losses (a
+cover page read as a table, words glued across spans), and answers that must be
+computed.
+
+`make test`: 1569 passed, 4 skipped.
