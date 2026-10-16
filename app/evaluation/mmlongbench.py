@@ -229,6 +229,15 @@ def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
     return _item_matches(prediction, gold)
 
 
+def gold_visible(question: PilotQuestion, texts: Iterable[str]) -> bool | None:
+    """Whether the gold answer appears in the given text (the same lenient
+    match answers are scored with). A lower bound: an answer the question
+    asks to compute (a difference, a count) is not in any text."""
+    if not question.answerable:
+        return None
+    return answer_matches("\n".join(texts), question.answer, question.answer_format)
+
+
 def page_hit(
     results: Iterable[tuple[str, int]], source_id: str, evidence_pages: tuple[int, ...]
 ) -> bool:
@@ -255,6 +264,29 @@ class QuestionOutcome:
     # How the response ended (see response_kind); None derives it from
     # `answered` for callers that only know that much.
     response_kind: str | None = None
+    # Whether the gold answer appears in the text of the evidence pages, and
+    # in the evidence the model was given; None when not measured.
+    gold_in_page_text: bool | None = None
+    gold_in_evidence: bool | None = None
+    # "retrieved", or "gold_page" when the model was given the evidence
+    # pages instead of what retrieval found.
+    evidence: str = "retrieved"
+
+    @property
+    def loss_stage(self) -> str | None:
+        """The first stage that lost the gold answer, for a wrong answer to
+        an answerable question: not in the evidence pages' text (a parsing
+        loss, or an answer that has to be computed), not retrieved, retrieved
+        but not in what the model saw, or seen and still not answered."""
+        if not self.question.answerable or self.correct:
+            return None
+        if self.ingested is False or self.gold_in_page_text is False:
+            return "not_in_page_text"
+        if self.evidence == "retrieved" and self.retrieved_top_k is False:
+            return "retrieval"
+        if self.gold_in_evidence is False:
+            return "assembly"
+        return "generation"
 
     @property
     def kind(self) -> str:
@@ -299,6 +331,8 @@ def _stage_metrics(outcomes: list[QuestionOutcome], top_k: int, candidate_k: int
         "ingestion_evidence_page_coverage": _rate(o.ingested for o in answerable),
         f"retrieval_hit_at_{top_k}": _rate(o.retrieved_top_k for o in answerable),
         f"retrieval_hit_at_{candidate_k}": _rate(o.retrieved_candidates for o in answerable),
+        "gold_in_page_text": _rate(o.gold_in_page_text for o in answerable),
+        "gold_in_evidence": _rate(o.gold_in_evidence for o in answerable),
         "answer_accuracy": _rate(o.correct for o in answerable),
         "citation_accuracy": _rate(o.citation_on_evidence for o in answerable),
     }
@@ -322,6 +356,9 @@ def build_report(
             "answerable_coverage": _rate(o.answered for o in answerable),
         },
         "response_kinds": dict(sorted(Counter(o.kind for o in outcomes).items())),
+        "loss_stages": dict(
+            sorted(Counter(o.loss_stage for o in answerable if o.loss_stage).items())
+        ),
         "acl_leaks": sum(o.acl_leaks for o in outcomes),
     }
 
@@ -364,6 +401,9 @@ def outcome_from_result(
         ),
         acl_leaks=int(result.get("acl_leaks") or 0),
         response_kind=kind,
+        gold_in_page_text=result.get("gold_in_page_text"),
+        gold_in_evidence=result.get("gold_in_evidence"),
+        evidence=result.get("evidence") or "retrieved",
     )
 
 

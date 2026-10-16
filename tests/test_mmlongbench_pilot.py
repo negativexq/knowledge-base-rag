@@ -368,3 +368,83 @@ def test_outcomes_can_be_rebuilt_from_saved_results():
     assert (outcome.retrieved_top_k, outcome.retrieved_candidates) == (True, True)
     assert (outcome.answered, outcome.correct, outcome.citation_on_evidence) == (True, True, True)
     assert outcome.response_kind == "answered"
+
+
+# --- where a wrong answer was lost -----------------------------------------
+
+
+def _raw(answer="I could not find this.", top=True, page_text=True, evidence_text=True):
+    return {
+        "answer": answer,
+        "abstain": False,
+        "validator_failure_codes": [],
+        "top_pages": [["a_pdf", 1]] if top else [["a_pdf", 9]],
+        "candidate_pages": [["a_pdf", 1]],
+        "cited_pages": [],
+        "acl_leaks": 0,
+        "evidence_page_chars": {"1": 120},
+        "gold_in_page_text": page_text,
+        "gold_in_evidence": evidence_text,
+    }
+
+
+def test_gold_visible_finds_the_gold_answer_in_text():
+    from app.evaluation.mmlongbench import gold_visible
+
+    question = _q(1, ["Pure-text (Plain-text)"])
+
+    assert gold_visible(question, ["nothing here", "the value is x"]) is True
+    assert gold_visible(question, ["nothing here"]) is False
+    assert gold_visible(_q(2, [], answerable=False), ["x"]) is None
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        (_raw(answer="It is x."), None),
+        (_raw(page_text=False), "not_in_page_text"),
+        (_raw(top=False), "retrieval"),
+        (_raw(evidence_text=False), "assembly"),
+        (_raw(), "generation"),
+        ({**_raw(), "gold_in_page_text": None, "gold_in_evidence": None}, "generation"),
+    ],
+)
+def test_a_wrong_answer_is_attributed_to_the_first_stage_that_lost_the_gold(raw, expected):
+    from app.evaluation.mmlongbench import outcome_from_result
+
+    outcome = outcome_from_result(_q(1, ["Pure-text (Plain-text)"]), raw, source_id="a_pdf")
+
+    assert outcome.loss_stage == expected
+
+
+def test_unanswerable_questions_have_no_loss_stage():
+    from app.evaluation.mmlongbench import outcome_from_result
+
+    outcome = outcome_from_result(_q(1, [], answerable=False), _raw(), source_id="a_pdf")
+
+    assert outcome.loss_stage is None
+
+
+def test_report_counts_loss_stages_and_gold_visibility():
+    from app.evaluation.mmlongbench import outcome_from_result
+
+    question = _q(1, ["Pure-text (Plain-text)"])
+    outcomes = [
+        outcome_from_result(question, _raw(answer="It is x."), source_id="a_pdf"),
+        outcome_from_result(question, _raw(evidence_text=False), source_id="a_pdf"),
+        outcome_from_result(question, _raw(), source_id="a_pdf"),
+    ]
+
+    report = build_report(outcomes, top_k=5, candidate_k=15)
+
+    assert report["loss_stages"] == {"assembly": 1, "generation": 1}
+    assert report["overall"]["gold_in_evidence"] == {"rate": 0.6667, "n": 3}
+
+
+def test_with_gold_page_evidence_retrieval_is_not_a_loss_stage():
+    from app.evaluation.mmlongbench import outcome_from_result
+
+    raw = {**_raw(top=False), "evidence": "gold_page"}
+    outcome = outcome_from_result(_q(1, ["Pure-text (Plain-text)"]), raw, source_id="a_pdf")
+
+    assert outcome.loss_stage == "generation"

@@ -4400,3 +4400,38 @@ out as one mixed line, and the model paired names with the wrong values (pilot r
 Parser version `pymupdf_elements_v5`.
 
 `make test`: 1461 passed, 4 skipped.
+
+## Benchmark — where wrong answers are lost (closing note)
+
+The MMLongBench pilot now says, per question, which stage lost the gold answer, and can
+replace retrieval with the gold evidence pages to separate retrieval and assembly losses
+from generation losses.
+
+- **Gold visibility.** Each result records whether the gold answer appears in the
+  evidence pages' chunk text (`gold_in_page_text`) and in the evidence the model was given
+  (`gold_in_evidence`), with the same lenient match answers are scored with. It is a lower
+  bound: an answer that has to be computed (a difference, a count) is in no text.
+- **Loss stage.** A wrong answer to an answerable question is attributed to the first
+  stage that lost the gold answer: `not_in_page_text` (a parsing loss or a computed or
+  visual answer), `retrieval`, `assembly`, or `generation`. The report counts them.
+- **Oracle evidence.** `--evidence gold_page` gives the model the evidence pages' chunks
+  instead of the retrieved evidence, through the same generation and validation. `--out`
+  writes a run elsewhere; the report names the generation model of the configured
+  provider.
+
+First measurement (OCR layout v5, `qwen3.5:4b`, 15 answerable and 5 unanswerable
+questions):
+
+| Evidence | Answer | Unanswerable refused | Loss stages |
+| --- | ---: | ---: | --- |
+| retrieved | 3/15 | 2/5 | not in page text 6, generation 4, retrieval 1, assembly 1 |
+| gold pages | 3/15 | 5/5 | not in page text 6, generation 6 |
+
+Perfect pages do not raise accuracy: two questions are fixed (639, 658) and two break
+(370, 634). The gold answer was in front of the model in every generation loss, so the
+generator is the main limit on answers; cleaner context mostly makes it refuse more,
+including the unanswerable questions it used to answer. The six `not_in_page_text`
+questions need a computation or a figure. Next: the same gold-page run with a stronger
+generation model, then decide between generation work and visual evidence.
+
+`make test`: 1471 passed, 4 skipped.
