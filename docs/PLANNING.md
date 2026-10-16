@@ -4579,3 +4579,20 @@ units do not have. gpt-6-luna pasted the example (pilot row 221) or wrote its ow
   citations released.
 
 `make test`: 1530 passed, 4 skipped.
+
+## Fix — month-year premises and unstated presuppositions (closing note)
+
+The premise check looked only at years, so "the document revised on May 2018" (pilot
+row 384, unanswerable) passed because "2018" appeared elsewhere in the evidence, and a
+question about a function the pins do not have (row 660) had no check at all.
+
+- `missing_question_dates` requires a month-year in the question ("May 2018",
+  "Mayıs 2018") to appear as a date in the support units ("May 2, 2018",
+  "2018-05", "05/2018"); otherwise an answer becomes the application abstention
+  `QUESTION_PREMISE_NOT_IN_EVIDENCE` (telemetry `premise_missing_dates`).
+- The support-ID output instructions tell the model to abstain when the question
+  presupposes something no unit states (a date, name, version, function or property),
+  instead of answering about something nearby. Term-level premises stay a model
+  judgement: a deterministic term check would refuse paraphrased questions.
+
+`make test`: 1538 passed, 4 skipped.
