@@ -80,7 +80,7 @@ def test_a_scan_without_ocr_is_a_skipped_empty_page(tmp_path, monkeypatch, caplo
 def test_ocr_pages_are_counted_by_reason(tmp_path, monkeypatch):
     monkeypatch.setattr(pdf_parser, "ocr_available", lambda: True)
     monkeypatch.setattr(
-        pdf_parser, "_ocr_blocks", lambda page: [(30, 60, 390, 100, "Scanned text\n", 0, 0)]
+        pdf_parser, "_ocr_lines", lambda page: [((30, 60, 190, 76), "Scanned text")]
     )
     report = ParseReport()
     extract_elements(_scanned_pdf(tmp_path), report=report)

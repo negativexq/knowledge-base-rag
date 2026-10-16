@@ -4374,3 +4374,29 @@ were green, so nothing behaved wrongly; the annotations are now complete.
 `mypy app/`), so this shows up locally before a merge.
 
 `make test`: 1451 passed, 4 skipped.
+
+## Ingestion — OCR page layout from word groups (closing note)
+
+OCR'd pages were read from MuPDF's OCR blocks, which put everything on one visual line into
+one block. Two columns printed side by side (a directors list next to a bankers list) came
+out as one mixed line, and the model paired names with the wrong values (pilot row 364).
+
+- **Layout.** `_ocr_lines` takes Tesseract's word groups with their boxes; `_ocr_layout`
+  splits lines at wide gaps (2 line heights) and cuts the page recursively into bands
+  (vertical gaps of 1.2 line heights) and columns (gutters of 2 line heights). Prose running
+  across a gutter right above or below columns is cut off first. A single line is never
+  split into columns.
+- **Tables.** Rows of three or more short cells (8 words at most) that line up by their
+  left or right edge stay table rows (`a | b | c`); right-aligned numbers count. A column
+  that is mostly numbers stays with the labels on its left, and neighbouring columns that
+  together form a table are joined back.
+- **Checked on the pilot's scanned report.** The directors/bankers page now reads as
+  separate paragraphs. A page with a financial table set right beside prose, with no
+  gutter between them, is still interleaved row by row (as before, now with ` | ` rows);
+  that needs a layout model.
+- **Tesseract's own layout analysis** (TSV block/paragraph numbers) was tried and was
+  worse: it split labels from values on the directors page and still mixed the table page.
+
+Parser version `pymupdf_elements_v5`.
+
+`make test`: 1461 passed, 4 skipped.

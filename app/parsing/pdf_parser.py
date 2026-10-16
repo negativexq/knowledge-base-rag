@@ -15,7 +15,7 @@ TEXT_BLOCK_TYPE = 0
 # Recorded in the ingestion pipeline fingerprint (app/ingestion/fingerprint.py)
 # through pdf_parser_version(); bump it whenever extraction output changes so
 # existing PDFs are re-indexed.
-PDF_PARSER_VERSION = "pymupdf_elements_v4"
+PDF_PARSER_VERSION = "pymupdf_elements_v5"
 # Tesseract languages for scanned pages (installed in the backend image as
 # tesseract-ocr-tur / tesseract-ocr-eng) and the render resolution; 300 dpi
 # is Tesseract's recommended input resolution.
@@ -50,6 +50,19 @@ RUNNING_TEXT_MIN_PAGES = 3
 MARGIN_BAND = 0.1
 # A short "Label:" block is kept with the value printed directly under it.
 LABEL_MAX_WORDS = 5
+# OCR layout, in multiples of the page's median line height: bands are cut
+# at vertical gaps of OCR_BAND_GAP, and columns at gutters of OCR_COLUMN_GAP
+# (word groups on one line that far apart are kept as separate pieces).
+OCR_BAND_GAP = 1.2
+OCR_COLUMN_GAP = 2.0
+# A table cell is short; a long line of prose beside a table is not a cell.
+OCR_TABLE_CELL_MAX_WORDS = 8
+# OCR boxes jitter by a few points; cells within this distance line up.
+OCR_ALIGN_TOLERANCE = 4.0
+# A cell holding only a number (amounts, percentages, "(61.71)", "--").
+NUMBER = re.compile(r"^[~(+\-\u2013\u2014]*\s*[\d.,]*\d[\d.,]*\)?%?$|^[-\u2013\u2014]+$")
+
+_Box = tuple[float, float, float, float]
 
 
 @cache
@@ -74,9 +87,177 @@ def pdf_parser_version() -> str:
     return PDF_PARSER_VERSION
 
 
-def _ocr_blocks(page: fitz.Page) -> list[tuple]:
+def _ocr_lines(page: fitz.Page) -> list[tuple[_Box, str]]:
+    """Tesseract's word groups with their boxes. MuPDF's OCR blocks are not
+    used: they put everything on one visual line into one block, columns
+    included, so the layout is rebuilt in _ocr_layout."""
     textpage = page.get_textpage_ocr(language=OCR_LANGUAGES, dpi=OCR_DPI, full=True)
-    return page.get_text("blocks", textpage=textpage)
+    lines = []
+    for block in page.get_text("dict", textpage=textpage)["blocks"]:
+        if block["type"] != TEXT_BLOCK_TYPE:
+            continue
+        for line in block["lines"]:
+            if text := _line_text(line):
+                lines.append((tuple(line["bbox"]), text))
+    return lines
+
+
+def _union(entries: list[tuple[_Box, str]]) -> _Box:
+    return (
+        min(box[0] for box, _ in entries),
+        min(box[1] for box, _ in entries),
+        max(box[2] for box, _ in entries),
+        max(box[3] for box, _ in entries),
+    )
+
+
+def _visual_lines(entries: list[tuple[_Box, str]]) -> list[list[tuple[_Box, str]]]:
+    """Group boxes into visual lines (boxes whose middle falls in the first
+    box's band), each sorted left to right."""
+    rows: list[list[tuple[_Box, str]]] = []
+    for entry in sorted(entries, key=lambda entry: (entry[0][1], entry[0][0])):
+        box = entry[0]
+        middle = (box[1] + box[3]) / 2
+        if rows and rows[-1][0][0][1] <= middle <= rows[-1][0][0][3]:
+            rows[-1].append(entry)
+        else:
+            rows.append([entry])
+    return [sorted(row, key=lambda entry: entry[0][0]) for row in rows]
+
+
+def _split_at_gaps(
+    entries: list[tuple[_Box, str]], axis: int, gap: float
+) -> list[list[tuple[_Box, str]]]:
+    """Split boxes where nothing covers a stretch of at least `gap` along
+    the axis (0: x, columns; 1: y, bands), in reading order."""
+    groups: list[list[tuple[_Box, str]]] = []
+    end = 0.0
+    for entry in sorted(entries, key=lambda entry: entry[0][axis]):
+        start, stop = entry[0][axis], entry[0][axis + 2]
+        if groups and start - end < gap:
+            groups[-1].append(entry)
+            end = max(end, stop)
+        else:
+            groups.append([entry])
+            end = stop
+    return groups
+
+
+def _ocr_table(entries: list[tuple[_Box, str]]) -> str | None:
+    """Rows of three or more cells that line up, as on the text layer
+    (_block_text), when they are at least half of the region's lines."""
+    rows = _visual_lines(entries)
+    cells = [
+        [box for box, _ in row]
+        for row in rows
+        if len(row) >= 3 and all(len(text.split()) <= OCR_TABLE_CELL_MAX_WORDS for _, text in row)
+    ]
+    if len(cells) < 2 or 2 * len(cells) < len(rows):
+        return None
+    # Numbers are usually right-aligned, so a cell lines up with another
+    # row's cell by its left or its right edge.
+    aligned = total = 0
+    for index, row in enumerate(cells):
+        others = [box for other, boxes in enumerate(cells) if other != index for box in boxes]
+        total += len(row)
+        aligned += sum(
+            1
+            for box in row
+            if any(
+                abs(box[0] - other[0]) <= OCR_ALIGN_TOLERANCE
+                or abs(box[2] - other[2]) <= OCR_ALIGN_TOLERANCE
+                for other in others
+            )
+        )
+    if aligned < 0.6 * total:
+        return None
+    return "\n".join(" | ".join(text for _, text in row) for row in rows)
+
+
+def _splits(rows: list[list[tuple[_Box, str]]], gutter: float) -> bool:
+    """True when lines spanning more than one line split into columns."""
+    return len(rows) > 1 and len(_split_at_gaps([e for row in rows for e in row], 0, gutter)) > 1
+
+
+def _ocr_regions(entries: list[tuple[_Box, str]], height: float) -> list[tuple[_Box, str]]:
+    """Recursive XY-cut: split into bands at wide vertical gaps, keep aligned
+    tables whole, then split into columns at gutters; what is left reads as
+    one paragraph. Neighbouring columns that together form a table (a table
+    printed beside prose) are joined back into that table."""
+    bands = _split_at_gaps(entries, 1, OCR_BAND_GAP * height)
+    if len(bands) > 1:
+        return [region for band in bands for region in _ocr_regions(band, height)]
+    if table := _ocr_table(entries):
+        return [(_union(entries), table)]
+    rows = _visual_lines(entries)
+    if len(rows) == 1:
+        return [(_union(entries), " ".join(text for _, text in rows[0]))]
+    columns = []
+    for column in _split_at_gaps(entries, 0, OCR_COLUMN_GAP * height):
+        # A column of numbers is not text to read on its own: it belongs to
+        # the labels on its left.
+        if columns and 2 * sum(bool(NUMBER.match(text)) for _, text in column) > len(column):
+            columns[-1] = columns[-1] + column
+        else:
+            columns.append(column)
+    if len(columns) == 1:
+        # Single-piece lines right above or below columns (prose running
+        # across the gutter) block both cuts: cut them off where the rest
+        # splits into columns.
+        gutter = OCR_COLUMN_GAP * height
+        cuts = [
+            cut
+            for cut in range(1, len(rows))
+            if all(len(row) == 1 for row in rows[:cut]) and _splits(rows[cut:], gutter)
+        ]
+        cuts += [
+            cut
+            for cut in range(len(rows) - 1, 0, -1)
+            if all(len(row) == 1 for row in rows[cut:]) and _splits(rows[:cut], gutter)
+        ]
+        if cuts:
+            top, bottom = rows[: cuts[0]], rows[cuts[0] :]
+            return [
+                region
+                for part in (top, bottom)
+                for region in _ocr_regions([entry for row in part for entry in row], height)
+            ]
+        text = " ".join(text for row in rows for _, text in row)
+        return [(_union(entries), text)]
+    regions: list[tuple[_Box, str]] = []
+    start = 0
+    while start < len(columns):
+        for stop in range(len(columns), start + 1, -1):
+            group = [entry for column in columns[start:stop] for entry in column]
+            if table := _ocr_table(group):
+                regions.append((_union(group), table))
+                start = stop
+                break
+        else:
+            regions.extend(_ocr_regions(columns[start], height))
+            start += 1
+    return regions
+
+
+def _ocr_layout(lines: list[tuple[_Box, str]]) -> list[tuple[_Box, str]]:
+    """Paragraphs of an OCR'd page in reading order. Word groups on one line
+    are joined unless a wide gap separates them (a separate column)."""
+    if not lines:
+        return []
+    heights = sorted(box[3] - box[1] for box, _ in lines)
+    height = heights[len(heights) // 2]
+    segments = []
+    for row in _visual_lines(lines):
+        current = [row[0]]
+        for entry in row[1:]:
+            if entry[0][0] - _union(current)[2] >= OCR_COLUMN_GAP * height:
+                segments.append(current)
+                current = [entry]
+            else:
+                current.append(entry)
+        segments.append(current)
+    joined = [(_union(segment), " ".join(text for _, text in segment)) for segment in segments]
+    return _ocr_regions(joined, height)
 
 
 def _visible(text: str) -> str:
@@ -214,10 +395,7 @@ def _text_layer_items(
 
 def _ocr_items(page: fitz.Page, reason: str) -> list[_Item]:
     return [
-        _Item(tuple(block[:4]), text, flags=(f"ocr:{reason}",))
-        for block in _ocr_blocks(page)
-        if block[6] == TEXT_BLOCK_TYPE
-        and (text := " ".join(line.strip() for line in block[4].splitlines() if line.strip()))
+        _Item(box, text, flags=(f"ocr:{reason}",)) for box, text in _ocr_layout(_ocr_lines(page))
     ]
 
 
