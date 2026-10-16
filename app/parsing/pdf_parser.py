@@ -15,7 +15,7 @@ TEXT_BLOCK_TYPE = 0
 # Recorded in the ingestion pipeline fingerprint (app/ingestion/fingerprint.py)
 # through pdf_parser_version(); bump it whenever extraction output changes so
 # existing PDFs are re-indexed.
-PDF_PARSER_VERSION = "pymupdf_elements_v5"
+PDF_PARSER_VERSION = "pymupdf_elements_v6"
 # Tesseract languages for scanned pages (installed in the backend image as
 # tesseract-ocr-tur / tesseract-ocr-eng) and the render resolution; 300 dpi
 # is Tesseract's recommended input resolution.
@@ -222,7 +222,7 @@ def _ocr_regions(entries: list[tuple[_Box, str]], height: float) -> list[tuple[_
                 for part in (top, bottom)
                 for region in _ocr_regions([entry for row in part for entry in row], height)
             ]
-        text = " ".join(text for row in rows for _, text in row)
+        text = _join_lines([" ".join(text for _, text in row) for row in rows])
         return [(_union(entries), text)]
     regions: list[tuple[_Box, str]] = []
     start = 0
@@ -314,6 +314,33 @@ def _rows(lines: list[dict]) -> list[list[dict]]:
     return [sorted(row, key=lambda line: line["bbox"][0]) for row in rows]
 
 
+# A word broken at a line end: a lowercase letter, a hyphen, then a line
+# that starts with a lowercase letter ("pri-" / "marily").
+_BROKEN_WORD_END = re.compile(r"(?<=[^\W\d_])-$")
+_BROKEN_WORD_START = re.compile(r"^[^\W\d_]")
+
+
+def _join_lines(lines: list[str]) -> str:
+    """Lines of prose joined with spaces; a hyphen that breaks a word across
+    two lines is removed and the halves joined. Only a lowercase continuation
+    counts, so "Covid-" / "19" and "CAN-" / "Bus" keep their hyphen."""
+    text = ""
+    for line in lines:
+        if not line:
+            continue
+        if (
+            text
+            and _BROKEN_WORD_END.search(text)
+            and text[-2].islower()
+            and _BROKEN_WORD_START.match(line)
+            and line[0].islower()
+        ):
+            text = text[:-1] + line
+        else:
+            text = f"{text} {line}" if text else line
+    return text
+
+
 def _line_text(line: dict) -> str:
     return " ".join("".join(span["text"] for span in line["spans"]).split())
 
@@ -347,7 +374,7 @@ def _block_text(lines: list[dict]) -> str:
         rows.append([_line_text(line) for line in cells])
     if _columns_align(cell_starts):
         return "\n".join(" | ".join(row) for row in rows)
-    return " ".join(_line_text(line) for line in lines if _line_text(line))
+    return _join_lines([_line_text(line) for line in lines])
 
 
 def _dominant_size(lines: list[dict]) -> float | None:
