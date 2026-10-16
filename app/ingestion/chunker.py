@@ -4,7 +4,7 @@ from dataclasses import dataclass, replace
 
 from app.ingestion.chunking_config import ChunkingConfig
 from app.ingestion.models import Chunk
-from app.ingestion.tokenizer import token_offsets
+from app.ingestion.tokenizer import token_count, token_offsets
 from app.parsing.models import DocumentElement, Paragraph, ParseReport
 from app.parsing.pdf_parser import extract_elements
 
@@ -16,6 +16,9 @@ DEFAULT_OVERLAP_TOKENS = 50  # 10% of DEFAULT_CHUNK_SIZE_TOKENS
 
 _SENTENCE_END_RE = re.compile(r'[.!?]["\')\]]?(?=\s|$)')
 _SENTENCE_BOUNDARY_LOOKAHEAD = 300
+# Element-aware chunking: the paragraph or heading just before a table is
+# taken as its caption when it is at most this long.
+CAPTION_MAX_TOKENS = 64
 
 
 def compute_doc_id(pdf_path: str) -> str:
@@ -205,6 +208,148 @@ def _chunk_page_text(
     return spans
 
 
+def _element_aware_spans(
+    run: list[DocumentElement],
+    section_text: str,
+    offsets: list[tuple[int, int, int]],
+    page_number: int,
+    config: ChunkingConfig,
+) -> list[ChunkSpan]:
+    """Pack a section's elements whole into chunks, in order.
+
+    Elements are added while the chunk stays under the hard ceiling, and a
+    chunk closes once it reaches the target; no element is in two chunks. A
+    chunk never ends on a heading, which moves on to the content under it.
+    A table is chunked on its own with the short line just before it as its
+    caption (see _table_spans); a prose element longer
+    than the ceiling is split at sentence ends. Char ranges are in the
+    section text, keyed by run position like the other splitters."""
+    hard = config.hard_max_tokens or config.target_tokens
+
+    def count(text: str) -> int:
+        return token_count(text, config.tokenizer_model, config.tokenizer_revision)
+
+    def span(start: int, end: int, key: int, text: str | None = None) -> ChunkSpan:
+        text = section_text[start:end] if text is None else text
+        return ChunkSpan(
+            page_number=page_number,
+            paragraph_index=key,
+            char_range=(start, end),
+            text=text,
+            token_count=count(text),
+            overlap_token_count=0,
+            sentence_split=False,
+            page_crossing=False,
+        )
+
+    spans: list[ChunkSpan] = []
+    group: list[int] = []
+
+    def group_text(keys: list[int]) -> str:
+        return section_text[offsets[keys[0]][1] : offsets[keys[-1]][2]]
+
+    def flush() -> None:
+        if group:
+            spans.append(span(offsets[group[0]][1], offsets[group[-1]][2], group[0]))
+            group.clear()
+
+    for key, start, end in offsets:
+        element = run[key]
+        if element.kind == "table":
+            caption = None
+            if (
+                group
+                and run[group[-1]].kind in {"paragraph", "heading"}
+                and run[group[-1]].page_number == element.page_number
+                and count(group_text(group[-1:])) <= CAPTION_MAX_TOKENS
+            ):
+                caption = group.pop()
+            flush()
+            table = _table_spans(
+                section_text,
+                start,
+                end,
+                key,
+                hard,
+                count,
+                span,
+                caption=None if caption is None else offsets[caption],
+            )
+            if table is not None:
+                spans.extend(table)
+                continue
+            if caption is not None:
+                group.append(caption)
+                flush()
+        # A table reaching here could not be split by rows.
+        if element.kind == "table" or count(section_text[start:end]) > hard:
+            flush()
+            for piece in _token_aware_spans(
+                section_text[start:end], [(key, 0, end - start)], page_number, config
+            ):
+                a, b = piece.char_range
+                spans.append(span(start + a, start + b, key, piece.text))
+            continue
+        if group and count(group_text([*group, key])) > hard:
+            carried = [group.pop()] if run[group[-1]].kind == "heading" and group[:-1] else []
+            flush()
+            group.extend(carried)
+        group.append(key)
+        if run[key].kind != "heading" and count(group_text(group)) >= config.target_tokens:
+            flush()
+    flush()
+    return spans
+
+
+def _table_spans(
+    section_text, start, end, key, hard, count, span, caption=None
+) -> list[ChunkSpan] | None:
+    """A table that fits is one chunk, starting at its caption (the short
+    paragraph or heading just before it, e.g. "Consolidated Statements of
+    Earnings $ in millions"). A longer one is split into row groups that each
+    start with the caption and the table's first line (the parser's
+    "Table: ..." column line), so every group still names its statement and
+    columns. A group's char range covers only its own rows, which keeps
+    point ids distinct.
+
+    None when the table cannot be split by rows (one line, as OCR tables can
+    be, or a single row over the ceiling); the caller then splits it like
+    long prose instead of losing it."""
+    lead = ""
+    first = start
+    if caption is not None:
+        cap_key, cap_start, cap_end = caption
+        lead = section_text[cap_start:cap_end] + "\n\n"
+        first = cap_start
+    if count(section_text[first:end]) <= hard:
+        return [span(first, end, key if caption is None else cap_key)]
+    lines: list[tuple[int, int]] = []
+    cursor = start
+    for line in section_text[start:end].split("\n"):
+        lines.append((cursor, cursor + len(line)))
+        cursor += len(line) + 1
+    if len(lines) < 2:
+        return None
+    header = lead + section_text[lines[0][0] : lines[0][1]]
+
+    spans: list[ChunkSpan] = []
+    rows: list[tuple[int, int]] = []
+
+    def rendered(group: list[tuple[int, int]]) -> str:
+        return header + "\n" + section_text[group[0][0] : group[-1][1]]
+
+    for row in lines[1:]:
+        if count(rendered([row])) > hard:
+            return None
+        if rows and count(rendered([*rows, row])) > hard:
+            spans.append(span(rows[0][0], rows[-1][1], key, rendered(rows)))
+            rows = []
+        rows.append(row)
+    if rows:
+        spans.append(span(rows[0][0], rows[-1][1], key, rendered(rows)))
+    return spans
+
+
 def _document_sections(
     elements: list[DocumentElement],
 ) -> list[tuple[tuple[str, ...], list[DocumentElement]]]:
@@ -283,7 +428,11 @@ def chunk_document(
         section_text, offsets = _build_page_text(keyed)
         starts = {key: start for key, start, _ in offsets}
         first_page = run[0].page_number
-        if chunking_config is not None and chunking_config.token_aware:
+        if chunking_config is not None and chunking_config.element_aware:
+            section_spans = _element_aware_spans(
+                run, section_text, offsets, first_page, chunking_config
+            )
+        elif chunking_config is not None and chunking_config.token_aware:
             section_spans = _token_aware_spans(section_text, offsets, first_page, chunking_config)
         else:
             section_spans = _chunk_page_text(
