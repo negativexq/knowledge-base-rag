@@ -406,7 +406,6 @@ def test_gold_visible_finds_the_gold_answer_in_text():
         (_raw(top=False), "retrieval"),
         (_raw(evidence_text=False), "assembly"),
         (_raw(), "generation"),
-        ({**_raw(), "gold_in_page_text": None, "gold_in_evidence": None}, "generation"),
     ],
 )
 def test_a_wrong_answer_is_attributed_to_the_first_stage_that_lost_the_gold(raw, expected):
@@ -448,3 +447,87 @@ def test_with_gold_page_evidence_retrieval_is_not_a_loss_stage():
     outcome = outcome_from_result(_q(1, ["Pure-text (Plain-text)"]), raw, source_id="a_pdf")
 
     assert outcome.loss_stage == "generation"
+
+
+# --- scorer audit fixes (luna RAG pilot) -----------------------------------
+
+
+def test_cited_pages_read_page_fields_and_labels_with_a_section_path():
+    from app.evaluation.mmlongbench import cited_pages
+
+    units = [
+        {"support_id": "E1.S1", "source_id": "a_pdf", "section_label": "4 Experiments (page 8)"},
+        {"support_id": "E1.S2", "source_id": "a_pdf", "section_label": "Results (pages 5–6)"},
+        {
+            "support_id": "E2.S1",
+            "source_id": "b_pdf",
+            "section_label": "Board of Directors",
+            "page_number": 9,
+            "page_end": 10,
+        },
+    ]
+
+    answer = "x [E1.S1] y [E1.S2] z [E2.S1]"
+
+    assert cited_pages(answer, units) == [
+        ("a_pdf", 8),
+        ("a_pdf", 5),
+        ("a_pdf", 6),
+        ("b_pdf", 9),
+        ("b_pdf", 10),
+    ]
+
+
+@pytest.mark.parametrize(
+    ("prediction", "gold", "answer_format", "expected"),
+    [
+        # The answer is the first number the answer states, not any number
+        # mentioned on the way.
+        ("Port 3 has the functions for pins 10 to 13.", "13", "Int", False),
+        ("41% of seniors do not go online, 59% do.", "59", "Int", False),
+        ("41% of seniors do not go online, 59% do.", "41", "Int", True),
+        ("The gap is 12.0 points (65% vs 53%).", "12%", "Float", True),
+        ("It is listed for two parts: 8052AH and 8751BH.", "2", "Int", True),
+        # A one-letter slip in a long gold item is the gold's typo.
+        ("Union Bank of India and Bank of Baroda", "['Unioon Bank of India']", "List", True),
+        ("Bank of Baroda", "['Bank of India']", "List", False),
+    ],
+)
+def test_answer_matching_reads_the_stated_number_and_tolerates_gold_typos(
+    prediction, gold, answer_format, expected
+):
+    assert answer_matches(prediction, gold, answer_format) is expected
+
+
+@pytest.mark.parametrize(
+    ("gold", "answer_format"),
+    [("2", "Int"), ("0.0", "Float"), ("['12', '13', '16']", "List")],
+)
+def test_small_number_golds_are_not_measured_in_page_text(gold, answer_format):
+    from app.evaluation.mmlongbench import gold_visible
+
+    question = parse_question(
+        {
+            "doc_id": "a.pdf",
+            "doc_type": "x",
+            "question": "q",
+            "answer": gold,
+            "evidence_pages": "[1]",
+            "evidence_sources": "[]",
+            "answer_format": answer_format,
+        },
+        row_idx=1,
+    )
+
+    # Any page holds a "2"; finding one says nothing about the answer.
+    assert gold_visible(question, ["Table 2 lists 12, 13 and 16 items, 0.0 loss."]) is None
+
+
+def test_an_unmeasured_gold_is_its_own_loss_stage():
+    from app.evaluation.mmlongbench import outcome_from_result
+
+    raw = {**_raw(), "gold_in_page_text": None, "gold_in_evidence": None}
+
+    outcome = outcome_from_result(_q(1, ["Pure-text (Plain-text)"]), raw, source_id="a_pdf")
+
+    assert outcome.loss_stage == "unmeasured"

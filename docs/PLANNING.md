@@ -4510,3 +4510,26 @@ answer in the units, and row 218 does not use `100 - 59`. Next: see why luna abs
 on answers that are in its evidence.
 
 `make test`: 1505 passed, 4 skipped.
+
+## Fix — pilot scorer audit (closing note)
+
+An audit of the gpt-6-luna RAG pilot found the scorer misreading results:
+
+- Cited pages were read only from a bare "page N" label, so units labelled with a
+  section path ("… (page 8)", "(pages 5–6)") counted as uncited. `cited_pages` now uses
+  a unit's page fields when present, else either label form.
+- A number answer matched when any number in it was within 1%, so "Port 3 … pins
+  10 to 13" matched a gold 13. It now matches on the first number stated (number words
+  included, years skipped unless the gold is a year).
+- Small-number golds (|x| < 100: "2", "12%", page lists) are on almost every page, so
+  "gold in page text" for them is now unmeasured (`None`), and their loss stage is
+  `unmeasured` instead of a guessed `generation`.
+- A long gold item one slip from the answer is a gold typo ("Unioon Bank of India",
+  row 364) and matches.
+- In gold-page mode an unanswerable question had no evidence at all, so refusing it
+  was free; it now gets the retrieved evidence.
+
+Re-scored luna RAG pilot: 5/15 answerable correct (4/15 before; row 364). Lenient
+string matching still credits an answer with an extra wrong name (row 370).
+
+`make test`: 1516 passed, 4 skipped.
