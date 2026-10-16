@@ -345,22 +345,20 @@ async def _sse_event_stream(
         generation_skip_reason = _generation_skip_reason(observation.reason, chunks)
         span.set_attribute("answerability.generation_skipped", generation_skip_reason is not None)
         token_counts = [chunk.payload.get("token_count") for chunk in chunks]
-        report.context.update({
-            "retrieved_chunk_count": len(chunks),
-            "top_context_tokens": (
-                sum(token_counts)
-                if token_counts and all(isinstance(value, int) for value in token_counts)
-                else None
-            ),
-        })
+        report.context.update(
+            {
+                "retrieved_chunk_count": len(chunks),
+                "top_context_tokens": (
+                    sum(token_counts)
+                    if token_counts and all(isinstance(value, int) for value in token_counts)
+                    else None
+                ),
+            }
+        )
         if capture is not None:
             capture.merge_stage(
                 "retrieval",
-                {
-                    "stage_timings_ms": {
-                        stage.name: stage.duration_ms for stage in report.stages
-                    }
-                },
+                {"stage_timings_ms": {stage.name: stage.duration_ms for stage in report.stages}},
             )
             capture.merge_stage(
                 "visible_pipeline",
@@ -451,9 +449,7 @@ def _enforce_chat_rate_limit(request: Request, user: UserContext) -> None:
     (e.g. oversized or blank) questions still count. Runs after
     authentication: unauthenticated callers get 401, never a rate-limit
     slot."""
-    limiter: SlidingWindowRateLimiter | None = getattr(
-        request.app.state, "chat_rate_limiter", None
-    )
+    limiter: SlidingWindowRateLimiter | None = getattr(request.app.state, "chat_rate_limiter", None)
     if limiter is None:
         return
     retry_after = limiter.check(f"{user.tenant_id}:{user.user_id}")

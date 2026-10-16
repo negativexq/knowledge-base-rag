@@ -120,7 +120,12 @@ async def test_tenant_a_retrieves_its_own_secret_via_hybrid_search(two_tenant_co
     client, sparse_encoder, ollama = two_tenant_collection
 
     results = await search(
-        TENANT_A_SECRET, ollama, sparse_encoder, client, COLLECTION, "fake",
+        TENANT_A_SECRET,
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
         RetrievalContext(tenant_id="tenant-a"),
     )
 
@@ -139,7 +144,12 @@ async def test_tenant_a_never_retrieves_tenant_b_secret_even_when_querying_for_i
     client, sparse_encoder, ollama = two_tenant_collection
 
     results = await search(
-        TENANT_B_SECRET, ollama, sparse_encoder, client, COLLECTION, "fake",
+        TENANT_B_SECRET,
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
         RetrievalContext(tenant_id="tenant-a"),
     )
 
@@ -154,7 +164,12 @@ async def test_tenant_b_retrieves_its_own_secret(two_tenant_collection):
     client, sparse_encoder, ollama = two_tenant_collection
 
     results = await search(
-        TENANT_B_SECRET, ollama, sparse_encoder, client, COLLECTION, "fake",
+        TENANT_B_SECRET,
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
         RetrievalContext(tenant_id="tenant-b"),
     )
 
@@ -167,7 +182,12 @@ async def test_tenant_b_never_retrieves_tenant_a_secret(two_tenant_collection):
     client, sparse_encoder, ollama = two_tenant_collection
 
     results = await search(
-        TENANT_A_SECRET, ollama, sparse_encoder, client, COLLECTION, "fake",
+        TENANT_A_SECRET,
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
         RetrievalContext(tenant_id="tenant-b"),
     )
 
@@ -185,7 +205,10 @@ async def test_dense_only_search_is_tenant_isolated(two_tenant_collection):
     query_vector = await ollama.embed(TENANT_A_SECRET, model="fake")
 
     results = dense_only_search(
-        client, COLLECTION, query_vector, top_k=10,
+        client,
+        COLLECTION,
+        query_vector,
+        top_k=10,
         filters=build_acl_filter(RetrievalContext(tenant_id="tenant-a")),
     )
 
@@ -208,7 +231,11 @@ async def test_exact_lexical_phrase_from_another_tenant_yields_zero_authorized_m
     query_dense = await ollama.embed(TENANT_B_SECRET, model="fake")
 
     results = hybrid_search(
-        client, COLLECTION, query_dense, query_sparse, top_k=10,
+        client,
+        COLLECTION,
+        query_dense,
+        query_sparse,
+        top_k=10,
         filters=build_acl_filter(RetrievalContext(tenant_id="tenant-a")),
     )
 
@@ -227,7 +254,12 @@ async def test_filter_override_attack_cannot_widen_access_to_another_tenant(
     malicious_filter = build_filter(source_types=["filesystem"])  # innocuous-looking
 
     results = await search(
-        TENANT_B_SECRET, ollama, sparse_encoder, client, COLLECTION, "fake",
+        TENANT_B_SECRET,
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
         RetrievalContext(tenant_id="tenant-a"),
         filters=None,
         doc_ids=None,
@@ -268,7 +300,12 @@ async def test_reranker_only_ever_sees_authorized_candidates(two_tenant_collecti
     real_reranker.rerank = _spy_rerank
 
     await search(
-        "authentication protocol", ollama, sparse_encoder, client, COLLECTION, "fake",
+        "authentication protocol",
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
         RetrievalContext(tenant_id="tenant-a"),
         reranker=real_reranker,
     )
@@ -289,7 +326,12 @@ async def test_citation_for_another_tenants_content_is_never_emitted(two_tenant_
     client, sparse_encoder, ollama = two_tenant_collection
 
     results = await search(
-        "authentication protocol", ollama, sparse_encoder, client, COLLECTION, "fake",
+        "authentication protocol",
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
         RetrievalContext(tenant_id="tenant-a"),
     )
     assert all(r.payload["tenant_id"] == "tenant-a" for r in results)
@@ -308,7 +350,10 @@ async def test_citation_for_another_tenants_content_is_never_emitted(two_tenant_
     events = [
         event
         async for event in stream_answer(
-            "What is the auth protocol?", results, _FakeChatLeaking(), model="fake",
+            "What is the auth protocol?",
+            results,
+            _FakeChatLeaking(),
+            model="fake",
             prompt_version="v1",
         )
     ]
@@ -324,7 +369,7 @@ async def test_citation_for_another_tenants_content_is_never_emitted(two_tenant_
 async def test_adversarial_broad_enumeration_query_still_only_returns_tenant_a(
     two_tenant_collection,
 ):
-    """"List all documents" / "what does the other tenant have" style
+    """ "List all documents" / "what does the other tenant have" style
     broad queries must still come back tenant-scoped — the ACL applies
     regardless of query phrasing/intent.
     """
@@ -332,7 +377,12 @@ async def test_adversarial_broad_enumeration_query_still_only_returns_tenant_a(
 
     for query in ["list all documents", "what information do other tenants have"]:
         results = await search(
-            query, ollama, sparse_encoder, client, COLLECTION, "fake",
+            query,
+            ollama,
+            sparse_encoder,
+            client,
+            COLLECTION,
+            "fake",
             RetrievalContext(tenant_id="tenant-a"),
         )
         assert all(r.payload["tenant_id"] == "tenant-a" for r in results)
@@ -347,7 +397,12 @@ async def test_repeated_queries_attempting_enumeration_never_leak_tenant_b(
     seen_tenants = set()
     for i in range(10):
         results = await search(
-            f"enumeration attempt {i}", ollama, sparse_encoder, client, COLLECTION, "fake",
+            f"enumeration attempt {i}",
+            ollama,
+            sparse_encoder,
+            client,
+            COLLECTION,
+            "fake",
             RetrievalContext(tenant_id="tenant-a"),
         )
         seen_tenants.update(r.payload["tenant_id"] for r in results)
@@ -367,8 +422,14 @@ async def test_system_context_can_see_both_tenants_but_is_never_used_for_a_real_
     client, sparse_encoder, ollama = two_tenant_collection
 
     results = await search(
-        "authentication protocol", ollama, sparse_encoder, client, COLLECTION, "fake",
-        RetrievalContext.system(), top_k=10,
+        "authentication protocol",
+        ollama,
+        sparse_encoder,
+        client,
+        COLLECTION,
+        "fake",
+        RetrievalContext.system(),
+        top_k=10,
     )
 
     tenants_seen = {r.payload["tenant_id"] for r in results}

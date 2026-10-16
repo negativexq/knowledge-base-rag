@@ -39,8 +39,12 @@ def _section_key(payload: dict[str, Any]) -> tuple[Any, ...]:
     headings = tuple(payload.get("heading_path") or ())
     if headings:
         return ("heading", headings, int(payload.get("heading_occurrence") or 0))
-    # PDF ingestion has no markdown heading path.  A page is the smallest
-    # stable logical section available in that representation.
+    # PDF chunks carry the section path of the document element they came
+    # from; a PDF without detected headings falls back to its page, the
+    # smallest stable logical section in that representation.
+    sections = tuple(payload.get("section_path") or ())
+    if sections:
+        return ("section", sections)
     return ("page", payload.get("page_number"))
 
 
@@ -191,8 +195,7 @@ class SectionAwareEvidenceBuilder:
         if (
             candidate_payload.get("source_type") != anchor_payload.get("source_type")
             or candidate_payload.get("source_id") != anchor_payload.get("source_id")
-            or candidate_payload.get("document_version")
-            != anchor_payload.get("document_version")
+            or candidate_payload.get("document_version") != anchor_payload.get("document_version")
             or candidate_payload.get("tenant_id") != anchor_payload.get("tenant_id")
         ):
             return False
@@ -280,6 +283,7 @@ class SectionAwareEvidenceBuilder:
                         "text": str(item.payload.get("text", "")),
                         "section_key": list(_section_key(item.payload)),
                         "heading_path": list(item.payload.get("heading_path") or []),
+                        "section_path": list(item.payload.get("section_path") or []),
                         "page_number": item.payload.get("page_number"),
                     }
                     for item in ordered
@@ -320,9 +324,7 @@ class SectionAwareEvidenceBuilder:
             anchor = group["anchor"]
             points = await asyncio.to_thread(self._scroll_source, anchor, context)
             points = [
-                item
-                for item in points
-                if self._same_authorized_boundary(anchor, item, context)
+                item for item in points if self._same_authorized_boundary(anchor, item, context)
             ]
             # A provider/storage race must not erase an anchor from the
             # model-visible evidence boundary.
@@ -337,8 +339,7 @@ class SectionAwareEvidenceBuilder:
             self._block(group["anchor"], group["selected"], self._count) for group in groups
         ]
         full_anchor_sizes = [
-            self._count(str(block.payload.get("text", "")))
-            for block in full_anchor_blocks
+            self._count(str(block.payload.get("text", ""))) for block in full_anchor_blocks
         ]
         allocations = list(full_anchor_sizes)
         anchor_total = sum(full_anchor_sizes)
@@ -348,8 +349,7 @@ class SectionAwareEvidenceBuilder:
             allocations = [0] * len(groups)
             remaining = self._token_budget
             while remaining and any(
-                size > allocation
-                for size, allocation in zip(full_anchor_sizes, allocations)
+                size > allocation for size, allocation in zip(full_anchor_sizes, allocations)
             ):
                 progressed = False
                 for index, size in enumerate(full_anchor_sizes):
@@ -406,8 +406,7 @@ class SectionAwareEvidenceBuilder:
                 trial_output = list(output)
                 trial_output[output_index] = trial_block
                 trial_tokens = sum(
-                    self._count(str(item.payload.get("text", "")))
-                    for item in trial_output
+                    self._count(str(item.payload.get("text", ""))) for item in trial_output
                 )
                 if trial_tokens <= self._token_budget:
                     current_chunks.append(candidate)
@@ -470,8 +469,5 @@ def serialize_section_aware_context(chunks: list[SearchResult]) -> str:
             f"[/evidence_block {index}]"
         )
     return (
-        '<section_aware_evidence trust="untrusted" blocks="{}">\n{}\n'
-        "</section_aware_evidence>"
-    ).format(
-        len(records), "\n".join(records)
-    )
+        '<section_aware_evidence trust="untrusted" blocks="{}">\n{}\n' "</section_aware_evidence>"
+    ).format(len(records), "\n".join(records))

@@ -264,9 +264,7 @@ class ObligationSufficiencyEvaluation(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    obligations: list[SufficiencyObligation] = Field(
-        min_length=1, max_length=MAX_OBLIGATIONS
-    )
+    obligations: list[SufficiencyObligation] = Field(min_length=1, max_length=MAX_OBLIGATIONS)
     decision: SufficiencyDecision
     missing_information: list[str] = Field(default_factory=list, max_length=MAX_LIST_ITEMS)
     rationale: str = Field(default="", max_length=MAX_RATIONALE_CHARS)
@@ -313,9 +311,7 @@ class ObligationExtraction(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    obligations: list[QueryObligation] = Field(
-        min_length=1, max_length=MAX_OBLIGATIONS
-    )
+    obligations: list[QueryObligation] = Field(min_length=1, max_length=MAX_OBLIGATIONS)
 
     @model_validator(mode="after")
     def obligation_ids_are_unique(self) -> ObligationExtraction:
@@ -349,9 +345,7 @@ class SupportEvaluation(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    results: list[ObligationSupport] = Field(
-        min_length=1, max_length=MAX_OBLIGATIONS
-    )
+    results: list[ObligationSupport] = Field(min_length=1, max_length=MAX_OBLIGATIONS)
 
     @model_validator(mode="after")
     def obligation_ids_are_unique(self) -> SupportEvaluation:
@@ -561,12 +555,9 @@ def _fixed_support_messages(
 ) -> list[dict[str, str]]:
     """Build support input from fixed obligations and authorized context."""
     obligation_data = [
-        {"id": obligation.id, "description": obligation.description}
-        for obligation in obligations
+        {"id": obligation.id, "description": obligation.description} for obligation in obligations
     ]
-    context = json.dumps(
-        [chunk.as_dict() for chunk in chunks], ensure_ascii=False, sort_keys=True
-    )
+    context = json.dumps([chunk.as_dict() for chunk in chunks], ensure_ascii=False, sort_keys=True)
     fixed = json.dumps(obligation_data, ensure_ascii=False, sort_keys=True)
     return [
         {"role": "system", "content": system_prompt},
@@ -842,9 +833,7 @@ class OllamaSemanticEvaluator:
                 stats.get("first_pass_schema_success", 0) for stats in self.last_call_stats
             ),
             "retry_count": sum(stats.get("retry_count", 0) for stats in self.last_call_stats),
-            "timeout_count": sum(
-                stats.get("timeout_count", 0) for stats in self.last_call_stats
-            ),
+            "timeout_count": sum(stats.get("timeout_count", 0) for stats in self.last_call_stats),
             "invalid_obligation_count": sum(
                 stats.get("invalid_obligation_count", 0) for stats in self.last_call_stats
             ),
@@ -891,9 +880,7 @@ class OllamaFixedObligationEvaluator:
         self.last_call_stats: list[dict[str, int]] = []
         self._last_raw: str | None = None
 
-    async def _call(
-        self, messages: list[dict[str, str]], model_type: type[BaseModel]
-    ) -> BaseModel:
+    async def _call(self, messages: list[dict[str, str]], model_type: type[BaseModel]) -> BaseModel:
         stats = {
             "attempts": 0,
             "first_pass_schema_success": 0,
@@ -1036,9 +1023,7 @@ class OllamaFixedObligationEvaluator:
                 raise ValueError("support obligation IDs do not match fixed obligations")
             valid_chunk_ids = {chunk.chunk_id for chunk in context}
             cited_ids = {
-                chunk_id
-                for result in parsed.results
-                for chunk_id in result.supporting_chunk_ids
+                chunk_id for result in parsed.results for chunk_id in result.supporting_chunk_ids
             }
             stats["invalid_chunk_id_count"] = len(cited_ids - valid_chunk_ids)
             if cited_ids - valid_chunk_ids:

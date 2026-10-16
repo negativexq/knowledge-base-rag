@@ -44,8 +44,13 @@ def test_default_tenant_chunk_has_a_different_point_id_than_an_explicit_tenant()
     when left at its default.
     """
     default_chunk = Chunk(
-        doc_id="same-hash", source_type="filesystem", source_id="handbook.pdf",
-        page_number=1, paragraph_index=0, char_range=(0, 10), text="x",
+        doc_id="same-hash",
+        source_type="filesystem",
+        source_id="handbook.pdf",
+        page_number=1,
+        paragraph_index=0,
+        char_range=(0, 10),
+        text="x",
     )
     tenant_a_chunk = _chunk("tenant-a")
 

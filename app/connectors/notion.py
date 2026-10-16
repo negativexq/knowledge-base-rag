@@ -141,9 +141,7 @@ class NotionConnector:
                 params["start_cursor"] = cursor
 
             data = (
-                await self._request(
-                    "GET", f"/blocks/{document.source_id}/children", params=params
-                )
+                await self._request("GET", f"/blocks/{document.source_id}/children", params=params)
             ).json()
             for block in data.get("results", []):
                 rendered = _render_block(block)

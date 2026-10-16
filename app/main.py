@@ -104,9 +104,7 @@ def create_app(
     """
 
     runtime_settings = settings or Settings(_env_file=None)
-    effective_auth_enabled = (
-        runtime_settings.auth_enabled if auth_enabled is None else auth_enabled
-    )
+    effective_auth_enabled = runtime_settings.auth_enabled if auth_enabled is None else auth_enabled
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:

@@ -124,8 +124,14 @@ def test_validate_golden_set_computes_not_found_ratio():
         _q("a", "Q1"),
         _q("b", "Q2"),
         _q("c", "Q3"),
-        {"id": "nf", "query": "Q4", "query_lang": "en", "content_lang": None,
-         "expected_locations": [], "expect_not_found": True},
+        {
+            "id": "nf",
+            "query": "Q4",
+            "query_lang": "en",
+            "content_lang": None,
+            "expected_locations": [],
+            "expect_not_found": True,
+        },
     ]
 
     report = validate_golden_set(questions, real_locations={("filesystem", "doc", "A")})

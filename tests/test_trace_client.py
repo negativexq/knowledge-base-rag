@@ -76,9 +76,7 @@ def test_fetch_trace_spans_keeps_retrying_when_root_span_is_missing():
         call_count += 1
         if call_count < 3:
             # Partial batch: child spans present, root span not yet flushed.
-            return httpx.Response(
-                200, json=_jaeger_response([_span("embed_query", 100, 500)])
-            )
+            return httpx.Response(200, json=_jaeger_response([_span("embed_query", 100, 500)]))
         return httpx.Response(
             200,
             json=_jaeger_response(
@@ -125,9 +123,7 @@ def _linked_span(
     span = _span(name, start_time_us, duration_us)
     span["spanID"] = span_id
     span["references"] = (
-        [{"refType": "CHILD_OF", "traceID": _TRACE_ID, "spanID": parent_id}]
-        if parent_id
-        else []
+        [{"refType": "CHILD_OF", "traceID": _TRACE_ID, "spanID": parent_id}] if parent_id else []
     )
     return span
 

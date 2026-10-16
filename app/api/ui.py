@@ -116,9 +116,7 @@ def _runtime_settings(request: Request):
 
 
 @router.get("/identity")
-async def identity(
-    request: Request, user: UserContext = Depends(get_current_user)
-) -> dict:
+async def identity(request: Request, user: UserContext = Depends(get_current_user)) -> dict:
     """Server-owned identity for the console header. The UI renders
     whatever this returns — it never derives tenant/role from anything
     it holds locally, and it can never send a tenant_id of its own

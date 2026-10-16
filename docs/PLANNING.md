@@ -4280,3 +4280,29 @@ extracted text. Historical phase artifacts keep the fingerprint they were measur
 `make test`: 1417 passed, 4 skipped.
 
 Next: section-aware PDF chunking on these elements, with heading context.
+
+## Ingestion — section-aware PDF chunking (closing note)
+
+PDF chunking now follows the document elements from the previous step.
+
+- **Sections.** Within a page, a chunk never mixes two sections (runs of elements under
+  the same heading path). A heading with no body of its own joins the next section, so
+  titles stay with content. `char_range` stays relative to the page text, so citations
+  (`page/paragraph`) are unchanged.
+- **`Chunk.section_path`.** Each chunk records its section path, stored in the payload as
+  `section_path` and kept apart from markdown `heading_path`, so PDF citation locations do
+  not change.
+- **Contextual index text.** `index_text(chunk)` (section or heading path, then a blank
+  line, then the chunk text) is what gets dense-embedded and sparse-indexed, for PDF and
+  markdown alike. The stored text the model reads and citations quote is still the source
+  text. The pipeline fingerprint records `index_text_mode="section_context_v1"`, so existing
+  indexes re-embed through the normal mismatch path.
+- **Evidence.** Section-aware evidence groups PDF chunks by `("section", path)` instead of
+  the page when a section path exists, so a section that continues on the next page
+  expands together. The support-unit label reads "A > B (page N)".
+- **Page furniture.** Running headers, footers and page numbers (text in the top or bottom
+  10% band repeated on at least half the pages, digits ignored) become `furniture`
+  elements and are left out of paragraphs and chunks. Parser version: `pymupdf_elements_v4`.
+  The current Evaluation Corpus v2 fingerprint artifacts were updated again.
+
+`make test`: 1429 passed, 4 skipped.

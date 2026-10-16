@@ -49,9 +49,7 @@ def test_empty_retrieval_and_empty_rerank_reasons_are_distinct():
     no_retrieval = extract_answerability_observation(
         [], authorized_candidate_count=0, pre_acl_candidate_count=0
     )
-    empty_rerank = extract_answerability_observation(
-        [], authorized_candidate_count=2
-    )
+    empty_rerank = extract_answerability_observation([], authorized_candidate_count=2)
 
     assert no_retrieval.reason == "NO_RETRIEVAL_CANDIDATES"
     assert empty_rerank.reason == "EMPTY_RERANK_RESULT"
@@ -72,9 +70,7 @@ def test_optional_branch_features_are_null_and_scores_are_not_confidence():
 
 
 def test_empty_top_five_has_nullable_numeric_features():
-    features = extract_answerability_observation(
-        [], authorized_candidate_count=0
-    ).features
+    features = extract_answerability_observation([], authorized_candidate_count=0).features
 
     assert features.top1_score is None
     assert features.top1_top2_margin is None

@@ -37,9 +37,9 @@ def test_discriminated_schema_accepts_only_answer_or_abstain_payloads() -> None:
     assert set(answer["properties"]) == {"status", "answer_parts"}
     assert answer["properties"]["status"]["enum"] == ["ANSWER"]
     assert answer["properties"]["answer_parts"]["minItems"] == 1
-    assert answer["properties"]["answer_parts"]["items"]["properties"]["support_ids"][
-        "minItems"
-    ] == 1
+    assert (
+        answer["properties"]["answer_parts"]["items"]["properties"]["support_ids"]["minItems"] == 1
+    )
     assert set(abstain["properties"]) == {"status", "reason_code"}
     assert abstain["properties"]["status"]["enum"] == ["ABSTAIN"]
 

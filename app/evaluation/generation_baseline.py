@@ -272,9 +272,7 @@ def score_generation(
         if grounding_event
         else grounding.ungrounded_citations
     )
-    emitted_citations_valid = (
-        grounding_event.get("citations_valid") if grounding_event else None
-    )
+    emitted_citations_valid = grounding_event.get("citations_valid") if grounding_event else None
     # ``stream_answer`` deliberately keeps the grounding event compact and
     # does not include ``citations_valid``.  The event's ungrounded list is
     # authoritative for the citations emitted by the raw model response,

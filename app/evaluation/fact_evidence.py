@@ -59,8 +59,7 @@ def evaluate_fact_evidence(
         source_id = str(fact["authoritative_source_id"])
         span = normalize_evidence(str(fact["supporting_text_span"]))
         supported = any(
-            str(block["source_id"]) == source_id
-            and span in normalize_evidence(str(block["text"]))
+            str(block["source_id"]) == source_id and span in normalize_evidence(str(block["text"]))
             for block in blocks
         )
         target = present_facts if supported else missing_facts

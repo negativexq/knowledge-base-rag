@@ -154,8 +154,6 @@ async def test_raw_capture_covers_generation_validation_citation_and_visible_sta
     assert stages["generation"]["model_support_ids"] == ["E1.S1"]
     assert stages["support_id_validation"]["accepted_support_ids"] == ["E1.S1"]
     assert stages["support_id_validation"]["critical_validator"]["invocations"] == 1
-    assert stages["support_id_validation"]["critical_validator"]["shadow_v3_outcomes"] == [
-        "PASS"
-    ]
+    assert stages["support_id_validation"]["critical_validator"]["shadow_v3_outcomes"] == ["PASS"]
     assert stages["citation_resolution"]["resolved_citation_ids"] == ["E1.S1"]
     assert stages["visible_response"]["outcome"] == "ANSWER"

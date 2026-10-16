@@ -106,8 +106,11 @@ def test_ranking_flip_flags_bit_level_noise_with_no_ranking_impact_is_all_false(
     flags = ranking_flip_flags(ranked_lists, recalls5=[1.0] * 4, rrs=[1.0] * 4)
 
     assert flags == {
-        "top1_flip": False, "top3_set_change": False, "top5_set_change": False,
-        "mrr_impacting_flip": False, "recall_at_5_impacting_flip": False,
+        "top1_flip": False,
+        "top3_set_change": False,
+        "top5_set_change": False,
+        "mrr_impacting_flip": False,
+        "recall_at_5_impacting_flip": False,
     }
 
 
@@ -194,10 +197,28 @@ def test_stratified_sample_is_deterministic():
 
 def test_canonical_per_question_metrics_averages_across_runs():
     passes = [
-        {"per_question": {"q1": {"recall_at_1": 1.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                                   "mrr": 1.0, "ndcg_at_5": 1.0}}},
-        {"per_question": {"q1": {"recall_at_1": 0.0, "recall_at_3": 0.0, "recall_at_5": 0.0,
-                                   "mrr": 0.0, "ndcg_at_5": 0.0}}},
+        {
+            "per_question": {
+                "q1": {
+                    "recall_at_1": 1.0,
+                    "recall_at_3": 1.0,
+                    "recall_at_5": 1.0,
+                    "mrr": 1.0,
+                    "ndcg_at_5": 1.0,
+                }
+            }
+        },
+        {
+            "per_question": {
+                "q1": {
+                    "recall_at_1": 0.0,
+                    "recall_at_3": 0.0,
+                    "recall_at_5": 0.0,
+                    "mrr": 0.0,
+                    "ndcg_at_5": 0.0,
+                }
+            }
+        },
     ]
 
     canonical = canonical_per_question_metrics(passes)
@@ -207,8 +228,17 @@ def test_canonical_per_question_metrics_averages_across_runs():
 
 def test_canonical_per_question_metrics_handles_a_question_missing_from_some_runs():
     passes = [
-        {"per_question": {"q1": {"recall_at_1": 1.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                                   "mrr": 1.0, "ndcg_at_5": 1.0}}},
+        {
+            "per_question": {
+                "q1": {
+                    "recall_at_1": 1.0,
+                    "recall_at_3": 1.0,
+                    "recall_at_5": 1.0,
+                    "mrr": 1.0,
+                    "ndcg_at_5": 1.0,
+                }
+            }
+        },
         {"per_question": {}},  # q1 was a not-found miss or otherwise absent this run
     ]
 
@@ -287,8 +317,12 @@ async def test_embed_query_frozen_mode_never_calls_ollama(tmp_path):
     config = get_embedding_model_config("qwen3-0.6b", Settings(), output_dimension=768)
     cache = EmbeddingCache(tmp_path / "cache.json")
     key = cache_key(
-        config.ollama_model, config.revision, config.dimension, config.query_prefix(),
-        "a query", "fp1",
+        config.ollama_model,
+        config.revision,
+        config.dimension,
+        config.query_prefix(),
+        "a query",
+        "fp1",
     )
     cache.put(key, [0.9, 0.8, 0.7], fingerprint="fp1")
 

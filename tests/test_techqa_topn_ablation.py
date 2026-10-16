@@ -9,8 +9,7 @@ from scripts.experiments.run_techqa_topn_ablation import (
 
 def test_persisted_top_n_slices_ranked_input_without_recomputing() -> None:
     ranked = [
-        {"rank": rank, "chunk_id": f"c{rank}", "bge_score": 1 / rank}
-        for rank in range(1, 21)
+        {"rank": rank, "chunk_id": f"c{rank}", "bge_score": 1 / rank} for rank in range(1, 21)
     ]
     assert [item["chunk_id"] for item in select_persisted_anchors(ranked, 2)] == ["c1", "c2"]
     assert [item["chunk_id"] for item in select_persisted_anchors(ranked, 3)] == ["c1", "c2", "c3"]

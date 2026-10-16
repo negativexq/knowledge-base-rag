@@ -25,8 +25,7 @@ def validate_validator_selector(value: str) -> ValidatorSelector:
     """Validate the server-owned selector and fail closed on unknown values."""
     if value not in VALIDATOR_SELECTORS:
         raise ValueError(
-            "critical validator selector must be one of "
-            f"{VALIDATOR_SELECTORS}, got {value!r}"
+            "critical validator selector must be one of " f"{VALIDATOR_SELECTORS}, got {value!r}"
         )
     return cast(ValidatorSelector, value)
 
@@ -55,16 +54,12 @@ def _architecture_v2_result(
 ) -> dict[str, Any]:
     """Adapt the frozen Architecture V2 result to the production result shape."""
     started = time.perf_counter()
-    architecture = audit_claim_architecture_v2(
-        claim, support_texts, claim_id=claim_id
-    )
+    architecture = audit_claim_architecture_v2(claim, support_texts, claim_id=claim_id)
     v3_result = dict(architecture["v3"])
     decisions = architecture["role_decisions"]
     role_counts = {
         "validate_role_count": sum(d.role == "VALIDATE" for d in decisions),
-        "skip_rejected_premise_count": sum(
-            d.role == "SKIP_REJECTED_PREMISE" for d in decisions
-        ),
+        "skip_rejected_premise_count": sum(d.role == "SKIP_REJECTED_PREMISE" for d in decisions),
         "ambiguous_keep_validating_count": sum(
             d.role == "AMBIGUOUS_KEEP_VALIDATING" for d in decisions
         ),
@@ -89,10 +84,7 @@ def _architecture_v2_result(
         "locale_ambiguity": False,
         "version_ambiguity": False,
         "version_specificity_reject": _outcome(v3_result) == "REJECT"
-        and any(
-            occurrence.lexical_type == "VERSION"
-            for occurrence in architecture["occurrences"]
-        ),
+        and any(occurrence.lexical_type == "VERSION" for occurrence in architecture["occurrences"]),
         "identifier_reject": _outcome(v3_result) == "REJECT"
         and any(
             occurrence.lexical_type in {"IDENTIFIER", "SIGNED_IDENTIFIER"}
@@ -109,9 +101,7 @@ def _architecture_v2_result(
         "shadow_v3_reason_class": None,
         "critical_value_count": len(architecture["occurrences"]),
         "critical_value_type": (
-            architecture["occurrences"][0].lexical_type
-            if architecture["occurrences"]
-            else None
+            architecture["occurrences"][0].lexical_type if architecture["occurrences"] else None
         ),
         "occurrence_count": len(architecture["occurrences"]),
         **role_counts,
@@ -141,9 +131,7 @@ def _architecture_v2_result(
                 }
                 for decision in decisions
             ],
-            "filtered_validate_occurrence_ids": list(
-                architecture["validate_occurrence_ids"]
-            ),
+            "filtered_validate_occurrence_ids": list(architecture["validate_occurrence_ids"]),
             "v3_result": v3_result,
         },
     }
@@ -213,9 +201,7 @@ def audit_critical_value(
                 _outcome(result), shadow_outcome
             )
             result["architecture_v2_shadow_executed"] = True
-            result["architecture_v2_shadow_architecture_id"] = shadow_result.get(
-                "architecture_id"
-            )
+            result["architecture_v2_shadow_architecture_id"] = shadow_result.get("architecture_id")
             result["architecture_v2_shadow_occurrence_count"] = int(
                 shadow_result.get("occurrence_count", 0)
             )

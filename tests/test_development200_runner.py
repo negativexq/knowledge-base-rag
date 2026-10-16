@@ -38,13 +38,26 @@ def test_canonical_hash_is_stable_for_manifest_payload() -> None:
 def test_config_identity_drift_is_fail_closed() -> None:
     from scripts.experiments.run_development200 import load_and_assert_identity
 
-    config, _fingerprints, questions, fingerprint, _plan, _sample, split_hash = load_and_assert_identity()
+    config, _fingerprints, questions, fingerprint, _plan, _sample, split_hash = (
+        load_and_assert_identity()
+    )
     assert config["config_fingerprint"] == EXPECTED_CONFIG_FINGERPRINT
     assert fingerprint == EXPECTED_CONFIG_FINGERPRINT
     assert len(questions) == 200
     assert len(split_hash) == 64
 
 
-@pytest.mark.parametrize("state", ["PERSISTED_COMPLETE", "GENERATION_COMPLETE", "FAILED_PROVIDER", "FAILED_SCORER"])
+@pytest.mark.parametrize(
+    "state", ["PERSISTED_COMPLETE", "GENERATION_COMPLETE", "FAILED_PROVIDER", "FAILED_SCORER"]
+)
 def test_checkpoint_states_are_explicit(state: str) -> None:
-    assert state in {"NOT_STARTED", "GENERATION_COMPLETE", "SCORING_COMPLETE", "PERSISTED_COMPLETE", "FAILED_PROVIDER", "FAILED_PARSE", "FAILED_SCORER", "FAILED_PERSISTENCE"}
+    assert state in {
+        "NOT_STARTED",
+        "GENERATION_COMPLETE",
+        "SCORING_COMPLETE",
+        "PERSISTED_COMPLETE",
+        "FAILED_PROVIDER",
+        "FAILED_PARSE",
+        "FAILED_SCORER",
+        "FAILED_PERSISTENCE",
+    }

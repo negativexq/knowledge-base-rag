@@ -26,7 +26,8 @@ def test_passes_silently_when_no_collection_exists_yet():
 
 def test_passes_when_dimension_matches():
     settings = Settings(
-        embedding_model_key="qwen3-4b", embedding_output_dimension=1024,
+        embedding_model_key="qwen3-4b",
+        embedding_output_dimension=1024,
         qdrant_collection_name="kb_chunks",
     )
     client = _client_with_dense_collection("kb_chunks", 1024)
@@ -36,7 +37,8 @@ def test_passes_when_dimension_matches():
 
 def test_raises_clearly_on_dimension_mismatch():
     settings = Settings(
-        embedding_model_key="qwen3-4b", embedding_output_dimension=1024,
+        embedding_model_key="qwen3-4b",
+        embedding_output_dimension=1024,
         qdrant_collection_name="kb_chunks",
     )
     client = _client_with_dense_collection("kb_chunks", 768)
@@ -49,7 +51,8 @@ def test_checks_the_alias_target_dimension_when_an_alias_is_active():
     from app.migration.aliasing import atomic_switch_alias
 
     settings = Settings(
-        embedding_model_key="qwen3-4b", embedding_output_dimension=1024,
+        embedding_model_key="qwen3-4b",
+        embedding_output_dimension=1024,
         qdrant_active_alias="kb_active",
     )
     client = _client_with_dense_collection("kb_qwen3_4b_1024_x", 1024)

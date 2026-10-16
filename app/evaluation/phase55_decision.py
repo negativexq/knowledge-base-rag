@@ -92,11 +92,7 @@ def family_impact(
     payload: dict[str, Any], changed: dict[str, list[dict[str, Any]]]
 ) -> list[dict[str, Any]]:
     by_k = records_by_candidate(payload)
-    query_ids = sorted(
-        item["query_id"]
-        for direction in changed.values()
-        for item in direction
-    )
+    query_ids = sorted(item["query_id"] for direction in changed.values() for item in direction)
     output = []
     for query_id in query_ids:
         family = by_k[20][query_id]["case_family"]
@@ -124,11 +120,7 @@ def family_impact(
 
 def cross_lingual_membership(payload: dict[str, Any]) -> dict[str, Any]:
     by_k = records_by_candidate(payload)
-    members = [
-        record
-        for record in by_k[20].values()
-        if record["category"] == "cross_lingual"
-    ]
+    members = [record for record in by_k[20].values() if record["category"] == "cross_lingual"]
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for record in members:
         groups[record["language_pair"]].append(record)
@@ -145,9 +137,7 @@ def cross_lingual_membership(payload: dict[str, Any]) -> dict[str, Any]:
         "member_count": len(members),
         "member_ids": sorted(record["query_id"] for record in members),
         "language_pair_groups": pair_data,
-        "other_or_mixed_pairs": sorted(
-            pair for pair in groups if pair not in {"tr->en", "en->tr"}
-        ),
+        "other_or_mixed_pairs": sorted(pair for pair in groups if pair not in {"tr->en", "en->tr"}),
     }
 
 
@@ -158,9 +148,7 @@ def ndcg_breakdown(
     unique_ranked = list(dict.fromkeys(record["ranked_source_ids"]))
     top = unique_ranked[:top_n]
     dcg = sum(
-        1 / math.log2(rank + 2)
-        for rank, source_id in enumerate(top)
-        if source_id in expected
+        1 / math.log2(rank + 2) for rank, source_id in enumerate(top) if source_id in expected
     )
     ideal_hits = min(len(expected), top_n)
     idcg = sum(1 / math.log2(rank + 2) for rank in range(ideal_hits))

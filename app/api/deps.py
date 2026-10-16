@@ -37,9 +37,7 @@ def get_current_user(request: Request) -> UserContext:
     token = authorization.split(" ", 1)[1].strip()
     authenticator = getattr(request.app.state, "token_authenticator", None)
     if authenticator is None:
-        log_audit_event(
-            AUTHENTICATION_FAILED, endpoint=request.url.path, reason="not_configured"
-        )
+        log_audit_event(AUTHENTICATION_FAILED, endpoint=request.url.path, reason="not_configured")
         raise HTTPException(status_code=401, detail="Authentication is not configured")
 
     user = authenticator.authenticate(token)
@@ -58,9 +56,7 @@ def require_role(required: Role):
     (/sync needs OPERATOR+, /chat only needs USER+).
     """
 
-    def _dependency(
-        request: Request, user: UserContext = Depends(get_current_user)
-    ) -> UserContext:
+    def _dependency(request: Request, user: UserContext = Depends(get_current_user)) -> UserContext:
         if not user.has_role(required):
             log_audit_event(
                 AUTHORIZATION_DENIED,

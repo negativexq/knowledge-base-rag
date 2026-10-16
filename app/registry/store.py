@@ -180,6 +180,7 @@ class IndexSchemaMismatchError(Exception):
     automatically on next boot, no further action needed.
     """
 
+
 # version only increments when content_hash actually changes — re-syncing
 # unchanged content (the common case) just refreshes last_synced_at, so a
 # incremental sync's "skip unchanged documents" logic can tell "still current"

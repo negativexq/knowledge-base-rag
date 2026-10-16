@@ -84,7 +84,10 @@ _ManagerBundle = tuple[SyncManager, _RecordingStore, DocumentRegistry]
 
 
 def _make_manager(
-    tmp_path, docs_dir, pipeline_fingerprint, store: _RecordingStore | None = None,
+    tmp_path,
+    docs_dir,
+    pipeline_fingerprint,
+    store: _RecordingStore | None = None,
     registry: DocumentRegistry | None = None,
 ) -> _ManagerBundle:
     """store/registry are optional so a test can build a SECOND manager

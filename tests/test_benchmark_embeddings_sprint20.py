@@ -14,10 +14,14 @@ def _result(label, cross_recall5, cross_mrr, mono_recall5, dimension, p95, per_q
         "supported": True,
         "requested_dimension": dimension,
         "cross_lingual": {
-            "recall_at_5": cross_recall5, "mrr": cross_mrr, "ndcg_at_5": cross_recall5
+            "recall_at_5": cross_recall5,
+            "mrr": cross_mrr,
+            "ndcg_at_5": cross_recall5,
         },
         "mono_lingual": {
-            "recall_at_5": mono_recall5, "mrr": mono_recall5, "ndcg_at_5": mono_recall5
+            "recall_at_5": mono_recall5,
+            "mrr": mono_recall5,
+            "ndcg_at_5": mono_recall5,
         },
         "overall": {"ndcg_at_5": cross_recall5},
         "operational": {"query_embed_p95_ms": p95},
@@ -43,10 +47,22 @@ def _bootstrap_entry(metric, subset, lower, upper, observed=None):
 
 
 def test_production_decision_recommends_small_when_within_tolerance_and_ci_agrees():
-    small = _result("qwen3-0.6b@768", cross_recall5=0.93, cross_mrr=0.72, mono_recall5=1.0,
-                     dimension=768, p95=140)
-    large = _result("qwen3-4b@1024", cross_recall5=0.96, cross_mrr=0.75, mono_recall5=1.0,
-                     dimension=1024, p95=260)
+    small = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.93,
+        cross_mrr=0.72,
+        mono_recall5=1.0,
+        dimension=768,
+        p95=140,
+    )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.96,
+        cross_mrr=0.75,
+        mono_recall5=1.0,
+        dimension=1024,
+        p95=260,
+    )
     bootstrap_entries = [
         _bootstrap_entry("recall_at_5", "cross_lingual", lower=-0.06, upper=0.02),
         _bootstrap_entry("mrr", "cross_lingual", lower=-0.07, upper=0.01),
@@ -65,10 +81,22 @@ def test_production_decision_recommends_small_when_within_tolerance_and_ci_agree
 
 
 def test_production_decision_recommends_large_when_gap_exceeds_tolerance_and_ci_confirms():
-    small = _result("qwen3-0.6b@768", cross_recall5=0.70, cross_mrr=0.50, mono_recall5=1.0,
-                     dimension=768, p95=140)
-    large = _result("qwen3-4b@1024", cross_recall5=0.97, cross_mrr=0.80, mono_recall5=1.0,
-                     dimension=1024, p95=260)
+    small = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.70,
+        cross_mrr=0.50,
+        mono_recall5=1.0,
+        dimension=768,
+        p95=140,
+    )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.97,
+        cross_mrr=0.80,
+        mono_recall5=1.0,
+        dimension=1024,
+        p95=260,
+    )
     bootstrap_entries = [
         _bootstrap_entry("recall_at_5", "cross_lingual", lower=-0.35, upper=-0.20),
         _bootstrap_entry("mrr", "cross_lingual", lower=-0.40, upper=-0.25),
@@ -91,10 +119,22 @@ def test_production_decision_is_need_more_data_when_point_estimate_and_ci_disagr
     still shows a gap beyond the threshold — genuine ambiguity, not a
     confident answer either direction.
     """
-    small = _result("qwen3-0.6b@768", cross_recall5=0.94, cross_mrr=0.73, mono_recall5=1.0,
-                     dimension=768, p95=140)
-    large = _result("qwen3-4b@1024", cross_recall5=0.96, cross_mrr=0.75, mono_recall5=1.0,
-                     dimension=1024, p95=260)
+    small = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.94,
+        cross_mrr=0.73,
+        mono_recall5=1.0,
+        dimension=768,
+        p95=140,
+    )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.96,
+        cross_mrr=0.75,
+        mono_recall5=1.0,
+        dimension=1024,
+        p95=260,
+    )
     # Point estimate loss is small (within tolerance) but the CI is wide
     # and its upper bound still exceeds -threshold.
     bootstrap_entries = [
@@ -119,12 +159,25 @@ def test_production_decision_is_need_more_data_when_configs_missing():
 
 
 def test_production_decision_falls_back_to_nomic_when_both_qwen_candidates_are_in_crisis():
-    small = _result("qwen3-0.6b@768", cross_recall5=0.30, cross_mrr=0.20, mono_recall5=0.9,
-                     dimension=768, p95=140)
-    large = _result("qwen3-4b@1024", cross_recall5=0.35, cross_mrr=0.25, mono_recall5=0.9,
-                     dimension=1024, p95=260)
-    nomic = _result("nomic@768", cross_recall5=0.60, cross_mrr=0.40, mono_recall5=1.0,
-                     dimension=768, p95=45)
+    small = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.30,
+        cross_mrr=0.20,
+        mono_recall5=0.9,
+        dimension=768,
+        p95=140,
+    )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.35,
+        cross_mrr=0.25,
+        mono_recall5=0.9,
+        dimension=1024,
+        p95=260,
+    )
+    nomic = _result(
+        "nomic@768", cross_recall5=0.60, cross_mrr=0.40, mono_recall5=1.0, dimension=768, p95=45
+    )
     bootstrap_entries = [
         _bootstrap_entry("recall_at_5", "cross_lingual", lower=-0.10, upper=0.05),
         _bootstrap_entry("mrr", "cross_lingual", lower=-0.10, upper=0.05),
@@ -142,27 +195,47 @@ def test_production_decision_falls_back_to_nomic_when_both_qwen_candidates_are_i
 
 
 def test_quality_winner_is_the_highest_weighted_score_config():
-    small = _result("qwen3-0.6b@768", cross_recall5=0.90, cross_mrr=0.70, mono_recall5=1.0,
-                     dimension=768, p95=140)
-    large = _result("qwen3-4b@1024", cross_recall5=0.97, cross_mrr=0.80, mono_recall5=1.0,
-                     dimension=1024, p95=260)
-
-    decision = sprint20_production_decision(
-        {"qwen3-0.6b@768": small, "qwen3-4b@1024": large}, []
+    small = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.90,
+        cross_mrr=0.70,
+        mono_recall5=1.0,
+        dimension=768,
+        p95=140,
     )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.97,
+        cross_mrr=0.80,
+        mono_recall5=1.0,
+        dimension=1024,
+        p95=260,
+    )
+
+    decision = sprint20_production_decision({"qwen3-0.6b@768": small, "qwen3-4b@1024": large}, [])
 
     assert decision["quality_winner"] == "qwen3-4b@1024"
 
 
 def test_efficiency_winner_prefers_lower_dimension_and_lower_latency():
-    small = _result("qwen3-0.6b@768", cross_recall5=0.90, cross_mrr=0.70, mono_recall5=1.0,
-                     dimension=768, p95=140)
-    large = _result("qwen3-4b@1024", cross_recall5=0.97, cross_mrr=0.80, mono_recall5=1.0,
-                     dimension=1024, p95=260)
-
-    decision = sprint20_production_decision(
-        {"qwen3-0.6b@768": small, "qwen3-4b@1024": large}, []
+    small = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.90,
+        cross_mrr=0.70,
+        mono_recall5=1.0,
+        dimension=768,
+        p95=140,
     )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.97,
+        cross_mrr=0.80,
+        mono_recall5=1.0,
+        dimension=1024,
+        p95=260,
+    )
+
+    decision = sprint20_production_decision({"qwen3-0.6b@768": small, "qwen3-4b@1024": large}, [])
 
     assert decision["efficiency_winner"] == "qwen3-0.6b@768"
 
@@ -175,12 +248,25 @@ def test_efficiency_winner_excludes_a_fast_but_much_lower_quality_config_even_ab
     quality than every other option. The fix makes the quality bar
     relative to the best config, not an absolute floor.
     """
-    nomic = _result("nomic@768", cross_recall5=0.58, cross_mrr=0.42, mono_recall5=0.92,
-                     dimension=768, p95=45)
-    small = _result("qwen3-0.6b@768", cross_recall5=0.91, cross_mrr=0.70, mono_recall5=0.98,
-                     dimension=768, p95=137)
-    large = _result("qwen3-4b@1024", cross_recall5=0.96, cross_mrr=0.75, mono_recall5=1.0,
-                     dimension=1024, p95=256)
+    nomic = _result(
+        "nomic@768", cross_recall5=0.58, cross_mrr=0.42, mono_recall5=0.92, dimension=768, p95=45
+    )
+    small = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.91,
+        cross_mrr=0.70,
+        mono_recall5=0.98,
+        dimension=768,
+        p95=137,
+    )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.96,
+        cross_mrr=0.75,
+        mono_recall5=1.0,
+        dimension=1024,
+        p95=256,
+    )
 
     decision = sprint20_production_decision(
         {"nomic@768": nomic, "qwen3-0.6b@768": small, "qwen3-4b@1024": large}, []
@@ -191,14 +277,24 @@ def test_efficiency_winner_excludes_a_fast_but_much_lower_quality_config_even_ab
 
 
 def test_efficiency_winner_excludes_configs_below_the_crisis_floor():
-    crisis = _result("qwen3-0.6b@768", cross_recall5=0.10, cross_mrr=0.05, mono_recall5=1.0,
-                      dimension=768, p95=140)
-    large = _result("qwen3-4b@1024", cross_recall5=0.97, cross_mrr=0.80, mono_recall5=1.0,
-                     dimension=1024, p95=260)
-
-    decision = sprint20_production_decision(
-        {"qwen3-0.6b@768": crisis, "qwen3-4b@1024": large}, []
+    crisis = _result(
+        "qwen3-0.6b@768",
+        cross_recall5=0.10,
+        cross_mrr=0.05,
+        mono_recall5=1.0,
+        dimension=768,
+        p95=140,
     )
+    large = _result(
+        "qwen3-4b@1024",
+        cross_recall5=0.97,
+        cross_mrr=0.80,
+        mono_recall5=1.0,
+        dimension=1024,
+        p95=260,
+    )
+
+    decision = sprint20_production_decision({"qwen3-0.6b@768": crisis, "qwen3-4b@1024": large}, [])
 
     assert decision["efficiency_winner"] == "qwen3-4b@1024"  # the only non-crisis config
 
@@ -262,18 +358,52 @@ def test_compute_bootstrap_report_pairs_by_question_id_not_position():
     # Deliberately different insertion order between the two configs —
     # pairing must still be correct because it's keyed by id.
     result_a = _result(
-        "a", 0.5, 0.5, 1.0, 768, 100,
-        per_question={"q2": {"recall_at_1": 0.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                               "mrr": 0.5, "ndcg_at_5": 0.5},
-                       "q1": {"recall_at_1": 1.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                               "mrr": 1.0, "ndcg_at_5": 1.0}},
+        "a",
+        0.5,
+        0.5,
+        1.0,
+        768,
+        100,
+        per_question={
+            "q2": {
+                "recall_at_1": 0.0,
+                "recall_at_3": 1.0,
+                "recall_at_5": 1.0,
+                "mrr": 0.5,
+                "ndcg_at_5": 0.5,
+            },
+            "q1": {
+                "recall_at_1": 1.0,
+                "recall_at_3": 1.0,
+                "recall_at_5": 1.0,
+                "mrr": 1.0,
+                "ndcg_at_5": 1.0,
+            },
+        },
     )
     result_b = _result(
-        "b", 0.5, 0.5, 1.0, 1024, 200,
-        per_question={"q1": {"recall_at_1": 0.0, "recall_at_3": 0.0, "recall_at_5": 0.0,
-                               "mrr": 0.0, "ndcg_at_5": 0.0},
-                       "q2": {"recall_at_1": 0.0, "recall_at_3": 0.0, "recall_at_5": 0.0,
-                               "mrr": 0.0, "ndcg_at_5": 0.0}},
+        "b",
+        0.5,
+        0.5,
+        1.0,
+        1024,
+        200,
+        per_question={
+            "q1": {
+                "recall_at_1": 0.0,
+                "recall_at_3": 0.0,
+                "recall_at_5": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_5": 0.0,
+            },
+            "q2": {
+                "recall_at_1": 0.0,
+                "recall_at_3": 0.0,
+                "recall_at_5": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_5": 0.0,
+            },
+        },
     )
 
     entries = compute_bootstrap_report(result_a, result_b, questions, seed=1, iterations=200)
@@ -288,10 +418,24 @@ def test_compute_bootstrap_report_pairs_by_question_id_not_position():
 
 def test_compute_bootstrap_report_is_deterministic_for_a_fixed_seed():
     questions = [{"id": "q1", "query_lang": "tr", "content_lang": "en"}]
-    pq_a = {"q1": {"recall_at_1": 1.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                    "mrr": 1.0, "ndcg_at_5": 1.0}}
-    pq_b = {"q1": {"recall_at_1": 0.0, "recall_at_3": 0.0, "recall_at_5": 0.0,
-                    "mrr": 0.0, "ndcg_at_5": 0.0}}
+    pq_a = {
+        "q1": {
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0,
+            "recall_at_5": 1.0,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+        }
+    }
+    pq_b = {
+        "q1": {
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0,
+            "recall_at_5": 0.0,
+            "mrr": 0.0,
+            "ndcg_at_5": 0.0,
+        }
+    }
     result_a = _result("a", 0.5, 0.5, 1.0, 768, 100, per_question=pq_a)
     result_b = _result("b", 0.5, 0.5, 1.0, 1024, 200, per_question=pq_b)
 
@@ -306,12 +450,31 @@ def test_compute_bootstrap_report_skips_questions_missing_from_either_config():
         {"id": "q1", "query_lang": "tr", "content_lang": "en"},
         {"id": "q2", "query_lang": "tr", "content_lang": "en"},
     ]
-    pq_a = {"q1": {"recall_at_1": 1.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                    "mrr": 1.0, "ndcg_at_5": 1.0}}  # q2 missing (e.g. not-found for this config)
-    pq_b = {"q1": {"recall_at_1": 1.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                    "mrr": 1.0, "ndcg_at_5": 1.0},
-            "q2": {"recall_at_1": 1.0, "recall_at_3": 1.0, "recall_at_5": 1.0,
-                    "mrr": 1.0, "ndcg_at_5": 1.0}}
+    pq_a = {
+        "q1": {
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0,
+            "recall_at_5": 1.0,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+        }
+    }  # q2 missing (e.g. not-found for this config)
+    pq_b = {
+        "q1": {
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0,
+            "recall_at_5": 1.0,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+        },
+        "q2": {
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0,
+            "recall_at_5": 1.0,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+        },
+    }
     result_a = _result("a", 1.0, 1.0, 1.0, 768, 100, per_question=pq_a)
     result_b = _result("b", 1.0, 1.0, 1.0, 1024, 200, per_question=pq_b)
 

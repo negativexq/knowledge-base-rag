@@ -131,9 +131,7 @@ def test_rejected_long_questions_still_count_against_the_rate_limit(tmp_path):
     """Otherwise a client could flood the endpoint with oversized bodies
     for free."""
     search = _CountingSearch()
-    client = _client(
-        tmp_path, search, chat_rate_limit_per_minute=1, chat_max_question_chars=3
-    )
+    client = _client(tmp_path, search, chat_rate_limit_per_minute=1, chat_max_question_chars=3)
 
     assert _ask(client, "too long").status_code == 422
     assert _ask(client, "ok").status_code == 429

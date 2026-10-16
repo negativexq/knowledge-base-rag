@@ -10,7 +10,14 @@ from scripts.audits import diagnose_multidoc_oracle_context as oracle
 
 def test_no_provider_retrieval_reranker_or_semantic_gate_path_exists():
     source = inspect.getsource(oracle)
-    forbidden = ("OllamaClient", "stream_answer", "QdrantClient", "hybrid_search", "CrossEncoderReranker", "semantic_answerability")
+    forbidden = (
+        "OllamaClient",
+        "stream_answer",
+        "QdrantClient",
+        "hybrid_search",
+        "CrossEncoderReranker",
+        "semantic_answerability",
+    )
     assert all(token not in source for token in forbidden)
     assert "qwen2.5:7b" not in source
     assert "qwen3.5:9b" not in source

@@ -151,4 +151,4 @@ def test_build_pipeline_fingerprint_records_the_current_pdf_parser_version():
 
     assert fingerprint.pdf_parser_version == pdf_parser_version()
     assert fingerprint.pdf_parser_version.startswith(PDF_PARSER_VERSION)
-    assert PDF_PARSER_VERSION == "pymupdf_elements_v3"
+    assert PDF_PARSER_VERSION == "pymupdf_elements_v4"

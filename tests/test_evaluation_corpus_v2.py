@@ -74,8 +74,7 @@ def test_corpus_v2_split_is_deterministic():
 
 def test_artifact_builder_does_not_mutate_canonical_assets(tmp_path):
     canonical = [
-        path for path in CORPUS.rglob("*")
-        if path.is_file() and path.name != "__pycache__"
+        path for path in CORPUS.rglob("*") if path.is_file() and path.name != "__pycache__"
     ]
     before = {path: path.read_bytes() for path in canonical}
     build_artifacts(CORPUS, DATASET, tmp_path / "artifacts")
@@ -133,9 +132,7 @@ def test_corpus_v2_case_families_never_cross_splits():
 def test_validator_rejects_case_family_split_leakage(tmp_path):
     def mutate(questions):
         family = questions[0]["case_family"]
-        sibling = next(
-            question for question in questions[1:] if question["case_family"] == family
-        )
+        sibling = next(question for question in questions[1:] if question["case_family"] == family)
         sibling["split"] = (
             "frozen_test" if questions[0]["split"] != "frozen_test" else "development"
         )
@@ -200,8 +197,7 @@ def test_validator_rejects_answerable_without_evidence(tmp_path):
     report = _isolated_copy(tmp_path, mutate)
 
     assert any(
-        "answerable records require answer and evidence" in error
-        for error in report["errors"]
+        "answerable records require answer and evidence" in error for error in report["errors"]
     )
 
 
@@ -219,9 +215,14 @@ def test_validator_rejects_invalid_language_pair_and_tenant(tmp_path):
 def test_long_documents_have_distinct_substantive_content():
     stats = json.loads((ARTIFACTS / "statistics.json").read_text(encoding="utf-8"))
     long_ids = {
-        "employee-handbook-en", "long-policy-tr", "support-playbook",
-        "enterprise-contract-guide", "product-guide-en", "regional-returns-eu",
-        "regional-returns-tr", "returns-manual-tr",
+        "employee-handbook-en",
+        "long-policy-tr",
+        "support-playbook",
+        "enterprise-contract-guide",
+        "product-guide-en",
+        "regional-returns-eu",
+        "regional-returns-tr",
+        "returns-manual-tr",
     }
     for source_id in long_ids:
         metrics = stats["content_quality"][source_id]
@@ -277,7 +278,10 @@ def test_validator_rejects_wrong_language_metadata(tmp_path):
 def test_queries_do_not_reveal_evaluation_labels():
     questions = _load_questions()
     forbidden = (
-        "available evidence", "tenant boundary", "using the turkish", "without naming a plan"
+        "available evidence",
+        "tenant boundary",
+        "using the turkish",
+        "without naming a plan",
     )
 
     assert not any(any(phrase in q["question"].lower() for phrase in forbidden) for q in questions)

@@ -39,9 +39,7 @@ def _valid_citation_identities(chunks: list[SearchResult]) -> set[tuple[str, str
     return identities
 
 
-def citation_identity_status(
-    citation: str, chunks: list[SearchResult]
-) -> str:
+def citation_identity_status(citation: str, chunks: list[SearchResult]) -> str:
     """Classify one citation without broadening the authorized boundary.
 
     Exact identity is preferred.  A case-insensitive match is accepted only
@@ -59,8 +57,7 @@ def citation_identity_status(
     matches = {
         identity
         for identity in identities
-        if tuple(part.casefold() for part in identity)
-        == tuple(part.casefold() for part in folded)
+        if tuple(part.casefold() for part in identity) == tuple(part.casefold() for part in folded)
     }
     if len(matches) == 1:
         return "VALID"
@@ -109,10 +106,9 @@ def check_grounding(answer: str, chunks: list[SearchResult]) -> GroundingResult:
     """
     citations_found = extract_citations(answer)
     ungrounded_citations = [
-        c for c in citations_found
-        if citation_identity_status(
-            f"[s.{c[0]}:{c[1]}/{c[2]}]", chunks
-        ) != "VALID"
+        c
+        for c in citations_found
+        if citation_identity_status(f"[s.{c[0]}:{c[1]}/{c[2]}]", chunks) != "VALID"
     ]
 
     has_citations = len(citations_found) > 0

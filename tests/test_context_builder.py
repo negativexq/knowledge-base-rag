@@ -16,21 +16,25 @@ def _chunk(chunk_id: str, source_id: str, text: str, heading: str = "Policy") ->
 
 
 def test_context_builder_removes_only_exact_duplicate_same_identity():
-    result = build_context_v1([
-        _chunk("c1", "s1", "14 days"),
-        _chunk("c1", "s1", "14 days"),
-        _chunk("c2", "s1", "14 days", "Different location"),
-    ])
+    result = build_context_v1(
+        [
+            _chunk("c1", "s1", "14 days"),
+            _chunk("c1", "s1", "14 days"),
+            _chunk("c2", "s1", "14 days", "Different location"),
+        ]
+    )
     assert result.output_chunk_ids == ["c1", "c2"]
     assert result.removed_chunk_ids == ["c1"]
     assert result.dedupe_similarity["c1"] == 1.0
 
 
 def test_context_builder_retains_distinct_same_source_chunks_and_order():
-    result = build_context_v1([
-        _chunk("c1", "s1", "14 days", "A"),
-        _chunk("c2", "s1", "30 days", "B"),
-    ])
+    result = build_context_v1(
+        [
+            _chunk("c1", "s1", "14 days", "A"),
+            _chunk("c2", "s1", "30 days", "B"),
+        ]
+    )
     assert result.output_chunk_ids == ["c1", "c2"]
     assert result.ordering_changes == 0
     assert "CANONICAL_CITATION" in result.context

@@ -91,7 +91,6 @@ class EmbeddingCache:
     def save(self) -> None:
         self._path.parent.mkdir(parents=True, exist_ok=True)
         raw = {
-            k: {"vector": e.vector, "fingerprint": e.fingerprint}
-            for k, e in self._entries.items()
+            k: {"vector": e.vector, "fingerprint": e.fingerprint} for k, e in self._entries.items()
         }
         self._path.write_text(json.dumps(raw), encoding="utf-8")

@@ -19,6 +19,7 @@ def _local_tracer_with_exporter():
     provider.add_span_processor(SimpleSpanProcessor(exporter))
     return provider.get_tracer("test"), exporter
 
+
 COLLECTION = "test_ingest"
 
 

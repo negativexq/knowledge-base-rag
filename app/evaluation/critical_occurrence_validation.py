@@ -49,8 +49,10 @@ def validate_occurrences_v3(
     ]
     support = " ".join(support_texts)
     statuses: list[str] = []
-    if occurrences and _v3_version_signal(answer) and any(
-        occurrence.lexical_type == "VERSION" for occurrence in occurrences
+    if (
+        occurrences
+        and _v3_version_signal(answer)
+        and any(occurrence.lexical_type == "VERSION" for occurrence in occurrences)
     ):
         claim_versions = [
             tuple(int(part) for part in occurrence.normalized_value.split("."))

@@ -25,8 +25,7 @@ class ValidationReport:
 
     def meets_distribution(self, minimums: dict[tuple[str, str], int]) -> bool:
         return all(
-            self.language_pair_counts.get(cell, 0) >= minimum
-            for cell, minimum in minimums.items()
+            self.language_pair_counts.get(cell, 0) >= minimum for cell, minimum in minimums.items()
         )
 
 

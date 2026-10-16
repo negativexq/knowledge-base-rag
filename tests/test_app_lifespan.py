@@ -84,9 +84,7 @@ def test_on_shutdown_hooks_run_after_scheduler_stop(tmp_path):
     async def close_client():
         order.append("client_closed")
 
-    client = _client(
-        tmp_path, scheduler=_OrderedScheduler(), on_shutdown=[close_client]
-    )
+    client = _client(tmp_path, scheduler=_OrderedScheduler(), on_shutdown=[close_client])
 
     with client:
         pass

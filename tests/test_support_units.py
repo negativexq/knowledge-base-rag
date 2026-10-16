@@ -87,9 +87,7 @@ def test_state_machine_provider_wrapper_maps_to_canonical_answer() -> None:
         json.dumps(
             {
                 "result": {
-                    "answer_parts": [
-                        {"text": "14 days", "support_ids": ["E1.S1"]}
-                    ],
+                    "answer_parts": [{"text": "14 days", "support_ids": ["E1.S1"]}],
                     "abstain": False,
                 }
             }
@@ -105,9 +103,7 @@ def test_state_machine_provider_wrapper_rejects_abstain_with_parts() -> None:
             json.dumps(
                 {
                     "result": {
-                        "answer_parts": [
-                            {"text": "14 days", "support_ids": ["E1.S1"]}
-                        ],
+                        "answer_parts": [{"text": "14 days", "support_ids": ["E1.S1"]}],
                         "abstain": True,
                     }
                 }

@@ -83,12 +83,12 @@ async def test_same_question_answered_by_both_real_providers():
 
         # Both must follow the same citation format and both must be
         # grounded — the format doesn't depend on which model produced it.
-        assert ollama_grounding["citations_found"], (
-            f"Ollama produced no citations: {ollama_answer!r}"
-        )
-        assert claude_grounding["citations_found"], (
-            f"Claude produced no citations: {claude_answer!r}"
-        )
+        assert ollama_grounding[
+            "citations_found"
+        ], f"Ollama produced no citations: {ollama_answer!r}"
+        assert claude_grounding[
+            "citations_found"
+        ], f"Claude produced no citations: {claude_answer!r}"
         assert ollama_grounding["grounded"] is True
         assert claude_grounding["grounded"] is True
 

@@ -23,9 +23,7 @@ def get_tokenizer(model: str, revision: str):
 
 def token_offsets(text: str, model: str, revision: str) -> list[tuple[int, int]]:
     tokenizer = get_tokenizer(model, revision)
-    encoded: dict[str, Any] = tokenizer(
-        text, add_special_tokens=False, return_offsets_mapping=True
-    )
+    encoded: dict[str, Any] = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)
     return [tuple(offset) for offset in encoded["offset_mapping"] if offset[1] > offset[0]]
 
 

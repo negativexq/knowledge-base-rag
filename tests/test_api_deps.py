@@ -58,9 +58,7 @@ def test_valid_token_resolves_a_real_user_context():
 def test_user_role_is_forbidden_from_an_operator_endpoint():
     client = TestClient(_app())
 
-    response = client.post(
-        "/operator-only", headers={"Authorization": "Bearer token-user-a"}
-    )
+    response = client.post("/operator-only", headers={"Authorization": "Bearer token-user-a"})
 
     assert response.status_code == 403
 
@@ -68,9 +66,7 @@ def test_user_role_is_forbidden_from_an_operator_endpoint():
 def test_operator_role_is_allowed_on_an_operator_endpoint():
     client = TestClient(_app())
 
-    response = client.post(
-        "/operator-only", headers={"Authorization": "Bearer token-operator-a"}
-    )
+    response = client.post("/operator-only", headers={"Authorization": "Bearer token-operator-a"})
 
     assert response.status_code == 200
 
@@ -79,9 +75,7 @@ def test_admin_role_is_also_allowed_on_an_operator_endpoint():
     """Role hierarchy: ADMIN satisfies an OPERATOR+ requirement."""
     client = TestClient(_app())
 
-    response = client.post(
-        "/operator-only", headers={"Authorization": "Bearer token-admin-a"}
-    )
+    response = client.post("/operator-only", headers={"Authorization": "Bearer token-admin-a"})
 
     assert response.status_code == 200
 

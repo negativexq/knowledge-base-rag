@@ -58,6 +58,11 @@ def section_label(payload: dict[str, Any]) -> str | None:
     heading_path = payload.get("heading_path") or []
     if heading_path:
         return " > ".join(str(heading) for heading in heading_path)
+    section_path = payload.get("section_path") or []
+    if section_path and payload.get("page_number") is not None:
+        return " > ".join(str(heading) for heading in section_path) + (
+            f" (page {payload['page_number']})"
+        )
     if payload.get("page_number") is not None:
         return f"page {payload['page_number']}"
     return None

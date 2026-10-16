@@ -6,9 +6,7 @@ from app.evaluation.bootstrap import paired_bootstrap_ci
 
 
 def _ci(a, b, seed, iterations=1000, metric="recall_at_5", subset="overall"):
-    return paired_bootstrap_ci(
-        a, b, metric=metric, subset=subset, seed=seed, iterations=iterations
-    )
+    return paired_bootstrap_ci(a, b, metric=metric, subset=subset, seed=seed, iterations=iterations)
 
 
 def test_paired_bootstrap_is_deterministic_for_a_fixed_seed():

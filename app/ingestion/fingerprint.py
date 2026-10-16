@@ -49,6 +49,10 @@ class PipelineFingerprint:
     # fingerprint mismatch path instead of an index schema bump (which
     # would refuse to start until the index is wiped).
     pdf_parser_version: str = "pymupdf_blocks_v1"
+    # What text is embedded and sparse-indexed per chunk
+    # (app/ingestion/models.py::index_text): "section_context_v1" prefixes
+    # the chunk's section/heading path; "body_v1" was the chunk text alone.
+    index_text_mode: str = "section_context_v1"
 
     def canonical(self) -> str:
         # sort_keys=True is what makes this deterministic across

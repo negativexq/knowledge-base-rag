@@ -52,9 +52,7 @@ def test_build_token_authenticator_replaces_dev_tokens_entirely_when_json_given(
 
 
 def test_build_token_authenticator_parses_multiple_roles():
-    custom = json.dumps(
-        {"t": {"user_id": "u", "tenant_id": "x", "roles": ["USER", "OPERATOR"]}}
-    )
+    custom = json.dumps({"t": {"user_id": "u", "tenant_id": "x", "roles": ["USER", "OPERATOR"]}})
 
     user = build_token_authenticator(custom).authenticate("t")
 

@@ -755,9 +755,7 @@ def validate_support_unit_answer(
         if value_audit.get("shadow_v3_outcome"):
             validator_telemetry["shadow_v3_outcomes"].append(value_audit["shadow_v3_outcome"])
         if value_audit.get("shadow_v3_reason_class"):
-            validator_telemetry["shadow_v3_reasons"].append(
-                value_audit["shadow_v3_reason_class"]
-            )
+            validator_telemetry["shadow_v3_reasons"].append(value_audit["shadow_v3_reason_class"])
         value_status = value_audit["status"]
         if not value_audit["pass"]:
             part_codes.extend(value_audit["failure_codes"])
@@ -794,9 +792,7 @@ def validate_support_unit_answer(
     validator_telemetry["shadow_v3_outcomes"] = sorted(
         set(validator_telemetry["shadow_v3_outcomes"])
     )
-    validator_telemetry["shadow_v3_reasons"] = sorted(
-        set(validator_telemetry["shadow_v3_reasons"])
-    )
+    validator_telemetry["shadow_v3_reasons"] = sorted(set(validator_telemetry["shadow_v3_reasons"]))
     validator_telemetry["architecture_v2_shadow_outcomes"] = sorted(
         set(validator_telemetry["architecture_v2_shadow_outcomes"])
     )
@@ -856,8 +852,7 @@ def _aggregate_validator_outcome(
     if not present:
         return no_result
     invocation_count = sum(
-        int(telemetry.get(outcome.lower(), 0))
-        for outcome in _BOUNDED_VALIDATOR_OUTCOMES
+        int(telemetry.get(outcome.lower(), 0)) for outcome in _BOUNDED_VALIDATOR_OUTCOMES
     )
     return present[0] if invocation_count == 1 else "MIXED"
 
@@ -892,18 +887,12 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
             ),
             "validator.identifier_reject": bool(telemetry.get("identifier_reject", False)),
             "validator.duration_ms": float(telemetry.get("duration_ms", 0.0)),
-            "validator.baseline.duration_ms": float(
-                telemetry.get("baseline_duration_ms", 0.0)
-            ),
-            "validator.shadow_v3.duration_ms": float(
-                telemetry.get("shadow_v3_duration_ms", 0.0)
-            ),
+            "validator.baseline.duration_ms": float(telemetry.get("baseline_duration_ms", 0.0)),
+            "validator.shadow_v3.duration_ms": float(telemetry.get("shadow_v3_duration_ms", 0.0)),
             "validator.shadow_error": int(telemetry.get("shadow_errors", 0)) > 0,
             "validator.architecture_id": telemetry.get("architecture_id") or "none",
             "validator.occurrence_count": int(telemetry.get("occurrence_count", 0)),
-            "validator.validate_role_count": int(
-                telemetry.get("validate_role_count", 0)
-            ),
+            "validator.validate_role_count": int(telemetry.get("validate_role_count", 0)),
             "validator.skip_rejected_premise_count": int(
                 telemetry.get("skip_rejected_premise_count", 0)
             ),
@@ -965,15 +954,11 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
         span.set_attribute("validator.shadow_error_class", ",".join(shadow_error_classes))
         span.set_attribute(
             "validator.shadow.architecture_v2.outcome",
-            telemetry.get(
-                "architecture_v2_shadow_aggregate_outcome", "NO_VALIDATOR_RESULT"
-            ),
+            telemetry.get("architecture_v2_shadow_aggregate_outcome", "NO_VALIDATOR_RESULT"),
         )
         span.set_attribute(
             "validator.shadow.architecture_v2.disagreement",
-            telemetry.get(
-                "architecture_v2_shadow_aggregate_disagreement", "NOT_EXECUTED"
-            ),
+            telemetry.get("architecture_v2_shadow_aggregate_disagreement", "NOT_EXECUTED"),
         )
     except Exception:
         # Tracing/exporter failures must never change answer delivery.
@@ -1217,17 +1202,11 @@ async def _support_unit_answer_events(
             else None
         )
         model_support_ids = (
-            [
-                item
-                for part in parsed_payload["answer_parts"]
-                for item in part["support_ids"]
-            ]
+            [item for part in parsed_payload["answer_parts"] for item in part["support_ids"]]
             if parsed_payload
             else []
         )
-        accepted_ids = [
-            item for part in validation.valid_parts for item in part.support_ids
-        ]
+        accepted_ids = [item for part in validation.valid_parts for item in part.support_ids]
         rejected_ids = [
             item for part in validation.rejected_parts for item in part.get("support_ids", [])
         ]
@@ -1275,8 +1254,7 @@ async def _support_unit_answer_events(
                 "resolved_citation_ids": accepted_ids,
                 "rejected_citation_ids": rejected_ids,
                 "model_citation_like_text_present": bool(
-                    parsed
-                    and any("[s." in part.text for part in parsed.answer_parts)
+                    parsed and any("[s." in part.text for part in parsed.answer_parts)
                 ),
             },
         )

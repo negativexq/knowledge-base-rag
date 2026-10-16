@@ -122,9 +122,7 @@ class ForensicCapture:
         return capture
 
     def stage(self, name: str, values: dict[str, Any]) -> None:
-        self.record.setdefault("stages", {})[name] = _safe_value(
-            values, raw_text=self.raw_text
-        )
+        self.record.setdefault("stages", {})[name] = _safe_value(values, raw_text=self.raw_text)
 
     def merge_stage(self, name: str, values: dict[str, Any]) -> None:
         stage = self.record.setdefault("stages", {}).setdefault(name, {})
@@ -157,9 +155,7 @@ class ForensicCapture:
             return None
 
 
-def metadata_for_chunks(
-    chunks: list[Any], *, include_text: bool = False
-) -> list[dict[str, Any]]:
+def metadata_for_chunks(chunks: list[Any], *, include_text: bool = False) -> list[dict[str, Any]]:
     return [
         _chunk_metadata(chunk, index, include_text=include_text)
         for index, chunk in enumerate(chunks, 1)

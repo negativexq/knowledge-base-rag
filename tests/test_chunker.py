@@ -49,9 +49,7 @@ def test_extend_to_sentence_end_falls_back_when_no_period_nearby():
 
 
 def test_chunk_page_text_never_splits_a_sentence_across_non_final_chunks():
-    paragraphs = [
-        Paragraph(page_number=1, paragraph_index=0, text=_long_paragraph())
-    ]
+    paragraphs = [Paragraph(page_number=1, paragraph_index=0, text=_long_paragraph())]
     page_text, offsets = _build_page_text(paragraphs)
 
     chunks = _chunk_page_text(
@@ -68,9 +66,7 @@ def test_chunk_page_text_never_splits_a_sentence_across_non_final_chunks():
 
 
 def test_chunk_page_text_overlaps_consecutive_chunks():
-    paragraphs = [
-        Paragraph(page_number=1, paragraph_index=0, text=_long_paragraph())
-    ]
+    paragraphs = [Paragraph(page_number=1, paragraph_index=0, text=_long_paragraph())]
     page_text, offsets = _build_page_text(paragraphs)
 
     chunks = _chunk_page_text(
@@ -91,9 +87,9 @@ def test_chunk_document_maps_each_chunk_to_correct_page(sample_pdf):
     assert chunks  # non-empty
     for chunk in chunks:
         marker = f"PAGE{chunk.page_number}-"
-        assert marker in chunk.text, (
-            f"chunk attributed to page {chunk.page_number} but text is: {chunk.text!r}"
-        )
+        assert (
+            marker in chunk.text
+        ), f"chunk attributed to page {chunk.page_number} but text is: {chunk.text!r}"
 
 
 def test_chunk_document_skips_page_with_no_text_layer(sample_pdf):

@@ -121,9 +121,7 @@ def test_selection_is_safety_first_not_latency_first():
             "latency": {"total": {"p95": total_p95}},
         }
 
-    result = select_model(
-        [summary("fast-unsafe", 1, 1.0, 1.0), summary("safe", 0, 0.5, 10.0)]
-    )
+    result = select_model([summary("fast-unsafe", 1, 1.0, 1.0), summary("safe", 0, 0.5, 10.0)])
     assert result == {"status": "SELECT_MODEL", "model": "safe"}
 
 

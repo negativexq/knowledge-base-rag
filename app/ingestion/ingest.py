@@ -13,6 +13,7 @@ from app.ingestion.chunker import DEFAULT_CHUNK_SIZE_TOKENS, DEFAULT_OVERLAP_TOK
 from app.ingestion.chunking_config import ChunkingConfig
 from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
+from app.ingestion.models import index_text
 from app.ingestion.qdrant_store import QdrantStore
 from app.registry.store import DEFAULT_TENANT_ID, DocumentRegistry
 from app.retrieval.sparse import SparseVector
@@ -135,9 +136,11 @@ async def ingest_path(
                     span.set_attribute("embed.chunk_count", len(batch))
                     span.set_attribute("embed.concurrency", embedding_concurrency)
                     dense_vectors = await embed_texts_concurrently(
-                        [chunk.text for chunk in batch], embed_fn, embedding_concurrency
+                        [index_text(chunk) for chunk in batch], embed_fn, embedding_concurrency
                     )
-                    sparse_vectors = [sparse_encoder.embed_document(chunk.text) for chunk in batch]
+                    sparse_vectors = [
+                        sparse_encoder.embed_document(index_text(chunk)) for chunk in batch
+                    ]
 
                 with tracer.start_as_current_span("upsert_batch") as span:
                     span.set_attribute("upsert.chunk_count", len(batch))
@@ -456,10 +459,12 @@ async def ingest_connector(
                             span.set_attribute("embed.chunk_count", len(batch))
                             span.set_attribute("embed.concurrency", embedding_concurrency)
                             dense_vectors = await embed_texts_concurrently(
-                                [chunk.text for chunk in batch], embed_fn, embedding_concurrency
+                                [index_text(chunk) for chunk in batch],
+                                embed_fn,
+                                embedding_concurrency,
                             )
                             sparse_vectors = [
-                                sparse_encoder.embed_document(chunk.text) for chunk in batch
+                                sparse_encoder.embed_document(index_text(chunk)) for chunk in batch
                             ]
 
                         with tracer.start_as_current_span("upsert_batch") as span:
