@@ -1,7 +1,7 @@
 {
   "schema_version": "golden-dataset-v2",
   "question_count": 445,
-  "corpus_fingerprint": "0175aa4a2f9beca7e1a996bcf976dc715c8e6d94a55b76f181500c8c5b8a57b7",
+  "corpus_fingerprint": "7d69f7e309f20727dc18e8c93372a0ed2e9a101d64140654f3e4c96dfa559e7f",
   "dataset_fingerprint": "17474079f2abf80154b3ba1bf1afbc09c13fa16e2f75c26cb4a99bd44518868f",
   "source_of_truth": "data/evaluation/evaluation-corpus-v2/golden-dataset-v2.json",
   "split_policy": "Whole case families retain their committed development, calibration, or frozen_test assignment.",

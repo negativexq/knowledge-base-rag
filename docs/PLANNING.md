@@ -4247,3 +4247,36 @@ A by-hand audit of the pilot corrects the PR #21 note above.
 
 The re-scored report is the baseline for the PDF ingestion work that follows
 (element model, OCR gate, tables, label–value units, section chunking).
+
+## Ingestion — PDF document elements (closing note)
+
+PDFs are now parsed into typed elements (`app/parsing/models.py::DocumentElement`)
+instead of bare paragraphs. `extract_paragraphs` is a view over
+`extract_elements`, so the chunker and citations are unchanged in this step.
+
+- **Structure.** Each element records its kind (heading, paragraph or table), page, index,
+  bbox, heading level and the heading path it sits under. Headings come from PDF bookmarks
+  when there are any. Otherwise they come from style (clearly larger than body text, or
+  all-bold at body size) or from section numbering ("2.", "3.1"). Running headers repeated
+  on most pages, noise and bare numbers are never headings.
+- **Page quality gate.** Pages are sent to OCR in three cases:
+  - no text layer (as before);
+  - a garbled text layer, i.e. a font without a Unicode mapping, detected by the share of
+    control characters;
+  - text drawn as vector outlines (very little text but hundreds of paths).
+
+  Without OCR, garbled blocks are dropped with a warning instead of being indexed as noise.
+  OCR'd elements carry `ocr:<reason>` flags.
+- **Tables and rows.** Header-less columns keep their bare values instead of a made-up
+  "Column N" name. Unruled tables whose cells line up across rows keep one row per line
+  (`a | b | c`); justified prose does not.
+- **Label–value.** A short "Label:" block is kept with the value printed under it.
+- **Whitespace.** Text is whitespace-normalized, so NBSP becomes a space.
+
+Parser version `pymupdf_elements_v3`; the pipeline fingerprint re-indexes PDFs. The current
+Evaluation Corpus v2 fingerprint artifacts were updated, because the corpus fingerprint hashes
+extracted text. Historical phase artifacts keep the fingerprint they were measured under.
+
+`make test`: 1417 passed, 4 skipped.
+
+Next: section-aware PDF chunking on these elements, with heading context.
