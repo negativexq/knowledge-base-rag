@@ -4648,3 +4648,44 @@ parser lost. Layout questions are the weak slice and the target of the element-a
 chunking challenger, which runs against this baseline one variable at a time.
 
 `make test`: 1552 passed, 4 skipped.
+
+## Experiment — element-aware chunking against the v2 baseline (closing note)
+
+Challenger (`CHUNKING_MODE=element_aware`, collection
+`kb_bench_mmlongbench_v2_element_aware`): parser elements packed whole up to 320
+tokens (ceiling 448, no overlap, a heading never ends a chunk), each table its own
+chunk with the short line before it as its caption, long tables split into row groups
+that repeat the caption and column line, a table or paragraph that cannot be split by
+rows split at sentences. Reranker `max_length` 1024: measured with the reranker's own
+tokenizer no element-aware pair exceeds it (7 of 421 Best Buy chunks exceed 512), so
+its scores equal the 8192 default and chunking is the only variable.
+
+The first run exposed two chunker bugs, fixed test-first before the reported run: OCR
+tables that arrive as one line produced no chunk at all (a PDF's pages 15–16 lost
+their table text), and a table chunk lost its caption ("Consolidated Statements of
+Earnings $ in millions") to the prose chunk above it.
+
+Retrieval-only, 100 answerable questions, same 12k evidence budget:
+
+| Run | Hit@top_n | Hit@candidate_k | Evidence page seen | Gold in evidence | Layout Hit@top_n |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline 15/5 | 86% | 94% | 88 | 19/49 | 55% |
+| element-aware 15/5 | 80% | 89% | 83 | 16/49 | 64% |
+| baseline 40/14 | 94% | 95% | 95 | 20/49 | 73% |
+| element-aware 40/14 | 92% | 95% | 93 | 18/49 | 73% |
+
+- At 15/5 the challenger's smaller chunks (median ~150 vs ~425 tokens) cover fewer
+  pages (13 vs 18 distinct candidate pages), so a fixed k disadvantages them.
+- At equal settings (40/14) the baseline is level or ahead on every metric; the
+  challenger wins one question at the candidate stage and loses two. Element-aware
+  chunking is not adopted; production keeps the baseline. The mode stays available
+  for later experiments (e.g. with contextual headers or another parser).
+- The measured lever is retrieval depth, not chunking: candidate_k 15→40 and
+  top_n 5→14 lift the baseline's Hit@top_n from 86% to 94% and evidence page seen
+  from 88 to 95 at the same evidence budget. Adopting it is a separate change (the
+  Ollama evidence budget of 1600 tokens cannot hold 14 anchors).
+
+Reports: `artifacts/mmlongbench-v2/{baseline-retrieval,baseline-retrieval-k40,
+element-aware-retrieval,element-aware-retrieval-equal-text}/`.
+
+`make test`: 1565 passed, 4 skipped.
