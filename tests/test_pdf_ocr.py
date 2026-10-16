@@ -33,10 +33,10 @@ def _scanned_page_pdf(tmp_path, text: str = "Iade suresi 30 gundur.", with_text_
     return str(path)
 
 
-def _fake_ocr(calls: list[int], blocks):
+def _fake_ocr(calls: list[int], lines):
     def ocr(page):
         calls.append(page.number + 1)
-        return blocks
+        return lines
 
     return ocr
 
@@ -46,8 +46,11 @@ def test_image_only_page_is_read_with_ocr(tmp_path, monkeypatch):
     monkeypatch.setattr(pdf_parser, "ocr_available", lambda: True)
     monkeypatch.setattr(
         pdf_parser,
-        "_ocr_blocks",
-        _fake_ocr(calls, [(30, 60, 390, 100, "Iade suresi\n30 gundur.\n", 0, 0)]),
+        "_ocr_lines",
+        _fake_ocr(
+            calls,
+            [((30, 60, 200, 75), "Iade suresi"), ((30, 80, 190, 95), "30 gundur.")],
+        ),
     )
 
     paragraphs = extract_paragraphs(_scanned_page_pdf(tmp_path))
@@ -62,7 +65,7 @@ def test_image_only_page_is_read_with_ocr(tmp_path, monkeypatch):
 def test_pages_with_a_text_layer_are_never_ocrd(tmp_path, monkeypatch):
     calls: list[int] = []
     monkeypatch.setattr(pdf_parser, "ocr_available", lambda: True)
-    monkeypatch.setattr(pdf_parser, "_ocr_blocks", _fake_ocr(calls, []))
+    monkeypatch.setattr(pdf_parser, "_ocr_lines", _fake_ocr(calls, []))
     doc = fitz.open()
     doc.new_page().insert_text((72, 72), "Plain text page.", fontsize=11)
     path = tmp_path / "text.pdf"
@@ -90,7 +93,7 @@ def test_ocr_failure_skips_the_page_with_a_warning(tmp_path, monkeypatch, caplog
         raise RuntimeError("tesseract crashed")
 
     monkeypatch.setattr(pdf_parser, "ocr_available", lambda: True)
-    monkeypatch.setattr(pdf_parser, "_ocr_blocks", broken)
+    monkeypatch.setattr(pdf_parser, "_ocr_lines", broken)
 
     with caplog.at_level(logging.WARNING, logger="app.parsing.pdf_parser"):
         paragraphs = extract_paragraphs(_scanned_page_pdf(tmp_path))

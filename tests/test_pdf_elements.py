@@ -226,9 +226,12 @@ def test_garbled_text_layer_is_read_with_ocr(tmp_path, monkeypatch):
     monkeypatch.setattr(pdf_parser, "ocr_available", lambda: True)
     monkeypatch.setattr(
         pdf_parser,
-        "_ocr_blocks",
+        "_ocr_lines",
         lambda page: calls.append(page.number + 1)
-        or [(72, 60, 300, 110, "Readable heading\nExcise duty rose last year.\n", 0, 0)],
+        or [
+            ((72, 60, 200, 72), "Readable heading"),
+            ((72, 76, 300, 88), "Excise duty rose last year."),
+        ],
     )
 
     elements = extract_elements(path)
@@ -266,11 +269,12 @@ def test_a_page_drawn_as_vector_shapes_is_read_with_ocr(tmp_path, monkeypatch):
     monkeypatch.setattr(pdf_parser, "ocr_available", lambda: True)
     monkeypatch.setattr(
         pdf_parser,
-        "_ocr_blocks",
+        "_ocr_lines",
         lambda page: calls.append(page.number + 1)
         or [
-            (72, 30, 300, 50, "COMPANY NAME\n", 0, 0),
-            (72, 100, 300, 140, "Harbor Trust\nRiverside Bank\n", 1, 0),
+            ((72, 30, 200, 50), "COMPANY NAME"),
+            ((72, 100, 180, 116), "Harbor Trust"),
+            ((72, 120, 190, 136), "Riverside Bank"),
         ],
     )
 
@@ -288,7 +292,7 @@ def test_ordinary_text_pages_with_a_few_drawings_are_not_ocrd(tmp_path, monkeypa
     page.draw_line((72, 80), (500, 80))
     calls: list[int] = []
     monkeypatch.setattr(pdf_parser, "ocr_available", lambda: True)
-    monkeypatch.setattr(pdf_parser, "_ocr_blocks", lambda page: calls.append(1) or [])
+    monkeypatch.setattr(pdf_parser, "_ocr_lines", lambda page: calls.append(1) or [])
 
     extract_elements(_save(doc, tmp_path))
 
