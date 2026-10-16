@@ -119,7 +119,8 @@ def test_a_long_table_is_split_into_row_groups_that_repeat_its_header(monkeypatc
 
 def test_a_short_table_stays_one_chunk_apart_from_prose(monkeypatch):
     table = _element("table", 1, 1, "Table: A | B\nA: 1 | B: 2")
-    elements = [_paragraph(1, 0, n_sentences=2), table, _paragraph(1, 2, n_sentences=2)]
+    # The paragraph before is prose, too long to be taken as a caption.
+    elements = [_paragraph(1, 0, n_sentences=8), table, _paragraph(1, 2, n_sentences=2)]
 
     chunks = _chunk(monkeypatch, elements)
 
@@ -139,3 +140,46 @@ def test_the_reranker_max_length_is_configurable(monkeypatch, max_length):
     wiring.build_reranker(Settings(_env_file=None, reranker_max_length=max_length))
 
     assert captured.get("max_length") == max_length
+
+
+def test_a_long_table_without_row_lines_is_split_not_dropped(monkeypatch):
+    # v2 run: OCR tables came back as one line; the row grouper found no rows
+    # after the header and emitted nothing, so pages 15-16 of a PDF lost all
+    # their table text (rows 381 and 831 had no chunk on their evidence page).
+    cells = " | ".join(f"Standard RL.{i}: cite textual evidence {i}." for i in range(150))
+    table = _element("table", 15, 5, "Table: " + cells)
+
+    chunks = _chunk(monkeypatch, [table])
+
+    assert len(chunks) > 1
+    assert all(c.token_count <= CONFIG.hard_max_tokens for c in chunks)
+    joined = " ".join(c.text for c in chunks)
+    assert all(f"RL.{i}:" in joined for i in range(150))
+
+
+def test_a_table_keeps_the_caption_line_just_before_it(monkeypatch):
+    # v2 run, Best Buy 10-K p.40: "Consolidated Statements of Earnings $ in
+    # millions" is a paragraph before the table; packed with the prose above
+    # it, the table chunk named no statement and retrieval missed it.
+    caption = _element("paragraph", 40, 1, "Consolidated Statements of Earnings $ in millions")
+    table = _element("table", 40, 2, "Table: Item | 2023\nItem: Revenue | 2023: 46,298")
+    elements = [_paragraph(40, 0, n_sentences=4), caption, table]
+
+    chunks = _chunk(monkeypatch, elements)
+
+    holding = [c for c in chunks if table.text in c.text]
+    assert [c.text for c in holding] == [caption.text + "\n\n" + table.text]
+    assert all(caption.text not in c.text for c in chunks if c not in holding)
+
+
+def test_every_row_group_of_a_split_table_repeats_its_caption(monkeypatch):
+    caption = _element("paragraph", 3, 0, "Store counts by year")
+    header = "Table: Year | Revenue | Stores"
+    rows = [f"Year: {2000 + i} | Revenue: {i * 37} | Stores: {i * 3}" for i in range(120)]
+    table = _element("table", 3, 1, "\n".join([header, *rows]))
+
+    chunks = _chunk(monkeypatch, [caption, table])
+
+    assert len(chunks) > 1
+    assert all(c.text.startswith(caption.text + "\n\n" + header + "\n") for c in chunks)
+    assert all(c.token_count <= CONFIG.hard_max_tokens for c in chunks)

@@ -13,7 +13,7 @@ from dataclasses import asdict, dataclass
 QWEN3_EMBEDDING_TOKENIZER = "Qwen/Qwen3-Embedding-4B"
 QWEN3_TOKENIZER_REVISION = "main"
 BOUNDARY_STRATEGY = "sentence_heading_page_v1"
-ELEMENT_BOUNDARY_STRATEGY = "element_pack_table_rows_v1"
+ELEMENT_BOUNDARY_STRATEGY = "element_pack_table_rows_v3"
 
 
 @dataclass(frozen=True)
