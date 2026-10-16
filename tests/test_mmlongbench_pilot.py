@@ -531,3 +531,19 @@ def test_an_unmeasured_gold_is_its_own_loss_stage():
     outcome = outcome_from_result(_q(1, ["Pure-text (Plain-text)"]), raw, source_id="a_pdf")
 
     assert outcome.loss_stage == "unmeasured"
+
+
+def test_the_evidence_pages_the_model_saw_are_measured_and_lose_as_assembly():
+    from app.evaluation.mmlongbench import outcome_from_result
+
+    question = _q(1, ["Pure-text (Plain-text)"])
+    unseen = {**_raw(), "seen_pages": [["a_pdf", 5]], "gold_in_page_text": None}
+    seen = {**_raw(answer="It is x."), "seen_pages": [["a_pdf", 1]]}
+
+    lost = outcome_from_result(question, unseen, source_id="a_pdf")
+    found = outcome_from_result(question, seen, source_id="a_pdf")
+    report = build_report([lost, found], top_k=5, candidate_k=15)
+
+    # Retrieval found page 1, but the model was shown page 5 only.
+    assert lost.loss_stage == "assembly"
+    assert report["overall"]["evidence_page_seen"] == {"rate": 0.5, "n": 2}

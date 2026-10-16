@@ -23,6 +23,7 @@ from app.llm.provider import (
     default_chat_model,
     default_context_tokens,
     default_embed_model,
+    default_evidence_tokens,
     get_chat_provider,
 )
 from app.llm.query_rewrite import ChatTurn, RewriteResult, rewrite_query
@@ -134,7 +135,7 @@ def build_chat_dependencies(
         SectionAwareEvidenceBuilder(
             qdrant_client,
             collection_name,
-            token_budget=settings.pipeline_v2_context_token_budget,
+            token_budget=default_evidence_tokens(settings),
             count_tokens=count_prompt_tokens,
         )
         if settings.rag_pipeline_v2 or settings.support_ids_enabled
