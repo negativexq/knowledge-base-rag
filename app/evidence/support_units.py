@@ -30,6 +30,9 @@ class SupportUnit:
     text: str
     # Human-readable section shown to the model ("Kurulum > Adım 1", "page 3").
     section_label: str | None = None
+    # The pages the unit's own chunk covers (a merged block spans several).
+    page_number: int | None = None
+    page_end: int | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -45,6 +48,8 @@ class SupportUnit:
             "model_visible": self.model_visible,
             "text": self.text,
             "section_label": self.section_label,
+            "page_number": self.page_number,
+            "page_end": self.page_end,
         }
 
 
@@ -68,10 +73,17 @@ def section_label(payload: dict[str, Any]) -> str | None:
     return None
 
 
+def _pages(payload: dict[str, Any]) -> tuple[int | None, int | None]:
+    first = payload.get("page_number")
+    if first is None:
+        return None, None
+    return int(first), int(payload.get("page_end") or first)
+
+
 def _sections(
     payload: dict[str, Any], block_id: str | None
-) -> list[tuple[str, Any, str | None, tuple[str, ...]]]:
-    """(text, section id, label, chunk ids) per chunk of the block, in order.
+) -> list[tuple[str, Any, str | None, tuple[str, ...], tuple[int | None, int | None]]]:
+    """(text, section id, label, chunk ids, pages) per chunk of the block, in order.
 
     A section-aware block records its chunks in ``section_chunks``; they are
     used only while they still reproduce the block text exactly (a truncated
@@ -86,6 +98,7 @@ def _sections(
                 chunk["section_key"],
                 section_label(chunk),
                 (str(chunk["chunk_id"]),),
+                _pages(chunk),
             )
             for chunk in chunks
         ]
@@ -93,7 +106,7 @@ def _sections(
     if not contributing and block_id:
         contributing = (block_id,)
     section = payload.get("section_key") or payload.get("heading_path") or None
-    return [(text, section, section_label(payload), contributing)]
+    return [(text, section, section_label(payload), contributing, _pages(payload))]
 
 
 def build_support_units(blocks: list[SearchResult]) -> list[SupportUnit]:
@@ -103,13 +116,13 @@ def build_support_units(blocks: list[SearchResult]) -> list[SupportUnit]:
         evidence_id = str(payload.get("evidence_id", f"E{block_index}"))
         parent_id = str(payload.get("evidence_block_id", block.id or evidence_id))
         unit_texts = [
-            (text, section, label, contributing)
-            for chunk_text, section, label, contributing in _sections(
+            (text, section, label, contributing, pages)
+            for chunk_text, section, label, contributing, pages in _sections(
                 payload, str(block.id) if block.id else None
             )
             for text in _units_for_text(chunk_text)
         ]
-        for unit_index, (text, section, label, contributing) in enumerate(unit_texts, 1):
+        for unit_index, (text, section, label, contributing, pages) in enumerate(unit_texts, 1):
             units.append(
                 SupportUnit(
                     support_unit_id=f"{evidence_id}.S{unit_index}",
@@ -132,6 +145,8 @@ def build_support_units(blocks: list[SearchResult]) -> list[SupportUnit]:
                     model_visible=bool(payload.get("model_visible", True)),
                     text=text,
                     section_label=label,
+                    page_number=pages[0],
+                    page_end=pages[1],
                 )
             )
     return units

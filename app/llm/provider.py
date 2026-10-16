@@ -46,6 +46,13 @@ def default_context_tokens(settings: Settings) -> int:
     return settings.cloud_context_tokens
 
 
+def default_evidence_tokens(settings: Settings) -> int:
+    """Evidence text budget for the active generator's prompt."""
+    if settings.generation_provider == "ollama":
+        return settings.pipeline_v2_context_token_budget
+    return settings.cloud_evidence_token_budget
+
+
 def default_embed_model(settings: Settings) -> str:
     from app.llm.embedding_models import active_embedding_config
 

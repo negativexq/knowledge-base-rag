@@ -100,6 +100,8 @@ async def test_metadata_maps_every_support_id_to_its_source_section_and_text():
             "source_type": "filesystem",
             "source_id": "nimbus_cli_md",
             "section_label": "Kurulum",
+            "page_number": 1,
+            "page_end": 1,
             "text": "Nimbus CLI pip ile kurulur.",
         },
         {
@@ -108,6 +110,8 @@ async def test_metadata_maps_every_support_id_to_its_source_section_and_text():
             "source_type": "filesystem",
             "source_id": "nimbus_cli_md",
             "section_label": "Kimlik Doğrulama > Token Süresi",
+            "page_number": 1,
+            "page_end": 1,
             "text": "Erişim token'ları 90 gün geçerlidir.",
         },
         {
@@ -116,6 +120,8 @@ async def test_metadata_maps_every_support_id_to_its_source_section_and_text():
             "source_type": "filesystem",
             "source_id": "nimbus_handbook_pdf",
             "section_label": "page 3",
+            "page_number": 3,
+            "page_end": 3,
             "text": "Free accounts include 15GB of storage.",
         },
     ]

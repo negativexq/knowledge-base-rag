@@ -232,6 +232,10 @@ class Settings(BaseSettings):
     # cloud model dropped evidence units its window had room for. This bounds
     # cost per question, not what the model can take.
     cloud_context_tokens: int = Field(default=32768, gt=0)
+    # Evidence text budget for a cloud generator, inside cloud_context_tokens.
+    # pipeline_v2_context_token_budget is sized for the local 4096 window;
+    # reusing it cut a cloud model's evidence to one block.
+    cloud_evidence_token_budget: int = Field(default=12000, gt=0)
 
     qdrant_url: str = "http://localhost:6333"
     qdrant_collection_name: str = "kb_chunks"

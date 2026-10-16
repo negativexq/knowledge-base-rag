@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -21,6 +22,12 @@ from qdrant_client.http import models as qmodels
 from app.llm.citation_location import location_for
 from app.retrieval.hybrid_search import SearchResult
 from app.security.models import RetrievalContext
+
+# Points read per scroll request; a source is read to its end.
+SCROLL_PAGE_SIZE = 1000
+# A later anchor is cut to the remaining budget only when at least this
+# much is left; a shorter tail is noise.
+MIN_PARTIAL_TOKENS = 50
 
 
 @dataclass(frozen=True)
@@ -66,6 +73,29 @@ def _sort_key(result: SearchResult) -> tuple[Any, ...]:
 def _estimate_tokens(text: str) -> int:
     """Fallback budget unit when no tokenizer is given: whitespace words."""
     return len(text.split())
+
+
+def _cut_text(text: str, token_limit: int, count_tokens: Callable[[str], int]) -> str:
+    """The longest prefix ending at a word that fits ``token_limit``. The
+    text between words is kept as written, so paragraph breaks survive."""
+    ends = [match.end() for match in re.finditer(r"\S+", text)]
+    low, high = 0, min(len(ends), max(0, token_limit))
+    while low < high:
+        middle = (low + high + 1) // 2
+        if count_tokens(text[: ends[middle - 1]]) <= token_limit:
+            low = middle
+        else:
+            high = middle - 1
+    return text[: ends[low - 1]] if low else ""
+
+
+def _cut_chunk(
+    item: SearchResult, token_limit: int, count_tokens: Callable[[str], int]
+) -> SearchResult:
+    payload = dict(item.payload)
+    payload["text"] = _cut_text(str(payload.get("text", "")), token_limit, count_tokens)
+    payload["truncated"] = True
+    return SearchResult(score=item.score, id=item.id, payload=payload)
 
 
 def _identity_alias(result: SearchResult) -> dict[str, Any]:
@@ -136,13 +166,20 @@ class SectionAwareEvidenceBuilder:
                     key="tenant_id", match=qmodels.MatchValue(value=context.tenant_id)
                 )
             )
-        points, _ = self._client.scroll(
-            collection_name=self._collection_name,
-            scroll_filter=qmodels.Filter(must=must),
-            limit=1000,
-            with_payload=True,
-            with_vectors=False,
-        )
+        points: list[Any] = []
+        offset = None
+        while True:
+            page, offset = self._client.scroll(
+                collection_name=self._collection_name,
+                scroll_filter=qmodels.Filter(must=must),
+                limit=SCROLL_PAGE_SIZE,
+                offset=offset,
+                with_payload=True,
+                with_vectors=False,
+            )
+            points += page
+            if offset is None:
+                break
         return [
             SearchResult(score=anchor.score, id=str(point.id), payload=dict(point.payload or {}))
             for point in points
@@ -202,6 +239,17 @@ class SectionAwareEvidenceBuilder:
         return context.is_system or candidate_payload.get("tenant_id") == context.tenant_id
 
     @staticmethod
+    def _unique_ranked(anchors: list[SearchResult]) -> list[SearchResult]:
+        """Anchors in reranker order, each chunk once."""
+        seen: set[str] = set()
+        ranked = []
+        for anchor in anchors:
+            if _chunk_id(anchor) not in seen:
+                seen.add(_chunk_id(anchor))
+                ranked.append(anchor)
+        return ranked
+
+    @staticmethod
     def _unique_chunks(chunks: list[SearchResult]) -> list[SearchResult]:
         result: list[SearchResult] = []
         seen: set[tuple[str, str]] = set()
@@ -223,15 +271,7 @@ class SectionAwareEvidenceBuilder:
         Keeps the longest whole-word prefix that fits ``token_limit``."""
         text = str(block.payload.get("text", ""))
         original_count = count_tokens(text)
-        words = text.split()
-        low, high = 0, min(len(words), max(0, token_limit))
-        while low < high:
-            middle = (low + high + 1) // 2
-            if count_tokens(" ".join(words[:middle])) <= token_limit:
-                low = middle
-            else:
-                high = middle - 1
-        visible_text = " ".join(words[:low])
+        visible_text = _cut_text(text, token_limit, count_tokens)
         visible_count = count_tokens(visible_text)
         block.payload["text"] = visible_text
         # The words no longer map back onto chunk boundaries.
@@ -332,48 +372,89 @@ class SectionAwareEvidenceBuilder:
             group["points"] = self._unique_chunks(points + group["anchors"])
             group["selected"] = self._unique_chunks(group["anchors"])
 
-        # Phase A: reserve anchor content fairly.  If all anchors fit, no
-        # truncation is needed.  Otherwise each source group receives an
-        # initial token and the remaining budget is distributed round-robin,
-        # preventing the first large source from starving later anchors.
-        full_anchor_blocks = [
-            self._block(group["anchor"], group["selected"], self._count) for group in groups
-        ]
-        full_anchor_sizes = [
-            self._count(str(block.payload.get("text", ""))) for block in full_anchor_blocks
-        ]
-        allocations = list(full_anchor_sizes)
-        anchor_total = sum(full_anchor_sizes)
+        # Phase A: reserve anchors in rank order.  Each source's best anchor
+        # comes first (a fair share each when they do not all fit, so the
+        # first large source cannot starve the others); then the remaining
+        # anchors in reranker order, the last one cut to what is left.  A
+        # cut keeps chunk and paragraph boundaries, and the block lists its
+        # chunks in document order, so every unit keeps its own page.
+        count = self._count
+        separator = max(0, count("x\n\nx") - 2 * count("x"))
+        chosen: list[list[SearchResult]] = [[] for _ in groups]
+        taken: set[str] = set()
+        truncated_count = 0
         budget_exhausted = False
-        if anchor_total > self._token_budget:
+        group_index = {id(group): index for index, group in enumerate(groups)}
+        anchor_group: dict[str, int] = {}
+        for group in groups:
+            for anchor in group["anchors"]:
+                anchor_group.setdefault(_chunk_id(anchor), group_index[id(group)])
+
+        def cost(index: int, tokens: int) -> int:
+            return tokens + (separator if chosen[index] else 0)
+
+        def take(index: int, item: SearchResult, limit: int | None = None) -> int:
+            nonlocal truncated_count
+            if limit is not None:
+                item = _cut_chunk(item, limit, count)
+                truncated_count += 1
+            used = cost(index, count(str(item.payload.get("text", ""))))
+            chosen[index].append(item)
+            taken.add(_chunk_id(item))
+            return used
+
+        # A group's anchor is its first, i.e. best-ranked, chunk.
+        tops = [group["anchor"] for group in groups]
+        top_sizes = [count(str(top.payload.get("text", ""))) for top in tops]
+        allocations = list(top_sizes)
+        if sum(top_sizes) > self._token_budget:
             budget_exhausted = True
             allocations = [0] * len(groups)
             remaining = self._token_budget
-            while remaining and any(
-                size > allocation for size, allocation in zip(full_anchor_sizes, allocations)
+            while remaining > 0 and any(
+                size > allocation for size, allocation in zip(top_sizes, allocations)
             ):
-                progressed = False
-                for index, size in enumerate(full_anchor_sizes):
+                for index, size in enumerate(top_sizes):
                     if remaining <= 0:
                         break
                     if allocations[index] < size:
                         allocations[index] += 1
                         remaining -= 1
-                        progressed = True
-                if not progressed:
-                    break
-
-        output: list[SearchResult] = []
-        truncated_count = 0
-        output_index_by_group: dict[int, int] = {}
-        for group, block, allocation, full_size in zip(
-            groups, full_anchor_blocks, allocations, full_anchor_sizes
-        ):
+        remaining = self._token_budget
+        for index, (top, size, allocation) in enumerate(zip(tops, top_sizes, allocations)):
             if allocation <= 0:
                 continue
-            if full_size > allocation:
-                self._truncate_block(block, allocation, self._count)
-                truncated_count += 1
+            remaining -= take(index, top, None if allocation >= size else allocation)
+
+        for anchor in self._unique_ranked(anchors):
+            if _chunk_id(anchor) in taken:
+                continue
+            index = anchor_group[_chunk_id(anchor)]
+            size = count(str(anchor.payload.get("text", "")))
+            if cost(index, size) <= remaining:
+                remaining -= take(index, anchor)
+                continue
+            budget_exhausted = True
+            room = remaining - cost(index, 0)
+            if room >= MIN_PARTIAL_TOKENS:
+                remaining -= take(index, anchor, room)
+
+        output: list[SearchResult] = []
+        output_index_by_group: dict[int, int] = {}
+        for index, group in enumerate(groups):
+            if not chosen[index]:
+                continue
+            block = self._block(group["anchor"], chosen[index], count)
+            if any(item.payload.get("truncated") for item in chosen[index]):
+                full = {_chunk_id(item): item for item in group["anchors"]}
+                original = "\n\n".join(
+                    str(full.get(_chunk_id(item), item).payload.get("text", ""))
+                    for item in sorted(chosen[index], key=_sort_key)
+                )
+                block.payload["truncated"] = True
+                block.payload["original_token_count"] = count(original)
+                block.payload["visible_token_count"] = block.payload["token_count"]
+            group["selected"] = chosen[index]
             output_index_by_group[id(group)] = len(output)
             output.append(block)
 
