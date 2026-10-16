@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import shutil
 import sys
 import time
@@ -74,6 +75,47 @@ COLLECTION = "kb_bench_mmlongbench"
 TENANT = "bench-mmlongbench"
 OTHER_TENANT = "tenant-a"
 OUT = ROOT / "artifacts" / "mmlongbench-pilot"
+
+
+def collection_for(manifest_path: Path) -> str:
+    """The pilot keeps its collection; another manifest gets its own,
+    named after its folder (artifacts/mmlongbench-v2 → kb_bench_mmlongbench_v2)."""
+    if Path(manifest_path).resolve() == MANIFEST.resolve():
+        return COLLECTION
+    return "kb_bench_" + Path(manifest_path).parent.name.replace("-", "_")
+
+
+def manifest_documents(root: Path, manifest, collection: str) -> Path:
+    """A documents folder for one index holding only the manifest's PDFs, as
+    relative links into the shared download folder (so it also works through
+    a container bind mount)."""
+    folder = root / "work" / collection / "documents"
+    folder.mkdir(parents=True, exist_ok=True)
+    wanted = {
+        Path(f.path).name: root / f.path for f in manifest.files if f.path.startswith("documents/")
+    }
+    for link in folder.iterdir():
+        if link.name not in wanted:
+            link.unlink()
+    for name, target in wanted.items():
+        link = folder / name
+        if link.is_symlink() or link.exists():
+            link.unlink()
+        link.symlink_to(os.path.relpath(target, folder))
+    return folder
+
+
+def disable_generation(provider) -> None:
+    """Answer every question with an abstention instead of calling the model,
+    for a run that measures retrieval and evidence assembly only (no key, no
+    model variance). Answer metrics of such a run are not meaningful."""
+
+    async def abstain(messages, **kwargs) -> str:
+        return json.dumps({"answer_parts": [], "abstain": True})
+
+    provider.chat_json = abstain
+
+
 OUT_BY_EVIDENCE = {
     "retrieved": OUT,
     "gold_page": ROOT / "artifacts" / "mmlongbench-pilot-gold-page",
@@ -93,15 +135,14 @@ def source_id_for(doc_id: str) -> str:
 
 
 async def ingest(
-    settings: Settings, client: QdrantClient, ollama: OllamaClient, root: Path
+    settings: Settings, client: QdrantClient, ollama: OllamaClient, root: Path, manifest
 ) -> dict:
     embed_config = active_embedding_config(settings)
     store = QdrantStore(
         client=client, collection_name=COLLECTION, dense_dimension=embed_config.dimension
     )
-    work = root / "work"
-    work.mkdir(parents=True, exist_ok=True)
-    registry = DocumentRegistry(str(work / "registry.db"))
+    documents = manifest_documents(root, manifest, COLLECTION)
+    registry = DocumentRegistry(str(documents.parent / "registry.db"))
 
     async def embed_fn(text: str) -> list[float]:
         return await ollama.embed(
@@ -113,7 +154,7 @@ async def ingest(
 
     started = time.perf_counter()
     stats = await ingest_connector(
-        LocalFilesystemConnector(root / "documents"),
+        LocalFilesystemConnector(documents),
         store,
         registry,
         embed_fn,
@@ -327,7 +368,13 @@ def score(questions, raws: list[dict]) -> list[QuestionOutcome]:
 
 
 async def run_questions(
-    settings: Settings, root: Path, questions, skip_ingest: bool, evidence: str = "retrieved"
+    settings: Settings,
+    root: Path,
+    manifest,
+    questions,
+    skip_ingest: bool,
+    evidence: str = "retrieved",
+    generate: bool = True,
 ):
     from app.wiring import build_chat_dependencies
 
@@ -336,10 +383,12 @@ async def run_questions(
     deps, chat_provider = build_chat_dependencies(
         settings, client, ollama, SparseEncoder(), COLLECTION
     )
+    if not generate:
+        disable_generation(chat_provider)
     try:
         ingest_stats = {"chunks_upserted": "existing", "seconds": 0}
         if not skip_ingest:
-            ingest_stats = await ingest(settings, client, ollama, root)
+            ingest_stats = await ingest(settings, client, ollama, root, manifest)
             print(f"ingested: {ingest_stats}", flush=True)
         pages = chunked_pages(client)
         raws = []
@@ -375,11 +424,29 @@ async def main() -> None:
         help="give the model the retrieved evidence, or the evidence pages' chunks",
     )
     parser.add_argument("--out", type=Path, help="write results here instead of the default")
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=MANIFEST,
+        help="question set; a manifest other than the pilot gets its own collection",
+    )
+    parser.add_argument(
+        "--no-generation",
+        action="store_true",
+        help="measure retrieval and evidence only; every answer is an abstention",
+    )
     args = parser.parse_args()
-    out = args.out or OUT_BY_EVIDENCE[args.evidence]
+    global COLLECTION
+    COLLECTION = collection_for(args.manifest)
+    if args.out:
+        out = args.out
+    elif Path(args.manifest).resolve() == MANIFEST.resolve():
+        out = OUT_BY_EVIDENCE[args.evidence]
+    else:
+        out = Path(args.manifest).parent / f"results-{args.evidence.replace('_', '-')}"
 
     settings = Settings()
-    manifest = load_manifest(MANIFEST)
+    manifest = load_manifest(args.manifest)
     root = data_dir(manifest.revision)
     table = pq.read_table(root / "data" / "train-00000-of-00001.parquet").to_pylist()
     questions = [parse_question(table[row], row) for row in manifest.question_rows]
@@ -393,7 +460,13 @@ async def main() -> None:
         meta = json.loads((out / "report.json").read_text(encoding="utf-8"))["meta"]
     else:
         raws, ingest_stats = await run_questions(
-            settings, root, questions, args.skip_ingest, args.evidence
+            settings,
+            root,
+            manifest,
+            questions,
+            args.skip_ingest,
+            args.evidence,
+            generate=not args.no_generation,
         )
         seconds = sorted(raw["seconds"] for raw in raws)
         meta = {
@@ -403,7 +476,7 @@ async def main() -> None:
             "questions": len(questions),
             "collection": COLLECTION,
             "tenant": TENANT,
-            "model": generation_model(settings),
+            "model": generation_model(settings) if not args.no_generation else "none",
             "top_n": settings.reranker_top_n,
             "candidate_k": settings.reranker_candidate_k,
             "ingest": ingest_stats,

@@ -1,4 +1,4 @@
-.PHONY: dev test test-ollama lint up down langfuse-up langfuse-down
+.PHONY: dev test test-ollama lint up down bench-up langfuse-up langfuse-down
 
 VENV := .venv/bin
 
@@ -20,6 +20,13 @@ up:
 
 down:
 	docker compose down
+
+# The backend with benchmark runners, inputs and results bind-mounted from the
+# host (docker-compose.bench.yml), e.g.
+#   docker exec -w /app kb-rag-backend python scripts/benchmarks/run_mmlongbench_pilot.py \
+#     --manifest artifacts/mmlongbench-v2/manifest.json
+bench-up:
+	docker compose -f docker-compose.yml -f docker-compose.bench.yml up -d backend
 
 # Optional, heavy (6 containers): self-hosted Langfuse on http://localhost:3001.
 # The backend exports to it only with LANGFUSE_ENABLED=true in .env.

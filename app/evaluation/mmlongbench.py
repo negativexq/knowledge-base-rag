@@ -148,6 +148,34 @@ def _literal_list(value: str | None) -> list[Any]:
     return list(parsed) if isinstance(parsed, list | tuple) else [parsed]
 
 
+# Evidence a text chunker can reach; a question whose evidence is only a chart
+# or a figure needs visual evidence, not better chunks.
+TEXTUAL_SOURCES = frozenset({"Pure-text (Plain-text)", "Table", "Generalized-text (Layout)"})
+
+
+def select_focused_rows(
+    table: list[dict[str, Any]], doc_ids: list[str], *, unanswerable_per_doc: int
+) -> list[int]:
+    """Rows of the given documents whose evidence includes text, a table or
+    layout text, plus the first ``unanswerable_per_doc`` unanswerable
+    questions of each document (refusal stays measured without dominating),
+    in row order."""
+    selected, refusals = [], Counter[str]()
+    wanted = set(doc_ids)
+    for index, row in enumerate(table):
+        doc = row["doc_id"]
+        if doc not in wanted:
+            continue
+        if row["answer"] == NOT_ANSWERABLE:
+            if refusals[doc] < unanswerable_per_doc:
+                refusals[doc] += 1
+                selected.append(index)
+            continue
+        if set(_literal_list(row.get("evidence_sources"))) & TEXTUAL_SOURCES:
+            selected.append(index)
+    return selected
+
+
 def parse_question(row: dict[str, Any], row_idx: int) -> PilotQuestion:
     return PilotQuestion(
         row_idx=row_idx,

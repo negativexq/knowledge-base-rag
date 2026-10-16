@@ -547,3 +547,33 @@ def test_the_evidence_pages_the_model_saw_are_measured_and_lose_as_assembly():
     # Retrieval found page 1, but the model was shown page 5 only.
     assert lost.loss_stage == "assembly"
     assert report["overall"]["evidence_page_seen"] == {"rate": 0.5, "n": 2}
+
+
+# --- focused v2 question set -----------------------------------------------
+
+
+def _row(doc, sources, answer="x"):
+    return {"doc_id": doc, "evidence_sources": repr(sources), "answer": answer}
+
+
+def test_the_focused_set_keeps_text_table_and_layout_questions_and_few_refusals():
+    from app.evaluation.mmlongbench import select_focused_rows
+
+    table = [
+        _row("a.pdf", ["Table"]),
+        _row("a.pdf", ["Figure"]),  # image-only: chunking cannot reach it
+        _row("a.pdf", ["Chart", "Pure-text (Plain-text)"]),
+        _row("a.pdf", [], "Not answerable"),
+        _row("a.pdf", [], "Not answerable"),
+        _row("a.pdf", [], "Not answerable"),
+        _row("b.pdf", ["Generalized-text (Layout)"]),
+        _row("c.pdf", ["Table"]),  # not a selected document
+    ]
+
+    assert select_focused_rows(table, ["a.pdf", "b.pdf"], unanswerable_per_doc=2) == [
+        0,
+        2,
+        3,
+        4,
+        6,
+    ]
