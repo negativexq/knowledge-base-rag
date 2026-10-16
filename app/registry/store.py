@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS documents (
     status         TEXT    NOT NULL,
     chunk_count    INTEGER,
     pipeline_fingerprint TEXT,
+    ingestion_quality TEXT,
     PRIMARY KEY (tenant_id, source_type, source_id)
 );
 """
@@ -57,6 +59,14 @@ def _migrate_add_tenant_id_and_rebuild_pk(conn: sqlite3.Connection) -> None:
         """
     )
     conn.execute("DROP TABLE documents_pre_23")
+
+
+def _migrate_add_ingestion_quality_column(conn: sqlite3.Connection) -> None:
+    # Nullable JSON: rows ingested before quality reports existed, and
+    # non-PDF documents, have none.
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(documents)").fetchall()}
+    if "ingestion_quality" not in columns:
+        conn.execute("ALTER TABLE documents ADD COLUMN ingestion_quality TEXT")
 
 
 def _migrate_add_pipeline_fingerprint_column(conn: sqlite3.Connection) -> None:
@@ -188,15 +198,16 @@ class IndexSchemaMismatchError(Exception):
 _UPSERT = """
 INSERT INTO documents
     (tenant_id, source_type, source_id, content_hash, last_synced_at, version, status,
-     chunk_count, pipeline_fingerprint)
+     chunk_count, pipeline_fingerprint, ingestion_quality)
 VALUES (:tenant_id, :source_type, :source_id, :content_hash, :last_synced_at, 1, :status,
-        :chunk_count, :pipeline_fingerprint)
+        :chunk_count, :pipeline_fingerprint, :ingestion_quality)
 ON CONFLICT(tenant_id, source_type, source_id) DO UPDATE SET
     content_hash = excluded.content_hash,
     last_synced_at = excluded.last_synced_at,
     status = excluded.status,
     chunk_count = excluded.chunk_count,
     pipeline_fingerprint = excluded.pipeline_fingerprint,
+    ingestion_quality = excluded.ingestion_quality,
     version = CASE WHEN documents.content_hash != excluded.content_hash
                     THEN documents.version + 1
                     ELSE documents.version
@@ -205,13 +216,13 @@ ON CONFLICT(tenant_id, source_type, source_id) DO UPDATE SET
 
 _SELECT_ONE = """
 SELECT tenant_id, source_type, source_id, content_hash, last_synced_at, version, status,
-       chunk_count, pipeline_fingerprint
+       chunk_count, pipeline_fingerprint, ingestion_quality
 FROM documents WHERE tenant_id = ? AND source_type = ? AND source_id = ?;
 """
 
 _SELECT_ALL = """
 SELECT tenant_id, source_type, source_id, content_hash, last_synced_at, version, status,
-       chunk_count, pipeline_fingerprint
+       chunk_count, pipeline_fingerprint, ingestion_quality
 FROM documents ORDER BY tenant_id, source_type, source_id;
 """
 
@@ -241,6 +252,7 @@ def _row_to_record(row: tuple) -> DocumentRecord:
         status,
         chunk_count,
         pipeline_fingerprint,
+        ingestion_quality,
     ) = row
     return DocumentRecord(
         tenant_id=tenant_id,
@@ -252,6 +264,7 @@ def _row_to_record(row: tuple) -> DocumentRecord:
         status=status,
         chunk_count=chunk_count,
         pipeline_fingerprint=pipeline_fingerprint,
+        ingestion_quality=json.loads(ingestion_quality) if ingestion_quality else None,
     )
 
 
@@ -277,6 +290,7 @@ class DocumentRegistry:
             _migrate_add_chunk_count_column(self._conn)
             _migrate_add_pipeline_fingerprint_column(self._conn)
             _migrate_add_tenant_id_and_rebuild_pk(self._conn)
+            _migrate_add_ingestion_quality_column(self._conn)
             self._conn.execute(_METADATA_SCHEMA)
 
     def upsert_document(
@@ -288,6 +302,7 @@ class DocumentRegistry:
         status: str = DEFAULT_STATUS,
         chunk_count: int | None = None,
         pipeline_fingerprint: str | None = None,
+        ingestion_quality: dict | None = None,
     ) -> DocumentRecord:
         # tenant_id has no default — every write call site (only
         # app/ingestion/ingest.py::ingest_connector) must say explicitly
@@ -313,6 +328,11 @@ class DocumentRegistry:
                     "status": status,
                     "chunk_count": chunk_count,
                     "pipeline_fingerprint": pipeline_fingerprint,
+                    "ingestion_quality": (
+                        json.dumps(ingestion_quality, sort_keys=True)
+                        if ingestion_quality is not None
+                        else None
+                    ),
                 },
             )
         return self.get_document(tenant_id, source_type, source_id)

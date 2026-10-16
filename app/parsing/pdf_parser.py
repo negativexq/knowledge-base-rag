@@ -7,7 +7,7 @@ from functools import cache
 
 import fitz
 
-from app.parsing.models import DocumentElement, Paragraph
+from app.parsing.models import DocumentElement, Paragraph, ParseReport
 
 logger = logging.getLogger(__name__)
 
@@ -187,13 +187,19 @@ def _is_bold(lines: list[dict]) -> bool:
     return total > 0 and sum(count for count, bold in chars if bold) >= 0.8 * total
 
 
-def _text_layer_items(page: fitz.Page, drop_garbled: bool = False) -> list[_Item]:
+def _text_layer_items(
+    page: fitz.Page, drop_garbled: bool = False, report: ParseReport | None = None
+) -> list[_Item]:
     items = []
     for block in page.get_text("dict")["blocks"]:
         if block["type"] != TEXT_BLOCK_TYPE:
             continue
         text = _block_text(block["lines"])
-        if not text or (drop_garbled and _is_garbled(text)):
+        if not text:
+            continue
+        if drop_garbled and _is_garbled(text):
+            if report is not None:
+                report.garbled_blocks_dropped += 1
             continue
         items.append(
             _Item(
@@ -215,14 +221,21 @@ def _ocr_items(page: fitz.Page, reason: str) -> list[_Item]:
     ]
 
 
-def _page_items(page: fitz.Page, pdf_path: str, page_number: int) -> list[_Item]:
+def _page_items(
+    page: fitz.Page, pdf_path: str, page_number: int, report: ParseReport
+) -> list[_Item]:
     reason = _ocr_reason(page)
     if reason is None:
         return _text_layer_items(page)
     name = os.path.basename(pdf_path)
+
+    def skipped() -> list[_Item]:
+        report.skipped_pages += 1
+        return []
+
     fallback = {
-        "no_text_layer": lambda: [],
-        "garbled_text": lambda: _text_layer_items(page, drop_garbled=True),
+        "no_text_layer": skipped,
+        "garbled_text": lambda: _text_layer_items(page, drop_garbled=True, report=report),
         "vector_text": lambda: _text_layer_items(page),
     }[reason]
     if not ocr_available():
@@ -238,12 +251,14 @@ def _page_items(page: fitz.Page, pdf_path: str, page_number: int) -> list[_Item]
             )
         return fallback()
     try:
-        return _ocr_items(page, reason)
+        items = _ocr_items(page, reason)
     except Exception:
         logger.warning("OCR failed on %s page %d (%s)", name, page_number, reason, exc_info=True)
         if reason == "no_text_layer":
             logger.warning("Skipping %s page %d: OCR failed", name, page_number)
         return fallback()
+    report.ocr_pages[reason] = report.ocr_pages.get(reason, 0) + 1
+    return items
 
 
 def _is_label(item: _Item) -> bool:
@@ -371,7 +386,7 @@ def _is_heading_text(text: str) -> bool:
     )
 
 
-def extract_elements(pdf_path: str) -> list[DocumentElement]:
+def extract_elements(pdf_path: str, report: ParseReport | None = None) -> list[DocumentElement]:
     """Parse a PDF into typed elements in reading order.
 
     Ruled tables (PyMuPDF's line-based table finder) become one table
@@ -396,6 +411,7 @@ def extract_elements(pdf_path: str) -> list[DocumentElement]:
     index -1: never a heading, and left out of paragraphs and chunks. Every
     other element records the heading path it sits under.
     """
+    report = report if report is not None else ParseReport()
     pages: list[list[_Item]] = []
     heights: list[float] = []
     with fitz.open(pdf_path) as doc:
@@ -409,7 +425,7 @@ def extract_elements(pdf_path: str) -> list[DocumentElement]:
             ]
             items = tables + [
                 item
-                for item in _page_items(page, pdf_path, page_number)
+                for item in _page_items(page, pdf_path, page_number, report)
                 if not _inside_any(item.bbox, tables)
             ]
             items.sort(key=lambda item: (round(item.bbox[1], 1), item.bbox[0]))
@@ -417,6 +433,7 @@ def extract_elements(pdf_path: str) -> list[DocumentElement]:
             heights.append(page.rect.height)
 
     levels = {} if toc else _heading_levels(pages)
+    report.pages = len(pages)
     running = _running_texts(pages, heights)
     elements: list[DocumentElement] = []
     stack: list[tuple[int, str]] = []
@@ -470,6 +487,13 @@ def extract_elements(pdf_path: str) -> list[DocumentElement]:
                 )
             )
             index += 1
+    content_pages = {e.page_number for e in elements if e.kind != "furniture"}
+    report.empty_pages = report.pages - len(content_pages)
+    report.headings = sum(e.kind == "heading" for e in elements)
+    report.tables = sum(e.kind == "table" for e in elements)
+    report.furniture = sum(e.kind == "furniture" for e in elements)
+    if report.headings:
+        report.heading_source = "bookmarks" if toc else "layout"
     return elements
 
 

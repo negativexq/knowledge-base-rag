@@ -282,6 +282,7 @@ async def documents(
             "status": record.status,
             "chunk_count": record.chunk_count,
             "pipeline_fingerprint": record.pipeline_fingerprint,
+            "ingestion_quality": record.ingestion_quality,
             "last_synced_at": record.last_synced_at.isoformat(),
         }
         for record in records

@@ -9,8 +9,15 @@ import { EmptyState } from "@/components/EmptyState"
 import { ErrorState } from "@/components/ErrorState"
 import { LoadingRows } from "@/components/LoadingSkeleton"
 import { StatusBadge } from "@/components/StatusBadge"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { qualityRows, qualitySummary } from "@/lib/quality"
 import { formatRelativeTime } from "@/lib/utils"
+
+function QualityBadge({ doc }: { doc: DocumentRecord }) {
+  const { label, status } = qualitySummary(doc.ingestion_quality)
+  return <Badge variant={status}>{label}</Badge>
+}
 
 function DocumentDetail({ doc, onClose }: { doc: DocumentRecord; onClose: () => void }) {
   return (
@@ -35,6 +42,8 @@ function DocumentDetail({ doc, onClose }: { doc: DocumentRecord; onClose: () => 
           ["Indexed at", formatRelativeTime(doc.last_synced_at)],
           ["Status", doc.status],
           ["Tenant", doc.tenant_id],
+          ["Parse quality", qualitySummary(doc.ingestion_quality).label],
+          ...(doc.ingestion_quality ? qualityRows(doc.ingestion_quality) : []),
         ].map(([label, value]) => (
           <div key={label} className="flex justify-between gap-2 border-b border-[var(--color-border)] py-1.5">
             <dt className="text-[var(--color-muted-foreground)]">{label}</dt>
@@ -136,6 +145,7 @@ export default function Knowledge() {
                     <th className="py-2 font-medium">Name</th>
                     <th className="py-2 font-medium">Version</th>
                     <th className="py-2 font-medium">Chunks</th>
+                    <th className="py-2 font-medium">Quality</th>
                     <th className="py-2 font-medium">Status</th>
                     <th className="py-2 font-medium">Updated</th>
                   </tr>
@@ -155,6 +165,9 @@ export default function Knowledge() {
                       </td>
                       <td className="py-2 font-technical text-[var(--color-muted-foreground)]">
                         {doc.chunk_count ?? "—"}
+                      </td>
+                      <td className="py-2">
+                        <QualityBadge doc={doc} />
                       </td>
                       <td className="py-2">
                         <StatusBadge status={doc.status} />

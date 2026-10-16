@@ -126,6 +126,20 @@ export interface Overview {
   }
 }
 
+// app/parsing/models.py::ParseReport.as_dict()
+export interface IngestionQuality {
+  pages: number
+  ocr_pages: Record<string, number>
+  skipped_pages: number
+  garbled_blocks_dropped: number
+  empty_pages: number
+  headings: number
+  tables: number
+  furniture: number
+  heading_source: string
+  needs_review: boolean
+}
+
 export interface DocumentRecord {
   tenant_id: string
   source_type: string
@@ -135,6 +149,8 @@ export interface DocumentRecord {
   status: string
   chunk_count: number | null
   pipeline_fingerprint: string | null
+  // Only PDFs ingested since quality reports were added carry one.
+  ingestion_quality?: IngestionQuality | null
   last_synced_at: string
 }
 

@@ -15,6 +15,7 @@ from app.ingestion.fingerprint import PipelineFingerprint
 from app.ingestion.markdown_chunker import chunk_markdown_document, chunk_markdown_text
 from app.ingestion.models import index_text
 from app.ingestion.qdrant_store import QdrantStore
+from app.parsing.models import ParseReport
 from app.registry.store import DEFAULT_TENANT_ID, DocumentRegistry
 from app.retrieval.sparse import SparseVector
 from app.shared.slug import slugify
@@ -360,8 +361,10 @@ async def ingest_connector(
                         span.set_attribute("fetch.source_id", document.source_id)
                         content_bytes = await connector.fetch_content(document)
 
+                parse_report: ParseReport | None = None
                 with tracer.start_as_current_span("parse_and_chunk") as span:
                     if document.content_type == "pdf":
+                        parse_report = ParseReport()
                         chunks = chunk_document(
                             str(document.path),
                             document.source_id,
@@ -370,6 +373,7 @@ async def ingest_connector(
                             overlap_tokens,
                             doc_id=content_hash,
                             chunking_config=chunking_config,
+                            report=parse_report,
                         )
                     elif document.content_type == "markdown":
                         chunks = chunk_markdown_document(
@@ -584,6 +588,7 @@ async def ingest_connector(
                 pipeline_fingerprint=(
                     pipeline_fingerprint.digest() if pipeline_fingerprint is not None else None
                 ),
+                ingestion_quality=parse_report.as_dict() if parse_report is not None else None,
             )
             files_processed += 1
 
