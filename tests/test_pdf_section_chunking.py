@@ -74,7 +74,10 @@ def test_char_ranges_still_point_into_the_page_text(report_pdf):
     for chunk in chunks:
         page_text = "\n\n".join(pages[chunk.page_number]) + "\n\n"
         start, end = chunk.char_range
-        assert page_text[start:end].strip() == chunk.text
+        if chunk.page_crossing:  # anchored where it starts on its first page
+            assert chunk.text.startswith(page_text[start:].strip()[:20])
+        else:
+            assert page_text[start:end].strip() == chunk.text
 
 
 def test_pdfs_without_headings_chunk_by_page_as_before(sample_pdf):
@@ -167,11 +170,10 @@ async def test_ingestion_embeds_the_section_context_but_stores_the_source_text(
         sparse,
     )
 
-    assert "Annual Report > Outlook\n\nThe outlook assumes stable prices." in embedded
+    outlook = "Outlook\n\nWe expect steady demand next year.\n\nThe outlook assumes stable prices."
+    assert f"Annual Report > Outlook\n\n{outlook}" in embedded
     assert sparse.texts == embedded
     points, _ = client.scroll("sections", limit=50, with_payload=True)
     stored = {p.payload["text"]: p.payload for p in points}
-    assert stored["The outlook assumes stable prices."]["section_path"] == [
-        "Annual Report",
-        "Outlook",
-    ]
+    assert stored[outlook]["section_path"] == ["Annual Report", "Outlook"]
+    assert (stored[outlook]["page_number"], stored[outlook]["page_end"]) == (1, 2)
