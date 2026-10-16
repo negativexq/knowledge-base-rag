@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 import unicodedata
 from collections.abc import Callable
@@ -174,6 +175,9 @@ class SupportUnitAnswer:
     # Parts a model returned alongside abstain=true. The abstention wins
     # (the fail-closed reading); the count is kept for telemetry.
     discarded_abstain_parts: int = 0
+    # Parts whose text is the not-found phrase: a refusal written as an
+    # answer part, never an answer. Dropped; none left means an abstention.
+    discarded_not_found_parts: int = 0
 
 
 @dataclass(frozen=True)
@@ -487,6 +491,17 @@ def parse_support_unit_state_machine_answer(raw: str) -> SupportUnitAnswer:
     return answer
 
 
+_SUPPORT_ID_TOKEN = re.compile(r"\[[^\]]*\]")
+
+
+def _is_not_found_text(text: str) -> bool:
+    """The part says the answer was not found (citations and punctuation aside)."""
+    bare = _SUPPORT_ID_TOKEN.sub(" ", text).casefold()
+    return " ".join(re.findall(r"\w+", bare)) == " ".join(
+        re.findall(r"\w+", NOT_FOUND_PHRASE.casefold())
+    )
+
+
 def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
     value = json.loads(_strip_json_fence(raw))
     if not isinstance(value, dict) or set(value) - {"answer_parts", "abstain", "reason_code"}:
@@ -512,7 +527,11 @@ def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
         # wrote parts. Honour the abstention instead of failing the whole
         # response as malformed, and drop the parts unread.
         return SupportUnitAnswer([], True, reason, discarded_abstain_parts=len(parsed))
-    return SupportUnitAnswer(parsed, abstain, reason)
+    answered = [part for part in parsed if not _is_not_found_text(part.text)]
+    not_found = len(parsed) - len(answered)
+    if parsed and not answered:
+        return SupportUnitAnswer([], True, reason, discarded_not_found_parts=not_found)
+    return SupportUnitAnswer(answered, abstain, reason, discarded_not_found_parts=not_found)
 
 
 def validate_support_unit_answer(
@@ -541,6 +560,7 @@ def validate_support_unit_answer(
                 "reject": 0,
                 "indeterminate": 0,
                 "discarded_abstain_parts": answer.discarded_abstain_parts,
+                "discarded_not_found_parts": answer.discarded_not_found_parts,
                 "forced_abstain": False,
                 "critical_value_count": 0,
                 "reason_classes": [],
@@ -582,6 +602,7 @@ def validate_support_unit_answer(
     validator_telemetry: dict[str, Any] = {
         "version": validator_version,
         "shadow_enabled": shadow_enabled,
+        "discarded_not_found_parts": answer.discarded_not_found_parts,
         "invocations": 0,
         "pass": 0,
         "reject": 0,
