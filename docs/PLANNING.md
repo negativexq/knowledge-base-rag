@@ -4306,3 +4306,21 @@ PDF chunking now follows the document elements from the previous step.
   The current Evaluation Corpus v2 fingerprint artifacts were updated again.
 
 `make test`: 1429 passed, 4 skipped.
+
+## Fix — abstain-with-parts and question premises absent from evidence (closing note)
+
+Two answer-generation gaps found in the pilot audit.
+
+- **Abstain with parts.** A model reply with `abstain: true` that still carries answer
+  parts used to fail schema validation (`TOP_LEVEL_SCHEMA_INVALID`, shown as "could not
+  produce a verified answer"). It is now read as an abstention: the parts are dropped and
+  counted in validator telemetry as `discarded_abstain_parts`. The strict state-machine
+  parser is unchanged.
+- **Question premise.** `missing_question_years` (`app/llm/premise.py`) lists the years
+  (1900–2099) named in the question that appear nowhere in the evidence. When any are
+  missing, validated parts are withheld and the answer becomes an application abstention
+  with failure code `QUESTION_PREMISE_NOT_IN_EVIDENCE`; the missing years are recorded as
+  `premise_missing_years`. This keeps the system from answering a question about 2015
+  with 2013 figures.
+
+Covered by the stack-tip `make test` in the ingestion quality report note.
