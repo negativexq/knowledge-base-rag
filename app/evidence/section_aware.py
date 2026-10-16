@@ -333,6 +333,20 @@ class SectionAwareEvidenceBuilder:
         )
         return SearchResult(score=anchor.score, id=block_id, payload=anchor_payload)
 
+    def _group_block(self, group: dict[str, Any], chunks: list[SearchResult]) -> SearchResult:
+        """A source group's block; a cut anchor marks the block truncated."""
+        block = self._block(group["anchor"], chunks, self._count)
+        if any(item.payload.get("truncated") for item in chunks):
+            full = {_chunk_id(item): item for item in group["anchors"]}
+            original = "\n\n".join(
+                str(full.get(_chunk_id(item), item).payload.get("text", ""))
+                for item in sorted(chunks, key=_sort_key)
+            )
+            block.payload["truncated"] = True
+            block.payload["original_token_count"] = self._count(original)
+            block.payload["visible_token_count"] = block.payload["token_count"]
+        return block
+
     async def build(
         self, anchors: list[SearchResult], context: RetrievalContext
     ) -> EvidenceBuildResult:
@@ -444,16 +458,7 @@ class SectionAwareEvidenceBuilder:
         for index, group in enumerate(groups):
             if not chosen[index]:
                 continue
-            block = self._block(group["anchor"], chosen[index], count)
-            if any(item.payload.get("truncated") for item in chosen[index]):
-                full = {_chunk_id(item): item for item in group["anchors"]}
-                original = "\n\n".join(
-                    str(full.get(_chunk_id(item), item).payload.get("text", ""))
-                    for item in sorted(chosen[index], key=_sort_key)
-                )
-                block.payload["truncated"] = True
-                block.payload["original_token_count"] = count(original)
-                block.payload["visible_token_count"] = block.payload["token_count"]
+            block = self._group_block(group, chosen[index])
             group["selected"] = chosen[index]
             output_index_by_group[id(group)] = len(output)
             output.append(block)
@@ -480,25 +485,34 @@ class SectionAwareEvidenceBuilder:
                 ]
             )
             selected_ids = {_chunk_id(item) for item in current_chunks}
+            # Each candidate is priced on its own (text plus a separator)
+            # against a running total, instead of re-tokenizing the whole
+            # output per candidate, which was quadratic in the budget.
+            total = sum(count(str(item.payload.get("text", ""))) for item in output)
+            added: list[SearchResult] = []
             for candidate in candidates:
                 if _chunk_id(candidate) in selected_ids:
                     continue
-                trial_chunks = current_chunks + [candidate]
-                trial_block = self._block(group["anchor"], trial_chunks, self._count)
-                trial_output = list(output)
-                trial_output[output_index] = trial_block
-                trial_tokens = sum(
-                    self._count(str(item.payload.get("text", ""))) for item in trial_output
-                )
-                if trial_tokens <= self._token_budget:
-                    current_chunks.append(candidate)
+                price = count(str(candidate.payload.get("text", ""))) + separator
+                if total + price <= self._token_budget:
+                    added.append(candidate)
                     selected_ids.add(_chunk_id(candidate))
-                    output = trial_output
-                    expanded = True
+                    total += price
                 else:
                     budget_exhausted = True
                     dropped_expansions += 1
-
+            while added:
+                trial = list(output)
+                trial[output_index] = self._group_block(group, current_chunks + added)
+                exact = sum(count(str(item.payload.get("text", ""))) for item in trial)
+                if exact <= self._token_budget:
+                    output = trial
+                    current_chunks += added
+                    expanded = True
+                    break
+                # Token counts are not exactly additive; give back the last one.
+                added.pop()
+                dropped_expansions += 1
             group["selected"] = current_chunks
 
         context_tokens = sum(self._count(str(block.payload.get("text", ""))) for block in output)
