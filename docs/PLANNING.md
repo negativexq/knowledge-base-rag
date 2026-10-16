@@ -4533,3 +4533,66 @@ Re-scored luna RAG pilot: 5/15 answerable correct (4/15 before; row 364). Lenien
 string matching still credits an answer with an extra wrong name (row 370).
 
 `make test`: 1516 passed, 4 skipped.
+
+## Fix — evidence assembly keeps rank order, pages and paragraph units (closing note)
+
+The audit of the gpt-6-luna RAG pilot traced most losses to evidence assembly: a
+document's anchors were merged in page order and cut from the end at 1600 tokens (a
+local-model budget), so the top-ranked chunk on a later page was dropped (row 639's
+gold table); the cut re-joined words with single spaces, so 12 of 20 prompts held one
+support unit, which made per-claim support checks and citations meaningless; and units
+carried the anchor's page, not their own.
+
+- Anchors are reserved in reranker order: each source's best anchor first (a fair
+  share each if they do not all fit), then the rest, the last one cut at a word
+  boundary with paragraph breaks kept. Blocks list chunks in document order.
+- Support units carry their own chunk's `page_number`/`page_end`, also in the
+  citation map; the pilot records the pages the model was shown
+  (`evidence_page_seen`, a measurable assembly loss).
+- The evidence budget follows the generator: 1600 for Ollama,
+  `CLOUD_EVIDENCE_TOKEN_BUDGET` (12000) for Claude and OpenAI.
+- Expansion candidates are priced incrementally (the whole output was re-tokenized
+  per candidate; with the larger budget that took minutes per question, now 0.1 s).
+- Consecutive units of one source and section share one header in the prompt
+  (headers were 22–78% of pilot prompts; evidence text 36% shorter).
+- The source scroll pages through documents of more than 1000 chunks.
+
+Replay of the pilot's 20 questions (same retrieval, no model call): units per prompt
+1–26 → 32–274; row 639's gold now in the units; an evidence page among the shown
+pages for 11 of 15 answerable questions (retrieval missed rows 218, 377, 385, 389).
+
+`make test`: 1523 passed, 4 skipped.
+
+## Fix — one citation contract on the support-ID path (closing note)
+
+The support-ID path used the shared v3 system prompt, which also told the model to
+copy a "CANONICAL CITATION" line such as `[s.filesystem:handbook/1/0]` — a line support
+units do not have. gpt-6-luna pasted the example (pilot row 221) or wrote its own
+`[doc, page 8]` (row 364), and that text reached the answer unchecked.
+
+- `prompts/answer_v4.txt` keeps v3's trust-boundary rules without a citation format;
+  the support-ID path uses it (`SUPPORT_ID_PROMPT_VERSION`, default v4). Legacy paths
+  keep `ACTIVE_PROMPT_VERSION` (v3).
+- Citation-like text the model writes itself (`[s.type:…]`, `[… page N …]`) is
+  removed when the output is parsed, before validation (its digits would otherwise be
+  read as claimed values), and again when rendering. Validated support IDs are the only
+  citations released.
+
+`make test`: 1530 passed, 4 skipped.
+
+## Fix — month-year premises and unstated presuppositions (closing note)
+
+The premise check looked only at years, so "the document revised on May 2018" (pilot
+row 384, unanswerable) passed because "2018" appeared elsewhere in the evidence, and a
+question about a function the pins do not have (row 660) had no check at all.
+
+- `missing_question_dates` requires a month-year in the question ("May 2018",
+  "Mayıs 2018") to appear as a date in the support units ("May 2, 2018",
+  "2018-05", "05/2018"); otherwise an answer becomes the application abstention
+  `QUESTION_PREMISE_NOT_IN_EVIDENCE` (telemetry `premise_missing_dates`).
+- The support-ID output instructions tell the model to abstain when the question
+  presupposes something no unit states (a date, name, version, function or property),
+  instead of answering about something nearby. Term-level premises stay a model
+  judgement: a deterministic term check would refuse paraphrased questions.
+
+`make test`: 1538 passed, 4 skipped.

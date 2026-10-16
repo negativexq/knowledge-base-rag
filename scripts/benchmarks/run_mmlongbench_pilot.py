@@ -229,7 +229,9 @@ async def ask(deps, client: QdrantClient, question, evidence: str = "retrieved")
         question.question, RetrievalContext(tenant_id=OTHER_TENANT), RetrievalReport()
     )
 
-    cited = cited_pages(answer, metadata.get("support_units") or [])
+    units = metadata.get("support_units") or []
+    cited = cited_pages(answer, units)
+    seen = cited_pages(" ".join(f"[{unit['support_id']}]" for unit in units), units)
     raw = {
         "row_idx": question.row_idx,
         "doc_id": question.doc_id,
@@ -248,6 +250,7 @@ async def ask(deps, client: QdrantClient, question, evidence: str = "retrieved")
         "top_pages": top,
         "candidate_pages": candidates,
         "cited_pages": cited,
+        "seen_pages": seen,
         "evidence": evidence,
         "gold_in_page_text": gold_visible(
             question, (c.payload.get("text", "") for c in gold_chunks)
@@ -299,6 +302,8 @@ def write_markdown(report: dict, meta: dict, path: Path) -> None:
         f"- Gold answer in the evidence pages' text: "
         f"{cell(report['overall']['gold_in_page_text'])}; in the evidence the model saw: "
         f"{cell(report['overall']['gold_in_evidence'])}",
+        f"- An evidence page among the pages the model was shown: "
+        f"{cell(report['overall']['evidence_page_seen'])}",
         "- Wrong answers by the stage that lost the gold answer: "
         + (", ".join(f"{stage} {n}" for stage, n in report["loss_stages"].items()) or "none"),
         "- Response kinds: "
@@ -428,6 +433,7 @@ async def main() -> None:
             "citation_on_evidence": o.citation_on_evidence,
             "gold_in_page_text": o.gold_in_page_text,
             "gold_in_evidence": o.gold_in_evidence,
+            "evidence_page_seen": o.evidence_page_seen,
             "loss_stage": o.loss_stage,
             "acl_leaks": o.acl_leaks,
         }
