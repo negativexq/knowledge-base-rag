@@ -4704,3 +4704,18 @@ cover page read as a table, words glued across spans), and answers that must be
 computed.
 
 `make test`: 1569 passed, 4 skipped.
+
+## Fix — PDF text the parser dropped: OCR word spans, text a table does not hold (closing note)
+
+Two losses from the v2 audit. OCR spans that meet without a space are now separate
+words: tesseract sets a font size per word, so an OCR span boundary is a word boundary
+("of" + "Travancore" was "ofTravancore"); text-layer spans still join as written, since
+their boundary can fall inside a word. A text block inside a detected table's area is
+dropped only when 80% of its words are in that table's cells: a decorative page frame
+read as a one-cell table kept only the cover title and dropped "Rick Scott GOVERNOR".
+On the v2 PDFs the rule keeps 5 cover blocks, 1 Best Buy block and 10 Costco blocks
+whose year header row ("2021 2020 2019") the table extraction missed — that row now
+reaches the index, at the cost of repeating the table's first row. Parser version
+`pymupdf_elements_v7`; PDFs are re-parsed on the next sync.
+
+`make test`: 1573 passed, 4 skipped.

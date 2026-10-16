@@ -15,12 +15,15 @@ TEXT_BLOCK_TYPE = 0
 # Recorded in the ingestion pipeline fingerprint (app/ingestion/fingerprint.py)
 # through pdf_parser_version(); bump it whenever extraction output changes so
 # existing PDFs are re-indexed.
-PDF_PARSER_VERSION = "pymupdf_elements_v6"
+PDF_PARSER_VERSION = "pymupdf_elements_v7"
 # Tesseract languages for scanned pages (installed in the backend image as
 # tesseract-ocr-tur / tesseract-ocr-eng) and the render resolution; 300 dpi
 # is Tesseract's recommended input resolution.
 OCR_LANGUAGES = "tur+eng"
 OCR_DPI = 300
+# A text block inside a table's area counts as held by the table when this
+# share of its words appears in the table's cells.
+TABLE_HELD_SHARE = 0.8
 # Page quality gate. A text layer whose visible characters are mostly
 # control characters comes from a font without a Unicode mapping; a page
 # with almost no text but hundreds of vector paths usually has its text
@@ -97,7 +100,7 @@ def _ocr_lines(page: fitz.Page) -> list[tuple[_Box, str]]:
         if block["type"] != TEXT_BLOCK_TYPE:
             continue
         for line in block["lines"]:
-            if text := _line_text(line):
+            if text := _line_text(line, word_spans=True):
                 lines.append((tuple(line["bbox"]), text))
     return lines
 
@@ -341,8 +344,14 @@ def _join_lines(lines: list[str]) -> str:
     return text
 
 
-def _line_text(line: dict) -> str:
-    return " ".join("".join(span["text"] for span in line["spans"]).split())
+def _line_text(line: dict, word_spans: bool = False) -> str:
+    """A line's text with whitespace collapsed. On the text layer spans are
+    joined as written, since a span boundary can fall inside a word (a drop
+    cap, a kerning run). Tesseract sets a font size per word, so in OCR
+    output a span boundary is always a word boundary, even where neither
+    span carries the space ("of" + "Travancore")."""
+    joiner = " " if word_spans else ""
+    return " ".join(joiner.join(span["text"] for span in line["spans"]).split())
 
 
 def _columns_align(cell_starts: list[list[float]]) -> bool:
@@ -628,11 +637,9 @@ def extract_elements(pdf_path: str, report: ParseReport | None = None) -> list[D
                 for table in page.find_tables().tables
                 if (text := _table_text(rows := _clean_rows(table.extract())))
             ]
-            items = tables + [
-                item
-                for item in _page_items(page, pdf_path, page_number, report)
-                if not _inside_any(item.bbox, tables)
-            ]
+            items = tables + _outside_tables(
+                _page_items(page, pdf_path, page_number, report), tables
+            )
             items.sort(key=lambda item: (round(item.bbox[1], 1), item.bbox[0]))
             pages.append(_merge_labels(items))
             heights.append(page.rect.height)
@@ -740,6 +747,27 @@ def _table_text(rows: list[list[str]]) -> str:
         if cells:
             lines.append(" | ".join(cells))
     return "\n".join(lines)
+
+
+def _words(text: str) -> set[str]:
+    return set(re.findall(r"\w+", text.lower()))
+
+
+def _outside_tables(items: list[_Item], tables: list[_Item]) -> list[_Item]:
+    """The text blocks a table does not already hold. A block inside a
+    table's area is dropped only when its words are in that table's cells;
+    otherwise the table missed it (a decorative page frame detected as a
+    one-cell table holds only its title) and the block is kept."""
+    kept = []
+    for item in items:
+        holders = [t for t in tables if _inside_any(item.bbox, [t])]
+        words = _words(item.text)
+        if holders and any(
+            len(words & _words(t.text)) >= TABLE_HELD_SHARE * len(words) for t in holders
+        ):
+            continue
+        kept.append(item)
+    return kept
 
 
 def _inside_any(bbox: tuple, tables: list[_Item]) -> bool:
