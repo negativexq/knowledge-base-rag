@@ -331,6 +331,9 @@ class QuestionOutcome:
     # "retrieved", or "gold_page" when the model was given the evidence
     # pages instead of what retrieval found.
     evidence: str = "retrieved"
+    # Whether an evidence page is among the pages of the support units the
+    # model was shown; None for results saved before this was recorded.
+    evidence_page_seen: bool | None = None
 
     @property
     def loss_stage(self) -> str | None:
@@ -344,6 +347,8 @@ class QuestionOutcome:
             return "not_in_page_text"
         if self.evidence == "retrieved" and self.retrieved_top_k is False:
             return "retrieval"
+        if self.evidence_page_seen is False:
+            return "assembly"
         if self.gold_in_page_text is None or self.gold_in_evidence is None:
             # A small-number gold (or an old result) cannot be located in
             # text, so the loss cannot be pinned on assembly or generation.
@@ -397,6 +402,7 @@ def _stage_metrics(outcomes: list[QuestionOutcome], top_k: int, candidate_k: int
         f"retrieval_hit_at_{candidate_k}": _rate(o.retrieved_candidates for o in answerable),
         "gold_in_page_text": _rate(o.gold_in_page_text for o in answerable),
         "gold_in_evidence": _rate(o.gold_in_evidence for o in answerable),
+        "evidence_page_seen": _rate(o.evidence_page_seen for o in answerable),
         "answer_accuracy": _rate(o.correct for o in answerable),
         "citation_accuracy": _rate(o.citation_on_evidence for o in answerable),
     }
@@ -468,6 +474,11 @@ def outcome_from_result(
         gold_in_page_text=result.get("gold_in_page_text"),
         gold_in_evidence=result.get("gold_in_evidence"),
         evidence=result.get("evidence") or "retrieved",
+        evidence_page_seen=(
+            page_hit(_pages(result["seen_pages"]), source_id, pages)
+            if result.get("seen_pages") is not None and pages
+            else None
+        ),
     )
 
 

@@ -1478,6 +1478,8 @@ def support_unit_citation_map(
                 "source_type": block.payload.get("source_type"),
                 "source_id": unit.source_id,
                 "section_label": unit.section_label,
+                "page_number": unit.page_number,
+                "page_end": unit.page_end,
                 "text": unit.text,
             }
         )
