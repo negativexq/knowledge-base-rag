@@ -166,6 +166,13 @@ class Settings(BaseSettings):
     reranker_top_n: int = Field(default=RERANKER_TOP_N, gt=0)
     reranker_max_concurrency: int = Field(default=1, ge=1, le=16)
     reranker_trust_remote_code: bool = False
+    # Torch device for the cross-encoder ("cpu", "mps", "cuda"); None lets
+    # sentence-transformers choose. The container has CPU only.
+    reranker_device: str | None = None
+    # Pairs per cross-encoder forward pass; None keeps the library default
+    # (32). Attention memory grows with batch x length^2, so a smaller batch
+    # caps peak memory on a 16 GB Mac without changing the scores.
+    reranker_batch_size: int | None = Field(default=None, gt=0)
 
     # Production keeps the legacy word-window as the explicit
     # benchmark baseline until a measured candidate is adopted. Switching

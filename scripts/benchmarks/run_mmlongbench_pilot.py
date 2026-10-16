@@ -116,6 +116,37 @@ def disable_generation(provider) -> None:
     provider.chat_json = abstain
 
 
+def save_checkpoint(path: Path, raw: dict) -> None:
+    """Append one finished question so a killed run can resume."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(raw, ensure_ascii=False) + "\n")
+
+
+def load_checkpoint(path: Path) -> dict[int, dict]:
+    """Finished questions by row; a line cut off by the kill is dropped."""
+    if not path.exists():
+        return {}
+    done = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            raw = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        done[raw["row_idx"]] = raw
+    return done
+
+
+def free_accelerator_memory() -> None:
+    """Return the MPS allocator's cache between questions. Reranker inputs
+    vary in length up to max_length, and the cache otherwise grows until a
+    16 GB Mac swaps (13 GB after 70 questions)."""
+    import torch
+
+    if torch.backends.mps.is_available():
+        torch.mps.empty_cache()
+
+
 OUT_BY_EVIDENCE = {
     "retrieved": OUT,
     "gold_page": ROOT / "artifacts" / "mmlongbench-pilot-gold-page",
@@ -375,6 +406,7 @@ async def run_questions(
     skip_ingest: bool,
     evidence: str = "retrieved",
     generate: bool = True,
+    checkpoint: Path | None = None,
 ):
     from app.wiring import build_chat_dependencies
 
@@ -391,12 +423,19 @@ async def run_questions(
             ingest_stats = await ingest(settings, client, ollama, root, manifest)
             print(f"ingested: {ingest_stats}", flush=True)
         pages = chunked_pages(client)
+        done = load_checkpoint(checkpoint) if checkpoint else {}
         raws = []
         for index, question in enumerate(questions, 1):
+            if question.row_idx in done:
+                raws.append(done[question.row_idx])
+                continue
             raw = await ask(deps, client, question, evidence)
             covered = pages.get(source_id_for(question.doc_id), {})
             raw["evidence_page_chars"] = {p: covered.get(p, 0) for p in question.evidence_pages}
             raws.append(raw)
+            if checkpoint:
+                save_checkpoint(checkpoint, raw)
+            free_accelerator_memory()
             print(
                 f"[{index}/{len(questions)}] row {question.row_idx} {raw['seconds']}s "
                 f"kind={response_kind(raw)}",
@@ -467,6 +506,7 @@ async def main() -> None:
             args.skip_ingest,
             args.evidence,
             generate=not args.no_generation,
+            checkpoint=out / "results.partial.jsonl",
         )
         seconds = sorted(raw["seconds"] for raw in raws)
         meta = {
@@ -488,6 +528,7 @@ async def main() -> None:
         (out / "results.jsonl").write_text(
             "".join(json.dumps(raw, ensure_ascii=False) + "\n" for raw in raws), encoding="utf-8"
         )
+        (out / "results.partial.jsonl").unlink(missing_ok=True)
 
     outcomes = score(questions, raws)
     report = build_report(outcomes, top_k=meta["top_n"], candidate_k=meta["candidate_k"])

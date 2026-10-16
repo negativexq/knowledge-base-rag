@@ -64,6 +64,8 @@ def build_reranker(settings: Settings):
         settings.reranker_model,
         trust_remote_code=settings.reranker_trust_remote_code,
         max_concurrency=settings.reranker_max_concurrency,
+        device=settings.reranker_device,
+        batch_size=settings.reranker_batch_size,
     )
 
 

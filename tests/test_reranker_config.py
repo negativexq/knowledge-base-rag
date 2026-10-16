@@ -58,3 +58,44 @@ def test_rescue_drop_classification_is_deterministic():
     assert classify_case(3, None) == "dropped_out_of_top5"
     assert classify_case(3, 4) == "degraded"
     assert classify_case(3, 3) == "unchanged"
+
+
+@pytest.mark.parametrize(("device", "expected"), [(None, None), ("mps", "mps")])
+def test_the_reranker_device_is_configurable(monkeypatch, device, expected):
+    # Docker on macOS has no Metal; a host run can put the cross-encoder on
+    # the Apple GPU (about 2.7x faster than CPU in a 15-candidate timing).
+    import app.wiring as wiring
+
+    captured = {}
+    monkeypatch.setattr(
+        wiring, "CrossEncoderReranker", lambda *args, **kwargs: captured.update(kwargs)
+    )
+
+    wiring.build_reranker(Settings(_env_file=None, reranker_device=device))
+
+    assert captured["device"] == expected
+
+
+def test_the_reranker_batch_size_reaches_the_model(monkeypatch):
+    # Attention memory grows with batch x length^2; all 15 candidates in one
+    # batch padded towards max_length 8192 pushed a 16 GB Mac into swap.
+    import app.reranker.cross_encoder as cross_encoder
+    import app.wiring as wiring
+    from app.retrieval.hybrid_search import SearchResult
+
+    calls = []
+
+    class _Model:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def predict(self, pairs, **kwargs):
+            calls.append(kwargs)
+            return [0.0] * len(pairs)
+
+    monkeypatch.setattr(cross_encoder, "CrossEncoder", _Model)
+    reranker = wiring.build_reranker(Settings(_env_file=None, reranker_batch_size=4))
+    reranker.rerank("q", [SearchResult(score=1.0, id="c", payload={"text": "t"})], top_n=1)
+
+    assert calls == [{"batch_size": 4}]
+    assert Settings(_env_file=None).reranker_batch_size is None

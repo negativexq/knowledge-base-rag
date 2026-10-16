@@ -51,3 +51,15 @@ async def test_without_generation_every_question_is_an_abstention():
     raw = json.loads(await provider.chat_json([], model="m"))
 
     assert raw == {"answer_parts": [], "abstain": True}
+
+
+def test_a_checkpoint_keeps_finished_questions_for_a_resumed_run(tmp_path):
+    # A long run killed midway (memory pressure on a 16 GB Mac) resumes from
+    # the questions it already answered instead of starting over.
+    checkpoint = tmp_path / "results.partial.jsonl"
+    runner.save_checkpoint(checkpoint, {"row_idx": 206, "seconds": 9.1})
+    runner.save_checkpoint(checkpoint, {"row_idx": 207, "seconds": 4.5})
+    checkpoint.write_text(checkpoint.read_text() + '{"row_idx": 20', encoding="utf-8")
+
+    assert sorted(runner.load_checkpoint(checkpoint)) == [206, 207]
+    assert runner.load_checkpoint(tmp_path / "missing.jsonl") == {}
