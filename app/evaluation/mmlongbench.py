@@ -19,6 +19,7 @@ from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 NOT_ANSWERABLE = "Not answerable"
 
@@ -139,14 +140,14 @@ class PilotQuestion:
         return self.answer != NOT_ANSWERABLE
 
 
-def _literal_list(value: str | None) -> list:
+def _literal_list(value: str | None) -> list[Any]:
     if not value:
         return []
     parsed = ast.literal_eval(value)
     return list(parsed) if isinstance(parsed, list | tuple) else [parsed]
 
 
-def parse_question(row: dict, row_idx: int) -> PilotQuestion:
+def parse_question(row: dict[str, Any], row_idx: int) -> PilotQuestion:
     return PilotQuestion(
         row_idx=row_idx,
         doc_id=row["doc_id"],
@@ -268,7 +269,7 @@ class QuestionOutcome:
 REFUSAL_KINDS = ("model_abstained", "validator_blocked")
 
 
-def response_kind(result: dict) -> str:
+def response_kind(result: dict[str, Any]) -> str:
     """How a response ended, from its validation event fields."""
     abstain = result.get("abstain")
     codes = result.get("validator_failure_codes")
@@ -284,14 +285,14 @@ def response_kind(result: dict) -> str:
     return "model_abstained"
 
 
-def _rate(values: Iterable[bool | None]) -> dict:
+def _rate(values: Iterable[bool | None]) -> dict[str, Any]:
     applicable = [value for value in values if value is not None]
     if not applicable:
         return {"rate": None, "n": 0}
     return {"rate": round(sum(applicable) / len(applicable), 4), "n": len(applicable)}
 
 
-def _stage_metrics(outcomes: list[QuestionOutcome], top_k: int, candidate_k: int) -> dict:
+def _stage_metrics(outcomes: list[QuestionOutcome], top_k: int, candidate_k: int) -> dict[str, Any]:
     answerable = [o for o in outcomes if o.question.answerable]
     return {
         "questions": len(outcomes),
@@ -303,7 +304,9 @@ def _stage_metrics(outcomes: list[QuestionOutcome], top_k: int, candidate_k: int
     }
 
 
-def build_report(outcomes: list[QuestionOutcome], *, top_k: int, candidate_k: int) -> dict:
+def build_report(
+    outcomes: list[QuestionOutcome], *, top_k: int, candidate_k: int
+) -> dict[str, Any]:
     answerable = [o for o in outcomes if o.question.answerable]
     unanswerable = [o for o in outcomes if not o.question.answerable]
     return {
@@ -323,12 +326,12 @@ def build_report(outcomes: list[QuestionOutcome], *, top_k: int, candidate_k: in
     }
 
 
-def _pages(values: Iterable) -> list[tuple[str, int]]:
+def _pages(values: Iterable[Any] | None) -> list[tuple[str, int]]:
     return [(str(source_id), int(page)) for source_id, page in values or []]
 
 
 def outcome_from_result(
-    question: PilotQuestion, result: dict, *, source_id: str
+    question: PilotQuestion, result: dict[str, Any], *, source_id: str
 ) -> QuestionOutcome:
     """Score one saved result (a results.jsonl row), so a report can be
     rebuilt without asking the model again."""
@@ -367,14 +370,14 @@ def outcome_from_result(
 _PAGE_LABEL = re.compile(r"^page (\d+)$")
 
 
-def payload_pages(payload: dict) -> list[int]:
+def payload_pages(payload: dict[str, Any]) -> list[int]:
     """Every page a chunk covers: page_number through page_end."""
     first = int(payload["page_number"])
     last = int(payload.get("page_end") or first)
     return list(range(first, max(first, last) + 1))
 
 
-def cited_pages(answer: str, support_units: list[dict]) -> list[tuple[str, int]]:
+def cited_pages(answer: str, support_units: list[dict[str, Any]]) -> list[tuple[str, int]]:
     """(source_id, page) of every support unit the answer cites, in citation
     order, read from the unit's "page N" section label. Units without a page
     (Markdown sections) and unknown ids are skipped."""

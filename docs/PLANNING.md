@@ -4361,3 +4361,16 @@ remaining misses are generation errors on retrieved evidence and unanswerable qu
 answered from near-miss evidence. That run predates the two fixes above.
 
 `make test` on this stack: 1451 passed, 4 skipped.
+
+## Fix — CI lint job green again (closing note)
+
+The CI `lint` job had failed on main since the MMLongBench pilot merge: `mypy app/`
+reported 16 errors (bare `dict`/`list`/`Iterable` annotations in the pilot evaluation
+module, `ParseReport.as_dict` and `DocumentRecord.ingestion_quality`, and a `None`
+narrowing mypy could not follow in `_document_sections`). Tests, frontend and Docker jobs
+were green, so nothing behaved wrongly; the annotations are now complete.
+
+`make lint` now runs the same checks as CI (`ruff check app tests scripts` and
+`mypy app/`), so this shows up locally before a merge.
+
+`make test`: 1451 passed, 4 skipped.
