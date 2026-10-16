@@ -88,3 +88,48 @@ async def test_an_answer_whose_premise_is_in_the_evidence_is_kept():
 
     assert "Records Office" in answer
     assert validation["abstain"] is False
+
+
+# --- month-year dates and the presupposition rule (luna RAG pilot) ----------
+
+from app.llm.premise import missing_question_dates  # noqa: E402
+
+
+def test_a_month_and_year_must_appear_together():
+    # Pilot row 384: the evidence held "2018" elsewhere, so the year check
+    # passed although no document was revised in May 2018.
+    evidence = ["Revised May 2016.", "Survey fielded in 2018."]
+
+    assert missing_question_dates("Who produced the plan revised on May 2018?", evidence) == [
+        "May 2018"
+    ]
+
+
+@pytest.mark.parametrize(
+    "evidence",
+    ["Revised May 2018.", "revised may, 2018", "Revised 2018-05-02.", "Revised 05/2018."],
+)
+def test_a_month_and_year_written_another_way_pass(evidence):
+    assert missing_question_dates("Who revised it in May 2018?", [evidence]) == []
+
+
+def test_turkish_month_names_are_read():
+    assert missing_question_dates("Mayıs 2018'de kim revize etti?", ["Ocak 2018 sürümü."]) == [
+        "Mayıs 2018"
+    ]
+
+
+def test_the_model_is_told_to_abstain_on_a_presupposition_the_units_do_not_state():
+    from app.llm.structured_output import SUPPORT_ID_OUTPUT_INSTRUCTIONS
+
+    assert "presuppos" in SUPPORT_ID_OUTPUT_INSTRUCTIONS
+
+
+@pytest.mark.asyncio
+async def test_a_year_seen_elsewhere_does_not_confirm_a_month_year_premise(monkeypatch):
+    monkeypatch.setitem(globals(), "EVIDENCE", EVIDENCE + " Staff survey 2018.")
+
+    answer, validation = await _ask("Who produced the plan that was revised in May 2018?")
+
+    assert "Records Office" not in answer
+    assert "QUESTION_PREMISE_NOT_IN_EVIDENCE" in validation["validator_failure_codes"]
