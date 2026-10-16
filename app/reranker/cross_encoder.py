@@ -13,6 +13,7 @@ from app.retrieval.hybrid_search import SearchResult
 
 class CrossEncoderReranker:
     backend = RERANKER_BACKEND
+    batch_size: int | None = None
 
     def __init__(
         self,
@@ -20,6 +21,7 @@ class CrossEncoderReranker:
         trust_remote_code: bool = False,
         device: str | None = None,
         max_concurrency: int = 1,
+        batch_size: int | None = None,
     ) -> None:
         if max_concurrency < 1:
             raise ValueError("max_concurrency must be at least 1")
@@ -31,6 +33,7 @@ class CrossEncoderReranker:
         if device is not None:
             kwargs["device"] = device
         self.device = device
+        self.batch_size = batch_size
         self._model = CrossEncoder(model_name, **kwargs)
 
     async def async_rerank(
@@ -45,7 +48,8 @@ class CrossEncoderReranker:
             return []
 
         pairs = [[query, candidate.payload["text"]] for candidate in candidates]
-        scores = self._model.predict(pairs)
+        kwargs = {"batch_size": self.batch_size} if self.batch_size else {}
+        scores = self._model.predict(pairs, **kwargs)
 
         reranked = sorted(zip(candidates, scores), key=lambda pair: -pair[1])
         return [

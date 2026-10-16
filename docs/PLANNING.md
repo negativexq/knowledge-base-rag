@@ -4608,3 +4608,43 @@ and a lowercase letter starting the next line; a capital or digit continuation k
 `pymupdf_elements_v6`; PDFs are re-parsed on the next sync.
 
 `make test`: 1544 passed, 4 skipped.
+
+## Eval — focused MMLongBench v2 set and retrieval baseline (closing note)
+
+The 15-question pilot is too small to compare chunking strategies. The v2 set
+(`artifacts/mmlongbench-v2/manifest.json`) keeps the 5 pilot PDFs and adds 8 with
+structure a chunker has to respect (two 10-Ks, guidebooks, slide reports, an
+administration file): 13 PDFs, 120 questions — every question whose evidence is text,
+a table or layout text, plus at most two unanswerable questions per PDF. Files are
+pinned by sha256 (LFS) or git blob id; the PDFs stay in gitignored `data/`.
+
+- Each manifest gets its own Qdrant collection, documents folder and registry
+  (`kb_bench_mmlongbench_v2`), so experiments never share an index.
+- `--no-generation` measures retrieval and evidence assembly without a model (every
+  answer is an abstention; answer metrics of such a run are meaningless).
+- Runs checkpoint each question (`results.partial.jsonl`) and resume after a kill.
+- Reranker on the host: `RERANKER_DEVICE=mps` (Docker on macOS has no Metal) and
+  `RERANKER_BATCH_SIZE`. Timing for 15 candidates: container CPU 35–100 s, host CPU
+  10–27 s, MPS 4–10 s, hybrid search 0.3 s. With the default batch (32) the MPS
+  allocator cache grew to 13 GB in 70 questions on a 16 GB Mac; batch 4 plus
+  `torch.mps.empty_cache()` between questions holds the process at about 4 GB, at
+  4–6 s per question. Ingest (OCR) stays in the container, whose image pins the
+  tesseract version.
+
+Baseline (`artifacts/mmlongbench-v2/baseline-retrieval/`, 500/50-word chunks, cloud
+evidence budget, no generation), over 100 answerable questions:
+
+| Slice | Hit@5 | Hit@15 |
+| --- | ---: | ---: |
+| all | 86% | 94% |
+| text (45) | 82% | 98% |
+| table (55) | 96% | 98% |
+| layout (11) | 55% | 64% |
+
+An evidence page reached the assembled evidence for 88/100. Of the 49 questions with a
+measurable gold string, it was in the evidence pages' parsed text for 23 and in the
+assembled evidence for 19; the other 26 need a computation, a figure, or text the
+parser lost. Layout questions are the weak slice and the target of the element-aware
+chunking challenger, which runs against this baseline one variable at a time.
+
+`make test`: 1552 passed, 4 skipped.

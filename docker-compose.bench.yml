@@ -1,0 +1,13 @@
+# Benchmark overlay for the backend container: `make bench-up`.
+#
+# Benchmark runners and their inputs live on the host, not in the image, so
+# they are bind-mounted: results land in the host's artifacts/ folder and
+# survive an image rebuild (they used to be written to the container's /tmp
+# and were lost with it). data/benchmarks sits inside the registry_data
+# volume's mount point; Docker mounts the nested bind on top of it.
+services:
+  backend:
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./artifacts:/app/artifacts
+      - ./data/benchmarks:/app/data/benchmarks

@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import shutil
 import sys
 import time
@@ -74,6 +75,78 @@ COLLECTION = "kb_bench_mmlongbench"
 TENANT = "bench-mmlongbench"
 OTHER_TENANT = "tenant-a"
 OUT = ROOT / "artifacts" / "mmlongbench-pilot"
+
+
+def collection_for(manifest_path: Path) -> str:
+    """The pilot keeps its collection; another manifest gets its own,
+    named after its folder (artifacts/mmlongbench-v2 → kb_bench_mmlongbench_v2)."""
+    if Path(manifest_path).resolve() == MANIFEST.resolve():
+        return COLLECTION
+    return "kb_bench_" + Path(manifest_path).parent.name.replace("-", "_")
+
+
+def manifest_documents(root: Path, manifest, collection: str) -> Path:
+    """A documents folder for one index holding only the manifest's PDFs, as
+    relative links into the shared download folder (so it also works through
+    a container bind mount)."""
+    folder = root / "work" / collection / "documents"
+    folder.mkdir(parents=True, exist_ok=True)
+    wanted = {
+        Path(f.path).name: root / f.path for f in manifest.files if f.path.startswith("documents/")
+    }
+    for link in folder.iterdir():
+        if link.name not in wanted:
+            link.unlink()
+    for name, target in wanted.items():
+        link = folder / name
+        if link.is_symlink() or link.exists():
+            link.unlink()
+        link.symlink_to(os.path.relpath(target, folder))
+    return folder
+
+
+def disable_generation(provider) -> None:
+    """Answer every question with an abstention instead of calling the model,
+    for a run that measures retrieval and evidence assembly only (no key, no
+    model variance). Answer metrics of such a run are not meaningful."""
+
+    async def abstain(messages, **kwargs) -> str:
+        return json.dumps({"answer_parts": [], "abstain": True})
+
+    provider.chat_json = abstain
+
+
+def save_checkpoint(path: Path, raw: dict) -> None:
+    """Append one finished question so a killed run can resume."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(raw, ensure_ascii=False) + "\n")
+
+
+def load_checkpoint(path: Path) -> dict[int, dict]:
+    """Finished questions by row; a line cut off by the kill is dropped."""
+    if not path.exists():
+        return {}
+    done = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            raw = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        done[raw["row_idx"]] = raw
+    return done
+
+
+def free_accelerator_memory() -> None:
+    """Return the MPS allocator's cache between questions. Reranker inputs
+    vary in length up to max_length, and the cache otherwise grows until a
+    16 GB Mac swaps (13 GB after 70 questions)."""
+    import torch
+
+    if torch.backends.mps.is_available():
+        torch.mps.empty_cache()
+
+
 OUT_BY_EVIDENCE = {
     "retrieved": OUT,
     "gold_page": ROOT / "artifacts" / "mmlongbench-pilot-gold-page",
@@ -93,15 +166,14 @@ def source_id_for(doc_id: str) -> str:
 
 
 async def ingest(
-    settings: Settings, client: QdrantClient, ollama: OllamaClient, root: Path
+    settings: Settings, client: QdrantClient, ollama: OllamaClient, root: Path, manifest
 ) -> dict:
     embed_config = active_embedding_config(settings)
     store = QdrantStore(
         client=client, collection_name=COLLECTION, dense_dimension=embed_config.dimension
     )
-    work = root / "work"
-    work.mkdir(parents=True, exist_ok=True)
-    registry = DocumentRegistry(str(work / "registry.db"))
+    documents = manifest_documents(root, manifest, COLLECTION)
+    registry = DocumentRegistry(str(documents.parent / "registry.db"))
 
     async def embed_fn(text: str) -> list[float]:
         return await ollama.embed(
@@ -113,7 +185,7 @@ async def ingest(
 
     started = time.perf_counter()
     stats = await ingest_connector(
-        LocalFilesystemConnector(root / "documents"),
+        LocalFilesystemConnector(documents),
         store,
         registry,
         embed_fn,
@@ -327,7 +399,14 @@ def score(questions, raws: list[dict]) -> list[QuestionOutcome]:
 
 
 async def run_questions(
-    settings: Settings, root: Path, questions, skip_ingest: bool, evidence: str = "retrieved"
+    settings: Settings,
+    root: Path,
+    manifest,
+    questions,
+    skip_ingest: bool,
+    evidence: str = "retrieved",
+    generate: bool = True,
+    checkpoint: Path | None = None,
 ):
     from app.wiring import build_chat_dependencies
 
@@ -336,18 +415,27 @@ async def run_questions(
     deps, chat_provider = build_chat_dependencies(
         settings, client, ollama, SparseEncoder(), COLLECTION
     )
+    if not generate:
+        disable_generation(chat_provider)
     try:
         ingest_stats = {"chunks_upserted": "existing", "seconds": 0}
         if not skip_ingest:
-            ingest_stats = await ingest(settings, client, ollama, root)
+            ingest_stats = await ingest(settings, client, ollama, root, manifest)
             print(f"ingested: {ingest_stats}", flush=True)
         pages = chunked_pages(client)
+        done = load_checkpoint(checkpoint) if checkpoint else {}
         raws = []
         for index, question in enumerate(questions, 1):
+            if question.row_idx in done:
+                raws.append(done[question.row_idx])
+                continue
             raw = await ask(deps, client, question, evidence)
             covered = pages.get(source_id_for(question.doc_id), {})
             raw["evidence_page_chars"] = {p: covered.get(p, 0) for p in question.evidence_pages}
             raws.append(raw)
+            if checkpoint:
+                save_checkpoint(checkpoint, raw)
+            free_accelerator_memory()
             print(
                 f"[{index}/{len(questions)}] row {question.row_idx} {raw['seconds']}s "
                 f"kind={response_kind(raw)}",
@@ -375,11 +463,29 @@ async def main() -> None:
         help="give the model the retrieved evidence, or the evidence pages' chunks",
     )
     parser.add_argument("--out", type=Path, help="write results here instead of the default")
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=MANIFEST,
+        help="question set; a manifest other than the pilot gets its own collection",
+    )
+    parser.add_argument(
+        "--no-generation",
+        action="store_true",
+        help="measure retrieval and evidence only; every answer is an abstention",
+    )
     args = parser.parse_args()
-    out = args.out or OUT_BY_EVIDENCE[args.evidence]
+    global COLLECTION
+    COLLECTION = collection_for(args.manifest)
+    if args.out:
+        out = args.out
+    elif Path(args.manifest).resolve() == MANIFEST.resolve():
+        out = OUT_BY_EVIDENCE[args.evidence]
+    else:
+        out = Path(args.manifest).parent / f"results-{args.evidence.replace('_', '-')}"
 
     settings = Settings()
-    manifest = load_manifest(MANIFEST)
+    manifest = load_manifest(args.manifest)
     root = data_dir(manifest.revision)
     table = pq.read_table(root / "data" / "train-00000-of-00001.parquet").to_pylist()
     questions = [parse_question(table[row], row) for row in manifest.question_rows]
@@ -393,7 +499,14 @@ async def main() -> None:
         meta = json.loads((out / "report.json").read_text(encoding="utf-8"))["meta"]
     else:
         raws, ingest_stats = await run_questions(
-            settings, root, questions, args.skip_ingest, args.evidence
+            settings,
+            root,
+            manifest,
+            questions,
+            args.skip_ingest,
+            args.evidence,
+            generate=not args.no_generation,
+            checkpoint=out / "results.partial.jsonl",
         )
         seconds = sorted(raw["seconds"] for raw in raws)
         meta = {
@@ -403,7 +516,7 @@ async def main() -> None:
             "questions": len(questions),
             "collection": COLLECTION,
             "tenant": TENANT,
-            "model": generation_model(settings),
+            "model": generation_model(settings) if not args.no_generation else "none",
             "top_n": settings.reranker_top_n,
             "candidate_k": settings.reranker_candidate_k,
             "ingest": ingest_stats,
@@ -415,6 +528,7 @@ async def main() -> None:
         (out / "results.jsonl").write_text(
             "".join(json.dumps(raw, ensure_ascii=False) + "\n" for raw in raws), encoding="utf-8"
         )
+        (out / "results.partial.jsonl").unlink(missing_ok=True)
 
     outcomes = score(questions, raws)
     report = build_report(outcomes, top_k=meta["top_n"], candidate_k=meta["candidate_k"])
