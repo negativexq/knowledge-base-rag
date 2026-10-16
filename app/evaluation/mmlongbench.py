@@ -18,6 +18,7 @@ import re
 from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
@@ -181,6 +182,14 @@ _NUMBER_WORDS = {
 # A minus sign counts only when it does not join two tokens, so a range like
 # "1981-1982" reads as two positive years.
 _NUMBER = re.compile(r"(?:(?<!\w)-)?\d+(?:\.\d+)?")
+_NUMBER_OR_WORD = re.compile(r"(?:(?<!\w)-)?\d+(?:\.\d+)?|\b(?:" + "|".join(_NUMBER_WORDS) + r")\b")
+# Golds below this are found on almost any page ("2", "12%"), so seeing one
+# in the page text says nothing about whether the answer is there.
+SMALL_NUMBER_GOLD = 100
+# A long gold item one slip away from the prediction is the gold's typo
+# ("Unioon Bank of India").
+TYPO_MIN_CHARS = 10
+TYPO_MIN_RATIO = 0.92
 _SUPPORT_ID = re.compile(r"\[(E\d+\.S\d+)\]")
 
 
@@ -199,9 +208,40 @@ def _numbers(text: str) -> list[float]:
     return values
 
 
+def _close(value: float, gold: float) -> bool:
+    return abs(value - gold) <= max(abs(gold) * 0.01, 1e-6)
+
+
 def _numeric_match(prediction: str, gold: float) -> bool:
-    tolerance = max(abs(gold) * 0.01, 1e-6)
-    return any(abs(value - gold) <= tolerance for value in _numbers(prediction))
+    return any(_close(value, gold) for value in _numbers(prediction))
+
+
+def _is_year(value: float) -> bool:
+    return value.is_integer() and 1900 <= value <= 2100
+
+
+def _stated_number(prediction: str, gold: float) -> float | None:
+    """The first number the answer states, in text order (number words
+    included). A year is skipped unless the gold is one, so "In 2013, 41%..."
+    states 41."""
+    cleaned = re.sub(r"(?<=\d),(?=\d{3})", "", prediction.lower())
+    for match in _NUMBER_OR_WORD.finditer(cleaned):
+        token = match.group()
+        value = float(_NUMBER_WORDS[token]) if token in _NUMBER_WORDS else float(token)
+        if _is_year(value) and not _is_year(gold):
+            continue
+        return value
+    return None
+
+
+def _typo_match(prediction: str, gold: str) -> bool:
+    if len(gold) < TYPO_MIN_CHARS:
+        return False
+    words, size = prediction.split(), len(gold.split())
+    return any(
+        SequenceMatcher(None, " ".join(words[start : start + size]), gold).ratio() >= TYPO_MIN_RATIO
+        for start in range(max(1, len(words) - size + 1))
+    )
 
 
 def _item_matches(prediction: str, gold: str) -> bool:
@@ -209,7 +249,8 @@ def _item_matches(prediction: str, gold: str) -> bool:
     bare = _normalize(gold).replace("%", "").replace(" ", "").replace(".", "")
     if gold_numbers and bare.isdigit():
         return _numeric_match(prediction, gold_numbers[0])
-    return _normalize(gold) in _normalize(prediction)
+    gold_text, text = _normalize(gold), _normalize(prediction)
+    return gold_text in text or _typo_match(text, gold_text)
 
 
 def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
@@ -219,7 +260,10 @@ def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
     prediction = _SUPPORT_ID.sub(" ", prediction)
     if answer_format in ("Int", "Float"):
         gold_numbers = _numbers(gold)
-        return bool(gold_numbers) and _numeric_match(prediction, gold_numbers[0])
+        if not gold_numbers:
+            return False
+        stated = _stated_number(prediction, gold_numbers[0])
+        return stated is not None and _close(stated, gold_numbers[0])
     if answer_format == "List":
         try:
             items = [str(item) for item in _literal_list(gold)]
@@ -229,11 +273,27 @@ def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
     return _item_matches(prediction, gold)
 
 
+def _small_number_gold(question: PilotQuestion) -> bool:
+    if question.answer_format in ("Int", "Float"):
+        values = _numbers(question.answer)
+    elif question.answer_format == "List":
+        try:
+            items = [str(item) for item in _literal_list(question.answer)]
+        except (ValueError, SyntaxError):
+            return False
+        if not all(_normalize(item).replace("%", "").replace(".", "").isdigit() for item in items):
+            return False
+        values = [value for item in items for value in _numbers(item)]
+    else:
+        return False
+    return bool(values) and all(abs(value) < SMALL_NUMBER_GOLD for value in values)
+
+
 def gold_visible(question: PilotQuestion, texts: Iterable[str]) -> bool | None:
     """Whether the gold answer appears in the given text (the same lenient
     match answers are scored with). A lower bound: an answer the question
     asks to compute (a difference, a count) is not in any text."""
-    if not question.answerable:
+    if not question.answerable or _small_number_gold(question):
         return None
     return answer_matches("\n".join(texts), question.answer, question.answer_format)
 
@@ -284,6 +344,10 @@ class QuestionOutcome:
             return "not_in_page_text"
         if self.evidence == "retrieved" and self.retrieved_top_k is False:
             return "retrieval"
+        if self.gold_in_page_text is None or self.gold_in_evidence is None:
+            # A small-number gold (or an old result) cannot be located in
+            # text, so the loss cannot be pinned on assembly or generation.
+            return "unmeasured"
         if self.gold_in_evidence is False:
             return "assembly"
         return "generation"
@@ -407,7 +471,8 @@ def outcome_from_result(
     )
 
 
-_PAGE_LABEL = re.compile(r"^page (\d+)$")
+# "page 3", or a section path ending in "(page 8)" / "(pages 5–6)".
+_PAGE_LABEL = re.compile(r"(?:^|\()pages? (\d+)(?:\s*[–-]\s*(\d+))?\)?$")
 
 
 def payload_pages(payload: dict[str, Any]) -> list[int]:
@@ -418,17 +483,31 @@ def payload_pages(payload: dict[str, Any]) -> list[int]:
 
 
 def cited_pages(answer: str, support_units: list[dict[str, Any]]) -> list[tuple[str, int]]:
-    """(source_id, page) of every support unit the answer cites, in citation
-    order, read from the unit's "page N" section label. Units without a page
-    (Markdown sections) and unknown ids are skipped."""
+    """(source_id, page) of every page a cited support unit covers, in
+    citation order: the unit's page fields, or else its section label's
+    "page N" / "(pages N–M)". Units without a page (Markdown sections) and
+    unknown ids are skipped."""
     by_id = {unit["support_id"]: unit for unit in support_units}
     pages: list[tuple[str, int]] = []
     for support_id in _SUPPORT_ID.findall(answer):
         unit = by_id.get(support_id)
-        match = _PAGE_LABEL.match(str((unit or {}).get("section_label") or ""))
-        if unit is None or match is None:
+        if unit is None:
             continue
-        page = (str(unit["source_id"]), int(match.group(1)))
-        if page not in pages:
-            pages.append(page)
+        for number in _unit_pages(unit):
+            page = (str(unit["source_id"]), number)
+            if page not in pages:
+                pages.append(page)
     return pages
+
+
+def _unit_pages(unit: dict[str, Any]) -> list[int]:
+    if unit.get("page_number") is not None:
+        first = int(unit["page_number"])
+        last = int(unit.get("page_end") or first)
+        return list(range(first, max(first, last) + 1))
+    match = _PAGE_LABEL.search(str(unit.get("section_label") or ""))
+    if match is None:
+        return []
+    first = int(match.group(1))
+    last = int(match.group(2) or first)
+    return list(range(first, max(first, last) + 1))

@@ -208,9 +208,12 @@ async def ask(deps, client: QdrantClient, question, evidence: str = "retrieved")
     top = [(r.payload["source_id"], page) for r in results for page in payload_pages(r.payload)]
 
     gold_chunks = gold_page_chunks(client, question) if question.answerable else []
-    if evidence == "gold_page":
+    if evidence == "gold_page" and question.answerable:
         blocks = gold_chunks
     else:
+        # An unanswerable question has no evidence page; with nothing to
+        # read, a refusal would be free. It gets what retrieval found.
+        evidence = "retrieved"
         blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
     answer, metadata, validation = "", {}, {}
     async for event in deps.stream_fn(question.question, blocks):
