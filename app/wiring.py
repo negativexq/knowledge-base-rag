@@ -213,6 +213,7 @@ def build_chat_dependencies(
                 shadow_enabled=settings.critical_validator_v3_shadow_enabled,
                 architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
                 count_tokens=count_prompt_tokens,
+                derived_answers=settings.derived_answers_enabled,
             ):
                 yield event
             return

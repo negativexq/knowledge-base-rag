@@ -4471,3 +4471,26 @@ abstention; beside real parts, they are dropped. The count is in validator telem
 `discarded_not_found_parts`.
 
 `make test`: 1474 passed, 4 skipped.
+
+## Feature — verified derived answers, behind a flag (closing note)
+
+A number the evidence does not print but implies ("41% do not go online" from "59% go
+online") was refused by design. With `DERIVED_ANSWERS_ENABLED=true` an answer part may
+carry `calculation: {expression, result}`. `app/llm/calculation.py` checks it without a
+model: a whitelist parse (numbers, + − × ÷, parentheses), every operand printed in the
+part's cited units (100 allowed for percentage remainders), the result recomputed at the
+stated precision, and the result stated in the answer text. A verified calculation is
+evidence for the critical-value check (unit kept, so "41%" matches "41%"); a wrong one
+rejects the part. The rendered answer shows the arithmetic. Off by default: the schema
+and prompt are unchanged without the flag.
+
+Gold-page pilot, qwen3.5:4b, flag on: 2/15 answerable correct (3/15 off), 5/5
+unanswerable refused. The verifier did its job — no wrong number got through:
+row 219 computed `100 - 41 - 30` from a 41 that was not printed (operand unsupported),
+row 221 stated an uncomputed "8" (indeterminate). The 4B model did not use the
+contract where it should (row 218 still abstains instead of `100 - 59`), and the longer
+prompt changed an unrelated answer (row 639 turned into an approximate numeric sentence,
+blocked as a conflict). So the flag stays off for small local models; the next check
+is the same run with gpt-6-luna.
+
+`make test`: 1502 passed, 4 skipped.

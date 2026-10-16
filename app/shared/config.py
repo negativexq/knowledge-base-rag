@@ -76,6 +76,10 @@ class Settings(BaseSettings):
     critical_validator_version: Literal["baseline", "v3", "architecture_v2"] = "architecture_v2"
     critical_validator_v3_shadow_enabled: bool = False
     critical_validator_arch_v2_shadow_enabled: bool = False
+    # Derived answers: answer parts may carry the arithmetic behind a number
+    # the evidence does not print, verified deterministically before release
+    # (app/llm/calculation.py). Off until the pilot shows it helps.
+    derived_answers_enabled: bool = False
 
     # Explicit local/debug forensic capture.  Both switches are required for
     # raw text; normal production telemetry remains bounded and unaffected.
