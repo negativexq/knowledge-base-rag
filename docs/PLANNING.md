@@ -4435,3 +4435,26 @@ questions need a computation or a figure. Next: the same gold-page run with a st
 generation model, then decide between generation work and visual evidence.
 
 `make test`: 1471 passed, 4 skipped.
+
+## Feature — gpt-6-luna as a selectable generator (closing note)
+
+`gpt-6-luna` is added to the OpenAI client's model allowlist (`OPENAI_MODEL=gpt-6-luna`);
+the default stays `gpt-5.6-luna` so earlier evaluation runs remain comparable. The key
+is passed to a run from the macOS Keychain through the environment, never written to
+`.env`.
+
+Gold-page pilot (same evidence, same validation, only the generator changed):
+
+| Generator | Answer | Answerable answered | Unanswerable refused |
+| --- | ---: | ---: | ---: |
+| qwen3.5:4b | 3/15 | 8/15 | 5/5 |
+| gpt-6-luna | 3/15 | 5/15 | 5/5 |
+
+The stronger model does not answer more correctly; it abstains more (14 of 20). The
+answer contract is the limit: a claim needs a directly supporting unit and the model
+runs without reasoning, so answers that must be computed (100 − 59) or counted are
+refused by design, and figure-only answers are not in the text. One output bug showed
+up: an answer part whose text is the not-found phrase (row 639) was released as an
+answer. Next: treat such parts as abstention, then verifiable derived answers.
+
+`make test`: see the next note.

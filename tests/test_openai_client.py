@@ -191,3 +191,12 @@ def test_provider_config_contract_does_not_contain_api_key_field():
         payload = config.read_text(encoding="utf-8")
         assert ("OPENAI_" + "API_KEY=") not in payload
         assert "authorization" not in payload.lower()
+
+
+@pytest.mark.asyncio
+async def test_gpt_6_luna_can_be_selected_as_the_generator():
+    sdk = _SDK()
+    client = OpenAIGeneratorClient(api_key="test-key", sdk_client=sdk)
+    await client.chat_json([{"role": "user", "content": "q"}], model="gpt-6-luna", schema=None)
+    assert sdk.responses.body["model"] == "gpt-6-luna"
+    await client.aclose()

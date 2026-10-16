@@ -35,7 +35,10 @@ DEFAULT_OPENAI_READ_TIMEOUT_SECONDS = 180.0
 DEFAULT_OPENAI_OVERALL_TIMEOUT_SECONDS = 240.0
 OPENAI_MODEL = "gpt-5.6-luna"
 OPENAI_JUDGE_MODEL = "gpt-5.6-terra"
-SUPPORTED_OPENAI_MODELS = frozenset({OPENAI_MODEL, OPENAI_JUDGE_MODEL})
+# Newer generator, selectable with OPENAI_MODEL; the default stays pinned so
+# earlier evaluation runs remain comparable.
+OPENAI_NEXT_MODEL = "gpt-6-luna"
+SUPPORTED_OPENAI_MODELS = frozenset({OPENAI_MODEL, OPENAI_JUDGE_MODEL, OPENAI_NEXT_MODEL})
 
 
 class OpenAIProviderError(RuntimeError):
