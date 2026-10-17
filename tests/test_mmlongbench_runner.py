@@ -77,14 +77,22 @@ def test_a_result_keeps_the_model_output_and_the_validator_trace():
     # looked the same.
     stages = {
         "generation": {"raw_model_output": '{"answer_parts": []}', "generation_ms": 9},
-        "support_id_validation": {"critical_validator": {"status": "DIRECT_CONFLICT"}},
+        "support_id_validation": {
+            "critical_validator": {"status": "DIRECT_CONFLICT"},
+            "cited_units": [{"support_unit_id": "E1.S1", "raw_support_text": "16%"}],
+        },
     }
 
     assert runner.validation_trace(stages) == {
         "raw_model_output": '{"answer_parts": []}',
         "critical_validator": {"status": "DIRECT_CONFLICT"},
+        "cited_units": [{"support_unit_id": "E1.S1", "raw_support_text": "16%"}],
     }
-    assert runner.validation_trace({}) == {"raw_model_output": None, "critical_validator": None}
+    assert runner.validation_trace({}) == {
+        "raw_model_output": None,
+        "critical_validator": None,
+        "cited_units": None,
+    }
 
 
 def test_rows_can_be_rerun_on_their_own():

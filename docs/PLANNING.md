@@ -4813,3 +4813,27 @@ operands are counted, not printed (399, 835, 513, 515, 639), wrong answers caugh
 "1,767.80" as "767.80" on both sides, so it compares consistently but wrongly.
 
 `make test`: 1599 passed, 4 skipped.
+
+## Feature — verified counts, ISO date restatement, cited units in the trace (closing note)
+
+The derived-answer rerun left 13 blocks. Three kinds now have a verified path:
+
+- Counts (399, 513, 515, 835; 639 partly): a counted number is printed nowhere, and
+  a calculation cannot help since its operands would be counts too ("4 + 3"). With
+  derived answers each part also carries `counts`: lists of items copied from the
+  cited units. `app/llm/counting.py` checks every item is printed there (case and
+  whitespace aside) and none is counted twice; the count is the number of items. A
+  verified count becomes an evidence line ("count of listed items = 13"), so it
+  supports the stated number and may be a calculation operand. The answer renders
+  "(count: 13 listed items)" and the scorer reads it when there is no calculation.
+- Dates (740): when an answer writes ISO dates, each month-name date in the cited
+  units ("24 March 2015", "March 25, 2015") is restated as an evidence line
+  ("24 March 2015 = 2015-03-24", `app/llm/dates.py`). Numeric dates are ambiguous
+  and never restated; the frozen V6 extractor is unchanged.
+- Trace: a raw-text capture now keeps the text of the units the model cited
+  (`cited_units`; a bounded capture keeps only their IDs), and the benchmark trace
+  carries it, so 525 (a correct 32% whose "In 2013" and "16%" conflict with its
+  units) and 639 can be diagnosed. 639's "2-hop" labels pass when the cited unit
+  prints them, so no extractor change was made before reading its units.
+
+`make test`: 1615 passed, 4 skipped.

@@ -276,11 +276,13 @@ def locations(client: QdrantClient, ids: list) -> list[tuple[str, int]]:
 
 
 def validation_trace(stages: dict) -> dict:
-    """What the model returned and what the critical-value validator decided
-    about it, from the forensic capture's stages."""
+    """What the model returned, the units it cited and what the critical-value
+    validator decided about it, from the forensic capture's stages."""
+    validation = stages.get("support_id_validation", {})
     return {
         "raw_model_output": stages.get("generation", {}).get("raw_model_output"),
-        "critical_validator": stages.get("support_id_validation", {}).get("critical_validator"),
+        "critical_validator": validation.get("critical_validator"),
+        "cited_units": validation.get("cited_units"),
     }
 
 
