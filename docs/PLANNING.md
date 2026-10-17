@@ -5595,3 +5595,17 @@ Right now and not before (13): 206, 216, 366, 382, 511, 634, 1018, 1020, 1070,
 1075 moved from wrong to refused.
 
 `make test`: 1743 passed, 4 skipped.
+
+## Fix — a printed total debt row, and EBITDA from operating income (closing note)
+
+`luna-full-v3`: 1074 (interest to average total debt) regressed from right to
+refused on the total-debt definition of #87: the resolver searched for "total
+debt including current portion" instead of binding Best Buy's printed "Total
+long-term debt" row (1,176 and 1,229, the current portion already in it).
+1015 added interest expense to operating income plus depreciation and
+amortization (8,660; gold 8,489). The definition now allows a printed row that
+already includes the current portion as one operand, and EBITDA is operating
+income plus depreciation and amortization, interest and taxes added back only
+to net income. Prompt-only.
+
+`make test`: 1744 passed, 4 skipped.
