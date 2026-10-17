@@ -1,4 +1,4 @@
-# RAG Operations Console Architecture
+# Knowledge Base Research Workspace Architecture
 
 ```text
 React UI
