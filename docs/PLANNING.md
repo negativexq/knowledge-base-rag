@@ -5402,3 +5402,14 @@ complete, so 1018 moved from refused to wrong. 1023, right, used the printed
 "Total lease liabilities" row instead of summing its parts.
 
 `make test`: 1721 passed, 4 skipped.
+
+## Fix — a printed total over its parts (closing note)
+
+`luna-v2-operand-rows`: 1018 summed "all lease liabilities" from the lease
+table's parts and left one out (980), an answer the validator cannot catch
+(each operand and the arithmetic check out); 1017 missed the same parts and
+was refused. 1023, right, used the printed "Total lease liabilities" row. The
+resolver instructions now ask for a printed total of the figures a definition
+sums, as one operand, over its parts. Prompt-only.
+
+`make test`: 1722 passed, 4 skipped.

@@ -47,7 +47,9 @@ program over named operands and return
 - Each operand: "name" (a, b, c, ...); "what": the figure in the question's
   words; "value": one figure exactly as one unit prints it, or null (a
   total of several printed figures is one operand per figure in the program,
-  never a value like "72 + 980");
+  never a value like "72 + 980"). When a unit prints a total of the
+  figures a definition sums ("Total lease liabilities" for all lease
+  liabilities), use that printed total as one operand, not its parts;
   "support_id": that unit, or null; "labels": the row and column labels printed
   next to the value in that unit, copied exactly (the line item, the year);
   "search": when "value" is null, a short search query for the figure, else null.
