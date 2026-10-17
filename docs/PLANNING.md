@@ -5779,3 +5779,18 @@ The page fix works where the reranker ranks the evidence page: the reads of
 637, 661 and 732 are right. The confirming call is now the larger loss.
 
 `make test`: 1751 passed, 4 skipped.
+
+## Visual path — check the reading's claim and the question's conditions (closing note)
+
+The confirming call saw only the bare candidate ("0.0", "1") and the pages,
+and had to say whether the pages "clearly show" it, with no reason. It
+refused right readings of 661 and 637, whose observations named the page and
+what on it gives the answer, and confirmed 636's "Four" prompt templates from
+the appendix, though the question asks about the main body. It now gets the
+reading's claim (answer, claimed page, observation) and returns
+`shown_on_page` (the page shows what the observation says and the answer
+follows from it), `meets_question` (the answer meets every condition the
+question sets: part of the document, group, period, unit) and a one-sentence
+`reason`, kept in the trace. The answer passes only when both are true.
+
+`make test`: 1752 passed, 4 skipped.
