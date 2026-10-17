@@ -141,7 +141,7 @@ ones.
 | Benchmark | Result | Notes |
 | --- | --- | --- |
 | MMLongBench-Doc (120 questions, 13 long PDFs) | **79/120 (66%)** overall; 19/21 unanswerable questions refused | [report](artifacts/mmlongbench-v2/luna-full-v3/report.md); lenient contains-match, not the official score |
-| TechQA end-to-end | 70% useful answers, 2% materially incorrect | [report](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/) |
+| TechQA HOLDOUT50 (50 questions, 769 documents) | **26/50 (52%)** useful on the current production path, 2% materially incorrect; the August pipeline reached 35/50 (70%) | [current](artifacts/ragbench/techqa-production-v1/report.md), [August](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/); one reviewer, canonical rubric |
 | Multilingual reranker selection (220 questions) | Recall@5 1.00 TR→EN and EN→TR | [decision](docs/reranking.md) |
 | Citation safety (TechQA) | 0 unknown or unauthorized support IDs accepted | Deterministic contract checks |
 
@@ -168,8 +168,11 @@ cd frontend && npm test && npm run typecheck && npm run lint
 
 - Visual answers can still misread a chart, and printed page numbers that
   differ from PDF page numbers can point the visual path at the wrong page.
-- The model sometimes declines a table lookup it could have answered.
-  Conservative refusal is a deliberate trade-off.
+- The model sometimes declines a question it could have answered (a table
+  lookup, or a TechQA support question whose document was retrieved), and the
+  critical-value validator blocks some correct answers that list many
+  versions. Conservative refusal is a deliberate trade-off, but on TechQA it
+  now costs more than it did in August.
 - The critical-value validator checks literals, not general meaning.
 - The research library is stored in the browser, not synced across devices.
 - Local demo authentication is not a full production identity setup.
