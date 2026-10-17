@@ -5033,3 +5033,24 @@ runs, it rejects exactly 206, 219 and 225 and none of the 11 correct count answe
 three wrong answers become abstentions, no API call.
 
 `make test`: 1648 passed, 4 skipped.
+
+## Feature — operand resolver for withheld computed answers (closing note)
+
+Second step of the evidence-driven plan. When the first answer is withheld (model
+abstained or validator blocked) and `OPERAND_RESOLVER_ENABLED=true` (with derived
+answers), the question gets one narrower try (`app/llm/operand_resolver.py`): the
+model plans a program over named operands and, for each, copies the value, its
+unit and the row and column labels printed next to it. Code binds each operand
+(value and every label must be in that unit's text), searches once for the
+missing ones within the request's ACL and document scope (`R1`, `R2`... evidence
+ids), plans again over the larger evidence, computes the program, and renders one
+answer part whose calculation and values go through the ordinary support-unit
+validator and the question's year and date premises. The model never does the
+arithmetic; a plan whose program is null, uses other names or operators, or has an
+unbound operand leaves the abstention. At most two planning calls and one search
+round per withheld answer. The chat API and the benchmark runner pass the scoped
+search only when the flag is on. Not measured yet; the targets are the 10-K ratio
+abstentions (380, 1013, 1015, 1018, 1020, 1021, 1023, 1024, 1072–1075, 1079, 1084,
+1086) and 727.
+
+`make test`: 1661 passed, 4 skipped.

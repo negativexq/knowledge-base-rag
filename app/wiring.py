@@ -208,7 +208,7 @@ def build_chat_dependencies(
             num_ctx=default_context_tokens(settings),
         )
 
-    async def stream_fn(question: str, chunks: list[SearchResult]):
+    async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None):
         if settings.support_ids_enabled:
             async for event in stream_support_unit_answer(
                 question,
@@ -223,6 +223,9 @@ def build_chat_dependencies(
                 architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
                 count_tokens=count_prompt_tokens,
                 derived_answers=settings.derived_answers_enabled,
+                operand_resolver=settings.derived_answers_enabled
+                and settings.operand_resolver_enabled,
+                retrieve=retrieve,
             ):
                 yield event
             return
@@ -280,6 +283,8 @@ def build_chat_dependencies(
             forensic_capture_enabled=settings.rag_forensic_capture_enabled,
             forensic_capture_raw_text=settings.rag_forensic_capture_raw_text,
             forensic_capture_dir=settings.rag_forensic_capture_dir,
+            operand_resolver_enabled=settings.derived_answers_enabled
+            and settings.operand_resolver_enabled,
             rewrite_fn=rewrite_fn if settings.query_rewrite_enabled else None,
         ),
         chat_provider,
