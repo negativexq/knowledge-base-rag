@@ -219,6 +219,8 @@ SMALL_NUMBER_GOLD = 100
 TYPO_MIN_CHARS = 10
 TYPO_MIN_RATIO = 0.92
 _SUPPORT_ID = re.compile(r"\[(E\d+\.S\d+)\]")
+# A verified calculation as the answer renders it: "(calculation: 10 / 24 * 100 = 41.7%)".
+_CALCULATION_RESULT = re.compile(r"\(calculation: [^()]*?=\s*([^()]+)\)")
 
 
 def _normalize(text: str) -> str:
@@ -290,6 +292,12 @@ def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
         gold_numbers = _numbers(gold)
         if not gold_numbers:
             return False
+        # A computed answer states its operands first; its value is the
+        # verified calculation's result (a decrease may be negative).
+        calculation = _CALCULATION_RESULT.search(prediction)
+        if calculation:
+            results = _numbers(calculation.group(1))
+            return bool(results) and _close(abs(results[0]), gold_numbers[0])
         stated = _stated_number(prediction, gold_numbers[0])
         return stated is not None and _close(stated, gold_numbers[0])
     if answer_format == "List":
