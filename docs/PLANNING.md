@@ -5762,3 +5762,20 @@ five; 385, 393 and 636 still miss them: their questions name a printed page
 ("page two") that is not the PDF page, a separate issue.
 
 `make test`: 1751 passed, 4 skipped.
+
+## Measurement — reranked visual pages on seven rows (closing note)
+
+`luna-v3-visual-rows`, gpt-6-luna, one run, the seven rows where the visual
+path ran in `luna-full-v3` (all refused there): 1 right, 1 wrong, 5 refused.
+- right: 732 (5, read from the Tweet table on page 16, a reranked page).
+- wrong: 636 (gold 2) answered "Four" from the appendix prompt templates on
+  page 15; the question asks for the main body, and the check confirmed it.
+- the read was right but the confirming call did not support it: 637 (1,
+  as in `luna-full-v3`) and 661 (0.0, now from the waveform page 20 instead
+  of pages 1, 4, 7).
+- 385 and 393 still miss page 5 ("page two" is not the PDF's second page);
+  662 read pages 15, 3, 4, one evidence page, and could not list them all.
+The page fix works where the reranker ranks the evidence page: the reads of
+637, 661 and 732 are right. The confirming call is now the larger loss.
+
+`make test`: 1751 passed, 4 skipped.
