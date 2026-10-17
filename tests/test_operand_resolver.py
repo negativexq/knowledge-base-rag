@@ -651,3 +651,20 @@ def test_a_plan_followed_by_repeated_output_parses_as_its_first_object():
 def test_output_with_no_complete_object_is_still_invalid():
     with pytest.raises(json.JSONDecodeError):
         parse_operand_plan('{"program": "a / b", "operands": [')
+
+
+# luna V2 audit, category F: 1072 and 1073 searched for "capital employed" and
+# "average equity", which no unit prints; 1075 left the current portion out of
+# the capitalization ratio's debt; 366 wrote abs(), which programs do not allow.
+
+
+def test_the_instructions_define_unprinted_measures_from_printed_figures():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    for phrase in (
+        "total assets - current liabilities",
+        "(this year's + last year's) / 2",
+        "long-term debt + its current portion",
+        "larger minus the smaller",
+    ):
+        assert phrase in RESOLVER_INSTRUCTIONS

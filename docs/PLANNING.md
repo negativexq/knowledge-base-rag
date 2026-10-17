@@ -5470,3 +5470,24 @@ liabilities" found by the resolver's one search. Across the V2 audit work,
 runs, and 1020, 1023 and 1025 are scored correct by the scale-aware match.
 
 `make test`: 1729 passed, 4 skipped.
+
+## Fix — resolver definitions for measures no unit prints (closing note)
+
+V2 audit, category F. 1072 (ROCE, gold 0.263) and 1073 (after-tax return on
+average equity, gold 0.488) planned the right ratios but searched for
+"capital employed" and "average equity", which no unit prints, and were
+refused. 1075 (capitalization ratio, gold 29.6%) left the current portion of
+long-term debt (16) out of debt: 1,160 / (1,160 + 2,795) = 29.3% instead of
+1,176 / (1,176 + 2,795) = 29.6%. 366 wrote abs(), which programs do not allow.
+The resolver instructions now plan such a figure from the printed figures it
+is defined by (capital employed = total assets - current liabilities, an
+average balance = (this year's + last year's) / 2, total debt = long-term debt
++ its current portion, lease liabilities only when the question says so) and
+a shortfall or gap as the larger minus the smaller figure. Prompt-only.
+Not addressed: 1079 (the resolver's search returns the balance sheet chunk
+that starts inside the "Total assets" row, its label in the chunk before; a
+chunking defect, about 20 chunks of the V2 index start inside a table row),
+380 (figures in lakhs against a gold in rupees) and 1070 (the first answer
+subtracts rounded printed margins).
+
+`make test`: 1730 passed, 4 skipped.
