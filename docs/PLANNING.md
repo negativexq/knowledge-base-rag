@@ -5647,3 +5647,17 @@ resolver plan against the indexed tables: only 1018's plan is refused (1074's
 averages of two "Total long-term debt" years stand).
 
 `make test`: 1748 passed, 4 skipped.
+
+## Measurement — the less-row check and net-earnings wording on eight rows (closing note)
+
+`luna-v3-debt-rows-2`, gpt-6-luna, one run, the same eight rows: 4 right, 0
+wrong, 4 refused (against 3 right, 1 wrong, 4 refused in `luna-full-v3` and 4,
+2, 2 in `luna-v3-debt-rows`). Right: 1015 (8,489), 1017 (11,407, from the
+lease parts this time), 1023 (19.25%), 1073 (48.805%, net earnings as
+printed). 1018 is refused by the new check (`OPERAND_TOTAL_AND_PART`: "Total
+long-term debt" plus the current portion its "Less current portion" row shows
+it holds) instead of answered wrong. 1074 left both debt operands unfound this
+run (it bound the printed rows in the previous run), 1072 failed the critical
+validator, and 1075 planned no calculation.
+
+`make test`: 1748 passed, 4 skipped.
