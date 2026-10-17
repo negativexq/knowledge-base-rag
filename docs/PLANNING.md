@@ -5099,3 +5099,19 @@ stops here: what is left is mostly which definition the gold uses, and pushing o
 would be benchmark tuning. Next: column headers in table cells, then visual input.
 
 `make test`: 1666 passed, 4 skipped.
+
+## Fix — table cells carry their column headers (closing note)
+
+10-K statements print their dates above the ruled area, so the table's first row
+was "ASSETS" with empty cells and every row reached the model as "ASSETS: Long-term
+debt, excluding current portion | 6,692 | 7,514", with no year (luna resolver rows
+1018, 1020, 1023). PyMuPDF finds such a header outside the table (`header.external`);
+it now heads the rows. A value printed one column right of a lone currency sign
+("$ | 11,258") takes the sign's header and joins it ("August 29, 2021: $ 11,258");
+an unnamed column that does not follow a sign keeps its bare value as before. The
+Costco balance sheet now reads "Long-term debt, excluding current portion | August
+29, 2021: 6,692 | August 30, 2020: 7,514". Survey cells (227) are not ruled tables
+and are not affected. `PDF_PARSER_VERSION` is `pymupdf_elements_v8`, so existing
+PDFs are re-indexed.
+
+`make test`: 1669 passed, 4 skipped.
