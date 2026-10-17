@@ -5150,3 +5150,11 @@ benchmark runner points it at the manifest's PDFs. Re-indexed with parser v9 (13
 PDFs, 719 chunks). Not measured yet.
 
 `make test`: 1682 passed, 4 skipped.
+
+## Fix — the runner keeps the visual path's trace (closing note)
+
+A benchmark result's `trace` now carries the capture's `visual_answer` stage (the
+pages shown, the reading and the confirmation calls' raw output, whether it
+answered; no images), so a visual run can be diagnosed from its results.
+
+`make test`: 1683 passed, 4 skipped.

@@ -88,12 +88,14 @@ def test_a_result_keeps_the_model_output_and_the_validator_trace():
         "critical_validator": {"status": "DIRECT_CONFLICT"},
         "cited_units": [{"support_unit_id": "E1.S1", "raw_support_text": "16%"}],
         "operand_resolver": None,
+        "visual_answer": None,
     }
     assert runner.validation_trace({}) == {
         "raw_model_output": None,
         "critical_validator": None,
         "cited_units": None,
         "operand_resolver": None,
+        "visual_answer": None,
     }
 
 
@@ -108,3 +110,9 @@ def test_rows_can_be_rerun_on_their_own():
 
     assert [q.row_idx for q in runner.select_rows(questions, "210,212")] == [210, 212]
     assert runner.select_rows(questions, None) == questions
+
+
+def test_a_result_keeps_the_visual_answer_trace():
+    visual = {"pages": [17], "read": "{}", "check": "{}", "answered": False}
+
+    assert runner.validation_trace({"visual_answer": visual})["visual_answer"] == visual
