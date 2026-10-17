@@ -5558,3 +5558,40 @@ every saved first answer of the V2 runs with its question: the check fires
 only on 1070 (gold 0.12, scored wrong), so no correct answer is refused.
 
 `make test`: 1743 passed, 4 skipped.
+
+## Measurement — full run after the V2 audit fixes (closing note)
+
+`luna-full-v3`: all 120 questions, gpt-6-luna, V2 labels, the index rebuilt
+with table-row chunk edges, PRs #75-#91 in. Scored with the current match
+against `luna-full-v2` rescored the same way:
+
+| | luna-full-v2 | luna-full-v3 |
+| --- | ---: | ---: |
+| Answerable right | 55 | 60 |
+| Answerable wrong | 8 | 10 |
+| Answerable refused | 36 | 29 |
+| Unanswerable refused | 18 | 19 |
+| Unanswerable answered | 3 | 2 |
+| All right | 73/120 (61%) | 79/120 (66%) |
+
+Right now and not before (13): 206, 216, 366, 382, 511, 634, 1018, 1020, 1070,
+1073, 1079, and 475 (unanswerable) is refused. Worse (8):
+- 1074 (right to refused) is a regression from the total-debt definition
+  (#87): the resolver searched for "total debt including current portion"
+  instead of binding the printed "Total long-term debt" row that already holds
+  it, and found nothing to bind.
+- 1015 (right to wrong): the first answer abstained this time and the
+  resolver added interest expense to operating income plus D&A (8,660; gold
+  8,489).
+- 396 (refused to wrong): the counts 21 and 14 were verified this time (no
+  duplicate item); the lists are incomplete (gold 22 and 21), which the count
+  check cannot see.
+- 513 (right to refused): the answer carried a one-number "calculation" ("13"),
+  whose literal no unit prints.
+- 214, 831 (wrong): the model read another row (27 for 39) or answered another
+  part of the quarter's assignment; 516 (right to refused) abstained.
+- 386 (right to wrong) states the gold objective with its clauses reordered,
+  which the contains-match misses.
+1075 moved from wrong to refused.
+
+`make test`: 1743 passed, 4 skipped.
