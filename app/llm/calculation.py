@@ -218,3 +218,28 @@ def verify_calculation(calculation: Calculation, support_texts: list[str], text:
     if not rounded and not any(_matches(stated[0], number, decimals) for number in written):
         return ["CALCULATION_RESULT_NOT_IN_ANSWER"]
     return []
+
+
+_STATES_RATE = re.compile(r"%|\bpercent", re.IGNORECASE)
+
+
+def precision_below_asked(calculation: Calculation, text: str, asked: int | None) -> bool:
+    """A sum or difference of printed rates ("22.5 - 22.4") carries no more
+    decimals than its rates; a result asked to more decimals than that is a
+    rounding artifact, and the rates' own figures must be used instead. Whole
+    numbers (counts, amounts) are exact and never fall below."""
+    if asked is None or not _STATES_RATE.search(text):
+        return False
+    try:
+        tree = _parse(calculation.expression)
+    except ValueError:
+        return False
+    additive = all(
+        not isinstance(node, ast.BinOp) or isinstance(node.op, ast.Add | ast.Sub)
+        for node in ast.walk(tree)
+    )
+    literals = _NUMBER.findall(calculation.expression)
+    if not additive or not literals:
+        return False
+    carried = max(_decimals(literal) for literal in literals)
+    return 0 < carried < asked

@@ -5541,3 +5541,20 @@ runs uses such a factor, so no saved answer changes. 380 also needs its
 "Total income" operand found (the resolver missed it); unmeasured.
 
 `make test`: 1738 passed, 4 skipped.
+
+## Fix — a difference of rounded rates cannot answer more decimals (closing note)
+
+V2 audit, 1070: "the change of Best Buy's gross margins ... round to 2 decimal
+places" was answered 22.5 - 22.4 = 0.10 from the rates the table prints to one
+decimal; the gold 0.12 is computed from gross profit and revenue (11,640 /
+51,761 - 10,573 / 47,262 = 0.117 points). A sum or difference of printed
+rates carries no more decimals than the rates, so when the question asks for
+more (and the answer states a percentage), the calculation is now refused
+(`CALCULATION_PRECISION_BELOW_ASKED`) and the resolver gets the question; its
+instructions compute such a rate from the figures it is a ratio of. Whole
+numbers (counts, amounts) are exact and never refused; a program with a
+division (the rates' own figures) is not a sum of rounded rates. Replayed on
+every saved first answer of the V2 runs with its question: the check fires
+only on 1070 (gold 0.12, scored wrong), so no correct answer is refused.
+
+`make test`: 1743 passed, 4 skipped.
