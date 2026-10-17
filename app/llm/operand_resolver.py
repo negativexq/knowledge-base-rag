@@ -47,8 +47,12 @@ program over named operands and return
   such is planned from the printed figures it is defined by:
   capital employed = total assets - current liabilities;
   an average balance = (this year's + last year's) / 2;
-  total debt = long-term debt + its current portion (plus lease liabilities
-  only when the question says so). A shortfall or gap is the larger minus the smaller figure.
+  total debt = long-term debt + its current portion, or a printed row that already includes it
+  ("Total long-term debt") as one operand (plus lease liabilities only when
+  the question says so);
+  EBITDA = operating income + depreciation and amortization (interest and
+  taxes are added back only to net income, never to operating income).
+  A shortfall or gap is the larger minus the smaller figure.
   When the question asks for more decimals than a printed rate carries
   ("22.5%" for two decimals), compute the rate from the figures it is a ratio of
   (gross profit / revenue * 100), not from the rounded rate.

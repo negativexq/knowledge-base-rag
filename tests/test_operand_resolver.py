@@ -732,3 +732,16 @@ def test_the_instructions_compute_rates_from_their_figures_for_more_decimals():
     from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
 
     assert "from the figures it is a ratio of" in RESOLVER_INSTRUCTIONS
+
+
+# luna-full-v3: 1074 searched for "total debt including current portion"
+# instead of binding the printed "Total long-term debt" row (1,176 and 1,229,
+# current portion included) and found nothing; 1015 added interest expense to
+# operating income plus D&A (8,660; gold 8,489).
+
+
+def test_the_instructions_bind_a_printed_total_debt_and_define_ebitda():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "a printed row that already includes it" in RESOLVER_INSTRUCTIONS
+    assert "EBITDA = operating income + depreciation and amortization" in RESOLVER_INSTRUCTIONS
