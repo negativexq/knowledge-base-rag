@@ -1,5 +1,6 @@
 import hashlib
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 
 from app.ingestion.chunking_config import ChunkingConfig
@@ -322,7 +323,14 @@ def _element_aware_spans(
 
 
 def _table_spans(
-    section_text, start, end, key, hard, count, span, caption=None
+    section_text: str,
+    start: int,
+    end: int,
+    key: int,
+    hard: int,
+    count: Callable[[str], int],
+    span: Callable[..., ChunkSpan],
+    caption: tuple[int, int, int] | None = None,
 ) -> list[ChunkSpan] | None:
     """A table that fits is one chunk, starting at its caption (the short
     paragraph or heading just before it, e.g. "Consolidated Statements of

@@ -5661,3 +5661,16 @@ run (it bound the printed rows in the previous run), 1072 failed the critical
 validator, and 1075 planned no calculation.
 
 `make test`: 1748 passed, 4 skipped.
+
+## CI lint — mypy errors since the MMLongBench V2 work (closing note)
+
+The `lint` job had failed on every run since PR #40: `ruff check` passed, but
+`mypy app/` reported seven errors in strict-checked modules. `_table_spans` in
+the chunker had untyped arguments; `visual_answer` imported PyMuPDF, which
+ships no stubs, and appended a page with a possibly-None source; the operand
+resolver passed support units to `build_messages`, typed for search results
+only. `build_messages` is now generic over its context items, `_table_spans`
+is annotated, `candidate_pages` returns early without a source, and `fitz` has
+an `ignore_missing_imports` override (no inline ignores). `mypy app/` passes.
+
+`make test`: 1748 passed, 4 skipped.

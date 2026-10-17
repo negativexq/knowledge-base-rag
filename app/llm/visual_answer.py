@@ -127,10 +127,12 @@ def candidate_pages(units: list[SupportUnit], limit: int = MAX_PAGES) -> list[tu
     visible = [unit for unit in units if unit.authorized and unit.model_visible]
     pages: list[tuple[str, int]] = []
     source = next((unit.source_id for unit in visible if unit.source_id), None)
+    if source is None:
+        return pages
     for unit in visible:
         if unit.source_id != source or unit.page_number is None:
             continue
-        page = (unit.source_id, unit.page_number)
+        page = (source, unit.page_number)
         if page not in pages:
             pages.append(page)
         if len(pages) == limit:
@@ -143,7 +145,8 @@ def render_pdf_page(pdf_path: str, page_number: int, dpi: int = RENDER_DPI) -> b
     with fitz.open(pdf_path) as doc:
         if not 1 <= page_number <= doc.page_count:
             return None
-        return doc[page_number - 1].get_pixmap(dpi=dpi).tobytes("png")
+        png: bytes = doc[page_number - 1].get_pixmap(dpi=dpi).tobytes("png")
+        return png
 
 
 class PdfPages:
