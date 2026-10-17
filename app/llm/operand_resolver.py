@@ -28,7 +28,7 @@ from app.evidence.support_units import (
 )
 from app.evidence.table_facts import Fact, header_line, unit_facts
 from app.llm.calculation import Calculation, evaluate_expression, numbers_in
-from app.llm.premise import missing_question_dates, missing_question_years
+from app.llm.premise import asks_count, missing_question_dates, missing_question_years
 from app.llm.prompt import build_messages
 from app.retrieval.hybrid_search import SearchResult
 
@@ -52,6 +52,11 @@ program over named operands and return
 - "result_label": what the result is, in the question's words, with no numbers
   other than years. "percent": true when the result is a percentage.
   "decimals": the decimals the question asks for, or null.
+- A number of people asked for when the units print only their share of a
+  group (a survey's "36% rate them as poor"): the share times the group's
+  size, "a / 100 * b", where b is the unweighted sample size printed for that
+  same group ("Total sample 1,503", "Dem/Lean Dem 710", "(n=537)"). Add or
+  subtract shares of the same group before multiplying.
 Values and labels are checked against the unit's text; never compute the result.
 """.strip()
 
@@ -263,6 +268,18 @@ def plan_codes(plan: OperandPlan) -> list[str]:
     return []
 
 
+def count_shape_codes(question: str, plan: OperandPlan) -> list[str]:
+    """A question that asks how many is not answered by a percentage."""
+    return ["PERCENT_PLAN_FOR_COUNT_QUESTION"] if asks_count(question) and plan.percent else []
+
+
+def _shaped(question: str, plan: OperandPlan) -> OperandPlan:
+    """A count is a whole number unless the question asks for decimals."""
+    if asks_count(question) and plan.decimals is None:
+        return replace(plan, decimals=0)
+    return plan
+
+
 def _format(value: float, decimals: int | None) -> str:
     """At the asked decimals; otherwise a whole number as is, else two."""
     if decimals is None:
@@ -360,9 +377,10 @@ async def resolve_operands(
     plan = await _plan(
         question, units, provider, generation_kwargs, prompt_version, context_serializer, trace
     )
-    if plan is None or (codes := plan_codes(plan)):
+    if plan is None or (codes := plan_codes(plan) or count_shape_codes(question, plan)):
         trace.plan_codes.extend(codes if plan is not None else [])
         return None, None, units, trace
+    plan = _shaped(question, plan)
     missing, facts = _bind_all(plan, units, trace)
     if missing and retrieve is not None:
         retrieved: list[SearchResult] = []
@@ -385,9 +403,10 @@ async def resolve_operands(
                 context_serializer,
                 trace,
             )
-            if plan is None or (codes := plan_codes(plan)):
+            if plan is None or (codes := plan_codes(plan) or count_shape_codes(question, plan)):
                 trace.plan_codes.extend(codes if plan is not None else [])
                 return None, None, units, trace
+            plan = _shaped(question, plan)
             missing, facts = _bind_all(plan, units, trace)
     if missing:
         return plan, None, units, trace

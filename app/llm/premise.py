@@ -118,6 +118,18 @@ _ASKS_SHARE = re.compile(
     r"percent|%|\bshare\b|\bproportion\b|\brate\b|\bratio\b|\bfraction\b", re.IGNORECASE
 )
 _STATES_PERCENT = re.compile(r"\d\s*%|\d\s+percent\b", re.IGNORECASE)
+# "How many times larger" asks for a ratio, not a count.
+_ASKS_TIMES = re.compile(r"\bhow\s+many\s+times\b", re.IGNORECASE)
+
+
+def asks_count(question: str | None) -> bool:
+    """The question asks how many things, not what share or how many times."""
+    question = question or ""
+    return bool(
+        _ASKS_COUNT.search(question)
+        and not _ASKS_SHARE.search(question)
+        and not _ASKS_TIMES.search(question)
+    )
 
 
 def asks_count_answers_percent(question: str | None, text: str) -> bool:
