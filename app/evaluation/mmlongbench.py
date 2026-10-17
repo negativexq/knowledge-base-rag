@@ -12,6 +12,7 @@ committed under artifacts/.
 from __future__ import annotations
 
 import ast
+import difflib
 import hashlib
 import json
 import re
@@ -138,7 +139,8 @@ class PilotQuestion:
 
     @property
     def answerable(self) -> bool:
-        return self.answer != NOT_ANSWERABLE
+        # MMLongBench-Doc-V2 also writes "Not answerable or 0 or none".
+        return not str(self.answer).startswith(NOT_ANSWERABLE)
 
 
 def _literal_list(value: str | None) -> list[Any]:
@@ -189,6 +191,45 @@ def parse_question(row: dict[str, Any], row_idx: int) -> PilotQuestion:
             EVIDENCE_TYPES[source] for source in _literal_list(row["evidence_sources"])
         ),
     )
+
+
+# MMLongBench-Doc-V2 (github.com/VectifyAI/MMLongBench-Doc-V2) corrects gold
+# answers and rewrites ambiguous questions in V1's row order, dropping rows
+# whose document cannot be read. Its samples carry no V1 row index.
+SAME_QUESTION_MIN_RATIO = 0.5
+
+
+def _same_question(v1: dict[str, Any], v2: dict[str, Any]) -> bool:
+    """The same question when it shares the document and its text, its answer
+    or its evidence pages (a rewritten question keeps the answer, a corrected
+    answer keeps the text)."""
+    if v1["doc_id"] != v2["doc_id"]:
+        return False
+    ratio = difflib.SequenceMatcher(None, v1["question"], v2["question"]).ratio()
+    return (
+        ratio >= SAME_QUESTION_MIN_RATIO
+        or str(v1["answer"]).strip() == str(v2["answer"]).strip()
+        or v1["evidence_pages"] == v2["evidence_pages"]
+    )
+
+
+def corrected_rows(
+    v1: list[dict[str, Any]], v2: list[dict[str, Any]]
+) -> list[dict[str, Any] | None]:
+    """Each V1 row's V2 sample, None for a row V2 dropped. Rows are aligned in
+    order; a V2 file that does not align with every one of its samples is
+    refused rather than half applied."""
+    rows: list[dict[str, Any] | None] = []
+    j = 0
+    for row in v1:
+        if j < len(v2) and _same_question(row, v2[j]):
+            rows.append({**row, **v2[j]})
+            j += 1
+        else:
+            rows.append(None)
+    if j != len(v2):
+        raise ValueError(f"V2 samples do not align with V1 rows: {j} of {len(v2)} matched")
+    return rows
 
 
 # --- answer scoring -------------------------------------------------------

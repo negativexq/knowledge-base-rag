@@ -54,6 +54,7 @@ from app.evaluation.mmlongbench import (
     QuestionOutcome,
     build_report,
     cited_pages,
+    corrected_rows,
     gold_visible,
     load_manifest,
     outcome_from_result,
@@ -428,6 +429,7 @@ def write_markdown(report: dict, meta: dict, path: Path) -> None:
         f"- ACL leaks (same questions as `{OTHER_TENANT}`): {report['acl_leaks']}",
         f"- Evidence given to the model: {meta.get('evidence', 'retrieved')}",
         f"- Retrieval scope: {meta.get('retrieval_scope', 'open_corpus')}",
+        f"- Labels: {meta.get('labels', 'v1')}",
         f"- Gold answer in the evidence pages' text: "
         f"{cell(report['overall']['gold_in_page_text'])}; in the evidence the model saw: "
         f"{cell(report['overall']['gold_in_evidence'])}",
@@ -543,6 +545,11 @@ async def main() -> None:
         help="index the manifest's PDFs and stop (run it where OCR is installed)",
     )
     parser.add_argument(
+        "--labels",
+        type=Path,
+        help="corrected questions and gold answers (MMLongBench-Doc-V2 samples.json)",
+    )
+    parser.add_argument(
         "--no-generation",
         action="store_true",
         help="measure retrieval and evidence only; every answer is an abstention",
@@ -561,6 +568,12 @@ async def main() -> None:
     manifest = load_manifest(args.manifest)
     root = data_dir(manifest.revision)
     table = pq.read_table(root / "data" / "train-00000-of-00001.parquet").to_pylist()
+    if args.labels:
+        corrected = corrected_rows(table, json.loads(args.labels.read_text(encoding="utf-8")))
+        dropped = [row for row in manifest.question_rows if corrected[row] is None]
+        if dropped:
+            raise SystemExit(f"rows dropped by the corrected labels: {dropped}")
+        table = corrected
     questions = select_rows(
         [parse_question(table[row], row) for row in manifest.question_rows], args.rows
     )
@@ -610,6 +623,7 @@ async def main() -> None:
             "ocr_available": shutil.which("tesseract") is not None,
             "evidence": args.evidence,
             "retrieval_scope": "open_corpus" if args.open_corpus else "question_document",
+            "labels": str(args.labels) if args.labels else "v1",
         }
         out.mkdir(parents=True, exist_ok=True)
         (out / "results.jsonl").write_text(
