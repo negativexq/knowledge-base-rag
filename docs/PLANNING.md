@@ -5388,3 +5388,17 @@ overall), `luna-full-v9` 1025, `luna-v2-rerun-rows` 1023, `luna-v2-fix-rows`
 them needs a judge, not a number rule.
 
 `make test`: 1721 passed, 4 skipped.
+
+## Measurement — one figure per operand on 1017 and 1018 (closing note)
+
+`luna-v2-operand-rows`, gpt-6-luna, V2 labels, one run. The rule took: no
+operand held two figures. 1017 (gold 11,407) planned five operands and left
+the finance lease liabilities (72 current + 980 long-term) unfound after the
+search, so it was refused. 1018 (gold 1.344) was answered 1.228: all seven
+operands bound, but the long-term finance lease liabilities (980) were left
+out of "all lease liabilities", (10,427 + 980) / 8,489 = 1.344. The validator
+checks each operand and the arithmetic, not that a definition's sum is
+complete, so 1018 moved from refused to wrong. 1023, right, used the printed
+"Total lease liabilities" row instead of summing its parts.
+
+`make test`: 1721 passed, 4 skipped.
