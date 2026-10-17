@@ -5609,3 +5609,23 @@ income plus depreciation and amortization, interest and taxes added back only
 to net income. Prompt-only.
 
 `make test`: 1744 passed, 4 skipped.
+
+## Measurement — the total-debt and EBITDA wording on eight rows (closing note)
+
+`luna-v3-debt-rows`, gpt-6-luna, one run, the eight debt and return rows.
+Against the same rows in `luna-full-v3` (right 1018, 1023, 1073; wrong 1015;
+refused 1017, 1072, 1074, 1075) it is 4 right, 2 wrong, 2 refused:
+- right: 1015 (8,489, operating income + D&A), 1017 (11,407), 1023 (19.25%),
+  and 1074 (2.911%, the printed "Total long-term debt" rows 1,176 and 1,229),
+  so the #87 regression is undone;
+- wrong: 1018 (1.443) bound Costco's "long-term debt, including its current
+  portion" (7,531) and added the current portion (799) again, two rows the
+  total-and-part check does not tie (one is not the printed total of the
+  other's table); 1073 (36.079%) subtracted income tax from net earnings,
+  which are already after tax, likely led by the new "interest and taxes are
+  added back only to net income" clause;
+- refused: 1072 (the computed result's operands did not pass the critical
+  validator) and 1075 (invalid operand names).
+Net on these rows: one more right, one more wrong.
+
+`make test`: 1744 passed, 4 skipped.
