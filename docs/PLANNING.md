@@ -5794,3 +5794,25 @@ question sets: part of the document, group, period, unit) and a one-sentence
 `reason`, kept in the trace. The answer passes only when both are true.
 
 `make test`: 1752 passed, 4 skipped.
+
+## Measurement — the claim-based visual check on seven rows (closing note)
+
+`luna-v3-visual-check-rows`, gpt-6-luna, one run, the same seven rows: 1
+right, 1 wrong, 5 refused, the same totals as `luna-v3-visual-rows` with a
+different split. The check now decides as intended on the rows it was
+changed for:
+- 637 is right (1): the check confirmed the reading's claim on its page.
+- 636 is refused instead of wrong: "the four templates are appendix section
+  E, while the question asks about the main body" (`meets_question` false).
+- 661 is refused with a reason: the reading took 0 V from VSS on another page,
+  not from the waveform's own low level; a defensible refusal.
+- 732 is wrong (3, gold 5): the reading counted three company charts on page
+  16 (it read 5 from the Tweet table last run), and the check, which shares
+  the reading's question, confirmed it. The check cannot catch a reading
+  that answers the question as luna misreads it.
+- 385, 393, 662 stay refused at the reading (printed page names and an
+  incomplete page set).
+Over the two runs the visual path is right on 637 and 732 once each; the
+reading, not the check, is now what varies.
+
+`make test`: 1752 passed, 4 skipped.
