@@ -196,3 +196,37 @@ async def test_operands_from_tables_of_different_scales_are_not_combined():
 
     assert calculation is None
     assert "OPERAND_SCALE_MISMATCH" in trace.plan_codes
+
+
+# luna 1017, 1018, 1020 (V2): a lease note prints "Current" and "Long-term" as
+# section lines above its rows, so "Operating lease liabilities(2) | 2021: $ 222"
+# is the current one only by its section. A label may name the fact's section.
+
+LEASES = (
+    "Table:  | 2021 | 2020\n"
+    "Liabilities\n"
+    "Current\n"
+    "Operating lease liabilities(2) | 2021: $ 222 | 2020: $ 231\n"
+    "Finance lease liabilities(2) | 2021: 72 | 2020: 31\n"
+    "Long-term\n"
+    "Operating lease liabilities | 2021: 2,642 | 2020: 2,558\n"
+    "Finance lease liabilities(3) | 2021: 980 | 2020: 657"
+)
+
+
+def test_a_fact_carries_its_section_line():
+    facts = {f.value: f for f in unit_facts(LEASES).facts}
+
+    assert facts[222.0].section == "Current"
+    assert facts[980.0].section == "Long-term"
+
+
+def test_a_label_may_name_the_facts_section():
+    assert _bind(LEASES, "222", ["Operating lease liabilities(2)", "2021", "Current"]) == []
+    assert _bind(LEASES, "980", ["Finance lease liabilities", "Long-term", "2021"]) == []
+    # The section must be the fact's own.
+    assert _bind(LEASES, "980", ["Finance lease liabilities", "Current", "2021"]) == [
+        "OPERAND_LABEL_NOT_IN_UNIT"
+    ]
+    # A section alone names no row.
+    assert _bind(LEASES, "222", ["Current", "2021"]) == ["OPERAND_LABEL_NOT_IN_UNIT"]
