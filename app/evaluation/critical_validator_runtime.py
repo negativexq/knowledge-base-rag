@@ -51,15 +51,19 @@ def _architecture_v2_result(
     support_texts: Sequence[str],
     *,
     claim_id: str = "claim",
+    query_values: frozenset[tuple[str, str]] = frozenset(),
 ) -> dict[str, Any]:
     """Adapt the frozen Architecture V2 result to the production result shape."""
     started = time.perf_counter()
-    architecture = audit_claim_architecture_v2(claim, support_texts, claim_id=claim_id)
+    architecture = audit_claim_architecture_v2(
+        claim, support_texts, claim_id=claim_id, query_values=query_values
+    )
     v3_result = dict(architecture["v3"])
     decisions = architecture["role_decisions"]
     role_counts = {
         "validate_role_count": sum(d.role == "VALIDATE" for d in decisions),
         "skip_rejected_premise_count": sum(d.role == "SKIP_REJECTED_PREMISE" for d in decisions),
+        "skip_query_echo_count": sum(d.role == "SKIP_QUERY_ECHO" for d in decisions),
         "ambiguous_keep_validating_count": sum(
             d.role == "AMBIGUOUS_KEEP_VALIDATING" for d in decisions
         ),
@@ -147,11 +151,17 @@ def audit_critical_value(
     v3_shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
     claim_id: str = "claim",
+    query_values: frozenset[tuple[str, str]] = frozenset(),
 ) -> dict[str, Any]:
-    """Run the selected validator and optional diagnostic Architecture V2 shadow."""
+    """Run the selected validator and optional diagnostic Architecture V2 shadow.
+
+    ``query_values`` are question values the evidence holds; Architecture V2
+    does not validate them as claims (see ``grounded_query_values``)."""
     selected = validate_validator_selector(selector)
     if selected == "architecture_v2":
-        result = _architecture_v2_result(claim, support_texts, claim_id=claim_id)
+        result = _architecture_v2_result(
+            claim, support_texts, claim_id=claim_id, query_values=query_values
+        )
         # V2 already delegates to frozen V3 comparison semantics. A second V2
         # shadow would duplicate work and make telemetry ambiguous.
         result["architecture_v2_shadow_enabled"] = False
@@ -189,6 +199,7 @@ def audit_critical_value(
     result["occurrence_count"] = 0
     result["validate_role_count"] = 0
     result["skip_rejected_premise_count"] = 0
+    result["skip_query_echo_count"] = 0
     result["ambiguous_keep_validating_count"] = 0
     result["occurrence_identity_error_count"] = 0
     result["role_classification_error_count"] = 0

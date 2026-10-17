@@ -3,20 +3,24 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
 from app.evaluation.critical_occurrences import (
     CriticalValueOccurrence,
+    extract_critical_occurrences,
     occurrence_local_context,
 )
 
 OccurrenceRole = Literal[
     "VALIDATE",
     "SKIP_REJECTED_PREMISE",
+    "SKIP_QUERY_ECHO",
     "AMBIGUOUS_KEEP_VALIDATING",
 ]
+SKIP_ROLES = frozenset({"SKIP_REJECTED_PREMISE", "SKIP_QUERY_ECHO"})
+QueryValue = tuple[str, str]
 RoleDeterminism = Literal["DETERMINISTIC", "AMBIGUOUS"]
 
 
@@ -163,14 +167,64 @@ def _is_rejected_premise(
     )
 
 
+def grounded_query_values(
+    question: str | None, evidence_texts: Iterable[str]
+) -> frozenset[QueryValue]:
+    """Values the question states that the evidence also holds ("FY 2021",
+    "65+"): premises an answer repeats, not values it claims."""
+    if not question:
+        return frozenset()
+    asked = {(o.normalized_value, o.lexical_type) for o in extract_critical_occurrences(question)}
+    if not asked:
+        return frozenset()
+    held = {
+        (o.normalized_value, o.lexical_type)
+        for text in evidence_texts
+        for o in extract_critical_occurrences(text)
+    }
+    return frozenset(asked & held)
+
+
+def _query_echo_ids(
+    occurrences: Sequence[CriticalValueOccurrence],
+    query_values: frozenset[QueryValue],
+) -> set[str]:
+    """Echoes are skipped only beside a value that is still validated in the
+    same claim unit: an answer made only of question values (a yes/no
+    confirmation of the question's figure) is validated in full."""
+    if not query_values:
+        return set()
+    echoes = {
+        o.occurrence_id for o in occurrences if (o.normalized_value, o.lexical_type) in query_values
+    }
+    claimed_units = {o.claim_unit_id for o in occurrences if o.occurrence_id not in echoes}
+    return {
+        o.occurrence_id
+        for o in occurrences
+        if o.occurrence_id in echoes and o.claim_unit_id in claimed_units
+    }
+
+
 def classify_occurrence_roles(
     answer: str,
     occurrences: Sequence[CriticalValueOccurrence],
+    *,
+    query_values: frozenset[QueryValue] = frozenset(),
 ) -> tuple[OccurrenceRoleDecision, ...]:
     """Assign a role to each known occurrence without creating new ones."""
     decisions: list[OccurrenceRoleDecision] = []
+    echoes = _query_echo_ids(occurrences, query_values)
     for occurrence in occurrences:
-        if _is_rejected_premise(answer, occurrence, occurrences):
+        if occurrence.occurrence_id in echoes:
+            decisions.append(
+                OccurrenceRoleDecision(
+                    occurrence.occurrence_id,
+                    "SKIP_QUERY_ECHO",
+                    "QUERY_ECHO_GROUNDED_PREMISE",
+                    "DETERMINISTIC",
+                )
+            )
+        elif _is_rejected_premise(answer, occurrence, occurrences):
             decisions.append(
                 OccurrenceRoleDecision(
                     occurrence.occurrence_id,

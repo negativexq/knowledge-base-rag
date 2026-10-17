@@ -7,7 +7,7 @@ from typing import Any
 
 from app.evaluation.critical_occurrence_validation import validate_occurrences_v3
 from app.evaluation.critical_occurrences import extract_critical_occurrences
-from app.evaluation.critical_roles import classify_occurrence_roles
+from app.evaluation.critical_roles import SKIP_ROLES, QueryValue, classify_occurrence_roles
 
 
 def audit_claim_architecture_v2(
@@ -15,14 +15,13 @@ def audit_claim_architecture_v2(
     support_texts: Sequence[str],
     *,
     claim_id: str = "claim",
+    query_values: frozenset[QueryValue] = frozenset(),
 ) -> dict[str, Any]:
     """Run extraction, occurrence-local roles, structured filtering, and V3."""
     occurrences = extract_critical_occurrences(claim, claim_id=claim_id)
-    role_decisions = classify_occurrence_roles(claim, occurrences)
+    role_decisions = classify_occurrence_roles(claim, occurrences, query_values=query_values)
     validate_ids = tuple(
-        decision.occurrence_id
-        for decision in role_decisions
-        if decision.role != "SKIP_REJECTED_PREMISE"
+        decision.occurrence_id for decision in role_decisions if decision.role not in SKIP_ROLES
     )
     validate_occurrences = tuple(
         occurrence for occurrence in occurrences if occurrence.occurrence_id in validate_ids

@@ -4745,3 +4745,24 @@ chunks). The remaining 14 `not_in_page_text` are mostly computed answers. The ne
 bottleneck is generation, measured next with luna at 40/14.
 
 `make test`: 1578 passed, 4 skipped.
+
+## Fix — two critical-value validator false blocks (closing note)
+
+Luna at scoped 40/14 (`artifacts/mmlongbench-v2/luna-scoped-40-14`): answers correct
+23/100, coverage 34/100, citations 28/34, unanswerable refused 16/20; response kinds
+answered 38, model_abstained 43, validator_blocked 39. The trace rerun of the 39
+blocked rows (`luna-blocked-trace`) showed about 20 correct answers blocked by two
+validator rules, besides computed answers (derived path off) and genuine blocks:
+
+- The locale guard marked a grouped number INDETERMINATE whenever its digits were in
+  the support, even written identically ("$1,874 million" citing "1,874"). It now
+  flags only the same digits under another separator or none ("1.874" vs "1,874").
+- Values the answer repeats from the question ("FY 2021", "65+") were validated
+  against the cited row, which lacks them, and conflicted. The question now reaches
+  the validator: a question value that the model-visible evidence also holds gets the
+  role `SKIP_QUERY_ECHO` (telemetry `skip_query_echo_count`). Echoes are skipped only
+  beside another value still validated in the same answer part, so a yes/no
+  confirmation made only of question values ("Yes, FY 2021 liabilities were 36,851")
+  is validated in full, and a question value the evidence lacks is still validated.
+
+`make test`: 1587 passed, 4 skipped.

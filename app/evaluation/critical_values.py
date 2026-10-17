@@ -501,12 +501,20 @@ def _v3_ambiguous_locale_pair(claim: str, support: str) -> bool:
     def numeric(text: str) -> list[str]:
         return re.findall(r"(?<![\w])\d+(?:[.,]\d+)*(?![\w])", text)
 
-    grouped = [value for value in numeric(claim) if _V3_GROUPED_INTEGER.fullmatch(value)]
+    support_literals = numeric(support)
+    # A literal written exactly as in the support copies its convention; only
+    # the same digits under another separator ("1.874" for "1,874") or none
+    # are ambiguous.
+    grouped = [
+        value
+        for value in numeric(claim)
+        if _V3_GROUPED_INTEGER.fullmatch(value) and value not in support_literals
+    ]
     if not grouped:
         return False
     normalized = {value.replace(",", "").replace(".", "") for value in grouped}
     support_values = set()
-    for value in numeric(support):
+    for value in support_literals:
         if _V3_GROUPED_INTEGER.fullmatch(value):
             support_values.add(value.replace(",", "").replace(".", ""))
         elif value.isdigit() and len(value) > 3:

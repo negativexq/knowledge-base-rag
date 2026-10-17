@@ -602,6 +602,7 @@ def validate_support_unit_answer(
     validator_version: ValidatorSelector = "architecture_v2",
     shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
+    question: str | None = None,
 ) -> SupportUnitValidation:
     available = support_unit_map(units)
     if answer.abstain:
@@ -652,6 +653,7 @@ def validate_support_unit_answer(
                 "occurrence_count": 0,
                 "validate_role_count": 0,
                 "skip_rejected_premise_count": 0,
+                "skip_query_echo_count": 0,
                 "ambiguous_keep_validating_count": 0,
                 "occurrence_identity_error_count": 0,
                 "role_classification_error_count": 0,
@@ -702,10 +704,17 @@ def validate_support_unit_answer(
         "occurrence_count": 0,
         "validate_role_count": 0,
         "skip_rejected_premise_count": 0,
+        "skip_query_echo_count": 0,
         "ambiguous_keep_validating_count": 0,
         "occurrence_identity_error_count": 0,
         "role_classification_error_count": 0,
     }
+    from app.evaluation.critical_roles import grounded_query_values
+
+    # Question values the evidence also holds are premises the answer repeats.
+    query_values = grounded_query_values(
+        question, (unit.text for unit in units if unit.model_visible and unit.authorized)
+    )
     for index, part in enumerate(answer.answer_parts):
         part_codes: list[str] = []
         if not part.text:
@@ -737,6 +746,7 @@ def validate_support_unit_answer(
                 v3_shadow_enabled=shadow_enabled,
                 architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
                 claim_id=f"support_part_{index}",
+                query_values=query_values,
             )
         except Exception:
             # A selected validator infrastructure failure must never fail open.
@@ -778,6 +788,7 @@ def validate_support_unit_answer(
                 "occurrence_count": 0,
                 "validate_role_count": 0,
                 "skip_rejected_premise_count": 0,
+                "skip_query_echo_count": 0,
                 "ambiguous_keep_validating_count": 0,
                 "occurrence_identity_error_count": 0,
                 "role_classification_error_count": 0,
@@ -830,6 +841,7 @@ def validate_support_unit_answer(
             "occurrence_count",
             "validate_role_count",
             "skip_rejected_premise_count",
+            "skip_query_echo_count",
             "ambiguous_keep_validating_count",
             "occurrence_identity_error_count",
             "role_classification_error_count",
@@ -1019,6 +1031,7 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
             "validator.skip_rejected_premise_count": int(
                 telemetry.get("skip_rejected_premise_count", 0)
             ),
+            "validator.skip_query_echo_count": int(telemetry.get("skip_query_echo_count", 0)),
             "validator.ambiguous_keep_validating_count": int(
                 telemetry.get("ambiguous_keep_validating_count", 0)
             ),
@@ -1270,6 +1283,7 @@ async def _support_unit_answer_events(
             validator_version=validator_version,
             shadow_enabled=shadow_enabled,
             architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+            question=query,
         )
     except (ValueError, json.JSONDecodeError):
         parsed = None
