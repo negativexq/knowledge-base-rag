@@ -61,6 +61,9 @@ _LOCAL_DURATION = re.compile(
 # 15 GB and 15 TB never match each other.
 _LOCAL_SIZE = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(KB|MB|GB|TB|PB)\b", re.IGNORECASE)
 _LOCAL_VERSION = re.compile(r"\b(?:v(?:ersion)?\s*)?(\d+(?:\.\d+)+)\b", re.IGNORECASE)
+# A decimal with thousands groups ("1,767.80") is one literal; without this
+# the version pattern took only "767.80".
+_GROUPED_DECIMAL = re.compile(r"(?<![\d.,])\d{1,3}(?:,\d{3})+\.\d+(?![.,]?\d)")
 _CITATION = re.compile(r"\s*\[s\.filesystem:[^\]]+\]", re.IGNORECASE)
 _LOCAL_WORD = re.compile(r"[\w]+", re.UNICODE)
 _LOCAL_STOP = {
@@ -226,6 +229,14 @@ def _local_tokens(text: str) -> list[dict[str, Any]]:
         values.append(
             _local_token("NUMBER", match.group(1), match.group(2), match.start(), match.end(), text)
         )
+        occupied.append(match.span())
+    for match in _GROUPED_DECIMAL.finditer(text):
+        if any(start < match.end() and match.start() < end for start, end in occupied):
+            continue
+        # Typed and valued as its ungrouped form, so "1,767.80" meets "1767.80".
+        ungrouped = match.group(0).replace(",", "")
+        kind = "VERSION" if _LOCAL_VERSION.fullmatch(ungrouped) else "NUMBER"
+        values.append(_local_token(kind, ungrouped, None, match.start(), match.end(), text))
         occupied.append(match.span())
     for pattern, kind in ((_PERCENT, "PERCENTAGE"), (_LOCAL_VERSION, "VERSION"), (_DATE, "DATE")):
         for match in pattern.finditer(text):

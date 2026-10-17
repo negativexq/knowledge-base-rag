@@ -4837,3 +4837,35 @@ The derived-answer rerun left 13 blocks. Three kinds now have a verified path:
   prints them, so no extractor change was made before reading its units.
 
 `make test`: 1615 passed, 4 skipped.
+
+## Fix — extraction and format blocks traced with cited unit texts (closing note)
+
+Luna counts rerun of the 39 rows (`luna-blocked-counts`, PR #49): answered 25 (was 19),
+correct 18/38 (was 13/38), citations 21/25, validator_blocked 10, model_abstained 4.
+Counts opened 513, 515 and 658; the verdict fix opened 516; 525 passes. One limit:
+a count checks that its items are printed, not that the list is complete (396
+counted 21, gold 23). With the cited units in the trace, the remaining blocks were:
+
+- 373: the base tokenizer read "1,767.80" as "767.80" (the version pattern took
+  the tail). A grouped decimal is now one literal, typed and valued as its
+  ungrouped form, so it meets a unit printing "1767.80".
+- 740: the units print "24th of March 2015" and "25-03-2015". The ISO date
+  restatement now reads ordinal days and "of", and a numeric date when one part
+  cannot be a month; "03/04/2015" stays ambiguous and unrestated.
+- 835: ten counted items verified, but a beside-the-point "3 + 7" failed and took
+  the part down. A calculation whose result a verified count establishes is not
+  checked (telemetry `redundant_calculations`).
+- 223, 227: survey tables print percentages as bare cells with significance letters
+  ("$75,000+ 92 42", "(n=537) 87ab"). For an answer stating a percentage, each
+  standalone 0-100 cell of a cited unit that prints no "%" (line end, "|" or another
+  number next; not "42 employees") is restated as "table cell 87ab = 87%"
+  (`app/llm/percent_cells.py`). The trade-off: a bare number in such a row is read
+  as a percentage.
+- 399: the derived prompt now says every number the model counted is given as a
+  count, also inside a calculation.
+
+Correct blocks left alone: 212 (a self-contradicting answer), 220 (unanswerable),
+1070 (wrong figure). 639's "2-hop" labels sit in a header unit the model did not
+cite; that is a citation choice, not a validator rule.
+
+`make test`: 1625 passed, 4 skipped.

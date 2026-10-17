@@ -125,6 +125,12 @@ def _matches(value: float, stated: float, decimals: int) -> bool:
     return abs(value - stated) <= RESULT_TOLERANCE * max(abs(stated), 1e-9)
 
 
+def calculation_result(calculation: Calculation) -> float | None:
+    """The result the calculation states, sign included."""
+    stated = _signed_numbers(calculation.result)
+    return stated[0] if stated else None
+
+
 def verify_calculation(calculation: Calculation, support_texts: list[str], text: str) -> list[str]:
     """Failure codes for a calculation; empty when it is verified."""
     try:

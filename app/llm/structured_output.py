@@ -23,10 +23,11 @@ from app.evidence.support_units import (
     serialize_support_units,
     support_unit_map,
 )
-from app.llm.calculation import Calculation, verify_calculation
+from app.llm.calculation import Calculation, calculation_result, verify_calculation
 from app.llm.counting import Count, verify_count
 from app.llm.dates import ISO_DATE, iso_date_facts
 from app.llm.observability import GenerationObservation
+from app.llm.percent_cells import percent_cell_facts
 from app.llm.premise import missing_question_dates, missing_question_years
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
@@ -125,8 +126,10 @@ parentheses. The calculation is checked. Otherwise set "calculation": null.
 Every answer_part also has "counts". When the answer counts things the cited units
 list (names, rows, items), set "counts": [{"items": ["...", "..."]}] with every
 counted item copied from the cited units, each once; the count is the number of
-items, and a count may be a number in the calculation. The counts are checked.
-Otherwise set "counts": null.
+items, and a count may be a number in the calculation. Give every number you counted
+yourself (people in a list, rows, items) as a count, also when it is a number in the
+calculation; a calculation number is otherwise one printed in the cited units. The
+counts are checked. Otherwise set "counts": null.
 """.strip()
 
 ANSWERABILITY_OUTPUT_INSTRUCTIONS = """
@@ -714,6 +717,7 @@ def validate_support_unit_answer(
         "discarded_not_found_parts": answer.discarded_not_found_parts,
         "calculations": 0,
         "counts": 0,
+        "redundant_calculations": 0,
         "invocations": 0,
         "pass": 0,
         "reject": 0,
@@ -777,19 +781,28 @@ def validate_support_unit_answer(
         if any(unit is not None and not unit.authorized for unit in selected):
             part_codes.append("UNAUTHORIZED_SUPPORT_ID")
         support_texts = [unit.text for unit in selected if unit is not None]
+        if re.search(r"\d\s*%", part.text):
+            # A percentage may restate a bare survey-table cell ("92", "87ab").
+            support_texts = [*support_texts, *percent_cell_facts(support_texts)]
         count_facts = []
+        counted: set[int] = set()
         for count in part.counts:
             count_codes = verify_count(count, support_texts)
             part_codes.extend(count_codes)
             validator_telemetry["counts"] += 1
             if not count_codes:
                 count_facts.append(count.fact())
+                counted.add(count.result)
         # A verified count is evidence for its number, also as an operand.
         support_texts = [*support_texts, *count_facts]
         if ISO_DATE.search(part.text):
             # An ISO answer date restates a month-name date the units print.
             support_texts = [*support_texts, *iso_date_facts(support_texts)]
-        if part.calculation is not None:
+        if part.calculation is not None and calculation_result(part.calculation) in counted:
+            # A verified count already establishes the number; the arithmetic
+            # beside it ("3 + 7" for ten counted items) is not needed.
+            validator_telemetry["redundant_calculations"] += 1
+        elif part.calculation is not None:
             calculation_codes = verify_calculation(part.calculation, support_texts, part.text)
             part_codes.extend(calculation_codes)
             validator_telemetry["calculations"] += 1

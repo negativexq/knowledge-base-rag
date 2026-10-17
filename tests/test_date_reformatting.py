@@ -65,3 +65,14 @@ def test_an_iso_date_the_units_do_not_print_is_still_blocked():
     validation = _validate("Incident date: 2015-03-26.")
 
     assert validation.application_abstain is True
+
+
+def test_ordinal_days_and_unambiguous_numeric_dates_are_restated():
+    # luna 740: the units print "24th of March 2015" and "25-03-2015".
+    assert iso_date_facts(["* Date of incident: 24th of March 2015 * Flight"]) == [
+        "24th of March 2015 = 2015-03-24"
+    ]
+    assert iso_date_facts(["25-03-2015 BRENDAN HODGSON", "Filed 12/31/2014."]) == [
+        "25-03-2015 = 2015-03-25",
+        "12/31/2014 = 2014-12-31",
+    ]
