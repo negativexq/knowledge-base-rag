@@ -5850,3 +5850,17 @@ source card no longer shows the raw citation location ("2/0").
 
 Frontend: 96 tests passed, typecheck, lint and build clean. `make test`: 1752
 passed, 4 skipped (no backend change).
+
+## Docs — product README (closing note)
+
+The README now reads as a product page: a research-workspace hero, feature
+highlights (evidence inspector, verified citations, derived answers and the
+operand resolver, visual answers with the claim check, table-aware ingestion
+with OCR, the research library, Inspect mode), a current pipeline diagram,
+quickstart with the optional feature flags, and a short quality section with
+MMLongBench-Doc luna-full-v3 (79/120) at the bottom instead of benchmark
+tables at the top. Screenshots were retaken from the current UI; the 13 old
+console images were removed. `docs/architecture.md` uses the workspace name
+and `.env.example` lists the three optional answer flags.
+
+`make test`: 1752 passed, 4 skipped (no backend change).
