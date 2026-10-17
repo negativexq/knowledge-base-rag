@@ -24,6 +24,8 @@ from app.evidence.support_units import (
     support_unit_map,
 )
 from app.llm.calculation import Calculation, verify_calculation
+from app.llm.counting import Count, verify_count
+from app.llm.dates import ISO_DATE, iso_date_facts
 from app.llm.observability import GenerationObservation
 from app.llm.premise import missing_question_dates, missing_question_years
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
@@ -120,6 +122,11 @@ rest of a percentage), state the result in "text" and set
 "calculation": {"expression": "100 - 59", "result": "41"}, using only numbers printed
 in the cited units (and 100 for the rest of a percentage) and only + - * / and
 parentheses. The calculation is checked. Otherwise set "calculation": null.
+Every answer_part also has "counts". When the answer counts things the cited units
+list (names, rows, items), set "counts": [{"items": ["...", "..."]}] with every
+counted item copied from the cited units, each once; the count is the number of
+items, and a count may be a number in the calculation. The counts are checked.
+Otherwise set "counts": null.
 """.strip()
 
 ANSWERABILITY_OUTPUT_INSTRUCTIONS = """
@@ -184,6 +191,9 @@ class SupportUnitAnswerPart:
     # The arithmetic behind a number the evidence does not print (derived
     # answers); checked by app/llm/calculation.py before the part is kept.
     calculation: Calculation | None = None
+    # Counts of items the cited units list, behind a counted number; checked
+    # by app/llm/counting.py.
+    counts: tuple[Count, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -293,6 +303,21 @@ _CALCULATION_SCHEMA = {
     ]
 }
 
+_COUNTS_SCHEMA = {
+    "anyOf": [
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {"items": {"type": "array", "items": {"type": "string"}}},
+                "required": ["items"],
+            },
+        },
+        {"type": "null"},
+    ]
+}
+
 
 def support_unit_output_schema(
     units: list[SupportUnit], *, derived_answers: bool = False
@@ -326,7 +351,8 @@ def support_unit_output_schema(
     if derived_answers:
         part = schema["properties"]["answer_parts"]["items"]
         part["properties"]["calculation"] = copy.deepcopy(_CALCULATION_SCHEMA)
-        part["required"].append("calculation")
+        part["properties"]["counts"] = copy.deepcopy(_COUNTS_SCHEMA)
+        part["required"].extend(["calculation", "counts"])
     return schema
 
 
@@ -545,6 +571,20 @@ def _parse_calculation(value: Any, index: int) -> Calculation | None:
     return Calculation(value["expression"].strip(), value["result"].strip())
 
 
+def _parse_counts(value: Any, index: int) -> tuple[Count, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, list) or not all(
+        isinstance(count, dict)
+        and set(count) == {"items"}
+        and isinstance(count["items"], list)
+        and all(isinstance(item, str) for item in count["items"])
+        for count in value
+    ):
+        raise ValueError(f"invalid support-unit counts {index}")
+    return tuple(Count(tuple(count["items"])) for count in value)
+
+
 _SUPPORT_ID_TOKEN = re.compile(r"\[[^\]]*\]")
 
 
@@ -573,6 +613,7 @@ def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
             "text",
             "support_ids",
             "calculation",
+            "counts",
         }:
             raise ValueError(f"invalid support-unit part {index}")
         if not isinstance(part["text"], str) or not isinstance(part["support_ids"], list):
@@ -584,6 +625,7 @@ def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
                 _without_self_written_citations(part["text"].strip()),
                 list(part["support_ids"]),
                 _parse_calculation(part.get("calculation"), index),
+                _parse_counts(part.get("counts"), index),
             )
         )
     if abstain and parsed:
@@ -671,6 +713,7 @@ def validate_support_unit_answer(
         "shadow_enabled": shadow_enabled,
         "discarded_not_found_parts": answer.discarded_not_found_parts,
         "calculations": 0,
+        "counts": 0,
         "invocations": 0,
         "pass": 0,
         "reject": 0,
@@ -734,6 +777,18 @@ def validate_support_unit_answer(
         if any(unit is not None and not unit.authorized for unit in selected):
             part_codes.append("UNAUTHORIZED_SUPPORT_ID")
         support_texts = [unit.text for unit in selected if unit is not None]
+        count_facts = []
+        for count in part.counts:
+            count_codes = verify_count(count, support_texts)
+            part_codes.extend(count_codes)
+            validator_telemetry["counts"] += 1
+            if not count_codes:
+                count_facts.append(count.fact())
+        # A verified count is evidence for its number, also as an operand.
+        support_texts = [*support_texts, *count_facts]
+        if ISO_DATE.search(part.text):
+            # An ISO answer date restates a month-name date the units print.
+            support_texts = [*support_texts, *iso_date_facts(support_texts)]
         if part.calculation is not None:
             calculation_codes = verify_calculation(part.calculation, support_texts, part.text)
             part_codes.extend(calculation_codes)
@@ -971,6 +1026,7 @@ def render_support_unit_answer(parts: list[SupportUnitAnswerPart], *, abstain: b
                 [
                     _without_self_written_citations(part.text),
                     f"(calculation: {part.calculation.fact()})" if part.calculation else "",
+                    *(f"(count: {count.result} listed items)" for count in part.counts),
                     " ".join(f"[{item}]" for item in part.support_ids),
                 ],
             )
@@ -1405,6 +1461,12 @@ async def _support_unit_answer_events(
                 ),
                 "hidden_support_count": validation.failure_codes.count("HIDDEN_SUPPORT_ID"),
                 "critical_validator": telemetry,
+                # The cited units' text is raw: kept only in a raw-text capture.
+                "cited_units": [
+                    {"support_unit_id": unit.support_unit_id, "raw_support_text": unit.text}
+                    for unit in units
+                    if unit.support_unit_id in set(model_support_ids)
+                ],
                 "pre_validation_model_result": {
                     "parsed": bool(parsed),
                     "model_abstain": validation.model_abstain,

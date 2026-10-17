@@ -157,3 +157,38 @@ async def test_raw_capture_covers_generation_validation_citation_and_visible_sta
     assert stages["support_id_validation"]["critical_validator"]["shadow_v3_outcomes"] == ["PASS"]
     assert stages["citation_resolution"]["resolved_citation_ids"] == ["E1.S1"]
     assert stages["visible_response"]["outcome"] == "ANSWER"
+
+
+async def _capture_stages(raw_text: bool) -> dict:
+    capture = ForensicCapture.create("What is the limit?", raw_text=raw_text)
+    token = set_current_capture(capture)
+    try:
+        async for _ in stream_support_unit_answer(
+            "What is the limit?",
+            [_block()],
+            _FakeProvider(),
+            model="fixture-model",
+            validator_version="architecture_v2",
+        ):
+            pass
+    finally:
+        reset_current_capture(token)
+    return capture.snapshot()["stages"]
+
+
+@pytest.mark.asyncio
+async def test_a_raw_capture_keeps_the_text_of_the_units_the_model_cited():
+    # luna 525: a correct answer conflicted with its cited units, and the trace
+    # held only their IDs, so the conflict could not be read.
+    stages = await _capture_stages(raw_text=True)
+
+    cited = stages["support_id_validation"]["cited_units"]
+    assert [unit["support_unit_id"] for unit in cited] == ["E1.S1"]
+    assert "120 requests per minute" in cited[0]["raw_support_text"]
+
+
+@pytest.mark.asyncio
+async def test_a_bounded_capture_keeps_only_the_cited_unit_ids():
+    stages = await _capture_stages(raw_text=False)
+
+    assert stages["support_id_validation"]["cited_units"] == [{"support_unit_id": "E1.S1"}]
