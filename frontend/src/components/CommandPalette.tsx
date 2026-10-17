@@ -3,16 +3,18 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 import { type LucideIcon, Moon, Search, Sun } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
+import { useWorkspaceCommands } from "@/lib/workspaceCommands"
 import { ALL_NAV_ITEMS } from "@/lib/nav"
 import { themeSwitchLabel, useTheme } from "@/lib/theme"
 import { cn } from "@/lib/utils"
 
 interface Command {
   id: string
-  group: "Go to" | "Preferences"
+  group: "Go to" | "Preferences" | "Research"
   label: string
   hint?: string
   icon: LucideIcon
+  disabled?: boolean
   run: () => void
 }
 
@@ -24,6 +26,7 @@ export function CommandPalette({
   onOpenChange: (open: boolean) => void
 }) {
   const navigate = useNavigate()
+  const workspaceCommands = useWorkspaceCommands()
   const { theme, toggleTheme } = useTheme()
   const [query, setQuery] = useState("")
   const [active, setActive] = useState(0)
@@ -51,6 +54,7 @@ export function CommandPalette({
         icon: item.icon,
         run: () => navigate(item.to),
       })),
+      ...workspaceCommands.map((command) => ({ ...command, group: "Research" as const })),
       {
         id: "theme",
         group: "Preferences" as const,
@@ -59,7 +63,7 @@ export function CommandPalette({
         run: toggleTheme,
       },
     ],
-    [navigate, theme, toggleTheme],
+    [navigate, theme, toggleTheme, workspaceCommands],
   )
 
   const needle = query.trim().toLowerCase()
@@ -75,7 +79,7 @@ export function CommandPalette({
   }
 
   function run(command: Command | undefined) {
-    if (!command) return
+    if (!command || command.disabled) return
     close()
     command.run()
   }
@@ -147,10 +151,12 @@ export function CommandPalette({
                     role="option"
                     aria-selected={index === activeIndex}
                     aria-label={command.label}
+                    aria-disabled={command.disabled || undefined}
                     onMouseMove={() => setActive(index)}
                     onClick={() => run(command)}
                     className={cn(
                       "flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm",
+                      command.disabled && "cursor-not-allowed opacity-40",
                       index === activeIndex
                         ? "bg-[var(--color-surface-hover)] text-[var(--color-foreground)]"
                         : "text-[var(--color-muted-foreground)]",

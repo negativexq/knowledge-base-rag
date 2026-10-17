@@ -1,19 +1,33 @@
 import { useEffect, useRef, useState } from "react"
-import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Search, Sparkles, Square } from "lucide-react"
+import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Download, History, NotebookPen, Pin, Columns2, Search, Sparkles, Square } from "lucide-react"
 
 import { chatApi } from "@/api/chat"
 import type {
   AnswerValidation,
+  Identity,
   ChatMetadata,
   GroundingResult,
   RetrievalReportPayload,
   RetrievedSource,
   SupportUnitRef,
 } from "@/api/types"
+import { EvidenceSources } from "@/components/EvidenceSources"
+import { ResearchNotes } from "@/components/ResearchNotes"
+import { ShareViewButton } from "@/components/ShareViewButton"
+import { useOrganization } from "@/hooks/useOrganization"
+import { researchSessionCommands } from "@/lib/researchCommands"
+import { useResearchView } from "@/hooks/useResearchView"
+import { useRegisterWorkspaceCommands } from "@/lib/workspaceCommands"
+import { ResearchHistory } from "@/components/ResearchHistory"
+import { PinnedEvidence } from "@/components/PinnedEvidence"
+import { useResearchLibrary } from "@/hooks/useResearchLibrary"
+import { downloadResearch, researchScope, samePin, type EvidencePin, type ResearchTurn as Turn } from "@/lib/research"
+import { classifyError } from "@/api/client"
+import { ErrorState } from "@/components/ErrorState"
+import { LoadingRows } from "@/components/LoadingSkeleton"
 import { InspectorPanel } from "@/components/InspectorPanel"
 import { RetrievalPipeline } from "@/components/RetrievalPipeline"
 import { SecurityInspector } from "@/components/SecurityInspector"
-import { SourceCard } from "@/components/SourceCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TraceWaterfall } from "@/components/TraceWaterfall"
 import { useIdentity } from "@/hooks/useIdentity"
@@ -75,67 +89,31 @@ function statusOf(turn: Turn): AnswerStatus | null {
   })
 }
 
-// The conversation survives a page reload within the tab (sessionStorage,
-// per tab, cleared by "New chat"). Only finished turns are kept; storage
-// can be unavailable (private mode, blocked site data), so every access is
-// guarded and the page works without it.
-const CONVERSATION_KEY = "kb-console.playground-conversation"
-
-function loadConversation(): Turn[] {
-  try {
-    const raw = sessionStorage.getItem(CONVERSATION_KEY)
-    return raw ? (JSON.parse(raw) as Turn[]) : []
-  } catch {
-    return []
-  }
-}
-
-function saveConversation(turns: Turn[]): void {
-  try {
-    const finished = turns.filter((turn) => !turn.streaming)
-    if (finished.length === 0) sessionStorage.removeItem(CONVERSATION_KEY)
-    else sessionStorage.setItem(CONVERSATION_KEY, JSON.stringify(finished))
-  } catch {
-    // Storage unavailable: the conversation just won't survive a reload.
-  }
-}
-
 function isAnswerValidation(payload: unknown): payload is AnswerValidation {
   return typeof (payload as { passed?: unknown } | null)?.passed === "boolean"
 }
 
-interface Turn {
-  question: string
-  answer: string
-  sources: RetrievedSource[]
-  report: RetrievalReportPayload | null
-  grounding: GroundingResult | null
-  validation: AnswerValidation | null
-  metadata: ChatMetadata | null
-  streaming: boolean
-  errorMessage: string | null
-  // Sprint 24: client-observed wall-clock timings — real measured
-  // durations (performance.now() deltas between real SSE events this
-  // browser received), never a backend-reported value the stream
-  // doesn't actually carry. The backend's SSE contract has no per-token
-  // or per-check timing, so this is the only honest way to show
-  // generation/grounding duration without fabricating it.
-  firstTokenAt: number | null
-  lastTokenAt: number | null
-  groundingAt: number | null
-  askStartedAt: number | null
+export default function Playground() {
+  const identity = useIdentity()
+  if (identity.isError) return <div className="p-6"><ErrorState kind={classifyError(identity.error)} detail={(identity.error as Error).message} /></div>
+  if (!identity.data) return <div className="p-6"><LoadingRows rows={3} /></div>
+  return <ResearchWorkspace key={researchScope(identity.data)} identity={identity.data} />
 }
 
-export default function Playground() {
-  const { data: identity } = useIdentity()
-  const [turns, setTurns] = useState<Turn[]>(loadConversation)
+function ResearchWorkspace({ identity }: { identity: Identity }) {
+  const library = useResearchLibrary(researchScope(identity))
+  const organization = useOrganization(researchScope(identity))
+  const turns = library.active.turns
+  const setTurns = library.setTurns
+  const [exportError, setExportError] = useState("")
   const [copiedTurn, setCopiedTurn] = useState<number | null>(null)
   const [question, setQuestion] = useState("")
-  const [mode, setMode] = useState<"research" | "inspect">("research")
-  const [inspectorOpen, setInspectorOpen] = useState(false)
+  const workspaceView = useResearchView(researchScope(identity))
+  const { mode, setMode, tab: activeTab, setTab: setActiveTab, open: inspectorOpen, setOpen: setInspectorOpen } = workspaceView
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [noteLink, setNoteLink] = useState<EvidencePin | null>(null)
   const [selectionVersion, setSelectionVersion] = useState(0)
   const [inspectedTurn, setInspectedTurn] = useState<number | null>(null)
-  const [activeTab, setActiveTab] = useState("sources")
   const [highlightedRank, setHighlightedRank] = useState<number | null>(null)
   const [highlightedUnit, setHighlightedUnit] = useState<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -145,7 +123,12 @@ export default function Playground() {
   const current = turns[turns.length - 1]
   const evidenceTurn = turns[inspectedTurn ?? turns.length - 1]
 
-  useEffect(() => saveConversation(turns), [turns])
+  useEffect(() => () => abortRef.current?.abort(), [])
+
+  function exportResearch() {
+    try { downloadResearch(library.active); setExportError("") }
+    catch { setExportError("The Markdown file could not be downloaded. Try again.") }
+  }
 
   async function copyAnswer(index: number, answer: string) {
     try {
@@ -254,11 +237,30 @@ export default function Playground() {
 
   function newChat() {
     abortRef.current?.abort()
-    setTurns([])
+    if (current?.streaming) updateCurrent({ streaming: false, errorMessage: "Cancelled." })
+    const nextSessionId = library.newSession()
+    const projectId = organization.assignments[library.active.id]
+    if (projectId) organization.assign(nextSessionId, projectId)
+    setNoteLink(null)
+    setCopiedTurn(null)
+    setQuestion("")
     setInspectedTurn(null)
     setHighlightedRank(null)
     setHighlightedUnit(null)
     setActiveTab("sources")
+  }
+
+  function openResearch(id: string) {
+    if (current?.streaming) return
+    library.openSession(id)
+    setNoteLink(null)
+    setCopiedTurn(null)
+    setQuestion("")
+    setInspectedTurn(null)
+    setHighlightedRank(null)
+    setHighlightedUnit(null)
+    setActiveTab("sources")
+    setExportError("")
   }
 
   function cancel() {
@@ -288,6 +290,19 @@ export default function Playground() {
     setInspectorOpen(next === "inspect")
     if (next === "research") setActiveTab("sources")
   }
+
+  useRegisterWorkspaceCommands([
+    { id: "research-history", label: "Open research history", icon: History, run: () => setHistoryOpen(true) },
+    { id: "research-new", label: "New research", icon: MessageSquarePlus, disabled: Boolean(current?.streaming), run: newChat },
+    { id: "research-export", label: "Export research as Markdown", icon: Download, disabled: Boolean(current?.streaming) || (!turns.some((turn) => !turn.streaming) && !library.active.notes.length), run: exportResearch },
+    { id: "research-pinned", label: "Open pinned evidence", icon: Pin, run: () => { setActiveTab("pinned"); setInspectorOpen(true) } },
+    { id: "research-compare", label: "Compare pinned evidence", hint: "Select two passages", icon: Columns2, run: () => { setActiveTab("pinned"); setInspectorOpen(true) } },
+    { id: "research-notes", label: "Open research notes", icon: NotebookPen, run: () => { setActiveTab("notes"); setInspectorOpen(true) } },
+    ...researchSessionCommands(library, openResearch, Boolean(current?.streaming), (id) => {
+      library.remove(id)
+      if (id === library.active.id) { setInspectedTurn(null); setHighlightedRank(null); setHighlightedUnit(null); setActiveTab("sources") }
+    }),
+  ])
 
   const citedUnits = citedUnitsByRank(evidenceTurn)
 
@@ -324,6 +339,7 @@ export default function Playground() {
     <div className="flex h-full flex-col overflow-hidden">
       <div className="flex min-h-14 shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-4 py-2 sm:px-6">
         <div className="flex items-center gap-3">
+
           <span className="hidden text-xs text-[var(--color-subtle-foreground)] sm:inline">Workspace</span>
           <div role="group" aria-label="Workspace mode" className="flex rounded-lg bg-[var(--color-surface-hover)] p-0.5">
             {(["research", "inspect"] as const).map((value) => (
@@ -334,15 +350,35 @@ export default function Playground() {
             ))}
           </div>
         </div>
+        <div className="flex flex-wrap items-center gap-1">
+        <ResearchHistory open={historyOpen} onOpenChange={setHistoryOpen} sessions={library.sessions} activeId={library.active.id} streaming={Boolean(current?.streaming)}
+          onOpen={openResearch} onNew={newChat} onRename={library.rename} onStar={library.star} onRemove={(id) => {
+            library.remove(id)
+            if (id === library.active.id) { setInspectedTurn(null); setHighlightedRank(null); setHighlightedUnit(null); setActiveTab("sources") }
+          }} onUndo={library.undoRemove} removedTitle={library.removed?.title} />
+        <button type="button" aria-label="Export research as Markdown" disabled={(!turns.some((turn) => !turn.streaming) && !library.active.notes.length) || Boolean(current?.streaming)} onClick={exportResearch}
+          className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] disabled:opacity-40">
+          <Download className="h-3.5 w-3.5" /><span className="hidden sm:inline">Export</span>
+        </button>
+        {organization.projects.length > 0 && <select aria-label="Research project" value={organization.assignments[library.active.id] ?? ""} onChange={(event) => organization.assign(library.active.id, event.target.value || null)} className="h-8 max-w-40 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-xs"><option value="">No project</option>{organization.projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select>}
+        <ShareViewButton values={workspaceView.query} />
+        <button type="button" aria-label="Open research notes" onClick={() => { setNoteLink(null); setActiveTab("notes"); setInspectorOpen(true) }} className="flex min-h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"><NotebookPen className="h-3.5 w-3.5" /><span className="hidden sm:inline">Notes</span></button>
+        <button type="button" aria-label={`Pinned evidence (${library.active.pins.length})`} onClick={() => { setActiveTab("pinned"); setInspectorOpen(true) }}
+          className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
+          <Pin className="h-3.5 w-3.5" />{library.active.pins.length}
+        </button>
         <button type="button" aria-expanded={inspectorOpen} aria-controls="evidence-inspector" onClick={() => setInspectorOpen(!inspectorOpen)}
           className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-medium text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
           <PanelRight className="h-3.5 w-3.5" /> Evidence
           {evidenceTurn && <span className="font-technical text-[11px] text-[var(--color-subtle-foreground)]">{evidenceTurn.sources.length}</span>}
         </button>
+        </div>
       </div>
+      {(library.storageError || organization.error || exportError) && <p role="status" className="border-b border-[var(--color-border)] px-6 py-2 text-xs text-[var(--color-warning)]">{exportError || organization.error || "Browser storage is unavailable or full. This research is available for this visit; export it to keep a copy."}</p>}
+      {turns.length > 0 && <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-6 py-2 text-xs text-[var(--color-subtle-foreground)]"><span className="truncate" title={library.active.title}>{library.active.customTitle ? library.active.title : "Research session"}</span><span className="ml-auto shrink-0">Local research</span></div>}
       <div className="flex min-h-0 flex-1 overflow-hidden">
       {/* Conversation */}
-      <section className="flex min-w-0 flex-1 flex-col">
+      <section aria-label="Conversation" className="flex min-w-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-5 py-10 sm:px-10">
             {turns.length === 0 ? (
@@ -422,7 +458,7 @@ export default function Playground() {
                           )}
                         </div>
                         {!turn.streaming && turn.sources.length > 0 && (
-                          <button type="button" onClick={() => { setInspectedTurn(i); setActiveTab("sources"); setHighlightedRank(null); setHighlightedUnit(null); setInspectorOpen(true) }}
+                          <button type="button" aria-controls="evidence-inspector" aria-expanded={inspectorOpen && activeTab === "sources" && (inspectedTurn ?? turns.length - 1) === i} onClick={() => { setInspectedTurn(i); const citation = segmentsOf(turn).find((segment) => segment.type === "citation" && segment.valid && segment.source); focusSource(citation?.source?.rank ?? turn.sources[0].rank, citation?.unit?.support_id ?? null) }}
                             className="flex w-fit items-center gap-2 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
                             <FileText className="h-3.5 w-3.5" /> Supporting evidence <span className="font-technical">{turn.sources.length}</span>
                           </button>
@@ -480,7 +516,7 @@ export default function Playground() {
                 <button
                   type="button"
                   onClick={newChat}
-                  disabled={turns.length === 0}
+                  disabled={turns.length === 0 && library.active.notes.length === 0}
                   className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-xs font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)] disabled:pointer-events-none disabled:opacity-40"
                   aria-label="New chat"
                   title="New chat"
@@ -518,11 +554,13 @@ export default function Playground() {
       </section>
 
       {/* Evidence inspector */}
-      <InspectorPanel open={inspectorOpen} onOpenChange={setInspectorOpen}>
+      <InspectorPanel preferencesKey={`${researchScope(identity)}:panel-width`} open={inspectorOpen} onOpenChange={setInspectorOpen}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex h-full flex-col">
-          <div className="flex items-center gap-2 overflow-x-auto border-b border-[var(--color-border)] px-4 py-2.5">
-            <TabsList>
+          <div className="shrink-0 border-b border-[var(--color-border)] px-3 py-2.5">
+            <TabsList className="grid w-full grid-cols-4 [&>button]:min-w-0 [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs">
               <TabsTrigger value="sources">Sources</TabsTrigger>
+              <TabsTrigger value="pinned">Pinned</TabsTrigger>
+              <TabsTrigger value="notes">Notes</TabsTrigger>
               <TabsTrigger value="why">Why</TabsTrigger>
               {mode === "inspect" && <>
                 <TabsTrigger value="retrieval">Retrieval</TabsTrigger>
@@ -536,30 +574,19 @@ export default function Playground() {
                 {!evidenceTurn || evidenceTurn.sources.length === 0 ? (
                   <EmptyState title="No sources yet" description="Ask a question to see the retrieved evidence." />
                 ) : (
-                  <div className="flex flex-col gap-2">
-                    {evidenceTurn.sources.map((source) => (
-                      <SourceCard
-                        key={`${inspectedTurn ?? turns.length - 1}:${source.rank}:${selectionVersion}`}
-                        source={source}
-                        technical={mode === "inspect"}
-                        cited={
-                          (evidenceTurn.grounding?.citations_found.some(
-                            ([, sid]) => sid === source.source_id,
-                          ) ??
-                            false) ||
-                          (citedUnits.get(source.rank)?.length ?? 0) > 0
-                        }
-                        citedUnits={citedUnits.get(source.rank)}
-                        highlightedUnitId={highlightedRank === source.rank ? highlightedUnit : null}
-                        highlighted={highlightedRank === source.rank}
-                        cardRef={(el) => {
-                          if (el) sourceRefs.current.set(source.rank, el)
-                          else sourceRefs.current.delete(source.rank)
-                        }}
-                      />
-                    ))}
-                  </div>
+                  <EvidenceSources key={`${library.active.id}:${inspectedTurn ?? turns.length - 1}:${selectionVersion}`} sources={evidenceTurn.sources} units={citedUnits} answer={evidenceTurn.answer} supportUnits={evidenceTurn.metadata?.support_units ?? []}
+                    highlightedRank={highlightedRank} highlightedUnit={highlightedUnit} technical={mode === "inspect"}
+                    citedRanks={new Set(evidenceTurn.sources.filter((source) => evidenceTurn.grounding?.citations_found.some(([, sid]) => sid === source.source_id)).map((source) => source.rank))}
+                    cardRef={(rank, el) => { if (el) sourceRefs.current.set(rank, el); else sourceRefs.current.delete(rank) }}
+                    onPin={!evidenceTurn.streaming ? (rank, supportId) => library.togglePin({ turnIndex: inspectedTurn ?? turns.length - 1, sourceRank: rank, supportId }) : undefined}
+                    isPinned={(rank, supportId) => library.active.pins.some((pin) => samePin(pin, { turnIndex: inspectedTurn ?? turns.length - 1, sourceRank: rank, supportId }))} />
                 )}
+              </TabsContent>
+              <TabsContent value="pinned">
+                <PinnedEvidence key={library.active.id} session={library.active} onRemove={library.togglePin} onAddNote={(pin) => { setNoteLink(pin); setActiveTab("notes") }} onOpen={(pin) => { setInspectedTurn(pin.turnIndex); focusSource(pin.sourceRank, pin.supportId) }} />
+              </TabsContent>
+              <TabsContent value="notes">
+                <ResearchNotes key={library.active.id} session={library.active} initialEvidence={noteLink} disabled={Boolean(current?.streaming)} onSave={library.saveNote} onRemove={library.removeNote} onOpen={(pin) => { setInspectedTurn(pin.turnIndex); focusSource(pin.sourceRank, pin.supportId) }} />
               </TabsContent>
               <TabsContent value="why">
                 {!evidenceTurn ? (

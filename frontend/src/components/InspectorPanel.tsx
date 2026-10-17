@@ -1,4 +1,4 @@
-import { useRef, useState, useSyncExternalStore, type ReactNode } from "react"
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react"
 import { Dialog } from "radix-ui"
 import { PanelRight, X } from "lucide-react"
 
@@ -9,16 +9,24 @@ const subscribe = (callback: () => void) => {
   return () => media?.removeEventListener("change", callback)
 }
 const isMobile = () => window.matchMedia?.(mobileQuery).matches ?? false
-const clampWidth = (width: number) => Math.max(320, Math.min(620, width))
+const clampWidth = (width: number) => Math.max(400, Math.min(450, width))
 
 /** A docked desktop inspector and a focus-trapped sheet on small screens. */
-export function InspectorPanel({ open, onOpenChange, children }: {
+export function InspectorPanel({ open, onOpenChange, children, preferencesKey = "kb-console.inspector-width" }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   children: ReactNode
+  preferencesKey?: string
 }) {
   const mobile = useSyncExternalStore(subscribe, isMobile, () => false)
-  const [width, setWidth] = useState(420)
+  const [width, setWidth] = useState(() => {
+    try { const saved = Number(localStorage.getItem(preferencesKey)); return Number.isFinite(saved) && saved > 0 ? clampWidth(saved) : 420 }
+    catch { return 420 }
+  })
+  useEffect(() => {
+    try { localStorage.setItem(preferencesKey, String(width)) }
+    catch { /* Resizing remains available without storage. */ }
+  }, [preferencesKey, width])
   const drag = useRef<{ x: number; width: number } | null>(null)
   const closeRef = useRef<HTMLButtonElement | null>(null)
 
@@ -41,7 +49,7 @@ export function InspectorPanel({ open, onOpenChange, children }: {
         <Dialog.Content id="evidence-inspector" aria-describedby={undefined}
           onOpenAutoFocus={(event) => { event.preventDefault(); closeRef.current?.focus() }}
           onCloseAutoFocus={(event) => { event.preventDefault(); document.querySelector<HTMLButtonElement>('[aria-controls="evidence-inspector"]')?.focus() }}
-          className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col bg-[var(--color-surface)] shadow-pop">
+          className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[450px] flex-col bg-[var(--color-surface)] shadow-pop">
           <Dialog.Title className="sr-only">Evidence inspector</Dialog.Title>
           {header}
           <div className="min-h-0 flex-1">{children}</div>
@@ -61,7 +69,7 @@ export function InspectorPanel({ open, onOpenChange, children }: {
       }}
       className="relative flex max-w-[52%] shrink-0 flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)]">
       <div role="separator" tabIndex={0} aria-label="Resize evidence inspector" aria-orientation="vertical"
-        aria-valuemin={320} aria-valuemax={620} aria-valuenow={width}
+        aria-valuemin={400} aria-valuemax={450} aria-valuenow={width}
         onPointerDown={(event) => { drag.current = { x: event.clientX, width }; event.currentTarget.setPointerCapture(event.pointerId) }}
         onPointerMove={(event) => { if (drag.current) setWidth(clampWidth(drag.current.width + drag.current.x - event.clientX)) }}
         onPointerUp={(event) => { drag.current = null; event.currentTarget.releasePointerCapture(event.pointerId) }}
@@ -70,7 +78,7 @@ export function InspectorPanel({ open, onOpenChange, children }: {
         onKeyDown={(event) => {
           if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
             event.preventDefault()
-            setWidth((value) => event.key === "Home" ? 320 : event.key === "End" ? 620 : clampWidth(value + (event.key === "ArrowLeft" ? 20 : -20)))
+            setWidth((value) => event.key === "Home" ? 400 : event.key === "End" ? 450 : clampWidth(value + (event.key === "ArrowLeft" ? 20 : -20)))
           }
         }}
         className="absolute inset-y-0 -left-1 z-10 w-2 touch-none cursor-col-resize transition-colors hover:bg-[var(--color-accent-muted)] focus-visible:bg-[var(--color-accent-muted)] focus-visible:outline-none" />

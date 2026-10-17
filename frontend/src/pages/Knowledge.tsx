@@ -9,29 +9,32 @@ import { EmptyState } from "@/components/EmptyState"
 import { ErrorState } from "@/components/ErrorState"
 import { LoadingRows } from "@/components/LoadingSkeleton"
 import { StatusBadge } from "@/components/StatusBadge"
-import { Badge } from "@/components/ui/badge"
+import { KnowledgeDocuments } from "@/components/KnowledgeDocuments"
+import { useIdentity } from "@/hooks/useIdentity"
+import { updateViewQuery, useViewSearch } from "@/lib/viewState"
+import { readKnowledgeView } from "@/lib/knowledgeView"
+import { researchScope } from "@/lib/research"
+import { Dialog } from "radix-ui"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { qualityRows, qualitySummary } from "@/lib/quality"
 import { formatRelativeTime } from "@/lib/utils"
 
-function QualityBadge({ doc }: { doc: DocumentRecord }) {
-  const { label, status } = qualitySummary(doc.ingestion_quality)
-  return <Badge variant={status}>{label}</Badge>
-}
-
 function DocumentDetail({ doc, onClose }: { doc: DocumentRecord; onClose: () => void }) {
   return (
-    <div className="fixed inset-y-0 right-0 z-20 w-96 overflow-y-auto border-l border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-xl">
+    <Dialog.Root open onOpenChange={(open) => { if (!open) onClose() }}>
+      <Dialog.Portal>
+      <Dialog.Overlay className="fixed inset-0 z-40 bg-black/25 backdrop-blur-sm" />
+      <Dialog.Content aria-describedby={undefined} className="fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto border-l border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-pop">
       <button
         onClick={onClose}
         className="mb-4 text-xs text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
       >
         ← Close
       </button>
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--color-foreground)]">
+      <Dialog.Title className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--color-foreground)]">
         <FileText className="h-4 w-4" />
         {doc.source_id}
-      </h3>
+      </Dialog.Title>
       <dl className="flex flex-col gap-2 text-xs">
         {[
           ["Source", doc.source_type],
@@ -53,19 +56,23 @@ function DocumentDetail({ doc, onClose }: { doc: DocumentRecord; onClose: () => 
           </div>
         ))}
       </dl>
-    </div>
+      </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 
 export default function Knowledge() {
-  const [selectedSourceType, setSelectedSourceType] = useState<string | null>(null)
+  const selectedSourceType = readKnowledgeView(useViewSearch()).source
+  const setSelectedSourceType = (source: string) => updateViewQuery({ source, page: null })
   const [selectedDoc, setSelectedDoc] = useState<DocumentRecord | null>(null)
-  const [search, setSearch] = useState("")
+  const { data: identity } = useIdentity()
+  const scope = identity ? researchScope(identity) : "unresolved"
 
-  const sources = useQuery({ queryKey: ["sources"], queryFn: sourcesApi.list })
+  const sources = useQuery({ queryKey: ["sources", scope], queryFn: sourcesApi.list })
   const documents = useQuery({
-    queryKey: ["documents", selectedSourceType],
-    queryFn: () => sourcesApi.documents(selectedSourceType ?? undefined),
+    queryKey: ["documents", scope, selectedSourceType],
+    queryFn: () => sourcesApi.documents(selectedSourceType === "*" ? undefined : selectedSourceType ?? undefined),
     enabled: Boolean(selectedSourceType),
   })
 
@@ -84,9 +91,6 @@ export default function Knowledge() {
     )
   }
 
-  const filteredDocs = (documents.data ?? []).filter((d) =>
-    d.source_id.toLowerCase().includes(search.toLowerCase()),
-  )
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
@@ -98,11 +102,14 @@ export default function Knowledge() {
           description="This tenant has no connectors ingesting documents yet."
         />
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between"><p className="text-xs text-[var(--color-muted-foreground)]">Browse connected knowledge</p><button type="button" onClick={() => setSelectedSourceType("*")} aria-pressed={selectedSourceType === "*"} className="rounded-md px-3 py-2 text-xs font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent-muted)]">All documents</button></div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {sources.data!.map((source) => (
             <button
               key={source.source_type}
-              onClick={() => setSelectedSourceType(source.source_type)}
+              onClick={() => { setSelectedSourceType(source.source_type); setSelectedDoc(null) }}
+              aria-pressed={selectedSourceType === source.source_type}
               className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left shadow-card transition-all hover:-translate-y-px hover:border-[var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
             >
               <div>
@@ -119,67 +126,19 @@ export default function Knowledge() {
               <ChevronRight className="h-4 w-4 text-[var(--color-subtle-foreground)]" />
             </button>
           ))}
+          </div>
         </div>
       )}
 
-      {selectedSourceType && (
+      {selectedSourceType && sources.data!.length > 0 && (
         <Card>
-          <CardHeader className="flex-row items-center justify-between space-y-0">
-            <CardTitle className="capitalize">{selectedSourceType} documents</CardTitle>
-            <input
-              placeholder="Filter by name…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-48 h-8 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 text-xs text-[var(--color-foreground)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
-            />
+          <CardHeader>
+            <CardTitle className="capitalize">{selectedSourceType === "*" ? "All" : selectedSourceType} documents</CardTitle>
           </CardHeader>
           <CardContent>
-            {documents.isLoading ? (
-              <LoadingRows rows={4} />
-            ) : filteredDocs.length === 0 ? (
-              <EmptyState title="No documents match" />
-            ) : (
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-[var(--color-border)] text-[var(--color-muted-foreground)]">
-                    <th className="py-2 font-medium">Name</th>
-                    <th className="py-2 font-medium">Version</th>
-                    <th className="py-2 font-medium">Chunks</th>
-                    <th className="py-2 font-medium">Quality</th>
-                    <th className="py-2 font-medium">Status</th>
-                    <th className="py-2 font-medium">Updated</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDocs.map((doc) => (
-                    <tr
-                      key={doc.source_id}
-                      onClick={() => setSelectedDoc(doc)}
-                      className="cursor-pointer border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-surface-hover)]"
-                    >
-                      <td className="py-2 font-technical text-[var(--color-foreground)]">
-                        {doc.source_id}
-                      </td>
-                      <td className="py-2 font-technical text-[var(--color-muted-foreground)]">
-                        v{doc.version}
-                      </td>
-                      <td className="py-2 font-technical text-[var(--color-muted-foreground)]">
-                        {doc.chunk_count ?? "—"}
-                      </td>
-                      <td className="py-2">
-                        <QualityBadge doc={doc} />
-                      </td>
-                      <td className="py-2">
-                        <StatusBadge status={doc.status} />
-                      </td>
-                      <td className="py-2 text-[var(--color-subtle-foreground)]">
-                        {formatRelativeTime(doc.last_synced_at)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+            {documents.isLoading ? <LoadingRows rows={4} /> : documents.isError ? (
+              <div className="space-y-3"><ErrorState kind={classifyError(documents.error)} detail={(documents.error as Error).message} /><button type="button" onClick={() => void documents.refetch()} className="rounded-md border border-[var(--color-border)] px-3 py-2 text-xs">Retry documents</button></div>
+            ) : <KnowledgeDocuments key={`${scope}:${selectedSourceType}`} documents={documents.data ?? []} onOpen={setSelectedDoc} preferencesKey={`${scope}:knowledge-table`} organizationScope={identity ? scope : undefined} />}
           </CardContent>
         </Card>
       )}
