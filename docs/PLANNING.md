@@ -5674,3 +5674,26 @@ is annotated, `candidate_pages` returns early without a source, and `fitz` has
 an `ignore_missing_imports` override (no inline ignores). `mypy app/` passes.
 
 `make test`: 1748 passed, 4 skipped.
+
+## Measurement — the rows no row run had measured (closing note)
+
+`luna-v3-unmeasured-rows`, gpt-6-luna, V2 labels, one run, the four rows whose
+fixes had no row measurement of their own: 0/4 right, 1 wrong, 3 refused.
+- 219 (gold 1,038 = 68% of 1,526) answered 1,114 = (41% + 32%) x 1,526: the
+  share-of-sample program is right, but it bound "go online but do not use
+  SNS" (32%) where the question asks for "only use SNS" (27%). The validator
+  checks that each operand is printed, not that its label is the asked group.
+  Refused in `luna-full-v3`, wrong now.
+- 225 (gold 738) refused as before (`ANSWER_TYPE_MISMATCH`): the model gave
+  the shares (11%, 71%) without the sample size, and the resolver did not
+  complete it.
+- 380 (gold 8,367,277,000) refused as before: the model abstained outright,
+  so no answer was withheld and the resolver never ran; the lakh-scale
+  support (#90) was not reached.
+- 1070 (gold 0.12%) answered 0.10 from the printed one-decimal rates, which
+  the precision check (#91) refused (`CALCULATION_PRECISION_BELOW_ASKED`);
+  the resolver did not recompute it from gross profit and revenue. It was
+  right (0.12%) in `luna-full-v3`, so the check turned a wrong answer into a
+  refusal, not a right one.
+
+`make test`: 1748 passed, 4 skipped.

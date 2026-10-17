@@ -1,0 +1,339 @@
+{
+  "meta": {
+    "dataset": "yubo2333/MMLongBench-Doc",
+    "revision": "2ff6aa9237fc777b6627dc57a486e9225ac5fb86",
+    "documents": 3,
+    "questions": 4,
+    "collection": "kb_bench_mmlongbench_v2",
+    "tenant": "bench-mmlongbench",
+    "model": "gpt-6-luna",
+    "top_n": 14,
+    "candidate_k": 40,
+    "ingest": {
+      "chunks_upserted": "existing",
+      "seconds": 0
+    },
+    "median_seconds": 18.7,
+    "ocr_available": true,
+    "evidence": "retrieved",
+    "retrieval_scope": "question_document",
+    "labels": "data/benchmarks/mmlongbench-doc-v2/samples.json"
+  },
+  "overall": {
+    "questions": 4,
+    "ingestion_evidence_page_coverage": {
+      "rate": 1.0,
+      "n": 4
+    },
+    "retrieval_hit_at_14": {
+      "rate": 1.0,
+      "n": 4
+    },
+    "retrieval_hit_at_40": {
+      "rate": 1.0,
+      "n": 4
+    },
+    "gold_in_page_text": {
+      "rate": 0.0,
+      "n": 3
+    },
+    "gold_in_evidence": {
+      "rate": 0.0,
+      "n": 3
+    },
+    "evidence_page_seen": {
+      "rate": 1.0,
+      "n": 4
+    },
+    "answer_accuracy": {
+      "rate": 0.0,
+      "n": 4
+    },
+    "citation_accuracy": {
+      "rate": 1.0,
+      "n": 1
+    }
+  },
+  "slices": {
+    "text": {
+      "questions": 2,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "gold_in_page_text": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "gold_in_evidence": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "answer_accuracy": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "citation_accuracy": {
+        "rate": 1.0,
+        "n": 1
+      }
+    },
+    "layout": {
+      "questions": 0,
+      "ingestion_evidence_page_coverage": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_14": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_40": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": null,
+        "n": 0
+      },
+      "answer_accuracy": {
+        "rate": null,
+        "n": 0
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    },
+    "table": {
+      "questions": 3,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "gold_in_page_text": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "gold_in_evidence": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "answer_accuracy": {
+        "rate": 0.0,
+        "n": 3
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    },
+    "chart": {
+      "questions": 2,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "gold_in_page_text": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "gold_in_evidence": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "answer_accuracy": {
+        "rate": 0.0,
+        "n": 2
+      },
+      "citation_accuracy": {
+        "rate": 1.0,
+        "n": 1
+      }
+    },
+    "figure": {
+      "questions": 0,
+      "ingestion_evidence_page_coverage": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_14": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_40": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": null,
+        "n": 0
+      },
+      "answer_accuracy": {
+        "rate": null,
+        "n": 0
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    }
+  },
+  "answerability": {
+    "unanswerable_correctly_refused": {
+      "rate": null,
+      "n": 0
+    },
+    "answerable_coverage": {
+      "rate": 0.25,
+      "n": 4
+    }
+  },
+  "response_kinds": {
+    "answered": 1,
+    "model_abstained": 1,
+    "validator_blocked": 2
+  },
+  "loss_stages": {
+    "not_in_page_text": 3,
+    "unmeasured": 1
+  },
+  "acl_leaks": 0,
+  "per_question": [
+    {
+      "row_idx": 219,
+      "doc_id": "PIP_Seniors-and-Tech-Use_040314.pdf",
+      "evidence_types": [
+        "text",
+        "chart"
+      ],
+      "answerable": true,
+      "response_kind": "answered",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": true,
+      "gold_in_page_text": false,
+      "gold_in_evidence": false,
+      "evidence_page_seen": true,
+      "loss_stage": "not_in_page_text",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 225,
+      "doc_id": "PIP_Seniors-and-Tech-Use_040314.pdf",
+      "evidence_types": [
+        "text",
+        "table",
+        "chart"
+      ],
+      "answerable": true,
+      "response_kind": "validator_blocked",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": false,
+      "gold_in_evidence": false,
+      "evidence_page_seen": true,
+      "loss_stage": "not_in_page_text",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 380,
+      "doc_id": "afe620b9beac86c1027b96d31d396407.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "response_kind": "model_abstained",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": false,
+      "gold_in_evidence": false,
+      "evidence_page_seen": true,
+      "loss_stage": "not_in_page_text",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 1070,
+      "doc_id": "BESTBUY_2023_10K.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "response_kind": "validator_blocked",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": "unmeasured",
+      "acl_leaks": 0
+    }
+  ]
+}
