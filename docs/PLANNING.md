@@ -5054,3 +5054,12 @@ abstentions (380, 1013, 1015, 1018, 1020, 1021, 1023, 1024, 1072–1075, 1079, 1
 1086) and 727.
 
 `make test`: 1661 passed, 4 skipped.
+
+## Fix — the runner keeps the operand resolver's trace (closing note)
+
+A benchmark result's `trace` now carries the capture's `operand_resolver` stage
+(the planning calls' raw output, each operand's binding codes, the searches, and
+whether it resolved), so a resolver run can be diagnosed from its results without
+asking the model again.
+
+`make test`: 1662 passed, 4 skipped.
