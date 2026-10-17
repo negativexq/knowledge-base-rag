@@ -308,3 +308,33 @@ def test_a_printed_number_is_not_found_by_position(tmp_path):
 
     assert pages.by_position("paper_pdf", 6982) is False
     assert pages.by_position("paper_pdf", 2) is True
+
+
+@pytest.mark.asyncio
+async def test_a_reading_that_names_the_printed_page_number_is_kept():
+    # luna 637: shown the 5th page, the model answered "page": 6985, the number
+    # printed on it.
+    class Pages:
+        def __call__(self, source, page):
+            return b"PNG"
+
+        def resolve(self, source, page):
+            return 5 if page in (5, 6985) else None
+
+        def by_position(self, source, page):
+            return False
+
+    from app.llm.visual_answer import answer_from_pages
+
+    units = build_support_units(_blocks(("doc", 5), ("doc", 1)))
+    provider = _Provider({**READ, "answer": "1", "page": 6985}, YES)
+    visual = await answer_from_pages(
+        "How many examples are in the figure at the top of page 6985?",
+        units,
+        provider,
+        Pages(),
+        generation_kwargs={},
+        trace={},
+    )
+
+    assert visual is not None and visual.page == 5

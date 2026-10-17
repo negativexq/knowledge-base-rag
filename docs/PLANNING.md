@@ -5192,3 +5192,17 @@ only by position, the next page is shown too (a printed number is often one off:
 deck, whose pages are mostly images without a text layer (no OCR here).
 
 `make test`: 1688 passed, 4 skipped.
+
+## Measure and fix — named pages on 5 rows; a printed page number in the reading (closing note)
+
+`luna-visual-rows-2` (385, 475, 511, 637, 829 after PR #69): 511 is now answered
+from its page ("Start new search", page 17 shown first, gold correct); 829 stays
+correct; 475 (unanswerable) is refused because the confirmation rejected a reading
+of the green bar. 385 was answered "Table of Contents" and confirmed, a wrong
+answer: the question says "page two" while its gold evidence is page 5. 637 read
+the right answer ("1") but named the page by the number printed on it ("page":
+6985), not its position (5), so it was dropped. A reading's page that is not a
+shown position is now resolved like a named page, so a printed number of a shown
+page is kept.
+
+`make test`: 1689 passed, 4 skipped.
