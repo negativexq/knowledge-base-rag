@@ -745,3 +745,105 @@ def test_the_instructions_bind_a_printed_total_debt_and_define_ebitda():
 
     assert "a printed row that already includes it" in RESOLVER_INSTRUCTIONS
     assert "EBITDA = operating income + depreciation and amortization" in RESOLVER_INSTRUCTIONS
+
+
+# luna-v3-debt-rows: 1018 added "long-term debt, including its current portion"
+# (7,531) and the "current portion of long-term debt" (799) it already holds;
+# 1073 subtracted income tax from net earnings, which are already after tax.
+
+DEBT_ROWS = (
+    "Long-term debt, including current portion | 2021: 7,531 | 2020: 7,514\n"
+    "Current portion of long-term debt | 2021: 799 | 2020: 95\n"
+    "Long-term debt, excluding current portion | 2021: 6,692 | 2020: 7,419"
+)
+
+
+async def _debt_resolve(program, operands):
+    return await resolve_operands(
+        "What is Costco's total debt in FY2021?",
+        _units(DEBT_ROWS),
+        _Provider(
+            {
+                "program": program,
+                "operands": operands,
+                "result_label": "Total debt, FY2021",
+                "percent": False,
+                "decimals": None,
+            }
+        ),
+        generation_kwargs={"model": "m"},
+        prompt_version="v3",
+        context_serializer=None,
+    )
+
+
+def _debt_op(name, value, row):
+    return _op(name, value, "E1.S1", [row, "2021"])
+
+
+@pytest.mark.asyncio
+async def test_a_row_that_includes_another_is_not_added_to_it():
+    including = _debt_op("a", "7,531", "Long-term debt, including current portion")
+    current = _debt_op("b", "799", "Current portion of long-term debt")
+    _, calculation, _, trace = await _debt_resolve("a + b", [including, current])
+
+    assert calculation is None
+    assert trace.plan_codes == ["OPERAND_TOTAL_AND_PART"]
+
+
+@pytest.mark.asyncio
+async def test_a_row_that_excludes_another_is_added_to_it():
+    excluding = _debt_op("a", "6,692", "Long-term debt, excluding current portion")
+    current = _debt_op("b", "799", "Current portion of long-term debt")
+    _, calculation, _, trace = await _debt_resolve("a + b", [excluding, current])
+
+    assert calculation is not None and calculation.result == "7,491"
+
+
+def test_the_instructions_use_net_earnings_as_printed():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "already after tax" in RESOLVER_INSTRUCTIONS
+    assert "added back only to net income" not in RESOLVER_INSTRUCTIONS
+
+
+# The real 1018 plan: Costco's debt note prints "Total long-term debt 7,531"
+# and below it "Less current portion(1) 799", so the total holds the current
+# portion; the plan added the balance sheet's "Current portion of long-term
+# debt" (799) to it again.
+
+DEBT_NOTE = (
+    "Table:  | 2021 | 2020\n"
+    "2.750% Senior Notes due May 2024 | 2021: 1,000 | 2020: 1,000\n"
+    "Other long-term debt | 2021: 6,531 | 2020: 6,657\n"
+    "Total long-term debt | 2021: 7,531 | 2020: 7,657\n"
+    "Less unamortized debt discounts and issuance costs | 2021: 40 | 2020: 48\n"
+    "Less current portion(1) | 2021: 799 | 2020: 95\n"
+    "Long-term debt, excluding current portion | 2021: $ 6,692 | 2020: $ 7,514"
+)
+BALANCE_CURRENT = "Current portion of long-term debt | 2021: 799 | 2020: 95"
+
+
+@pytest.mark.asyncio
+async def test_a_total_with_a_less_row_holds_what_that_row_subtracts():
+    plan = {
+        "program": "a + b",
+        "operands": [
+            _op("a", "7,531", "E1.S1", ["Total long-term debt", "2021"]),
+            _op("b", "799", "E2.S1", ["Current portion of long-term debt", "2021"]),
+        ],
+        "result_label": "Total debt, FY2021",
+        "percent": False,
+        "decimals": None,
+    }
+    _, calculation, _, trace = await resolve_operands(
+        "What is Costco's total debt in FY2021?",
+        _units(DEBT_NOTE, BALANCE_CURRENT),
+        _Provider(plan),
+        generation_kwargs={"model": "m"},
+        prompt_version="v3",
+        context_serializer=None,
+    )
+
+    assert calculation is None
+    assert trace.plan_codes == ["OPERAND_TOTAL_AND_PART"]

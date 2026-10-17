@@ -5629,3 +5629,21 @@ refused 1017, 1072, 1074, 1075) it is 4 right, 2 wrong, 2 refused:
 Net on these rows: one more right, one more wrong.
 
 `make test`: 1744 passed, 4 skipped.
+
+## Fix — a total its "Less" rows show holding a part, and net earnings as printed (closing note)
+
+`luna-v3-debt-rows`: 1018 added Costco's "Total long-term debt" (7,531) and
+the balance sheet's "Current portion of long-term debt" (799). The debt note
+prints "Less current portion(1) 799" right below that total, so the total
+already holds it; the add-up check could not see this (the parts of 7,531 are
+the notes, and the 799 came from another table). The total-and-part check now
+also refuses a sum that adds a printed total and a row matching what a "Less
+..." row right below the total subtracts, and a row whose label says it
+includes another ("Long-term debt, including current portion") added to that
+other. 1073 subtracted income tax from net earnings after the EBITDA wording
+of #93 mentioned taxes; the clause is replaced by "net earnings are already
+after tax: an after-tax return uses them as printed". Replayed on every saved
+resolver plan against the indexed tables: only 1018's plan is refused (1074's
+averages of two "Total long-term debt" years stand).
+
+`make test`: 1748 passed, 4 skipped.

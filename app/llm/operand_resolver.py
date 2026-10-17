@@ -50,8 +50,8 @@ program over named operands and return
   total debt = long-term debt + its current portion, or a printed row that already includes it
   ("Total long-term debt") as one operand (plus lease liabilities only when
   the question says so);
-  EBITDA = operating income + depreciation and amortization (interest and
-  taxes are added back only to net income, never to operating income).
+  EBITDA = operating income + depreciation and amortization;
+  net earnings are already after tax: an after-tax return uses them as printed.
   A shortfall or gap is the larger minus the smaller figure.
   When the question asks for more decimals than a printed rate carries
   ("22.5%" for two decimals), compute the rate from the figures it is a ratio of
@@ -426,24 +426,73 @@ def _total_parts(total: Fact, table: tuple[Fact, ...]) -> set[tuple[float, str, 
     return set()
 
 
+_INCLUDING = re.compile(r"\b(?:including|incl\.)\s+(?:its\s+|the\s+)?([^,;()|]+)")
+
+
+def _included(row: str) -> str | None:
+    """What a row label says it already includes ("Long-term debt, including
+    current portion" includes "current portion"), or None."""
+    match = _INCLUDING.search(_normalized(row))
+    return match.group(1).strip() if match else None
+
+
+def _subtracted_below(total: Fact, table: tuple[Fact, ...]) -> list[str]:
+    """What the "Less ..." rows right below a printed total subtract from it
+    ("Total long-term debt" then "Less current portion(1)": the total holds
+    the current portion), with footnote marks dropped."""
+    rows = [fact.row for fact in table if fact.column == total.column]
+    if total.row not in rows:
+        return []
+    subtracted = []
+    for row in rows[rows.index(total.row) + 1 :]:
+        text = _normalized(row)
+        if not text.startswith("less "):
+            break
+        subtracted.append(" ".join(re.sub(r"\(\d+\)", " ", text.removeprefix("less ")).split()))
+    return subtracted
+
+
 def total_and_part_codes(
     plan: OperandPlan, facts: dict[str, Fact], units: list[SupportUnit]
 ) -> list[str]:
     """A sum that adds a table's printed total and a row that total already
-    sums counts that row twice."""
+    sums (or one its "Less ..." rows show it holds), or a row whose label says
+    it includes another and that other row, counts that row twice."""
     available = support_unit_map(units)
     blocks = block_texts(units)
     operands = {operand.name: operand for operand in plan.operands}
+
+    def row(name: str) -> str:
+        fact = facts.get(name)
+        return fact.row if fact is not None else " ".join(operands[name].labels)
+
     for group in _sum_groups(plan.program or ""):
+        names = [name for name in group if name in operands]
+        for name in names:
+            included = _included(row(name))
+            if included and any(
+                other != name and included in _normalized(row(other)) for other in names
+            ):
+                # "Long-term debt, including current portion" + "Current portion".
+                return ["OPERAND_TOTAL_AND_PART"]
         for name in group:
             total = facts.get(name)
             if total is None or not _normalized(total.row).startswith("total"):
                 continue
             unit = available[operands[name].support_id or ""]
             block = blocks.get(unit.parent_evidence_block_id, unit.text)
-            parts = _total_parts(total, unit_facts(block).facts)
+            table = unit_facts(block).facts
+            parts = _total_parts(total, table)
             if any(
                 other != name and other in facts and _key(facts[other]) in parts for other in group
+            ):
+                return ["OPERAND_TOTAL_AND_PART"]
+            held = _subtracted_below(total, table)
+            if any(
+                other != name and phrase in _normalized(row(other))
+                for other in names
+                for phrase in held
+                if phrase
             ):
                 return ["OPERAND_TOTAL_AND_PART"]
     return []
