@@ -53,7 +53,10 @@ class Calculation:
         if text and stated:
             decimals = _decimals(self.result)
             for match in _NUMBER_WITH_UNIT.finditer(text):
-                if _matches(float(match.group(1).replace(",", "")), stated[0], decimals):
+                written = match.group(1)
+                if _matches(float(written.replace(",", "")), stated[0], decimals) or _states(
+                    stated[0], written
+                ):
                     return f"{self.expression} = {match.group(0).strip()}"
         return f"{self.expression} = {self.result}"
 
@@ -119,6 +122,14 @@ def _decimals(text: str) -> int:
     return len(match.group().split(".")[1])
 
 
+def _states(result: float, written: str) -> bool:
+    """The answer's number states the result: equal at the result's own
+    precision, or the result rounded to the number's precision ("about 42%"
+    for 41.67)."""
+    number = float(written.replace(",", ""))
+    return number != 0 and round(result, _decimals(written)) == number
+
+
 def _matches(value: float, stated: float, decimals: int) -> bool:
     if round(value, decimals) == round(stated, decimals):
         return True
@@ -152,6 +163,10 @@ def verify_calculation(calculation: Calculation, support_texts: list[str], text:
     written = numbers_in(text)
     if stated[0] < 0 and _DECREASE.search(text):
         written += [-number for number in written]
-    if not any(_matches(stated[0], number, decimals) for number in written):
+    rounded = any(
+        _states(abs(stated[0]) if stated[0] < 0 and _DECREASE.search(text) else stated[0], literal)
+        for literal in _NUMBER.findall(text)
+    )
+    if not rounded and not any(_matches(stated[0], number, decimals) for number in written):
         return ["CALCULATION_RESULT_NOT_IN_ANSWER"]
     return []
