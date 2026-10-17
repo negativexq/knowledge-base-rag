@@ -72,3 +72,39 @@ def missing_question_dates(question: str, evidence_texts: list[str]) -> list[str
         if not _date_in(evidence, _MONTH_NUMBER[month_text.lower()], year):
             missing.append(label)
     return missing
+
+
+# A question may pick things out by color ("the yellow color", "with grey
+# background", "highlighted in yellow"). Parsed text carries no colors, so such
+# a question is answerable from the cited units only when they name the color;
+# an answer drawn from units that do not was matched on something else.
+_COLOR = (
+    r"red|orange|yellow|green|blue|purple|violet|pink|brown|black|white|gr[ae]y|cyan|"
+    r"magenta|teal|navy|maroon|beige"
+)
+# Things a color describes in a figure or a page.
+_COLORED = (
+    r"colou?r(?:ed)?|background|line|bar|box|font|text|highlight\w*|arrow|circle|area|"
+    r"region|shad\w*|marker|dot|node|block|border|cell|curve|label|icon|rectangle|square"
+)
+_COLOR_PREMISE = re.compile(
+    rf"\b(?i:({_COLOR}))\s+(?i:{_COLORED})s?\b"
+    rf"|\b(?i:in)\s+(?i:({_COLOR}))\b(?!\s+[A-Z])"
+    rf"|\b(?i:colou?r(?:ed)?)\s+(?i:({_COLOR}))\b"
+    rf"|\b(?i:({_COLOR}))-(?i:colou?red)\b"
+)
+
+
+def _named(color: str, texts: list[str]) -> bool:
+    pattern = r"\bgr[ae]y\b" if color in {"grey", "gray"} else rf"\b{color}\b"
+    return any(re.search(pattern, text, re.IGNORECASE) for text in texts)
+
+
+def unsupported_colors(question: str | None, support_texts: list[str]) -> list[str]:
+    """The colors the question picks things out by that no support text names."""
+    colors: list[str] = []
+    for match in _COLOR_PREMISE.finditer(question or ""):
+        color = next(group for group in match.groups() if group).casefold()
+        if color not in colors and not _named(color, support_texts):
+            colors.append(color)
+    return colors
