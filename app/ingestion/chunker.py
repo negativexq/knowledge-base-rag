@@ -16,6 +16,10 @@ DEFAULT_OVERLAP_TOKENS = 50  # 10% of DEFAULT_CHUNK_SIZE_TOKENS
 
 _SENTENCE_END_RE = re.compile(r'[.!?]["\')\]]?(?=\s|$)')
 _SENTENCE_BOUNDARY_LOOKAHEAD = 300
+# A chunk edge inside a table line ("Total assets | 2023: $ 15,803 | ...")
+# moves to the line's edge, so a row's label and values stay together; a line
+# longer than this (a whole OCR table on one line) is split like prose.
+TABLE_LINE_MAX_CHARS = 1000
 # Element-aware chunking: the paragraph or heading just before a table is
 # taken as its caption when it is at most this long.
 CAPTION_MAX_TOKENS = 64
@@ -59,6 +63,17 @@ def _extend_to_sentence_end(text: str, pos: int) -> int:
     if match:
         return match.end()
     return pos
+
+
+def _table_line(text: str, pos: int) -> tuple[int, int] | None:
+    """The span of the table line holding ``pos``, or None when that line is
+    not a table line or is longer than TABLE_LINE_MAX_CHARS."""
+    start = text.rfind("\n", 0, pos) + 1
+    end = text.find("\n", pos)
+    end = len(text) if end == -1 else end
+    if "|" not in text[start:end] or end - start > TABLE_LINE_MAX_CHARS:
+        return None
+    return start, end
 
 
 @dataclass(frozen=True)
@@ -188,6 +203,11 @@ def _chunk_page_text(
         end_char = words[j - 1].end()
         if j < len(words):
             end_char = _extend_to_sentence_end(page_text, end_char)
+        # Never start or end inside a table row.
+        if (line := _table_line(page_text, start_char)) is not None:
+            start_char = line[0]
+        if j < len(words) and (line := _table_line(page_text, end_char - 1)) is not None:
+            end_char = max(end_char, line[1])
 
         text = page_text[start_char:end_char].strip()
         if text:

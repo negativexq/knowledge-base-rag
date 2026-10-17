@@ -43,7 +43,7 @@ class PipelineFingerprint:
     target_tokens: int = 500
     overlap_tokens: int = 50
     hard_max_tokens: int | None = None
-    boundary_strategy: str = "legacy_word_sentence_heading_page_v1"
+    boundary_strategy: str = "word_sentence_table_row_heading_page_v2"
     # PDF text extraction changes chunk text without changing point
     # identity, so a new parser version re-indexes PDFs through the normal
     # fingerprint mismatch path instead of an index schema bump (which
