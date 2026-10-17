@@ -5206,3 +5206,13 @@ shown position is now resolved like a named page, so a printed number of a shown
 page is kept.
 
 `make test`: 1689 passed, 4 skipped.
+
+## Measure — luna 637 after the printed page number fix (closing note)
+
+`luna-visual-637` (1 row, after PR #70): the reading named page 6985 and it now
+resolves to the shown 5th page, so the reading is kept ("1", the gold). The
+independent check then rejected it (`"supported": false`), so the row stays
+abstained, like 634. The check is left as strict as it is: it is what refused the
+wrong readings on the unanswerable controls. The visual path work stops here.
+
+No code change; `make test` unchanged at 1689 passed, 4 skipped.
