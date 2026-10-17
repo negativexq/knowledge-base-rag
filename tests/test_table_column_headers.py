@@ -65,3 +65,36 @@ def test_a_header_printed_above_the_table_names_its_columns(tmp_path):
     text = "\n".join(p.text for p in extract_paragraphs(_statement_pdf(tmp_path)))
 
     assert "Total assets | August 29, 2021: 59,268 | August 30, 2020: 55,556" in text
+
+
+# Costco debt note: the "2021 | 2020" line above the ruled area came back
+# merged with the first data row ("2021 800", "2020 $ 800"), and most values sit
+# in the unnamed column left of the year ("1,000 | | 2021"), with only "$" rows
+# putting theirs under it. The row's text is taken out of the header names, and
+# an unnamed column whose right neighbour is named and is filled only after a
+# lone sign takes that neighbour's name.
+
+from app.parsing.pdf_parser import _external_header_names  # noqa: E402
+
+FIRST = ["2.300% Senior Notes due May 2022", "$", "800", "", "$", "800"]
+
+
+def test_the_first_rows_text_is_taken_out_of_a_merged_header():
+    names = ["2.300% Senior Notes due May 2022", "$", "2021 800", "", "$", "2020 $ 800"]
+
+    assert _external_header_names(names, FIRST) == ["", "", "2021", "", "", "2020"]
+
+
+def test_values_left_of_their_year_join_it():
+    rows = [
+        ["", "", "2021", "", "", "2020"],
+        FIRST,
+        ["2.750% Senior Notes due May 2024", "1,000", "", "", "1,000", ""],
+        ["Long-term debt, excluding current portion", "$", "6,692", "", "$", "7,514"],
+    ]
+
+    assert _table_text(rows).splitlines()[1:] == [
+        "2.300% Senior Notes due May 2022 | 2021: $ 800 | 2020: $ 800",
+        "2.750% Senior Notes due May 2024 | 2021: 1,000 | 2020: 1,000",
+        "Long-term debt, excluding current portion | 2021: $ 6,692 | 2020: $ 7,514",
+    ]
