@@ -5460,3 +5460,13 @@ strict. On the saved output, 1018's plan now parses ("(a + b + c) / (d + e)",
 the lease liabilities left to the search).
 
 `make test`: 1729 passed, 4 skipped.
+
+## Measurement — 1018 after the resolver parse fix (closing note)
+
+`luna-v2-json-row`, gpt-6-luna, one run: 1018 answers 1.344 (gold 1.344),
+(6,692 + 799 + 3,916) / (6,708 + 1,781), with the printed "Total lease
+liabilities" found by the resolver's one search. Across the V2 audit work,
+1017, 1018, 206, 216 and 399 moved from refused to correct on their measuring
+runs, and 1020, 1023 and 1025 are scored correct by the scale-aware match.
+
+`make test`: 1729 passed, 4 skipped.
