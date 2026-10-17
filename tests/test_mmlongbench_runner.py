@@ -87,12 +87,20 @@ def test_a_result_keeps_the_model_output_and_the_validator_trace():
         "raw_model_output": '{"answer_parts": []}',
         "critical_validator": {"status": "DIRECT_CONFLICT"},
         "cited_units": [{"support_unit_id": "E1.S1", "raw_support_text": "16%"}],
+        "operand_resolver": None,
     }
     assert runner.validation_trace({}) == {
         "raw_model_output": None,
         "critical_validator": None,
         "cited_units": None,
+        "operand_resolver": None,
     }
+
+
+def test_a_result_keeps_the_operand_resolver_trace():
+    resolver = {"raw_outputs": ["{}"], "operand_codes": {"a": []}, "resolved": True}
+
+    assert runner.validation_trace({"operand_resolver": resolver})["operand_resolver"] == resolver
 
 
 def test_rows_can_be_rerun_on_their_own():
