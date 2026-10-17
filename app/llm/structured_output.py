@@ -24,7 +24,7 @@ from app.evidence.support_units import (
     support_unit_map,
 )
 from app.llm.calculation import Calculation, calculation_result, verify_calculation
-from app.llm.counting import Count, verify_count
+from app.llm.counting import Count, unit_count_facts, verify_count
 from app.llm.dates import ISO_DATE, iso_date_facts
 from app.llm.observability import GenerationObservation
 from app.llm.operand_resolver import ResolverTrace, Retrieve, render_part_text, resolve_operands
@@ -809,6 +809,9 @@ def validate_support_unit_answer(
             if not count_codes:
                 count_facts.append(count.fact())
                 counted.add(count.result)
+                count_facts.extend(
+                    unit_count_facts(count, [unit.text for unit in selected if unit is not None])
+                )
         # A verified count is evidence for its number, also as an operand.
         support_texts = [*support_texts, *count_facts]
         if ISO_DATE.search(part.text):
