@@ -5063,3 +5063,25 @@ whether it resolved), so a resolver run can be diagnosed from its results withou
 asking the model again.
 
 `make test`: 1662 passed, 4 skipped.
+
+## Measure and fix — operand resolver on 17 rows (closing note)
+
+`luna-resolver-rows` (16 withheld targets and the unanswerable 367 as a control):
+the resolver answered 1079 correctly; 1015, 1021 and 1024 were answered by the
+first pass this time; 367 stayed refused. Its trace shows two blocks:
+
+- Labels: a 10-K table row prints no column header ("ASSETS: Long-term debt,
+  excluding current portion | 6,692 | 7,514"); the year is in the table's header,
+  elsewhere in the same chunk. Every operand labelled with "2021" failed to bind
+  (1018, 1020, 1023, 380). At least one label must now be in the operand's unit,
+  the others in the unit or its evidence block.
+- Program null: for named ratios (1072–1075, 1084) and for 727, whose values it had
+  not found, the model returned no program. The resolver instructions (its own
+  path only) now say a named ratio is computed from its standard definition and the
+  program is written even when operand values are missing.
+
+The real fix for detached headers is in parsing: write each cell with its column
+header ("2021: 6,692"), as some tables already are; it would also bind survey cells
+(227). Left for later.
+
+`make test`: 1664 passed, 4 skipped.

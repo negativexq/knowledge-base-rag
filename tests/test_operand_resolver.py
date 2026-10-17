@@ -331,3 +331,49 @@ async def test_a_question_that_asks_no_calculation_keeps_its_abstention():
     answer, validation = await _run(_Provider(ABSTAIN, none), operand_resolver=True)
 
     assert validation["abstain"] is True
+
+
+# luna resolver rows: a 10-K table row prints no column header
+# ("Long-term debt, excluding current portion | 6,692 | 7,514"); the year is in
+# the table's header row, elsewhere in the same block. At least one label must
+# be in the operand's unit, the others may be in its block. 1072-1075 and 1084
+# returned program null for named ratios, 727 for a difference whose values it
+# had not found.
+
+TABLE_BLOCK = (
+    "Table: CONSOLIDATED BALANCE SHEETS | 2021 | 2020\n\n"
+    "ASSETS: Long-term debt, excluding current portion | 6,692 | 7,514\n\n"
+    "ASSETS: TOTAL LIABILITIES | 41,190 | 36,851"
+)
+
+
+def test_a_column_label_may_be_in_the_operands_block():
+    from app.llm.operand_resolver import block_texts
+
+    units = _units(TABLE_BLOCK)
+    available = {unit.support_unit_id: unit for unit in units}
+    row = next(u for u in units if "Long-term debt" in u.text)
+    op = _operand(
+        "a", "6,692", ["Long-term debt, excluding current portion", "2021"], row.support_unit_id
+    )
+
+    assert bind_operand(op, available) == ["OPERAND_LABEL_NOT_IN_UNIT"]
+    assert bind_operand(op, available, block_texts(units)) == []
+    # A label found nowhere, or labels only in the block, still fail.
+    assert bind_operand(
+        _operand("a", "6,692", ["Total equity", "2021"], row.support_unit_id),
+        available,
+        block_texts(units),
+    ) == ["OPERAND_LABEL_NOT_IN_UNIT"]
+    assert bind_operand(
+        _operand("a", "6,692", ["2021", "2020"], row.support_unit_id),
+        available,
+        block_texts(units),
+    ) == ["OPERAND_LABEL_NOT_IN_UNIT"]
+
+
+def test_the_instructions_ask_for_named_ratios_and_programs_with_missing_values():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "standard definition" in RESOLVER_INSTRUCTIONS
+    assert "even when some operand values are missing" in RESOLVER_INSTRUCTIONS

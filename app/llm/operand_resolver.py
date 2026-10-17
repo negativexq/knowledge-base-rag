@@ -39,8 +39,10 @@ The question may ask for a number computed from figures the evidence units print
 program over named operands and return
 {"program": ..., "operands": [...], "result_label": ..., "percent": ..., "decimals": ...}.
 - "program": an expression over the operand names with + - * / and parentheses
-  (and 100, for a percentage), e.g. "(a - b) / b * 100". null when the question
-  does not ask for such a calculation.
+  (and 100, for a percentage), e.g. "(a - b) / b * 100". A named ratio or
+  measure (a return, a coverage ratio, EBITDA) is computed from its
+  standard definition. Write the program even when some operand values are missing.
+  null only when the question does not ask for a computed number.
 - Each operand: "name" (a, b, c, ...); "what": the figure in the question's
   words; "value": the figure exactly as one unit prints it, or null;
   "support_id": that unit, or null; "labels": the row and column labels printed
@@ -170,9 +172,23 @@ def _normalized(text: str) -> str:
     return " ".join(text.casefold().split())
 
 
-def bind_operand(operand: Operand, available: dict[str, SupportUnit]) -> list[str]:
+def block_texts(units: list[SupportUnit]) -> dict[str, str]:
+    """Each evidence block's text, from its units: a table's header row is a
+    unit of the block its rows belong to."""
+    texts: dict[str, list[str]] = {}
+    for unit in units:
+        texts.setdefault(unit.parent_evidence_block_id, []).append(unit.text)
+    return {block: "\n".join(parts) for block, parts in texts.items()}
+
+
+def bind_operand(
+    operand: Operand,
+    available: dict[str, SupportUnit],
+    blocks: dict[str, str] | None = None,
+) -> list[str]:
     """Failure codes for one operand; empty when its unit prints the value and
-    every label."""
+    a label, and every other label is in the unit or its block (a table row
+    prints no column header; the header row is elsewhere in the block)."""
     if operand.value is None or operand.support_id is None:
         return ["OPERAND_MISSING"]
     unit = available.get(operand.support_id)
@@ -186,7 +202,11 @@ def bind_operand(operand: Operand, available: dict[str, SupportUnit]) -> list[st
     if not operand.labels:
         return ["OPERAND_LABELS_MISSING"]
     unit_text = _normalized(unit.text)
-    if any(_normalized(label) not in unit_text for label in operand.labels):
+    block_text = _normalized((blocks or {}).get(unit.parent_evidence_block_id, unit.text))
+    labels = [_normalized(label) for label in operand.labels]
+    if not any(label in unit_text for label in labels) or any(
+        label not in unit_text and label not in block_text for label in labels
+    ):
         return ["OPERAND_LABEL_NOT_IN_UNIT"]
     return []
 
@@ -274,9 +294,10 @@ async def _plan(
 
 def _bind_all(plan: OperandPlan, units: list[SupportUnit], trace: ResolverTrace) -> list[Operand]:
     available = support_unit_map(units)
+    blocks = block_texts(units)
     missing = []
     for operand in plan.operands:
-        codes = bind_operand(operand, available)
+        codes = bind_operand(operand, available, blocks)
         trace.operand_codes[operand.name] = codes
         if codes:
             missing.append(operand)
