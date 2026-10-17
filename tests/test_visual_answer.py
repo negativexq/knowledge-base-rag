@@ -29,6 +29,8 @@ def test_questions_that_refer_to_something_visual():
         "In the chart on page 9, which group is largest?",
         "What color is the logo?",
         "How many pictures are on the cover?",
+        "What are the words written in the first rectangle on the top of page two?",
+        "What are the top two texts of the red words in the document?",
     ):
         assert asks_visual(question), question
     for question in (

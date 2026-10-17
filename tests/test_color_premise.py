@@ -29,6 +29,7 @@ def test_color_phrasings_and_grey_spellings():
     assert unsupported_colors("Which lines are highlighted in yellow?", ["text"]) == ["yellow"]
     assert unsupported_colors("What is written in the Orange box?", ["Start"]) == ["orange"]
     assert unsupported_colors("When does the red bar start?", ["09:00"]) == ["red"]
+    assert unsupported_colors("Which are the red words?", ["LONG, HEALTHY"]) == ["red"]
 
 
 def test_color_words_that_are_not_colors_are_ignored():

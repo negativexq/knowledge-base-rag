@@ -85,7 +85,8 @@ _COLOR = (
 # Things a color describes in a figure or a page.
 _COLORED = (
     r"colou?r(?:ed)?|background|line|bar|box|font|text|highlight\w*|arrow|circle|area|"
-    r"region|shad\w*|marker|dot|node|block|border|cell|curve|label|icon|rectangle|square"
+    r"region|shad\w*|marker|dot|node|block|border|cell|curve|label|icon|rectangle|square|"
+    r"word|letter|shape|frame"
 )
 _COLOR_PREMISE = re.compile(
     rf"\b(?i:({_COLOR}))\s+(?i:{_COLORED})s?\b"

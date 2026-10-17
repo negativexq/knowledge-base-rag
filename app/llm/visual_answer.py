@@ -34,7 +34,8 @@ RENDER_DPI = 110
 _VISUAL_CUE = re.compile(
     r"\b(?:figures?|fig\.|charts?|graphs?|diagrams?|pictures?|photos?|photographs?|images?|"
     r"icons?|logos?|maps?|illustrations?|screenshots?|colou?rs?|colou?red|highlighted|"
-    r"drawn|shown\s+in\s+the|boxe?s?|arrows?|circled|shaded)\b",
+    r"drawn|shown\s+in\s+the|boxe?s?|arrows?|circled|shaded|rectangles?|squares?|"
+    r"shapes?|frames?)\b",
     re.IGNORECASE,
 )
 
