@@ -37,6 +37,7 @@ from app.llm.premise import (
 )
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
+from app.llm.visual_answer import PageRenderer, VisualAnswer, answer_from_pages, asks_visual
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer, mark_llm_generation
@@ -1265,6 +1266,8 @@ async def stream_support_unit_answer(
     derived_answers: bool = False,
     operand_resolver: bool = False,
     retrieve: Retrieve | None = None,
+    visual_answers: bool = False,
+    render_page: PageRenderer | None = None,
 ):
     """Generate an answer whose citations are request-scoped support IDs.
 
@@ -1276,6 +1279,11 @@ async def stream_support_unit_answer(
     computed figure gets one more try (app/llm/operand_resolver.py): operands
     bound to their units, missing ones searched once with ``retrieve``, the
     result computed by code and validated like any answer part.
+
+    With ``visual_answers``, a withheld answer to a question about something
+    visual is read from the top pages' images (``render_page``) and confirmed
+    by a second call (app/llm/visual_answer.py); it is marked as read from a
+    page image, never as text-validated.
 
     With ``count_tokens``, the prompt is fitted to the context window first:
     prompt plus SUPPORT_ID_MAX_OUTPUT_TOKENS must not exceed ``num_ctx``, so
@@ -1316,6 +1324,8 @@ async def stream_support_unit_answer(
             derived_answers=derived_answers,
             operand_resolver=operand_resolver,
             retrieve=retrieve,
+            visual_answers=visual_answers,
+            render_page=render_page,
         ):
             for name, value in telemetry.items():
                 if value is not None:
@@ -1357,6 +1367,8 @@ async def _support_unit_answer_events(
     derived_answers: bool = False,
     operand_resolver: bool = False,
     retrieve: Retrieve | None = None,
+    visual_answers: bool = False,
+    render_page: PageRenderer | None = None,
 ):
     telemetry = telemetry if telemetry is not None else {}
     instructions = SUPPORT_ID_OUTPUT_INSTRUCTIONS
@@ -1538,6 +1550,28 @@ async def _support_unit_answer_events(
                     ),
                     "prompt_fit": prompt_fit,
                 }
+    visual: VisualAnswer | None = None
+    if (
+        visual_answers
+        and render_page is not None
+        and getattr(provider, "supports_images", False)
+        and (validation.model_abstain or validation.application_abstain)
+        and not (missing_years or missing_dates)
+        and asks_visual(query)
+    ):
+        visual_trace: dict[str, Any] = {}
+        visual = await answer_from_pages(
+            query,
+            units,
+            provider,
+            render_page,
+            generation_kwargs={k: v for k, v in generation_kwargs.items() if k != "schema"},
+            trace=visual_trace,
+        )
+        if capture is not None:
+            if not capture.raw_text:
+                visual_trace = {"pages": visual_trace.get("pages", [])}
+            capture.stage("visual_answer", {**visual_trace, "answered": visual is not None})
     final_abstain = validation.model_abstain or validation.application_abstain
     telemetry = validation.validator_telemetry
     if capture is not None:
@@ -1660,12 +1694,35 @@ async def _support_unit_answer_events(
             for part in validation.valid_parts
         ]
         evaluation_observation.rejected_answer_parts = validation.rejected_parts
+    if visual is not None:
+        # Read from a page image and confirmed by a second call; not
+        # text-validated, and marked so in the answer and the event.
+        yield {"type": "token", "content": visual.rendered()}
+        yield {
+            "type": "security_validation",
+            "passed": True,
+            "violations": [],
+            "validator_failure_codes": [],
+            "citation_suppressed": False,
+            "hidden_prompt_leaked": False,
+            "abstain": False,
+            "application_forced_abstention": False,
+            "visual_answer": True,
+            "visual_page": {"source_id": visual.source_id, "page": visual.page},
+            "generation": {
+                "done_reason": done_reason,
+                "prompt_tokens": observation.get("prompt_tokens"),
+                "output_tokens": observation.get("output_tokens"),
+            },
+        }
+        return
     if user_visible:
         yield {"type": "token", "content": rendered}
     else:
         yield {"type": "token", "content": UNVERIFIED_ANSWER_PHRASE}
     yield {
         "type": "security_validation",
+        "visual_answer": False,
         "passed": user_visible,
         "violations": list(validation.failure_codes),
         "validator_failure_codes": list(validation.failure_codes),

@@ -84,6 +84,10 @@ class Settings(BaseSettings):
     # try, with operands bound to their units and missing ones searched once
     # (app/llm/operand_resolver.py). Needs derived answers; off by default.
     operand_resolver_enabled: bool = False
+    # Visual answers: a withheld answer to a question about something visual is
+    # read from the top pages' images and confirmed by a second call
+    # (app/llm/visual_answer.py). Needs an image-capable provider; off by default.
+    visual_answers_enabled: bool = False
 
     # Explicit local/debug forensic capture.  Both switches are required for
     # raw text; normal production telemetry remains bounded and unaffected.

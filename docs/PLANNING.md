@@ -5131,3 +5131,22 @@ unchanged apart from losing the "ASSETS:" prefix the merged header gave every ro
 `PDF_PARSER_VERSION` is `pymupdf_elements_v9`.
 
 `make test`: 1671 passed, 4 skipped.
+
+## Feature — visual answers read from page images (closing note)
+
+Last step of the evidence-driven plan. Parsed text carries no colors, figures or
+layout; 10 answerable luna questions about them were abstained. With
+`VISUAL_ANSWERS_ENABLED=true`, an image-capable provider (`supports_images`: the
+OpenAI client) and a withheld text answer to a question that refers to something
+visual (figure, chart, picture, color, highlighted, box...), the distinct pages of
+the top units' document (at most 3, only units the caller may see) are rendered
+(PyMuPDF, 110 dpi) and read by the model (`app/llm/visual_answer.py`). A second,
+independent call is shown the same pages, the question and only the candidate
+answer, and must confirm it; a page that was not shown, an abstention or a refusal
+leaves the abstention. The answer is marked "[page N, read from the page image]"
+and its event carries `visual_answer: true`: it is not text-validated and does not
+claim to be. Pages are found by source_id under `FILESYSTEM_ROOT_PATH`; the
+benchmark runner points it at the manifest's PDFs. Re-indexed with parser v9 (13
+PDFs, 719 chunks). Not measured yet.
+
+`make test`: 1682 passed, 4 skipped.
