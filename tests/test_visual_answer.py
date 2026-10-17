@@ -109,8 +109,8 @@ READ = {
     "observation": "An orange box reads 'Start new search'.",
     "abstain": False,
 }
-YES = {"supported": True}
-NO = {"supported": False}
+YES = {"shown_on_page": True, "meets_question": True, "reason": "The orange box reads it."}
+NO = {"shown_on_page": False, "meets_question": True, "reason": "No orange box on page 17."}
 
 
 async def _run(
@@ -143,9 +143,45 @@ async def test_a_withheld_visual_question_is_read_from_the_page_and_checked():
     assert validation["abstain"] is False and validation["visual_answer"] is True
     assert answer == "Start new search [page 17, read from the page image]"
     assert len(provider.calls) == 3
-    # The check sees the candidate, not the first call's reasoning.
-    assert "Start new search" in json.dumps(provider.calls[2])
-    assert "observation" not in json.dumps(provider.calls[2])
+    # The check verifies the reading's claim: its answer, page and observation.
+    check = json.dumps(provider.calls[2])
+    assert "Start new search" in check
+    assert "CLAIMED PAGE: 17" in check
+    assert "An orange box reads" in check
+
+
+# luna-v3-visual-rows: the check saw only the bare answer ("0.0", "1") and
+# refused right readings of 661 and 637, whose observations named the page
+# and what on it gives the answer; it confirmed 636's "Four" prompt templates
+# from the appendix, though the question asks about the main body. It now
+# checks the claim on its page and, separately, every condition the question
+# sets, and says why.
+
+
+@pytest.mark.asyncio
+async def test_a_reading_that_misses_a_condition_of_the_question_is_refused():
+    off_scope = {
+        "shown_on_page": True,
+        "meets_question": False,
+        "reason": "The four templates are in the appendix, not the main body.",
+    }
+    provider = _Provider(READ, off_scope)
+    trace = {}
+    from app.llm.visual_answer import answer_from_pages
+
+    units = build_support_units(_blocks(("doc", 17)))
+    visual = await answer_from_pages(
+        "How many prompt examples are shown in the paper's main body?",
+        units,
+        provider,
+        lambda source, page: b"PNG",
+        generation_kwargs={},
+        trace=trace,
+    )
+
+    assert visual is None
+    assert "appendix" in trace["check"]
+    assert "every condition" in " ".join(provider.calls[1][0]["content"].split())
 
 
 @pytest.mark.asyncio
