@@ -129,3 +129,33 @@ def test_a_count_answer_is_scored_by_its_count():
         "10",
         "Int",
     )
+
+
+def test_a_calculation_beside_a_verified_count_of_its_result_is_not_needed():
+    # luna 835: 10 counted outcomes verified, but the model also wrote "3 + 7",
+    # whose operands are not printed; the count already establishes the number.
+    items = ["San Fernando Valley (West)", "Burbank", "East Los Angeles"]
+
+    _, validation = _validate(
+        "3 geographic market names are listed.",
+        counts=[{"items": items}],
+        calculation={"expression": "1 + 2", "result": "3"},
+    )
+
+    assert validation.failure_codes == []
+    assert validation.validator_telemetry["redundant_calculations"] == 1
+
+
+def test_a_calculation_of_another_number_is_still_checked():
+    _, validation = _validate(
+        "3 geographic market names are listed, 9 in all.",
+        counts=[{"items": ["San Fernando Valley (West)", "Burbank", "East Los Angeles"]}],
+        calculation={"expression": "4 + 5", "result": "9"},
+    )
+
+    assert "CALCULATION_OPERAND_UNSUPPORTED" in validation.failure_codes
+
+
+def test_the_prompt_says_counted_operands_come_with_their_counts():
+    # luna 399: "4 + 3" over two listed groups, with "counts": null.
+    assert "every number you counted" in DERIVED_ANSWER_INSTRUCTIONS
