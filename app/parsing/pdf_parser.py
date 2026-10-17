@@ -15,7 +15,7 @@ TEXT_BLOCK_TYPE = 0
 # Recorded in the ingestion pipeline fingerprint (app/ingestion/fingerprint.py)
 # through pdf_parser_version(); bump it whenever extraction output changes so
 # existing PDFs are re-indexed.
-PDF_PARSER_VERSION = "pymupdf_elements_v7"
+PDF_PARSER_VERSION = "pymupdf_elements_v8"
 # Tesseract languages for scanned pages (installed in the backend image as
 # tesseract-ocr-tur / tesseract-ocr-eng) and the render resolution; 300 dpi
 # is Tesseract's recommended input resolution.
@@ -635,7 +635,7 @@ def extract_elements(pdf_path: str, report: ParseReport | None = None) -> list[D
             tables = [
                 _Item(tuple(table.bbox), text, kind="table", rows=tuple(map(tuple, rows)))
                 for table in page.find_tables().tables
-                if (text := _table_text(rows := _clean_rows(table.extract())))
+                if (text := _table_text(rows := _clean_rows(_with_external_header(table))))
             ]
             items = tables + _outside_tables(
                 _page_items(page, pdf_path, page_number, report), tables
@@ -728,25 +728,70 @@ def _clean_rows(rows: list[list[object]]) -> list[list[str]]:
     return [row for row in cleaned if any(row)]
 
 
+# A cell holding only a currency or percent sign: its value is printed in the
+# next column, which has no header of its own ("$ | 11,258").
+_SYMBOL_CELL = re.compile(r"^(?:[$€£¥₺%]|Rs\.?)$")
+
+
+def _spilled_headers(rows: list[list[str]]) -> list[str]:
+    """The header row with each unnamed column that holds the values spilled
+    from a symbol column to its left named like that column. Column 0 (the
+    row labels) never names another."""
+    header = list(rows[0])
+    for c in range(2, len(header)):
+        left = c - 1
+        if header[c] or not header[left]:
+            continue
+        spilled = [row for row in rows[1:] if row[c]]
+        if spilled and all(not row[left] or _SYMBOL_CELL.match(row[left]) for row in spilled):
+            header[c] = header[left]
+    return header
+
+
 def _table_text(rows: list[list[str]]) -> str:
     """One line naming the columns, then one line per data row that repeats
     each column header next to its value ("Plan: Free | Storage: 15GB"), so
     any single row still carries its meaning after chunking. The first row
     is taken as the header. A column with no header keeps its bare value
-    rather than a made-up name; empty cells and empty columns are left out."""
+    rather than a made-up name, except a value printed after a lone currency
+    sign, which joins the sign under its header ("2021: $ 11,258"); empty
+    cells and empty columns are left out."""
     if not rows:
         return ""
     width = max(len(row) for row in rows)
     rows = [row + [""] * (width - len(row)) for row in rows]
     used = [c for c in range(width) if any(row[c] for row in rows)]
     rows = [[row[c] for c in used] for row in rows]
-    header = rows[0]
-    lines = [re.sub(r"\|\s+(?=\|)", "| ", "Table: " + " | ".join(header)).rstrip()]
+    header = _spilled_headers(rows)
+    # Adjacent columns sharing a header are one column: a sign and its value.
+    groups: list[list[int]] = []
+    for c, name in enumerate(header):
+        if groups and name and header[groups[-1][0]] == name:
+            groups[-1].append(c)
+        else:
+            groups.append([c])
+    names = [header[group[0]] for group in groups]
+    lines = [re.sub(r"\|\s+(?=\|)", "| ", "Table: " + " | ".join(names)).rstrip()]
     for row in rows[1:]:
-        cells = [f"{name}: {value}" if name else value for name, value in zip(header, row) if value]
+        cells = []
+        for group, name in zip(groups, names):
+            value = " ".join(row[c] for c in group if row[c])
+            if value:
+                cells.append(f"{name}: {value}" if name else value)
         if cells:
             lines.append(" | ".join(cells))
     return "\n".join(lines)
+
+
+def _with_external_header(table) -> list[list[object]]:
+    """The table's rows, headed by the header PyMuPDF found above its ruled
+    area when the first row inside it is not the header (statements print
+    their dates above the table)."""
+    rows = table.extract()
+    header = table.header
+    if header.external and any(name for name in header.names[1:]):
+        return [list(header.names), *rows]
+    return rows
 
 
 def _words(text: str) -> set[str]:
