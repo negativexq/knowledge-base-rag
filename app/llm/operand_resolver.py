@@ -45,7 +45,9 @@ program over named operands and return
   standard definition. Write the program even when some operand values are missing.
   null only when the question does not ask for a computed number.
 - Each operand: "name" (a, b, c, ...); "what": the figure in the question's
-  words; "value": the figure exactly as one unit prints it, or null;
+  words; "value": one figure exactly as one unit prints it, or null (a
+  total of several printed figures is one operand per figure in the program,
+  never a value like "72 + 980");
   "support_id": that unit, or null; "labels": the row and column labels printed
   next to the value in that unit, copied exactly (the line item, the year);
   "search": when "value" is null, a short search query for the figure, else null.

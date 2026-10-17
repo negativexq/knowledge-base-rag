@@ -488,3 +488,21 @@ def test_the_instructions_ask_for_counts_from_shares_of_a_sample():
     from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
 
     assert "sample size" in RESOLVER_INSTRUCTIONS
+
+
+# luna V2 rows 1017, 1018: a sum of lease liabilities was put in one operand
+# ("value": "72 + 980"), which cannot bind to one printed figure.
+
+
+def test_the_instructions_ask_for_one_figure_per_operand():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "one operand per figure" in RESOLVER_INSTRUCTIONS
+
+
+def test_an_operand_holding_a_sum_does_not_bind():
+    units = _units(BALANCE)
+    available = {unit.support_unit_id: unit for unit in units}
+    op = _operand("e", "29,441 + 41,190", ["Total current liabilities", "2021"])
+
+    assert bind_operand(op, available) == ["OPERAND_VALUE_NOT_A_NUMBER"]
