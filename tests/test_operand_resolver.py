@@ -378,3 +378,113 @@ def test_the_instructions_ask_for_named_ratios_and_programs_with_missing_values(
 
     assert "standard definition" in RESOLVER_INSTRUCTIONS
     assert "even when some operand values are missing" in RESOLVER_INSTRUCTIONS
+
+
+# luna V2 rows 206, 216, 219, 225: a survey report prints the share of a group
+# ("36% rate them as poor") and, in its methodology, the group's sample size
+# ("Total sample | 1,503"); "how many adults" is the share times the size.
+# The first answers stated the percentage and the type check blocked them;
+# the resolver returned program null.
+
+SURVEY_QUESTION = (
+    "Among the adults conducted the survey on April 25 - May 1 2018, how many adults "
+    "rated Trump's government ethical standards as poor?"
+)
+ETHICS = "Ratings of the ethical standards of top Trump administration officials: 36% poor."
+SAMPLE = (
+    "Table: Group | Unweighted sample size | Plus or minus\n"
+    "Survey conducted April 25-May 1, 2018\n"
+    "Total sample | 1,503 | 2.9 percentage points\n"
+    "Dem/Lean Dem | 710 | 4.3 percentage points"
+)
+
+
+def _share_plan(percent=False, decimals=None, program="a / 100 * b"):
+    return {
+        "program": program,
+        "operands": [
+            _op("a", "36%", "E1.S1", ["poor"]),
+            _op("b", "1,503", "E2.S1", ["Total sample"]),
+        ],
+        "result_label": "Adults who rated the ethical standards as poor",
+        "percent": percent,
+        "decimals": decimals,
+    }
+
+
+async def _resolve(question, plan):
+    return await resolve_operands(
+        question,
+        _units(ETHICS, SAMPLE),
+        _Provider(plan),
+        generation_kwargs={"model": "m"},
+        prompt_version="v3",
+        context_serializer=None,
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_count_from_a_share_of_a_sample_is_a_whole_number():
+    plan, calculation, _, trace = await _resolve(SURVEY_QUESTION, _share_plan())
+
+    assert calculation is not None
+    assert (calculation.expression, calculation.result) == ("36 / 100 * 1503", "541")
+
+
+@pytest.mark.asyncio
+async def test_a_count_question_is_not_answered_with_a_percentage():
+    plan, calculation, _, trace = await _resolve(
+        SURVEY_QUESTION, _share_plan(percent=True, program="a")
+    )
+
+    assert calculation is None
+    assert trace.plan_codes == ["PERCENT_PLAN_FOR_COUNT_QUESTION"]
+
+
+@pytest.mark.asyncio
+async def test_how_many_times_keeps_the_default_decimals():
+    plan, calculation, _, trace = await _resolve(
+        "How many times the share rating poor is the total sample?",
+        _share_plan(program="b / a"),
+    )
+
+    assert calculation is not None and calculation.result == "41.75"
+
+
+@pytest.mark.asyncio
+async def test_a_blocked_percentage_for_a_count_is_resolved_from_the_sample_size():
+    from app.llm.structured_output import stream_support_unit_answer
+
+    first = {
+        "answer_parts": [
+            {
+                "text": "36% of adults rated the ethical standards as poor.",
+                "support_ids": ["E1.S1"],
+                "calculation": None,
+                "counts": None,
+            }
+        ],
+        "abstain": False,
+    }
+    events = [
+        event
+        async for event in stream_support_unit_answer(
+            SURVEY_QUESTION,
+            _blocks(ETHICS, SAMPLE),
+            _Provider(first, _share_plan()),
+            model="m",
+            derived_answers=True,
+            operand_resolver=True,
+        )
+    ]
+    answer = "".join(event["content"] for event in events if event["type"] == "token")
+    validation = next(event for event in events if event["type"] == "security_validation")
+
+    assert validation["passed"] is True and validation["abstain"] is False
+    assert "(calculation: 36 / 100 * 1503 = 541)" in answer
+
+
+def test_the_instructions_ask_for_counts_from_shares_of_a_sample():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "sample size" in RESOLVER_INSTRUCTIONS

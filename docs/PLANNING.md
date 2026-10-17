@@ -5320,3 +5320,24 @@ reverted before). Offline, every saved answer with counts in `luna-full-v2`
 change: only 399 changes, from blocked to passed (gold 7).
 
 `make test`: 1707 passed, 4 skipped.
+
+## Fix — a count of people from a share of a sample (closing note)
+
+V2 audit, 206, 216, 219, 225: "how many adults rated ... as poor" in a Pew
+survey report. The report prints only the share ("36% poor") and, in its
+methodology or table rows, the group's unweighted sample size ("Total sample
+1,503", "Dem/Lean Dem 710", "(n=1,526)"); the gold is their product (36% of
+1,503 = 541; V2's 4087 and 1251 are 68% of 6,010 and 82% of 1,526). The first
+answers stated the percentage and the type check blocked them; the resolver
+returned program null (206, 216, 225) or added two percentages (219). The
+resolver instructions now name the share-times-sample-size program, with shares
+of the same group added before multiplying. In code, a resolver plan whose
+result is a percentage is refused for a question that asks how many
+(`PERCENT_PLAN_FOR_COUNT_QUESTION`), and such a question's result is a whole
+number unless it asks for decimals ("how many times" stays a ratio). Offline,
+no saved resolver answer changes: on the saved runs the resolver answered no
+count question. 227 ("the gap of 65+ people", gold 301 = 56 points of n=537)
+was answered with the percentage gap, so the resolver never runs for it; it
+stays wrong. The prompt change is unmeasured until a paid run.
+
+`make test`: 1712 passed, 4 skipped.
