@@ -28,6 +28,7 @@ from app.llm.provider import (
 )
 from app.llm.query_rewrite import ChatTurn, RewriteResult, rewrite_query
 from app.llm.structured_output import stream_evidence_backed_answer, stream_support_unit_answer
+from app.llm.visual_answer import pdf_page_renderer
 from app.main import create_app
 from app.migration.aliasing import resolve_active_collection_name
 from app.migration.readiness import check_readiness
@@ -208,6 +209,8 @@ def build_chat_dependencies(
             num_ctx=default_context_tokens(settings),
         )
 
+    page_renderer = pdf_page_renderer(settings.filesystem_root_path)
+
     async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None):
         if settings.support_ids_enabled:
             async for event in stream_support_unit_answer(
@@ -226,6 +229,8 @@ def build_chat_dependencies(
                 operand_resolver=settings.derived_answers_enabled
                 and settings.operand_resolver_enabled,
                 retrieve=retrieve,
+                visual_answers=settings.visual_answers_enabled,
+                render_page=page_renderer,
             ):
                 yield event
             return

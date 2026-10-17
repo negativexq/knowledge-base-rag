@@ -469,6 +469,10 @@ async def run_questions(
 
     client = QdrantClient(url=settings.qdrant_url)
     ollama = OllamaClient(base_url=settings.ollama_base_url)
+    # Page images for visual answers come from the manifest's own PDFs.
+    settings = settings.model_copy(
+        update={"filesystem_root_path": str(manifest_documents(root, manifest, COLLECTION))}
+    )
     deps, chat_provider = build_chat_dependencies(
         settings, client, ollama, SparseEncoder(), COLLECTION
     )

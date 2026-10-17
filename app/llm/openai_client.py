@@ -210,6 +210,9 @@ def validate_responses_strict_schema_shape(schema: dict[str, Any]) -> None:
 class OpenAIGeneratorClient:
     """Small async Responses API client with no automatic retries."""
 
+    # Responses input accepts page images (input_image), for visual answers.
+    supports_images = True
+
     def __init__(
         self,
         *,
