@@ -634,3 +634,20 @@ async def test_only_rows_that_add_up_to_the_total_are_its_parts():
     )
 
     assert calculation is not None and trace.plan_codes == []
+
+
+# luna V2 row 1018: the strict-schema plan was complete, then the model kept
+# writing (a fragment, then the same object again, cut off at the token limit).
+# Code checks every operand of the plan, so the first complete object is used.
+
+
+def test_a_plan_followed_by_repeated_output_parses_as_its_first_object():
+    first = json.dumps(_plan_json([_op("a", "1", "E1.S1", ["x"]), _op("b", "2", "E1.S1", ["y"])]))
+    raw = f'{first}{{"result_label":"x","percent":false}} \n{first} \n{first[:40]}'
+
+    assert parse_operand_plan(raw) == parse_operand_plan(first)
+
+
+def test_output_with_no_complete_object_is_still_invalid():
+    with pytest.raises(json.JSONDecodeError):
+        parse_operand_plan('{"program": "a / b", "operands": [')

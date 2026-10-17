@@ -152,7 +152,10 @@ def _text(value: Any) -> str | None:
 
 
 def parse_operand_plan(raw: str) -> OperandPlan:
-    data = json.loads(raw)
+    """The plan from the model's output. Output may run on after the complete
+    object (a fragment, the object again, cut off at the token limit); the
+    first complete object is the plan, and code checks every operand of it."""
+    data, _ = json.JSONDecoder().raw_decode(raw.strip())
     if not isinstance(data, dict) or not isinstance(data.get("operands", []), list):
         raise ValueError("operand plan must be an object with an operands list")
     operands = tuple(

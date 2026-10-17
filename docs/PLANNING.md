@@ -5444,3 +5444,19 @@ rule. 1075 answers 29.3% as before (gold 29.6%, a different definition; audit
 category F): the check did not refuse it, as the replay predicted.
 
 `make test`: 1727 passed, 4 skipped.
+
+## Fix — a resolver plan followed by repeated output (closing note)
+
+`luna-v2-part-rows`, 1018: the resolver's strict-schema plan was a complete,
+valid object, and the model kept writing after it (a fragment, then the same
+object again, cut off at the token limit), so `json.loads` failed and the plan
+was dropped (`PLAN_SCHEMA_INVALID`). It is 1 of the 1,048 luna outputs saved
+across the V2 runs (first answers and resolver plans); the invalid plans seen
+on 206 and 219 came from the discarded qwen3.5:4b run. The resolver now takes
+the first complete JSON object as the plan; output with no complete object is
+still invalid. Only the resolver: its plan is a proposal whose every operand,
+label and the arithmetic code checks again. The first answer's parser stays
+strict. On the saved output, 1018's plan now parses ("(a + b + c) / (d + e)",
+the lease liabilities left to the search).
+
+`make test`: 1729 passed, 4 skipped.
