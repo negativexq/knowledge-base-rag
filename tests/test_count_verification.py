@@ -156,6 +156,9 @@ def test_a_calculation_of_another_number_is_still_checked():
     assert "CALCULATION_OPERAND_UNSUPPORTED" in validation.failure_codes
 
 
-def test_the_prompt_says_counted_operands_come_with_their_counts():
-    # luna 399: "4 + 3" over two listed groups, with "counts": null.
-    assert "every number you counted" in DERIVED_ANSWER_INSTRUCTIONS
+def test_the_prompt_does_not_ask_counted_operands_to_come_as_counts():
+    # Asking for every counted number as a count (for 399's "4 + 3") gained
+    # nothing in the luna format rerun and cost three correct calculations
+    # (371, 741, 1015), where the model abstained instead; it was reverted.
+    assert "every number you counted" not in DERIVED_ANSWER_INSTRUCTIONS
+    assert "a count may be a number in the calculation" in DERIVED_ANSWER_INSTRUCTIONS
