@@ -5370,3 +5370,21 @@ the program. The refusal is unchanged; a test pins it. Prompt-only, unmeasured
 until a paid run.
 
 `make test`: 1714 passed, 4 skipped.
+
+## Measurement fix — percentages and thousands in the answer match (closing note)
+
+V2 audit, category A: the contains-match missed answers right in substance.
+1020 and 1023 state a ratio as a percentage ("25.04%", "19.25%"; gold 0.25,
+0.192); 1025 states a share count in thousands ("1,358 (000's)"; gold
+1358000). A numeric answer now also matches when the number, as the unit
+written next to it scales it (%, percent, (000's), thousand, million,
+billion), is within 1% of the gold; a gold that is itself a percentage is not
+read as a ratio. This changes the measurement, not the system. Rescoring every
+saved V2 run with the old and new match flips only those rows, all from wrong
+to right: `luna-full-v2` 1023 and 1025 (53 to 55 answerable correct, 73/120
+overall), `luna-full-v9` 1025, `luna-v2-rerun-rows` 1023, `luna-v2-fix-rows`
+1020 (4/8). The committed reports keep the scores they were produced with.
+1027 (a paraphrase) and 368 (a less specific address) stay wrong: matching
+them needs a judge, not a number rule.
+
+`make test`: 1721 passed, 4 skipped.
