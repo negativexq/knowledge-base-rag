@@ -28,7 +28,12 @@ from app.llm.counting import Count, verify_count
 from app.llm.dates import ISO_DATE, iso_date_facts
 from app.llm.observability import GenerationObservation
 from app.llm.percent_cells import percent_cell_facts
-from app.llm.premise import missing_question_dates, missing_question_years, unsupported_colors
+from app.llm.premise import (
+    asks_count_answers_percent,
+    missing_question_dates,
+    missing_question_years,
+    unsupported_colors,
+)
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
 from app.retrieval.hybrid_search import SearchResult
@@ -782,6 +787,14 @@ def validate_support_unit_answer(
         if unsupported_colors(question, support_texts):
             # The question picks things out by a color the cited units never name.
             part_codes.append("QUERY_COLOR_NOT_IN_SUPPORT")
+        if (
+            part.calculation is None
+            and not part.counts
+            and asks_count_answers_percent(question, part.text)
+        ):
+            # A count was asked; a percentage with no count or calculation is
+            # another quantity.
+            part_codes.append("ANSWER_TYPE_MISMATCH")
         if re.search(r"\d\s*%", part.text):
             # A percentage may restate a bare survey-table cell ("92", "87ab").
             support_texts = [*support_texts, *percent_cell_facts(support_texts)]

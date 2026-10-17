@@ -108,3 +108,23 @@ def unsupported_colors(question: str | None, support_texts: list[str]) -> list[s
         if color not in colors and not _named(color, support_texts):
             colors.append(color)
     return colors
+
+
+# A question that asks for a count of things ("how many adults") and not for a
+# share is not answered by a percentage, though every number in it is cited.
+_ASKS_COUNT = re.compile(r"\bhow\s+many\b|\bnumber\s+of\b", re.IGNORECASE)
+_ASKS_SHARE = re.compile(
+    r"percent|%|\bshare\b|\bproportion\b|\brate\b|\bratio\b|\bfraction\b", re.IGNORECASE
+)
+_STATES_PERCENT = re.compile(r"\d\s*%|\d\s+percent\b", re.IGNORECASE)
+
+
+def asks_count_answers_percent(question: str | None, text: str) -> bool:
+    """The question asks how many, not what share, and the text states a
+    percentage."""
+    question = question or ""
+    return bool(
+        _ASKS_COUNT.search(question)
+        and not _ASKS_SHARE.search(question)
+        and _STATES_PERCENT.search(text)
+    )

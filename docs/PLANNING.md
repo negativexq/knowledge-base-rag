@@ -5016,3 +5016,20 @@ changes; luna varies between runs. The rule is reverted, with a test keeping it
 out; the format and color fixes stay.
 
 `make test`: 1644 passed, 4 skipped.
+
+## Fix — a count question answered by a percentage (closing note)
+
+First step of the evidence-driven plan (bind each value to what the question asks).
+The wrong-binding rows' cited units show why label binding cannot come first: a
+survey cell reaches the model as "College graduate (n=537) 87ab", without its
+column header (cell phone or tablet), so a check that the value's labels are in
+its unit would block correct survey answers too. What 206, 219 and 225 share is a
+type error: the question asks how many people, the answer gives the survey's
+percentages, and every number is cited. A question that asks for a count ("how
+many", "number of") and not a share (percent, share, proportion, rate, ratio,
+fraction) now rejects a part that states a percentage with no count and no
+calculation (ANSWER_TYPE_MISMATCH). Replayed on the saved outputs of both full luna
+runs, it rejects exactly 206, 219 and 225 and none of the 11 correct count answers:
+three wrong answers become abstentions, no API call.
+
+`make test`: 1648 passed, 4 skipped.
