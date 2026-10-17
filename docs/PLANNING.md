@@ -5170,3 +5170,25 @@ full-run answers no correct answer is affected; 15 of the 120 questions now trig
 the visual path.
 
 `make test`: 1683 passed, 4 skipped.
+
+## Measure and fix — visual path on 17 rows; the page a question names (closing note)
+
+`luna-visual-rows` (10 visual targets, 634, the color controls 471/475/635, and
+1018/1020/1023 on the v9 index): the visual path answered 829 correctly ("2", page
+1) and 663 wrongly (one connection graph of the gold's two: counting over a whole
+guidebook needs more than three pages); the three unanswerable color questions were
+refused, two of them because the confirmation call rejected a reading (635). The
+confirmation also rejected a correct reading (634, "Fact Checker"). 1020 and 1023
+now resolve against the year-labelled rows but differ from the gold's definitions.
+
+The traces show the main loss: the question names a page ("page 17", "page 50",
+"page 6985", "page two") and the model was shown the top retrieved pages instead
+(511, 475, 637, 385). A page the question names ("page N", "page two", "the first
+page", "the cover", "the last page") is now shown first, resolved by the PDF's page
+label, else a page printing N as its first or last line, else the Nth page; found
+only by position, the next page is shown too (a printed number is often one off:
+511's "page 17" is the 18th). On the real PDFs 637 resolves to its gold page 5 and
+829 to page 1. 732 got no pages: retrieval gave the model no units from that slide
+deck, whose pages are mostly images without a text layer (no OCR here).
+
+`make test`: 1688 passed, 4 skipped.

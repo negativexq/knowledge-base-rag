@@ -199,3 +199,112 @@ def test_candidate_pages_skip_units_the_caller_may_not_see():
     units = build_support_units(blocks)
 
     assert candidate_pages(units) == [("doc", 5)]
+
+
+# luna visual rows: 511 ("page 17"), 637 ("the figure at the top of page 6985"),
+# 475 ("page 50") and 385 ("page two") were shown the top retrieved pages, not
+# the page they name. A page the question names is shown first: by the PDF's
+# page label, else by a page printing that number as its first or last line,
+# else by position.
+
+from app.llm.visual_answer import named_pages, pdf_page_renderer  # noqa: E402
+
+
+def test_pages_a_question_names():
+    assert named_pages("What is the word in the orange box on page 17?") == [17]
+    assert named_pages("What are the words in the first rectangle on page two?") == [2]
+    assert named_pages("How many lines are highlighted on the first page?") == [1]
+    assert named_pages("What is on the cover?") == [1]
+    assert named_pages("What is on the last page?") == [-1]
+    assert named_pages("What is Costco's total debt?") == []
+
+
+def _numbered_pdf(tmp_path, printed):
+    doc = fitz.open()
+    for number in printed:
+        page = doc.new_page()
+        page.insert_text((72, 72), "Body text")
+        page.insert_text((300, 800), str(number))
+    path = tmp_path / "paper.pdf"
+    doc.save(path)
+    return path
+
+
+def test_a_named_page_resolves_by_printed_number_then_position(tmp_path):
+    _numbered_pdf(tmp_path, [6981, 6982, 6983])
+    pages = pdf_page_renderer(str(tmp_path))
+
+    assert pages.resolve("paper_pdf", 6982) == 2
+    assert pages.resolve("paper_pdf", 3) == 3
+    assert pages.resolve("paper_pdf", -1) == 3
+    assert pages.resolve("paper_pdf", 50) is None
+
+
+@pytest.mark.asyncio
+async def test_the_named_page_is_shown_first():
+    shown = []
+
+    class Pages:
+        def __call__(self, source, page):
+            shown.append(page)
+            return b"PNG"
+
+        def resolve(self, source, page):
+            return 17 if page == 17 else None
+
+        def by_position(self, source, page):
+            return False
+
+    from app.llm.visual_answer import answer_from_pages
+
+    units = build_support_units(_blocks(("doc", 1), ("doc", 3), ("doc", 4)))
+    provider = _Provider({"answer": None, "page": None, "observation": "", "abstain": True})
+    await answer_from_pages(
+        "What is the word in the orange box on page 17?",
+        units,
+        provider,
+        Pages(),
+        generation_kwargs={},
+        trace={},
+    )
+
+    assert shown == [17, 1, 3]
+
+
+@pytest.mark.asyncio
+async def test_a_page_found_only_by_position_also_shows_the_next_page():
+    shown = []
+
+    class Pages:
+        def __call__(self, source, page):
+            shown.append(page)
+            return b"PNG"
+
+        def resolve(self, source, page):
+            return page
+
+        def by_position(self, source, page):
+            return True
+
+    from app.llm.visual_answer import answer_from_pages
+
+    units = build_support_units(_blocks(("doc", 1), ("doc", 3)))
+    provider = _Provider({"answer": None, "page": None, "observation": "", "abstain": True})
+    await answer_from_pages(
+        "What is in the orange box on page 17?",
+        units,
+        provider,
+        Pages(),
+        generation_kwargs={},
+        trace={},
+    )
+
+    assert shown == [17, 18, 1]
+
+
+def test_a_printed_number_is_not_found_by_position(tmp_path):
+    _numbered_pdf(tmp_path, [6981, 6982, 6983])
+    pages = pdf_page_renderer(str(tmp_path))
+
+    assert pages.by_position("paper_pdf", 6982) is False
+    assert pages.by_position("paper_pdf", 2) is True

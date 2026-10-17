@@ -39,6 +39,19 @@ _VISUAL_CUE = re.compile(
     re.IGNORECASE,
 )
 
+_NUMBER_WORDS = {
+    word: index
+    for index, word in enumerate(
+        "one two three four five six seven eight nine ten eleven twelve".split(), 1
+    )
+}
+_ORDINALS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "last": -1}
+_NAMED_PAGE = re.compile(
+    r"\bpages?\s+(\d+|" + "|".join(_NUMBER_WORDS) + r")\b"
+    r"|\b(" + "|".join(_ORDINALS) + r")\s+page\b|\b(cover)\b",
+    re.IGNORECASE,
+)
+
 READ_INSTRUCTIONS = """
 You are shown pages of a document as images, and a question about them.
 Answer only from what the pages show. Return
@@ -91,6 +104,22 @@ def asks_visual(question: str | None) -> bool:
     return bool(_VISUAL_CUE.search(question) or unsupported_colors(question, []))
 
 
+def named_pages(question: str | None) -> list[int]:
+    """Pages the question names, in its order: "page 17", "page two", "the
+    first page", "the cover" (1); "the last page" is -1."""
+    pages: list[int] = []
+    for number, ordinal, cover in _NAMED_PAGE.findall(question or ""):
+        if number:
+            page = int(number) if number.isdigit() else _NUMBER_WORDS[number.casefold()]
+        elif ordinal:
+            page = _ORDINALS[ordinal.casefold()]
+        else:
+            page = 1
+        if page not in pages:
+            pages.append(page)
+    return pages
+
+
 def candidate_pages(units: list[SupportUnit], limit: int = MAX_PAGES) -> list[tuple[str, int]]:
     """The distinct pages of the top units' document, in rank order. Pages of
     other documents than the top unit's, and of units the caller may not see,
@@ -117,22 +146,72 @@ def render_pdf_page(pdf_path: str, page_number: int, dpi: int = RENDER_DPI) -> b
         return doc[page_number - 1].get_pixmap(dpi=dpi).tobytes("png")
 
 
-def pdf_page_renderer(root: str) -> PageRenderer:
-    """Renders pages of the PDFs under ``root``, found by the source_id
+class PdfPages:
+    """Renders and finds pages of the PDFs under a folder, by the source_id
     ingestion gave them (the file name slugged with its extension)."""
-    paths: dict[str, Path] | None = None
 
-    def render(source_id: str, page_number: int) -> bytes | None:
-        nonlocal paths
-        if paths is None:
-            paths = {
+    def __init__(self, root: str):
+        self.root = root
+        self._paths: dict[str, Path] | None = None
+
+    def _path(self, source_id: str) -> Path | None:
+        if self._paths is None:
+            self._paths = {
                 slugify(path.name, strip_extension=False): path
-                for path in Path(root).rglob("*.pdf")
+                for path in Path(self.root).rglob("*.pdf")
             }
-        path = paths.get(source_id)
+        return self._paths.get(source_id)
+
+    def __call__(self, source_id: str, page_number: int) -> bytes | None:
+        path = self._path(source_id)
         return render_pdf_page(str(path), page_number) if path else None
 
-    return render
+    def by_position(self, source_id: str, page: int) -> bool:
+        """Whether "page N" is found only as the Nth page (no label or printed
+        number says so): a printed number is often one off from the position."""
+        resolved = self.resolve(source_id, page)
+        return (
+            resolved is not None
+            and page > 0
+            and resolved == page
+            and not self._printed(source_id, page)
+        )
+
+    def _printed(self, source_id: str, page: int) -> bool:
+        path = self._path(source_id)
+        if path is None:
+            return False
+        with fitz.open(str(path)) as doc:
+            return any(self._prints(doc[index], page) for index in range(doc.page_count))
+
+    @staticmethod
+    def _prints(pdf_page: Any, page: int) -> bool:
+        if pdf_page.get_label() == str(page):
+            return True
+        lines = [line.strip() for line in pdf_page.get_text().splitlines() if line.strip()]
+        return bool(lines) and str(page) in (lines[0], lines[-1])
+
+    def resolve(self, source_id: str, page: int) -> int | None:
+        """The 1-based page a question means by "page N": the page labelled
+        N, else the page printing N as its first or last line, else the Nth
+        page; -1 is the last page."""
+        path = self._path(source_id)
+        if path is None:
+            return None
+        with fitz.open(str(path)) as doc:
+            if page == -1:
+                return doc.page_count or None
+            for index in range(doc.page_count):
+                if doc[index].get_label() == str(page):
+                    return index + 1
+            for index in range(doc.page_count):
+                if self._prints(doc[index], page):
+                    return index + 1
+            return page if 1 <= page <= doc.page_count else None
+
+
+def pdf_page_renderer(root: str) -> PdfPages:
+    return PdfPages(root)
 
 
 def page_messages(
@@ -161,9 +240,24 @@ async def answer_from_pages(
 ) -> VisualAnswer | None:
     """Read the answer from the top pages, then have it confirmed by a
     separate call; None unless both agree."""
+    ranked = candidate_pages(units)
+    resolve = getattr(render_page, "resolve", None)
+    named: list[tuple[str, int]] = []
+    if ranked and resolve is not None:
+        source = ranked[0][0]
+        for ref in named_pages(question):
+            page = resolve(source, ref)
+            if page is None:
+                continue
+            nearby = [page]
+            if getattr(render_page, "by_position", lambda *_: False)(source, ref):
+                nearby.append(page + 1)
+            named.extend((source, p) for p in nearby if (source, p) not in named)
+    # Pages the question names come first, then the top retrieved pages.
+    wanted = (named + [page for page in ranked if page not in named])[:MAX_PAGES]
     pages = [
         (source, page, image)
-        for source, page in candidate_pages(units)
+        for source, page in wanted
         if (image := render_page(source, page)) is not None
     ]
     trace["pages"] = [page for _, page, _ in pages]
