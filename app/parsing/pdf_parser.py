@@ -15,7 +15,7 @@ TEXT_BLOCK_TYPE = 0
 # Recorded in the ingestion pipeline fingerprint (app/ingestion/fingerprint.py)
 # through pdf_parser_version(); bump it whenever extraction output changes so
 # existing PDFs are re-indexed.
-PDF_PARSER_VERSION = "pymupdf_elements_v8"
+PDF_PARSER_VERSION = "pymupdf_elements_v9"
 # Tesseract languages for scanned pages (installed in the backend image as
 # tesseract-ocr-tur / tesseract-ocr-eng) and the render resolution; 300 dpi
 # is Tesseract's recommended input resolution.
@@ -735,8 +735,10 @@ _SYMBOL_CELL = re.compile(r"^(?:[$€£¥₺%]|Rs\.?)$")
 
 def _spilled_headers(rows: list[list[str]]) -> list[str]:
     """The header row with each unnamed column that holds the values spilled
-    from a symbol column to its left named like that column. Column 0 (the
-    row labels) never names another."""
+    from a symbol column to its left named like that column, and each unnamed
+    column holding the values of the named column to its right (which is
+    filled only after a lone sign) named like that one. Column 0 (the row
+    labels) never names or takes a name."""
     header = list(rows[0])
     for c in range(2, len(header)):
         left = c - 1
@@ -745,6 +747,15 @@ def _spilled_headers(rows: list[list[str]]) -> list[str]:
         spilled = [row for row in rows[1:] if row[c]]
         if spilled and all(not row[left] or _SYMBOL_CELL.match(row[left]) for row in spilled):
             header[c] = header[left]
+    # The other way round: values sit in an unnamed column and only rows with
+    # a lone sign there put theirs under the named column to its right.
+    for c in range(len(header) - 2, 0, -1):
+        right = c + 1
+        if header[c] or not header[right]:
+            continue
+        under = [row for row in rows[1:] if row[right]]
+        if under and all(_SYMBOL_CELL.match(row[c]) for row in under):
+            header[c] = header[right]
     return header
 
 
@@ -789,9 +800,33 @@ def _with_external_header(table) -> list[list[object]]:
     their dates above the table)."""
     rows = table.extract()
     header = table.header
-    if header.external and any(name for name in header.names[1:]):
-        return [list(header.names), *rows]
+    if header.external and rows:
+        names = _external_header_names(
+            [_cell(name) for name in header.names], [_cell(value) for value in rows[0]]
+        )
+        if any(names[1:]):
+            return [names, *rows]
     return rows
+
+
+def _external_header_names(names: list[str], first_row: list[str]) -> list[str]:
+    """A header found above the table can come back merged with the table's
+    first row ("2021 800" over a "800" cell, "2020 $ 800" over "$ | 800"):
+    words of the first row's cell in the same or the previous column are taken
+    off the end of each name, and a name equal to its column's cell is left
+    empty."""
+    first_row = first_row + [""] * (len(names) - len(first_row))
+    cleaned = []
+    for c, name in enumerate(names):
+        if name == first_row[c]:
+            cleaned.append("")
+            continue
+        merged = set(first_row[c].split()) | (set(first_row[c - 1].split()) if c else set())
+        words = name.split()
+        while words and words[-1] in merged:
+            words.pop()
+        cleaned.append(" ".join(words))
+    return cleaned
 
 
 def _words(text: str) -> set[str]:

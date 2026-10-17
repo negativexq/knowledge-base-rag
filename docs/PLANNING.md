@@ -5115,3 +5115,19 @@ and are not affected. `PDF_PARSER_VERSION` is `pymupdf_elements_v8`, so existing
 PDFs are re-indexed.
 
 `make test`: 1669 passed, 4 skipped.
+
+## Fix — a header merged with the first row, and values left of their header (closing note)
+
+After v8 the Costco debt note read "$: $ | 2021 800: 6,692": PyMuPDF's external
+header came back merged with the table's first row ("2021 800", "2020 $ 800"), and
+most values sit in the unnamed column left of the year, with only "$" rows putting
+theirs under it. Words of the first row's cell in the same or the previous column
+are now taken off the end of an external header name (a name equal to its column's
+cell is left empty), and an unnamed column whose named right neighbour is filled
+only after a lone sign takes that neighbour's name. The note now reads "2.750%
+Senior Notes due May 2024 | 2021: 1,000 | 2020: 1,000" and "Long-term debt,
+excluding current portion | 2021: $ 6,692 | 2020: $ 7,514"; the balance sheet is
+unchanged apart from losing the "ASSETS:" prefix the merged header gave every row.
+`PDF_PARSER_VERSION` is `pymupdf_elements_v9`.
+
+`make test`: 1671 passed, 4 skipped.
