@@ -4948,3 +4948,16 @@ so 1085's "…ending January 28, 2023 was 20.7%" scored 28. The day of a month-n
 date is now skipped; this lifts both full runs by one.
 
 `make test`: 1630 passed, 4 skipped.
+
+## Audit — losses of the full luna derived run (closing note)
+
+`artifacts/mmlongbench-v2/luna-full-derived/audit.md` classifies the 56 rows that
+lost: 16 answered wrong (share × sample survey counts, wrong quantity or passage,
+other debt definitions, misreads), 3 unanswerable answered (471, 635, 660), 6
+answerable blocked (639 and 1014 correct blocks; 221 and 741 format; 399 and 509
+partial derived output) and 31 abstained (10 visual, 11 multi-statement financial
+derivations, 5 multi-hop, 3 counting, 2 with the gold in evidence). The validator
+now costs 2 answerable rows; visual input and financial derivations are the largest
+remaining blocks.
+
+`make test`: 1630 passed, 4 skipped.
