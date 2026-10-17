@@ -1,5 +1,8 @@
+import { MemoryRouter } from "react-router-dom"
+import { RecentConversations } from "@/components/RecentConversations"
+import { WorkspaceCommandsProvider } from "@/components/WorkspaceCommandsProvider"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react"
 import { describe, expect, beforeEach, it, vi } from "vitest"
 
 import { chatApi } from "@/api/chat"
@@ -7,6 +10,7 @@ import { uiApi } from "@/api/ui"
 import type { Identity } from "@/api/types"
 import { useIdentity } from "@/hooks/useIdentity"
 import Playground from "@/pages/Playground"
+import { readResearchSessions, researchScope } from "@/lib/research"
 
 vi.mock("@/api/chat", () => ({ chatApi: { ask: vi.fn() } }))
 vi.mock("@/api/ui", () => ({ uiApi: { trace: vi.fn() } }))
@@ -21,11 +25,14 @@ const identity: Identity = {
   auth_enabled: true,
 }
 
-function renderPlayground() {
+function renderPlayground(withSidebar = false) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
     <QueryClientProvider client={client}>
-      <Playground />
+      <MemoryRouter><WorkspaceCommandsProvider>
+        {withSidebar && <RecentConversations scope={researchScope(identity)} />}
+        <Playground />
+      </WorkspaceCommandsProvider></MemoryRouter>
     </QueryClientProvider>,
   )
 }
@@ -79,6 +86,26 @@ describe("Playground evidence flow", () => {
     })
   })
 
+  it("opens supporting evidence with its passage, location and answer citation", async () => {
+    renderPlayground()
+    fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "How should we deploy?" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    const trigger = await screen.findByRole("button", { name: "Supporting evidence 1" })
+    fireEvent.click(trigger)
+    const inspector = screen.getByRole("complementary", { name: "Evidence inspector" })
+    expect(inspector).toHaveStyle({ width: "420px" })
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(within(inspector).getByRole("button", { name: "View source 1: runbook" })).toHaveAttribute("aria-expanded", "true")
+    expect(within(inspector).getByText(/Page 1/)).toBeInTheDocument()
+    expect(within(inspector).getByText("Deploy safely.")).toBeInTheDocument()
+    const relation = within(inspector).getByRole("region", { name: "Citation relationship for source 1" })
+    expect(relation).toHaveTextContent("[s.filesystem:runbook/1/0]")
+    expect(relation).toHaveTextContent("Answer")
+    fireEvent.click(within(inspector).getByRole("button", { name: "Close evidence inspector" }))
+    expect(screen.queryByRole("complementary", { name: "Evidence inspector" })).not.toBeInTheDocument()
+    expect(screen.getByRole("textbox", { name: "Question" })).toBeInTheDocument()
+  })
+
   it("keeps research uncluttered and reveals engineering detail in Inspect", () => {
     renderPlayground()
     expect(screen.queryByRole("complementary", { name: "Evidence inspector" })).not.toBeInTheDocument()
@@ -109,6 +136,162 @@ describe("Playground evidence flow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Jump to source 1" }))
     expect(screen.getByRole("button", { name: "View source 1: runbook" })).toHaveAttribute("aria-expanded", "true")
     expect(screen.getByText("Deploy safely.")).toBeInTheDocument()
+  })
+
+  it("renames, stars and reopens saved research after starting a new session", async () => {
+    renderPlayground()
+    fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "Deployment investigation" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    await screen.findByRole("button", { name: "Jump to source 1" })
+    fireEvent.click(screen.getByRole("button", { name: "History" }))
+    fireEvent.click(screen.getByRole("button", { name: "Rename Deployment investigation" }))
+    fireEvent.change(screen.getByRole("textbox", { name: "Research title" }), { target: { value: "Release notes" } })
+    fireEvent.click(screen.getByRole("button", { name: "Save" }))
+    fireEvent.click(screen.getByRole("button", { name: "Star Release notes" }))
+    expect(screen.getByRole("button", { name: "Unstar Release notes" })).toHaveAttribute("aria-pressed", "true")
+    fireEvent.click(screen.getByRole("button", { name: "Close research history" }))
+    fireEvent.click(screen.getByRole("button", { name: "New chat" }))
+    expect(screen.queryByText("Deployment investigation")).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "History" }))
+    fireEvent.change(screen.getByRole("textbox", { name: "Search research history" }), { target: { value: "Deployment investigation" } })
+    fireEvent.click(screen.getByRole("button", { name: /Release notes.*1 question/ }))
+    expect(screen.getByText("Deployment investigation")).toBeInTheDocument()
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))[0]).toMatchObject({ title: "Release notes", starred: true }))
+    fireEvent.click(screen.getByRole("button", { name: "History" }))
+    fireEvent.click(screen.getByRole("button", { name: "Remove Release notes" }))
+    expect(screen.queryByRole("button", { name: /Release notes.*1 question/ })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }))
+    expect(screen.getByRole("button", { name: /Release notes.*1 question/ })).toBeInTheDocument()
+  })
+
+  it("keeps pinned evidence across reloads without making another chat request", async () => {
+    const first = renderPlayground()
+    fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "Pin this research" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    fireEvent.click(await screen.findByRole("button", { name: "Jump to source 1" }))
+    fireEvent.click(screen.getByRole("button", { name: "Pin source 1" }))
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))[0]?.pins).toHaveLength(1))
+    first.unmount()
+    renderPlayground()
+    fireEvent.click(screen.getByRole("button", { name: "Pinned evidence (1)" }))
+    expect(screen.getByText("Deploy safely.")).toBeInTheDocument()
+    expect(chatApi.ask).toHaveBeenCalledTimes(1)
+    fireEvent.click(screen.getByRole("button", { name: "Unpin evidence from runbook" }))
+    expect(screen.getByText("No pinned evidence")).toBeInTheDocument()
+  })
+
+  it("does not expose saved research when the identity changes", async () => {
+    const view = renderPlayground()
+    fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "Private tenant-a question" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    await screen.findByRole("button", { name: "Jump to source 1" })
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))).toHaveLength(1))
+    vi.mocked(useIdentity).mockReturnValue({ data: { ...identity, tenant_id: "tenant-b", user_id: "user_b" } } as ReturnType<typeof useIdentity>)
+    view.rerender(<QueryClientProvider client={new QueryClient()}><Playground /></QueryClientProvider>)
+    expect(screen.queryByText("Private tenant-a question")).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "History" }))
+    expect(screen.getByText("Your completed research will appear here.")).toBeInTheDocument()
+  })
+
+  it("keeps research usable and reports when browser persistence fails", async () => {
+    const write = vi.spyOn(localStorage, "setItem").mockImplementation(() => { throw new DOMException("Storage full", "QuotaExceededError") })
+    try {
+      renderPlayground()
+      expect(await screen.findByText(/Browser storage is unavailable or full/)).toBeInTheDocument()
+      fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "In-memory research" } })
+      fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+      expect(await screen.findByRole("button", { name: "Jump to source 1" })).toBeInTheDocument()
+      expect(screen.getByRole("button", { name: "Export research as Markdown" })).toBeEnabled()
+    } finally { write.mockRestore() }
+  })
+
+  it("downloads the current completed research as a Markdown file", async () => {
+    const originalURL = URL
+    const createObjectURL = vi.fn(() => "blob:local-research")
+    vi.stubGlobal("URL", class extends originalURL { static createObjectURL = createObjectURL; static revokeObjectURL = vi.fn() })
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {})
+    try {
+      renderPlayground()
+      const exportButton = screen.getByRole("button", { name: "Export research as Markdown" })
+      expect(exportButton).toBeDisabled()
+      fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "Export deployment" } })
+      fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+      await screen.findByRole("button", { name: "Jump to source 1" })
+      fireEvent.click(exportButton)
+      expect(createObjectURL).toHaveBeenCalledWith(expect.any(Blob))
+      expect(click).toHaveBeenCalledOnce()
+      expect((click.mock.instances[0] as HTMLAnchorElement).download).toBe("Export deployment.md")
+    } finally { click.mockRestore(); vi.unstubAllGlobals() }
+  })
+
+  it("shows saved conversations below Research and manages them through the three-dot menu", async () => {
+    const first = renderPlayground()
+    fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "An older conversation" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    await screen.findByRole("button", { name: "Jump to source 1" })
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))).toHaveLength(1))
+    first.unmount()
+    renderPlayground(true)
+    let menu = screen.getByRole("list", { name: "Recent conversations" })
+    expect(within(menu).getByRole("button", { name: "Open conversation: An older conversation" })).toBeInTheDocument()
+    fireEvent.keyDown(within(menu).getByRole("button", { name: "Conversation options: An older conversation" }), { key: "Enter" })
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Rename" }))
+    fireEvent.change(screen.getByRole("textbox", { name: "Conversation name" }), { target: { value: "Rollout review" } })
+    fireEvent.click(screen.getByRole("button", { name: "Save name" }))
+    expect(within(menu).getByRole("button", { name: "Open conversation: Rollout review" })).toBeInTheDocument()
+    fireEvent.keyDown(within(menu).getByRole("button", { name: "Conversation options: Rollout review" }), { key: "Enter" })
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Star" }))
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))[0]?.starred).toBe(true))
+    fireEvent.keyDown(within(menu).getByRole("button", { name: "Conversation options: Rollout review" }), { key: "Enter" })
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Pin to top" }))
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))[0]?.pinned).toBe(true))
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))[0]).toMatchObject({ title: "Rollout review", starred: true, pinned: true }))
+    fireEvent.keyDown(within(menu).getByRole("button", { name: "Conversation options: Rollout review" }), { key: "Enter" })
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Delete conversation" }))
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Open conversation: Rollout review" })).not.toBeInTheDocument())
+    fireEvent.click(screen.getByRole("button", { name: "Undo delete" }))
+    menu = await screen.findByRole("list", { name: "Recent conversations" })
+    fireEvent.click(within(menu).getByRole("button", { name: "Open conversation: Rollout review" }))
+    expect(within(screen.getByRole("region", { name: "Conversation" })).getByText("An older conversation")).toBeInTheDocument()
+    fireEvent.click(within(menu.parentElement!).getByRole("button", { name: "New chat" }))
+    expect(within(screen.getByRole("region", { name: "Conversation" })).queryByText("An older conversation")).not.toBeInTheDocument()
+    expect(readResearchSessions(researchScope(identity))).toHaveLength(1)
+  })
+
+  it("persists linked notes and reopens their source after a reload", async () => {
+    const first = renderPlayground()
+    fireEvent.change(screen.getByRole("textbox", { name: "Question" }), { target: { value: "A question for notes" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    fireEvent.click(await screen.findByRole("button", { name: "Jump to source 1" }))
+    fireEvent.click(screen.getByRole("button", { name: "Pin source 1" }))
+    fireEvent.click(screen.getByRole("button", { name: "Pinned evidence (1)" }))
+    fireEvent.click(screen.getByRole("button", { name: "Add linked note" }))
+    fireEvent.change(screen.getByRole("textbox", { name: "Research note" }), { target: { value: "Follow up with the deployment owner." } })
+    fireEvent.click(screen.getByRole("button", { name: "Save note" }))
+    await waitFor(() => expect(readResearchSessions(researchScope(identity))[0]?.notes).toHaveLength(1))
+    first.unmount()
+    renderPlayground()
+    expect(screen.getByText("Follow up with the deployment owner.")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "runbook" }))
+    expect(screen.getByRole("button", { name: "View source 1: runbook" })).toHaveAttribute("aria-expanded", "true")
+  })
+
+  it("remembers workspace layout while explicit view links take precedence", () => {
+    const first = renderPlayground()
+    fireEvent.click(screen.getByRole("button", { name: "Inspect" }))
+    fireEvent.click(screen.getByRole("tab", { name: "Why" }))
+    fireEvent.keyDown(screen.getByRole("separator", { name: "Resize evidence inspector" }), { key: "ArrowLeft" })
+    first.unmount()
+    window.history.replaceState(null, "", "/playground")
+    const second = renderPlayground()
+    expect(screen.getByRole("button", { name: "Inspect" })).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByRole("tab", { name: "Why" })).toHaveAttribute("aria-selected", "true")
+    expect(screen.getByRole("separator", { name: "Resize evidence inspector" })).toHaveAttribute("aria-valuenow", "440")
+    second.unmount()
+    window.history.replaceState(null, "", "/playground?mode=research&panel=notes&inspector=open")
+    renderPlayground()
+    expect(screen.getByRole("button", { name: "Research" })).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByRole("tab", { name: "Notes" })).toHaveAttribute("aria-selected", "true")
   })
 
   it("aggregates the real stream and focuses the cited source card", async () => {
@@ -148,11 +331,11 @@ describe("Playground evidence flow", () => {
     ])
 
     fireEvent.click(screen.getByRole("button", { name: "New chat" }))
-    expect(screen.queryByText("How do I deploy?")).not.toBeInTheDocument()
+    expect(within(screen.getByRole("region", { name: "Conversation" })).queryByText("How do I deploy?")).not.toBeInTheDocument()
 
     fireEvent.change(input, { target: { value: "Unrelated question" } })
     fireEvent.click(screen.getByRole("button", { name: "Ask" }))
-    await screen.findByText("Unrelated question")
+    await within(screen.getByRole("region", { name: "Conversation" })).findByText("Unrelated question")
     expect(vi.mocked(chatApi.ask).mock.calls[2][1]).toEqual([])
   })
 
@@ -531,11 +714,11 @@ describe("Playground answer confidence and why-this-answer", () => {
     first.unmount()
 
     renderPlayground()
-    expect(screen.getByText("Kept question?")).toBeInTheDocument()
+    expect(within(screen.getByRole("region", { name: "Conversation" })).getByText("Kept question?")).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Jump to E1.S2 in source 1" })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole("button", { name: "New chat" }))
-    expect(sessionStorage.length).toBe(0)
+    await waitFor(() => expect(sessionStorage.length).toBe(0))
   })
 
   it("composes multi-line questions: Enter asks, Shift+Enter adds a line", async () => {

@@ -1,6 +1,8 @@
 import { BookOpen, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import { NavLink } from "react-router-dom"
 
+import { RecentConversations } from "@/components/RecentConversations"
+import { researchScope } from "@/lib/research"
 import { useIdentity } from "@/hooks/useIdentity"
 import { NAV_GROUPS, type NavItem, SETTINGS_ITEM } from "@/lib/nav"
 import { cn } from "@/lib/utils"
@@ -84,7 +86,10 @@ export function Sidebar({
               </div>
             )}
             {group.items.map((item) => (
-              <SidebarLink key={item.to} item={item} collapsed={collapsed} />
+              <div key={item.to}>
+                <SidebarLink item={item} collapsed={collapsed} />
+                {item.to === "/playground" && !collapsed && identity && <RecentConversations key={researchScope(identity)} scope={researchScope(identity)} />}
+              </div>
             ))}
           </div>
         ))}

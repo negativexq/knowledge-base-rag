@@ -1,11 +1,15 @@
 import {
   BarChart3,
   Database,
+  FolderOpen,
+  Folders,
+  History,
   LayoutDashboard,
   type LucideIcon,
   RefreshCw,
   Settings,
   Sparkles,
+  Star,
   Waypoints,
 } from "lucide-react"
 
@@ -39,11 +43,14 @@ export const NAV_GROUPS: NavGroup[] = [
         description: "Ask the knowledge base and inspect the evidence",
         icon: Sparkles,
       },
+      { to: "/starred", label: "Starred", description: "Your starred research conversations", icon: Star },
+      { to: "/projects", label: "Projects", description: "Personal projects for conversations, notes and sources", icon: FolderOpen },
     ],
   },
   {
     label: "Data",
     items: [
+      { to: "/collections", label: "Collections", description: "Personal document groups by topic or department", icon: Folders },
       {
         to: "/knowledge",
         label: "Knowledge",
@@ -84,9 +91,12 @@ export const SETTINGS_ITEM: NavItem = {
   icon: Settings,
 }
 
-export const ALL_NAV_ITEMS: NavItem[] = [...NAV_GROUPS.flatMap((g) => g.items), SETTINGS_ITEM]
+export const HISTORY_ITEM: NavItem = { to: "/playground/history", label: "History", description: "Saved conversations and research notes", icon: History }
+
+export const ALL_NAV_ITEMS: NavItem[] = [...NAV_GROUPS.flatMap((g) => g.items), HISTORY_ITEM, SETTINGS_ITEM]
 
 export function navItemFor(pathname: string): NavItem | undefined {
+  if (pathname === HISTORY_ITEM.to) return HISTORY_ITEM
   if (pathname === "/") return ALL_NAV_ITEMS[0]
   return ALL_NAV_ITEMS.find((item) => item.to !== "/" && pathname.startsWith(item.to))
 }

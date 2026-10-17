@@ -5832,3 +5832,21 @@ and the Traces note follow the new names.
 
 Frontend: 59 tests passed, typecheck, lint and build clean. `make test`: 1752
 passed, 4 skipped (no backend change).
+
+## UI — research library, projects and collections (closing note)
+
+The research workspace keeps a browser-local library: research sessions
+(history, rename, star, pin, delete with undo, recent conversations in the
+sidebar), pinned evidence and personal notes linked to evidence, Markdown
+export with footnoted citations resolved by the same mapping as the UI, and
+Starred, History, Projects and Collections pages. Collections group Knowledge
+documents; Knowledge gains document filters and saved views. Workspace mode,
+panel and inspector state live in the URL; "View link" shares only those
+allowed view settings. The evidence inspector adds passage search with
+highlighted matches, per-source citation context, a remembered width (400-450
+px) and two rows of four tabs, so Inspect's seven tabs fit. Browser storage is
+partitioned by API base, tenant, user and roles and never holds a token. A
+source card no longer shows the raw citation location ("2/0").
+
+Frontend: 96 tests passed, typecheck, lint and build clean. `make test`: 1752
+passed, 4 skipped (no backend change).

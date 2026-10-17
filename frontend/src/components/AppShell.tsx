@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from "react"
 
+import { WorkspaceCommandsProvider } from "@/components/WorkspaceCommandsProvider"
 import { CommandPalette } from "@/components/CommandPalette"
 import { Sidebar } from "@/components/Sidebar"
 import { TopBar } from "@/components/TopBar"
@@ -32,6 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <ThemeProvider>
+      <WorkspaceCommandsProvider>
       <div className="flex h-dvh overflow-hidden">
         <Sidebar collapsed={collapsed} onToggle={toggleSidebar} />
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -40,6 +42,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </div>
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      </WorkspaceCommandsProvider>
     </ThemeProvider>
   )
 }

@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { ApiError } from "@/api/client"
 import { healthApi } from "@/api/health"
 import { sourcesApi } from "@/api/sources"
 import { syncApi } from "@/api/sync"
@@ -151,6 +152,16 @@ describe("console page regression states", () => {
     expect(await screen.findByText("tenant-a.md")).toBeInTheDocument()
     expect(screen.getByText("—")).toBeInTheDocument()
     expect(screen.getByText("Not reported")).toBeInTheDocument()
+  })
+
+  it("shows document-fetch failures separately from an empty filtered result", async () => {
+    vi.mocked(sourcesApi.list).mockResolvedValue([{ source_type: "filesystem", document_count: 1, is_running: false }])
+    vi.mocked(sourcesApi.documents).mockRejectedValue(new ApiError(403, "Access denied", null))
+    renderWithClient(<Knowledge />)
+    fireEvent.click(await screen.findByRole("button", { name: /filesystem/i }))
+    expect(await screen.findByText("Not authorized")).toBeInTheDocument()
+    expect(screen.queryByText("No documents match")).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Retry documents" })).toBeInTheDocument()
   })
 
   it("flags a document whose parse lost text and lists the report", async () => {

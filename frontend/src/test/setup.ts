@@ -27,7 +27,9 @@ HTMLElement.prototype.scrollIntoView = () => undefined
 // Pages may keep state in sessionStorage (the Playground conversation);
 // every test starts from an empty one.
 beforeEach(() => {
+  localStorage.clear()
   sessionStorage.clear()
+  window.history.replaceState(null, "", "/")
 })
 
 // Radix popovers measure their anchor; jsdom has no ResizeObserver.
