@@ -22,6 +22,14 @@ ALLOWED_CONSTANTS = frozenset({100.0})
 # stated precision, or is within this relative tolerance.
 RESULT_TOLERANCE = 0.005
 _NUMBER = re.compile(r"\d[\d,]*(?:\.\d+)?|\.\d+")
+_SIGNED_NUMBER = re.compile(r"(-\s*)?(\d[\d,]*(?:\.\d+)?|\.\d+)")
+# A negative result may be stated as its magnitude in an answer that says it
+# is a decrease ("lower by 155.98" for 1767.80 - 1923.78 = -155.98).
+_DECREASE = re.compile(
+    r"\b(?:lower|less|fewer|smaller|decreas\w*|declin\w*|fell|fall\w*|dropp?\w*|down|"
+    r"reduc\w*|below|short)\b",
+    re.IGNORECASE,
+)
 # A number followed by "%" or one word (a unit such as "percent" or "crore").
 _NUMBER_WITH_UNIT = re.compile(r"(\d[\d,]*(?:\.\d+)?)(\s*%|\s+[^\W\d_]+)?")
 _OPERATORS = {
@@ -41,7 +49,7 @@ class Calculation:
         """The verified calculation as a line of evidence. With the answer
         text, the result is written as the answer states it, unit included
         ("41%"), so a typed value check compares like with like."""
-        stated = numbers_in(self.result)
+        stated = _signed_numbers(self.result)
         if text and stated:
             decimals = _decimals(self.result)
             for match in _NUMBER_WITH_UNIT.finditer(text):
@@ -53,6 +61,14 @@ class Calculation:
 def numbers_in(text: str) -> list[float]:
     """Numbers printed in text; thousands separators are ignored."""
     return [float(match.replace(",", "")) for match in _NUMBER.findall(text)]
+
+
+def _signed_numbers(text: str) -> list[float]:
+    """Numbers with their minus sign, for a calculation's result."""
+    return [
+        (-1 if sign else 1) * float(digits.replace(",", ""))
+        for sign, digits in _SIGNED_NUMBER.findall(text)
+    ]
 
 
 def _literals(node: ast.AST) -> list[float]:
@@ -121,12 +137,15 @@ def verify_calculation(calculation: Calculation, support_texts: list[str], text:
         operand not in cited and operand not in ALLOWED_CONSTANTS for operand in _literals(tree)
     ):
         return ["CALCULATION_OPERAND_UNSUPPORTED"]
-    stated = numbers_in(calculation.result)
+    stated = _signed_numbers(calculation.result)
     if not stated:
         return ["CALCULATION_UNPARSEABLE"]
     decimals = _decimals(calculation.result)
     if not _matches(value, stated[0], decimals):
         return ["CALCULATION_RESULT_MISMATCH"]
-    if not any(_matches(stated[0], number, decimals) for number in numbers_in(text)):
+    written = numbers_in(text)
+    if stated[0] < 0 and _DECREASE.search(text):
+        written += [-number for number in written]
+    if not any(_matches(stated[0], number, decimals) for number in written):
         return ["CALCULATION_RESULT_NOT_IN_ANSWER"]
     return []

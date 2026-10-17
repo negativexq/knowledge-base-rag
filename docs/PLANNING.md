@@ -4787,3 +4787,29 @@ wrong figure, which only the gold catches.
   FY 2021 liabilities were 36,851" is still validated in full.
 
 `make test`: 1591 passed, 4 skipped.
+
+## Fix — computed answers scored by their result, and decreases stated as magnitudes (closing note)
+
+Luna rerun of the 39 blocked rows with derived answers on and PRs #46/#47
+(`luna-blocked-derived`): answered 19 (was 7), validator_blocked 13, model_abstained 7;
+answers correct 13/38 (was 4/38), citations 15/19. The figures-as-printed rule took
+effect (1071, 1078 now cite "$1,383 million" and pass). 516, 729, 1013 and 1023 now
+abstain instead of answering, so the verdict fix is untested on real output.
+
+- Scorer: it reads the first number an answer states, but a computed answer states
+  its operands first ("10 of the 24 tweets, or 41.7%"), so four correct derived
+  answers (214, 371, 509, 741) scored wrong. An answer carrying a verified
+  calculation, rendered "(calculation: … = X)", is now scored by X. Reports re-scored
+  with `--from-results`; earlier runs had no calculations and are unchanged.
+- 373: "lower by 155.98" with "1767.80 - 1923.78 = -155.98" failed as
+  CALCULATION_RESULT_MISMATCH because the result's minus sign was dropped when read.
+  Results keep their sign; a negative result may be stated as its magnitude only when
+  the answer names a decrease (lower, fell, declined, …).
+
+Still blocked, by kind: counts the arithmetic check cannot verify because the
+operands are counted, not printed (399, 835, 513, 515, 639), wrong answers caught
+(223, 227, 396, 658, 1070), a date reformatted (740) and 525 (a correct 32% whose
+"In 2013" and "16%" conflict with the cited units). Noted: the extractor reads
+"1,767.80" as "767.80" on both sides, so it compares consistently but wrongly.
+
+`make test`: 1599 passed, 4 skipped.
