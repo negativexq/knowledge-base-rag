@@ -4974,3 +4974,16 @@ states the result when it equals the result rounded to the number's own precisio
 decimals keep their type; 43% or 41.2% still block.
 
 `make test`: 1636 passed, 4 skipped.
+
+## Fix — a question's color premise must be named by the cited units (closing note)
+
+471 and 635 (unanswerable) and 634 ask about a color ("the yellow color", "with grey
+background"); the text layer carries no colors, so the answers named items from
+units that never mention it. A question that picks things out by color ("yellow
+color", "grey background", "highlighted in yellow", "Orange box") now needs a cited
+unit naming that color (grey and gray alike); otherwise the part is rejected with
+QUERY_COLOR_NOT_IN_SUPPORT. Color words that are not colors here ("Black adults",
+"white paper", "Green Bay") are ignored. On the full luna run no correct answer
+asks about a color: the check refuses 471 and 635 and turns 634 into an abstention.
+
+`make test`: 1641 passed, 4 skipped.
