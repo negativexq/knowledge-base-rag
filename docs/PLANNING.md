@@ -5503,3 +5503,23 @@ away into a sum of hundreds of operand names until the token limit
 (`PLAN_SCHEMA_INVALID`), a degenerate generation the parse rightly refuses.
 
 `make test`: 1730 passed, 4 skipped.
+
+## Fix — a chunk never starts or ends inside a table row (closing note)
+
+V2 audit, 1079: the resolver's search for Best Buy's total assets returned the
+balance-sheet chunk that starts inside the "Total assets" row ("2023: $ 15,803
+| January 29, 2022: $ 17,504"), its label left in the chunk before, so the
+value could not bind. The baseline chunker's 500-word window (50 overlap) cut
+anywhere; about 20 chunks of the V2 index started inside a table row, most in
+the Best Buy and Costco 10-Ks. A chunk edge inside a table line (a line with
+cells) now moves to the line's edge: the start back to the line start, the end
+forward to the line end. A line over 1,000 characters (a whole OCR table on one
+line) is split as before. The baseline's boundary strategy is now
+`word_sentence_table_row_heading_page_v2`, so existing indexes re-index through
+the fingerprint mismatch path. Offline, re-chunking the V2 PDFs (no
+embedding) gives 773 chunks; Costco has no chunk starting inside a row and
+Best Buy's "Total assets" row is whole; the remaining heuristic hits are lines
+that start with numbers (a numbered contents line, a market code) or OCR
+noise. The V2 index is not rebuilt and nothing is measured yet.
+
+`make test`: 1733 passed, 4 skipped.

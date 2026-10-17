@@ -139,3 +139,65 @@ def test_chunk_document_accepts_an_explicit_doc_id_override(sample_pdf):
 def _long_paragraph() -> str:
     sentences = [f"Sentence number {i} has several words in it." for i in range(20)]
     return " ".join(sentences)
+
+
+# MMLongBench V2, Best Buy balance sheet: a 500-word window ended inside the
+# "Total assets" row and the next chunk started inside it ("2023: $ 15,803 |
+# January 29, 2022: $ 17,504"), its label left in the chunk before; about 20
+# chunks of the V2 index started inside a table row. A chunk now starts and
+# ends at the edges of a table line.
+
+_BALANCE = (
+    "Table:  | January 28, 2023 | January 29, 2022\n"
+    + "\n".join(
+        f"Line item {n} | January 28, 2023: $ {n},100 | January 29, 2022: $ {n},200"
+        for n in range(1, 13)
+    )
+    + "\nTotal assets | January 28, 2023: $ 15,803 | January 29, 2022: $ 17,504"
+)
+
+
+def test_chunk_page_text_starts_and_ends_on_table_line_edges():
+    paragraphs = [
+        Paragraph(page_number=1, paragraph_index=0, text="Consolidated Balance Sheets"),
+        Paragraph(page_number=1, paragraph_index=1, text=_BALANCE),
+    ]
+    page_text, offsets = _build_page_text(paragraphs)
+
+    chunks = _chunk_page_text(
+        page_text, offsets, page_number=1, chunk_size_tokens=17, overlap_tokens=4
+    )
+
+    assert len(chunks) > 2
+    lines = set(page_text.splitlines())
+    for chunk in chunks:
+        for line in chunk.text.splitlines():
+            if "|" in line:
+                assert line in lines, line
+        start, end = chunk.char_range
+        assert page_text[start:end].strip() == chunk.text
+    assert any("Total assets | January 28, 2023: $ 15,803" in chunk.text for chunk in chunks)
+
+
+def test_a_table_line_longer_than_the_cap_is_still_split():
+    from app.ingestion.chunker import TABLE_LINE_MAX_CHARS
+
+    line = " | ".join(f"cell {n}: {n}" for n in range(TABLE_LINE_MAX_CHARS // 8))
+    paragraphs = [Paragraph(page_number=1, paragraph_index=0, text=line)]
+    page_text, offsets = _build_page_text(paragraphs)
+
+    chunks = _chunk_page_text(
+        page_text, offsets, page_number=1, chunk_size_tokens=50, overlap_tokens=5
+    )
+
+    assert len(chunks) > 1
+    assert max(len(chunk.text) for chunk in chunks) < len(line)
+
+
+def test_the_baseline_names_its_table_row_boundaries():
+    from app.ingestion.chunking_config import ChunkingConfig
+
+    # A new boundary rule re-indexes through the fingerprint mismatch path.
+    assert ChunkingConfig.current_baseline().boundary_strategy == (
+        "word_sentence_table_row_heading_page_v2"
+    )

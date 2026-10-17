@@ -58,7 +58,7 @@ class ChunkingConfig:
             hard_max_tokens=None,
             tokenizer_model=QWEN3_EMBEDDING_TOKENIZER,
             tokenizer_revision=QWEN3_TOKENIZER_REVISION,
-            boundary_strategy="legacy_word_sentence_heading_page_v1",
+            boundary_strategy="word_sentence_table_row_heading_page_v2",
         )
 
     @classmethod
