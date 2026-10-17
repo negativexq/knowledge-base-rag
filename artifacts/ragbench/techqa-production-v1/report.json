@@ -1,0 +1,409 @@
+{
+  "meta": {
+    "dataset": "RAGBench TechQA HOLDOUT50",
+    "parquet_sha256": "426f360d12b5d3589b66293c3417d3686a9d69eba3e82938e93d3e1545681264",
+    "documents": 769,
+    "collection": "kb_bench_techqa",
+    "tenant": "bench-techqa",
+    "model": "gpt-6-luna",
+    "ingest": {
+      "chunks_upserted": "existing",
+      "seconds": 0
+    },
+    "retrieval_scope": "open_corpus",
+    "top_n": 14,
+    "candidate_k": 40,
+    "flags": {
+      "DERIVED_ANSWERS_ENABLED": true,
+      "OPERAND_RESOLVER_ENABLED": true,
+      "VISUAL_ANSWERS_ENABLED": true
+    },
+    "scores": "semantic-scores.csv"
+  },
+  "questions": 50,
+  "top_n": 14,
+  "candidate_k": 40,
+  "response_kinds": {
+    "answered": 29,
+    "model_abstained": 14,
+    "validator_blocked": 7
+  },
+  "retrieval_hit_top": {
+    "rate": 0.9024,
+    "n": 41
+  },
+  "retrieval_hit_candidates": {
+    "rate": 1.0,
+    "n": 41
+  },
+  "citation_on_relevant": {
+    "rate": 0.8462,
+    "n": 26
+  },
+  "acl_leaks": 0,
+  "median_seconds": 27.9,
+  "semantic": {
+    "counts": {
+      "PARTIAL": 10,
+      "CORRECT": 16,
+      "UNAVAILABLE": 23,
+      "INCORRECT": 1
+    },
+    "useful_rate": 0.52,
+    "correct_rate": 0.32,
+    "incorrect_rate": 0.02,
+    "unavailable_rate": 0.46
+  },
+  "per_question": [
+    {
+      "qid": "techqa_DEV_Q252",
+      "response_kind": "answered",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q126",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q112",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q277",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q157",
+      "response_kind": "answered",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q250",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q206",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q018",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q275",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q218",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q166",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q035",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q181",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q246",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q296",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q300",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q047",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q259",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q085",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q149",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q008",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q036",
+      "response_kind": "answered",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q012",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q044",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q188",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q119",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q267",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "INCORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q039",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q182",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q220",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q237",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q111",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q092",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q173",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q146",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q129",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q238",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q051",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q205",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q239",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q095",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q077",
+      "response_kind": "answered",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q032",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q172",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q174",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q308",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    },
+    {
+      "qid": "techqa_DEV_Q251",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q297",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "UNAVAILABLE"
+    },
+    {
+      "qid": "techqa_DEV_Q283",
+      "response_kind": "answered",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": "PARTIAL"
+    },
+    {
+      "qid": "techqa_DEV_Q186",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": "CORRECT"
+    }
+  ]
+}

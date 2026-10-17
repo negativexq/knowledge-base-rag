@@ -5864,3 +5864,29 @@ console images were removed. `docs/architecture.md` uses the workspace name
 and `.env.example` lists the three optional answer flags.
 
 `make test`: 1752 passed, 4 skipped (no backend change).
+
+## Measure — TechQA HOLDOUT50 on the production path (closing note)
+
+`scripts/benchmarks/run_techqa_production.py` (pure logic in
+`app/evaluation/techqa.py`) asks the frozen TechQA HOLDOUT50 over the same
+769-document corpus through today's production path: production ingestion
+(1116 chunks, 92 min of local embedding), whole-corpus search, reranker 40/14,
+evidence, luna, validators, derived answers and the operand resolver on.
+Result (`artifacts/ragbench/techqa-production-v1`, graded by one reviewer
+with the canonical rubric against RAGBench's reference response): 16 correct,
+10 partial, 1 incorrect, 23 unavailable, so 26/50 (52%) useful against 35/50
+(70%) for the August pipeline (15/20/1/14). A relevant document reached the
+top-14 for 37/41 questions and the 40 candidates for 41/41; answers cite a
+relevant document 22/26 times; no ACL leak.
+
+Per question, 22 stay useful, 4 are newly useful, 13 are lost and 11 stay
+unusable. The losses are refusals, not wrong answers: the model abstains
+outright on retrieved support questions (14 model abstentions, e.g. the Log
+File Agent version), and the critical-value validator forces abstention on
+long version-heavy answers as CRITICAL_VALUE_INDETERMINATE (7 blocks, e.g.
+the MQ resource-adapter version map, which the August run answered
+correctly). Retrieval is not the cause. Next candidates: the answer prompt's
+abstention wording since the MMLongBench work, and INDETERMINATE handling for
+answers with many VERSION values.
+
+`make test`: 1758 passed, 4 skipped.
