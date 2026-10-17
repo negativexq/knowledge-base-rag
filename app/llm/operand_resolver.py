@@ -43,7 +43,13 @@ program over named operands and return
 - "program": an expression over the operand names with + - * / and parentheses
   (and 100, for a percentage), e.g. "(a - b) / b * 100". A named ratio or
   measure (a return, a coverage ratio, EBITDA) is computed from its
-  standard definition. Write the program even when some operand values are missing.
+  standard definition. A figure that definition uses but no unit prints as
+  such is planned from the printed figures it is defined by:
+  capital employed = total assets - current liabilities;
+  an average balance = (this year's + last year's) / 2;
+  total debt = long-term debt + its current portion (plus lease liabilities
+  only when the question says so). A shortfall or gap is the larger minus the smaller figure.
+  Write the program even when some operand values are missing.
   null only when the question does not ask for a computed number.
 - Each operand: "name" (a, b, c, ...); "what": the figure in the question's
   words; "value": one figure exactly as one unit prints it, or null (a
