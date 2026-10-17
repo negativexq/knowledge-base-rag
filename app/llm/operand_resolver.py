@@ -14,6 +14,7 @@ and a value whose labels its unit does not print is never used.
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 from collections.abc import Awaitable, Callable
@@ -69,6 +70,8 @@ _PROGRAM_TOKEN = re.compile(r"[a-z][a-z0-9_]*|\d+(?:\.\d+)?|[+\-*/()\s]")
 # Units found by a targeted search are few: the best blocks per missing operand.
 RETRIEVED_BLOCKS_PER_OPERAND = 3
 DEFAULT_DECIMALS = 2
+# A printed total may differ from the sum of its rounded rows by a unit.
+TOTAL_ROUNDING = 1.0
 
 
 @dataclass(frozen=True)
@@ -350,19 +353,80 @@ async def _plan(
 
 def _bind_all(
     plan: OperandPlan, units: list[SupportUnit], trace: ResolverTrace
-) -> tuple[list[Operand], list[Fact]]:
+) -> tuple[list[Operand], dict[str, Fact]]:
     available = support_unit_map(units)
     blocks = block_texts(units)
     missing = []
-    facts = []
+    facts = {}
     for operand in plan.operands:
         codes, fact = bound_fact(operand, available, blocks)
         trace.operand_codes[operand.name] = codes
         if codes:
             missing.append(operand)
         elif fact is not None:
-            facts.append(fact)
+            facts[operand.name] = fact
     return missing, facts
+
+
+def _sum_groups(program: str) -> list[set[str]]:
+    """The operand names added or subtracted together, per sum in the program."""
+    groups = []
+
+    def terms(node: ast.AST) -> list[ast.AST]:
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add | ast.Sub):
+            return terms(node.left) + terms(node.right)
+        return [node]
+
+    for node in ast.walk(ast.parse(program, mode="eval")):
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add | ast.Sub):
+            groups.append({term.id for term in terms(node) if isinstance(term, ast.Name)})
+    return groups
+
+
+def _key(fact: Fact) -> tuple[float, str, str]:
+    return fact.value, fact.row, fact.column
+
+
+def _total_parts(total: Fact, table: tuple[Fact, ...]) -> set[tuple[float, str, str]]:
+    """The rows a printed total sums: the rows right above it in its column
+    whose values add up to it (within rounding), back to no further than the
+    previous total row. None when no such run of rows adds up to it."""
+    keys = [_key(fact) for fact in table if fact.column == total.column]
+    if _key(total) not in keys:
+        return set()
+    parts: set[tuple[float, str, str]] = set()
+    running = 0.0
+    for key in reversed(keys[: keys.index(_key(total))]):
+        if _normalized(key[1]).startswith("total"):
+            break
+        parts.add(key)
+        running += key[0]
+        if abs(running - total.value) <= TOTAL_ROUNDING:
+            return parts
+    return set()
+
+
+def total_and_part_codes(
+    plan: OperandPlan, facts: dict[str, Fact], units: list[SupportUnit]
+) -> list[str]:
+    """A sum that adds a table's printed total and a row that total already
+    sums counts that row twice."""
+    available = support_unit_map(units)
+    blocks = block_texts(units)
+    operands = {operand.name: operand for operand in plan.operands}
+    for group in _sum_groups(plan.program or ""):
+        for name in group:
+            total = facts.get(name)
+            if total is None or not _normalized(total.row).startswith("total"):
+                continue
+            unit = available[operands[name].support_id or ""]
+            block = blocks.get(unit.parent_evidence_block_id, unit.text)
+            parts = _total_parts(total, unit_facts(block).facts)
+            if any(
+                other != name and other in facts and _key(facts[other]) in parts for other in group
+            ):
+                return ["OPERAND_TOTAL_AND_PART"]
+    return []
 
 
 async def resolve_operands(
@@ -414,8 +478,11 @@ async def resolve_operands(
             missing, facts = _bind_all(plan, units, trace)
     if missing:
         return plan, None, units, trace
-    if len({fact.scale for fact in facts if fact.scale}) > 1:
+    if len({fact.scale for fact in facts.values() if fact.scale}) > 1:
         trace.plan_codes.append("OPERAND_SCALE_MISMATCH")
+        return plan, None, units, trace
+    if codes := total_and_part_codes(plan, facts, units):
+        trace.plan_codes.extend(codes)
         return plan, None, units, trace
     try:
         calculation = compute(plan)

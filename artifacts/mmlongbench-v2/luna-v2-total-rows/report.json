@@ -1,0 +1,313 @@
+{
+  "meta": {
+    "dataset": "yubo2333/MMLongBench-Doc",
+    "revision": "2ff6aa9237fc777b6627dc57a486e9225ac5fb86",
+    "documents": 1,
+    "questions": 3,
+    "collection": "kb_bench_mmlongbench_v2",
+    "tenant": "bench-mmlongbench",
+    "model": "gpt-6-luna",
+    "top_n": 14,
+    "candidate_k": 40,
+    "ingest": {
+      "chunks_upserted": "existing",
+      "seconds": 0
+    },
+    "median_seconds": 28.2,
+    "ocr_available": true,
+    "evidence": "retrieved",
+    "retrieval_scope": "question_document",
+    "labels": "data/benchmarks/mmlongbench-doc-v2/samples.json"
+  },
+  "overall": {
+    "questions": 3,
+    "ingestion_evidence_page_coverage": {
+      "rate": 1.0,
+      "n": 3
+    },
+    "retrieval_hit_at_14": {
+      "rate": 1.0,
+      "n": 3
+    },
+    "retrieval_hit_at_40": {
+      "rate": 1.0,
+      "n": 3
+    },
+    "gold_in_page_text": {
+      "rate": 0.0,
+      "n": 1
+    },
+    "gold_in_evidence": {
+      "rate": 0.0,
+      "n": 1
+    },
+    "evidence_page_seen": {
+      "rate": 1.0,
+      "n": 3
+    },
+    "answer_accuracy": {
+      "rate": 0.6667,
+      "n": 3
+    },
+    "citation_accuracy": {
+      "rate": 0.6667,
+      "n": 3
+    }
+  },
+  "slices": {
+    "text": {
+      "questions": 0,
+      "ingestion_evidence_page_coverage": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_14": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_40": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": null,
+        "n": 0
+      },
+      "answer_accuracy": {
+        "rate": null,
+        "n": 0
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    },
+    "layout": {
+      "questions": 0,
+      "ingestion_evidence_page_coverage": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_14": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_40": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": null,
+        "n": 0
+      },
+      "answer_accuracy": {
+        "rate": null,
+        "n": 0
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    },
+    "table": {
+      "questions": 3,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "gold_in_page_text": {
+        "rate": 0.0,
+        "n": 1
+      },
+      "gold_in_evidence": {
+        "rate": 0.0,
+        "n": 1
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 3
+      },
+      "answer_accuracy": {
+        "rate": 0.6667,
+        "n": 3
+      },
+      "citation_accuracy": {
+        "rate": 0.6667,
+        "n": 3
+      }
+    },
+    "chart": {
+      "questions": 0,
+      "ingestion_evidence_page_coverage": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_14": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_40": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": null,
+        "n": 0
+      },
+      "answer_accuracy": {
+        "rate": null,
+        "n": 0
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    },
+    "figure": {
+      "questions": 0,
+      "ingestion_evidence_page_coverage": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_14": {
+        "rate": null,
+        "n": 0
+      },
+      "retrieval_hit_at_40": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": null,
+        "n": 0
+      },
+      "answer_accuracy": {
+        "rate": null,
+        "n": 0
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    }
+  },
+  "answerability": {
+    "unanswerable_correctly_refused": {
+      "rate": null,
+      "n": 0
+    },
+    "answerable_coverage": {
+      "rate": 1.0,
+      "n": 3
+    }
+  },
+  "response_kinds": {
+    "answered": 3
+  },
+  "loss_stages": {
+    "unmeasured": 1
+  },
+  "acl_leaks": 0,
+  "per_question": [
+    {
+      "row_idx": 1017,
+      "doc_id": "COSTCO_2021_10K.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "response_kind": "answered",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": false,
+      "gold_in_page_text": false,
+      "gold_in_evidence": false,
+      "evidence_page_seen": true,
+      "loss_stage": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 1018,
+      "doc_id": "COSTCO_2021_10K.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "response_kind": "answered",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": false,
+      "citation_on_evidence": true,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": "unmeasured",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 1023,
+      "doc_id": "COSTCO_2021_10K.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "response_kind": "answered",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": true,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": null,
+      "acl_leaks": 0
+    }
+  ]
+}

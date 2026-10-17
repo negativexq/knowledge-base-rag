@@ -517,3 +517,120 @@ def test_the_instructions_prefer_a_printed_total_over_its_parts():
     from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
 
     assert "printed total" in RESOLVER_INSTRUCTIONS
+
+
+# luna V2 row 1018, after the printed-total rule: "(6692 + 799 + 222 + 3916)"
+# added the lease table's total and one of the parts it already sums (222).
+
+LEASES = (
+    "Table:  | 2021 | 2020\n"
+    "Assets\n"
+    "Operating lease right-of-use assets | 2021: $ 2,890 | 2020: $ 2,788\n"
+    "Total lease assets | 2021: $ 3,890 | 2020: $ 3,380\n"
+    "Liabilities\n"
+    "Current\n"
+    "Operating lease liabilities(2) | 2021: $ 222 | 2020: $ 231\n"
+    "Finance lease liabilities(2) | 2021: 72 | 2020: 31\n"
+    "Long-term\n"
+    "Operating lease liabilities | 2021: 2,642 | 2020: 2,558\n"
+    "Finance lease liabilities(3) | 2021: 980 | 2020: 657\n"
+    "Total lease liabilities | 2021: $ 3,916 | 2020: $ 3,477"
+)
+DEBT = "Long-term debt, excluding current portion | 2021: 6,692 | 2020: 7,514"
+
+
+def _lease_plan(program, operands):
+    return {
+        "program": program,
+        "operands": operands,
+        "result_label": "Total debt, FY2021",
+        "percent": False,
+        "decimals": None,
+    }
+
+
+TOTAL = _op("t", "3,916", "E1.S1", ["Total lease liabilities", "2021"])
+PART = _op("p", "222", "E1.S1", ["Operating lease liabilities(2)", "Current", "2021"])
+LTD = _op("d", "6,692", "E2.S1", ["Long-term debt, excluding current portion", "2021"])
+
+
+async def _lease_resolve(plan):
+    return await resolve_operands(
+        "What is Costco's total debt in FY2021 including all lease liabilities?",
+        _units(LEASES, DEBT),
+        _Provider(plan),
+        generation_kwargs={"model": "m"},
+        prompt_version="v3",
+        context_serializer=None,
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_sum_of_a_printed_total_and_one_of_its_parts_is_refused():
+    plan, calculation, _, trace = await _lease_resolve(_lease_plan("d + p + t", [LTD, PART, TOTAL]))
+
+    assert calculation is None
+    assert trace.plan_codes == ["OPERAND_TOTAL_AND_PART"]
+
+
+@pytest.mark.asyncio
+async def test_a_printed_total_alone_is_summed():
+    plan, calculation, _, trace = await _lease_resolve(_lease_plan("d + t", [LTD, TOTAL]))
+
+    assert calculation is not None and calculation.result == "10,608"
+
+
+@pytest.mark.asyncio
+async def test_a_part_over_its_total_is_a_share_not_a_double_count():
+    plan, calculation, _, trace = await _lease_resolve(_lease_plan("p / t", [PART, TOTAL]))
+
+    assert calculation is not None and trace.plan_codes == []
+
+
+@pytest.mark.asyncio
+async def test_a_row_after_an_earlier_total_is_not_its_part():
+    other = _op("p", "2,890", "E1.S1", ["Operating lease right-of-use assets", "2021"])
+    plan, calculation, _, trace = await _lease_resolve(_lease_plan("p + t", [other, TOTAL]))
+
+    assert calculation is not None
+
+
+# Best Buy's balance sheet prints no "Total liabilities": the rows above
+# "Total equity" back to "Total current liabilities" include long-term debt.
+# Only the rows that add up to the printed total are its parts, so 1075's
+# capitalization ratio, a / (a + b) with long-term debt and total equity, stands.
+
+EQUITY = (
+    "Table:  | 2023 | 2022\n"
+    "Total current liabilities | 2023: 8,979 | 2022: 10,674\n"
+    "Long-term debt | 2023: 1,160 | 2022: 1,216\n"
+    "Long-term liabilities | 2023: 705 | 2022: 533\n"
+    "Common stock | 2023: 22 | 2022: 23\n"
+    "Retained earnings | 2023: 2,430 | 2022: 2,668\n"
+    "Accumulated other comprehensive income | 2023: 343 | 2022: 329\n"
+    "Total equity | 2023: 2,795 | 2022: 3,020"
+)
+
+
+@pytest.mark.asyncio
+async def test_only_rows_that_add_up_to_the_total_are_its_parts():
+    plan = {
+        "program": "a / (a + b) * 100",
+        "operands": [
+            _op("a", "1,160", "E1.S1", ["Long-term debt", "2023"]),
+            _op("b", "2,795", "E1.S1", ["Total equity", "2023"]),
+        ],
+        "result_label": "Capitalization ratio",
+        "percent": True,
+        "decimals": 1,
+    }
+    _, calculation, _, trace = await resolve_operands(
+        "What is the capitalization ratio?",
+        _units(EQUITY),
+        _Provider(plan),
+        generation_kwargs={"model": "m"},
+        prompt_version="v3",
+        context_serializer=None,
+    )
+
+    assert calculation is not None and trace.plan_codes == []
