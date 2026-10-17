@@ -5085,3 +5085,17 @@ header ("2021: 6,692"), as some tables already are; it would also bind survey ce
 (227). Left for later.
 
 `make test`: 1664 passed, 4 skipped.
+
+## Fix — an average's divisor needs no citation; financial ratios stop here (closing note)
+
+`luna-resolver-rows-2` (11 withheld rows after PR #62): label binding through the
+block works (1020 and 1075 resolved), but both answers differ from the gold's debt
+definition (0.16 vs 0.25, 29.3% vs 29.6%); the rest abstain because a derived
+measure was not decomposed (EBITDA, total debt), values were not found after the
+search (727, 1074, 380), or 1073's average equity `(3020 + 2795) / 2` was rejected:
+2 is printed in no unit. A sum of n terms divided by n is an average, and that n
+now needs no citation; any other uncited number still fails. Work on 10-K ratios
+stops here: what is left is mostly which definition the gold uses, and pushing on it
+would be benchmark tuning. Next: column headers in table cells, then visual input.
+
+`make test`: 1666 passed, 4 skipped.
