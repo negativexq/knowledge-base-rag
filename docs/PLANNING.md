@@ -5000,3 +5000,19 @@ change: both operands must be printed in the cited units and 100 is allowed. Not
 measured yet; the prompt reaches every row, so it needs a full rerun.
 
 `make test`: 1644 passed, 4 skipped.
+
+## Measure and revert — full luna run with the premise and format fixes (closing note)
+
+`luna-full-premise` (PRs #55–#57, otherwise as `luna-full-derived`): 44/100
+answerable correct (from 47), 16/20 unanswerable refused (from 17), coverage 59,
+blocked 7, abstained 50. The targeted fixes worked: 221 ("12.0") and 741 ("about
+42%") now pass, and the color check refused 471 and 635. The share × sample rule
+gained none of 206, 219, 225, 227 (the model said the sample size was not given),
+and the run lost counts it had given (513, 835 without `counts`; 658 listed one of
+two items) and three financial ratios it had computed (1015, 1021, 1024 abstained),
+the same pattern as the "every number you counted" sentence reverted in PR #51.
+519 abstained and 365, 388, 520 (unanswerable) were answered, with no tie to the
+changes; luna varies between runs. The rule is reverted, with a test keeping it
+out; the format and color fixes stay.
+
+`make test`: 1644 passed, 4 skipped.

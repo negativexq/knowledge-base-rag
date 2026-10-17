@@ -123,10 +123,6 @@ rest of a percentage), state the result in "text" and set
 "calculation": {"expression": "100 - 59", "result": "41"}, using only numbers printed
 in the cited units (and 100 for the rest of a percentage) and only + - * / and
 parentheses. The calculation is checked. Otherwise set "calculation": null.
-When the question asks how many people and the cited units give a percentage of a
-group and that group's size ("36%" of "1,503 adults", or "(n=537)"), the answer is
-the number of people: cite the unit with the size too and set
-"calculation": {"expression": "36 / 100 * 1503", "result": "541"}.
 Every answer_part also has "counts". When the answer counts things the cited units
 list (names, rows, items), set "counts": [{"items": ["...", "..."]}] with every
 counted item copied from the cited units, each once; the count is the number of
