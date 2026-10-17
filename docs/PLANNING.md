@@ -5216,3 +5216,30 @@ abstained, like 634. The check is left as strict as it is: it is what refused th
 wrong readings on the unanswerable controls. The visual path work stops here.
 
 No code change; `make test` unchanged at 1689 passed, 4 skipped.
+
+## Table facts — operands bind to one (value, row, column) fact (closing note)
+
+The resolver bound an operand when its unit printed the value and a label, so
+6,692 could bind to a "Total debt" row by a "Long-term debt" label printed
+elsewhere in the same table. `app/evidence/table_facts.py` now reads each value
+cell of a parser table row ("Long-term debt | 2021: 6,692") as a fact with its
+row label and column from the same line; a row printed without headers takes
+them from the block's `Table:` line by position, only when the cell counts
+match. An operand whose value is in a table binds only to the one fact its
+labels name (one label in the row, every label in the row or column):
+`OPERAND_FACT_AMBIGUOUS` when several match, `OPERAND_FACT_UNRESOLVED` when the
+value's row or column cannot be read or its cell prints two numbers. A value
+printed only in prose keeps the text binding. Operands from tables whose
+headers state different scales ("in millions" vs "in thousands") are not
+combined (`OPERAND_SCALE_MISMATCH`); a scale stated outside the table header
+is not seen.
+
+Scope is the resolver path only (a withheld first answer), so no score change
+is expected: answers that passed the first validator (212, 386) are untouched;
+applying fact binding to them is a separate decision. Offline replay (local
+retrieval on the v9 index, no generation) bound every saved resolver operand
+of 380, 1018, 1020, 1023, 1073, 1075 and 1079 exactly as the text rule did. A
+separate header-row fetch was not needed: rows already repeat their column
+headers, and headerless rows use the block's header line.
+
+`make test`: 1699 passed, 4 skipped.

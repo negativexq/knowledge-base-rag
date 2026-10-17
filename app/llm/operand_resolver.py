@@ -26,6 +26,7 @@ from app.evidence.support_units import (
     serialize_support_units,
     support_unit_map,
 )
+from app.evidence.table_facts import Fact, header_line, unit_facts
 from app.llm.calculation import Calculation, evaluate_expression, numbers_in
 from app.llm.premise import missing_question_dates, missing_question_years
 from app.llm.prompt import build_messages
@@ -181,34 +182,67 @@ def block_texts(units: list[SupportUnit]) -> dict[str, str]:
     return {block: "\n".join(parts) for block, parts in texts.items()}
 
 
+def _names(fact: Fact, labels: list[str]) -> bool:
+    """Every label is in the fact's row or column, and one is in its row."""
+    row, column = _normalized(fact.row), _normalized(fact.column)
+    return any(label in row for label in labels) and all(
+        label in row or label in column for label in labels
+    )
+
+
+def bound_fact(
+    operand: Operand,
+    available: dict[str, SupportUnit],
+    blocks: dict[str, str] | None = None,
+) -> tuple[list[str], Fact | None]:
+    """Failure codes for one operand, and the table fact it is bound to.
+
+    A value its unit prints in a table row binds only to the one fact (value,
+    row label, column) its labels name; a value whose row or column cannot be
+    read is unresolved. A value printed only in prose binds when the unit
+    prints a label and every other label is in the unit or its block.
+    """
+    if operand.value is None or operand.support_id is None:
+        return ["OPERAND_MISSING"], None
+    unit = available.get(operand.support_id)
+    if unit is None or not unit.model_visible or not unit.authorized:
+        return ["OPERAND_UNIT_UNAVAILABLE"], None
+    values = numbers_in(operand.value)
+    if len(values) != 1:
+        return ["OPERAND_VALUE_NOT_A_NUMBER"], None
+    if values[0] not in numbers_in(unit.text):
+        return ["OPERAND_VALUE_NOT_IN_UNIT"], None
+    if not operand.labels:
+        return ["OPERAND_LABELS_MISSING"], None
+    block = (blocks or {}).get(unit.parent_evidence_block_id, unit.text)
+    labels = [_normalized(label) for label in operand.labels]
+    table = unit_facts(unit.text, header_line(block))
+    candidates = [fact for fact in table.facts if fact.value == values[0]]
+    if candidates or values[0] in table.unresolved:
+        named = [fact for fact in candidates if _names(fact, labels)]
+        if values[0] in table.unresolved and len(named) <= 1:
+            return ["OPERAND_FACT_UNRESOLVED"], None
+        if len(named) > 1:
+            return ["OPERAND_FACT_AMBIGUOUS"], None
+        if not named:
+            return ["OPERAND_LABEL_NOT_IN_UNIT"], None
+        return [], named[0]
+    unit_text = _normalized(unit.text)
+    block_text = _normalized(block)
+    if not any(label in unit_text for label in labels) or any(
+        label not in unit_text and label not in block_text for label in labels
+    ):
+        return ["OPERAND_LABEL_NOT_IN_UNIT"], None
+    return [], None
+
+
 def bind_operand(
     operand: Operand,
     available: dict[str, SupportUnit],
     blocks: dict[str, str] | None = None,
 ) -> list[str]:
-    """Failure codes for one operand; empty when its unit prints the value and
-    a label, and every other label is in the unit or its block (a table row
-    prints no column header; the header row is elsewhere in the block)."""
-    if operand.value is None or operand.support_id is None:
-        return ["OPERAND_MISSING"]
-    unit = available.get(operand.support_id)
-    if unit is None or not unit.model_visible or not unit.authorized:
-        return ["OPERAND_UNIT_UNAVAILABLE"]
-    values = numbers_in(operand.value)
-    if len(values) != 1:
-        return ["OPERAND_VALUE_NOT_A_NUMBER"]
-    if values[0] not in numbers_in(unit.text):
-        return ["OPERAND_VALUE_NOT_IN_UNIT"]
-    if not operand.labels:
-        return ["OPERAND_LABELS_MISSING"]
-    unit_text = _normalized(unit.text)
-    block_text = _normalized((blocks or {}).get(unit.parent_evidence_block_id, unit.text))
-    labels = [_normalized(label) for label in operand.labels]
-    if not any(label in unit_text for label in labels) or any(
-        label not in unit_text and label not in block_text for label in labels
-    ):
-        return ["OPERAND_LABEL_NOT_IN_UNIT"]
-    return []
+    """Failure codes for one operand; empty when it is bound."""
+    return bound_fact(operand, available, blocks)[0]
 
 
 def plan_codes(plan: OperandPlan) -> list[str]:
@@ -292,16 +326,21 @@ async def _plan(
         return None
 
 
-def _bind_all(plan: OperandPlan, units: list[SupportUnit], trace: ResolverTrace) -> list[Operand]:
+def _bind_all(
+    plan: OperandPlan, units: list[SupportUnit], trace: ResolverTrace
+) -> tuple[list[Operand], list[Fact]]:
     available = support_unit_map(units)
     blocks = block_texts(units)
     missing = []
+    facts = []
     for operand in plan.operands:
-        codes = bind_operand(operand, available, blocks)
+        codes, fact = bound_fact(operand, available, blocks)
         trace.operand_codes[operand.name] = codes
         if codes:
             missing.append(operand)
-    return missing
+        elif fact is not None:
+            facts.append(fact)
+    return missing, facts
 
 
 async def resolve_operands(
@@ -323,7 +362,7 @@ async def resolve_operands(
     if plan is None or (codes := plan_codes(plan)):
         trace.plan_codes.extend(codes if plan is not None else [])
         return None, None, units, trace
-    missing = _bind_all(plan, units, trace)
+    missing, facts = _bind_all(plan, units, trace)
     if missing and retrieve is not None:
         retrieved: list[SearchResult] = []
         for operand in missing:
@@ -348,8 +387,11 @@ async def resolve_operands(
             if plan is None or (codes := plan_codes(plan)):
                 trace.plan_codes.extend(codes if plan is not None else [])
                 return None, None, units, trace
-            missing = _bind_all(plan, units, trace)
+            missing, facts = _bind_all(plan, units, trace)
     if missing:
+        return plan, None, units, trace
+    if len({fact.scale for fact in facts if fact.scale}) > 1:
+        trace.plan_codes.append("OPERAND_SCALE_MISMATCH")
         return plan, None, units, trace
     try:
         calculation = compute(plan)
