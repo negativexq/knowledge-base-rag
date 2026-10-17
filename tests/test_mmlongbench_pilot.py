@@ -616,3 +616,62 @@ def test_a_page_number_only_close_to_the_gold_does_not_make_it_visible():
     from app.evaluation.mmlongbench import gold_visible
 
     assert gold_visible(_numeric_question("815", "Int"), ["We operated 811 warehouses."]) is False
+
+
+# MMLongBench-Doc-V2 (VectifyAI) corrects 106 gold answers and rewrites
+# ambiguous questions, keeping V1's row order and dropping 20 rows. A V1 row
+# takes its V2 sample's fields; rows are aligned in order by document, and a
+# pair that shares no question text, answer or evidence pages is not taken as
+# the same question.
+
+from app.evaluation.mmlongbench import corrected_rows  # noqa: E402
+
+
+def _v1v2_row(doc, question, answer, pages="[1]"):
+    return {
+        "doc_id": doc,
+        "doc_type": "Report",
+        "question": question,
+        "answer": answer,
+        "answer_format": "Str",
+        "evidence_pages": pages,
+        "evidence_sources": "['Pure-text (Plain-text)']",
+    }
+
+
+def test_v1_rows_take_their_v2_corrections_in_order():
+    v1 = [
+        _v1v2_row("a.pdf", "What is long-term debt?", "10314"),
+        _v1v2_row("a.pdf", "What is the gap?", "73.0", "[16]"),
+        _v1v2_row("b.pdf", "Dropped question", "x"),
+        _v1v2_row("c.pdf", "Who wrote it?", "Ann"),
+    ]
+    v2 = [
+        _v1v2_row("a.pdf", "What is long-term debt, including leases?", "10314"),
+        _v1v2_row("a.pdf", "What is the gap?", "12.0", "[16]"),
+        _v1v2_row("c.pdf", "Who wrote it?", "Ann"),
+    ]
+
+    rows = corrected_rows(v1, v2)
+
+    assert rows[0]["question"] == "What is long-term debt, including leases?"
+    assert rows[1]["answer"] == "12.0"
+    assert rows[2] is None
+    assert rows[3]["answer"] == "Ann"
+
+
+def test_a_misaligned_v2_file_is_refused():
+    v1 = [_v1v2_row("a.pdf", "What is the revenue in 2021?", "5", "[2]")]
+    v2 = [_v1v2_row("a.pdf", "Who signed off?", "Acme", "[9]")]
+
+    with pytest.raises(ValueError):
+        corrected_rows(v1, v2)
+
+
+def test_a_v2_refusal_gold_that_also_accepts_zero_is_unanswerable():
+    # V2 labels 14 questions "Not answerable or 0 or none": a refusal is right.
+    row = _v1v2_row("a.pdf", "What time does the red bar start?", "Not answerable or 0 or none")
+    row["evidence_pages"] = "[]"
+    row["evidence_sources"] = "[]"
+
+    assert parse_question(row, 475).answerable is False

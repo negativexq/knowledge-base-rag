@@ -5263,3 +5263,27 @@ do not match the new index). 19 rows print a table number.
 So fact binding stays on the resolver path only; a first answer is not
 re-checked against table facts. No code change; `make test` unchanged at 1699
 passed, 4 skipped.
+
+## Eval — full luna run, OCR re-index, MMLongBench-Doc-V2 labels (closing note)
+
+`luna-full-v9` (all flags, V1 labels) scored 45/100 answerable, 17/20 refused. Nine
+answerable rows had lost their evidence pages: the v9 re-index ran on the host
+without Tesseract, so the slide decks' image-only pages yielded nothing (the
+earlier index had OCR). Tesseract is now installed on the host (`tur+eng`, with
+`TESSDATA_PREFIX`), and the index was rebuilt with OCR.
+
+MMLongBench-Doc-V2 (VectifyAI, Apache-2.0) corrects 106 gold answers and spells
+out ambiguous questions (the 10-K debt definitions now say what to include),
+keeping V1's row order. `corrected_rows` aligns V1 rows with V2 samples (same
+document, and the same text, answer or evidence pages, else refused);
+`--labels <samples.json>` runs and scores with them. "Not answerable or 0 or
+none" counts as unanswerable. 24 of our 120 rows change, none is dropped.
+
+`luna-full-v2` merges `luna-full-v9` with the 23 rows re-asked (14 rewritten
+questions, 9 OCR-restored rows) and rescores all 120 with V2 labels: answerable
+53/99 correct, 36 refused, 10 wrong; unanswerable 18/21 refused. Over all 120:
+71 right (59%), 13 wrong (11%), 36 refused (30%). Scoring stays the
+deterministic contains-match (no LLM judge). Loss audit in
+`artifacts/mmlongbench-v2/luna-full-v2/audit.md`.
+
+`make test`: 1702 passed, 4 skipped.
