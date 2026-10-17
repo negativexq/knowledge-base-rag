@@ -116,3 +116,12 @@ def test_a_calculation_with_parentheses_is_scored_by_its_result():
         "41.67",
         "Float",
     )
+
+
+def test_the_day_of_a_date_is_not_the_stated_number():
+    # luna full run 1085: "...ending January 28, 2023 was 20.7%" scored 28.
+    answer = "Best Buy's effective tax ratio for the fiscal year ending January 28, 2023 was 20.7%."
+
+    assert answer_matches(answer, "20.7%", "Float")
+    assert answer_matches("On 24th of March 2015, 150 people died.", "150", "Int")
+    assert not answer_matches(answer, "28", "Int")

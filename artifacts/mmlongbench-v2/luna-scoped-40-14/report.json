@@ -45,7 +45,7 @@
       "n": 100
     },
     "answer_accuracy": {
-      "rate": 0.23,
+      "rate": 0.24,
       "n": 100
     },
     "citation_accuracy": {
@@ -151,7 +151,7 @@
         "n": 55
       },
       "answer_accuracy": {
-        "rate": 0.1273,
+        "rate": 0.1455,
         "n": 55
       },
       "citation_accuracy": {
@@ -248,7 +248,7 @@
   "loss_stages": {
     "generation": 19,
     "not_in_page_text": 14,
-    "unmeasured": 44
+    "unmeasured": 43
   },
   "acl_leaks": 0,
   "per_question": [
@@ -2613,12 +2613,12 @@
       "hit_top": true,
       "hit_candidates": true,
       "answered": true,
-      "correct": false,
+      "correct": true,
       "citation_on_evidence": false,
       "gold_in_page_text": null,
       "gold_in_evidence": null,
       "evidence_page_seen": true,
-      "loss_stage": "unmeasured",
+      "loss_stage": null,
       "acl_leaks": 0
     },
     {

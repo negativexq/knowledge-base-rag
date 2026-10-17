@@ -4919,3 +4919,32 @@ move between runs with the model (509, 221, 1015 this time), so these 39 rows ar
 tuned on; the full 120-question run measures the effect.
 
 `make test`: 1629 passed, 4 skipped.
+
+## Measure — full luna 40/14 with derived answers and the validator fixes (closing note)
+
+The full 120-question run (`luna-full-derived`: scoped retrieval, 40/14, derived
+answers on, PRs #46–#52) against the earlier full run (`luna-scoped-40-14`), both
+re-scored with the fixes below:
+
+| | luna-scoped-40-14 | luna-full-derived |
+| --- | ---: | ---: |
+| Answers correct | 24/100 | 47/100 |
+| Coverage | 34/100 | 63/100 |
+| Citations on evidence | 28/34 | 54/63 |
+| Unanswerable refused | 16/20 | 17/20 |
+| validator_blocked | 39 | 8 |
+| model_abstained | 43 | 46 |
+
+Tables gained most (7 to 23 of 55); charts and figures stay weak (1/10, 1/8). Of
+the 63 answers, 47 match the gold, so loosening the validator did not add wrong
+answers. Left blocked: 220 and 384 (unanswerable, correct), 639 (an invented 9%
+total), 1014 (no calculation given), 741 ("about 42%" against 41.7), 399, 509 and
+221 (model output). Wrong answers: three unanswerable questions answered (471, 635,
+660), three survey counts that need share × sample (219, 225, 227), other debt
+definitions (1016, 1017), and misreadings or list and text formats.
+
+Scorer: the first stated number skipped years but not the day of a written date,
+so 1085's "…ending January 28, 2023 was 20.7%" scored 28. The day of a month-name
+date is now skipped; this lifts both full runs by one.
+
+`make test`: 1630 passed, 4 skipped.

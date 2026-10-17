@@ -219,6 +219,16 @@ SMALL_NUMBER_GOLD = 100
 TYPO_MIN_CHARS = 10
 TYPO_MIN_RATIO = 0.92
 _SUPPORT_ID = re.compile(r"\[(E\d+\.S\d+)\]")
+_MONTH_NAME = (
+    r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|"
+    r"sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?"
+)
+# The day of a written date ("January 28, 2023", "24th of March") is not a
+# number the answer states.
+_DATE_DAY = re.compile(
+    rf"\b{_MONTH_NAME}\s+\d{{1,2}}(?:st|nd|rd|th)?\b|\b\d{{1,2}}(?:st|nd|rd|th)?\s+(?:of\s+)?{_MONTH_NAME}",
+    re.IGNORECASE,
+)
 # A verified calculation as the answer renders it: "(calculation: 10 / 24 * 100 = 41.7%)".
 # The expression may hold parentheses ("10 / (10 + 14) * 100"); it holds no "=".
 _CALCULATION_RESULT = re.compile(r"\(calculation: [^=]*=\s*([^()=]+)\)")
@@ -256,8 +266,8 @@ def _is_year(value: float) -> bool:
 def _stated_number(prediction: str, gold: float) -> float | None:
     """The first number the answer states, in text order (number words
     included). A year is skipped unless the gold is one, so "In 2013, 41%..."
-    states 41."""
-    cleaned = re.sub(r"(?<=\d),(?=\d{3})", "", prediction.lower())
+    states 41; so is the day of a written date ("January 28, 2023")."""
+    cleaned = _DATE_DAY.sub(" ", re.sub(r"(?<=\d),(?=\d{3})", "", prediction.lower()))
     for match in _NUMBER_OR_WORD.finditer(cleaned):
         token = match.group()
         value = float(_NUMBER_WORDS[token]) if token in _NUMBER_WORDS else float(token)
