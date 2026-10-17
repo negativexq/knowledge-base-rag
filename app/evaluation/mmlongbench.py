@@ -337,6 +337,36 @@ def _item_matches(prediction: str, gold: str) -> bool:
     return gold_text in text or _typo_match(text, gold_text)
 
 
+# A number the answer writes with a unit that scales it: "25.04%" is the ratio
+# 0.2504, "1,358 (000's)" is 1,358,000.
+_SCALED = re.compile(
+    r"(\d[\d,]*(?:\.\d+)?)\s*(%|percent\b|\(000['’]?s\)|thousands?\b|millions?\b|billions?\b)",
+    re.IGNORECASE,
+)
+_FACTORS = {"%": 0.01, "percent": 0.01, "thousand": 1e3, "million": 1e6, "billion": 1e9}
+
+
+def _factor(unit: str) -> float:
+    unit = unit.lower()
+    if unit.startswith("("):
+        return 1e3
+    return _FACTORS.get(unit, _FACTORS.get(unit.removesuffix("s"), 1.0))
+
+
+def _value_matches(prediction: str, value: float, gold_text: str, gold: float) -> bool:
+    """The value, or the value as its unit scales it where the answer writes
+    one next to it. A gold that is itself a percentage is not read as a ratio."""
+    if _close(value, gold):
+        return True
+    for number, unit in _SCALED.findall(prediction):
+        factor = _factor(unit)
+        if factor == 0.01 and "%" in gold_text:
+            continue
+        if float(number.replace(",", "")) == value and _close(value * factor, gold):
+            return True
+    return False
+
+
 def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
     if gold == NOT_ANSWERABLE or answer_format == "None":
         return False
@@ -351,9 +381,11 @@ def answer_matches(prediction: str, gold: str, answer_format: str) -> bool:
         calculation = _CALCULATION_RESULT.search(prediction) or _COUNT_RESULT.search(prediction)
         if calculation:
             results = _numbers(calculation.group(1))
-            return bool(results) and _close(abs(results[0]), gold_numbers[0])
+            return bool(results) and _value_matches(
+                prediction, abs(results[0]), gold, gold_numbers[0]
+            )
         stated = _stated_number(prediction, gold_numbers[0])
-        return stated is not None and _close(stated, gold_numbers[0])
+        return stated is not None and _value_matches(prediction, stated, gold, gold_numbers[0])
     if answer_format == "List":
         try:
             items = [str(item) for item in _literal_list(gold)]

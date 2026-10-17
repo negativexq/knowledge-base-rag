@@ -675,3 +675,34 @@ def test_a_v2_refusal_gold_that_also_accepts_zero_is_unanswerable():
     row["evidence_sources"] = "[]"
 
     assert parse_question(row, 475).answerable is False
+
+
+# V2 audit, category A: answers right in substance that the contains-match
+# missed. 1020 and 1023 state a ratio as a percentage (gold 0.25, 0.192); 1025
+# states a share count in thousands ("1,358 (000's)", gold 1358000).
+@pytest.mark.parametrize(
+    ("prediction", "gold", "answer_format", "expected"),
+    [
+        (
+            "Long-term Debt to Total Liabilities is 25.04%. "
+            "(calculation: (6692 + 2642 + 980) / 41190 * 100 = 25.04) [E1.S50]",
+            "0.25",
+            "Float",
+            True,
+        ),
+        (
+            "total debt to total assets: 19.25% (calculation: (799 + 6692 + 3916) "
+            "/ 59268 * 100 = 19.25)",
+            "0.192",
+            "Float",
+            True,
+        ),
+        ("Costco repurchased 1,358 (000’s) shares in FY2021. [E1.S153]", "1358000", "Int", True),
+        ("It spent $495 million on repurchases.", "495", "Int", True),
+        ("The ratio is 12.64%.", "0.192", "Float", False),
+        ("The rate is 25%.", "0.25%", "Float", False),
+        ("The ratio is 0.25.", "25", "Float", False),
+    ],
+)
+def test_answer_matching_reads_percentages_and_thousands(prediction, gold, answer_format, expected):
+    assert answer_matches(prediction, gold, answer_format) is expected
