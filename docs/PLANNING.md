@@ -5413,3 +5413,24 @@ resolver instructions now ask for a printed total of the figures a definition
 sums, as one operand, over its parts. Prompt-only.
 
 `make test`: 1722 passed, 4 skipped.
+
+## Measurement and fix — a printed total plus one of its parts (closing note)
+
+`luna-v2-total-rows` (after the printed-total rule), gpt-6-luna, one run:
+1017 answers 11,407 (correct, from "Total lease liabilities" 3,916), 1023
+stays correct, 1018 answers 1.370 (gold 1.344): it added the printed total
+and the current operating lease liabilities (222), which the total already
+sums. The resolver now refuses a plan whose sum adds a table's printed total
+and one of its parts (`OPERAND_TOTAL_AND_PART`). A total's parts are the rows
+right above it in its column whose values add up to it within rounding, never
+past an earlier total row; with no such run there are no parts, so the check
+can miss but not invent a double count. Without the add-up condition, Best
+Buy's balance sheet (no "Total liabilities" row) made long-term debt a part of
+"Total equity" and would have refused 1075's capitalization ratio. On the
+indexed tables the parts found are the expected rows (lease liabilities,
+segment stores, capital expenditures, deferred tax assets). Of the saved
+plans that sum a total with another operand from its unit, only 1018 is
+refused; 1073, 1074 and 1075 stand. A part over its total (a share) is not a
+sum and stands.
+
+`make test`: 1727 passed, 4 skipped.
