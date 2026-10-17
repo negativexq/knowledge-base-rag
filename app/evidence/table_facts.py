@@ -20,7 +20,7 @@ from app.llm.calculation import numbers_in
 
 _HEADER = "Table:"
 _TEXT = re.compile(r"[^\W\d_]{2,}")
-_SCALE = re.compile(r"\bin\s+(thousands|millions|billions)\b", re.IGNORECASE)
+_SCALE = re.compile(r"\bin\s+(thousands|millions|billions|lacs|lakhs?|crores?)\b", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -28,7 +28,8 @@ class Fact:
     value: float
     row: str
     column: str
-    # "thousands", "millions" or "billions" when the table's header says so.
+    # "thousands", "millions", "billions", "lacs" or "crores" when the
+    # table's header says so.
     scale: str | None
     # The table's section line above the row ("Current", "Long-term"), or "".
     section: str = ""
@@ -52,7 +53,11 @@ def header_line(text: str) -> str | None:
 
 def _scale(header: str | None) -> str | None:
     match = _SCALE.search(header or "")
-    return match.group(1).casefold() if match else None
+    if not match:
+        return None
+    scale = match.group(1).casefold()
+    # One name per scale, so "lakh" and "lacs" are not two scales.
+    return {"lakh": "lacs", "lakhs": "lacs", "crore": "crores"}.get(scale, scale)
 
 
 def _row(

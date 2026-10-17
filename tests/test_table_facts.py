@@ -230,3 +230,12 @@ def test_a_label_may_name_the_facts_section():
     ]
     # A section alone names no row.
     assert _bind(LEASES, "222", ["Current", "2021"]) == ["OPERAND_LABEL_NOT_IN_UNIT"]
+
+
+def test_lakh_spellings_are_one_scale():
+    from app.evidence.table_facts import unit_facts
+
+    one = unit_facts("Table: (Rs. in lakhs) | 2003\nIncome | 2003: 10")
+    two = unit_facts("Table: Rupees in lacs | 2003\nIncome | 2003: 10")
+
+    assert one.facts[0].scale == two.facts[0].scale == "lacs"

@@ -668,3 +668,61 @@ def test_the_instructions_define_unprinted_measures_from_printed_figures():
         "larger minus the smaller",
     ):
         assert phrase in RESOLVER_INSTRUCTIONS
+
+
+# V2 row 380: the scale line is its own unit of the block ("Rupees in lacs");
+# the resolver's answer cites the figures' units, and the block's stated scale
+# supports the factor.
+
+LACS_BLOCK = (
+    "Profit and loss account for the year ended March 31, 2003\n\n"
+    "Rupees in lacs\n\n"
+    "Table:  | 31.3.2003 | 31.3.2002\n"
+    "Total income | 31.3.2003: 109638.91 | 31.3.2002: 96231.40\n"
+    "Shareholders' funds | 31.3.2003: 25966.14 | 31.3.2002: 24169.83"
+)
+LACS_QUESTION = (
+    "For the year ended March 31,2003, how much less were the shareholders' funds "
+    "compared to the income in rupees?"
+)
+
+
+@pytest.mark.asyncio
+async def test_a_result_in_rupees_from_figures_in_lakh_is_validated():
+    from app.llm.structured_output import stream_support_unit_answer
+
+    units = _units(LACS_BLOCK)
+    income = next(u for u in units if "Total income" in u.text).support_unit_id
+    funds = next(u for u in units if "Shareholders" in u.text).support_unit_id
+    plan = {
+        "program": "(a - b) * 100000",
+        "operands": [
+            _op("a", "109638.91", income, ["Total income", "31.3.2003"]),
+            _op("b", "25966.14", funds, ["Shareholders' funds", "31.3.2003"]),
+        ],
+        "result_label": "How much less the shareholders' funds were than the income, in rupees",
+        "percent": False,
+        "decimals": None,
+    }
+    events = [
+        event
+        async for event in stream_support_unit_answer(
+            LACS_QUESTION,
+            _blocks(LACS_BLOCK),
+            _Provider(ABSTAIN, plan),
+            model="m",
+            derived_answers=True,
+            operand_resolver=True,
+        )
+    ]
+    answer = "".join(event["content"] for event in events if event["type"] == "token")
+    validation = next(event for event in events if event["type"] == "security_validation")
+
+    assert validation["passed"] is True and validation["abstain"] is False
+    assert "8,367,277,000" in answer
+
+
+def test_the_instructions_convert_a_stated_scale_to_the_asked_unit():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "a lakh is 100000" in RESOLVER_INSTRUCTIONS

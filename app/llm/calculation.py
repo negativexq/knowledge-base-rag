@@ -19,6 +19,30 @@ from dataclasses import dataclass
 # Numbers an expression may use without a citation: the whole of a
 # percentage, for remainders such as 100 - 59.
 ALLOWED_CONSTANTS = frozenset({100.0})
+# A scale the units state ("Rupees in lacs", "in millions") supports its
+# factor, for a result asked in another unit ("in rupees").
+_STATED_SCALE = re.compile(
+    r"\bin\s+(lacs|lakhs?|crores?|thousands|millions|billions)\b", re.IGNORECASE
+)
+SCALE_FACTORS = {
+    "lac": 1e5,
+    "lakh": 1e5,
+    "crore": 1e7,
+    "thousand": 1e3,
+    "million": 1e6,
+    "billion": 1e9,
+}
+
+
+def stated_scale_factors(texts: list[str]) -> set[float]:
+    """The factors of the scales the texts state."""
+    return {
+        SCALE_FACTORS[match.group(1).casefold().removesuffix("s")]
+        for text in texts
+        for match in _STATED_SCALE.finditer(text)
+    }
+
+
 # A stated result matches when it equals the recomputed value rounded to the
 # stated precision, or is within this relative tolerance.
 RESULT_TOLERANCE = 0.005
@@ -173,6 +197,7 @@ def verify_calculation(calculation: Calculation, support_texts: list[str], text:
     except ValueError:
         return ["CALCULATION_UNPARSEABLE"]
     cited = {number for support in support_texts for number in numbers_in(support)}
+    cited |= stated_scale_factors(support_texts)
     if any(
         operand not in cited and operand not in ALLOWED_CONSTANTS for operand in _literals(tree)
     ):

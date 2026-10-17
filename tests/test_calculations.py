@@ -244,3 +244,26 @@ async def test_without_derived_answers_the_contract_is_unchanged():
     assert '"calculation"' not in provider.messages[0]["content"]
     part = provider.kwargs["schema"]["properties"]["answer_parts"]["items"]
     assert "calculation" not in part["properties"]
+
+
+# MMLongBench V2 row 380: Godfrey Phillips prints its accounts "Rupees in
+# lacs"; "how much less ... in rupees" is (109,638.91 - 25,966.14) lakh, times
+# 100,000 = 8,367,277,000 rupees. A stated scale is evidence for its factor.
+
+
+def test_a_stated_scale_supports_its_factor():
+    calculation = Calculation("(109638.91 - 25966.14) * 100000", "8,367,277,000")
+    texts = ["Rupees in lacs", "Total income | 109638.91", "Shareholders' funds | 25966.14"]
+    text = "Shareholders' funds were 8,367,277,000 rupees less than income."
+
+    assert verify_calculation(calculation, texts, text) == []
+    assert verify_calculation(calculation, texts[1:], text) == ["CALCULATION_OPERAND_UNSUPPORTED"]
+
+
+def test_a_factor_needs_the_scale_the_units_state():
+    calculation = Calculation("(109638.91 - 25966.14) * 1000", "83,672,770")
+    texts = ["Rupees in lacs", "Total income | 109638.91", "Shareholders' funds | 25966.14"]
+
+    assert verify_calculation(calculation, texts, "83,672,770") == [
+        "CALCULATION_OPERAND_UNSUPPORTED"
+    ]

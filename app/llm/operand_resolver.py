@@ -68,6 +68,10 @@ program over named operands and return
   size, "a / 100 * b", where b is the unweighted sample size printed for that
   same group ("Total sample 1,503", "Dem/Lean Dem 710", "(n=537)"). Add or
   subtract shares of the same group before multiplying.
+- A result asked in a unit other than the scale the units state ("in rupees"
+  from "Rupees in lacs", "in millions" from "in thousands") multiplies by the
+  scale's factor in the program: a lakh is 100000, a crore 10000000, a
+  thousand 1000, a million 1000000.
 Values and labels are checked against the unit's text; never compute the result.
 """.strip()
 

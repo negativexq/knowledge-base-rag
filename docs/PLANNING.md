@@ -5523,3 +5523,21 @@ that start with numbers (a numbered contents line, a market code) or OCR
 noise. The V2 index is not rebuilt and nothing is measured yet.
 
 `make test`: 1733 passed, 4 skipped.
+
+## Fix — a stated scale supports its factor (closing note)
+
+V2 audit, 380: Godfrey Phillips prints its accounts "Rupees in lacs" (a line
+of its own above the table) and the question asks "in rupees"; the gold is
+(109,638.91 - 25,966.14) lakh x 100,000 = 8,367,277,000. A calculation's
+literals had to be printed in the cited units (or be 100), so no factor could
+pass. Now a scale the cited units or their blocks state ("in lacs", "in
+lakhs", "in crores", "in thousands", "in millions", "in billions") supports
+its factor (100,000; 10,000,000; 1,000; 1,000,000; 1,000,000,000), and only
+that factor: a 1,000 against "in lacs" is still unsupported. The resolver
+instructions ask for that factor when the result is asked in another unit,
+and table facts read lakh and crore scales (one name per scale, so "lakh" and
+"lacs" do not trip the scale-mismatch check). No saved calculation in the V2
+runs uses such a factor, so no saved answer changes. 380 also needs its
+"Total income" operand found (the resolver missed it); unmeasured.
+
+`make test`: 1738 passed, 4 skipped.
