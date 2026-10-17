@@ -46,7 +46,7 @@ function DevIdentitySwitcher() {
     <select
       aria-label="Development identity"
       title="Development identity"
-      className="h-7 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-xs text-[var(--color-foreground)] transition-colors hover:border-[var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
+      className="hidden sm:block h-7 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-xs text-[var(--color-foreground)] transition-colors hover:border-[var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"
       value={current ?? ""}
       onChange={(e) => {
         setToken(e.target.value)
@@ -74,7 +74,7 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
   const ThemeIcon = theme === "dark" ? Sun : Moon
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-4 border-b border-[var(--color-border)] bg-[color-mix(in_oklch,var(--color-background)_80%,transparent)] px-5 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 sm:gap-4 border-b border-[var(--color-border)] bg-[color-mix(in_oklch,var(--color-background)_80%,transparent)] px-3 sm:px-6 backdrop-blur-md">
       <div className="min-w-0 flex-1">
         {page && (
           <div className="flex min-w-0 items-baseline gap-3">

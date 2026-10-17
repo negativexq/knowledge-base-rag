@@ -52,6 +52,7 @@ export function AnswerBody({
             return (
               <CitationChip
                 rank={citation.source?.rank}
+                sourceName={citation.source?.source_id ?? undefined}
                 supportId={citation.unit?.support_id}
                 preview={citation.valid ? citation.unit : undefined}
                 valid={citation.valid}
@@ -66,6 +67,7 @@ export function AnswerBody({
               {children as ReactNode}
             </code>
           ),
+          table: ({ children }) => <div className="max-w-full overflow-x-auto"><table>{children}</table></div>,
           ul: ({ children }) => <ul className="ml-4 list-disc space-y-1">{children}</ul>,
           ol: ({ children }) => <ol className="ml-4 list-decimal space-y-1">{children}</ol>,
           p: ({ children }) => <p>{children}</p>,

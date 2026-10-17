@@ -13,7 +13,7 @@ export default function SignIn() {
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
           <BookOpen className="mb-1 h-6 w-6 text-[var(--color-accent)]" strokeWidth={1.75} />
-          <CardTitle className="text-base">Knowledge Base Operations Console</CardTitle>
+          <CardTitle className="text-base">Knowledge Base Research Workspace</CardTitle>
           <CardDescription>Choose a development identity to continue.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">

@@ -15,7 +15,7 @@ const number = (value: number) => value.toLocaleString("en-US")
 
 function Step({ title, summary, children }: { title: string; summary: ReactNode; children?: ReactNode }) {
   return (
-    <li className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+    <li className="border-b border-[var(--color-border)]">
       <Collapsible>
         <CollapsibleTrigger
           disabled={!children}

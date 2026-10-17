@@ -79,6 +79,38 @@ describe("Playground evidence flow", () => {
     })
   })
 
+  it("keeps research uncluttered and reveals engineering detail in Inspect", () => {
+    renderPlayground()
+    expect(screen.queryByRole("complementary", { name: "Evidence inspector" })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Inspect" }))
+    expect(screen.getByRole("tab", { name: "Retrieval" })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: "Security" })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Research" }))
+    expect(screen.queryByRole("complementary", { name: "Evidence inspector" })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Evidence" }))
+    expect(screen.getByRole("tab", { name: "Why" })).toBeInTheDocument()
+    expect(screen.queryByRole("tab", { name: "Security" })).not.toBeInTheDocument()
+  })
+
+  it("opens the evidence belonging to an earlier answer after a follow-up", async () => {
+    renderPlayground()
+    const input = screen.getByRole("textbox", { name: "Question" })
+    fireEvent.change(input, { target: { value: "First question" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    await screen.findByRole("button", { name: "Jump to source 1" })
+    vi.mocked(chatApi.ask).mockImplementationOnce(async (_q, _h, handlers) => {
+      handlers.onSources([])
+      handlers.onToken("A different answer without sources.")
+      handlers.onDone()
+    })
+    fireEvent.change(input, { target: { value: "Second question" } })
+    fireEvent.click(screen.getByRole("button", { name: "Ask" }))
+    await screen.findByText("A different answer without sources.")
+    fireEvent.click(screen.getByRole("button", { name: "Jump to source 1" }))
+    expect(screen.getByRole("button", { name: "View source 1: runbook" })).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByText("Deploy safely.")).toBeInTheDocument()
+  })
+
   it("aggregates the real stream and focuses the cited source card", async () => {
     renderPlayground()
     fireEvent.change(screen.getByPlaceholderText("Ask anything…"), {
@@ -88,10 +120,10 @@ describe("Playground evidence flow", () => {
 
     const citation = await screen.findByRole("button", { name: "Jump to source 1" })
     expect(screen.getByText("Answer")).toBeInTheDocument()
-    expect(screen.getByText("runbook")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /Evidence/ })).toHaveAttribute("aria-expanded", "false")
 
     fireEvent.click(citation)
-    const sourceCard = screen.getByText("runbook").closest("[class*='border']")
+    const sourceCard = screen.getByRole("button", { name: "View source 1: runbook" }).parentElement
     expect(sourceCard).toHaveClass("border-[var(--color-accent)]")
   })
 
@@ -274,7 +306,7 @@ describe("Playground support-ID citations", () => {
     expect(passage).toHaveTextContent("Kimlik Doğrulama > Token Süresi")
     expect(passage).toHaveTextContent("Erişim token'ları 90 gün geçerlidir.")
     expect(passage).toHaveAttribute("data-highlighted", "true")
-    const card = screen.getByText("nimbus_cli_md").closest("[class*='border']")
+    const card = screen.getByRole("button", { name: "View source 1: nimbus_cli_md" }).parentElement
     expect(card).toHaveClass("border-[var(--color-accent)]")
     // Uncited units and sources stay unmarked.
     expect(screen.queryByRole("note", { name: "Cited passage E1.S1" })).not.toBeInTheDocument()
@@ -478,6 +510,7 @@ describe("Playground answer confidence and why-this-answer", () => {
     await ask()
     await screen.findByText("Citation integrity verified")
 
+    fireEvent.click(screen.getByRole("button", { name: /Evidence/ }))
     fireEvent.mouseDown(screen.getByRole("tab", { name: "Why" }))
     fireEvent.click(screen.getByRole("tab", { name: "Why" }))
 

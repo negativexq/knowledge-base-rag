@@ -68,7 +68,7 @@ export default function Traces() {
       </div>
 
       <p className="text-xs text-[var(--color-muted-foreground)]">
-        Traces from sync runs (chat traces are visible per-conversation in the Playground's Trace
+        Traces from sync runs (chat traces are visible per-conversation in Research, under Inspect → Trace
         tab — this platform doesn't persist a general chat trace index yet).
       </p>
 

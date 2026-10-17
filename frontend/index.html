@@ -10,16 +10,15 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <title>Knowledge Base — Operations Console</title>
+    <title>Knowledge Base — Research Workspace</title>
     <script>
-      // Apply the saved (or system) theme before first paint, so a light
+      // Apply the saved theme (light by default) before first paint, so a light
       // theme never flashes dark on load. Mirrors src/lib/theme.tsx.
       try {
         var saved = localStorage.getItem("kb-console.theme")
-        var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches
         document.documentElement.dataset.theme =
-          saved === "light" || saved === "dark" ? saved : prefersLight ? "light" : "dark"
-      } catch (e) {}
+          saved === "light" || saved === "dark" ? saved : "light"
+      } catch (e) { document.documentElement.dataset.theme = "light" }
     </script>
   </head>
   <body>

@@ -109,6 +109,7 @@ describe("Evidence Inspector", () => {
       />,
     )
     expect(screen.getByText("unknown")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "View source 1: unknown" }))
     expect(screen.getByText("Deploy safely.")).toBeInTheDocument()
   })
 
