@@ -5327,7 +5327,8 @@ V2 audit, 206, 216, 219, 225: "how many adults rated ... as poor" in a Pew
 survey report. The report prints only the share ("36% poor") and, in its
 methodology or table rows, the group's unweighted sample size ("Total sample
 1,503", "Dem/Lean Dem 710", "(n=1,526)"); the gold is their product (36% of
-1,503 = 541; V2's 4087 and 1251 are 68% of 6,010 and 82% of 1,526). The first
+1,503 = 541; V2's 1038 and 738 are 68% of 1,526 and 82% of the 65+
+internet users). The first
 answers stated the percentage and the type check blocked them; the resolver
 returned program null (206, 216, 225) or added two percentages (219). The
 resolver instructions now name the share-times-sample-size program, with shares
@@ -5341,3 +5342,19 @@ was answered with the percentage gap, so the resolver never runs for it; it
 stays wrong. The prompt change is unmeasured until a paid run.
 
 `make test`: 1712 passed, 4 skipped.
+
+## Measurement — the V2 audit fixes on their rows (closing note)
+
+`luna-v2-fix-rows`: 399, 1017, 1018, 1020 (PRs #75, #76) and 206, 216, 219,
+225 (PR #77), gpt-6-luna, V2 labels, one run. 206 and 216 are resolved as
+share times sample size (36% of 1,503 = 541; 18% of Dem/Lean Dem 710 = 128),
+both correct. 399 passes with its per-unit split (7, correct). 1020 answers
+25.04%, the gold's 0.25 as a percentage; the contains-match scores it wrong
+(audit category A). 219 and 225 planned the right program, but the chart's
+percentages did not bind: their labels are not printed in the cited units
+(`OPERAND_LABEL_NOT_IN_UNIT`), and 225's internet-user sample size was not
+found. 1017 and 1018 planned the right sums but put two values in one operand
+("72 + 980"), which is refused (`OPERAND_VALUE_NOT_A_NUMBER`). Before the
+fixes all eight were refused; now 3/8 by the scorer, 4/8 counting 1020.
+A first attempt ran on the local qwen3.5:4b because the provider variables
+were left out; it was discarded.
