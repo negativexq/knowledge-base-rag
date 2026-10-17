@@ -4961,3 +4961,16 @@ now costs 2 answerable rows; visual input and financial derivations are the larg
 remaining blocks.
 
 `make test`: 1630 passed, 4 skipped.
+
+## Fix — a zero-fraction decimal and a rounded calculation result (closing note)
+
+The audit left two answerable rows blocked on format. 221 wrote "12 percentage
+points (float format: 12.0)": every bare decimal is typed VERSION, so "12.0" met
+the support's "12" as INDETERMINATE. A decimal whose fraction is all zeros, with no
+version word before it ("version", "release", "v"), is now the whole number. 741
+stated "about 42%" for `10 / 24 * 100 = 41.6666666667`: an answer's number now
+states the result when it equals the result rounded to the number's own precision
+(42, 41.7, 41.67), and the fact line writes it as stated. Versions and real
+decimals keep their type; 43% or 41.2% still block.
+
+`make test`: 1636 passed, 4 skipped.

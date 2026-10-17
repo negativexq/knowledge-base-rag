@@ -61,6 +61,19 @@ _LOCAL_DURATION = re.compile(
 # 15 GB and 15 TB never match each other.
 _LOCAL_SIZE = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)?)\s*(KB|MB|GB|TB|PB)\b", re.IGNORECASE)
 _LOCAL_VERSION = re.compile(r"\b(?:v(?:ersion)?\s*)?(\d+(?:\.\d+)+)\b", re.IGNORECASE)
+_ZERO_FRACTION = re.compile(r"\d+\.0+")
+_VERSION_WORD_BEFORE = re.compile(r"\b(?:v|version|release|rel|ver)\.?\s*$", re.IGNORECASE)
+
+
+def _zero_fraction_number(text: str, match: re.Match[str]) -> bool:
+    """A decimal whose fraction is all zeros ("12.0"), with no version word
+    before it, is a whole number, not a version."""
+    return bool(
+        _ZERO_FRACTION.fullmatch(match.group(0))
+        and not _VERSION_WORD_BEFORE.search(text[max(0, match.start() - 12) : match.start()])
+    )
+
+
 # A decimal with thousands groups ("1,767.80") is one literal; without this
 # the version pattern took only "767.80".
 _GROUPED_DECIMAL = re.compile(r"(?<![\d.,])\d{1,3}(?:,\d{3})+\.\d+(?![.,]?\d)")
@@ -242,10 +255,20 @@ def _local_tokens(text: str) -> list[dict[str, Any]]:
         for match in pattern.finditer(text):
             if any(start < match.end() and match.start() < end for start, end in occupied):
                 continue
+            value = match.group(1)
+            if kind == "VERSION" and _zero_fraction_number(text, match):
+                # "12.0" with no version word before it is the whole number 12.
+                values.append(
+                    _local_token(
+                        "NUMBER", value.split(".")[0], None, match.start(), match.end(), text
+                    )
+                )
+                occupied.append(match.span())
+                continue
             values.append(
                 _local_token(
                     kind,
-                    match.group(1),
+                    value,
                     "%" if kind == "PERCENTAGE" else None,
                     match.start(),
                     match.end(),
