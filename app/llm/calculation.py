@@ -4,7 +4,8 @@ A derived answer states a number the evidence does not print, computed from
 numbers it does print ("41% do not go online" from "59% go online"). The
 model writes the arithmetic; this module checks it without a model: the
 expression is parsed with a whitelist (numbers, + - * /, parentheses), every
-number in it must appear in the cited support units, the result is
+number in it must appear in the cited support units (except 100 for a
+percentage and the n of an average of n terms), the result is
 recomputed and compared, and the answer text must state the result.
 """
 
@@ -74,9 +75,31 @@ def _signed_numbers(text: str) -> list[float]:
     ]
 
 
+def _sum_terms(node: ast.AST) -> int:
+    """How many terms a chain of additions has (1 for anything else)."""
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        return _sum_terms(node.left) + _sum_terms(node.right)
+    return 1
+
+
+def _is_average(node: ast.BinOp) -> bool:
+    """A sum of n terms divided by n: "(3020 + 2795) / 2"."""
+    terms = _sum_terms(node.left)
+    return (
+        isinstance(node.op, ast.Div)
+        and terms > 1
+        and isinstance(node.right, ast.Constant)
+        and node.right.value == terms
+    )
+
+
 def _literals(node: ast.AST) -> list[float]:
+    """The numbers an expression takes from its evidence; an average's
+    divisor (the count of its terms) is not one."""
     if isinstance(node, ast.Expression):
         return _literals(node.body)
+    if isinstance(node, ast.BinOp) and _is_average(node):
+        return _literals(node.left)
     if isinstance(node, ast.BinOp):
         return _literals(node.left) + _literals(node.right)
     if isinstance(node, ast.UnaryOp):
