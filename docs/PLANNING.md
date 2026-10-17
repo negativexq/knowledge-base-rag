@@ -5158,3 +5158,15 @@ pages shown, the reading and the confirmation calls' raw output, whether it
 answered; no images), so a visual run can be diagnosed from its results.
 
 `make test`: 1683 passed, 4 skipped.
+
+## Fix — rectangles and colored words count as visual cues (closing note)
+
+Replaying the cue detector on the questions, two visual ones did not trigger the
+visual path: 385 ("the first rectangle on the top of page two") and 393 ("the red
+words"). Rectangles, squares, shapes and frames are now visual cues, and a color
+before "word", "letter", "shape" or "frame" is a color premise (so 393's text answer
+is held to a cited unit naming red, and the visual path can answer it). On the saved
+full-run answers no correct answer is affected; 15 of the 120 questions now trigger
+the visual path.
+
+`make test`: 1683 passed, 4 skipped.
