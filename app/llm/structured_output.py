@@ -23,7 +23,12 @@ from app.evidence.support_units import (
     serialize_support_units,
     support_unit_map,
 )
-from app.llm.calculation import Calculation, calculation_result, verify_calculation
+from app.llm.calculation import (
+    Calculation,
+    calculation_result,
+    stated_scale_factors,
+    verify_calculation,
+)
 from app.llm.counting import Count, unit_count_facts, verify_count
 from app.llm.dates import ISO_DATE, iso_date_facts
 from app.llm.observability import GenerationObservation
@@ -604,6 +609,22 @@ def _is_not_found_text(text: str) -> bool:
     )
 
 
+def block_scale_texts(
+    selected: list[SupportUnit | None], available: dict[str, SupportUnit]
+) -> list[str]:
+    """The texts in the cited units' blocks that state a scale ("Rupees in
+    lacs" printed as its own line above a table)."""
+    blocks = {unit.parent_evidence_block_id for unit in selected if unit is not None}
+    return [
+        unit.text
+        for unit in available.values()
+        if unit.parent_evidence_block_id in blocks
+        and unit.model_visible
+        and unit.authorized
+        and stated_scale_factors([unit.text])
+    ]
+
+
 def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
     value = json.loads(_strip_json_fence(raw))
     if not isinstance(value, dict) or set(value) - {"answer_parts", "abstain", "reason_code"}:
@@ -822,7 +843,11 @@ def validate_support_unit_answer(
             # beside it ("3 + 7" for ten counted items) is not needed.
             validator_telemetry["redundant_calculations"] += 1
         elif part.calculation is not None:
-            calculation_codes = verify_calculation(part.calculation, support_texts, part.text)
+            calculation_codes = verify_calculation(
+                part.calculation,
+                [*support_texts, *block_scale_texts(selected, available)],
+                part.text,
+            )
             part_codes.extend(calculation_codes)
             validator_telemetry["calculations"] += 1
             if not calculation_codes:
