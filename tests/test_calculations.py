@@ -267,3 +267,83 @@ def test_a_factor_needs_the_scale_the_units_state():
     assert verify_calculation(calculation, texts, "83,672,770") == [
         "CALCULATION_OPERAND_UNSUPPORTED"
     ]
+
+
+# MMLongBench V2 row 1070: "the change of Best Buy's gross margins from FY2022
+# to FY2021 ... round to 2 decimal places" was answered 22.5 - 22.4 = 0.10 from
+# the rates the table prints to one decimal; the gold, 0.12, is computed from
+# gross profit and revenue (11,640 / 51,761 - 10,573 / 47,262). A sum or
+# difference of rates cannot carry more decimals than the rates.
+
+MARGINS = (
+    "Table: Consolidated Performance Summary | 2022 | | 2021 |\n"
+    "Consolidated Performance Summary: Revenue | 2022: $ 51,761 | 2021: $ 47,262\n"
+    "Consolidated Performance Summary: Gross profit | 2022: $ 11,640 | 2021: $ 10,573\n"
+    "Consolidated Performance Summary: Gross profit as a % of revenue(1) | "
+    "2022: 22.5 | % | 2021: 22.4 | %"
+)
+MARGIN_QUESTION = (
+    "what is the change of Best Buy's gross margins change from FY2022 to FY2021? "
+    "Answer in percentage terms, round to 2 decimal places."
+)
+
+
+def _margin_validation(expression, result, text, question=MARGIN_QUESTION):
+    units = build_support_units([evidence(MARGINS)])
+    ids = [unit.support_unit_id for unit in units]
+    answer = parse_support_unit_answer(
+        json.dumps(
+            {
+                "answer_parts": [
+                    {
+                        "text": text,
+                        "support_ids": ids,
+                        "calculation": {"expression": expression, "result": result},
+                        "counts": None,
+                    }
+                ],
+                "abstain": False,
+            }
+        )
+    )
+    return validate_support_unit_answer(answer, units, question=question)
+
+
+def test_a_difference_of_rounded_rates_cannot_answer_more_decimals():
+    validation = _margin_validation(
+        "22.5 - 22.4", "0.10", "Gross margin rose by 0.10 percentage points."
+    )
+
+    assert "CALCULATION_PRECISION_BELOW_ASKED" in validation.failure_codes
+
+
+def test_rates_computed_from_their_figures_carry_the_asked_decimals():
+    validation = _margin_validation(
+        "(11640 / 51761 - 10573 / 47262) * 100",
+        "0.12",
+        "Gross margin rose by 0.12 percentage points.",
+    )
+
+    assert "CALCULATION_PRECISION_BELOW_ASKED" not in validation.failure_codes
+
+
+def test_rounded_rates_stand_when_no_more_decimals_are_asked():
+    validation = _margin_validation(
+        "22.5 - 22.4",
+        "0.1",
+        "Gross margin rose by 0.1 percentage points.",
+        question="How did Best Buy's gross margin change from FY2021 to FY2022?",
+    )
+
+    assert "CALCULATION_PRECISION_BELOW_ASKED" not in validation.failure_codes
+
+
+def test_whole_counts_are_exact_at_any_asked_precision():
+    validation = _margin_validation(
+        "11640 - 10573",
+        "1067",
+        "Gross profit rose by $1,067 million.",
+        question="By how much did gross profit grow? Round to 2 decimal places.",
+    )
+
+    assert "CALCULATION_PRECISION_BELOW_ASKED" not in validation.failure_codes

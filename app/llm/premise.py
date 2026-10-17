@@ -141,3 +141,16 @@ def asks_count_answers_percent(question: str | None, text: str) -> bool:
         and not _ASKS_SHARE.search(question)
         and _STATES_PERCENT.search(text)
     )
+
+
+_ASKED_DECIMALS = re.compile(r"\b(\d|one|two|three|four|five|six)\s+decimal", re.IGNORECASE)
+_DECIMAL_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6}
+
+
+def asked_decimals(question: str | None) -> int | None:
+    """The decimal places the question asks for ("round to 2 decimal places")."""
+    match = _ASKED_DECIMALS.search(question or "")
+    if not match:
+        return None
+    word = match.group(1).casefold()
+    return int(word) if word.isdigit() else _DECIMAL_WORDS[word]

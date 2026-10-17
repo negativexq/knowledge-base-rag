@@ -26,6 +26,7 @@ from app.evidence.support_units import (
 from app.llm.calculation import (
     Calculation,
     calculation_result,
+    precision_below_asked,
     stated_scale_factors,
     verify_calculation,
 )
@@ -35,6 +36,7 @@ from app.llm.observability import GenerationObservation
 from app.llm.operand_resolver import ResolverTrace, Retrieve, render_part_text, resolve_operands
 from app.llm.percent_cells import percent_cell_facts
 from app.llm.premise import (
+    asked_decimals,
     asks_count_answers_percent,
     missing_question_dates,
     missing_question_years,
@@ -848,6 +850,10 @@ def validate_support_unit_answer(
                 [*support_texts, *block_scale_texts(selected, available)],
                 part.text,
             )
+            if not calculation_codes and precision_below_asked(
+                part.calculation, part.text, asked_decimals(question)
+            ):
+                calculation_codes = ["CALCULATION_PRECISION_BELOW_ASKED"]
             part_codes.extend(calculation_codes)
             validator_telemetry["calculations"] += 1
             if not calculation_codes:

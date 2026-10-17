@@ -49,6 +49,9 @@ program over named operands and return
   an average balance = (this year's + last year's) / 2;
   total debt = long-term debt + its current portion (plus lease liabilities
   only when the question says so). A shortfall or gap is the larger minus the smaller figure.
+  When the question asks for more decimals than a printed rate carries
+  ("22.5%" for two decimals), compute the rate from the figures it is a ratio of
+  (gross profit / revenue * 100), not from the rounded rate.
   Write the program even when some operand values are missing.
   null only when the question does not ask for a computed number.
 - Each operand: "name" (a, b, c, ...); "what": the figure in the question's

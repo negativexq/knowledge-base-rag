@@ -726,3 +726,9 @@ def test_the_instructions_convert_a_stated_scale_to_the_asked_unit():
     from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
 
     assert "a lakh is 100000" in RESOLVER_INSTRUCTIONS
+
+
+def test_the_instructions_compute_rates_from_their_figures_for_more_decimals():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "from the figures it is a ratio of" in RESOLVER_INSTRUCTIONS
