@@ -162,3 +162,74 @@ def test_the_prompt_does_not_ask_counted_operands_to_come_as_counts():
     # (371, 741, 1015), where the model abstained instead; it was reverted.
     assert "every number you counted" not in DERIVED_ANSWER_INSTRUCTIONS
     assert "a count may be a number in the calculation" in DERIVED_ANSWER_INSTRUCTIONS
+
+
+# luna 399 (V2 audit): "7 people in total: 4 in MQA Executive Leadership and 3
+# in Prosecution Services Staff" with one verified count of 7 names, 4 of them
+# in one cited unit and 3 in the other. The per-unit numbers are counts of the
+# same verified items, so they are evidence too, when each item is printed in
+# exactly one of the cited units.
+
+LEADERSHIP = "MQA Executive Leadership: Lucy Gee, Lola Pouncey, Adrienne Rodgers, Mark Whitten"
+PROSECUTION = "Prosecution Services Staff: Sharmin Hibbert, Yolonda Green, Candace Rochester"
+PEOPLE = [
+    "Lucy Gee",
+    "Lola Pouncey",
+    "Adrienne Rodgers",
+    "Mark Whitten",
+    "Sharmin Hibbert",
+    "Yolonda Green",
+    "Candace Rochester",
+]
+
+
+def _validate_two(text: str, items, first: str = LEADERSHIP, second: str = PROSECUTION, **fields):
+    blocks = [_evidence(first), _evidence(second)]
+    blocks[1] = SearchResult(
+        score=1.0,
+        id="d",
+        payload={**blocks[1].payload, "evidence_id": "E2", "evidence_block_id": "b2"},
+    )
+    units = build_support_units(blocks)
+    part = {
+        "text": text,
+        "support_ids": [unit.support_unit_id for unit in units],
+        "counts": [{"items": items}],
+        **fields,
+    }
+    answer = parse_support_unit_answer(json.dumps({"answer_parts": [part], "abstain": False}))
+    return validate_support_unit_answer(answer, units)
+
+
+def test_per_unit_numbers_of_a_verified_count_are_evidence():
+    validation = _validate_two(
+        "There are 7 people in total: 4 in MQA Executive Leadership and 3 in Prosecution "
+        "Services Staff.",
+        PEOPLE,
+        calculation={"expression": "4 + 3", "result": "7"},
+    )
+
+    assert validation.failure_codes == []
+
+
+def test_a_per_unit_number_the_items_do_not_give_is_still_blocked():
+    validation = _validate_two(
+        "There are 7 people in total: 5 in MQA Executive Leadership and 2 in Prosecution "
+        "Services Staff.",
+        PEOPLE,
+    )
+
+    assert validation.application_abstain is True
+
+
+def test_items_printed_in_both_units_give_no_per_unit_numbers():
+    both = LEADERSHIP + "; " + PROSECUTION
+    validation = _validate_two(
+        "There are 7 people in total: 4 in MQA Executive Leadership and 3 in Prosecution "
+        "Services Staff.",
+        PEOPLE,
+        first=both,
+        second=PROSECUTION,
+    )
+
+    assert validation.application_abstain is True

@@ -5304,3 +5304,19 @@ the last section takes that section ("Total lease liabilities" reads
 "Long-term"); a label naming it would still have to name its row.
 
 `make test`: 1704 passed, 4 skipped.
+
+## Fix — a verified count split by cited unit is evidence (closing note)
+
+V2 audit, 399: "7 people in total: 4 in MQA Executive Leadership and 3 in
+Prosecution Services Staff", with one verified count of the 7 names, was blocked
+(`CRITICAL_VALUE_DIRECT_CONFLICT`): 4 and 3 are printed nowhere. They are counts
+of the same verified items, 4 of them in one cited unit and 3 in the other.
+`unit_count_facts` now adds each cited unit's share of a verified count as
+evidence, only when every item is printed in exactly one of the cited units (so
+the split is the units' own); a number the items do not give stays blocked. The
+prompt is unchanged (asking for every counted operand as a count was tried and
+reverted before). Offline, every saved answer with counts in `luna-full-v2`
+(12 rows) was revalidated on its saved cited units, with and without the
+change: only 399 changes, from blocked to passed (gold 7).
+
+`make test`: 1707 passed, 4 skipped.
