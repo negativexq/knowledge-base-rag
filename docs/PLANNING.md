@@ -5434,3 +5434,13 @@ refused; 1073, 1074 and 1075 stand. A part over its total (a share) is not a
 sum and stands.
 
 `make test`: 1727 passed, 4 skipped.
+
+## Measurement — the total-and-part check on 1018 and 1075 (closing note)
+
+`luna-v2-part-rows`, gpt-6-luna, one run. 1018 was refused: the resolver's
+plan after its search was not valid JSON (`PLAN_SCHEMA_INVALID`), so the new
+check never ran on it; refused rather than wrong, as before the printed-total
+rule. 1075 answers 29.3% as before (gold 29.6%, a different definition; audit
+category F): the check did not refuse it, as the replay predicted.
+
+`make test`: 1727 passed, 4 skipped.
