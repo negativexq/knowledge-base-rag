@@ -165,6 +165,9 @@ class ChatDependencies:
     forensic_capture_raw_text: bool = False
     forensic_capture_dir: str | None = None
     rewrite_fn: RewriteFn | None = None
+    # The answer path may search once more for a computed answer's missing
+    # operands (app/llm/operand_resolver.py), within this request's scope.
+    operand_resolver_enabled: bool = False
 
 
 @dataclass(frozen=True)
@@ -428,7 +431,15 @@ async def _sse_event_stream(
                 deps, format(span.get_span_context().trace_id, "032x"), generation_skip_reason
             )
             if generation_skip_reason is not None
-            else deps.stream_fn(question, chunks)
+            else deps.stream_fn(
+                question,
+                chunks,
+                **(
+                    {"retrieve": _scoped_retrieve(deps, context, scope)}
+                    if deps.operand_resolver_enabled
+                    else {}
+                ),
+            )
         )
         async for event in answer_events:
             if event["type"] == "token":
@@ -457,6 +468,16 @@ async def _sse_event_stream(
     if capture is not None:
         capture.write(deps.forensic_capture_dir)
     reset_current_capture(capture_token)
+
+
+def _scoped_retrieve(deps: ChatDependencies, context: RetrievalContext, scope: dict):
+    """A search for the operand resolver: the same caller, ACL and document
+    scope as the request's own search, with its own report."""
+
+    async def retrieve(query: str) -> list[SearchResult]:
+        return await deps.search_fn(query, context, RetrievalReport(), **scope)
+
+    return retrieve
 
 
 def _enforce_chat_rate_limit(request: Request, user: UserContext) -> None:

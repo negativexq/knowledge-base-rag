@@ -331,7 +331,14 @@ async def ask(
     answer, metadata, validation = "", {}, {}
     token = set_current_capture(report.forensic_capture)
     try:
-        async for event in deps.stream_fn(question.question, blocks):
+
+        async def retrieve(query: str):
+            return await deps.search_fn(
+                query, context, RetrievalReport(), **({"source_ids": scope} if scope else {})
+            )
+
+        extra = {"retrieve": retrieve} if deps.operand_resolver_enabled else {}
+        async for event in deps.stream_fn(question.question, blocks, **extra):
             if event["type"] == "token":
                 answer += event["content"]
             elif event["type"] == "metadata":

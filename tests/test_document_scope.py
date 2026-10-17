@@ -94,3 +94,38 @@ def test_the_benchmark_scopes_each_question_to_its_pdf():
         runner.source_id_for("BESTBUY_2023_10K.pdf")
     ]
     assert runner.retrieval_scope("BESTBUY_2023_10K.pdf", open_corpus=True) is None
+
+
+@pytest.mark.asyncio
+async def test_the_operand_resolver_searches_within_the_request_scope():
+    received = {}
+    searches = []
+
+    async def stream_fn(question, chunks, retrieve=None):
+        searches.append(retrieve)
+        if retrieve is not None:
+            await retrieve("Costco total liabilities 2021")
+        yield {"type": "token", "content": "ok"}
+
+    deps = ChatDependencies(
+        search_fn=_recording_search(received), stream_fn=stream_fn, operand_resolver_enabled=True
+    )
+    await _drain(deps, source_ids=["costco.pdf"])
+
+    assert searches[0] is not None
+    assert received["kwargs"] == {"source_ids": ["costco.pdf"]}
+    assert received["context"].tenant_id == "tenant-a"
+
+
+@pytest.mark.asyncio
+async def test_without_the_resolver_the_stream_gets_no_search():
+    seen = []
+
+    async def stream_fn(question, chunks, **kwargs):
+        seen.append(kwargs)
+        yield {"type": "token", "content": "ok"}
+
+    deps = ChatDependencies(search_fn=_recording_search({}), stream_fn=stream_fn)
+    await _drain(deps)
+
+    assert seen == [{}]

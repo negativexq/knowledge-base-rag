@@ -27,6 +27,7 @@ from app.llm.calculation import Calculation, calculation_result, verify_calculat
 from app.llm.counting import Count, verify_count
 from app.llm.dates import ISO_DATE, iso_date_facts
 from app.llm.observability import GenerationObservation
+from app.llm.operand_resolver import ResolverTrace, Retrieve, render_part_text, resolve_operands
 from app.llm.percent_cells import percent_cell_facts
 from app.llm.premise import (
     asks_count_answers_percent,
@@ -1192,6 +1193,58 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
         return
 
 
+async def _resolved_validation(
+    query: str,
+    units: list[SupportUnit],
+    provider: ChatProvider,
+    *,
+    generation_kwargs: dict[str, Any],
+    prompt_version: str,
+    context_serializer: Any,
+    retrieve: Retrieve | None,
+    validator_version: ValidatorSelector,
+    shadow_enabled: bool,
+    architecture_v2_shadow_enabled: bool,
+) -> tuple[tuple[SupportUnitValidation, list[SupportUnit]] | None, ResolverTrace]:
+    """The operand resolver's answer as a validation, or None when it has
+    none that passes the support-unit validator and the question's premises."""
+    plan, calculation, all_units, trace = await resolve_operands(
+        query,
+        units,
+        provider,
+        generation_kwargs=generation_kwargs,
+        prompt_version=prompt_version,
+        context_serializer=context_serializer,
+        retrieve=retrieve,
+    )
+    if plan is None or calculation is None:
+        return None, trace
+    support_ids = list(dict.fromkeys(op.support_id for op in plan.operands if op.support_id))
+    part = SupportUnitAnswerPart(render_part_text(plan, calculation), support_ids, calculation)
+    validation = validate_support_unit_answer(
+        SupportUnitAnswer([part], False),
+        all_units,
+        validator_version=validator_version,
+        shadow_enabled=shadow_enabled,
+        architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+        question=query,
+    )
+    trace.plan_codes.extend(validation.failure_codes)
+    texts = [unit.text for unit in all_units]
+    if (
+        validation.application_abstain
+        or not validation.valid_parts
+        or missing_question_years(query, texts)
+        or missing_question_dates(query, texts)
+    ):
+        return None, trace
+    validation = replace(
+        validation,
+        validator_telemetry={**validation.validator_telemetry, "operand_resolver": True},
+    )
+    return (validation, all_units), trace
+
+
 async def stream_support_unit_answer(
     query: str,
     blocks: list[SearchResult],
@@ -1210,12 +1263,19 @@ async def stream_support_unit_answer(
     tracer: trace.Tracer | None = None,
     count_tokens: Callable[[str], int] | None = None,
     derived_answers: bool = False,
+    operand_resolver: bool = False,
+    retrieve: Retrieve | None = None,
 ):
     """Generate an answer whose citations are request-scoped support IDs.
 
     With ``derived_answers``, each answer part may carry the calculation
     behind a number the evidence does not print; it is verified before the
     part is kept (app/llm/calculation.py).
+
+    With ``operand_resolver``, a withheld answer to a question that asks for a
+    computed figure gets one more try (app/llm/operand_resolver.py): operands
+    bound to their units, missing ones searched once with ``retrieve``, the
+    result computed by code and validated like any answer part.
 
     With ``count_tokens``, the prompt is fitted to the context window first:
     prompt plus SUPPORT_ID_MAX_OUTPUT_TOKENS must not exceed ``num_ctx``, so
@@ -1254,6 +1314,8 @@ async def stream_support_unit_answer(
             count_tokens=count_tokens,
             telemetry=telemetry,
             derived_answers=derived_answers,
+            operand_resolver=operand_resolver,
+            retrieve=retrieve,
         ):
             for name, value in telemetry.items():
                 if value is not None:
@@ -1293,6 +1355,8 @@ async def _support_unit_answer_events(
     count_tokens: Callable[[str], int] | None = None,
     telemetry: dict[str, Any] | None = None,
     derived_answers: bool = False,
+    operand_resolver: bool = False,
+    retrieve: Retrieve | None = None,
 ):
     telemetry = telemetry if telemetry is not None else {}
     instructions = SUPPORT_ID_OUTPUT_INSTRUCTIONS
@@ -1442,6 +1506,38 @@ async def _support_unit_answer_events(
                 "premise_missing_dates": missing_dates,
             },
         )
+    withheld = validation.model_abstain or validation.application_abstain
+    if operand_resolver and withheld and not (missing_years or missing_dates):
+        resolved, resolver_trace = await _resolved_validation(
+            query,
+            units,
+            provider,
+            generation_kwargs={k: v for k, v in generation_kwargs.items() if k != "schema"},
+            prompt_version=prompt_version,
+            context_serializer=context_serializer,
+            retrieve=retrieve,
+            validator_version=validator_version,
+            shadow_enabled=shadow_enabled,
+            architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+        )
+        if capture is not None:
+            trace_payload = resolver_trace.as_dict()
+            if not capture.raw_text:
+                trace_payload.pop("raw_outputs")
+            capture.stage("operand_resolver", {**trace_payload, "resolved": resolved is not None})
+        if resolved is not None:
+            validation, units = resolved
+            if resolver_trace.blocks:
+                yield {
+                    "type": "metadata",
+                    "prompt_version": prompt_version,
+                    "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
+                    "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
+                    "support_units": support_unit_citation_map(
+                        units, [*blocks, *resolver_trace.blocks]
+                    ),
+                    "prompt_fit": prompt_fit,
+                }
     final_abstain = validation.model_abstain or validation.application_abstain
     telemetry = validation.validator_telemetry
     if capture is not None:

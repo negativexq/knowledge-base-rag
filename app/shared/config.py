@@ -80,6 +80,10 @@ class Settings(BaseSettings):
     # the evidence does not print, verified deterministically before release
     # (app/llm/calculation.py). Off until the pilot shows it helps.
     derived_answers_enabled: bool = False
+    # Operand resolver: a withheld answer to a computed question gets one more
+    # try, with operands bound to their units and missing ones searched once
+    # (app/llm/operand_resolver.py). Needs derived answers; off by default.
+    operand_resolver_enabled: bool = False
 
     # Explicit local/debug forensic capture.  Both switches are required for
     # raw text; normal production telemetry remains bounded and unaffected.
