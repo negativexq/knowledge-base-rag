@@ -120,11 +120,39 @@ def named_pages(question: str | None) -> list[int]:
     return pages
 
 
-def candidate_pages(units: list[SupportUnit], limit: int = MAX_PAGES) -> list[tuple[str, int]]:
-    """The distinct pages of the top units' document, in rank order. Pages of
-    other documents than the top unit's, and of units the caller may not see,
-    are left out."""
+def chunk_ranks(blocks: list[Any]) -> dict[str, int]:
+    """Each retrieved chunk's reranker rank. A section-aware block lists its
+    text in document order and its anchors in reranker order; any other block
+    is its own chunk, ranked by its place in the list."""
+    ranks: dict[str, int] = {}
+    for block in blocks:
+        payload = block.payload
+        ids = payload.get("anchor_chunk_ids") or payload.get("contributing_chunk_ids") or [block.id]
+        for chunk_id in ids:
+            ranks.setdefault(str(chunk_id), len(ranks))
+    return ranks
+
+
+def candidate_pages(
+    units: list[SupportUnit],
+    limit: int = MAX_PAGES,
+    chunk_ranks: dict[str, int] | None = None,
+) -> list[tuple[str, int]]:
+    """The distinct pages of the top units' document, in rank order: units of
+    ranked chunks first, by their chunk's rank, then the rest in their order.
+    Pages of other documents than the top unit's, and of units the caller may
+    not see, are left out."""
     visible = [unit for unit in units if unit.authorized and unit.model_visible]
+    if chunk_ranks:
+        unranked = len(chunk_ranks)
+
+        def rank(unit: SupportUnit) -> int:
+            return min(
+                (chunk_ranks.get(chunk_id, unranked) for chunk_id in unit.contributing_chunk_ids),
+                default=unranked,
+            )
+
+        visible.sort(key=rank)
     pages: list[tuple[str, int]] = []
     source = next((unit.source_id for unit in visible if unit.source_id), None)
     if source is None:
@@ -240,10 +268,12 @@ async def answer_from_pages(
     *,
     generation_kwargs: dict[str, Any],
     trace: dict[str, Any],
+    ranks: dict[str, int] | None = None,
 ) -> VisualAnswer | None:
-    """Read the answer from the top pages, then have it confirmed by a
-    separate call; None unless both agree."""
-    ranked = candidate_pages(units)
+    """Read the answer from the top pages (ranked by ``ranks``, see
+    chunk_ranks), then have it confirmed by a separate call; None unless both
+    agree."""
+    ranked = candidate_pages(units, chunk_ranks=ranks)
     resolve = getattr(render_page, "resolve", None)
     named: list[tuple[str, int]] = []
     if ranked and resolve is not None:

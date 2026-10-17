@@ -287,8 +287,13 @@ class SectionAwareEvidenceBuilder:
         anchor: SearchResult,
         section_chunks: list[SearchResult],
         count_tokens: Callable[[str], int] = _estimate_tokens,
+        anchors: list[SearchResult] | None = None,
     ) -> SearchResult:
         ordered = sorted(section_chunks, key=_sort_key)
+        ranked: list[str] = []
+        for item in anchors or [anchor]:
+            if _chunk_id(item) not in ranked:
+                ranked.append(_chunk_id(item))
         ids = [_chunk_id(item) for item in ordered]
         text = "\n\n".join(str(item.payload.get("text", "")) for item in ordered)
         anchor_payload = dict(anchor.payload)
@@ -314,6 +319,9 @@ class SectionAwareEvidenceBuilder:
                 "section_aware": True,
                 "section_key": list(_section_key(anchor_payload)),
                 "anchor_chunk_id": _chunk_id(anchor),
+                # The text is in document order; the anchors keep the
+                # reranker's, which ranks the block's pages.
+                "anchor_chunk_ids": ranked,
                 "token_count": count_tokens(text),
                 # Per-chunk provenance, in text order: the block section is the
                 # anchor's, but a merged small source spans several sections.
@@ -335,7 +343,7 @@ class SectionAwareEvidenceBuilder:
 
     def _group_block(self, group: dict[str, Any], chunks: list[SearchResult]) -> SearchResult:
         """A source group's block; a cut anchor marks the block truncated."""
-        block = self._block(group["anchor"], chunks, self._count)
+        block = self._block(group["anchor"], chunks, self._count, group["anchors"])
         if any(item.payload.get("truncated") for item in chunks):
             full = {_chunk_id(item): item for item in group["anchors"]}
             original = "\n\n".join(

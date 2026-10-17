@@ -44,7 +44,13 @@ from app.llm.premise import (
 )
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
-from app.llm.visual_answer import PageRenderer, VisualAnswer, answer_from_pages, asks_visual
+from app.llm.visual_answer import (
+    PageRenderer,
+    VisualAnswer,
+    answer_from_pages,
+    asks_visual,
+    chunk_ranks,
+)
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer, mark_llm_generation
@@ -1601,6 +1607,7 @@ async def _support_unit_answer_events(
             render_page,
             generation_kwargs={k: v for k, v in generation_kwargs.items() if k != "schema"},
             trace=visual_trace,
+            ranks=chunk_ranks(blocks),
         )
         if capture is not None:
             if not capture.raw_text:
