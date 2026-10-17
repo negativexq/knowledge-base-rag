@@ -5358,3 +5358,15 @@ found. 1017 and 1018 planned the right sums but put two values in one operand
 fixes all eight were refused; now 3/8 by the scorer, 4/8 counting 1020.
 A first attempt ran on the local qwen3.5:4b because the provider variables
 were left out; it was discarded.
+
+## Fix — one figure per resolver operand (closing note)
+
+`luna-v2-fix-rows`, 1017 and 1018: the resolver planned the right sums of debt
+and lease liabilities but put two figures in one operand ("value": "72 + 980"),
+which binds to no single printed figure and is refused
+(`OPERAND_VALUE_NOT_A_NUMBER`). The resolver instructions now ask for one
+figure per operand, a total of several figures being one operand per figure in
+the program. The refusal is unchanged; a test pins it. Prompt-only, unmeasured
+until a paid run.
+
+`make test`: 1714 passed, 4 skipped.
