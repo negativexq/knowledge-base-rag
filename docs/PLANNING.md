@@ -5687,9 +5687,11 @@ fixes had no row measurement of their own: 0/4 right, 1 wrong, 3 refused.
 - 225 (gold 738) refused as before (`ANSWER_TYPE_MISMATCH`): the model gave
   the shares (11%, 71%) without the sample size, and the resolver did not
   complete it.
-- 380 (gold 8,367,277,000) refused as before: the model abstained outright,
-  so no answer was withheld and the resolver never ran; the lakh-scale
-  support (#90) was not reached.
+- 380 (gold 8,367,277,000) refused as before: the model abstained, and the
+  resolver planned the right program, (income - shareholders' funds) x
+  100,000, bound the shareholders' funds (25,966.14), but its one search did
+  not find the "Total income" row (`OPERAND_MISSING`); the lakh-scale support
+  (#90) was not reached.
 - 1070 (gold 0.12%) answered 0.10 from the printed one-decimal rates, which
   the precision check (#91) refused (`CALCULATION_PRECISION_BELOW_ASKED`);
   the resolver did not recompute it from gross profit and revenue. It was
@@ -5697,3 +5699,49 @@ fixes had no row measurement of their own: 0/4 right, 1 wrong, 3 refused.
   refusal, not a right one.
 
 `make test`: 1748 passed, 4 skipped.
+
+## Audit — the 41 questions the latest measurements still lose (closing note)
+
+Offline, no new run: `luna-full-v3` with its twelve re-measured rows replaced
+by `luna-v3-debt-rows-2` and `luna-v3-unmeasured-rows` (79/120; 39 answerable
+questions lost, 2 unanswerable ones answered). Retrieval is not the loss: an
+evidence page was among the pages shown in every lost row, all of them in 36.
+By cause:
+
+1. The visual path reads the wrong pages (12: 385, 393, 636, 637, 661, 662,
+   732; not triggered on 210, 212, 476, 641, 642). `candidate_pages` takes
+   the first pages of the units in their order, and the units of a
+   question-scoped document are in document order (E1.S1, E1.S2 ...), so it
+   renders pages 1-3 instead of the reranked pages: 662 (evidence pages 12-20)
+   read pages 1, 2, 3; 661 (15, 16) read 1, 4, 7. 637 read its named page and
+   answered 1 (gold 1), but the confirming call did not support it.
+   `asks_visual` did not fire on the five chart questions.
+2. The model abstains on a table lookup or comparison it was shown (7: 381,
+   516, 517, 519, 524, 727, 729); the gold is in the page text for four. 727
+   and 729 planned the right sums but no search found the Tweet counts.
+3. The resolver cannot complete a plan (7): 380 ("Total income" not found),
+   399 (counts of listed names are not printed numbers), 225 (chart labels not
+   in the units, 65+ internet-user sample size not found), 1074 (debt rows
+   not found this run), 1075 (no plan), 1072 (an operand the validator
+   rejects), 1018 (refused by the total-and-part check; "Total long-term
+   debt" 7,531 plus lease liabilities 3,916 alone would be within 1%).
+4. The validator blocks a right answer (3): 513 (13, a bare "13" calculation
+   from a list count, `CALCULATION_OPERAND_UNSUPPORTED`), 639 ("Subtask",
+   `CRITICAL_VALUE_INDETERMINATE`); 1070 is a right block of 0.10 with no
+   recovery from gross profit and revenue.
+5. Wrong group or measure bound (4): 214 (46 - 27 for the age gap, gold 7),
+   219 (32% "do not use SNS" for "only use SNS"), 227 (a gap in percentage
+   points where the gold, 301, is a gap in people), 371 (23 directorships
+   from the "other companies" column, gold 30).
+6. Count lists wrong (2): 396 (21 and 14 for 22 and 21), 515 (6 for 5).
+7. Wrong section (1): 831 answered another quarter's activity.
+8. The scorer misses a right answer (3): 368, 386, 1027 (paraphrases).
+9. An unanswerable question answered (2): 388 (no governor on the last page;
+   the answer cites page 1), 660 (no port 10-13; false premise).
+
+Order of work by questions at stake and cost: the visual page ranking (1),
+then the validator's false blocks (4), the abstained table lookups (2), the
+operand group check (5), and an LLM judge for the scorer (8, measurement
+only).
+
+`make test`: 1748 passed, 4 skipped (no code change).
