@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from pathlib import Path
+from typing import TypeVar
 
 from app.llm.citation_location import location_for
 from app.llm.trust_boundary import serialize_untrusted_context, serialize_user_question
@@ -7,6 +8,9 @@ from app.retrieval.hybrid_search import SearchResult
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent.parent / "prompts"
 NOT_FOUND_PHRASE = "I could not find this in the document."
+
+# Retrieved chunks, or the support units built from them.
+ContextItem = TypeVar("ContextItem")
 
 
 def load_system_prompt(version: str) -> str:
@@ -45,9 +49,9 @@ def build_context(chunks: list[SearchResult]) -> str:
 
 def build_messages(
     question: str,
-    chunks: list[SearchResult],
+    chunks: list[ContextItem],
     version: str,
-    context_serializer: Callable[[list[SearchResult]], str] | None = None,
+    context_serializer: Callable[[list[ContextItem]], str] | None = None,
     system_prompt_suffix: str | None = None,
 ) -> list[dict]:
     system_prompt = load_system_prompt(version)
