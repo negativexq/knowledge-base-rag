@@ -5745,3 +5745,20 @@ operand group check (5), and an LLM judge for the scorer (8, measurement
 only).
 
 `make test`: 1748 passed, 4 skipped (no code change).
+
+## Visual path — rank the pages by the reranker, not the document (closing note)
+
+The audit's largest cause: `candidate_pages` took the first pages of the
+units in their order, and a question-scoped document's evidence is one
+section-aware block whose text, and so its units, are in document order. The
+visual path read pages 1-3 of the PDF instead of the reranked pages (662,
+evidence pages 12-20, read 1, 2, 3). The block now keeps its anchors' chunk
+ids in reranker order (`anchor_chunk_ids`); `chunk_ranks` turns the blocks
+into a chunk rank, and `candidate_pages` puts the units of ranked chunks first
+by that rank. Without a section-aware block each block is its own chunk,
+ranked by its place, as before. On the saved `luna-full-v3` rankings, 661
+(15, 16) and 732 (7, 11) now get their evidence pages and 662 gets 16 of its
+five; 385, 393 and 636 still miss them: their questions name a printed page
+("page two") that is not the PDF page, a separate issue.
+
+`make test`: 1751 passed, 4 skipped.

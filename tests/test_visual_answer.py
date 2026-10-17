@@ -15,6 +15,7 @@ from app.evidence.support_units import build_support_units
 from app.llm.visual_answer import (
     asks_visual,
     candidate_pages,
+    chunk_ranks,
     page_messages,
     render_pdf_page,
 )
@@ -338,3 +339,69 @@ async def test_a_reading_that_names_the_printed_page_number_is_kept():
     )
 
     assert visual is not None and visual.page == 5
+
+
+# luna audit: a question-scoped document's evidence is one block whose units
+# are in document order (E1.S1, E1.S2 ...), so the "top" units were the first
+# pages of the PDF: 662 (evidence pages 12-20) was shown pages 1, 2, 3 and 661
+# (15, 16) pages 1, 4, 7. The block keeps its anchors in reranker order, and
+# the pages are ranked by them.
+
+
+def _page_chunk(chunk_id, page):
+    return SearchResult(
+        score=1.0,
+        id=chunk_id,
+        payload={
+            "source_type": "filesystem",
+            "source_id": "doc",
+            "document_version": "v1",
+            "tenant_id": "tenant-a",
+            "heading_path": ["S"],
+            "heading_occurrence": 0,
+            "page_number": page,
+            "text": f"text on page {page}.",
+        },
+    )
+
+
+async def _ranked_units(anchor_pages, other_pages):
+    from app.evidence.section_aware import SectionAwareEvidenceBuilder
+    from app.security.models import RetrievalContext
+
+    anchors = [_page_chunk(f"a{page}", page) for page in anchor_pages]
+    others = [_page_chunk(f"o{page}", page) for page in other_pages]
+    builder = SectionAwareEvidenceBuilder.__new__(SectionAwareEvidenceBuilder)
+    builder._token_budget = 10_000
+    builder._scroll_source = lambda anchor, context: anchors + others
+    result = await builder.build(anchors, RetrievalContext("tenant-a"))
+    return result.blocks, build_support_units(result.blocks)
+
+
+@pytest.mark.asyncio
+async def test_the_block_keeps_its_anchors_in_reranker_order():
+    blocks, _ = await _ranked_units([16, 12, 20], [1, 2, 3])
+
+    assert blocks[0].payload["anchor_chunk_ids"] == ["a16", "a12", "a20"]
+
+
+@pytest.mark.asyncio
+async def test_candidate_pages_follow_the_reranker_not_the_document_order():
+    blocks, units = await _ranked_units([16, 12, 20], [1, 2, 3])
+
+    assert [unit.page_number for unit in units][:3] == [1, 2, 3]
+    assert candidate_pages(units, chunk_ranks=chunk_ranks(blocks)) == [
+        ("doc", 16),
+        ("doc", 12),
+        ("doc", 20),
+    ]
+
+
+def test_without_ranks_the_unit_order_stands():
+    blocks = _blocks(("doc", 4), ("doc", 5))
+
+    assert chunk_ranks(blocks) == {"c1": 0, "c2": 1}
+    assert candidate_pages(build_support_units(blocks), chunk_ranks={}) == [
+        ("doc", 4),
+        ("doc", 5),
+    ]
