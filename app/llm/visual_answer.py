@@ -275,7 +275,11 @@ async def answer_from_pages(
         return None
     answer = (reading.get("answer") or "").strip()
     shown = {page: source for source, page, _ in pages}
-    if reading.get("abstain") or not answer or reading.get("page") not in shown:
+    page = reading.get("page")
+    if isinstance(page, int) and page not in shown and resolve is not None:
+        # The model may name the number printed on a shown page.
+        page = resolve(pages[0][0], page)
+    if reading.get("abstain") or not answer or page not in shown:
         return None
     raw = await provider.chat_json(
         page_messages(
@@ -291,5 +295,4 @@ async def answer_from_pages(
         supported = False
     if not supported:
         return None
-    page = reading["page"]
     return VisualAnswer(answer, shown[page], page)
