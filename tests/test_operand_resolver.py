@@ -506,3 +506,14 @@ def test_an_operand_holding_a_sum_does_not_bind():
     op = _operand("e", "29,441 + 41,190", ["Total current liabilities", "2021"])
 
     assert bind_operand(op, available) == ["OPERAND_VALUE_NOT_A_NUMBER"]
+
+
+# luna V2 rows 1017, 1018: "all lease liabilities" was summed from the lease
+# table's parts and one part (980) was left out; 1023, right, used the table's
+# printed "Total lease liabilities" row.
+
+
+def test_the_instructions_prefer_a_printed_total_over_its_parts():
+    from app.llm.operand_resolver import RESOLVER_INSTRUCTIONS
+
+    assert "printed total" in RESOLVER_INSTRUCTIONS
