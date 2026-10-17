@@ -5287,3 +5287,20 @@ deterministic contains-match (no LLM judge). Loss audit in
 `artifacts/mmlongbench-v2/luna-full-v2/audit.md`.
 
 `make test`: 1702 passed, 4 skipped.
+
+## Fix — a table fact carries its section line (closing note)
+
+The V2 audit of `luna-full-v2` found that PR #72's fact binding refused 1017,
+1018 and 1020: Costco's lease note prints "Current" and "Long-term" as lines of
+their own above the rows ("Operating lease liabilities(2) | 2021: $ 222"), and
+an operand labelled "Current" named neither the fact's row nor its column, so
+the binding failed (`OPERAND_LABEL_NOT_IN_UNIT`) where the old text rule had
+accepted it. A fact now carries the last line without cells above it in its
+table (its section), and a label may name the row, the column or the section;
+one label must still name the row. Offline replay of the saved plans on the
+current index: 1017's and 1018's current and long-term lease operands now bind
+to the right section. Not measured with the model. A total row printed after
+the last section takes that section ("Total lease liabilities" reads
+"Long-term"); a label naming it would still have to name its row.
+
+`make test`: 1704 passed, 4 skipped.

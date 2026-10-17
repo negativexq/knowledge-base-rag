@@ -30,6 +30,8 @@ class Fact:
     column: str
     # "thousands", "millions" or "billions" when the table's header says so.
     scale: str | None
+    # The table's section line above the row ("Current", "Long-term"), or "".
+    section: str = ""
 
 
 @dataclass(frozen=True)
@@ -53,7 +55,9 @@ def _scale(header: str | None) -> str | None:
     return match.group(1).casefold() if match else None
 
 
-def _row(line: str, header: str | None, scale: str | None) -> tuple[list[Fact], set[float]]:
+def _row(
+    line: str, header: str | None, scale: str | None, section: str
+) -> tuple[list[Fact], set[float]]:
     cells = _cells(line)
     names = _cells(header.removeprefix(_HEADER)) if header else []
     facts: list[Fact] = []
@@ -72,23 +76,28 @@ def _row(line: str, header: str | None, scale: str | None) -> tuple[list[Fact], 
         if row is None or not column or len(numbers) != 1:
             unresolved.update(numbers)
             continue
-        facts.append(Fact(numbers[0], row, column, scale))
+        facts.append(Fact(numbers[0], row, column, scale, section))
     return facts, unresolved
 
 
 def unit_facts(text: str, header: str | None = None) -> UnitFacts:
     """The facts of the table rows in a unit's text. ``header`` is the table's
     header line when the unit does not print it (a row split from its table);
-    a header line in the text replaces it for the lines after it."""
+    a header line in the text replaces it for the lines after it. A line with
+    no cells between rows is the section of the rows below it."""
     facts: list[Fact] = []
     unresolved: set[float] = set()
+    section = ""
     for line in text.splitlines():
         if line.startswith(_HEADER):
-            header = line
+            header, section = line, ""
             continue
         if "|" not in line:
+            # A line without cells inside a table is a section heading.
+            if header and line.strip():
+                section = line.strip()
             continue
-        row_facts, row_unresolved = _row(line, header, _scale(header))
+        row_facts, row_unresolved = _row(line, header, _scale(header), section)
         facts.extend(row_facts)
         unresolved.update(row_unresolved)
     return UnitFacts(tuple(facts), frozenset(unresolved))

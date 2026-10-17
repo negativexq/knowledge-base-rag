@@ -183,10 +183,11 @@ def block_texts(units: list[SupportUnit]) -> dict[str, str]:
 
 
 def _names(fact: Fact, labels: list[str]) -> bool:
-    """Every label is in the fact's row or column, and one is in its row."""
-    row, column = _normalized(fact.row), _normalized(fact.column)
+    """Every label is in the fact's row, column or section, and one is in its
+    row."""
+    row, column, section = (_normalized(text) for text in (fact.row, fact.column, fact.section))
     return any(label in row for label in labels) and all(
-        label in row or label in column for label in labels
+        label in row or label in column or (section and label in section) for label in labels
     )
 
 
