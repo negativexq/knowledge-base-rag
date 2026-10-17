@@ -5491,3 +5491,15 @@ chunking defect, about 20 chunks of the V2 index start inside a table row),
 subtracts rounded printed margins).
 
 `make test`: 1730 passed, 4 skipped.
+
+## Measurement — resolver definitions on 1072, 1073, 1075, 366 (closing note)
+
+`luna-v2-definition-rows`, gpt-6-luna, one run. 366 answers 2.4 percentage
+points (6.7% forecast - 4.3% achieved; correct, a larger-minus-smaller
+program). 1073 answers 48.805% = 1,419 / ((2,795 + 3,020) / 2) (correct;
+gold 0.488). 1075 still answers 29.3%: the plan left the current portion of
+long-term debt out despite the rule. 1072 was refused: the plan's program ran
+away into a sum of hundreds of operand names until the token limit
+(`PLAN_SCHEMA_INVALID`), a degenerate generation the parse rightly refuses.
+
+`make test`: 1730 passed, 4 skipped.
