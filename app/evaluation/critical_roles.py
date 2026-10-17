@@ -17,9 +17,23 @@ OccurrenceRole = Literal[
     "VALIDATE",
     "SKIP_REJECTED_PREMISE",
     "SKIP_QUERY_ECHO",
+    "SKIP_VERDICT",
     "AMBIGUOUS_KEEP_VALIDATING",
 ]
-SKIP_ROLES = frozenset({"SKIP_REJECTED_PREMISE", "SKIP_QUERY_ECHO"})
+SKIP_ROLES = frozenset({"SKIP_REJECTED_PREMISE", "SKIP_QUERY_ECHO", "SKIP_VERDICT"})
+_VERDICT_END = re.compile(r"\s*(?:[.,;:!]|—|-\s|$)")
+
+
+def _is_leading_verdict(answer: str, occurrence: CriticalValueOccurrence) -> bool:
+    """A yes/no that opens the answer ("No. CA03 is ...") judges the question;
+    it is not a value copied from the support."""
+    return (
+        occurrence.lexical_type == "BOOLEAN"
+        and not answer[: occurrence.span_start].strip(" \t\n*\"'")
+        and _VERDICT_END.match(answer, occurrence.span_end) is not None
+    )
+
+
 QueryValue = tuple[str, str]
 RoleDeterminism = Literal["DETERMINISTIC", "AMBIGUOUS"]
 
@@ -188,16 +202,20 @@ def grounded_query_values(
 def _query_echo_ids(
     occurrences: Sequence[CriticalValueOccurrence],
     query_values: frozenset[QueryValue],
+    verdicts: set[str],
 ) -> set[str]:
     """Echoes are skipped only beside a value that is still validated in the
     same claim unit: an answer made only of question values (a yes/no
-    confirmation of the question's figure) is validated in full."""
+    confirmation of the question's figure) is validated in full. A skipped
+    verdict is not such a value."""
     if not query_values:
         return set()
     echoes = {
         o.occurrence_id for o in occurrences if (o.normalized_value, o.lexical_type) in query_values
     }
-    claimed_units = {o.claim_unit_id for o in occurrences if o.occurrence_id not in echoes}
+    claimed_units = {
+        o.claim_unit_id for o in occurrences if o.occurrence_id not in echoes | verdicts
+    }
     return {
         o.occurrence_id
         for o in occurrences
@@ -210,12 +228,30 @@ def classify_occurrence_roles(
     occurrences: Sequence[CriticalValueOccurrence],
     *,
     query_values: frozenset[QueryValue] = frozenset(),
+    support_states_boolean: bool = True,
 ) -> tuple[OccurrenceRoleDecision, ...]:
-    """Assign a role to each known occurrence without creating new ones."""
+    """Assign a role to each known occurrence without creating new ones.
+
+    A leading verdict is skipped only when the support states no boolean of
+    its own; otherwise it is compared ("Yes" against "enabled: false")."""
     decisions: list[OccurrenceRoleDecision] = []
-    echoes = _query_echo_ids(occurrences, query_values)
+    verdicts = (
+        set()
+        if support_states_boolean
+        else {o.occurrence_id for o in occurrences if _is_leading_verdict(answer, o)}
+    )
+    echoes = _query_echo_ids(occurrences, query_values, verdicts)
     for occurrence in occurrences:
-        if occurrence.occurrence_id in echoes:
+        if occurrence.occurrence_id in verdicts:
+            decisions.append(
+                OccurrenceRoleDecision(
+                    occurrence.occurrence_id,
+                    "SKIP_VERDICT",
+                    "LEADING_VERDICT_NO_SUPPORT_BOOLEAN",
+                    "DETERMINISTIC",
+                )
+            )
+        elif occurrence.occurrence_id in echoes:
             decisions.append(
                 OccurrenceRoleDecision(
                     occurrence.occurrence_id,

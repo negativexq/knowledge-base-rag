@@ -64,6 +64,7 @@ def _architecture_v2_result(
         "validate_role_count": sum(d.role == "VALIDATE" for d in decisions),
         "skip_rejected_premise_count": sum(d.role == "SKIP_REJECTED_PREMISE" for d in decisions),
         "skip_query_echo_count": sum(d.role == "SKIP_QUERY_ECHO" for d in decisions),
+        "skip_verdict_count": sum(d.role == "SKIP_VERDICT" for d in decisions),
         "ambiguous_keep_validating_count": sum(
             d.role == "AMBIGUOUS_KEEP_VALIDATING" for d in decisions
         ),
@@ -200,6 +201,7 @@ def audit_critical_value(
     result["validate_role_count"] = 0
     result["skip_rejected_premise_count"] = 0
     result["skip_query_echo_count"] = 0
+    result["skip_verdict_count"] = 0
     result["ambiguous_keep_validating_count"] = 0
     result["occurrence_identity_error_count"] = 0
     result["role_classification_error_count"] = 0

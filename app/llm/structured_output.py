@@ -107,6 +107,9 @@ knowledge. If a material claim has no directly supporting unit, omit that claim;
 no material claim can be supported, return {"answer_parts":[],"abstain":true}.
 If the question presupposes something no unit states (a date, name, version,
 function or property), abstain instead of answering about something nearby.
+Write every number exactly as the cited unit prints it, with its unit and scale
+("$1,383 million" stays "$1,383 million", not "$1.383 billion"); do not convert
+units, scale or number format.
 Do not include reasoning, planning, or markdown fences.
 """.strip()
 
@@ -654,6 +657,7 @@ def validate_support_unit_answer(
                 "validate_role_count": 0,
                 "skip_rejected_premise_count": 0,
                 "skip_query_echo_count": 0,
+                "skip_verdict_count": 0,
                 "ambiguous_keep_validating_count": 0,
                 "occurrence_identity_error_count": 0,
                 "role_classification_error_count": 0,
@@ -705,6 +709,7 @@ def validate_support_unit_answer(
         "validate_role_count": 0,
         "skip_rejected_premise_count": 0,
         "skip_query_echo_count": 0,
+        "skip_verdict_count": 0,
         "ambiguous_keep_validating_count": 0,
         "occurrence_identity_error_count": 0,
         "role_classification_error_count": 0,
@@ -789,6 +794,7 @@ def validate_support_unit_answer(
                 "validate_role_count": 0,
                 "skip_rejected_premise_count": 0,
                 "skip_query_echo_count": 0,
+                "skip_verdict_count": 0,
                 "ambiguous_keep_validating_count": 0,
                 "occurrence_identity_error_count": 0,
                 "role_classification_error_count": 0,
@@ -842,6 +848,7 @@ def validate_support_unit_answer(
             "validate_role_count",
             "skip_rejected_premise_count",
             "skip_query_echo_count",
+            "skip_verdict_count",
             "ambiguous_keep_validating_count",
             "occurrence_identity_error_count",
             "role_classification_error_count",
@@ -1032,6 +1039,7 @@ def _record_validator_telemetry(telemetry: dict[str, Any]) -> None:
                 telemetry.get("skip_rejected_premise_count", 0)
             ),
             "validator.skip_query_echo_count": int(telemetry.get("skip_query_echo_count", 0)),
+            "validator.skip_verdict_count": int(telemetry.get("skip_verdict_count", 0)),
             "validator.ambiguous_keep_validating_count": int(
                 telemetry.get("ambiguous_keep_validating_count", 0)
             ),
