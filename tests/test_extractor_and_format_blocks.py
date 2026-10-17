@@ -115,3 +115,34 @@ def test_the_support_unit_path_restates_cells_for_a_percentage_answer():
     answer = parse_support_unit_answer(json.dumps({"answer_parts": [part], "abstain": False}))
 
     assert validate_support_unit_answer(answer, units).failure_codes == []
+
+
+TWITTER = (
+    "Twitter users | Among online adults, the % who use Twitter | 2013 | 2014 | "
+    "Allintemet users | 18% | 23%* | Men | 17 | 24* | White, Non-Hispanic | 16 | ix | "
+    "Black, Non-Hispanic | 29 | 27 | Hispanic | 16 | 25 | 18-29 | 31 | 37"
+)
+
+
+def test_cells_under_a_percentage_header_are_restated_though_the_unit_prints_percent():
+    # luna 525: the header says "the % who use Twitter"; the cells are bare.
+    facts = percent_cell_facts([TWITTER])
+
+    assert "table cell 16 = 16%" in facts
+    assert "table cell 29 = 29%" in facts
+    # An age range is not a cell, and "24*" carries a mark, so neither is read.
+    assert facts.count("table cell 29 = 29%") == 1
+    assert "table cell 24 = 24%" not in facts
+
+
+def test_a_unit_printing_percent_without_a_percentage_header_is_not_restated():
+    assert percent_cell_facts(["Revenue | 18% | Staff | 42 | 51"]) == []
+
+
+def test_the_525_answer_passes_with_its_cited_table():
+    claim = "In 2013, White, Non-Hispanic users were 16% and Hispanic users were 16%."
+
+    assert (
+        audit_critical_value(claim, [TWITTER, *percent_cell_facts([TWITTER])])["validator_outcome"]
+        == "PASS"
+    )

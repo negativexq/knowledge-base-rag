@@ -4869,3 +4869,23 @@ Correct blocks left alone: 212 (a self-contradicting answer), 220 (unanswerable)
 cite; that is a citation choice, not a validator rule.
 
 `make test`: 1625 passed, 4 skipped.
+
+## Fix — counted-operands prompt reverted, percentage cells under a % header (closing note)
+
+Luna format rerun of the 39 rows (`luna-blocked-format`, PR #50): validator_blocked
+fell to 6 (was 10; 223, 740, 835 opened, 227 unblocked but wrong), yet
+model_abstained rose to 10 (was 4) and answers correct fell to 16/38 (was 18/38).
+Three correct calculations of the previous run (371: 14 + 5 + 11, 741: 10 / 24,
+1015: 6,708 + 1,781) became "I could not find this in the document." after the
+prompt sentence asking for every counted number as a count; its target, 399, stayed
+blocked (one count of 7 people, "4 and 3" in the text). The sentence is reverted and
+a test keeps it out. Single rows vary between runs, but three calculations lost in
+the same direction point at the prompt.
+
+525 blocked anew: its table's header says "the % who use Twitter" and some cells
+print "%", so the cell rule skipped the unit and the bare "16" cells conflicted with
+"16%". A unit whose header declares percentages ("% who", "% of", "(%)", "percent")
+now has its standalone cells restated too; a cell ending an age range ("18-29") is
+not read.
+
+`make test`: 1628 passed, 4 skipped.

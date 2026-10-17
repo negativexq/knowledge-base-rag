@@ -126,10 +126,8 @@ parentheses. The calculation is checked. Otherwise set "calculation": null.
 Every answer_part also has "counts". When the answer counts things the cited units
 list (names, rows, items), set "counts": [{"items": ["...", "..."]}] with every
 counted item copied from the cited units, each once; the count is the number of
-items, and a count may be a number in the calculation. Give every number you counted
-yourself (people in a list, rows, items) as a count, also when it is a number in the
-calculation; a calculation number is otherwise one printed in the cited units. The
-counts are checked. Otherwise set "counts": null.
+items, and a count may be a number in the calculation. The counts are checked.
+Otherwise set "counts": null.
 """.strip()
 
 ANSWERABILITY_OUTPUT_INSTRUCTIONS = """
