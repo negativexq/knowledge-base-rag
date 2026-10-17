@@ -64,13 +64,14 @@ describe("console shell", () => {
   it("switches between dark and light themes and remembers the choice", () => {
     renderShell()
 
-    fireEvent.click(screen.getByRole("button", { name: "Switch to light theme" }))
     expect(document.documentElement.dataset.theme).toBe("light")
-    expect(localStorage.getItem("kb-console.theme")).toBe("light")
-
     fireEvent.click(screen.getByRole("button", { name: "Switch to dark theme" }))
     expect(document.documentElement.dataset.theme).toBe("dark")
     expect(localStorage.getItem("kb-console.theme")).toBe("dark")
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to light theme" }))
+    expect(document.documentElement.dataset.theme).toBe("light")
+    expect(localStorage.getItem("kb-console.theme")).toBe("light")
   })
 
   it("collapses the sidebar to icons and keeps links reachable by name", () => {
@@ -80,7 +81,7 @@ describe("console shell", () => {
 
     const nav = screen.getByRole("navigation", { name: "Main" })
     expect(within(nav).queryByText("Ask")).not.toBeInTheDocument()
-    expect(within(nav).getByRole("link", { name: "Playground" })).toBeInTheDocument()
+    expect(within(nav).getByRole("link", { name: "Research" })).toBeInTheDocument()
     expect(localStorage.getItem("kb-console.sidebar-collapsed")).toBe("true")
     expect(screen.getByRole("button", { name: "Expand sidebar" })).toBeInTheDocument()
   })
@@ -103,6 +104,7 @@ describe("console shell", () => {
   })
 
   it("can switch the theme from the command palette", () => {
+    localStorage.setItem("kb-console.theme", "dark")
     renderShell()
 
     fireEvent.click(screen.getByRole("button", { name: "Search or jump to…" }))

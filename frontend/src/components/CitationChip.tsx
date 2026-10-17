@@ -7,12 +7,14 @@ import { cn } from "@/lib/utils"
 export function CitationChip({
   rank,
   supportId,
+  sourceName,
   preview,
   valid,
   onClick,
 }: {
   rank: number | undefined
-  // Set for a support-ID citation ("E1.S4"); shown in place of the rank.
+  // Preserve support-ID targeting while presenting a readable source label.
+  sourceName?: string
   supportId?: string
   // The cited passage, shown on hover or keyboard focus.
   preview?: SupportUnitRef
@@ -37,11 +39,12 @@ export function CitationChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "mx-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded bg-[var(--color-accent-muted)] px-1 align-middle text-[10px] font-semibold text-[var(--color-accent)] transition-colors hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
+        "mx-0.5 inline-flex min-h-5 min-w-4 max-w-52 items-center justify-center gap-1 rounded border border-[var(--color-border)] bg-[var(--color-accent-muted)] px-1 align-middle text-[10px] font-semibold text-[var(--color-accent)] transition-colors hover:bg-[var(--color-accent)] hover:text-[var(--color-accent-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
       )}
       aria-label={supportId ? `Jump to ${supportId} in source ${rank}` : `Jump to source ${rank}`}
     >
-      {supportId ?? rank}
+      <span>{rank}</span>
+      {sourceName && <span className="max-w-36 truncate font-normal">{sourceName.split(/[\\/]/).pop()}</span>}
     </button>
   )
   if (!preview) return chip

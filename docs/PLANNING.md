@@ -5816,3 +5816,19 @@ Over the two runs the visual path is right on 637 and 732 once each; the
 reading, not the check, is now what varies.
 
 `make test`: 1752 passed, 4 skipped.
+
+## UI — research workspace (closing note)
+
+The Playground becomes "Research" in a "Research workspace": a Research mode
+that keeps the answer column uncluttered (Sources and Why) and an Inspect mode
+that adds the Retrieval, Security and Trace tabs, technical source details and
+the timing strip. The evidence inspector opens on demand (a citation, the
+"Supporting evidence" button or the Evidence toggle), docks resizable on
+desktop and becomes a focus-trapped sheet below 1024 px; it shows the evidence
+of the answer it was opened from, not only the latest. Source cards expand to
+their cited passages; citation chips show the source name; the light theme is
+the default; the sidebar keeps icons only on narrow screens. The sign-in title
+and the Traces note follow the new names.
+
+Frontend: 59 tests passed, typecheck, lint and build clean. `make test`: 1752
+passed, 4 skipped (no backend change).

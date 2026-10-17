@@ -35,7 +35,7 @@ export const NAV_GROUPS: NavGroup[] = [
       },
       {
         to: "/playground",
-        label: "Playground",
+        label: "Research",
         description: "Ask the knowledge base and inspect the evidence",
         icon: Sparkles,
       },

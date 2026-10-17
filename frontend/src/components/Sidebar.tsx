@@ -11,12 +11,12 @@ function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
     <NavLink
       to={item.to}
       end={item.to === "/"}
-      aria-label={collapsed ? item.label : undefined}
+      aria-label={item.label}
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
         cn(
           "group relative flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
-          collapsed && "justify-center px-0",
+          collapsed ? "justify-center px-0" : "justify-center px-0 md:justify-start md:px-2.5",
           isActive
             ? "bg-[var(--color-surface-hover)] text-[var(--color-foreground)]"
             : "text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)]",
@@ -35,7 +35,7 @@ function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
             className={cn("h-4 w-4 shrink-0", isActive && "text-[var(--color-accent)]")}
             strokeWidth={1.75}
           />
-          {!collapsed && item.label}
+          {!collapsed && <span className="hidden md:inline">{item.label}</span>}
         </>
       )}
     </NavLink>
@@ -56,7 +56,7 @@ export function Sidebar({
     <aside
       className={cn(
         "flex h-full shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-surface)] py-3 transition-[width] duration-200",
-        collapsed ? "w-[60px] px-2" : "w-60 px-3",
+        collapsed ? "w-[60px] px-2" : "w-[60px] px-2 md:w-56 md:px-3",
       )}
     >
       <div className={cn("flex h-9 items-center gap-2.5 px-1", collapsed && "justify-center px-0")}>
@@ -64,10 +64,10 @@ export function Sidebar({
           <BookOpen className="h-4 w-4" strokeWidth={2} />
         </span>
         {!collapsed && (
-          <div className="min-w-0 leading-tight">
+          <div className="hidden min-w-0 leading-tight md:block">
             <div className="truncate text-sm font-semibold tracking-tight">Knowledge Base</div>
             <div className="truncate text-[11px] text-[var(--color-subtle-foreground)]">
-              Operations Console
+              Research workspace
             </div>
           </div>
         )}
@@ -79,7 +79,7 @@ export function Sidebar({
             {collapsed ? (
               <div className="mx-auto mb-1 h-px w-6 bg-[var(--color-border)]" aria-hidden="true" />
             ) : (
-              <div className="px-2.5 pb-1 text-[11px] font-medium uppercase tracking-wider text-[var(--color-subtle-foreground)]">
+              <div className="hidden px-2.5 pb-1 text-[10px] md:block font-medium uppercase tracking-wider text-[var(--color-subtle-foreground)]">
                 {group.label}
               </div>
             )}
@@ -97,12 +97,12 @@ export function Sidebar({
       <div
         className={cn(
           "mt-3 flex items-center gap-2 border-t border-[var(--color-border)] pt-3",
-          collapsed ? "flex-col" : "px-1",
+          collapsed ? "flex-col" : "flex-col md:flex-row md:px-1",
         )}
       >
         {identity && (
           <div
-            className={cn("flex min-w-0 flex-1 items-center gap-2", collapsed && "flex-none")}
+            className={cn("flex min-w-0 items-center gap-2 md:flex-1", collapsed && "flex-none")}
             title={`${identity.user_id} · ${identity.tenant_id}`}
           >
             <span
@@ -112,7 +112,7 @@ export function Sidebar({
               {identity.user_id.slice(0, 1)}
             </span>
             {!collapsed && (
-              <div className="min-w-0 leading-tight">
+              <div className="hidden min-w-0 leading-tight md:block">
                 <div className="truncate text-xs font-medium">{identity.user_id}</div>
                 <div className="truncate font-technical text-[11px] text-[var(--color-subtle-foreground)]">
                   {identity.tenant_id} · {identity.roles.join(", ").toLowerCase()}

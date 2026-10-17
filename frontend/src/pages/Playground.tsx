@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { ArrowUp, Check, Copy, MessageSquarePlus, Sparkles, Square } from "lucide-react"
+import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Search, Sparkles, Square } from "lucide-react"
 
 import { chatApi } from "@/api/chat"
 import type {
@@ -10,6 +10,7 @@ import type {
   RetrievedSource,
   SupportUnitRef,
 } from "@/api/types"
+import { InspectorPanel } from "@/components/InspectorPanel"
 import { RetrievalPipeline } from "@/components/RetrievalPipeline"
 import { SecurityInspector } from "@/components/SecurityInspector"
 import { SourceCard } from "@/components/SourceCard"
@@ -22,7 +23,7 @@ import { AnswerStatusLine } from "@/components/AnswerStatusLine"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { WhyPanel } from "@/components/WhyPanel"
 import { type AnswerStatus, answerStatus } from "@/lib/answerStatus"
-import { formatMs } from "@/lib/utils"
+import { cn, formatMs } from "@/lib/utils"
 import { EmptyState } from "@/components/EmptyState"
 import { uiApi } from "@/api/ui"
 import { useQuery } from "@tanstack/react-query"
@@ -130,6 +131,10 @@ export default function Playground() {
   const [turns, setTurns] = useState<Turn[]>(loadConversation)
   const [copiedTurn, setCopiedTurn] = useState<number | null>(null)
   const [question, setQuestion] = useState("")
+  const [mode, setMode] = useState<"research" | "inspect">("research")
+  const [inspectorOpen, setInspectorOpen] = useState(false)
+  const [selectionVersion, setSelectionVersion] = useState(0)
+  const [inspectedTurn, setInspectedTurn] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState("sources")
   const [highlightedRank, setHighlightedRank] = useState<number | null>(null)
   const [highlightedUnit, setHighlightedUnit] = useState<string | null>(null)
@@ -138,6 +143,7 @@ export default function Playground() {
   const sourceRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const current = turns[turns.length - 1]
+  const evidenceTurn = turns[inspectedTurn ?? turns.length - 1]
 
   useEffect(() => saveConversation(turns), [turns])
 
@@ -152,9 +158,9 @@ export default function Playground() {
   }
 
   const traceQuery = useQuery({
-    queryKey: ["trace", current?.metadata?.trace_id],
-    queryFn: () => uiApi.trace(current!.metadata!.trace_id),
-    enabled: Boolean(current?.metadata?.trace_id) && activeTab === "trace",
+    queryKey: ["trace", evidenceTurn?.metadata?.trace_id],
+    queryFn: () => uiApi.trace(evidenceTurn!.metadata!.trace_id),
+    enabled: inspectorOpen && Boolean(evidenceTurn?.metadata?.trace_id) && activeTab === "trace",
     refetchInterval: (query) => (query.state.data?.available ? false : 2000),
   })
 
@@ -190,6 +196,7 @@ export default function Playground() {
         askStartedAt: performance.now(),
       },
     ])
+    setInspectedTurn(null)
     setActiveTab("sources")
     setHighlightedRank(null)
     setHighlightedUnit(null)
@@ -248,6 +255,7 @@ export default function Playground() {
   function newChat() {
     abortRef.current?.abort()
     setTurns([])
+    setInspectedTurn(null)
     setHighlightedRank(null)
     setHighlightedUnit(null)
     setActiveTab("sources")
@@ -259,35 +267,49 @@ export default function Playground() {
   }
 
   function focusSource(rank: number, supportId: string | null = null) {
+    setInspectorOpen(true)
+    setSelectionVersion((value) => value + 1)
     setActiveTab("sources")
     setHighlightedRank(rank)
     setHighlightedUnit(supportId)
-    requestAnimationFrame(() => {
-      sourceRefs.current.get(rank)?.scrollIntoView({ behavior: "smooth", block: "center" })
-    })
   }
 
-  const citedUnits = citedUnitsByRank(current)
+  useEffect(() => {
+    if (inspectorOpen && highlightedRank !== null) {
+      const source = sourceRefs.current.get(highlightedRank)
+      const passage = Array.from(source?.querySelectorAll<HTMLElement>("[data-support-id]") ?? [])
+        .find((element) => element.dataset.supportId === highlightedUnit)
+      ;(passage ?? source)?.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+  }, [inspectorOpen, highlightedRank, highlightedUnit, inspectedTurn, selectionVersion])
 
-  const perf = current?.report
+  function changeMode(next: "research" | "inspect") {
+    setMode(next)
+    setInspectorOpen(next === "inspect")
+    if (next === "research") setActiveTab("sources")
+  }
+
+  const citedUnits = citedUnitsByRank(evidenceTurn)
+
+  const perf = evidenceTurn?.report
     ? {
-        embed: current.report.stages.find((s) => s.name === "query_embedding")?.duration_ms,
-        retrieval: current.report.stages.find((s) => s.name === "hybrid_retrieval")?.duration_ms,
-        rerank: current.report.stages.find((s) => s.name === "rerank")?.duration_ms,
+        embed: evidenceTurn.report.stages.find((s) => s.name === "query_embedding")?.duration_ms,
+        retrieval: evidenceTurn.report.stages.find((s) => s.name === "hybrid_retrieval")?.duration_ms,
+        rerank: evidenceTurn.report.stages.find((s) => s.name === "rerank")?.duration_ms,
       }
     : null
   // Client-observed (real, measured) timings — see the Turn interface's
   // comment for why these aren't backend-reported values.
   const llmMs =
-    current?.askStartedAt && current?.lastTokenAt
-      ? current.lastTokenAt - current.askStartedAt
+    evidenceTurn?.askStartedAt && evidenceTurn?.lastTokenAt
+      ? evidenceTurn.lastTokenAt - evidenceTurn.askStartedAt
       : null
   const groundingMs =
-    current?.lastTokenAt && current?.groundingAt ? current.groundingAt - current.lastTokenAt : null
+    evidenceTurn?.lastTokenAt && evidenceTurn?.groundingAt ? evidenceTurn.groundingAt - evidenceTurn.lastTokenAt : null
   const totalMs =
-    current?.askStartedAt && current?.groundingAt
-      ? current.groundingAt - current.askStartedAt
-      : (current?.report?.total_duration_ms ?? null)
+    evidenceTurn?.askStartedAt && evidenceTurn?.groundingAt
+      ? evidenceTurn.groundingAt - evidenceTurn.askStartedAt
+      : (evidenceTurn?.report?.total_duration_ms ?? null)
 
   const timings: { label: string; value: number | null | undefined; title?: string }[] = [
     { label: "Total", value: totalMs },
@@ -299,31 +321,62 @@ export default function Playground() {
   ]
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex min-h-14 shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] px-4 py-2 sm:px-6">
+        <div className="flex items-center gap-3">
+          <span className="hidden text-xs text-[var(--color-subtle-foreground)] sm:inline">Workspace</span>
+          <div role="group" aria-label="Workspace mode" className="flex rounded-lg bg-[var(--color-surface-hover)] p-0.5">
+            {(["research", "inspect"] as const).map((value) => (
+              <button key={value} type="button" aria-pressed={mode === value} onClick={() => changeMode(value)}
+                className={cn("rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]", mode === value ? "bg-[var(--color-surface)] text-[var(--color-foreground)] shadow-card" : "text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]")}>
+                {value === "research" ? "Research" : "Inspect"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button type="button" aria-expanded={inspectorOpen} aria-controls="evidence-inspector" onClick={() => setInspectorOpen(!inspectorOpen)}
+          className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-medium text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
+          <PanelRight className="h-3.5 w-3.5" /> Evidence
+          {evidenceTurn && <span className="font-technical text-[11px] text-[var(--color-subtle-foreground)]">{evidenceTurn.sources.length}</span>}
+        </button>
+      </div>
+      <div className="flex min-h-0 flex-1 overflow-hidden">
       {/* Conversation */}
       <section className="flex min-w-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-6 py-8">
+          <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col px-5 py-10 sm:px-10">
             {turns.length === 0 ? (
-              <div className="animate-in my-auto flex flex-col items-center gap-3 text-center">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-accent)] text-[var(--color-accent-foreground)] shadow-pop">
+              <div className="animate-in my-auto flex flex-col items-start gap-5 py-8">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-accent)]">
                   <Sparkles className="h-6 w-6" strokeWidth={1.75} />
                 </span>
-                <h2 className="text-xl font-semibold tracking-tight">Ask anything about the ingested documents</h2>
+                <div>
+                  <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-subtle-foreground)]">Your knowledge, connected</p>
+                  <h2 className="max-w-lg text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">A clearer answer.<br /><span className="text-[var(--color-muted-foreground)]">Evidence you can explore.</span></h2>
+                </div>
                 <p className="max-w-md text-sm text-[var(--color-muted-foreground)]">
-                  Answers cite the passages they rest on; hover a citation to read it, and open{" "}
-                  <span className="font-medium text-[var(--color-foreground)]">Why</span> to see how the answer was made.
+                  Ask a question across your documents. Follow each citation to its source, then explore how the answer came together.
                 </p>
-                <p className="font-technical text-xs text-[var(--color-subtle-foreground)]">
-                  Retrieving as {identity?.tenant_id ?? "…"} ({identity?.roles.join(", ") ?? "…"})
-                </p>
+                <div className="mt-3 grid w-full gap-0 border-y border-[var(--color-border)] sm:grid-cols-3">
+                  {[
+                    { icon: Search, title: "Ask a question", detail: "Search your connected knowledge" },
+                    { icon: FileText, title: "Follow the evidence", detail: "Read the passages behind an answer" },
+                    { icon: BookOpen, title: "Go a little deeper", detail: "Inspect retrieval and validation" },
+                  ].map(({ icon: Icon, title, detail }) => (
+                    <div key={title} className="flex flex-col gap-2 py-5 pr-4">
+                      <Icon className="h-4 w-4 text-[var(--color-subtle-foreground)]" strokeWidth={1.5} />
+                      <span className="text-xs font-medium">{title}</span>
+                      <span className="text-xs leading-relaxed text-[var(--color-muted-foreground)]">{detail}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="flex flex-col gap-8">
                 {turns.map((turn, i) => (
                   <div key={i} className="animate-in flex flex-col gap-4">
-                    <div className="ml-auto flex max-w-[85%] flex-col items-end gap-1">
-                      <div className="whitespace-pre-wrap rounded-2xl rounded-br-md bg-[var(--color-accent-muted)] px-4 py-2.5 text-sm text-[var(--color-foreground)]">
+                    <div className="flex flex-col items-start gap-2 border-b border-[var(--color-border)] pb-5">
+                      <div className="whitespace-pre-wrap text-xl font-semibold leading-relaxed tracking-tight text-[var(--color-foreground)]">
                         {turn.question}
                       </div>
                       {searchedAs(turn.report) && (
@@ -341,7 +394,7 @@ export default function Playground() {
                         <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
                       </span>
                       <div className="flex min-w-0 flex-1 flex-col gap-3">
-                        <div className="text-sm leading-relaxed text-[var(--color-foreground)]">
+                        <div className="text-[15px] leading-7 text-[var(--color-foreground)]">
                           {turn.errorMessage && turn.answer === "" ? (
                             <span className="text-[var(--color-error)]">{turn.errorMessage}</span>
                           ) : turn.streaming && turn.answer === "" ? (
@@ -360,7 +413,7 @@ export default function Playground() {
                                 answer={turn.answer}
                                 sources={turn.sources}
                                 supportUnits={turn.metadata?.support_units ?? []}
-                                onCite={focusSource}
+                                onCite={(rank, supportId) => { setInspectedTurn(i); focusSource(rank, supportId) }}
                               />
                               {turn.streaming && (
                                 <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-[var(--color-accent)]" />
@@ -368,6 +421,12 @@ export default function Playground() {
                             </>
                           )}
                         </div>
+                        {!turn.streaming && turn.sources.length > 0 && (
+                          <button type="button" onClick={() => { setInspectedTurn(i); setActiveTab("sources"); setHighlightedRank(null); setHighlightedUnit(null); setInspectorOpen(true) }}
+                            className="flex w-fit items-center gap-2 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
+                            <FileText className="h-3.5 w-3.5" /> Supporting evidence <span className="font-technical">{turn.sources.length}</span>
+                          </button>
+                        )}
                         {!turn.streaming && turn.answer && (
                           <div className="flex items-start justify-between gap-2">
                             {statusOf(turn) ? <AnswerStatusLine status={statusOf(turn)!} /> : <span />}
@@ -395,9 +454,9 @@ export default function Playground() {
           </div>
         </div>
 
-        <div className="px-6 pb-5">
+        <div className="px-4 pb-4 pt-3 sm:px-8 sm:pb-6">
           <div className="mx-auto w-full max-w-3xl">
-            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-pop transition-colors focus-within:border-[var(--color-border-strong)]">
+            <div className="rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-surface)] shadow-card transition-colors focus-within:border-[var(--color-border-strong)]">
               <textarea
                 ref={composerRef}
                 rows={1}
@@ -459,29 +518,32 @@ export default function Playground() {
       </section>
 
       {/* Evidence inspector */}
-      <aside className="flex w-[min(500px,46%)] shrink-0 flex-col overflow-hidden border-l border-[var(--color-border)] bg-[var(--color-surface)]">
+      <InspectorPanel open={inspectorOpen} onOpenChange={setInspectorOpen}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex h-full flex-col">
           <div className="flex items-center gap-2 overflow-x-auto border-b border-[var(--color-border)] px-4 py-2.5">
             <TabsList>
               <TabsTrigger value="sources">Sources</TabsTrigger>
               <TabsTrigger value="why">Why</TabsTrigger>
-              <TabsTrigger value="retrieval">Retrieval</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
-              <TabsTrigger value="trace">Trace</TabsTrigger>
+              {mode === "inspect" && <>
+                <TabsTrigger value="retrieval">Retrieval</TabsTrigger>
+                <TabsTrigger value="security">Security</TabsTrigger>
+                <TabsTrigger value="trace">Trace</TabsTrigger>
+              </>}
             </TabsList>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
               <TabsContent value="sources">
-                {!current || current.sources.length === 0 ? (
+                {!evidenceTurn || evidenceTurn.sources.length === 0 ? (
                   <EmptyState title="No sources yet" description="Ask a question to see the retrieved evidence." />
                 ) : (
                   <div className="flex flex-col gap-2">
-                    {current.sources.map((source) => (
+                    {evidenceTurn.sources.map((source) => (
                       <SourceCard
-                        key={source.rank}
+                        key={`${inspectedTurn ?? turns.length - 1}:${source.rank}:${selectionVersion}`}
                         source={source}
+                        technical={mode === "inspect"}
                         cited={
-                          (current.grounding?.citations_found.some(
+                          (evidenceTurn.grounding?.citations_found.some(
                             ([, sid]) => sid === source.source_id,
                           ) ??
                             false) ||
@@ -492,6 +554,7 @@ export default function Playground() {
                         highlighted={highlightedRank === source.rank}
                         cardRef={(el) => {
                           if (el) sourceRefs.current.set(source.rank, el)
+                          else sourceRefs.current.delete(source.rank)
                         }}
                       />
                     ))}
@@ -499,31 +562,31 @@ export default function Playground() {
                 )}
               </TabsContent>
               <TabsContent value="why">
-                {!current ? (
+                {!evidenceTurn ? (
                   <EmptyState title="Nothing to explain yet" description="Ask a question to see how the answer was made." />
                 ) : (
                   <WhyPanel
-                    question={current.question}
-                    report={current.report}
-                    sources={current.sources}
-                    metadata={current.metadata}
-                    validation={current.validation}
-                    status={statusOf(current)}
+                    question={evidenceTurn.question}
+                    report={evidenceTurn.report}
+                    sources={evidenceTurn.sources}
+                    metadata={evidenceTurn.metadata}
+                    validation={evidenceTurn.validation}
+                    status={statusOf(evidenceTurn)}
                   />
                 )}
               </TabsContent>
               <TabsContent value="retrieval">
-                {!current?.report ? (
+                {!evidenceTurn?.report ? (
                   <EmptyState title="No retrieval data yet" />
                 ) : (
-                  <RetrievalPipeline report={current.report} />
+                  <RetrievalPipeline report={evidenceTurn.report} />
                 )}
               </TabsContent>
               <TabsContent value="security">
-                <SecurityInspector report={current?.report ?? null} identity={identity} />
+                <SecurityInspector report={evidenceTurn?.report ?? null} identity={identity} />
               </TabsContent>
               <TabsContent value="trace">
-                {!current?.metadata?.trace_id ? (
+                {!evidenceTurn?.metadata?.trace_id ? (
                   <EmptyState title="No trace yet" />
                 ) : traceQuery.data ? (
                   <TraceWaterfall trace={traceQuery.data} />
@@ -534,16 +597,17 @@ export default function Playground() {
           </div>
 
           {/* Performance strip */}
-          <dl className="grid shrink-0 grid-cols-3 gap-px border-t border-[var(--color-border)] bg-[var(--color-border)]">
+          {mode === "inspect" && <dl className="grid shrink-0 grid-cols-3 gap-px border-t border-[var(--color-border)] bg-[var(--color-border)]">
             {timings.map(({ label, value, title }) => (
               <div key={label} title={title} className="bg-[var(--color-surface)] px-4 py-2">
                 <dt className="text-[11px] text-[var(--color-subtle-foreground)]">{label}</dt>
                 <dd className="font-technical text-xs text-[var(--color-foreground)]">{formatMs(value)}</dd>
               </div>
             ))}
-          </dl>
+          </dl>}
         </Tabs>
-      </aside>
+      </InspectorPanel>
+      </div>
     </div>
   )
 }

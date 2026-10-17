@@ -4,8 +4,7 @@ export type Theme = "dark" | "light"
 
 const THEME_KEY = "kb-console.theme"
 
-// index.html sets data-theme before first paint (saved choice, else the
-// system preference); start from whatever it decided so the two agree.
+// index.html sets data-theme before first paint (saved choice, else light); start from whatever it decided so the two agree.
 function initialTheme(): Theme {
   const applied = document.documentElement.dataset.theme
   if (applied === "light" || applied === "dark") return applied
@@ -13,9 +12,9 @@ function initialTheme(): Theme {
     const saved = localStorage.getItem(THEME_KEY)
     if (saved === "light" || saved === "dark") return saved
   } catch {
-    // Storage unavailable: fall through to the system preference.
+    // Storage unavailable: fall through to the default theme.
   }
-  return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark"
+  return "light"
 }
 
 interface ThemeContextValue {
