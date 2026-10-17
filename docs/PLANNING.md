@@ -4987,3 +4987,16 @@ QUERY_COLOR_NOT_IN_SUPPORT. Color words that are not colors here ("Black adults"
 asks about a color: the check refuses 471 and 635 and turns 634 into an abstention.
 
 `make test`: 1641 passed, 4 skipped.
+
+## Prompt — a count of people as share × sample size (closing note)
+
+206, 219, 225 and 227 ask how many people; the survey prints shares and a sample
+size, and luna restated the share (225 even said "the report gives percentages").
+The derived answer instructions now say that when the question asks how many people
+and the cited units give a percentage of a group and its size ("1,503 adults",
+"(n=537)"), the answer is the number of people, with the size's unit cited and the
+calculation written (`36 / 100 * 1503 = 541`). The calculation check needs no
+change: both operands must be printed in the cited units and 100 is allowed. Not
+measured yet; the prompt reaches every row, so it needs a full rerun.
+
+`make test`: 1644 passed, 4 skipped.
