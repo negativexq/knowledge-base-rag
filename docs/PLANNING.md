@@ -4766,3 +4766,24 @@ validator rules, besides computed answers (derived path off) and genuine blocks:
   is validated in full, and a question value the evidence lacks is still validated.
 
 `make test`: 1587 passed, 4 skipped.
+
+## Fix — figures copied as printed, and leading yes/no verdicts (closing note)
+
+Luna rerun of the 39 blocked rows after PR #46 (`luna-blocked-after-fix`): 7 now
+answer (212, 225, 1016, 1019, 1022, 1076, 1082; 4 match the gold), 220 is refused
+correctly, 31 stay blocked: 21 computed values (derived path off), 5 wrong answers
+caught (210, 223, 396, 658, 729), 3 figures restated in another scale (1013, 1071,
+1078: "$1.383 billion" for a "1,383" in millions, which the locale guard rightly
+reads as "1.383" vs "1,383"), and 516, a correct "No." blocked as a BOOLEAN value.
+1016 is answered but wrong (gold 10314): an echo-skipped answer can still pick the
+wrong figure, which only the gold catches.
+
+- The support-ID prompt now says to write every number exactly as the cited unit
+  prints it, with its unit and scale, and not to convert.
+- A yes/no that opens the answer part gets role `SKIP_VERDICT` (telemetry
+  `skip_verdict_count`) when the cited support states no boolean of its own; when it
+  does ("enabled: false"), the verdict is compared as before. A skipped verdict does
+  not count as the validated value that lets question echoes be skipped, so "Yes,
+  FY 2021 liabilities were 36,851" is still validated in full.
+
+`make test`: 1591 passed, 4 skipped.

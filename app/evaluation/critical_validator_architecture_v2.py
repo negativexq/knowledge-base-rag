@@ -19,7 +19,17 @@ def audit_claim_architecture_v2(
 ) -> dict[str, Any]:
     """Run extraction, occurrence-local roles, structured filtering, and V3."""
     occurrences = extract_critical_occurrences(claim, claim_id=claim_id)
-    role_decisions = classify_occurrence_roles(claim, occurrences, query_values=query_values)
+    support_states_boolean = any(
+        occurrence.lexical_type == "BOOLEAN"
+        for text in support_texts
+        for occurrence in extract_critical_occurrences(text)
+    )
+    role_decisions = classify_occurrence_roles(
+        claim,
+        occurrences,
+        query_values=query_values,
+        support_states_boolean=support_states_boolean,
+    )
     validate_ids = tuple(
         decision.occurrence_id for decision in role_decisions if decision.role not in SKIP_ROLES
     )
