@@ -45,7 +45,11 @@ import pyarrow.parquet as pq
 from qdrant_client import QdrantClient, models
 
 from app.connectors.filesystem import LocalFilesystemConnector
-from app.evaluation.forensic_capture import ForensicCapture
+from app.evaluation.forensic_capture import (
+    ForensicCapture,
+    reset_current_capture,
+    set_current_capture,
+)
 from app.evaluation.mmlongbench import (
     QuestionOutcome,
     build_report,
@@ -271,6 +275,23 @@ def locations(client: QdrantClient, ids: list) -> list[tuple[str, int]]:
     ]
 
 
+def validation_trace(stages: dict) -> dict:
+    """What the model returned and what the critical-value validator decided
+    about it, from the forensic capture's stages."""
+    return {
+        "raw_model_output": stages.get("generation", {}).get("raw_model_output"),
+        "critical_validator": stages.get("support_id_validation", {}).get("critical_validator"),
+    }
+
+
+def select_rows(questions, rows: str | None):
+    """The questions named by --rows ("210,212"), or all of them."""
+    if not rows:
+        return questions
+    wanted = {int(row) for row in rows.split(",")}
+    return [question for question in questions if question.row_idx in wanted]
+
+
 def retrieval_scope(doc_id: str, open_corpus: bool) -> list[str] | None:
     """MMLongBench is single-document QA: a question comes with its PDF and
     says "the document". The protocol scopes retrieval to that PDF, as a
@@ -284,7 +305,9 @@ async def ask(
 ) -> dict:
     context = RetrievalContext(tenant_id=TENANT)
     report = RetrievalReport()
-    report.forensic_capture = ForensicCapture.create(question.question, raw_text=False)
+    # Benchmark text, not user data: the capture keeps the model's raw output
+    # so a blocked answer can be told apart from a wrong one.
+    report.forensic_capture = ForensicCapture.create(question.question, raw_text=True)
     started = time.perf_counter()
     scope = retrieval_scope(question.doc_id, open_corpus)
     results = await deps.search_fn(
@@ -304,13 +327,17 @@ async def ask(
         evidence = "retrieved"
         blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
     answer, metadata, validation = "", {}, {}
-    async for event in deps.stream_fn(question.question, blocks):
-        if event["type"] == "token":
-            answer += event["content"]
-        elif event["type"] == "metadata":
-            metadata = event
-        elif event["type"] == "security_validation":
-            validation = event
+    token = set_current_capture(report.forensic_capture)
+    try:
+        async for event in deps.stream_fn(question.question, blocks):
+            if event["type"] == "token":
+                answer += event["content"]
+            elif event["type"] == "metadata":
+                metadata = event
+            elif event["type"] == "security_validation":
+                validation = event
+    finally:
+        reset_current_capture(token)
     seconds = round(time.perf_counter() - started, 1)
 
     leaked = await deps.search_fn(
@@ -346,6 +373,7 @@ async def ask(
         "gold_in_evidence": gold_visible(question, (b.payload.get("text", "") for b in blocks)),
         "acl_leaks": len(leaked),
         "seconds": seconds,
+        "trace": validation_trace(report.forensic_capture.record.get("stages", {})),
     }
     return raw
 
@@ -487,6 +515,7 @@ async def main() -> None:
         default=MANIFEST,
         help="question set; a manifest other than the pilot gets its own collection",
     )
+    parser.add_argument("--rows", help="run only these dataset rows, e.g. 210,212")
     parser.add_argument(
         "--open-corpus",
         action="store_true",
@@ -516,7 +545,9 @@ async def main() -> None:
     manifest = load_manifest(args.manifest)
     root = data_dir(manifest.revision)
     table = pq.read_table(root / "data" / "train-00000-of-00001.parquet").to_pylist()
-    questions = [parse_question(table[row], row) for row in manifest.question_rows]
+    questions = select_rows(
+        [parse_question(table[row], row) for row in manifest.question_rows], args.rows
+    )
 
     if args.ingest_only:
         client = QdrantClient(url=settings.qdrant_url)

@@ -69,3 +69,26 @@ def test_a_checkpoint_keeps_finished_questions_for_a_resumed_run(tmp_path):
 
     assert sorted(runner.load_checkpoint(checkpoint)) == [206, 207]
     assert runner.load_checkpoint(tmp_path / "missing.jsonl") == {}
+
+
+def test_a_result_keeps_the_model_output_and_the_validator_trace():
+    # luna v2 run: answers were blocked (CRITICAL_VALUE_DIRECT_CONFLICT) with
+    # no record of what the model said, so a false block and a wrong answer
+    # looked the same.
+    stages = {
+        "generation": {"raw_model_output": '{"answer_parts": []}', "generation_ms": 9},
+        "support_id_validation": {"critical_validator": {"status": "DIRECT_CONFLICT"}},
+    }
+
+    assert runner.validation_trace(stages) == {
+        "raw_model_output": '{"answer_parts": []}',
+        "critical_validator": {"status": "DIRECT_CONFLICT"},
+    }
+    assert runner.validation_trace({}) == {"raw_model_output": None, "critical_validator": None}
+
+
+def test_rows_can_be_rerun_on_their_own():
+    questions = [type("Q", (), {"row_idx": r})() for r in (206, 210, 212)]
+
+    assert [q.row_idx for q in runner.select_rows(questions, "210,212")] == [210, 212]
+    assert runner.select_rows(questions, None) == questions
