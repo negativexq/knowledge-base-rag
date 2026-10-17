@@ -4889,3 +4889,33 @@ now has its standalone cells restated too; a cell ending an age range ("18-29") 
 not read.
 
 `make test`: 1628 passed, 4 skipped.
+
+## Fix — scorer reads calculations with parentheses; the 39-row loop closes (closing note)
+
+Luna revert rerun of the 39 rows (`luna-blocked-revert`, PR #51): answered 30,
+model_abstained 5, validator_blocked 4, answers correct 18/38, citations 26/30.
+Reverting the prompt sentence brought abstentions back down (10 to 5); 373 ("Rs.
+155.98 lacs lower") and 525 (cells under "the % who") now answer correctly.
+
+The scorer missed 741's correct "10 / (10 + 14) * 100 = 41.7": its calculation
+pattern refused parentheses and fell back to the first number (24). The expression
+may now hold parentheses (it holds no "="). All four 39-row reports were re-scored
+with `--from-results`; only the revert run had such a calculation.
+
+The 39 rows, across the loop:
+
+| Run | Answered | Correct | Blocked | Abstained |
+| --- | ---: | ---: | ---: | ---: |
+| luna scoped 40/14 (blocked rows) | 0 | 0 | 39 | 0 |
+| after-fix (#46) | 7 | 4 | 31 | 1 |
+| derived (#47, #48) | 19 | 13 | 13 | 7 |
+| counts (#49) | 25 | 18 | 10 | 4 |
+| format (#50) | 23 | 16 | 6 | 10 |
+| revert (#51) | 30 | 18 | 4 | 5 |
+
+Left blocked: 399 (a calculation whose operands are counted), 509 (an unsupported
+range count this run), 639 (header unit not cited), 220 (unanswerable, correct). Rows
+move between runs with the model (509, 221, 1015 this time), so these 39 rows are now
+tuned on; the full 120-question run measures the effect.
+
+`make test`: 1629 passed, 4 skipped.

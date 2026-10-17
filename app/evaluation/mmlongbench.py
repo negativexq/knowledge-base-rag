@@ -220,7 +220,8 @@ TYPO_MIN_CHARS = 10
 TYPO_MIN_RATIO = 0.92
 _SUPPORT_ID = re.compile(r"\[(E\d+\.S\d+)\]")
 # A verified calculation as the answer renders it: "(calculation: 10 / 24 * 100 = 41.7%)".
-_CALCULATION_RESULT = re.compile(r"\(calculation: [^()]*?=\s*([^()]+)\)")
+# The expression may hold parentheses ("10 / (10 + 14) * 100"); it holds no "=".
+_CALCULATION_RESULT = re.compile(r"\(calculation: [^=]*=\s*([^()=]+)\)")
 # A verified count as the answer renders it: "(count: 13 listed items)".
 _COUNT_RESULT = re.compile(r"\(count: (\d+) listed items\)")
 

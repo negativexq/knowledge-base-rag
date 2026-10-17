@@ -105,3 +105,14 @@ def test_the_373_answer_passes_validation_end_to_end():
 
     assert validation.failure_codes == []
     assert validation.application_abstain is False
+
+
+def test_a_calculation_with_parentheses_is_scored_by_its_result():
+    # luna 741: "10 / (10 + 14) * 100 = 41.7" was missed and the first number
+    # (24) scored instead.
+    assert answer_matches(
+        "Germanwings posted 24 tweets: 10 in English and 14 in German. English tweets were "
+        "41.7% of the total. (calculation: 10 / (10 + 14) * 100 = 41.7) [E1.S124]",
+        "41.67",
+        "Float",
+    )
