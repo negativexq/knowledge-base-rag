@@ -5243,3 +5243,23 @@ separate header-row fetch was not needed: rows already repeat their column
 headers, and headerless rows use the block's header line.
 
 `make test`: 1699 passed, 4 skipped.
+
+## Measure — table facts on first answers: not applied (closing note)
+
+Offline, no generation: the 63 answered rows of `luna-full-premise` were
+re-retrieved on the v9 index, and every number in each answer was looked up
+among the table facts of the retrieved units (any unit, since saved support ids
+do not match the new index). 19 rows print a table number.
+
+- The targeted wrong answers are not table-binding errors: 212's numbers are
+  chart labels printed as bare cells (unresolved, no fact); 1017 names both of
+  its facts correctly and is wrong by definition (total debt without leases);
+  1070 is a change of the wrong kind; 386 printed no table number.
+- Correct answers would be refused: 370, 477, 478, 509 and 516 print numbers
+  from tables with no column headers (unresolved), and 1028 ("815 membership
+  warehouses") and 1081 ("978 Domestic segment stores") do not repeat their
+  fact's row label.
+
+So fact binding stays on the resolver path only; a first answer is not
+re-checked against table facts. No code change; `make test` unchanged at 1699
+passed, 4 skipped.
