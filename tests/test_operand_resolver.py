@@ -357,7 +357,8 @@ def test_a_column_label_may_be_in_the_operands_block():
         "a", "6,692", ["Long-term debt, excluding current portion", "2021"], row.support_unit_id
     )
 
-    assert bind_operand(op, available) == ["OPERAND_LABEL_NOT_IN_UNIT"]
+    # Without its block the row has no column, so the value is unresolved.
+    assert bind_operand(op, available) == ["OPERAND_FACT_UNRESOLVED"]
     assert bind_operand(op, available, block_texts(units)) == []
     # A label found nowhere, or labels only in the block, still fail.
     assert bind_operand(
