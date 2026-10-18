@@ -198,24 +198,16 @@ async def test_a_reading_from_a_page_that_was_not_shown_is_dropped():
     assert validation["abstain"] is True
 
 
-# mmlongbench-v2 escalation canary: 210 asks a percentage read off a chart
-# and 381 counts quizzes in a table; neither names a figure, so a keyword gate
-# never showed the pages. A withheld answer on a renderable page is now read
-# from the page whatever the wording; the independent check still decides.
+# visual-gate-canary-20261018: reading every withheld answer from its pages
+# recovered nothing (381 and 636 misread) and answered two unanswerable rows
+# (365 another company's bankers, 475 a timer picture) that the check
+# confirmed. The wording gate stays.
 
 
 @pytest.mark.asyncio
-async def test_a_withheld_answer_is_read_from_its_pages_whatever_the_wording():
+async def test_a_text_question_or_a_disabled_path_makes_no_visual_call():
     provider = _Provider(ABSTAIN, READ, YES)
-    answer, validation = await _run(provider, question="How many quizzes are in the course?")
-
-    assert validation["visual_answer"] is True and len(provider.calls) == 3
-
-
-@pytest.mark.asyncio
-async def test_unrenderable_pages_or_a_disabled_path_make_no_visual_call():
-    provider = _Provider(ABSTAIN, READ, YES)
-    await _run(provider, render_page=lambda source, page: None)
+    await _run(provider, question="What is Costco's total debt in FY2021?")
     assert len(provider.calls) == 1
 
     provider = _Provider(ABSTAIN, READ, YES)

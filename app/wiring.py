@@ -31,7 +31,7 @@ from app.llm.provider import (
 )
 from app.llm.query_rewrite import ChatTurn, RewriteResult, rewrite_query
 from app.llm.structured_output import stream_evidence_backed_answer, stream_support_unit_answer
-from app.llm.visual_answer import pdf_page_renderer
+from app.llm.visual_answer import asks_visual, pdf_page_renderer
 from app.main import create_app
 from app.migration.aliasing import resolve_active_collection_name
 from app.migration.readiness import check_readiness
@@ -268,7 +268,11 @@ def build_chat_dependencies(
         if first is not None:
             if settings.derived_answers_enabled and settings.operand_resolver_enabled:
                 tried.add("resolve_calculation")
-            if settings.visual_answers_enabled and getattr(chat_provider, "supports_images", False):
+            if (
+                settings.visual_answers_enabled
+                and getattr(chat_provider, "supports_images", False)
+                and asks_visual(question)
+            ):
                 tried.add("read_pages")
 
         async def candidate_generator(query, initial_blocks):

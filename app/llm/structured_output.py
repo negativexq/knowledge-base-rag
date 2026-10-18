@@ -51,6 +51,7 @@ from app.llm.visual_answer import (
     PageRenderer,
     VisualAnswer,
     answer_from_pages,
+    asks_visual,
     chunk_ranks,
 )
 from app.retrieval.filters import filter_authorized_candidates
@@ -1711,6 +1712,7 @@ async def _support_unit_answer_events(
         and getattr(provider, "supports_images", False)
         and (validation.model_abstain or validation.application_abstain)
         and not (missing_years or missing_dates)
+        and asks_visual(query)
     ):
         visual_trace: dict[str, Any] = {}
         visual = await answer_from_pages(

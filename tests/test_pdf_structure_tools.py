@@ -141,6 +141,7 @@ async def test_table_is_found_on_the_support_page_without_listing_elements(pdf):
     deps = deps_for(pdf)
 
     def model(messages, info):
+        assert "list_document_elements" not in [t.name for t in info.function_tools]
         if not returns(messages):
             return ModelResponse(parts=[ToolCallPart("inspect_table", {"support_id": "E1.S1"})])
         result = returns(messages)[0].content

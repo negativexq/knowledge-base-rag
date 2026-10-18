@@ -1,9 +1,9 @@
 """Answers read from page images, for questions parsed text cannot answer.
 
 Parsed text carries no colors, figures or layout. When the text answer is
-withheld, the top retrieved pages are rendered and read by an image-capable
-model: a chart value or a table count is often asked without naming a figure,
-so the question's wording does not decide it. A second, independent call is shown the same
+withheld and the question refers to something visual (a figure, a chart, a
+colored box, highlighted lines), the top retrieved pages are rendered and
+read by an image-capable model. A second, independent call is shown the same
 pages, the question and only the candidate answer, and confirms it or not.
 The answer is marked as read from a page image, with its page: it is not
 text-validated, so it never claims to be.

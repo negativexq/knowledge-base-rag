@@ -83,6 +83,7 @@ from app.llm.visual_answer import (
     PageRenderer,
     VisualAnswer,
     answer_from_pages,
+    asks_visual,
     chunk_ranks,
 )
 from app.retrieval.filters import filter_authorized_candidates
@@ -514,6 +515,9 @@ class AgentDependencies:
             )
 
 
+VISUAL_TOOLS = frozenset({"read_pages", "inspect_region", "list_document_elements"})
+
+
 def prepare_tool(
     ctx: RunContext[AgentDependencies], definition: ToolDefinition
 ) -> ToolDefinition | None:
@@ -527,6 +531,9 @@ def prepare_tool(
     # Repeating what the withheld fixed path already ran on the same evidence
     # cannot change its result; it becomes available once evidence changes.
     if name in deps.classic_tried and len(deps.ledger.blocks) <= deps.initial_revision:
+        return None
+    # Page-image and layout tools only serve questions about something visual.
+    if name in VISUAL_TOOLS and not asks_visual(deps.question):
         return None
     # Discovery cannot widen a request whose sources are already fixed.
     if name == "find_documents" and (

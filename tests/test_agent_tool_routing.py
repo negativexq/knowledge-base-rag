@@ -162,25 +162,24 @@ async def test_only_available_research_tools_are_exposed():
 
 
 @pytest.mark.asyncio
-async def test_visual_tools_follow_the_reader_not_the_question_wording():
-    # A chart or table question rarely names a figure (mmlongbench 210, 381).
-    def visual_deps(provider):
+async def test_visual_tools_are_exposed_only_for_visual_questions():
+    def visual_deps(question):
         return deps(
-            "What does the service use?",
+            question,
             retrieve=no_retrieve,
             visual_answers=True,
             render_page=lambda *args: None,
-            provider=provider,
+            provider=VisualProvider(),
         )
 
     seen = []
-    await run_agent(FunctionModel(tools_seen(seen)), visual_deps(VisualProvider()))
-    assert "read_pages" in seen[0]
-    seen.clear()
-    blind = VisualProvider()
-    blind.supports_images = False
-    await run_agent(FunctionModel(tools_seen(seen)), visual_deps(blind))
+    await run_agent(FunctionModel(tools_seen(seen)), visual_deps("What does the service use?"))
     assert "read_pages" not in seen[0]
+    seen.clear()
+    await run_agent(
+        FunctionModel(tools_seen(seen)), visual_deps("What color is the logo on the cover?")
+    )
+    assert "read_pages" in seen[0]
 
 
 @pytest.mark.asyncio
