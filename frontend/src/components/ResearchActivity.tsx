@@ -4,6 +4,9 @@ const labels: Record<string, string> = {
   search: "Searching sources", read_document_section: "Inspecting evidence",
   navigate_document: "Reading document", calculate: "Checking calculation",
   resolve_calculation: "Resolving calculation inputs", read_pages: "Reading page images",
+  find_documents: "Finding documents", list_document_elements: "Locating tables and images",
+  inspect_table: "Reading table cells", inspect_region: "Inspecting page region",
+  compare_evidence: "Comparing evidence",
   validation: "Validating answer", research: "Research", retrieval: "Finding initial evidence",
 }
 export function ResearchActivity({ steps, streaming }: { steps: ResearchStep[]; streaming: boolean }) {

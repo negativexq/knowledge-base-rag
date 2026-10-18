@@ -184,3 +184,65 @@ def test_admission_reports_duplicate_and_budget_exclusion_separately():
     }
     assert ledger.remaining_tokens == 9
     assert ledger.add([first], allowance=0) == []
+
+
+@pytest.mark.asyncio
+async def test_comparison_returns_exact_passages_and_provenance(research_reader):
+    ledger = await ledger_for(research_reader)
+    found = await research_reader.find(
+        "SSH",
+        document=DocumentRef(source_type="filesystem", source_id="manual", document_version="v1"),
+    )
+    ledger.add(found.blocks)
+
+    def model(messages, info):
+        if not returned(messages):
+            return ModelResponse(
+                parts=[ToolCallPart("compare_evidence", {"support_ids": ["E1.S1", "E2.S1"]})]
+            )
+        result = returned(messages)[0].content
+        assert result["different_sources"] is False
+        assert result["different_versions"] is False
+        assert result["scope_check_required"] is True
+        assert [u["text"] for u in result["passages"]] == [
+            "TLS requires an explicit setting.",
+            "SSH uses port 22.",
+        ]
+        return refuse(info)
+
+    result = await run_agent(FunctionModel(model), AgentDependencies("Compare", ledger))
+    assert result.failure_code is None
+
+
+@pytest.mark.asyncio
+async def test_discovery_and_literal_search_enforce_live_document_permissions(research_reader):
+    from app.security.document_permissions import DocumentPermissionStore, DocumentPolicy
+    from app.security.models import Role, UserContext
+
+    store = DocumentPermissionStore(":memory:")
+    who = UserContext("alice", "a", frozenset({Role.USER}))
+    research_reader.context = RetrievalContext.for_user(who, store.for_user(who))
+    assert (await research_reader.discover("manual")).blocks == []
+    assert (await research_reader.find("SSH")).blocks == []
+    saved = store.set(
+        "a",
+        "admin",
+        DocumentPolicy(
+            source_type="filesystem", source_id="manual", access="restricted", user_ids=["alice"]
+        ),
+    )
+    assert len((await research_reader.discover("manual")).blocks) == 2
+    assert len((await research_reader.find("SSH")).blocks) == 2
+    store.set(
+        "a",
+        "admin",
+        DocumentPolicy(
+            source_type="filesystem",
+            source_id="manual",
+            access="restricted",
+            revision=saved.revision,
+        ),
+    )
+    assert (await research_reader.discover("manual")).blocks == []
+    assert (await research_reader.find("SSH")).blocks == []
+    store.close()

@@ -243,3 +243,50 @@ async def test_oversized_scope_payload_is_rejected_before_model_request(monkeypa
     )
     assert candidate.failure_code == "AGENT_RUN_FAILED"
     assert candidate.telemetry["requests"] == 1
+
+
+async def test_last_research_turn_hides_tools_and_keeps_scope_verification_slot():
+    calls = 0
+
+    def main(messages, info):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            assert any(t.name == "read_document_section" for t in info.function_tools)
+            return ModelResponse(
+                parts=[ToolCallPart("read_document_section", {"support_id": "E1.S1"})]
+            )
+        assert info.function_tools == []
+        return output(info, json.loads(raw("The service uses TLS.")))
+
+    def verifier(messages, info):
+        return output(info, judgment())
+
+    candidate = await run_agent(
+        FunctionModel(main),
+        AgentDependencies("Protocol?", ledger(), scope_validation_enabled=True),
+        max_requests=3,
+        scope_model=FunctionModel(verifier),
+    )
+    assert candidate.failure_code is None
+    assert candidate.telemetry["requests"] == 3
+    assert candidate.scope_receipt is not None and not candidate.scope_receipt.failure_codes
+    assert candidate.telemetry["budget"]["scope_request_reserve"] == 1
+
+
+async def test_token_preflight_blocks_call_before_sending_an_oversized_history():
+    seen = 0
+
+    def main(messages, info):
+        nonlocal seen
+        seen += 1
+        raise AssertionError("Oversized request must be blocked before provider call")
+
+    evidence = EvidenceLedger(lambda text: len(text), 10000)
+    evidence.add([block("A" * 500)])
+    candidate = await run_agent(
+        FunctionModel(main), AgentDependencies("Protocol?", evidence), max_tokens=100
+    )
+    assert candidate.failure_code == "AGENT_BUDGET_EXCEEDED"
+    assert seen == 0
+    assert candidate.telemetry["budget"]["preflight_events"][0]["reason"] == "token_preflight"

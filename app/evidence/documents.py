@@ -215,7 +215,7 @@ class DocumentReader:
 
         def run() -> DocumentResult:
             blocks, limited = self._scan_scope()
-            anchors: dict[tuple[str, str, str], SearchResult] = {}
+            anchors: dict[tuple[str, ...], SearchResult] = {}
             terms = query.casefold().split()
             for b in blocks:
                 p = b.payload

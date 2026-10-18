@@ -339,13 +339,9 @@ async def ask(
     token = set_current_capture(report.forensic_capture)
     try:
 
-        async def retrieve(query: str):
-            found = await deps.search_fn(
-                query, context, RetrievalReport(), **({"source_ids": scope} if scope else {})
-            )
-            if deps.agentic_rag_enabled and deps.evidence_fn:
-                return await deps.evidence_fn(found, context)
-            return found
+        from app.api.chat import _scoped_retrieve
+
+        retrieve = _scoped_retrieve(deps, context, {"source_ids": scope} if scope else {})
 
         extra = (
             {"retrieve": retrieve}

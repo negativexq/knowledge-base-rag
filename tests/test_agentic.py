@@ -332,8 +332,8 @@ async def test_nested_model_requests_share_agent_budget():
     result = await run_agent(FunctionModel(model), deps, max_requests=2)
     assert result.failure_code == "AGENT_BUDGET_EXCEEDED"
     assert result.visual is None
-    # One orchestration request plus the reading; no budget for its confirming call.
-    assert calls == 1
+    # The visual tool is hidden when its checking call/final response cannot fit.
+    assert calls == 0
     assert result.telemetry["requests"] == 2
 
 

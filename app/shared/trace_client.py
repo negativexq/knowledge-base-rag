@@ -74,6 +74,8 @@ SAFE_ATTRIBUTES = frozenset(
         "research.parent_trace_id",
         "research.request_index",
         "research.retry_count",
+        "research.estimated_input_tokens",
+        "research.reserved_scope_tokens",
         "gen_ai.request.model",
         "gen_ai.provider.name",
         "gen_ai.operation.name",

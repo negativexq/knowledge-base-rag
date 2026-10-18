@@ -339,6 +339,7 @@ async def answer_from_pages(
     generation_kwargs: dict[str, Any],
     trace: dict[str, Any],
     ranks: dict[str, int] | None = None,
+    explicit_pages: list[tuple[str, int, bytes]] | None = None,
 ) -> VisualAnswer | None:
     """Read the answer from the top pages (ranked by ``ranks``, see
     chunk_ranks), then have it confirmed by a separate call; None unless both
@@ -358,11 +359,15 @@ async def answer_from_pages(
             named.extend((source, p) for p in nearby if (source, p) not in named)
     # Pages the question names come first, then the top retrieved pages.
     wanted = (named + [page for page in ranked if page not in named])[:MAX_PAGES]
-    pages = [
-        (source, page, image)
-        for source, page in wanted
-        if (image := render_page(source, page)) is not None
-    ]
+    pages = (
+        explicit_pages
+        if explicit_pages is not None
+        else [
+            (source, page, image)
+            for source, page in wanted
+            if (image := render_page(source, page)) is not None
+        ]
+    )
     trace["pages"] = [page for _, page, _ in pages]
     if not pages:
         return None

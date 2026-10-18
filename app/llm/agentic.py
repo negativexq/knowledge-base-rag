@@ -27,7 +27,12 @@ from pydantic_ai.capabilities import (
     WrapToolExecuteHandler,
 )
 from pydantic_ai.exceptions import UsageLimitExceeded
-from pydantic_ai.messages import ModelResponse, RetryPromptPart, ToolCallPart
+from pydantic_ai.messages import (
+    ModelMessagesTypeAdapter,
+    ModelResponse,
+    RetryPromptPart,
+    ToolCallPart,
+)
 from pydantic_ai.models import Model, ModelRequestContext
 from pydantic_ai.settings import ModelSettings
 from pydantic_ai.tools import ToolDefinition
@@ -37,6 +42,7 @@ from qdrant_client.http import models as qm
 from app.evaluation.critical_validator_runtime import ValidatorSelector
 from app.evaluation.forensic_capture import current_capture
 from app.evidence.documents import DocumentRead, DocumentReader, DocumentRef
+from app.evidence.pdf_structure import PdfStructure
 from app.evidence.support_units import SupportUnit, build_support_units, serialize_support_units
 from app.llm.agent_observability import (
     RequestUsage as ObservationUsage,
@@ -96,8 +102,13 @@ an unsupported premise. A tool failure is not evidence of absence.
 Use calculate for arithmetic and copy its expression and result into the part's
 calculation. For more complex calculations, resolve_calculation binds operands
 to evidence and returns a checked candidate. Copy only supported listed items
-into counts. A visual answer must select a verified reading ID returned by
-read_pages; do not rewrite that reading into a text-supported claim.
+into counts. Use list_document_elements to locate tables, images and captions;
+inspect_table returns extracted cells and surrounding text as citable evidence.
+Use inspect_region for a selected element or physical page. Detected image
+regions do not establish a complete semantic figure count. compare_evidence
+aligns passages and provenance; its flags do not prove semantic contradiction.
+A visual answer must select a verified reading ID returned by read_pages or
+inspect_region; do not rewrite that reading into a text-supported claim.
 If ambiguity about product, version, period or task would materially change the
 answer and cannot be resolved from evidence, request clarification with a short
 question and optional choices. Use abstain=true and no answer parts in that case.
@@ -280,6 +291,9 @@ class EvidenceLedger:
     def remaining_tokens(self) -> int:
         return max(0, self._budget - self._used)
 
+    def estimate_tokens(self, text: str) -> int:
+        return self._count(text)
+
     @property
     def units(self) -> list[SupportUnit]:
         return build_support_units(
@@ -317,6 +331,10 @@ class AgentDependencies:
     scope_receipts: dict[str, ScopeReceipt] = field(default_factory=dict)
     scope_limits: UsageLimits = field(default_factory=UsageLimits)
     scope_model_settings: ModelSettings | None = None
+    pdf_structures: dict[tuple[str, str], PdfStructure] = field(default_factory=dict)
+    reserve_scope_requests: int = 0
+    reserve_scope_tokens: int = 0
+    budget_events: list[dict[str, Any]] = field(default_factory=list)
 
     def validation(self, answer: AgentAnswer) -> SupportUnitValidation:
         return validate_support_unit_answer(
@@ -334,6 +352,28 @@ class AgentDependencies:
             self.question, texts
         ):
             raise ModelRetry("QUESTION_PREMISE_NOT_IN_EVIDENCE: find matching evidence or abstain")
+
+    async def pdf_structure(self, support_id: str) -> tuple[PdfStructure, SearchResult]:
+        unit = next((u for u in self.ledger.units if u.support_unit_id == support_id), None)
+        if unit is None:
+            raise ModelRetry("UNKNOWN_SUPPORT_ID: use a current authorized support ID")
+        parent = next(b for b in self.ledger.blocks if b.payload["evidence_id"] == unit.evidence_id)
+        if (
+            parent.payload.get("source_type") != "filesystem"
+            or not unit.source_id
+            or not unit.document_version
+        ):
+            raise ModelRetry("This source has no authorized versioned PDF")
+        bind = getattr(self.render_page, "snapshot", None)
+        if bind is None:
+            raise ModelRetry("Version-checked PDF inspection is unavailable")
+        key = (unit.source_id, unit.document_version)
+        if key not in self.pdf_structures:
+            snapshot = await asyncio.to_thread(bind, *key)
+            if snapshot is None:
+                raise ModelRetry("PDF_VERSION_MISMATCH: synchronize the document before inspection")
+            self.pdf_structures[key] = PdfStructure(snapshot)
+        return self.pdf_structures[key], parent
 
     def record(self, tool: str, **details: Any) -> None:
         self.tool_events.append({"tool": tool, **details})
@@ -366,9 +406,23 @@ def prepare_tool(
     ctx: RunContext[AgentDependencies], definition: ToolDefinition
 ) -> ToolDefinition | None:
     deps = ctx.deps
+    request_limit = deps.scope_limits.request_limit
+    if request_limit is not None:
+        # Leave a research response and mandatory scope verification after tool work.
+        nested = (
+            2
+            if definition.name in {"read_pages", "inspect_region"}
+            else (1 if definition.name == "resolve_calculation" else 0)
+        )
+        if ctx.usage.requests + 1 + nested + 1 + deps.reserve_scope_requests > request_limit:
+            return None
     if definition.name in {"navigate_document", "find_documents"} and deps.documents is None:
         return None
     if definition.name == "search" and deps.retrieve is None and deps.documents is None:
+        return None
+    if definition.name in {"list_document_elements", "inspect_table"} and not callable(
+        getattr(deps.render_page, "snapshot", None)
+    ):
         return None
     if definition.name == "calculate" and not deps.derived_answers:
         return None
@@ -378,12 +432,18 @@ def prepare_tool(
         and getattr(deps.provider, "supports_structured", False)
     ):
         return None
-    if definition.name == "read_pages" and not (
+    if definition.name in {"read_pages", "inspect_region"} and not (
         deps.visual_answers
         and deps.render_page
         and getattr(deps.provider, "supports_images", False)
         and getattr(deps.provider, "supports_structured", False)
     ):
+        return None
+    if definition.name == "inspect_region" and not callable(
+        getattr(deps.render_page, "snapshot", None)
+    ):
+        return None
+    if definition.name == "compare_evidence" and len(deps.ledger.units) < 2:
         return None
     return definition
 
@@ -431,6 +491,46 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
         request_context: ModelRequestContext,
         handler: WrapModelRequestHandler,
     ) -> ModelResponse:
+        deps = ctx.deps
+        reserve_requests = deps.reserve_scope_requests if self.model_role == "agent" else 0
+        reserve_tokens = deps.reserve_scope_tokens if self.model_role == "agent" else 0
+        maximum = deps.scope_limits.request_limit
+        if maximum is not None and ctx.usage.requests + reserve_requests >= maximum:
+            deps.budget_events.append({"reason": "scope_request_reserve", "role": self.model_role})
+            raise UsageLimitExceeded("Research would consume the reserved verification request")
+        # Local preflight estimate; provider-reported usage remains authoritative.
+        # Include tool schemas as well as growing conversation history.
+        serialized = ModelMessagesTypeAdapter.dump_json(request_context.messages).decode()
+        schemas = [
+            t.parameters_json_schema
+            for t in (
+                request_context.model_request_parameters.function_tools
+                + request_context.model_request_parameters.output_tools
+            )
+        ]
+        instructions = "\n".join(
+            part.content
+            for part in request_context.model_request_parameters.instruction_parts or []
+        )
+        estimated_input = deps.ledger.estimate_tokens(
+            serialized + json.dumps(schemas) + instructions
+        )
+        output_allowance = (request_context.model_settings or {}).get("max_tokens") or 1024
+        token_limit = deps.scope_limits.total_tokens_limit
+        if token_limit is not None and (
+            ctx.usage.total_tokens + estimated_input + output_allowance + reserve_tokens
+            > token_limit
+        ):
+            deps.budget_events.append(
+                {
+                    "reason": "token_preflight",
+                    "role": self.model_role,
+                    "estimated_input_tokens": estimated_input,
+                }
+            )
+            raise UsageLimitExceeded(
+                "Estimated request exceeds the remaining budget and verification reserve"
+            )
         retry_count = 0
         for message_index, message in enumerate(request_context.messages):
             for part_index, part in enumerate(message.parts):
@@ -451,6 +551,8 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
             },
         ) as span:
             mark_model(span, provider, model, self.model_role)
+            span.set_attribute("research.estimated_input_tokens", estimated_input)
+            span.set_attribute("research.reserved_scope_tokens", reserve_tokens)
             try:
                 response = await handler(request_context)
             except BaseException:
@@ -519,6 +621,8 @@ def build_agent(
         deps = ctx.deps
         if not query.strip() or len(query) > 1000:
             raise ModelRetry("Use a nonempty search query of at most 1000 characters")
+        if len(support_id) > 100 or len(section_id) > 100:
+            raise ModelRetry("Use returned support and section IDs")
         if not 0 <= offset <= 2000 or (page is not None and not 1 <= page <= 100000):
             raise ModelRetry("Use a valid page and offset within 0-2000")
         unit = next((u for u in deps.ledger.units if u.support_unit_id == support_id), None)
@@ -576,7 +680,7 @@ def build_agent(
                     qm.FieldCondition(key="page_number", match=qm.MatchValue(value=page))
                 )
             # Only canonical point IDs are sent to Qdrant; ledger IDs stay application-owned.
-            excluded = [
+            excluded: list[int | str] = [
                 i for i in seen if len(i) == 36 and all(c in "0123456789abcdef-" for c in i)
             ]
             filters = qm.Filter(
@@ -588,6 +692,20 @@ def build_agent(
             found = await deps.retrieve(query)
         else:
             raise ModelRetry("Scoped hybrid search is unavailable; use terms or phrase search")
+        if document is not None:
+            found = [
+                b
+                for b in found
+                if all(b.payload.get(k) == v for k, v in document.model_dump().items())
+            ]
+        if page is not None:
+            found = [
+                b
+                for b in found
+                if int(b.payload.get("page_number") or 0)
+                <= page
+                <= int(b.payload.get("page_end") or b.payload.get("page_number") or 0)
+            ]
         added = deps.ledger.add(found)
         status.update(deps.ledger.last_admission)
         status.update(
@@ -668,6 +786,204 @@ def build_agent(
             "next_offset": result.next_offset,
             "scan_limited": result.scan_limited,
             "admission": deps.ledger.last_admission,
+        }
+
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    async def list_document_elements(
+        ctx: RunContext[AgentDependencies],
+        /,
+        support_id: str,
+        page: int = 1,
+        offset: int = 0,
+    ) -> dict[str, Any]:
+        """List detected tables/images/caption candidates/bookmarks on a PDF page.
+
+        Continue with next_page/next_offset. This is not a complete semantic figure
+        inventory; inspect page images for vector graphics and layout-dependent counts.
+        Element IDs are source/version-local and must stay with this support anchor.
+        """
+        if not 1 <= page <= 2000 or not 0 <= offset <= 5000:
+            raise ModelRetry("Use page 1-2000 and offset 0-5000")
+        structure, _ = await ctx.deps.pdf_structure(support_id)
+        try:
+            result = await asyncio.to_thread(structure.list, page, offset)
+        except ValueError:
+            raise ModelRetry("PDF_STRUCTURE_UNAVAILABLE: select an available PDF page") from None
+        if not any(u.support_unit_id == support_id for u in ctx.deps.ledger.units):
+            raise ModelRetry("DOCUMENT_ACCESS_REVOKED")
+        ctx.deps.record(
+            "list_document_elements",
+            has_more=result["has_more"],
+            scan_limited=result["scan_limited"],
+        )
+        return result
+
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    async def inspect_table(
+        ctx: RunContext[AgentDependencies],
+        /,
+        support_id: str,
+        element_id: str,
+        offset: int = 0,
+    ) -> dict[str, Any]:
+        """Read extracted PDF table headers and cells, with citable evidence IDs.
+
+        Use a table element ID from list_document_elements and paginate all needed rows.
+        Inspect surrounding text or page images for units, footnotes and merged headers.
+        Extracted headers are parser output, not a guarantee of semantic correctness.
+        """
+        if not 0 <= offset <= 20000 or len(element_id) > 30:
+            raise ModelRetry("Use a returned table element ID and offset 0-20000")
+        deps = ctx.deps
+        structure, parent = await deps.pdf_structure(support_id)
+        try:
+            result = await asyncio.to_thread(structure.table, element_id, offset)
+        except ValueError:
+            raise ModelRetry(
+                "TABLE_STRUCTURE_UNAVAILABLE: inspect the page image instead"
+            ) from None
+        p = parent.payload
+        block_id = (
+            "pdf-table-"
+            + hashlib.sha256(
+                json.dumps(
+                    [
+                        p.get("tenant_id"),
+                        p.get("source_id"),
+                        p.get("document_version"),
+                        element_id,
+                        offset,
+                    ]
+                ).encode()
+            ).hexdigest()
+        )
+        block = SearchResult(
+            id=block_id,
+            score=0,
+            payload={
+                **{
+                    k: p[k]
+                    for k in ("tenant_id", "source_type", "source_id", "document_version")
+                    if k in p
+                },
+                "text": result["text"]
+                + ("\n\n" + result["context_text"] if result["context_text"] else ""),
+                "page_number": result["page"],
+                "paragraph_index": 0,
+                "section_path": [f"Extracted table {element_id}"],
+                "element_id": element_id,
+                "reading_method": "versioned_pdf_table",
+            },
+        )
+        added = deps.ledger.add([block])
+        units = [u for u in deps.ledger.units if block_id in u.contributing_chunk_ids]
+        deps.record(
+            "inspect_table",
+            added_blocks=len(added),
+            has_more=result["has_more"],
+            **deps.ledger.last_admission,
+        )
+        if not units:
+            return {
+                "admitted": False,
+                "admission": deps.ledger.last_admission,
+                "next_action": "Table exceeds evidence budget; use existing evidence or abstain.",
+            }
+        # Never bypass admission by returning excluded raw cells or text.
+        result.pop("text")
+        return {
+            **result,
+            "admitted": True,
+            "support_ids": [u.support_unit_id for u in units],
+            "evidence": deps.ledger.text([b for b in deps.ledger.blocks if b.id == block_id]),
+        }
+
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    async def inspect_region(
+        ctx: RunContext[AgentDependencies],
+        /,
+        support_id: str,
+        element_id: str = "",
+        page: int | None = None,
+    ) -> dict[str, Any]:
+        """Visually answer and separately verify from a selected PDF region or page.
+
+        Supply either a detected element ID or a 1-based physical page, never both.
+        Region crops include nearby context and the full page is also shown to the checker.
+        Successful results must be returned as visual_reading_id, not text-supported claims.
+        """
+        if bool(element_id) == (page is not None) or len(element_id) > 30:
+            raise ModelRetry("Select exactly one returned element ID or physical page")
+        if page is not None and not 1 <= page <= 2000:
+            raise ModelRetry("Use a physical PDF page within 1-2000")
+        deps = ctx.deps
+        deps.check_premise()
+        structure, parent = await deps.pdf_structure(support_id)
+        source = str(parent.payload["source_id"])
+        crop = None
+        try:
+            if element_id:
+                element, crop = await asyncio.to_thread(structure.render, element_id)
+                page = element.page
+            assert page is not None
+            full = await asyncio.to_thread(structure.snapshot, source, page)
+        except ValueError:
+            raise ModelRetry("PDF_REGION_UNAVAILABLE: select another element or page") from None
+        if full is None:
+            raise ModelRetry("PDF_PAGE_UNAVAILABLE")
+        images = [(source, page, full)]
+        if crop is not None:
+            images.append((source, page, crop))
+        reading = await answer_from_pages(
+            deps.question,
+            [],
+            deps.provider,
+            structure.snapshot,
+            generation_kwargs=deps.generation_kwargs,
+            trace={},
+            explicit_pages=images,
+        )
+        # Access may have been revoked while rendering or while model calls ran.
+        if not any(u.support_unit_id == support_id for u in deps.ledger.units):
+            raise ModelRetry("DOCUMENT_ACCESS_REVOKED")
+        deps.record("inspect_region", verified=reading is not None)
+        if reading is None:
+            return {"verified": False}
+        reading_id = f"V{len(deps.visual_readings) + 1}"
+        deps.visual_readings[reading_id] = reading
+        return {
+            "verified": True,
+            "visual_reading_id": reading_id,
+            "answer": reading.text,
+            "source_id": source,
+            "page": page,
+        }
+
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    def compare_evidence(
+        ctx: RunContext[AgentDependencies],
+        /,
+        support_ids: list[str],
+    ) -> dict[str, Any]:
+        """Align 2-10 cited passages with their exact source/version/section metadata.
+
+        Flags provenance differences, not semantic truth or contradiction. Read each
+        passage for period, entity, unit and conditions; final validators still apply.
+        """
+        if not 2 <= len(support_ids) <= 10 or len(set(support_ids)) != len(support_ids):
+            raise ModelRetry("Select 2-10 different returned support IDs")
+        available = {u.support_unit_id: u for u in ctx.deps.ledger.units}
+        if any(s not in available for s in support_ids):
+            raise ModelRetry("UNKNOWN_SUPPORT_ID: select current authorized units")
+        units = [available[s] for s in support_ids]
+        if sum(len(u.text) for u in units) > 30000:
+            raise ModelRetry("Select fewer or shorter passages for comparison")
+        ctx.deps.record("compare_evidence")
+        return {
+            "passages": [u.as_dict() for u in units],
+            "different_sources": len({u.source_id for u in units}) > 1,
+            "different_versions": len({u.document_version for u in units}) > 1,
+            "scope_check_required": True,
         }
 
     @agent.tool(sequential=True, prepare=prepare_tool)
@@ -948,10 +1264,15 @@ class ToolProvider:
         observations: ObservationUsage | None = None,
         provider_name: str = "unknown",
         role: str = "tool",
+        reserved_requests: int = 0,
+        reserved_tokens: int = 0,
+        count_tokens: Callable[[str], int] | None = None,
     ) -> None:
         self._provider, self._usage, self._limits = provider, usage, limits
         self.observations = observations or current_usage() or ObservationUsage()
         self.provider_name, self.role = provider_name, role
+        self.reserved_requests, self.reserved_tokens = reserved_requests, reserved_tokens
+        self.count_tokens = count_tokens
         self.supports_images = getattr(provider, "supports_images", False)
         self.supports_structured = callable(getattr(provider, "chat_json", None))
 
@@ -961,6 +1282,36 @@ class ToolProvider:
         if model is not None:
             kwargs["model"] = model
         self._limits.check_before_request(self._usage)
+        request_limit = self._limits.request_limit
+        if (
+            request_limit is not None
+            and self._usage.requests + self.reserved_requests >= request_limit
+        ):
+            raise UsageLimitExceeded("Tool would consume the final response/verification reserve")
+        if self.count_tokens is not None and self._limits.total_tokens_limit is not None:
+            text_parts = []
+            images = 0
+            for message in messages:
+                content = message.get("content", "")
+                if isinstance(content, str):
+                    text_parts.append(content)
+                elif isinstance(content, list):
+                    for part in content:
+                        if part.get("type") == "input_image":
+                            images += 1
+                        else:
+                            text_parts.append(str(part.get("text", "")))
+            estimate = self.count_tokens(
+                "\n".join(text_parts) + json.dumps(kwargs.get("schema", {}))
+            )
+            # Image cost varies by provider/resolution; this is a preflight estimate.
+            estimate += images * 4096
+            output = kwargs.get("num_predict") or 1024
+            if (
+                self._usage.total_tokens + estimate + output + self.reserved_tokens
+                > self._limits.total_tokens_limit
+            ):
+                raise UsageLimitExceeded("Tool estimate exceeds budget and verification reserve")
         self._usage.requests += 1
         model = str(kwargs.get("model", "unknown"))
         before = getattr(self._provider, "last_call_observation", None)
@@ -1017,10 +1368,19 @@ async def run_agent(
         request_limit=max_requests, tool_calls_limit=max_tool_calls, total_tokens_limit=max_tokens
     )
     deps.scope_limits = limits
+    deps.reserve_scope_requests = 1 if deps.scope_validation_enabled else 0
+    deps.reserve_scope_tokens = min(8000, max_tokens // 4) if deps.scope_validation_enabled else 0
     deps.scope_model_settings = model_settings
     if deps.provider is not None:
         deps.provider = ToolProvider(
-            deps.provider, usage, limits, deps.observations, deps.provider_name
+            deps.provider,
+            usage,
+            limits,
+            deps.observations,
+            deps.provider_name,
+            reserved_requests=deps.reserve_scope_requests + 1,
+            reserved_tokens=deps.reserve_scope_tokens,
+            count_tokens=deps.ledger.estimate_tokens,
         )
     failure = None
     visual = None
@@ -1063,6 +1423,11 @@ async def run_agent(
             "output_tokens": usage.output_tokens,
             "failure_code": failure,
             "tools": deps.tool_events,
+            "budget": {
+                "scope_request_reserve": deps.reserve_scope_requests,
+                "scope_token_reserve": deps.reserve_scope_tokens,
+                "preflight_events": deps.budget_events,
+            },
             "scope_validation": {
                 "enabled": deps.scope_validation_enabled,
                 "checks": len(deps.scope_receipts),

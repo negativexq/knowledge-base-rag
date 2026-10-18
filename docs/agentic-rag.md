@@ -315,3 +315,14 @@ unanswerable questions was also answered. Two answerable questions exhausted
 shared budgets. This is a concrete reason to keep rollout opt-in and evaluate
 semantic quantity binding and recovery further. See
 [the mini-10 audit](../artifacts/mmlongbench-v2/agentic-mini10-20261018/REVIEW.md).
+
+## Targeted research tools
+
+The agent now supports scoped hybrid/literal search, document discovery, PDF
+structure enumeration, citable table reading, selected-region/page visual checks
+and provenance comparison. Research preserves a final response/scope-check
+request budget and performs local token preflight. See
+[research-tools.md](research-tools.md) for exact contracts, bounds, dynamic
+availability, extraction limitations and validation coverage. These additions do
+not establish that semantic scope checking is infallible or that detected images
+are an exhaustive list of figures.
