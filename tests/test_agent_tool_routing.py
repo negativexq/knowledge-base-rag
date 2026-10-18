@@ -372,9 +372,10 @@ async def test_research_that_found_nothing_concludes_without_another_model_turn(
         return ModelResponse(parts=[ToolCallPart("search", {"query": "backup"})])
 
     result = await run_agent(FunctionModel(model), deps(retrieve=no_retrieve, reread_first=True))
-    # The re-read already abstained on unchanged evidence; a third turn could not
-    # see anything new, so code concludes with that abstention.
-    assert calls == 2
+    # The re-read already abstained on unchanged evidence; once research is
+    # closed without anything new, a further turn could not see anything new,
+    # so code concludes with that abstention.
+    assert calls == 3
     assert result.failure_code is None and json.loads(result.raw)["abstain"]
     assert result.telemetry["tools"][-1]["tool"] == "concluded_without_new_evidence"
 
@@ -396,5 +397,37 @@ async def test_a_tool_that_asks_for_a_retry_is_recorded_with_its_reason():
     result = await run_agent(FunctionModel(model), deps(retrieve=no_retrieve))
     failed = [e for e in result.telemetry["tools"] if e["tool"] == "tool_failed"]
     assert failed == [
-        {"tool": "tool_failed", "operation": "search", "reason": "UNKNOWN_SUPPORT_ID"}
+        {
+            "tool": "tool_failed",
+            "operation": "search",
+            "reason": "UNKNOWN_SUPPORT_ID",
+            "support_id": "E9.S1",
+        }
     ]
+
+
+# Agent canary after the audit fixes: the re-read used one of three research
+# turns, so research had a single tool turn; in five of eight runs that call
+# named an unknown support ID and research closed before it could be fixed.
+@pytest.mark.asyncio
+async def test_the_reread_does_not_use_a_research_turn_so_a_failed_call_can_be_fixed():
+    seen = []
+
+    async def retrieve(query):
+        return [block(BACKUP, id="c2")]
+
+    def model(messages, info):
+        seen.append(sorted(t.name for t in info.function_tools))
+        if len(seen) == 1:
+            return final(info)
+        if len(seen) == 2:
+            return ModelResponse(
+                parts=[ToolCallPart("search", {"query": "backup", "support_id": "[E1.S7]"})]
+            )
+        if len(seen) == 3:
+            return ModelResponse(parts=[ToolCallPart("search", {"query": "backup"})])
+        return final(info, (BACKUP, "E2.S1"))
+
+    result = await run_agent(FunctionModel(model), deps(retrieve=retrieve, reread_first=True))
+    assert seen[0] == [] and "search" in seen[1] and "search" in seen[2]
+    assert result.failure_code is None and not json.loads(result.raw)["abstain"]

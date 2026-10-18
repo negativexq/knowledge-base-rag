@@ -480,6 +480,14 @@ class AgentDependencies:
             self.pdf_structures[key] = PdfStructure(snapshot)
         return self.pdf_structures[key], parent
 
+    @property
+    def rereading(self) -> bool:
+        """The escalated run is still deciding again from the withheld evidence;
+        this turn has no tools and is not a research turn."""
+        return self.reread_first and not any(
+            e["tool"] == "research_opened" for e in self.tool_events
+        )
+
     def record(self, tool: str, **details: Any) -> None:
         self.tool_events.append({"tool": tool, **details})
         if tool == "validation_retry":
@@ -526,7 +534,7 @@ def prepare_tool(
     name = definition.name
     if deps.research_budget.tools_closed():
         return None
-    if deps.reread_first and deps.research_budget.research_requests == 0:
+    if deps.rereading:
         return None
     # Repeating what the withheld fixed path already ran on the same evidence
     # cannot change its result; it becomes available once evidence changes.
@@ -636,11 +644,16 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
                 # Retry messages are code-written; keep the code, or the text.
                 message = retry.message if isinstance(retry, ModelRetry) else str(retry)
                 code = message.split(":", 1)[0]
-                ctx.deps.record(
-                    "tool_failed",
-                    operation=call.tool_name,
-                    reason=code if re.fullmatch(r"[A-Z_]+", code) else message[:120],
-                )
+                details: dict[str, Any] = {
+                    "operation": call.tool_name,
+                    "reason": code if re.fullmatch(r"[A-Z_]+", code) else message[:120],
+                }
+                if code == "UNKNOWN_SUPPORT_ID":
+                    # What the model wrote instead of a listed ID, bounded.
+                    details["support_id"] = re.sub(
+                        r"[^\w.\[\] ,-]", "", str(args.get("support_id", ""))
+                    )[:40]
+                ctx.deps.record("tool_failed", **details)
                 publish({**event, "status": "retrying"})
                 raise
             except BaseException:
@@ -766,7 +779,9 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
             if self.model_role == "agent":
                 if repair_request:
                     budget.repair_requests += 1
-                else:
+                elif not deps.rereading:
+                    # The re-read is not research: counting it left research a
+                    # single tool turn, closed by one malformed call.
                     budget.research_requests += 1
             span.set_attribute("research.estimated_input_tokens", estimated_input)
             span.set_attribute("research.reserved_scope_tokens", reserve_tokens)
@@ -1385,8 +1400,7 @@ def build_agent(
             if (
                 answer.abstain
                 and answer.clarification is None
-                and deps.reread_first
-                and deps.research_budget.research_requests == 1
+                and deps.rereading
                 and not deps.research_budget.tools_closed()
             ):
                 # Re-reading found nothing to answer from: the fact is missing, so
