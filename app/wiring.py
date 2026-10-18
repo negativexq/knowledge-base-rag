@@ -259,6 +259,7 @@ def build_chat_dependencies(
             AgentDependencies,
             EvidenceLedger,
             agent_model,
+            agent_model_settings,
             run_agent,
         )
 
@@ -314,14 +315,7 @@ def build_chat_dependencies(
                 classic_failure_codes=first.failure_codes if first is not None else (),
                 reread_first=first is not None,
             )
-            model_settings = {"max_tokens": 1024, "temperature": 0.0}
-            if settings.generation_provider == "openai":
-                model_settings["openai_reasoning_effort"] = "none"
-            elif settings.generation_provider == "ollama":
-                model_settings["extra_body"] = {
-                    "options": {"num_ctx": context_tokens},
-                    "think": settings.ollama_thinking,
-                }
+            model_settings = agent_model_settings(settings, context_tokens)
             async with agent_model(settings) as native_model:
                 return await run_agent(
                     native_model,

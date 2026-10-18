@@ -262,3 +262,31 @@ async def test_empty_initial_retrieval_still_allows_scoped_agent_search():
     events = [e async for e in _sse_event_stream("original", deps, context)]
     assert called == ["original", "alternate phrasing"]
     assert "supported result" in "".join(events)
+
+
+# Audit of the escalation canary: the agent reread the withheld evidence with
+# the same model at reasoning "none" and temperature 0, so it reproduced the
+# fixed path's decision. The escalated reader now reasons; its output budget
+# covers the reasoning, and temperature is left to the provider.
+def test_escalated_agent_reads_with_reasoning_by_default():
+    from app.llm.agentic import agent_model_settings
+
+    settings = Settings(generation_provider="openai", openai_api_key="test-not-a-key")
+    model_settings = agent_model_settings(settings, context_tokens=32768)
+    assert model_settings["openai_reasoning_effort"] == "low"
+    assert "temperature" not in model_settings
+    assert model_settings["max_tokens"] >= 4096
+
+
+def test_reasoning_none_keeps_the_deterministic_reader():
+    from app.llm.agentic import agent_model_settings
+
+    settings = Settings(
+        generation_provider="openai", openai_api_key="test-not-a-key", agentic_reasoning="none"
+    )
+    model_settings = agent_model_settings(settings, context_tokens=32768)
+    assert model_settings == {
+        "max_tokens": 1024,
+        "temperature": 0.0,
+        "openai_reasoning_effort": "none",
+    }

@@ -1749,6 +1749,24 @@ async def run_agent(
         )
 
 
+def agent_model_settings(settings: Settings, context_tokens: int) -> dict[str, Any]:
+    """Model settings for the agent's own requests. With reasoning on, the
+    output budget covers reasoning tokens and temperature is not sent:
+    reasoning models do not accept it."""
+    reasoning = settings.generation_provider == "openai" and settings.agentic_reasoning != "none"
+    model_settings: dict[str, Any] = (
+        {"max_tokens": 8192} if reasoning else {"max_tokens": 1024, "temperature": 0.0}
+    )
+    if settings.generation_provider == "openai":
+        model_settings["openai_reasoning_effort"] = settings.agentic_reasoning
+    elif settings.generation_provider == "ollama":
+        model_settings["extra_body"] = {
+            "options": {"num_ctx": context_tokens},
+            "think": settings.ollama_thinking,
+        }
+    return model_settings
+
+
 @asynccontextmanager
 async def agent_model(settings: Settings) -> AsyncIterator[Model]:
     """Own and close native SDK clients; keep the existing generation provider usable by tools."""

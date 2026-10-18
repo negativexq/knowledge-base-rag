@@ -33,6 +33,10 @@ dependency does not introduce a graph into the application.
    again from the same evidence. The note is deliberately neutral: it asks for
    an answer only if the evidence supports one, so correct refusals of
    unanswerable questions are not pushed into answers.
+   The agent reads with reasoning on (`AGENTIC_REASONING=low`, OpenAI) while
+   the fixed path stays at `none`: rereading with the same non-reasoning model
+   at temperature 0 reproduced the fixed path's decision on every escalated
+   canary row, so the escalated turn is a different reader, not a repeat.
 5. **Research only after an abstention.** If the re-read abstains, research
    tools open. This routing step does not spend the repair allowance.
 6. The output validator checks the support-ID contract and validators.

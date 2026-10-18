@@ -102,6 +102,9 @@ class Settings(BaseSettings):
     agentic_timeout_seconds: float = Field(default=120.0, gt=0, le=600)
     agentic_output_retries: int = Field(default=2, ge=0, le=5)
     agentic_evidence_token_budget: int = Field(default=24000, ge=100, le=50000)
+    # The agent only sees answers the fixed path withheld; rereading them with
+    # the same non-reasoning model reproduces the same decision.
+    agentic_reasoning: Literal["none", "low", "medium", "high"] = "low"
     agentic_research_policy: ResearchPolicy = Field(default_factory=ResearchPolicy)
 
     @model_validator(mode="after")
