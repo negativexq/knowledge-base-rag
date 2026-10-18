@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import math
+import re
 import time
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
@@ -28,7 +29,7 @@ from pydantic_ai.capabilities import (
     WrapModelRequestHandler,
     WrapToolExecuteHandler,
 )
-from pydantic_ai.exceptions import UsageLimitExceeded
+from pydantic_ai.exceptions import ToolRetryError, UsageLimitExceeded
 from pydantic_ai.messages import (
     ModelMessage,
     ModelMessagesTypeAdapter,
@@ -613,6 +614,7 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
             except TimeoutError:
                 budget.close("TOOL_TIMEOUT")
                 budget.after_tool(False)
+                ctx.deps.record("tool_failed", operation=call.tool_name, reason="TOOL_TIMEOUT")
                 outcome(span, "timeout", "TOOL_TIMEOUT")
                 publish({**event, "status": "completed"})
                 return {
@@ -620,8 +622,18 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
                     "reason": "TOOL_TIMEOUT",
                     "next_action": "Use current evidence or abstain; timeout is not absence.",
                 }
-            except ModelRetry:
+            except (ModelRetry, ToolRetryError) as retry:
+                # The SDK hands a tool's ModelRetry back out of the handler as
+                # ToolRetryError; both are a failed attempt without progress.
                 budget.after_tool(False)
+                # Retry messages are code-written; keep the code, or the text.
+                message = retry.message if isinstance(retry, ModelRetry) else str(retry)
+                code = message.split(":", 1)[0]
+                ctx.deps.record(
+                    "tool_failed",
+                    operation=call.tool_name,
+                    reason=code if re.fullmatch(r"[A-Z_]+", code) else message[:120],
+                )
                 publish({**event, "status": "retrying"})
                 raise
             except BaseException:

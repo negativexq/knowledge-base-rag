@@ -27,6 +27,7 @@ _FORBIDDEN_KEY = re.compile(
     r"(?:api[_-]?key|authorization|cookie|password|secret|token|database_url)",
     re.IGNORECASE,
 )
+_TOKEN_COUNT_KEY = re.compile(r"(?:[a-z]+_)*(?:tokens|token_count)", re.IGNORECASE)
 _RAW_KEYS = {
     "raw_query",
     "raw_model_answer",
@@ -51,7 +52,10 @@ def _sha256(value: str) -> str:
 
 def _safe_value(value: Any, *, raw_text: bool, key: str = "") -> Any:
     """Copy only JSON-safe values and redact forbidden fields."""
-    if _FORBIDDEN_KEY.search(key):
+    if _FORBIDDEN_KEY.search(key) and not (
+        # Token counts ("input_tokens", "token_count") are usage, not secrets.
+        _TOKEN_COUNT_KEY.fullmatch(key) and isinstance(value, int) and not isinstance(value, bool)
+    ):
         return "[REDACTED]"
     if isinstance(value, dict):
         return {

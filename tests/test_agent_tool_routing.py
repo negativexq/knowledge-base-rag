@@ -378,3 +378,24 @@ async def test_research_that_found_nothing_concludes_without_another_model_turn(
     assert calls == 2
     assert result.failure_code is None and json.loads(result.raw)["abstain"]
     assert result.telemetry["tools"][-1]["tool"] == "concluded_without_new_evidence"
+
+
+# Telemetry ------------------------------------------------------------------
+
+
+# Escalation canary audit: every agent run showed one tool attempt and no
+# tool event; a tool that asked the model to retry left no trace of why.
+@pytest.mark.asyncio
+async def test_a_tool_that_asks_for_a_retry_is_recorded_with_its_reason():
+    def model(messages, info):
+        if len(messages) == 1:
+            return ModelResponse(
+                parts=[ToolCallPart("search", {"query": "backup", "support_id": "E9.S1"})]
+            )
+        return final(info)
+
+    result = await run_agent(FunctionModel(model), deps(retrieve=no_retrieve))
+    failed = [e for e in result.telemetry["tools"] if e["tool"] == "tool_failed"]
+    assert failed == [
+        {"tool": "tool_failed", "operation": "search", "reason": "UNKNOWN_SUPPORT_ID"}
+    ]

@@ -88,6 +88,31 @@ def test_raw_capture_is_local_and_redacts_secret_like_fields(tmp_path):
     assert data["stages"]["generation"]["openai_api_key"] == "[REDACTED]"
 
 
+# The escalation canary's per-row agent spend was "[REDACTED]": the secret
+# filter matched "token" in "input_tokens". A count stays; a token does not.
+def test_token_counts_are_kept_and_token_values_redacted(tmp_path):
+    capture = ForensicCapture.create("q", raw_text=False)
+    capture.stage(
+        "agentic",
+        {
+            "input_tokens": 15210,
+            "output_tokens": 230,
+            "token_count": 12,
+            "access_token": "abc",
+            "input_tokens_note": "not a count",
+            "refresh_tokens": ["abc"],
+        },
+    )
+    data = json.loads(Path(capture.write(str(tmp_path))).read_text())
+    stage = data["stages"]["agentic"]
+
+    assert stage["input_tokens"] == 15210 and stage["output_tokens"] == 230
+    assert stage["token_count"] == 12
+    assert stage["access_token"] == "[REDACTED]"
+    assert stage["input_tokens_note"] == "[REDACTED]"
+    assert stage["refresh_tokens"] == "[REDACTED]"
+
+
 def test_otel_redaction_never_carries_raw_text():
     bounded = redact_for_otel(
         {"raw_query": "private query", "raw_model_output": "private answer", "outcome": "PASS"}
