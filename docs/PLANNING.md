@@ -6170,3 +6170,28 @@ MMLongBench 17 requests, 181k input tokens):
   Not yet measured live.
 
 `make test`: 1923 passed, 4 skipped.
+
+### Parser audit: is the gold readable on its evidence pages? (2026-10-18)
+
+Offline, no model calls: the 62 answerable MMLongBench chart/table questions of
+`luna-full-v9` (13 documents), current index (PyMuPDF `pymupdf_elements_v9`)
+against Docling 2.140.0 (layout + TableFormer, OCR off), judged line by line on
+the evidence pages with the benchmark's lenient matcher.
+
+- Gold readable on its pages: ours 22/62, Docling 21/62. Most of the rest are
+  computed answers (ratios, differences) that no parser prints.
+- Tables: no difference. The index keeps rows as `label | column: value`, but a
+  whole table is one support unit (Costco's balance sheet: 2,631 characters).
+- Bar charts: Docling groups a chart's labels and values under one picture and
+  keeps their positions; rebuilding rows from same-height items recovers the
+  answer row on 210 (`Dem/Lean Dem | 21 | 52`), 212 and 214, where the index
+  has the numbers detached from their labels. Line charts (641, 642) do not
+  rebuild this way; their values need the axis, i.e. a chart-to-table model.
+- Ours ahead on 519/524 (image slides; the index uses OCR, the Docling run did
+  not) and 372.
+- 381's missing "Quiz #5" is in the index (a pages 7-8 chunk); it was not in
+  that question's evidence, a selection loss rather than a parsing one.
+
+So the parser is not the general loss. The specific gap is chart structure:
+values detached from their labels. Rebuilding rows needs a figure region plus
+positions, which Docling supplies; tables do not justify a parser switch.
