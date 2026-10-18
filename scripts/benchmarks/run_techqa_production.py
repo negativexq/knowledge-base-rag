@@ -36,6 +36,7 @@ sys.path.insert(0, str(ROOT))
 import pyarrow.parquet as pq
 from qdrant_client import QdrantClient
 
+from app.api.chat import _scoped_retrieve
 from app.connectors.filesystem import LocalFilesystemConnector
 from app.evaluation.forensic_capture import (
     ForensicCapture,
@@ -163,13 +164,9 @@ async def ask(deps, client: QdrantClient, question) -> dict:
     comparison = []
     token = set_current_capture(report.forensic_capture)
     try:
-
-        async def retrieve(query: str):
-            found = await deps.search_fn(query, context, RetrievalReport())
-            if deps.agentic_rag_enabled and deps.evidence_fn:
-                return await deps.evidence_fn(found, context)
-            return found
-
+        # The request's own retriever (ACL, evidence assembly and the
+        # anchored/literal search modes research tools use), as in the API.
+        retrieve = _scoped_retrieve(deps, context, {})
         extra = (
             {"retrieve": retrieve}
             if (deps.operand_resolver_enabled or deps.agentic_rag_enabled)

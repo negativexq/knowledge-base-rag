@@ -315,6 +315,26 @@ def test_answer_matching_ignores_citations_and_reads_ranges(
             "output_invalid",
         ),
         ({"abstain": None, "validator_failure_codes": None}, "no_verdict"),
+        # Escalation canary 520: the model led with the refusal and explained
+        # it; the user sees a refusal, so it is scored as one.
+        (
+            {
+                "abstain": False,
+                "validator_failure_codes": [],
+                "answer": "I could not find this in the document. The slides name eMarketer "
+                "as the source for Facebook, but give none for Google. [E1.S36]",
+            },
+            "model_abstained",
+        ),
+        # A refusal that is not the leading sentence is still an answer.
+        (
+            {
+                "abstain": False,
+                "validator_failure_codes": [],
+                "answer": "The total is 32%. I could not find this in the document for 2014.",
+            },
+            "answered",
+        ),
     ],
 )
 def test_response_kind_separates_refusals_by_their_source(raw, expected):
