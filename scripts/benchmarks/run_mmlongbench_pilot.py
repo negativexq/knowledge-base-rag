@@ -334,6 +334,8 @@ async def ask(
         evidence = "retrieved"
         blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
     answer, metadata, validation = "", {}, {}
+    clarification = None
+    comparison = []
     token = set_current_capture(report.forensic_capture)
     try:
 
@@ -355,6 +357,15 @@ async def ask(
         async for event in deps.stream_fn(question.question, blocks, **extra):
             if event["type"] == "token":
                 answer += event["content"]
+            elif event["type"] == "clarification":
+                clarification = {k: v for k, v in event.items() if k != "type"}
+                validation = {
+                    "abstain": True,
+                    "passed": True,
+                    "application_forced_abstention": False,
+                }
+            elif event["type"] == "comparison":
+                comparison = event["rows"]
             elif event["type"] == "evidence_update":
                 blocks = event["blocks"]
             elif event["type"] == "metadata":
@@ -380,6 +391,8 @@ async def ask(
         "answer_format": question.answer_format,
         "gold": question.answer,
         "answer": answer,
+        "clarification": clarification,
+        "comparison": comparison,
         "abstain": validation.get("abstain"),
         "application_forced_abstention": validation.get("application_forced_abstention"),
         "passed": validation.get("passed"),
