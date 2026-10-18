@@ -51,10 +51,10 @@ frontend trace inspection tests.
 
 ## Remaining boundaries
 
-1. Authorization is the existing **tenant-level** model plus selected source
-   scope. This branch does not implement per-document user/group permissions or
-   synchronize connector-native ACL changes. Those are required before exposing
-   documents with different permissions inside a tenant.
+1. Application-managed per-document user/group permissions now supplement tenant
+   and selected-source restrictions. They default to deny until ADMIN grants
+   access. Connector-native/IdP permissions are not synchronized automatically;
+   operators must maintain grants. See [document permissions](document-permissions.md).
 2. Prompt instructions and validators reduce risk but cannot prove resistance
    to all semantic prompt injection, misinformation or poisoned evidence.
    `CONTENT_SCREENING_MODE=shadow` observes findings and does not block them.
@@ -96,4 +96,27 @@ changing prompts or validators; this does not prove the broader issue fixed.
 All pilot/final outputs, usage, scenario coverage and limitations are preserved in
 [the live smoke report](../artifacts/agentic-security-luna6/REPORT.md). This is
 limited evidence, not a production penetration test, full live adversarial corpus
-or benchmark improvement. Tenant-internal document ACLs remain follow-up work.
+or benchmark improvement. This was the pre-guard smoke; the later implementation and results follow below.
+
+## Scope guard and document ACL implementation
+
+The follow-up adds claim-local semantic verification with exact witness checking,
+server-owned release receipts, shared model budgets, repair feedback and trace
+coverage. The answer agent's prompt was not changed. The previously failing
+ambiguous samples now trigger `SCOPE_NOT_ESTABLISHED`, search and return a properly
+scoped answer (4/4). A 17-case live regression/probe run also passed. These small
+synthetic runs do not prove universal semantic correctness or injection resistance.
+
+Persistent user/group policies now gate Qdrant queries, postfilters, expansion,
+ledger admission/reads, document APIs and pending answer release. Production
+defaults to deny unconfigured documents. ADMIN has a tenant-scoped policy editor,
+not an automatic read bypass. Current-policy checks handle revocation; tests
+exercise direct and group grants, role/cross-tenant isolation, empty allowlists,
+real in-memory Qdrant filtering, stale revisions, persistence and in-flight output
+withholding. The filesystem connector rejects policy-identity slug collisions.
+
+See [the scope guard measurements](../artifacts/agentic-security-luna6/SCOPE-GUARD.md)
+and [deployment/permission instructions](document-permissions.md). Existing local
+token authentication, connector-native permission synchronization, already-shared
+content, feedback/forensic storage and provider data handling retain their stated
+limitations.

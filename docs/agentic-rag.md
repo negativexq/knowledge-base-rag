@@ -4,7 +4,8 @@ The optional agent replaces answer orchestration while retaining production
 retrieval, reranking, section-aware evidence, arithmetic/operand binding,
 visual reading and confirmation, and support-ID validation. The original path
 remains the default until paired benchmark measurements justify a rollout.
-There is one agent and no application graph or multi-agent workflow.
+There is one research agent, a stateless scope verifier, and no application
+graph or multi-agent research workflow.
 
 Enable with `AGENTIC_RAG_ENABLED=true` and `SUPPORT_IDS_ENABLED=true`. Generation
 uses the configured provider/model: native OpenAI Responses, Anthropic, or the
@@ -153,9 +154,8 @@ Document reads preserve source type, source ID and document version. The service
 applies the existing server-owned tenant ACL and chat source scope and verifies
 returned payloads again. Reads scan at most 2000 chunks, paginate up to 50
 results, and return whole passages within a 60000-character response budget.
-`scan_limited`, `has_more` and `next_offset` make incomplete results visible. The
-API does not introduce per-user connector permissions beyond the existing tenant
-security model.
+`scan_limited`, `has_more` and `next_offset` make incomplete results visible. The API also enforces server-managed user/group document grants; connector-native
+permissions are not synchronized automatically.
 
 ### Answer feedback
 
@@ -253,3 +253,56 @@ Validation for this observability/security update: full backend suite 1821 passe
 followed the full run. Mypy checked 135 modules and Ruff passed. Frontend 109
 tests, TypeScript, ESLint and production build passed. No live LLM calls or new
 benchmark grading were performed.
+
+## Claim-scope validation and document grants
+
+`AGENTIC_SCOPE_VALIDATION_ENABLED=true` is the production agentic default. After
+existing deterministic validators accept a text/comparison candidate, a separate
+stateless PydanticAI checker assesses each claim's entity/product/service,
+version, period, population, unit and environment against the question and that
+claim's cited authorized units. It has no research tools and does not receive the
+answer agent's conversation or its reasoning. This is an output-validation call,
+not another autonomous research agent or an application graph.
+
+The checker returns supported/mismatch/insufficient, claim indexes, bounded reason
+codes and exact evidence excerpts. Every claim must be covered exactly once;
+supported checks need real excerpts from their own cited text/section. Fabricated
+witnesses and incomplete judgments fail closed. No entity/product vocabulary or
+benchmark-specific scope rule was added to the answer prompt.
+
+Mismatch or uncertainty returns `SCOPE_*` reason codes through the existing
+bounded retry path. The answer agent can search, inspect, correct/omit an
+unsupported claim, ask for clarification or abstain. This does not force a
+clarification when research can establish the missing fact. A server-owned
+receipt binds a successful check to the exact question, candidate, cited content
+and provenance. The release path rejects missing/mismatched receipts with
+`SCOPE_RELEASE_UNVERIFIED`; it does not blindly trust a model-supplied approval.
+Receipt reuse within a request avoids repeating the verifier on unchanged input.
+
+Verifier calls share the agent's request/token/time limits and appear as real
+`llm.request` spans with `research.model_role=scope_validator` under
+`answer.scope_validate` (candidate phase). The release receipt check has its own
+release-phase span. Ordinary supported answers generally need one extra call;
+repair may need another. The verifier payload is capped at 120000 characters;
+oversized candidates must reduce claims/focus citations. Tight budgets can cause
+an application abstention instead of releasing an unchecked draft. The explicit
+flag can disable this new semantic guard for controlled comparisons/debugging;
+it does not disable existing validators. Visual results retain their existing
+separate image-reading/condition-confirmation contract rather than pretending
+that page images are text-verified. Clarification/abstention carries no factual
+answer to certify.
+
+The checker is a probabilistic model judgment, even with literal-witness and
+receipt checks. It can still make semantic errors, particularly on complex or
+poisoned evidence. Keep paired quality and adversarial evaluation requirements.
+
+User/group document permissions are enforced independently of the agent flag.
+The production default is **deny until granted**. ADMIN manages policies in
+Knowledge → Document permissions. See [document permissions](document-permissions.md)
+for migration, API, identity groups, revocation and connector limitations.
+
+Live validation of this change: the four previously failing ambiguous-scope
+runs now reject the initial candidate with `SCOPE_NOT_ESTABLISHED`, search and
+answer SSH from the new evidence. A further 17-case run passed its checks,
+including version/environment/period binding, aliases and translated evidence.
+See [the measured follow-up](../artifacts/agentic-security-luna6/SCOPE-GUARD.md).

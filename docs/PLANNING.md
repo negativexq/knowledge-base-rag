@@ -6010,3 +6010,33 @@ No live LLM calls were made. Full backend suite: 1821 passed, 4 skipped, 5 live
 tests deselected, followed by targeted PDF raster-bound regression checks. Mypy
 checked 135 modules; Ruff passed. Frontend: 109 tests, TypeScript, ESLint and
 production build passed. Visual browser QA remains a manual deployment check.
+
+## Scope binding and per-document grants
+
+Added a stateless claim-scope verifier over each candidate's own cited authorized
+units, preserving the answer agent prompt and deterministic validators. Exact
+witness/coverage checks reject malformed judgments. Reason codes drive bounded
+research repair; final release validates a server-owned receipt bound to the
+question, candidate and provenance. Verifier calls share request/token/time
+limits and are visible as scope_validator generations. Payload size is bounded.
+
+Added persistent tenant/document policies with user/group grants, default deny,
+ADMIN-only revisioned management API and a Knowledge permission editor. Qdrant
+query filters, postfilters, section expansion, ledgers, document readers and
+pending answer release enforce live policies. Listing/count metadata is filtered;
+ADMIN may manage policy identifiers without implicit content access. In-flight
+revocation withholds new content, including legacy resolver citation metadata.
+Filesystem ingestion rejects source-identity slug collisions. Production factories
+require permission storage; deployment wiring provides and closes it.
+
+Existing documents require explicit grants after upgrade. Group membership comes
+from validated server-side identity configuration; connector-native/IdP ACL sync
+is not automatic. Historical browser content, submitted feedback/forensic storage
+and previously issued provider calls cannot be revoked retroactively. See
+`document-permissions.md` and `agentic-rag.md` for rollout and remaining limits.
+
+Live GPT-6 Luna: 4/4 formerly failing ambiguous-scope cases now reject the first
+candidate, search and answer correctly; 17/17 additional controls/probes passed.
+62 real calls in this follow-up. Full backend: 1856 passed, 4 skipped, 5 live tests
+deselected; mypy 137 modules, Ruff passed. Frontend: 111 tests, TypeScript, ESLint
+and production build passed. No push or paired full benchmark run was performed.
