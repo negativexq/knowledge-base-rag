@@ -85,7 +85,7 @@ async def test_missing_fact_is_searched_and_new_ids_stay_stable():
     def model(messages, info):
         if not returns(messages):
             return ModelResponse(parts=[ToolCallPart("search", {"query": "backup protocol"})])
-        assert "E2.S1" in returns(messages)[0].content
+        assert returns(messages)[0].content["support_ids"] == ["E2.S1"]
         return answer(info, "The backup service uses SSH.", "E2.S1")
 
     deps = dependencies(retrieve=retrieve)
@@ -301,6 +301,7 @@ async def test_verified_visual_reading_is_selected_without_rewriting_it(monkeypa
         visual_answers=True,
         render_page=lambda *_: b"image",
     )
+    deps.question = "What color is the service logo?"
     result = await run_agent(FunctionModel(model), deps)
     assert result.failure_code is None
     assert result.visual == VisualAnswer("Blue", "manual", 1)
@@ -340,7 +341,7 @@ async def test_nested_model_requests_share_agent_budget():
 @pytest.mark.asyncio
 async def test_disabled_tools_are_not_exposed_to_model():
     def model(messages, info):
-        assert [t.name for t in info.function_tools] == ["read_document_section"]
+        assert info.function_tools == []
         return refusal(info)
 
     result = await run_agent(FunctionModel(model), dependencies())

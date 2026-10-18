@@ -287,6 +287,7 @@ def validation_trace(stages: dict) -> dict:
         "cited_units": validation.get("cited_units"),
         "operand_resolver": stages.get("operand_resolver"),
         **({"agentic": stages["agentic"]} if "agentic" in stages else {}),
+        **({"escalation": stages["escalation"]} if "escalation" in stages else {}),
         "visual_answer": stages.get("visual_answer"),
     }
 
@@ -651,6 +652,7 @@ async def main() -> None:
             "labels": str(args.labels) if args.labels else "v1",
             "agentic": {
                 "enabled": settings.agentic_rag_enabled and not args.no_generation,
+                "mode": settings.agentic_mode,
                 "max_requests": settings.agentic_max_requests,
                 "max_tool_calls": settings.agentic_max_tool_calls,
                 "max_tokens": settings.agentic_max_tokens,

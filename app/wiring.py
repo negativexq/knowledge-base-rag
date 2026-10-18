@@ -31,7 +31,7 @@ from app.llm.provider import (
 )
 from app.llm.query_rewrite import ChatTurn, RewriteResult, rewrite_query
 from app.llm.structured_output import stream_evidence_backed_answer, stream_support_unit_answer
-from app.llm.visual_answer import pdf_page_renderer
+from app.llm.visual_answer import asks_visual, pdf_page_renderer
 from app.main import create_app
 from app.migration.aliasing import resolve_active_collection_name
 from app.migration.readiness import check_readiness
@@ -40,7 +40,7 @@ from app.registry.store import DocumentRegistry
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.research.feedback import FeedbackStore
 from app.research.traces import TraceStore
-from app.retrieval.filters import build_filter, combine_filters
+from app.retrieval.filters import build_filter, combine_filters, filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.retrieval.search import search
@@ -233,118 +233,157 @@ def build_chat_dependencies(
 
     page_renderer = pdf_page_renderer(settings.filesystem_root_path)
 
-    async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None, documents=None):
-        if settings.agentic_rag_enabled:
-            from app.llm.agentic import (
-                PIPELINE_VERSION,
-                AgentDependencies,
-                EvidenceLedger,
-                agent_model,
-                run_agent,
+    def classic_stream(question: str, chunks: list[SearchResult], retrieve=None):
+        return stream_support_unit_answer(
+            question,
+            chunks,
+            chat_provider,
+            model=default_chat_model(settings),
+            prompt_version=settings.support_id_prompt_version,
+            think=settings.ollama_thinking,
+            num_ctx=default_context_tokens(settings),
+            validator_version=settings.critical_validator_version,
+            shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+            architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+            count_tokens=count_prompt_tokens,
+            derived_answers=settings.derived_answers_enabled,
+            operand_resolver=settings.derived_answers_enabled and settings.operand_resolver_enabled,
+            retrieve=retrieve,
+            visual_answers=settings.visual_answers_enabled,
+            render_page=page_renderer,
+        )
+
+    async def agent_stream(question: str, chunks: list[SearchResult], retrieve, documents, first):
+        from app.llm.agentic import (
+            PIPELINE_VERSION,
+            AgentDependencies,
+            EvidenceLedger,
+            agent_model,
+            run_agent,
+        )
+
+        # Operations the withheld fixed path already ran on this same evidence.
+        tried: set[str] = set()
+        if first is not None:
+            if settings.derived_answers_enabled and settings.operand_resolver_enabled:
+                tried.add("resolve_calculation")
+            if (
+                settings.visual_answers_enabled
+                and getattr(chat_provider, "supports_images", False)
+                and asks_visual(question)
+            ):
+                tried.add("read_pages")
+
+        async def candidate_generator(query, initial_blocks):
+            context_tokens = default_context_tokens(settings)
+            budget = min(settings.agentic_evidence_token_budget, context_tokens // 2)
+            ledger = EvidenceLedger(
+                count_prompt_tokens,
+                budget,
+                context=documents.context if documents is not None else None,
+                source_ids=documents.source_ids if documents is not None else None,
             )
+            ledger.add(initial_blocks)
+            from app.llm.agent_observability import RequestUsage, load_prices
 
-            async def candidate_generator(query, initial_blocks):
-                context_tokens = default_context_tokens(settings)
-                budget = min(settings.agentic_evidence_token_budget, context_tokens // 2)
-                ledger = EvidenceLedger(
-                    count_prompt_tokens,
-                    budget,
-                    context=documents.context if documents is not None else None,
-                    source_ids=documents.source_ids if documents is not None else None,
+            agent_deps = AgentDependencies(
+                query,
+                ledger,
+                retrieve=retrieve,
+                documents=documents,
+                observations=RequestUsage(load_prices(settings.model_pricing_json)),
+                provider=chat_provider,
+                provider_name=settings.generation_provider,
+                scope_validation_enabled=settings.agentic_scope_validation_enabled,
+                generation_kwargs={
+                    "model": default_chat_model(settings),
+                    "think": settings.ollama_thinking,
+                    "num_ctx": context_tokens,
+                    "num_predict": 1024,
+                    "temperature": 0.0,
+                },
+                derived_answers=settings.derived_answers_enabled,
+                operand_resolver=settings.operand_resolver_enabled,
+                visual_answers=settings.visual_answers_enabled,
+                render_page=(
+                    page_renderer
+                    if documents is not None
+                    and documents.context.tenant_id == settings.filesystem_tenant_id
+                    else None
+                ),
+                validator_version=settings.critical_validator_version,
+                shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+                architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+                classic_tried=frozenset(tried),
+                classic_failure_codes=first.failure_codes if first is not None else (),
+                reread_first=first is not None,
+            )
+            model_settings = {"max_tokens": 1024, "temperature": 0.0}
+            if settings.generation_provider == "openai":
+                model_settings["openai_reasoning_effort"] = "none"
+            elif settings.generation_provider == "ollama":
+                model_settings["extra_body"] = {
+                    "options": {"num_ctx": context_tokens},
+                    "think": settings.ollama_thinking,
+                }
+            async with agent_model(settings) as native_model:
+                return await run_agent(
+                    native_model,
+                    agent_deps,
+                    max_requests=settings.agentic_max_requests,
+                    max_tool_calls=settings.agentic_max_tool_calls,
+                    max_tokens=settings.agentic_max_tokens,
+                    timeout_seconds=settings.agentic_timeout_seconds,
+                    retries=settings.agentic_output_retries,
+                    research_policy=settings.agentic_research_policy,
+                    model_settings=model_settings,
                 )
-                ledger.add(initial_blocks)
-                from app.llm.agent_observability import RequestUsage, load_prices
 
-                agent_deps = AgentDependencies(
-                    query,
-                    ledger,
-                    retrieve=retrieve,
-                    documents=documents,
-                    observations=RequestUsage(load_prices(settings.model_pricing_json)),
-                    provider=chat_provider,
-                    provider_name=settings.generation_provider,
-                    scope_validation_enabled=settings.agentic_scope_validation_enabled,
-                    generation_kwargs={
-                        "model": default_chat_model(settings),
-                        "think": settings.ollama_thinking,
-                        "num_ctx": context_tokens,
-                        "num_predict": 1024,
-                        "temperature": 0.0,
-                    },
-                    derived_answers=settings.derived_answers_enabled,
-                    operand_resolver=settings.operand_resolver_enabled,
-                    visual_answers=settings.visual_answers_enabled,
-                    render_page=(
-                        page_renderer
-                        if documents is not None
-                        and documents.context.tenant_id == settings.filesystem_tenant_id
-                        else None
-                    ),
-                    validator_version=settings.critical_validator_version,
-                    shadow_enabled=settings.critical_validator_v3_shadow_enabled,
-                    architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
-                )
-                model_settings = {"max_tokens": 1024, "temperature": 0.0}
-                if settings.generation_provider == "openai":
-                    model_settings["openai_reasoning_effort"] = "none"
-                elif settings.generation_provider == "ollama":
-                    model_settings["extra_body"] = {
-                        "options": {"num_ctx": context_tokens},
-                        "think": settings.ollama_thinking,
-                    }
-                async with agent_model(settings) as native_model:
-                    return await run_agent(
-                        native_model,
-                        agent_deps,
-                        max_requests=settings.agentic_max_requests,
-                        max_tool_calls=settings.agentic_max_tool_calls,
-                        max_tokens=settings.agentic_max_tokens,
-                        timeout_seconds=settings.agentic_timeout_seconds,
-                        retries=settings.agentic_output_retries,
-                        research_policy=settings.agentic_research_policy,
-                        model_settings=model_settings,
-                    )
-
-            async with aclosing(
-                stream_support_unit_answer(
-                    question,
-                    chunks,
-                    chat_provider,
-                    model=default_chat_model(settings),
-                    prompt_version=settings.support_id_prompt_version,
-                    validator_version=settings.critical_validator_version,
-                    shadow_enabled=settings.critical_validator_v3_shadow_enabled,
-                    architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
-                    derived_answers=settings.derived_answers_enabled,
-                    num_ctx=default_context_tokens(settings),
-                    candidate_generator=candidate_generator,
-                )
-            ) as events:
-                async for event in events:
-                    if event["type"] == "metadata":
-                        event = {**event, "pipeline_version": PIPELINE_VERSION}
-                    yield event
-            return
-        if settings.support_ids_enabled:
-            async for event in stream_support_unit_answer(
+        async with aclosing(
+            stream_support_unit_answer(
                 question,
                 chunks,
                 chat_provider,
                 model=default_chat_model(settings),
                 prompt_version=settings.support_id_prompt_version,
-                think=settings.ollama_thinking,
-                num_ctx=default_context_tokens(settings),
                 validator_version=settings.critical_validator_version,
                 shadow_enabled=settings.critical_validator_v3_shadow_enabled,
                 architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
-                count_tokens=count_prompt_tokens,
                 derived_answers=settings.derived_answers_enabled,
-                operand_resolver=settings.derived_answers_enabled
-                and settings.operand_resolver_enabled,
-                retrieve=retrieve,
-                visual_answers=settings.visual_answers_enabled,
-                render_page=page_renderer,
-            ):
+                num_ctx=default_context_tokens(settings),
+                candidate_generator=candidate_generator,
+            )
+        ) as events:
+            async for event in events:
+                if event["type"] == "metadata":
+                    event = {**event, "pipeline_version": PIPELINE_VERSION}
+                yield event
+
+    async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None, documents=None):
+        if settings.agentic_rag_enabled:
+            from app.llm.escalation import classic_first
+
+            scope = documents.source_ids if documents is not None else None
+            async with aclosing(
+                classic_first(
+                    chunks,
+                    lambda blocks: classic_stream(question, blocks, retrieve),
+                    lambda first: agent_stream(question, chunks, retrieve, documents, first),
+                    # Multi-document requests (comparisons) need the agent's contract.
+                    direct=settings.agentic_mode == "always"
+                    or (scope is not None and len(scope) > 1),
+                    authorize=(
+                        (lambda blocks: filter_authorized_candidates(blocks, documents.context))
+                        if documents is not None
+                        else None
+                    ),
+                )
+            ) as events:
+                async for event in events:
+                    yield event
+            return
+        if settings.support_ids_enabled:
+            async for event in classic_stream(question, chunks, retrieve):
                 yield event
             return
         if settings.rag_pipeline_v2:

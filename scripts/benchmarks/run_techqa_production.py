@@ -377,6 +377,7 @@ async def main() -> None:
             "candidate_k": settings.reranker_candidate_k,
             "flags": {
                 "AGENTIC_RAG_ENABLED": settings.agentic_rag_enabled,
+                "AGENTIC_MODE": settings.agentic_mode,
                 "DERIVED_ANSWERS_ENABLED": settings.derived_answers_enabled,
                 "OPERAND_RESOLVER_ENABLED": settings.operand_resolver_enabled,
                 "VISUAL_ANSWERS_ENABLED": settings.visual_answers_enabled,

@@ -119,10 +119,10 @@ async def test_execution_limit_is_enforced_inside_one_tool_batch():
         if not returned(messages):
             return ModelResponse(
                 parts=[
-                    ToolCallPart("read_document_section", {"support_id": "E1.S1"}),
-                    ToolCallPart("read_document_section", {"support_id": "E1.S2"}),
-                    ToolCallPart("read_document_section", {"support_id": "E1.S1"}),
-                    ToolCallPart("read_document_section", {"support_id": "E1.S2"}),
+                    ToolCallPart("search", {"query": "a"}),
+                    ToolCallPart("search", {"query": "b"}),
+                    ToolCallPart("search", {"query": "c"}),
+                    ToolCallPart("search", {"query": "d"}),
                 ]
             )
         assert info.function_tools == []
@@ -135,13 +135,18 @@ async def test_execution_limit_is_enforced_inside_one_tool_batch():
         )
         return refuse(info)
 
+    async def nothing_found(query):
+        return []
+
     result = await run_agent(
-        FunctionModel(model), deps(), research_policy=ResearchPolicy(max_tool_attempts=2)
+        FunctionModel(model),
+        deps(retrieve=nothing_found),
+        research_policy=ResearchPolicy(max_tool_attempts=2, max_no_progress=5),
     )
     assert result.failure_code is None
     policy = result.telemetry["budget"]["research"]
     assert policy["tool_attempts"] == 2 and policy["blocked_tool_calls"] == 2
-    assert len([t for t in result.telemetry["tools"] if t["tool"] == "read_document_section"]) == 2
+    assert len([t for t in result.telemetry["tools"] if t["tool"] == "search"]) == 2
 
 
 @pytest.mark.asyncio

@@ -16,27 +16,69 @@ dependency does not introduce a graph into the application.
 ## Request flow
 
 1. Existing search/reranker and section expansion produce the initial evidence.
-2. A request-local, append-only ledger assigns stable `E1.S1` support IDs.
-   Complete blocks fitting the evidence budget are admitted in retrieval order.
-   Unauthorized/hidden blocks, duplicates and blocks exceeding the remaining
-   budget are excluded. This can reduce visible context when budgets are tight.
-3. The agent answers immediately or chooses tools. An empty first search can
-   still be followed by an alternate query under the same authorization scope.
-4. The output validator checks the existing support-ID contract and validators.
-   Rejections return reason codes so the agent can correct, search or abstain.
-5. The candidate is checked again by the existing release path. Refreshed source
+2. **Classic first** (`AGENTIC_MODE=escalate`, the default). The fixed path
+   answers: one structured call, then the operand resolver and visual reading
+   when enabled. An answer that passes its release validators is released and
+   the agent never runs. Only a withheld answer escalates. Requests scoped to
+   two or more documents (comparisons) go to the agent directly;
+   `AGENTIC_MODE=always` restores agent-first behavior for every request.
+3. A request-local, append-only ledger assigns stable `E1.S1` support IDs to
+   the same evidence. Complete blocks fitting the evidence budget are admitted
+   in retrieval order; unauthorized/hidden blocks, duplicates and blocks
+   exceeding the remaining budget are excluded.
+4. **Re-read before research.** An escalated agent first sees no tools and is
+   told the fixed path's code-generated withholding reason. In the audited
+   TechQA losses the needed fact was already in the evidence (abstained on,
+   rejected by a validator, or answered incompletely), so this turn decides
+   again from the same evidence. The note is deliberately neutral: it asks for
+   an answer only if the evidence supports one, so correct refusals of
+   unanswerable questions are not pushed into answers.
+5. **Research only after an abstention.** If the re-read abstains, research
+   tools open. This routing step does not spend the repair allowance.
+6. The output validator checks the support-ID contract and validators.
+   **Rejected parts are dropped and the parts that passed are kept**, as on the
+   fixed path; a retry is used only when no part survives. The scope verifier
+   works the same way: claims it rejects are dropped, and the server derives a
+   release receipt for the remaining claims (each claim was judged on its own
+   cited evidence). An invalid or incomplete judgment still rejects everything.
+7. The candidate is checked again by the existing release path. Refreshed source
    cards and the final support-ID map arrive before any answer text is released.
+8. **Fallback.** If the agent runs out of budget or time after admitting new
+   evidence, the fixed path answers once over that (re-authorized) evidence
+   instead of returning an empty abstention. Validator, scope and access
+   rejections are decisions and are never retried this way.
 
-Tools:
+Tools are chosen by code, not offered all at once (`prepare_tool`):
 
-| Tool | Behavior |
+| Tool | Visible when |
 | --- | --- |
-| `search` | Calls the request's existing scoped retrieval and reranker, then section expansion; admits new evidence within the ledger budget. |
-| `read_document_section` | Reopens the already admitted evidence block containing a known support ID. |
-| `navigate_document` | Lists headings, searches document terms, reads unseen sections/pages or adjacent passages. Keeps the anchor source/version and request scope; newly admitted passages receive stable support IDs. |
-| `calculate` | Evaluates restricted arithmetic and verifies every operand against cited evidence with the existing calculator. |
-| `resolve_calculation` | Uses the existing operand planner, binding checks and deterministic computation. Missing operands must be searched through `search`, keeping IDs and budgets consistent. |
-| `read_pages` | Uses the existing page reader and separate claim/condition check for an admitted source. The final answer selects the verified reading without rewriting it. |
+| `search` | Retrieval or the document reader is available. Hybrid/terms/phrase over unseen passages, optionally inside one document version; no page/section arguments. |
+| `navigate_document` | A document reader is available: outline, section, page, term search or neighbours of a known support ID. |
+| `calculate`, `resolve_calculation` | Derived answers (and the operand resolver) are enabled. |
+| `inspect_table` | Versioned PDFs are available. Without an element ID it reads the first table on the support unit's page and lists the others. |
+| `read_pages`, `inspect_region`, `list_document_elements` | The question asks about something visual (`asks_visual`) and image reading is enabled. |
+| `find_documents` | The request has no fixed source scope. |
+| `compare_evidence` | Admitted evidence spans at least two sources. |
+
+An operation the withheld fixed path already ran (operand resolution, page
+reading) stays hidden until the ledger has new evidence, since repeating it on
+the same evidence cannot change its result. `read_document_section` was removed:
+it returned evidence the model already had. Empty or non-progressing results say
+what to do next ("answer from the current evidence or abstain").
+
+**Context.** Admitted evidence is carried once per model request: a history
+processor keeps all of it in the first prompt (the ledger is append-only, so
+new evidence extends its end and the earlier text stays a cacheable prefix) and
+replaces evidence in tool results with a reference. Instructions are static; the
+closed-research notice is a message, not an instruction change, so it does not
+invalidate the provider's prompt cache. The instructions' SHA-256 prefix is
+recorded in telemetry (`instructions_sha256`).
+
+**No benchmark tuning in the prompt.** Behavior that differs between question
+types lives in code (routing, validators, budgets, partial release) and is
+covered by deterministic tests. The agent instructions stay generic and the
+fixed path's prompt is unchanged; changes are measured on both benchmarks with
+the rule that neither may lose questions.
 
 Search has no tenant, ACL, collection or document-scope argument. Those values
 are captured by the application, including question-document scope in the

@@ -97,6 +97,21 @@ class ScopeReceipt:
     rejected_claims: tuple[int, ...]
     policy_version: str = POLICY_VERSION
 
+    def kept_claims(self, claim_count: int) -> list[int]:
+        """Claims a complete, well-formed judgment supported, if it rejected only some."""
+        if "SCOPE_CHECK_INVALID" in self.failure_codes or not self.rejected_claims:
+            return []
+        return [i for i in range(claim_count) if i not in self.rejected_claims]
+
+    def for_kept(self, payload: dict[str, Any]) -> ScopeReceipt:
+        """Server-derived receipt for the answer reduced to its supported claims.
+
+        Each claim was judged on its own cited evidence, so dropping rejected
+        claims does not change the verdict on the ones that remain."""
+        if not self.kept_claims(len(payload["claims"]) + len(self.rejected_claims)):
+            raise ValueError("Only a partially rejected, valid judgment can be reduced")
+        return ScopeReceipt(fingerprint(payload), (), ())
+
     def accepts(self, question: str, raw: str, units: list[SupportUnit]) -> bool:
         try:
             return (

@@ -115,7 +115,7 @@ async def test_agent_reads_unseen_page_and_cites_new_stable_evidence(reader):
                     )
                 ]
             )
-        assert "E2.S1" in returned[0].content["evidence"]
+        assert returned[0].content["support_ids"] == ["E2.S1"]
         return ModelResponse(
             parts=[
                 ToolCallPart(

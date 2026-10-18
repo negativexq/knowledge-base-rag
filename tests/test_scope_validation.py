@@ -245,6 +245,10 @@ async def test_oversized_scope_payload_is_rejected_before_model_request(monkeypa
     assert candidate.telemetry["requests"] == 1
 
 
+async def nothing_found(query):
+    return []
+
+
 async def test_last_research_turn_hides_tools_and_keeps_scope_verification_slot():
     calls = 0
 
@@ -252,10 +256,8 @@ async def test_last_research_turn_hides_tools_and_keeps_scope_verification_slot(
         nonlocal calls
         calls += 1
         if calls == 1:
-            assert any(t.name == "read_document_section" for t in info.function_tools)
-            return ModelResponse(
-                parts=[ToolCallPart("read_document_section", {"support_id": "E1.S1"})]
-            )
+            assert any(t.name == "search" for t in info.function_tools)
+            return ModelResponse(parts=[ToolCallPart("search", {"query": "protocol"})])
         assert info.function_tools == []
         return output(info, json.loads(raw("The service uses TLS.")))
 
@@ -264,7 +266,9 @@ async def test_last_research_turn_hides_tools_and_keeps_scope_verification_slot(
 
     candidate = await run_agent(
         FunctionModel(main),
-        AgentDependencies("Protocol?", ledger(), scope_validation_enabled=True),
+        AgentDependencies(
+            "Protocol?", ledger(), retrieve=nothing_found, scope_validation_enabled=True
+        ),
         max_requests=3,
         scope_model=FunctionModel(verifier),
     )

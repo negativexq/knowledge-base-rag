@@ -3,7 +3,7 @@
 import uuid
 
 import pytest
-from pydantic_ai.messages import ModelResponse, ToolCallPart, ToolReturnPart
+from pydantic_ai.messages import ModelResponse, ToolCallPart, ToolReturnPart, UserPromptPart
 from pydantic_ai.models.function import FunctionModel
 from qdrant_client import QdrantClient
 from qdrant_client import models as qm
@@ -69,6 +69,11 @@ def returned(messages):
     return [p for m in messages for p in m.parts if isinstance(p, ToolReturnPart)]
 
 
+def prompt(messages):
+    """Admitted evidence is carried once, in the first prompt's evidence list."""
+    return next(p.content for m in messages for p in m.parts if isinstance(p, UserPromptPart))
+
+
 @pytest.mark.asyncio
 async def test_literal_search_keeps_document_version_and_support_ids(research_reader):
     ledger = await ledger_for(research_reader)
@@ -87,9 +92,10 @@ async def test_literal_search_keeps_document_version_and_support_ids(research_re
                     )
                 ]
             )
-        content = returned(messages)[0].content
-        assert "E2.S1" in content and "port 22." in content
-        assert "2222" not in content and "Secret" not in content
+        assert returned(messages)[0].content["support_ids"] == ["E2.S1"]
+        evidence = prompt(messages)
+        assert "port 22." in evidence
+        assert "2222" not in evidence and "Secret" not in evidence
         return refuse(info)
 
     result = await run_agent(
@@ -120,7 +126,7 @@ async def test_discovery_returns_usable_new_anchor(research_reader):
         result = returned(messages)[0].content
         assert result["documents"][0]["source_id"] == "other"
         assert result["documents"][0]["support_id"] == "E2.S1"
-        assert "Other instructions" in result["evidence"]
+        assert "Other instructions" in prompt(messages)
         return refuse(info)
 
     result = await run_agent(
@@ -194,19 +200,24 @@ async def test_comparison_returns_exact_passages_and_provenance(research_reader)
         document=DocumentRef(source_type="filesystem", source_id="manual", document_version="v1"),
     )
     ledger.add(found.blocks)
+    other = await research_reader.find(
+        "Other",
+        document=DocumentRef(source_type="filesystem", source_id="other", document_version="v1"),
+    )
+    ledger.add(other.blocks)
 
     def model(messages, info):
         if not returned(messages):
             return ModelResponse(
-                parts=[ToolCallPart("compare_evidence", {"support_ids": ["E1.S1", "E2.S1"]})]
+                parts=[ToolCallPart("compare_evidence", {"support_ids": ["E1.S1", "E3.S1"]})]
             )
         result = returned(messages)[0].content
-        assert result["different_sources"] is False
+        assert result["different_sources"] is True
         assert result["different_versions"] is False
         assert result["scope_check_required"] is True
         assert [u["text"] for u in result["passages"]] == [
             "TLS requires an explicit setting.",
-            "SSH uses port 22.",
+            "Other instructions.",
         ]
         return refuse(info)
 

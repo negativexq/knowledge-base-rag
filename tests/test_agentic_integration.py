@@ -227,7 +227,7 @@ async def test_wiring_selects_agent_without_enabling_operand_resolver(monkeypatc
     monkeypatch.setattr(wiring, "active_embedding_config", lambda _: SimpleNamespace())
     monkeypatch.setattr(agentic, "agent_model", model_context)
     deps, _ = wiring.build_chat_dependencies(
-        Settings(_env_file=None, agentic_rag_enabled=True),
+        Settings(_env_file=None, agentic_rag_enabled=True, agentic_mode="always"),
         object(),
         object(),
         object(),

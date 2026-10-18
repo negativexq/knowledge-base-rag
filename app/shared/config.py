@@ -92,6 +92,9 @@ class Settings(BaseSettings):
 
     # Agentic orchestration is opt-in until paired benchmark runs justify rollout.
     agentic_rag_enabled: bool = False
+    # "escalate": the fixed answer path runs first and the agent only handles
+    # withheld answers (and multi-document requests); "always": agent first.
+    agentic_mode: Literal["escalate", "always"] = "escalate"
     agentic_scope_validation_enabled: bool = True
     agentic_max_requests: int = Field(default=6, ge=1, le=20)
     agentic_max_tool_calls: int = Field(default=8, ge=1, le=30)

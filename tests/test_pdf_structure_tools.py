@@ -105,7 +105,7 @@ async def test_agent_reads_table_as_citable_evidence(pdf):
             )
         result = returns(messages)[0].content
         assert result["admitted"] and result["support_ids"][0] == "E2.S1"
-        assert "excludes discontinued" in result["evidence"]
+        assert "excludes discontinued" in str(messages[0].parts)
         assert result["rows"][0] == ["North", "12"]
         return refuse(info)
 
@@ -137,6 +137,22 @@ async def test_table_cells_never_bypass_evidence_budget(pdf):
     assert len(result.blocks) == 1
 
 
+async def test_table_is_found_on_the_support_page_without_listing_elements(pdf):
+    deps = deps_for(pdf)
+
+    def model(messages, info):
+        assert "list_document_elements" not in [t.name for t in info.function_tools]
+        if not returns(messages):
+            return ModelResponse(parts=[ToolCallPart("inspect_table", {"support_id": "E1.S1"})])
+        result = returns(messages)[0].content
+        assert result["element_id"] == "P1.T1" and result["other_tables_on_page"] == []
+        assert result["rows"][0] == ["North", "12"]
+        return refuse(info)
+
+    result = await run_agent(FunctionModel(model), deps)
+    assert result.failure_code is None
+
+
 @pytest.mark.asyncio
 async def test_pdf_version_mismatch_is_recoverable_and_does_not_read_content(pdf):
     deps = deps_for(pdf, version="stale")
@@ -146,9 +162,7 @@ async def test_pdf_version_mismatch_is_recoverable_and_does_not_read_content(pdf
         nonlocal calls
         calls += 1
         if calls == 1:
-            return ModelResponse(
-                parts=[ToolCallPart("list_document_elements", {"support_id": "E1.S1"})]
-            )
+            return ModelResponse(parts=[ToolCallPart("inspect_table", {"support_id": "E1.S1"})])
         assert "Regional revenue" not in str(messages[-1])
         return refuse(info)
 
@@ -186,6 +200,7 @@ class Vision:
 async def test_region_shows_full_page_and_crop_and_requires_separate_check(pdf, accepted):
     vision = Vision(accepted=accepted)
     deps = deps_for(pdf, provider=vision, visual_answers=True)
+    deps.question = "What does the revenue chart show for North?"
 
     def model(messages, info):
         if not returns(messages):

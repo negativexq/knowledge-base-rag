@@ -124,7 +124,7 @@ async def test_progress_arrives_before_candidate_and_contains_no_drafts():
     def model(messages, info):
         if not any(isinstance(p, ToolReturnPart) for m in messages for p in m.parts):
             return ModelResponse(
-                parts=[ToolCallPart("read_document_section", {"support_id": "E1.S1"})]
+                parts=[ToolCallPart("compare_evidence", {"support_ids": ["E1.S1", "E2.S1"]})]
             )
         return ModelResponse(
             parts=[
