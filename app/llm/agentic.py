@@ -50,12 +50,22 @@ from app.llm.calculation import Calculation, evaluate_expression, verify_calcula
 from app.llm.operand_resolver import Retrieve
 from app.llm.premise import missing_question_dates, missing_question_years
 from app.llm.research_events import publish
+from app.llm.scope_validation import (
+    MAX_SCOPE_PAYLOAD_CHARS,
+    SCOPE_INSTRUCTIONS,
+    ScopeJudgment,
+    ScopeReceipt,
+    fingerprint,
+    scope_payload,
+    validate_judgment,
+)
 from app.llm.structured_output import (
     SupportUnitValidation,
     parse_support_unit_answer,
     validate_support_unit_answer,
 )
 from app.llm.visual_answer import PageRenderer, VisualAnswer, answer_from_pages, chunk_ranks
+from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.security.models import RetrievalContext
 from app.shared.config import Settings
@@ -175,6 +185,14 @@ class AgentCandidate:
     failure_code: str | None = None
     clarification: dict[str, Any] | None = None
     comparison: list[dict[str, Any]] = field(default_factory=list)
+    scope_validation_required: bool = False
+    scope_receipt: ScopeReceipt | None = None
+    authorization_context: RetrievalContext | None = None
+
+    def access_current(self) -> bool:
+        return self.authorization_context is None or len(
+            filter_authorized_candidates(self.blocks, self.authorization_context)
+        ) == len(self.blocks)
 
 
 class EvidenceLedger:
@@ -201,7 +219,7 @@ class EvidenceLedger:
     ) -> list[SearchResult]:
         added: list[SearchResult] = []
         remaining = min(self._budget - self._used, allowance or self._budget)
-        for block in blocks:
+        for block in filter_authorized_candidates(blocks, self.context) if self.context else blocks:
             payload = dict(block.payload)
             if (
                 self.context is not None
@@ -241,12 +259,15 @@ class EvidenceLedger:
 
     @property
     def units(self) -> list[SupportUnit]:
-        return build_support_units(self.blocks)
+        return build_support_units(
+            filter_authorized_candidates(self.blocks, self.context) if self.context else self.blocks
+        )
 
     def text(self, blocks: list[SearchResult] | None = None) -> str:
-        return serialize_support_units(
-            build_support_units(self.blocks if blocks is None else blocks)
-        )
+        visible = self.blocks if blocks is None else blocks
+        if self.context is not None:
+            visible = filter_authorized_candidates(visible, self.context)
+        return serialize_support_units(build_support_units(visible))
 
 
 @dataclass
@@ -268,7 +289,11 @@ class AgentDependencies:
     architecture_v2_shadow_enabled: bool = False
     tool_events: list[dict[str, Any]] = field(default_factory=list)
     visual_readings: dict[str, VisualAnswer] = field(default_factory=dict)
-    observed_retries: set[tuple[int, int]] = field(default_factory=set)
+    observed_retries: set[tuple[str, int, int]] = field(default_factory=set)
+    scope_validation_enabled: bool = False
+    scope_receipts: dict[str, ScopeReceipt] = field(default_factory=dict)
+    scope_limits: UsageLimits = field(default_factory=UsageLimits)
+    scope_model_settings: ModelSettings | None = None
 
     def validation(self, answer: AgentAnswer) -> SupportUnitValidation:
         return validate_support_unit_answer(
@@ -338,6 +363,9 @@ def prepare_tool(
 
 
 class ResearchProgress(AbstractCapability[AgentDependencies]):
+    def __init__(self, model_role: str = "agent") -> None:
+        self.model_role = model_role
+
     async def wrap_tool_execute(
         self,
         ctx: RunContext[AgentDependencies],
@@ -380,7 +408,7 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
         retry_count = 0
         for message_index, message in enumerate(request_context.messages):
             for part_index, part in enumerate(message.parts):
-                key = (message_index, part_index)
+                key = (self.model_role, message_index, part_index)
                 if isinstance(part, RetryPromptPart) and key not in ctx.deps.observed_retries:
                     ctx.deps.observed_retries.add(key)
                     retry_count += 1
@@ -396,7 +424,7 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
                 "research.attempt": ctx.run_step,
             },
         ) as span:
-            mark_model(span, provider, model, "agent")
+            mark_model(span, provider, model, self.model_role)
             try:
                 response = await handler(request_context)
             except BaseException:
@@ -418,7 +446,19 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
             return response
 
 
-def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, AgentAnswer]:
+def build_agent(
+    model: Model, *, retries: int = 2, scope_model: Model | None = None
+) -> Agent[AgentDependencies, AgentAnswer]:
+    scope_agent = Agent(
+        scope_model or model,
+        deps_type=AgentDependencies,
+        output_type=ScopeJudgment,
+        instructions=SCOPE_INSTRUCTIONS,
+        retries=0,
+        name="claim_scope_verifier",
+        capabilities=[ResearchProgress("scope_validator")],
+    )
+    scope_agent.instrument = False
     agent = Agent(
         model,
         deps_type=AgentDependencies,
@@ -628,7 +668,9 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, A
         }
 
     @agent.output_validator
-    def validate_output(ctx: RunContext[AgentDependencies], answer: AgentAnswer) -> AgentAnswer:
+    async def validate_output(
+        ctx: RunContext[AgentDependencies], answer: AgentAnswer
+    ) -> AgentAnswer:
         with operation(
             "agent.validate",
             attributes={"research.phase": "output", "research.attempt": ctx.retry + 1},
@@ -672,6 +714,39 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, A
                     + ", ".join(validation.failure_codes)
                     + ". Correct the claim, find evidence, omit it, or abstain."
                 )
+            if deps.scope_validation_enabled:
+                payload = scope_payload(deps.question, answer.raw_answer(), deps.ledger.units)
+                key = fingerprint(payload)
+                receipt = deps.scope_receipts.get(key)
+                with operation(
+                    "answer.scope_validate", attributes={"research.phase": "candidate"}
+                ) as check:
+                    if receipt is None:
+                        serialized = json.dumps(payload, ensure_ascii=False)
+                        if len(serialized) > MAX_SCOPE_PAYLOAD_CHARS:
+                            raise ModelRetry(
+                                "SCOPE_CHECK_TOO_LARGE: use fewer claims or more focused citations"
+                            )
+                        checked = await scope_agent.run(
+                            serialized,
+                            deps=deps,
+                            usage=ctx.usage,
+                            usage_limits=deps.scope_limits,
+                            model_settings=deps.scope_model_settings,
+                        )
+                        receipt = validate_judgment(payload, checked.output)
+                        deps.scope_receipts[key] = receipt
+                    check.set_attribute("validator.failure_codes", receipt.failure_codes)
+                    if receipt.failure_codes:
+                        deps.record("validation_retry", failure_codes=list(receipt.failure_codes))
+                        raise ModelRetry(
+                            "Claim scope validation failed for claim indexes "
+                            + str(list(receipt.rejected_claims))
+                            + ": "
+                            + ", ".join(receipt.failure_codes)
+                            + ". Search or inspect evidence establishing scope, correct or omit "
+                            "the claim, ask for clarification if needed, or abstain."
+                        )
             return answer
 
     return agent
@@ -747,14 +822,17 @@ async def run_agent(
     timeout_seconds: float = 120,
     retries: int = 2,
     model_settings: ModelSettings | None = None,
+    scope_model: Model | None = None,
 ) -> AgentCandidate:
     if current_usage() is not None:
         deps.observations = current_usage() or deps.observations
-    agent = build_agent(model, retries=retries)
+    agent = build_agent(model, retries=retries, scope_model=scope_model)
     usage = RunUsage()
     limits = UsageLimits(
         request_limit=max_requests, tool_calls_limit=max_tool_calls, total_tokens_limit=max_tokens
     )
+    deps.scope_limits = limits
+    deps.scope_model_settings = model_settings
     if deps.provider is not None:
         deps.provider = ToolProvider(
             deps.provider, usage, limits, deps.observations, deps.provider_name
@@ -800,6 +878,11 @@ async def run_agent(
             "output_tokens": usage.output_tokens,
             "failure_code": failure,
             "tools": deps.tool_events,
+            "scope_validation": {
+                "enabled": deps.scope_validation_enabled,
+                "checks": len(deps.scope_receipts),
+                "rejections": sum(bool(r.failure_codes) for r in deps.scope_receipts.values()),
+            },
         }
         capture = current_capture()
         if capture is not None:
@@ -823,7 +906,24 @@ async def run_agent(
             failure,
         )
         return AgentCandidate(
-            raw, list(deps.ledger.blocks), visual, telemetry, failure, clarification, comparison
+            raw,
+            list(deps.ledger.blocks),
+            visual,
+            telemetry,
+            failure,
+            clarification,
+            comparison,
+            authorization_context=deps.ledger.context,
+            scope_validation_required=deps.scope_validation_enabled,
+            scope_receipt=deps.scope_receipts.get(
+                fingerprint(scope_payload(deps.question, raw, deps.ledger.units))
+            )
+            if deps.scope_validation_enabled
+            and not failure
+            and not clarification
+            and visual is None
+            and not json.loads(raw)["abstain"]
+            else None,
         )
 
 

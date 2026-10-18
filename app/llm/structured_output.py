@@ -54,6 +54,7 @@ from app.llm.visual_answer import (
     asks_visual,
     chunk_ranks,
 )
+from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer, mark_llm_generation
@@ -1456,6 +1457,13 @@ async def _support_unit_answer_events(
                 else:
                     yield progress
         assert candidate is not None
+        if not candidate.access_current():
+            candidate.failure_code = "DOCUMENT_ACCESS_REVOKED"
+            candidate.clarification, candidate.visual, candidate.comparison = None, None, []
+            if candidate.authorization_context is not None:
+                candidate.blocks = filter_authorized_candidates(
+                    candidate.blocks, candidate.authorization_context
+                )
         telemetry["agent_requests"] = candidate.telemetry.get("requests", 0)
         telemetry["agent_tool_calls"] = candidate.telemetry.get("tool_calls", 0)
         yield {
@@ -1634,6 +1642,19 @@ async def _support_unit_answer_events(
             application_abstain=True,
             top_level_valid=False,
         )
+    if candidate is not None and candidate.scope_validation_required and validation.valid_parts:
+        with operation("answer.scope_validate", attributes={"research.phase": "release"}) as check:
+            receipt = candidate.scope_receipt
+            if receipt is None or not receipt.accepts(query, raw, units):
+                code = "SCOPE_RELEASE_UNVERIFIED"
+                check.set_attribute("validator.failure_codes", [code])
+                outcome(check, "rejected", code)
+                validation = replace(
+                    validation,
+                    valid_parts=[],
+                    failure_codes=[*validation.failure_codes, code],
+                    application_abstain=True,
+                )
     unit_texts = [unit.text for unit in units]
     missing_years = missing_question_years(query, unit_texts)
     missing_dates = missing_question_dates(query, unit_texts)
@@ -1708,6 +1729,15 @@ async def _support_unit_answer_events(
                 visual_trace = {"pages": visual_trace.get("pages", [])}
             capture.stage("visual_answer", {**visual_trace, "answered": visual is not None})
     if missing_years or missing_dates:
+        visual = None
+    if candidate is not None and not candidate.access_current():
+        validation = replace(
+            validation,
+            valid_parts=[],
+            failure_codes=["DOCUMENT_ACCESS_REVOKED"],
+            application_abstain=True,
+            model_abstain=False,
+        )
         visual = None
     final_abstain = validation.model_abstain or validation.application_abstain
     telemetry = validation.validator_telemetry

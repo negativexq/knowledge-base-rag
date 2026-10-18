@@ -5,10 +5,16 @@ from typing import Any, Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.api.chat import _enforce_chat_rate_limit
-from app.api.deps import get_current_user, require_role
+from app.api.deps import get_current_user, require_role, retrieval_context
 from app.evidence.documents import DocumentRead
 from app.research.feedback import FeedbackRequest, FeedbackReview, FeedbackStore
-from app.security.models import RetrievalContext, Role, UserContext
+from app.security.audit import log_audit_event
+from app.security.document_permissions import (
+    DocumentPermissionStore,
+    DocumentPolicy,
+    PolicyConflictError,
+)
+from app.security.models import Role, UserContext
 
 router = APIRouter(prefix="/research", tags=["research"])
 
@@ -20,7 +26,12 @@ async def read_document(
     deps = request.app.state.chat_deps
     if deps is None or deps.documents_factory is None:
         raise HTTPException(503, "Document reading is unavailable")
-    reader = deps.documents_factory(RetrievalContext.for_user(user), None)
+    context = retrieval_context(request, user)
+    if context.document_permissions is not None and not context.document_permissions.rules().allows(
+        body.document.source_type, body.document.source_id
+    ):
+        raise HTTPException(404, "Document not found")
+    reader = deps.documents_factory(context, None)
     try:
         result = await reader.read(body)
     except ValueError as exc:
@@ -80,3 +91,52 @@ async def review_feedback(
     if result is None:
         raise HTTPException(404, "Feedback not found")
     return result
+
+
+def permission_store(request: Request) -> DocumentPermissionStore:
+    store = getattr(request.app.state, "document_permission_store", None)
+    if not isinstance(store, DocumentPermissionStore):
+        raise HTTPException(503, "Document permissions are unavailable")
+    return store
+
+
+@router.get("/document-permissions")
+async def list_document_permissions(
+    request: Request,
+    offset: int = Query(0, ge=0, le=100000),
+    user: UserContext = Depends(require_role(Role.ADMIN)),
+) -> list[dict[str, Any]]:
+    store = permission_store(request)
+    records = request.app.state.registry.list_documents(tenant_id=user.tenant_id)
+    return [
+        store.get(user.tenant_id, r.source_type, r.source_id).model_dump()
+        for r in records[offset : offset + 50]
+    ]
+
+
+@router.put("/document-permissions")
+async def set_document_permissions(
+    body: DocumentPolicy,
+    request: Request,
+    user: UserContext = Depends(require_role(Role.ADMIN)),
+) -> dict[str, Any]:
+    store = permission_store(request)
+    record = request.app.state.registry.get_document(
+        user.tenant_id, body.source_type, body.source_id
+    )
+    if record is None:
+        raise HTTPException(404, "Document not found")
+    try:
+        result = store.set(user.tenant_id, user.user_id, body)
+    except PolicyConflictError as exc:
+        raise HTTPException(409, "Permissions changed; reload before saving") from exc
+    log_audit_event(
+        "document_permissions_changed",
+        user_id=user.user_id,
+        tenant_id=user.tenant_id,
+        source_type=body.source_type,
+        source_id=body.source_id,
+        revision=result.revision,
+        access=result.access,
+    )
+    return result.model_dump()

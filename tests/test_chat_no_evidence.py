@@ -32,7 +32,12 @@ def _chunk() -> SearchResult:
     return SearchResult(
         score=0.9,
         id="c1",
-        payload={"text": "Refunds take 30 days.", "source_type": "pdf", "source_id": "doc"},
+        payload={
+            "text": "Refunds take 30 days.",
+            "source_type": "pdf",
+            "source_id": "doc",
+            "tenant_id": "tenant-a",
+        },
     )
 
 

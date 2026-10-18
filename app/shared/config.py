@@ -91,6 +91,7 @@ class Settings(BaseSettings):
 
     # Agentic orchestration is opt-in until paired benchmark runs justify rollout.
     agentic_rag_enabled: bool = False
+    agentic_scope_validation_enabled: bool = True
     agentic_max_requests: int = Field(default=6, ge=1, le=20)
     agentic_max_tool_calls: int = Field(default=8, ge=1, le=30)
     agentic_max_tokens: int = Field(default=60000, ge=1000, le=500000)
@@ -279,6 +280,8 @@ class Settings(BaseSettings):
     registry_db_path: str = "data/registry.db"
     research_feedback_db_path: str = "data/research-feedback.db"
     request_trace_db_path: str = "data/request-traces.db"
+    document_permissions_db_path: str = "data/document-permissions.db"
+    document_default_access: Literal["tenant", "restricted"] = "restricted"
     external_trace_links_enabled: bool = False
     model_pricing_json: str = Field(default="{}", max_length=64000)
 

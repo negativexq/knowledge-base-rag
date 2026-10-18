@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from typing import Literal, Protocol
 
 
 class Role(str, Enum):
@@ -37,9 +38,29 @@ class UserContext:
     user_id: str
     tenant_id: str
     roles: frozenset[Role]
+    group_ids: frozenset[str] = frozenset()
 
     def has_role(self, required: Role) -> bool:
         return any(role_satisfies(r, required) for r in self.roles)
+
+
+@dataclass(frozen=True)
+class DocumentRules:
+    default_access: Literal["tenant", "restricted"]
+    allowed: frozenset[tuple[str, str]]
+    denied: frozenset[tuple[str, str]]
+
+    def allows(self, source_type: str, source_id: str) -> bool:
+        key = (source_type, source_id)
+        return (
+            bool(source_type and source_id)
+            and key not in self.denied
+            and (self.default_access == "tenant" or key in self.allowed)
+        )
+
+
+class DocumentPermissionView(Protocol):
+    def rules(self) -> DocumentRules: ...
 
 
 @dataclass(frozen=True)
@@ -58,10 +79,13 @@ class RetrievalContext:
 
     tenant_id: str | None
     is_system: bool = False
+    document_permissions: DocumentPermissionView | None = None
 
     @classmethod
-    def for_user(cls, user: UserContext) -> RetrievalContext:
-        return cls(tenant_id=user.tenant_id, is_system=False)
+    def for_user(
+        cls, user: UserContext, permissions: DocumentPermissionView | None = None
+    ) -> RetrievalContext:
+        return cls(tenant_id=user.tenant_id, is_system=False, document_permissions=permissions)
 
     @classmethod
     def system(cls) -> RetrievalContext:

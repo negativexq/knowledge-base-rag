@@ -17,7 +17,7 @@ def _recording_search(received: dict):
     async def search_fn(question, context, report, **kwargs):
         received["kwargs"] = kwargs
         received["context"] = context
-        return [SearchResult(score=1.0, payload={"text": "x"})]
+        return [SearchResult(score=1.0, payload={"text": "x", "tenant_id": context.tenant_id})]
 
     return search_fn
 

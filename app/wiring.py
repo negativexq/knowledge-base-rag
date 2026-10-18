@@ -44,6 +44,7 @@ from app.retrieval.report import RetrievalReport
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
 from app.security.auth import build_token_authenticator
+from app.security.document_permissions import DocumentPermissionStore
 from app.security.models import RetrievalContext
 from app.shared.config import Settings
 from app.shared.tracing import langfuse_export_from, setup_tracing
@@ -258,6 +259,7 @@ def build_chat_dependencies(
                     observations=RequestUsage(load_prices(settings.model_pricing_json)),
                     provider=chat_provider,
                     provider_name=settings.generation_provider,
+                    scope_validation_enabled=settings.agentic_scope_validation_enabled,
                     generation_kwargs={
                         "model": default_chat_model(settings),
                         "think": settings.ollama_thinking,
@@ -518,10 +520,14 @@ def build_app(settings: Settings) -> FastAPI:
 
     feedback = FeedbackStore(settings.research_feedback_db_path)
     request_traces = TraceStore(settings.request_trace_db_path)
+    document_permissions = DocumentPermissionStore(
+        settings.document_permissions_db_path, settings.document_default_access
+    )
 
     async def close_feedback() -> None:
         feedback.close()
         request_traces.close()
+        document_permissions.close()
 
     on_shutdown = [ollama.aclose, chat_provider.aclose, close_qdrant_client, close_feedback]
     for connector in connectors.values():
@@ -546,4 +552,5 @@ def build_app(settings: Settings) -> FastAPI:
         tracer_provider=tracer_provider,
         research_feedback_store=feedback,
         request_trace_store=request_traces,
+        document_permission_store=document_permissions,
     )

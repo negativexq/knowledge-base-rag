@@ -20,6 +20,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
 from app.llm.citation_location import location_for
+from app.retrieval.filters import build_acl_filter, combine_filters, filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.security.models import RetrievalContext
 
@@ -171,7 +172,11 @@ class SectionAwareEvidenceBuilder:
         while True:
             page, offset = self._client.scroll(
                 collection_name=self._collection_name,
-                scroll_filter=qmodels.Filter(must=must),
+                scroll_filter=(
+                    combine_filters(build_acl_filter(context), qmodels.Filter(must=must))
+                    if context.document_permissions is not None
+                    else qmodels.Filter(must=must)
+                ),
                 limit=SCROLL_PAGE_SIZE,
                 offset=offset,
                 with_payload=True,
@@ -236,7 +241,7 @@ class SectionAwareEvidenceBuilder:
             or candidate_payload.get("tenant_id") != anchor_payload.get("tenant_id")
         ):
             return False
-        return context.is_system or candidate_payload.get("tenant_id") == context.tenant_id
+        return bool(filter_authorized_candidates([candidate], context))
 
     @staticmethod
     def _unique_ranked(anchors: list[SearchResult]) -> list[SearchResult]:
@@ -366,6 +371,7 @@ class SectionAwareEvidenceBuilder:
         still returned.  This keeps budget pressure from becoming a query
         failure and preserves the existing source/version/tenant boundary.
         """
+        anchors = filter_authorized_candidates(anchors, context)
         input_ids = [_chunk_id(anchor) for anchor in anchors]
         groups: list[dict[str, Any]] = []
         group_by_key: dict[tuple[Any, ...], dict[str, Any]] = {}

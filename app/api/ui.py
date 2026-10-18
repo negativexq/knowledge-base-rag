@@ -25,7 +25,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, permitted_records
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.llm.embedding_models import active_embedding_config
 from app.llm.provider import default_chat_model
@@ -202,7 +202,7 @@ async def overview(request: Request, user: UserContext = Depends(get_current_use
     history = request.app.state.sync_history
     tenant_ids: dict[str, str] = getattr(request.app.state, "tenant_ids", {})
 
-    documents = registry.list_documents(tenant_id=user.tenant_id)
+    documents = permitted_records(request, user, registry.list_documents(tenant_id=user.tenant_id))
     tracked = [d.chunk_count for d in documents if d.chunk_count is not None]
 
     owned_source_types = [
@@ -271,7 +271,9 @@ async def documents(
     can never enumerate another tenant's documents.
     """
     registry = request.app.state.registry
-    records = registry.list_documents(tenant_id=user.tenant_id, source_type=source_type)
+    records = permitted_records(
+        request, user, registry.list_documents(tenant_id=user.tenant_id, source_type=source_type)
+    )
     return [
         {
             "tenant_id": record.tenant_id,

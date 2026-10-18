@@ -78,7 +78,22 @@ def _user_context_from_dict(token: str, data: object) -> UserContext:
             f"expected one of {[role.value for role in Role]}"
         ) from exc
 
-    return UserContext(user_id=user_id, tenant_id=tenant_id, roles=parsed_roles)
+    groups = data.get("group_ids", [])
+    if (
+        not isinstance(groups, list)
+        or len(groups) > 200
+        or any(
+            not isinstance(group, str)
+            or not group.strip()
+            or group != group.strip()
+            or len(group) > 200
+            for group in groups
+        )
+    ):
+        raise ValueError("AUTH_TOKENS_JSON group_ids must be bounded nonempty strings")
+    return UserContext(
+        user_id=user_id, tenant_id=tenant_id, roles=parsed_roles, group_ids=frozenset(groups)
+    )
 
 
 def parse_auth_tokens(auth_tokens_json: str | None) -> dict[str, UserContext]:

@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 from opentelemetry import trace
 from pydantic import BaseModel, Field, StringConstraints
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, retrieval_context
 from app.evaluation.answerability import extract_answerability_observation
 from app.evaluation.critical_validator_runtime import ValidatorSelector
 from app.evaluation.forensic_capture import (
@@ -25,6 +25,7 @@ from app.llm.citation_location import location_for
 from app.llm.prompt import NOT_FOUND_PHRASE
 from app.llm.query_rewrite import ChatTurn, RewriteResult
 from app.research.traces import TraceStore, request_trace
+from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport, RetrievalStage
 from app.security.audit import CONTENT_SCREENING_FLAGGED, RATE_LIMITED, log_audit_event
@@ -332,6 +333,7 @@ async def _sse_event_stream(
                 report.stages.insert(
                     0, RetrievalStage("query_rewrite", rewrite.duration_ms, detail=detail)
                 )
+            chunks = filter_authorized_candidates(chunks, context)
             anchor_chunks = chunks
             authorized_candidate_count = report.authorized_candidate_count
             if authorized_candidate_count is None:
@@ -397,7 +399,9 @@ async def _sse_event_stream(
                     len(sufficiency.get("supporting_chunk_ids", [])),
                 )
             if deps.evidence_fn is not None:
-                chunks = await deps.evidence_fn(anchor_chunks, context)
+                chunks = filter_authorized_candidates(
+                    await deps.evidence_fn(anchor_chunks, context), context
+                )
                 span.set_attribute("pipeline.evidence_block_count", len(chunks))
             generation_skip_reason = (
                 None
@@ -495,14 +499,50 @@ async def _sse_event_stream(
                     ),
                 )
             )
+            referenced_documents = {
+                (b.payload.get("source_type", ""), b.payload.get("source_id", "")) for b in chunks
+            }
             async with aclosing(answer_events) as events:
                 async for event in events:
+                    if event["type"] == "metadata":
+                        referenced_documents.update(
+                            (u.get("source_type", ""), u.get("source_id", ""))
+                            for u in event.get("support_units", [])
+                        )
+                    rules = (
+                        context.document_permissions.rules()
+                        if context.document_permissions
+                        else None
+                    )
+                    # Include newly cited sources from legacy resolver metadata too.
+                    if (
+                        rules is not None
+                        and any(not rules.allows(*key) for key in referenced_documents)
+                    ) or len(filter_authorized_candidates(chunks, context)) != len(chunks):
+                        outcome(span, "rejected", "DOCUMENT_ACCESS_REVOKED")
+                        revoked = {
+                            "passed": False,
+                            "abstain": True,
+                            "application_forced_abstention": True,
+                            "validator_failure_codes": ["DOCUMENT_ACCESS_REVOKED"],
+                        }
+                        yield f"event: security\ndata: {json.dumps(revoked)}\n\n"
+                        break
                     if event["type"] == "token":
                         if screening is not None:
                             shown_tokens.append(event["content"])
                         yield f"data: {json.dumps({'token': event['content']})}\n\n"
                     elif event["type"] == "evidence_update":
-                        sources = [source_payload(i, c) for i, c in enumerate(event["blocks"], 1)]
+                        chunks = event["blocks"]
+                        if len(filter_authorized_candidates(chunks, context)) != len(chunks):
+                            outcome(span, "rejected", "DOCUMENT_ACCESS_REVOKED")
+                            break
+                        sources = [
+                            source_payload(i, c)
+                            for i, c in enumerate(
+                                filter_authorized_candidates(event["blocks"], context), 1
+                            )
+                        ]
                         yield f"event: sources\ndata: {json.dumps({'sources': sources})}\n\n"
                     elif event["type"] in {"research_progress", "clarification", "comparison"}:
                         if event["type"] == "clarification":
@@ -633,7 +673,7 @@ async def chat(
             + chat_request.clarification.model_dump_json(),
         )
     deps: ChatDependencies = request.app.state.chat_deps
-    context = RetrievalContext.for_user(user)
+    context = retrieval_context(request, user)
     trace_store = getattr(request.app.state, "request_trace_store", None)
     if chat_request.parent_trace_id and (
         trace_store is None

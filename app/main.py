@@ -20,6 +20,7 @@ from app.registry.store import DocumentRegistry
 from app.research.feedback import FeedbackStore
 from app.research.traces import TraceStore
 from app.security.auth import TokenAuthenticator
+from app.security.document_permissions import DocumentPermissionStore
 from app.security.rate_limit import SlidingWindowRateLimiter
 from app.shared.config import Settings
 from app.sync.history import SyncHistory
@@ -76,6 +77,7 @@ def create_app(
     tracer_provider: TracerProvider | None = None,
     research_feedback_store: FeedbackStore | None = None,
     request_trace_store: TraceStore | None = None,
+    document_permission_store: DocumentPermissionStore | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -110,6 +112,8 @@ def create_app(
 
     runtime_settings = settings or Settings(_env_file=None)
     effective_auth_enabled = runtime_settings.auth_enabled if auth_enabled is None else auth_enabled
+    if runtime_settings.app_env == "production" and document_permission_store is None:
+        raise ValueError("Production requires a document permission store")
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -134,6 +138,7 @@ def create_app(
     app.state.registry = registry
     app.state.research_feedback_store = research_feedback_store
     app.state.request_trace_store = request_trace_store
+    app.state.document_permission_store = document_permission_store
     app.state.chat_deps = chat_deps
     app.state.list_ollama_models = list_ollama_models
     app.state.readiness_check = readiness_check
@@ -182,7 +187,7 @@ def create_app(
             CORSMiddleware,
             allow_origins=cors_origins,
             allow_credentials=False,
-            allow_methods=["GET", "POST"],
+            allow_methods=["GET", "POST", "PUT"],
             allow_headers=["Authorization", "Content-Type"],
         )
     return app

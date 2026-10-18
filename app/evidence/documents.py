@@ -103,6 +103,11 @@ class DocumentReader:
         acl = build_acl_filter(self.context)
         if self.source_ids is not None and ref.source_id not in self.source_ids:
             return [], False
+        if (
+            self.context.document_permissions is not None
+            and not self.context.document_permissions.rules().allows(ref.source_type, ref.source_id)
+        ):
+            return [], False
         conditions: list[qm.Condition] = [
             qm.FieldCondition(key=k, match=qm.MatchValue(value=v))
             for k, v in ref.model_dump().items()

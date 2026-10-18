@@ -182,6 +182,27 @@ async def test_wiring_selects_agent_without_enabling_operand_resolver(monkeypatc
     import app.wiring as wiring
 
     def model(messages, info):
+        if "checks" in info.output_tools[0].parameters_json_schema.get("properties", {}):
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name,
+                        {
+                            "checks": [
+                                {
+                                    "claim_index": 0,
+                                    "verdict": "supported",
+                                    "reason": "NONE",
+                                    "witnesses": [
+                                        {"support_id": "E1.S1", "quote": "The service uses TLS."}
+                                    ],
+                                }
+                            ]
+                        },
+                    )
+                ]
+            )
+
         return ModelResponse(
             parts=[
                 ToolCallPart(
