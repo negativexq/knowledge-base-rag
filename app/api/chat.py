@@ -28,6 +28,7 @@ from app.research.traces import TraceStore, request_trace
 from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport, RetrievalStage
+from app.retrieval.research import ResearchRetriever
 from app.security.audit import CONTENT_SCREENING_FLAGGED, RATE_LIMITED, log_audit_event
 from app.security.content_screening import ScreeningResult, screen_input, screen_output
 from app.security.models import RetrievalContext, UserContext
@@ -594,13 +595,13 @@ def _scoped_retrieve(deps: ChatDependencies, context: RetrievalContext, scope: d
     """A search for the operand resolver: the same caller, ACL and document
     scope as the request's own search, with its own report."""
 
-    async def retrieve(query: str) -> list[SearchResult]:
-        found = await deps.search_fn(query, context, RetrievalReport(), **scope)
-        if deps.agentic_rag_enabled and deps.evidence_fn is not None:
+    async def retrieve(query: str, **options) -> list[SearchResult]:
+        found = await deps.search_fn(query, context, RetrievalReport(), **scope, **options)
+        if deps.agentic_rag_enabled and deps.evidence_fn is not None and not options:
             return await deps.evidence_fn(found, context)
         return found
 
-    return retrieve
+    return ResearchRetriever(retrieve)
 
 
 def _enforce_chat_rate_limit(request: Request, user: UserContext) -> None:

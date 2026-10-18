@@ -4,6 +4,7 @@ from contextlib import aclosing
 
 from fastapi import FastAPI
 from qdrant_client import QdrantClient
+from qdrant_client.http import models as qm
 
 from app.api.chat import ChatDependencies
 from app.connectors.base import Connector
@@ -39,6 +40,7 @@ from app.registry.store import DocumentRegistry
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.research.feedback import FeedbackStore
 from app.research.traces import TraceStore
+from app.retrieval.filters import build_filter, combine_filters
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.retrieval.search import search
@@ -156,6 +158,7 @@ def build_chat_dependencies(
         context: RetrievalContext,
         report: RetrievalReport,
         source_ids: list[str] | None = None,
+        filters: qm.Filter | None = None,
     ) -> list[SearchResult]:
         return await search(
             question,
@@ -172,6 +175,7 @@ def build_chat_dependencies(
             dimensions=embed_config.output_dimension,
             report=report,
             source_ids=source_ids,
+            filters=combine_filters(build_filter(source_ids=source_ids), filters),
         )
 
     async def evidence_fn(

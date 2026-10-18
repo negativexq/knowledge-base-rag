@@ -99,19 +99,27 @@ class DocumentReader:
         self.source_ids = frozenset(source_ids) if source_ids is not None else None
 
     def _scan(self, ref: DocumentRef) -> tuple[list[SearchResult], bool]:
+        return self._scan_scope(ref)
+
+    def _scan_scope(self, ref: DocumentRef | None = None) -> tuple[list[SearchResult], bool]:
         # Fail closed before touching Qdrant, even for an empty source scope.
         acl = build_acl_filter(self.context)
-        if self.source_ids is not None and ref.source_id not in self.source_ids:
+        if ref and self.source_ids is not None and ref.source_id not in self.source_ids:
             return [], False
         if (
-            self.context.document_permissions is not None
+            ref is not None
+            and self.context.document_permissions is not None
             and not self.context.document_permissions.rules().allows(ref.source_type, ref.source_id)
         ):
             return [], False
         conditions: list[qm.Condition] = [
             qm.FieldCondition(key=k, match=qm.MatchValue(value=v))
-            for k, v in ref.model_dump().items()
+            for k, v in (ref.model_dump().items() if ref else [])
         ]
+        if self.source_ids is not None:
+            conditions.append(
+                qm.FieldCondition(key="source_id", match=qm.MatchAny(any=list(self.source_ids)))
+            )
         query_filter = combine_filters(acl, qm.Filter(must=conditions))
         found: list[SearchResult] = []
         cursor = None
@@ -133,11 +141,115 @@ class DocumentReader:
         found = [
             b
             for b in filter_authorized_candidates(found, self.context)
-            if all(b.payload.get(k) == v for k, v in ref.model_dump().items())
+            if (ref is None or all(b.payload.get(k) == v for k, v in ref.model_dump().items()))
+            and (self.source_ids is None or b.payload.get("source_id") in self.source_ids)
             and b.payload.get("authorized", True) is True
             and b.payload.get("model_visible", True) is True
         ]
         return sorted(found, key=order), cursor is not None
+
+    async def find(
+        self,
+        query: str,
+        *,
+        phrase: bool = False,
+        document: DocumentRef | None = None,
+        exclude_ids: set[str] | None = None,
+        page: int | None = None,
+        section: str = "",
+        offset: int = 0,
+    ) -> DocumentResult:
+        """Bounded literal search, with explicit incomplete-scan and pagination flags."""
+
+        def run() -> DocumentResult:
+            blocks, limited = self._scan_scope(document)
+            needle = " ".join(query.casefold().split())
+            selected = []
+            for b in blocks:
+                p = b.payload
+                text = " ".join(str(p.get("text", "")).casefold().split())
+                matches = needle in text if phrase else all(t in text for t in needle.split())
+                if not matches or b.id in (exclude_ids or set()):
+                    continue
+                if page is not None and not (
+                    int(p.get("page_number") or 0)
+                    <= page
+                    <= int(p.get("page_end") or p.get("page_number") or 0)
+                ):
+                    continue
+                if section and section_id(p) != section:
+                    continue
+                selected.append(b)
+            visible: list[SearchResult] = []
+            chars = 0
+            for b in selected[offset : offset + 20]:
+                cost = len(str(b.payload.get("text", "")))
+                if chars + cost > 60000:
+                    break
+                visible.append(b)
+                chars += cost
+            more = len(selected) > offset + len(visible)
+            return DocumentResult(
+                visible,
+                [],
+                more,
+                limited,
+                offset + len(visible) if more and visible else None,
+            )
+
+        with operation("document.read", attributes={"document.action": "find"}) as span:
+            result = await asyncio.to_thread(run)
+            span.set_attribute("document.returned_passages", len(result.blocks))
+            span.set_attribute("document.scan_limited", result.scan_limited)
+            span.set_attribute("document.has_more", result.has_more)
+            return result
+
+    async def discover(
+        self,
+        query: str,
+        *,
+        version: str = "",
+        offset: int = 0,
+    ) -> DocumentResult:
+        """Find authorized document anchors by indexed name/title/headings, without an LLM."""
+
+        def run() -> DocumentResult:
+            blocks, limited = self._scan_scope()
+            anchors: dict[tuple[str, str, str], SearchResult] = {}
+            terms = query.casefold().split()
+            for b in blocks:
+                p = b.payload
+                key = tuple(
+                    str(p.get(k, "")) for k in ("source_type", "source_id", "document_version")
+                )
+                if not all(key) or (version and key[2] != version):
+                    continue
+                metadata = " ".join(
+                    [
+                        key[1],
+                        str(p.get("title", "")),
+                        " ".join(p.get("heading_path") or p.get("section_path") or []),
+                    ]
+                ).casefold()
+                if all(term in metadata for term in terms):
+                    anchors.setdefault(key, b)
+            selected = sorted(
+                anchors.values(),
+                key=lambda b: (
+                    str(b.payload.get("source_id")),
+                    str(b.payload.get("document_version")),
+                ),
+            )
+            page = selected[offset : offset + 10]
+            more = len(selected) > offset + len(page)
+            return DocumentResult(page, [], more, limited, offset + len(page) if more else None)
+
+        with operation("document.read", attributes={"document.action": "discover"}) as span:
+            result = await asyncio.to_thread(run)
+            span.set_attribute("document.returned_passages", len(result.blocks))
+            span.set_attribute("document.scan_limited", result.scan_limited)
+            span.set_attribute("document.has_more", result.has_more)
+            return result
 
     async def read(self, request: DocumentRead) -> DocumentResult:
         with operation("document.read", attributes={"document.action": request.action}) as span:

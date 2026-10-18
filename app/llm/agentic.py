@@ -32,6 +32,7 @@ from pydantic_ai.models import Model, ModelRequestContext
 from pydantic_ai.settings import ModelSettings
 from pydantic_ai.tools import ToolDefinition
 from pydantic_ai.usage import RunUsage, UsageLimits
+from qdrant_client.http import models as qm
 
 from app.evaluation.critical_validator_runtime import ValidatorSelector
 from app.evaluation.forensic_capture import current_capture
@@ -67,6 +68,7 @@ from app.llm.structured_output import (
 from app.llm.visual_answer import PageRenderer, VisualAnswer, answer_from_pages, chunk_ranks
 from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
+from app.retrieval.research import ResearchRetriever
 from app.security.models import RetrievalContext
 from app.shared.config import Settings
 
@@ -81,6 +83,10 @@ missing facts, inspect a document section, resolve a calculation, or read pages.
 Use navigate_document to list headings or read unseen sections/pages of a known
 document. Follow next_offset when a result has_more; scan_limited means the
 result is incomplete, so never claim an exhaustive list from it.
+Use find_documents to discover a document by indexed name or headings. Search
+can be anchored to a support ID to keep its source/version, or use terms/phrase
+mode for literal matching. Inspect admission counts before repeating a search;
+duplicate results and evidence-budget exclusion require different recovery.
 Each answer part must cite support IDs actually returned in this request.
 Match the question's product, platform, period, population, unit and document
 scope. Distinguish a missing fact from evidence contradicting the question.
@@ -213,12 +219,20 @@ class EvidenceLedger:
         self._budget = token_budget
         self._used = 0
         self._keys: set[tuple[Any, ...]] = set()
+        self.last_admission: dict[str, int] = {}
 
     def add(
         self, blocks: list[SearchResult], *, allowance: int | None = None
     ) -> list[SearchResult]:
         added: list[SearchResult] = []
-        remaining = min(self._budget - self._used, allowance or self._budget)
+        remaining = min(
+            self._budget - self._used, allowance if allowance is not None else self._budget
+        )
+        self.last_admission = {
+            "duplicate_blocks": 0,
+            "empty_blocks": 0,
+            "budget_excluded_blocks": 0,
+        }
         for block in filter_authorized_candidates(blocks, self.context) if self.context else blocks:
             payload = dict(block.payload)
             if (
@@ -242,11 +256,16 @@ class EvidenceLedger:
                 str(block.id),
                 hashlib.sha256(text.encode()).hexdigest(),
             )
-            if key in self._keys or not text.strip():
+            if key in self._keys:
+                self.last_admission["duplicate_blocks"] += 1
+                continue
+            if not text.strip():
+                self.last_admission["empty_blocks"] += 1
                 continue
             # Keep complete units; a cut can remove a qualifier or table label.
             cost = self._count(text) + 40
             if cost > remaining:
+                self.last_admission["budget_excluded_blocks"] += 1
                 continue
             payload["evidence_id"] = f"E{len(self.blocks) + 1}"
             stored = SearchResult(id=block.id, score=block.score, payload=payload)
@@ -256,6 +275,10 @@ class EvidenceLedger:
             self._used += cost
             remaining -= cost
         return added
+
+    @property
+    def remaining_tokens(self) -> int:
+        return max(0, self._budget - self._used)
 
     @property
     def units(self) -> list[SupportUnit]:
@@ -322,6 +345,9 @@ class AgentDependencies:
             "resolved",
             "has_more",
             "scan_limited",
+            "duplicate_blocks",
+            "budget_excluded_blocks",
+            "remaining_evidence_tokens",
         }:
             if key in details and isinstance(details[key], int | bool):
                 span.set_attribute("tool." + key, details[key])
@@ -340,9 +366,9 @@ def prepare_tool(
     ctx: RunContext[AgentDependencies], definition: ToolDefinition
 ) -> ToolDefinition | None:
     deps = ctx.deps
-    if definition.name == "navigate_document" and deps.documents is None:
+    if definition.name in {"navigate_document", "find_documents"} and deps.documents is None:
         return None
-    if definition.name == "search" and deps.retrieve is None:
+    if definition.name == "search" and deps.retrieve is None and deps.documents is None:
         return None
     if definition.name == "calculate" and not deps.derived_answers:
         return None
@@ -473,17 +499,176 @@ def build_agent(
     agent.instrument = False
 
     @agent.tool(sequential=True, prepare=prepare_tool)
-    async def search(ctx: RunContext[AgentDependencies], /, query: str) -> str:
-        """Search authorized sources for a missing fact; returns stable support IDs."""
+    async def search(
+        ctx: RunContext[AgentDependencies],
+        /,
+        query: str,
+        mode: Literal["hybrid", "terms", "phrase"] = "hybrid",
+        support_id: str = "",
+        exclude_seen: bool = True,
+        page: int | None = None,
+        section_id: str = "",
+        offset: int = 0,
+    ) -> str:
+        """Find new evidence. Anchor to a support ID to narrow document/version.
+
+        Hybrid uses embeddings and reranking. Terms/phrase use bounded literal search
+        without model calls. Section IDs come from navigate_document outline.
+        Follow next_offset for literal results; incomplete scans never prove absence.
+        """
         deps = ctx.deps
         if not query.strip() or len(query) > 1000:
             raise ModelRetry("Use a nonempty search query of at most 1000 characters")
-        if deps.retrieve is None:
-            return "Search is unavailable; use existing evidence or abstain."
-        found = await deps.retrieve(query)
+        if not 0 <= offset <= 2000 or (page is not None and not 1 <= page <= 100000):
+            raise ModelRetry("Use a valid page and offset within 0-2000")
+        unit = next((u for u in deps.ledger.units if u.support_unit_id == support_id), None)
+        if support_id and unit is None:
+            raise ModelRetry("UNKNOWN_SUPPORT_ID: select a current authorized support ID")
+        document = None
+        if unit:
+            parent = next(
+                b for b in deps.ledger.blocks if b.payload["evidence_id"] == unit.evidence_id
+            )
+            if not unit.document_version or not unit.source_id:
+                raise ModelRetry("This evidence has no versioned document reference")
+            document = DocumentRef(
+                source_type=parent.payload.get("source_type", "doc"),
+                source_id=unit.source_id,
+                document_version=unit.document_version,
+            )
+        if section_id and document is None:
+            raise ModelRetry("A section filter requires a document support ID")
+        seen = (
+            {c for u in deps.ledger.units for c in u.contributing_chunk_ids}
+            if exclude_seen
+            else set()
+        )
+        status: dict[str, Any] = {"mode": mode, "has_more": False, "scan_limited": False}
+        if mode != "hybrid" or section_id:
+            if deps.documents is None:
+                raise ModelRetry("Literal document search is unavailable")
+            if mode == "hybrid" and section_id:
+                raise ModelRetry("Use terms or phrase mode for section filtering")
+            result = await deps.documents.find(
+                query,
+                phrase=mode == "phrase",
+                document=document,
+                exclude_ids=seen,
+                page=page,
+                section=section_id,
+                offset=offset,
+            )
+            found = result.blocks
+            status.update(
+                has_more=result.has_more,
+                scan_limited=result.scan_limited,
+                next_offset=result.next_offset,
+            )
+        elif isinstance(deps.retrieve, ResearchRetriever):
+            if offset:
+                raise ModelRetry("Use literal search pagination or change the hybrid query")
+            conditions: list[qm.Condition] = [
+                qm.FieldCondition(key=k, match=qm.MatchValue(value=v))
+                for k, v in (document.model_dump().items() if document else [])
+            ]
+            if page is not None:
+                conditions.append(
+                    qm.FieldCondition(key="page_number", match=qm.MatchValue(value=page))
+                )
+            # Only canonical point IDs are sent to Qdrant; ledger IDs stay application-owned.
+            excluded = [
+                i for i in seen if len(i) == 36 and all(c in "0123456789abcdef-" for c in i)
+            ]
+            filters = qm.Filter(
+                must=conditions or None,
+                must_not=[qm.HasIdCondition(has_id=excluded)] if excluded else None,
+            )
+            found = await deps.retrieve.search(query, filters)
+        elif deps.retrieve is not None and not (document or page is not None or offset):
+            found = await deps.retrieve(query)
+        else:
+            raise ModelRetry("Scoped hybrid search is unavailable; use terms or phrase search")
         added = deps.ledger.add(found)
-        deps.record("search", returned_blocks=len(found), added_blocks=len(added))
-        return deps.ledger.text(added) if added else "No new evidence within the evidence budget."
+        status.update(deps.ledger.last_admission)
+        status.update(
+            returned_blocks=len(found),
+            added_blocks=len(added),
+            remaining_evidence_tokens=deps.ledger.remaining_tokens,
+        )
+        deps.record("search", **status)
+        return (
+            json.dumps(status)
+            + "\n"
+            + (
+                deps.ledger.text(added)
+                if added
+                else "No new evidence admitted; inspect status before retrying."
+            )
+        )
+
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    async def find_documents(
+        ctx: RunContext[AgentDependencies],
+        /,
+        query: str,
+        version: str = "",
+        offset: int = 0,
+    ) -> dict[str, Any]:
+        """Discover authorized document anchors by name, indexed title or headings.
+
+        Version is an exact indexed content version, not an inferred product release.
+        Returned support IDs can anchor navigation. A partial scan is not a full inventory.
+        """
+        deps = ctx.deps
+        if (
+            deps.documents is None
+            or not query.strip()
+            or len(query) > 500
+            or not 0 <= offset <= 2000
+        ):
+            raise ModelRetry(
+                "Use a nonempty document query of at most 500 characters and valid offset"
+            )
+        if len(version) > 200:
+            raise ModelRetry("Use an indexed version of at most 200 characters")
+        result = await deps.documents.discover(query, version=version, offset=offset)
+        added = deps.ledger.add(result.blocks)
+        units = deps.ledger.units
+        documents = []
+        for b in result.blocks:
+            p = b.payload
+            matching = [
+                u
+                for u in units
+                if u.source_id == p.get("source_id")
+                and u.document_version == p.get("document_version")
+                and str(b.id) in u.contributing_chunk_ids
+            ]
+            if matching:
+                documents.append(
+                    {
+                        "source_type": p.get("source_type"),
+                        "source_id": p.get("source_id"),
+                        "document_version": p.get("document_version"),
+                        "support_id": matching[0].support_unit_id,
+                    }
+                )
+        deps.record(
+            "find_documents",
+            returned_blocks=len(result.blocks),
+            added_blocks=len(added),
+            has_more=result.has_more,
+            scan_limited=result.scan_limited,
+            **deps.ledger.last_admission,
+        )
+        return {
+            "documents": documents,
+            "evidence": deps.ledger.text(added),
+            "has_more": result.has_more,
+            "next_offset": result.next_offset,
+            "scan_limited": result.scan_limited,
+            "admission": deps.ledger.last_admission,
+        }
 
     @agent.tool(sequential=True, prepare=prepare_tool)
     def read_document_section(ctx: RunContext[AgentDependencies], /, support_id: str) -> str:
