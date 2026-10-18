@@ -20,9 +20,11 @@ from app.evaluation.forensic_capture import (
 from app.evaluation.semantic_answerability import SemanticEvaluator
 from app.evidence.documents import DocumentReaderFactory
 from app.evidence.support_units import section_label
+from app.llm.agent_observability import RequestUsage, load_prices, outcome
 from app.llm.citation_location import location_for
 from app.llm.prompt import NOT_FOUND_PHRASE
 from app.llm.query_rewrite import ChatTurn, RewriteResult
+from app.research.traces import TraceStore, request_trace
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport, RetrievalStage
 from app.security.audit import CONTENT_SCREENING_FLAGGED, RATE_LIMITED, log_audit_event
@@ -56,6 +58,7 @@ class ClarificationResponse(BaseModel):
 class ChatRequest(BaseModel):
     question: str
     clarification: ClarificationResponse | None = None
+    parent_trace_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{32}$")
     # Recent turns of this conversation, oldest first. Client-supplied and
     # therefore untrusted: used only to rewrite a follow-up question into a
     # standalone query (app/llm/query_rewrite.py), never sent to the answer
@@ -250,6 +253,10 @@ async def _sse_event_stream(
     screening: _ContentScreening | None = None,
     history: list[ChatTurn] | None = None,
     source_ids: list[str] | None = None,
+    request_usage: RequestUsage | None = None,
+    trace_store: TraceStore | None = None,
+    user_id: str | None = None,
+    parent_trace_id: str | None = None,
 ) -> AsyncIterator[str]:
     tracer = tracer or get_tracer(__name__)
     capture = (
@@ -266,7 +273,24 @@ async def _sse_event_stream(
     # named "chat_request" as the signal that a trace is fully indexed,
     # since it's guaranteed to close last.
     try:
-        with tracer.start_as_current_span("chat_request") as span:
+        with request_trace(
+            tracer=tracer,
+            tenant=context.tenant_id,
+            user=user_id,
+            usage=request_usage or RequestUsage(),
+            store=trace_store,
+            pipeline=deps.pipeline_version,
+            parent_trace_id=parent_trace_id,
+        ) as span:
+            if deps.agentic_rag_enabled:
+                metadata = {
+                    "trace_id": format(span.get_span_context().trace_id, "032x"),
+                    "prompt_version": deps.prompt_version,
+                    "pipeline_version": deps.pipeline_version,
+                    "parent_trace_id": parent_trace_id,
+                    "phase": "research",
+                }
+                yield f"event: metadata\ndata: {json.dumps(metadata)}\n\n"
             span.set_attribute("chat.question_char_count", len(question))
             if screening is not None:
                 span.set_attribute("guardrail.mode", screening.mode)
@@ -481,15 +505,33 @@ async def _sse_event_stream(
                         sources = [source_payload(i, c) for i, c in enumerate(event["blocks"], 1)]
                         yield f"event: sources\ndata: {json.dumps({'sources': sources})}\n\n"
                     elif event["type"] in {"research_progress", "clarification", "comparison"}:
+                        if event["type"] == "clarification":
+                            outcome(span, "clarification")
                         payload = {k: v for k, v in event.items() if k != "type"}
                         yield f"event: {event['type']}\ndata: {json.dumps(payload)}\n\n"
                     elif event["type"] == "metadata":
                         payload = {k: v for k, v in event.items() if k != "type"}
                         yield f"event: metadata\ndata: {json.dumps(payload)}\n\n"
                     elif event["type"] == "security_validation":
+                        state = (
+                            "rejected"
+                            if event.get("application_forced_abstention")
+                            else "abstained"
+                            if event.get("abstain")
+                            else "answered"
+                        )
+                        codes = event.get("validator_failure_codes") or []
+                        if codes:
+                            state = {
+                                "AGENT_TIMEOUT": "timeout",
+                                "AGENT_BUDGET_EXCEEDED": "budget_exceeded",
+                                "AGENT_RUN_FAILED": "failed",
+                            }.get(codes[0], state)
+                        outcome(span, state, codes[0] if codes else None)
                         payload = {k: v for k, v in event.items() if k != "type"}
                         yield f"event: security\ndata: {json.dumps(payload)}\n\n"
                     elif event["type"] == "error":
+                        outcome(span, "failed", "GENERATION_ERROR")
                         payload = {k: v for k, v in event.items() if k != "type"}
                         yield f"event: error\ndata: {json.dumps(payload)}\n\n"
                     else:
@@ -592,6 +634,12 @@ async def chat(
         )
     deps: ChatDependencies = request.app.state.chat_deps
     context = RetrievalContext.for_user(user)
+    trace_store = getattr(request.app.state, "request_trace_store", None)
+    if chat_request.parent_trace_id and (
+        trace_store is None
+        or trace_store.get(chat_request.parent_trace_id, user.tenant_id, user.user_id) is None
+    ):
+        raise HTTPException(404, "Parent trace not found")
     screening = _screen_question(request, user, question)
     history = _bounded_history(request, chat_request.history)
     return StreamingResponse(
@@ -602,6 +650,10 @@ async def chat(
             screening=screening,
             history=history,
             source_ids=chat_request.source_ids,
+            request_usage=RequestUsage(load_prices(request.app.state.settings.model_pricing_json)),
+            trace_store=trace_store if deps.agentic_rag_enabled else None,
+            user_id=user.user_id,
+            parent_trace_id=chat_request.parent_trace_id,
         ),
         media_type="text/event-stream",
     )

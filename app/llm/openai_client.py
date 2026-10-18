@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import time
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
@@ -242,7 +243,17 @@ class OpenAIGeneratorClient:
             max_retries=0,
             http_client=http_client,
         )
-        self.last_call_observation: dict[str, Any] | None = None
+        self._call_observation: ContextVar[dict[str, Any] | None] = ContextVar(
+            "provider_call_observation", default=None
+        )
+
+    @property
+    def last_call_observation(self) -> dict[str, Any] | None:
+        return self._call_observation.get()
+
+    @last_call_observation.setter
+    def last_call_observation(self, value: dict[str, Any] | None) -> None:
+        self._call_observation.set(value)
 
     @property
     def sdk_version(self) -> str:

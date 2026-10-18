@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qm
 
+from app.llm.agent_observability import operation
 from app.retrieval.filters import build_acl_filter, combine_filters, filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.security.models import RetrievalContext
@@ -134,7 +135,12 @@ class DocumentReader:
         return sorted(found, key=order), cursor is not None
 
     async def read(self, request: DocumentRead) -> DocumentResult:
-        return await asyncio.to_thread(self._read, request)
+        with operation("document.read", attributes={"document.action": request.action}) as span:
+            result = await asyncio.to_thread(self._read, request)
+            span.set_attribute("document.returned_passages", len(result.blocks))
+            span.set_attribute("document.scan_limited", result.scan_limited)
+            span.set_attribute("document.has_more", result.has_more)
+            return result
 
     def _read(self, request: DocumentRead) -> DocumentResult:
         blocks, limited = self._scan(request.document)

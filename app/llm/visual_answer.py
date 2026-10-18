@@ -12,7 +12,9 @@ text-validated, so it never claims to be.
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
+import math
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -30,6 +32,7 @@ PageRenderer = Callable[[str, int], bytes | None]
 # Pages rendered for one question: the distinct pages of the top units.
 MAX_PAGES = 3
 RENDER_DPI = 110
+MAX_SNAPSHOT_RENDER_PIXELS = 12_000_000
 
 _VISUAL_CUE = re.compile(
     r"\b(?:figures?|fig\.|charts?|graphs?|diagrams?|pictures?|photos?|photographs?|images?|"
@@ -189,6 +192,45 @@ def render_pdf_page(pdf_path: str, page_number: int, dpi: int = RENDER_DPI) -> b
         return png
 
 
+@dataclass(frozen=True)
+class PdfSnapshot:
+    source_id: str
+    content: bytes
+
+    def __call__(self, source_id: str, page_number: int) -> bytes | None:
+        if source_id != self.source_id:
+            return None
+        with fitz.open(stream=self.content, filetype="pdf") as doc:
+            if not 1 <= page_number <= doc.page_count:
+                return None
+            page = doc[page_number - 1]
+            width = math.ceil(page.rect.width * RENDER_DPI / 72)
+            height = math.ceil(page.rect.height * RENDER_DPI / 72)
+            if width * height > MAX_SNAPSHOT_RENDER_PIXELS:
+                return None
+            png: bytes = page.get_pixmap(dpi=RENDER_DPI).tobytes("png")
+            return png
+
+    def resolve(self, source_id: str, page: int) -> int | None:
+        if source_id != self.source_id:
+            return None
+        with fitz.open(stream=self.content, filetype="pdf") as doc:
+            if page == -1:
+                return doc.page_count or None
+            for index in range(min(doc.page_count, 2000)):
+                if PdfPages._prints(doc[index], page):
+                    return index + 1
+            return page if 1 <= page <= doc.page_count else None
+
+    def by_position(self, source_id: str, page: int) -> bool:
+        if source_id != self.source_id or page <= 0:
+            return False
+        with fitz.open(stream=self.content, filetype="pdf") as doc:
+            return page <= doc.page_count and not any(
+                PdfPages._prints(doc[index], page) for index in range(min(doc.page_count, 2000))
+            )
+
+
 class PdfPages:
     """Renders and finds pages of the PDFs under a folder, by the source_id
     ingestion gave them (the file name slugged with its extension)."""
@@ -204,6 +246,22 @@ class PdfPages:
                 for path in Path(self.root).rglob("*.pdf")
             }
         return self._paths.get(source_id)
+
+    def snapshot(self, source_id: str, document_version: str) -> PdfSnapshot | None:
+        """Pin exactly the indexed bytes, preventing filename collisions and read/render races."""
+        path = self._path(source_id)
+        if path is None:
+            return None
+        try:
+            with path.open("rb") as source:
+                content = source.read(64 * 1024 * 1024 + 1)
+        except OSError:
+            return None
+        if len(content) > 64 * 1024 * 1024:
+            return None
+        if hashlib.sha256(content).hexdigest() != document_version:
+            return None
+        return PdfSnapshot(source_id, content)
 
     def __call__(self, source_id: str, page_number: int) -> bytes | None:
         path = self._path(source_id)

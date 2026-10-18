@@ -162,7 +162,7 @@ async def test_followup_search_keeps_acl_scope_and_refreshes_sources_before_answ
     sources = [json.loads(e.split("data: ")[1]) for e in events if e.startswith("event: sources")]
     assert len(sources) == 2
     assert len(sources[-1]["sources"]) == 2
-    metadata = next(e for e in events if e.startswith("event: metadata"))
+    metadata = [e for e in events if e.startswith("event: metadata")][-1]
     assert '"support_id": "E2.S1"' in metadata
     token_index = next(i for i, e in enumerate(events) if '"token"' in e)
     update_index = max(i for i, e in enumerate(events) if e.startswith("event: sources"))

@@ -1,6 +1,6 @@
 """FastAPI native telemetry (0.142+) wired to the application's own
-TracerProvider: HTTP spans become the trace root, the existing
-"chat_request" span nests under them, and health probes stay out of
+TracerProvider: chat requests use a server-generated trace identity linked
+to the HTTP context, and health probes stay out of
 traces. Without a provider, create_app() stays a pure factory that emits
 no FastAPI telemetry at all.
 """
@@ -59,7 +59,7 @@ def _client(tmp_path, tracer_provider=None) -> TestClient:
     )
 
 
-def test_chat_request_span_nests_under_the_fastapi_http_span(tmp_path, monkeypatch):
+def test_chat_request_span_links_to_the_fastapi_http_span(tmp_path, monkeypatch):
     provider, exporter = _provider()
     monkeypatch.setattr(chat_module, "get_tracer", provider.get_tracer)
 
@@ -70,11 +70,12 @@ def test_chat_request_span_nests_under_the_fastapi_http_span(tmp_path, monkeypat
     http_span = spans["POST /chat"]
     chat_span = spans["chat_request"]
     assert http_span.parent is None
-    assert chat_span.context.trace_id == http_span.context.trace_id
-    # FastAPI may put its own operation span (endpoint execution) between
-    # the HTTP span and chat_request; walk up to the HTTP span.
+    assert chat_span.context.trace_id != http_span.context.trace_id
+    assert chat_span.parent is None
+    # FastAPI may put an operation span between the HTTP span and the
+    # streaming handler. Walk from the correlation link to the HTTP root.
     by_id = {s.context.span_id: s for s in exporter.get_finished_spans()}
-    ancestor = chat_span
+    ancestor = by_id[chat_span.links[0].context.span_id]
     while ancestor.parent is not None:
         ancestor = by_id[ancestor.parent.span_id]
     assert ancestor is http_span

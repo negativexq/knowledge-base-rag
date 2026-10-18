@@ -14,15 +14,21 @@ import math
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Any, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
 import httpx
+from opentelemetry import trace
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic_ai import Agent, ModelRetry, RunContext
-from pydantic_ai.capabilities import AbstractCapability, ValidatedToolArgs, WrapToolExecuteHandler
+from pydantic_ai.capabilities import (
+    AbstractCapability,
+    ValidatedToolArgs,
+    WrapModelRequestHandler,
+    WrapToolExecuteHandler,
+)
 from pydantic_ai.exceptions import UsageLimitExceeded
-from pydantic_ai.messages import ToolCallPart
-from pydantic_ai.models import Model
+from pydantic_ai.messages import ModelResponse, RetryPromptPart, ToolCallPart
+from pydantic_ai.models import Model, ModelRequestContext
 from pydantic_ai.settings import ModelSettings
 from pydantic_ai.tools import ToolDefinition
 from pydantic_ai.usage import RunUsage, UsageLimits
@@ -31,6 +37,15 @@ from app.evaluation.critical_validator_runtime import ValidatorSelector
 from app.evaluation.forensic_capture import current_capture
 from app.evidence.documents import DocumentRead, DocumentReader, DocumentRef
 from app.evidence.support_units import SupportUnit, build_support_units, serialize_support_units
+from app.llm.agent_observability import (
+    RequestUsage as ObservationUsage,
+)
+from app.llm.agent_observability import (
+    current_usage,
+    mark_model,
+    operation,
+    outcome,
+)
 from app.llm.calculation import Calculation, evaluate_expression, verify_calculation
 from app.llm.operand_resolver import Retrieve
 from app.llm.premise import missing_question_dates, missing_question_years
@@ -42,6 +57,7 @@ from app.llm.structured_output import (
 )
 from app.llm.visual_answer import PageRenderer, VisualAnswer, answer_from_pages, chunk_ranks
 from app.retrieval.hybrid_search import SearchResult
+from app.security.models import RetrievalContext
 from app.shared.config import Settings
 
 logger = logging.getLogger(__name__)
@@ -98,7 +114,9 @@ class AgentAnswerPart(StrictModel):
 
 class AgentClarification(StrictModel):
     question: str = Field(min_length=1, max_length=500)
-    options: list[str] = Field(default_factory=list, max_length=5)
+    options: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=5
+    )
 
 
 class ComparisonCell(AgentAnswerPart):
@@ -162,7 +180,16 @@ class AgentCandidate:
 class EvidenceLedger:
     """Bounded, deduplicated, append-only authorized evidence for one run."""
 
-    def __init__(self, count_tokens: Callable[[str], int], token_budget: int):
+    def __init__(
+        self,
+        count_tokens: Callable[[str], int],
+        token_budget: int,
+        context: RetrievalContext | None = None,
+        source_ids: frozenset[str] | None = None,
+    ):
+        if context is not None and not context.is_system and not context.tenant_id:
+            raise ValueError("Evidence ledger requires a tenant")
+        self.context, self.source_ids = context, source_ids
         self.blocks: list[SearchResult] = []
         self._count = count_tokens
         self._budget = token_budget
@@ -176,6 +203,14 @@ class EvidenceLedger:
         remaining = min(self._budget - self._used, allowance or self._budget)
         for block in blocks:
             payload = dict(block.payload)
+            if (
+                self.context is not None
+                and not self.context.is_system
+                and payload.get("tenant_id") != self.context.tenant_id
+            ):
+                continue
+            if self.source_ids is not None and payload.get("source_id") not in self.source_ids:
+                continue
             if payload.get("authorized", True) is not True:
                 continue
             if payload.get("model_visible", True) is not True:
@@ -221,6 +256,8 @@ class AgentDependencies:
     retrieve: Retrieve | None = None
     documents: DocumentReader | None = None
     provider: Any = None
+    provider_name: str = "unknown"
+    observations: ObservationUsage = field(default_factory=ObservationUsage)
     generation_kwargs: dict[str, Any] = field(default_factory=dict)
     render_page: PageRenderer | None = None
     derived_answers: bool = False
@@ -231,6 +268,7 @@ class AgentDependencies:
     architecture_v2_shadow_enabled: bool = False
     tool_events: list[dict[str, Any]] = field(default_factory=list)
     visual_readings: dict[str, VisualAnswer] = field(default_factory=dict)
+    observed_retries: set[tuple[int, int]] = field(default_factory=set)
 
     def validation(self, answer: AgentAnswer) -> SupportUnitValidation:
         return validate_support_unit_answer(
@@ -251,6 +289,17 @@ class AgentDependencies:
 
     def record(self, tool: str, **details: Any) -> None:
         self.tool_events.append({"tool": tool, **details})
+        span = trace.get_current_span()
+        for key in {
+            "returned_blocks",
+            "added_blocks",
+            "verified",
+            "resolved",
+            "has_more",
+            "scan_limited",
+        }:
+            if key in details and isinstance(details[key], int | bool):
+                span.set_attribute("tool." + key, details[key])
         if tool == "validation_retry":
             publish(
                 {
@@ -299,17 +348,74 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
         handler: WrapToolExecuteHandler,
     ) -> Any:
         event = {"id": call.tool_call_id, "operation": call.tool_name}
-        publish({**event, "status": "running"})
-        try:
-            result = await handler(args)
-        except ModelRetry:
-            publish({**event, "status": "retrying"})
-            raise
-        except BaseException:
-            publish({**event, "status": "failed"})
-            raise
-        publish({**event, "status": "completed"})
-        return result
+        ctx.deps.observations.tool_calls += 1
+        with operation(
+            "tool." + call.tool_name,
+            kind="tool",
+            attributes={
+                "gen_ai.tool.name": call.tool_name,
+                "gen_ai.tool.call.id": call.tool_call_id,
+                "research.attempt": ctx.retry + 1,
+            },
+        ):
+            publish({**event, "status": "running"})
+            try:
+                result = await handler(args)
+            except ModelRetry:
+                publish({**event, "status": "retrying"})
+                raise
+            except BaseException:
+                publish({**event, "status": "failed"})
+                raise
+            publish({**event, "status": "completed"})
+            return result
+
+    async def wrap_model_request(
+        self,
+        ctx: RunContext[AgentDependencies],
+        *,
+        request_context: ModelRequestContext,
+        handler: WrapModelRequestHandler,
+    ) -> ModelResponse:
+        retry_count = 0
+        for message_index, message in enumerate(request_context.messages):
+            for part_index, part in enumerate(message.parts):
+                key = (message_index, part_index)
+                if isinstance(part, RetryPromptPart) and key not in ctx.deps.observed_retries:
+                    ctx.deps.observed_retries.add(key)
+                    retry_count += 1
+        if retry_count:
+            ctx.deps.observations.retries += retry_count
+            with operation("agent.retry", attributes={"research.retry_count": retry_count}):
+                pass
+        provider, model = ctx.model.system, ctx.model.model_name
+        with operation(
+            "llm.request",
+            kind="generation",
+            attributes={
+                "research.attempt": ctx.run_step,
+            },
+        ) as span:
+            mark_model(span, provider, model, "agent")
+            try:
+                response = await handler(request_context)
+            except BaseException:
+                ctx.deps.observations.record(
+                    span, provider=provider, model=model, input_tokens=None, output_tokens=None
+                )
+                raise
+            ctx.deps.observations.record(
+                span,
+                provider=provider,
+                model=model,
+                input_tokens=response.usage.input_tokens,
+                output_tokens=response.usage.output_tokens,
+                cached_tokens=response.usage.cache_read_tokens,
+                cache_write_tokens=response.usage.cache_write_tokens,
+            )
+            if response.finish_reason:
+                span.set_attribute("gen_ai.response.finish_reasons", [response.finish_reason])
+            return response
 
 
 def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, AgentAnswer]:
@@ -322,6 +428,9 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, A
         name="knowledge_base_rag",
         capabilities=[ResearchProgress()],
     )
+    # Keep content-free application spans authoritative even if another module
+    # enables SDK-wide instrumentation with message capture.
+    agent.instrument = False
 
     @agent.tool(sequential=True, prepare=prepare_tool)
     async def search(ctx: RunContext[AgentDependencies], /, query: str) -> str:
@@ -484,12 +593,23 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, A
             raise ModelRetry("UNKNOWN_SUPPORT_ID: select a returned unit")
         deps.check_premise()
         source_units = [u for u in deps.ledger.units if u.source_id == unit.source_id]
+        renderer = deps.render_page
+        bind = getattr(renderer, "snapshot", None)
+        if bind is not None:
+            parent = next(
+                b for b in deps.ledger.blocks if b.payload["evidence_id"] == unit.evidence_id
+            )
+            if parent.payload.get("source_type") != "filesystem" or not unit.document_version:
+                raise ModelRetry("This source has no authorized versioned PDF")
+            renderer = await asyncio.to_thread(bind, unit.source_id, unit.document_version)
+            if renderer is None:
+                raise ModelRetry("PDF_VERSION_MISMATCH: synchronize the document before reading")
         trace: dict[str, Any] = {}
         reading = await answer_from_pages(
             deps.question,
             source_units,
             deps.provider,
-            deps.render_page,
+            renderer,
             generation_kwargs=deps.generation_kwargs,
             trace=trace,
             ranks=chunk_ranks(deps.ledger.blocks),
@@ -509,44 +629,50 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, A
 
     @agent.output_validator
     def validate_output(ctx: RunContext[AgentDependencies], answer: AgentAnswer) -> AgentAnswer:
-        deps = ctx.deps
-        if answer.clarification is not None or answer.abstain:
+        with operation(
+            "agent.validate",
+            attributes={"research.phase": "output", "research.attempt": ctx.retry + 1},
+        ) as span:
+            deps = ctx.deps
+            if answer.clarification is not None or answer.abstain:
+                outcome(span, "clarification" if answer.clarification else "abstained")
+                return answer
+            if answer.comparison:
+                units = {u.support_unit_id: u for u in deps.ledger.units}
+                for row in answer.comparison:
+                    if len({c.source_id for c in row.cells}) != len(row.cells):
+                        raise ModelRetry("Each comparison cell must refer to a different source")
+                    for cell in row.cells:
+                        if any(
+                            s not in units or units[s].source_id != cell.source_id
+                            for s in cell.support_ids
+                        ):
+                            raise ModelRetry("Comparison cell citations must belong to its source")
+            deps.check_premise()
+            if answer.visual_reading_id:
+                if answer.visual_reading_id not in deps.visual_readings:
+                    raise ModelRetry("Choose a verified visual_reading_id returned by read_pages")
+                return answer
+            if not deps.derived_answers and any(
+                p.calculation or p.counts
+                for p in [
+                    *answer.answer_parts,
+                    *(cell for row in answer.comparison for cell in row.cells),
+                ]
+            ):
+                raise ModelRetry("Derived answers are disabled")
+            validation = deps.validation(answer)
+            span.set_attribute("validator.failure_codes", validation.failure_codes)
+            if validation.failure_codes or validation.application_abstain:
+                # Only code-generated reason classes, never exception details or
+                # rejected document instructions, are fed back to the model.
+                deps.record("validation_retry", failure_codes=validation.failure_codes)
+                raise ModelRetry(
+                    "Answer validation failed: "
+                    + ", ".join(validation.failure_codes)
+                    + ". Correct the claim, find evidence, omit it, or abstain."
+                )
             return answer
-        if answer.comparison:
-            units = {u.support_unit_id: u for u in deps.ledger.units}
-            for row in answer.comparison:
-                if len({c.source_id for c in row.cells}) != len(row.cells):
-                    raise ModelRetry("Each comparison cell must refer to a different source")
-                for cell in row.cells:
-                    if any(
-                        s not in units or units[s].source_id != cell.source_id
-                        for s in cell.support_ids
-                    ):
-                        raise ModelRetry("Comparison cell citations must belong to its source")
-        deps.check_premise()
-        if answer.visual_reading_id:
-            if answer.visual_reading_id not in deps.visual_readings:
-                raise ModelRetry("Choose a verified visual_reading_id returned by read_pages")
-            return answer
-        if not deps.derived_answers and any(
-            p.calculation or p.counts
-            for p in [
-                *answer.answer_parts,
-                *(cell for row in answer.comparison for cell in row.cells),
-            ]
-        ):
-            raise ModelRetry("Derived answers are disabled")
-        validation = deps.validation(answer)
-        if validation.failure_codes or validation.application_abstain:
-            # Only code-generated reason classes, never exception details or
-            # rejected document instructions, are fed back to the model.
-            deps.record("validation_retry", failure_codes=validation.failure_codes)
-            raise ModelRetry(
-                "Answer validation failed: "
-                + ", ".join(validation.failure_codes)
-                + ". Correct the claim, find evidence, omit it, or abstain."
-            )
-        return answer
 
     return agent
 
@@ -554,27 +680,61 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, A
 class ToolProvider:
     """Charge nested resolver/visual model calls to the same request budget."""
 
-    def __init__(self, provider: Any, usage: RunUsage, limits: UsageLimits) -> None:
+    def __init__(
+        self,
+        provider: Any,
+        usage: RunUsage,
+        limits: UsageLimits,
+        observations: ObservationUsage | None = None,
+        provider_name: str = "unknown",
+        role: str = "tool",
+    ) -> None:
         self._provider, self._usage, self._limits = provider, usage, limits
+        self.observations = observations or current_usage() or ObservationUsage()
+        self.provider_name, self.role = provider_name, role
         self.supports_images = getattr(provider, "supports_images", False)
         self.supports_structured = callable(getattr(provider, "chat_json", None))
 
-    async def chat_json(self, messages: list[dict[str, Any]], **kwargs: Any) -> str:
+    async def chat_json(
+        self, messages: list[dict[str, Any]], model: str | None = None, **kwargs: Any
+    ) -> str:
+        if model is not None:
+            kwargs["model"] = model
         self._limits.check_before_request(self._usage)
         self._usage.requests += 1
-        raw = await self._provider.chat_json(messages, **kwargs)
-        observation = getattr(self._provider, "last_call_observation", None) or {}
-        usage = observation.get("usage") or {}
-        self._usage.input_tokens += (
-            observation.get("prompt_tokens") or usage.get("input_tokens") or 0
-        )
-        self._usage.output_tokens += (
-            observation.get("output_tokens") or usage.get("output_tokens") or 0
-        )
-        self._limits.check_tokens(self._usage)
-        if not isinstance(raw, str):
-            raise TypeError("Tool model output must be a JSON string")
-        return raw
+        model = str(kwargs.get("model", "unknown"))
+        before = getattr(self._provider, "last_call_observation", None)
+        with operation("llm.request", kind="generation") as span:
+            mark_model(span, self.provider_name, model, self.role)
+            failed = False
+            try:
+                raw = await self._provider.chat_json(messages, **kwargs)
+                if not isinstance(raw, str):
+                    raise TypeError("Tool model output must be a JSON string")
+                return raw
+            except BaseException:
+                failed = True
+                raise
+            finally:
+                record = getattr(self._provider, "last_call_observation", None)
+                if failed and record is before:
+                    record = None
+                record = record or {}
+                usage = record.get("usage") or {}
+                incoming = record.get("prompt_tokens", usage.get("input_tokens"))
+                outgoing = record.get("output_tokens", usage.get("output_tokens"))
+                self._usage.input_tokens += incoming or 0
+                self._usage.output_tokens += outgoing or 0
+                self.observations.record(
+                    span,
+                    provider=self.provider_name,
+                    model=model,
+                    input_tokens=incoming,
+                    output_tokens=outgoing,
+                    cached_tokens=usage.get("cached_input_tokens") or 0,
+                )
+                if not failed:
+                    self._limits.check_tokens(self._usage)
 
 
 async def run_agent(
@@ -588,62 +748,83 @@ async def run_agent(
     retries: int = 2,
     model_settings: ModelSettings | None = None,
 ) -> AgentCandidate:
+    if current_usage() is not None:
+        deps.observations = current_usage() or deps.observations
     agent = build_agent(model, retries=retries)
     usage = RunUsage()
     limits = UsageLimits(
         request_limit=max_requests, tool_calls_limit=max_tool_calls, total_tokens_limit=max_tokens
     )
     if deps.provider is not None:
-        deps.provider = ToolProvider(deps.provider, usage, limits)
+        deps.provider = ToolProvider(
+            deps.provider, usage, limits, deps.observations, deps.provider_name
+        )
     failure = None
     visual = None
     clarification = None
     comparison = []
     raw = '{"answer_parts":[],"abstain":true}'
-    try:
-        async with asyncio.timeout(timeout_seconds):
-            result = await agent.run(
-                "QUESTION:\n"
-                + deps.question
-                + "\n\nUNTRUSTED AUTHORIZED EVIDENCE:\n"
-                + deps.ledger.text(),
-                deps=deps,
-                usage=usage,
-                usage_limits=limits,
-                model_settings=model_settings,
+    with operation("agent.run", attributes={"research.pipeline": PIPELINE_VERSION}) as run_span:
+        try:
+            async with asyncio.timeout(timeout_seconds):
+                result = await agent.run(
+                    "QUESTION:\n"
+                    + deps.question
+                    + "\n\nUNTRUSTED AUTHORIZED EVIDENCE:\n"
+                    + deps.ledger.text(),
+                    deps=deps,
+                    usage=usage,
+                    usage_limits=limits,
+                    model_settings=model_settings,
+                )
+            raw = result.output.raw_answer()
+            clarification = (
+                result.output.clarification.model_dump() if result.output.clarification else None
             )
-        raw = result.output.raw_answer()
-        clarification = (
-            result.output.clarification.model_dump() if result.output.clarification else None
+            comparison = [row.model_dump() for row in result.output.comparison]
+            visual = deps.visual_readings.get(result.output.visual_reading_id or "")
+        except UsageLimitExceeded:
+            failure = "AGENT_BUDGET_EXCEEDED"
+        except TimeoutError:
+            failure = "AGENT_TIMEOUT"
+        except Exception as exc:
+            # Do not release a partial draft or weaken validation on failure.
+            failure = "AGENT_RUN_FAILED"
+            logger.warning("agentic_rag_failed error_class=%s", type(exc).__name__)
+        telemetry = {
+            "observability": deps.observations.snapshot(),
+            "pipeline_version": PIPELINE_VERSION,
+            "requests": usage.requests,
+            "tool_calls": usage.tool_calls,
+            "input_tokens": usage.input_tokens,
+            "output_tokens": usage.output_tokens,
+            "failure_code": failure,
+            "tools": deps.tool_events,
+        }
+        capture = current_capture()
+        if capture is not None:
+            capture.stage("agentic", telemetry)
+        publish(
+            {"id": "agent", "operation": "research", "status": "failed" if failure else "completed"}
         )
-        comparison = [row.model_dump() for row in result.output.comparison]
-        visual = deps.visual_readings.get(result.output.visual_reading_id or "")
-    except UsageLimitExceeded:
-        failure = "AGENT_BUDGET_EXCEEDED"
-    except TimeoutError:
-        failure = "AGENT_TIMEOUT"
-    except Exception as exc:
-        # Do not release a partial draft or weaken validation on failure.
-        failure = "AGENT_RUN_FAILED"
-        logger.warning("agentic_rag_failed error_class=%s", type(exc).__name__)
-    telemetry = {
-        "pipeline_version": PIPELINE_VERSION,
-        "requests": usage.requests,
-        "tool_calls": usage.tool_calls,
-        "input_tokens": usage.input_tokens,
-        "output_tokens": usage.output_tokens,
-        "failure_code": failure,
-        "tools": deps.tool_events,
-    }
-    capture = current_capture()
-    if capture is not None:
-        capture.stage("agentic", telemetry)
-    publish(
-        {"id": "agent", "operation": "research", "status": "failed" if failure else "completed"}
-    )
-    return AgentCandidate(
-        raw, list(deps.ledger.blocks), visual, telemetry, failure, clarification, comparison
-    )
+        outcome(
+            run_span,
+            "budget_exceeded"
+            if failure == "AGENT_BUDGET_EXCEEDED"
+            else "timeout"
+            if failure == "AGENT_TIMEOUT"
+            else "failed"
+            if failure
+            else "clarification"
+            if clarification
+            else "abstained"
+            if result.output.abstain
+            else "answered",
+            failure,
+        )
+        return AgentCandidate(
+            raw, list(deps.ledger.blocks), visual, telemetry, failure, clarification, comparison
+        )
 
 
 @asynccontextmanager

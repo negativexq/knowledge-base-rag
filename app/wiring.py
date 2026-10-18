@@ -38,6 +38,7 @@ from app.migration.startup_guard import ensure_embedding_schema_match
 from app.registry.store import DocumentRegistry
 from app.reranker.cross_encoder import CrossEncoderReranker
 from app.research.feedback import FeedbackStore
+from app.research.traces import TraceStore
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.retrieval.search import search
@@ -201,8 +202,21 @@ def build_chat_dependencies(
         return result.blocks
 
     async def rewrite_fn(question: str, history: list[ChatTurn]) -> RewriteResult:
+        rewrite_provider = chat_provider
+        if settings.agentic_rag_enabled:
+            from pydantic_ai.usage import RunUsage, UsageLimits
+
+            from app.llm.agentic import ToolProvider
+
+            rewrite_provider = ToolProvider(
+                chat_provider,
+                RunUsage(),
+                UsageLimits(),
+                provider_name=settings.generation_provider,
+                role="query_rewrite",
+            )
         return await rewrite_query(
-            chat_provider,
+            rewrite_provider,
             question,
             history,
             model=default_chat_model(settings),
@@ -227,14 +241,23 @@ def build_chat_dependencies(
             async def candidate_generator(query, initial_blocks):
                 context_tokens = default_context_tokens(settings)
                 budget = min(settings.agentic_evidence_token_budget, context_tokens // 2)
-                ledger = EvidenceLedger(count_prompt_tokens, budget)
+                ledger = EvidenceLedger(
+                    count_prompt_tokens,
+                    budget,
+                    context=documents.context if documents is not None else None,
+                    source_ids=documents.source_ids if documents is not None else None,
+                )
                 ledger.add(initial_blocks)
+                from app.llm.agent_observability import RequestUsage, load_prices
+
                 agent_deps = AgentDependencies(
                     query,
                     ledger,
                     retrieve=retrieve,
                     documents=documents,
+                    observations=RequestUsage(load_prices(settings.model_pricing_json)),
                     provider=chat_provider,
+                    provider_name=settings.generation_provider,
                     generation_kwargs={
                         "model": default_chat_model(settings),
                         "think": settings.ollama_thinking,
@@ -245,7 +268,12 @@ def build_chat_dependencies(
                     derived_answers=settings.derived_answers_enabled,
                     operand_resolver=settings.operand_resolver_enabled,
                     visual_answers=settings.visual_answers_enabled,
-                    render_page=page_renderer,
+                    render_page=(
+                        page_renderer
+                        if documents is not None
+                        and documents.context.tenant_id == settings.filesystem_tenant_id
+                        else None
+                    ),
                     validator_version=settings.critical_validator_version,
                     shadow_enabled=settings.critical_validator_v3_shadow_enabled,
                     architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
@@ -489,9 +517,11 @@ def build_app(settings: Settings) -> FastAPI:
         qdrant_client.close()
 
     feedback = FeedbackStore(settings.research_feedback_db_path)
+    request_traces = TraceStore(settings.request_trace_db_path)
 
     async def close_feedback() -> None:
         feedback.close()
+        request_traces.close()
 
     on_shutdown = [ollama.aclose, chat_provider.aclose, close_qdrant_client, close_feedback]
     for connector in connectors.values():
@@ -515,4 +545,5 @@ def build_app(settings: Settings) -> FastAPI:
         settings=settings,
         tracer_provider=tracer_provider,
         research_feedback_store=feedback,
+        request_trace_store=request_traces,
     )

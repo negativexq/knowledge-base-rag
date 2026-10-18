@@ -501,6 +501,7 @@ async def run_questions(
     settings = settings.model_copy(
         update={
             "filesystem_root_path": str(manifest_documents(root, manifest, COLLECTION)),
+            "filesystem_tenant_id": TENANT,
             "agentic_rag_enabled": settings.agentic_rag_enabled and generate,
         }
     )

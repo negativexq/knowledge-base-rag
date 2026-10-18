@@ -24,6 +24,7 @@ from app.evidence.support_units import (
     serialize_support_units,
     support_unit_map,
 )
+from app.llm.agent_observability import operation, outcome
 from app.llm.calculation import (
     Calculation,
     calculation_result,
@@ -1345,9 +1346,10 @@ async def stream_support_unit_answer(
     question, evidence or answer text.
     """
     tracer = tracer or get_tracer(__name__)
-    with tracer.start_as_current_span("generate") as span:
+    with operation("generate", tracer=tracer) as span:
         span.set_attribute("generate.model", model)
-        mark_llm_generation(span, model)
+        if candidate_generator is None:
+            mark_llm_generation(span, model)
         span.set_attribute("generate.prompt_version", prompt_version)
         span.set_attribute("generate.context_chunk_count", len(blocks))
         span.set_attribute(
@@ -1385,9 +1387,27 @@ async def stream_support_unit_answer(
                 for name, value in telemetry.items():
                     if value is not None:
                         span.set_attribute(f"generate.{name}", value)
+                if event["type"] == "clarification":
+                    outcome(span, "clarification")
                 if event["type"] == "metadata":
                     event = {**event, "trace_id": trace_id}
                 elif event["type"] == "security_validation":
+                    codes = event.get("validator_failure_codes") or []
+                    outcome(
+                        span,
+                        "timeout"
+                        if "AGENT_TIMEOUT" in codes
+                        else "budget_exceeded"
+                        if "AGENT_BUDGET_EXCEEDED" in codes
+                        else "failed"
+                        if "AGENT_RUN_FAILED" in codes
+                        else "rejected"
+                        if event["application_forced_abstention"]
+                        else "abstained"
+                        if event["abstain"]
+                        else "answered",
+                        codes[0] if codes else None,
+                    )
                     span.set_attribute("security.output_policy_passed", event["passed"])
                     span.set_attribute("generate.abstain", event["abstain"])
                     span.set_attribute(
@@ -1436,6 +1456,15 @@ async def _support_unit_answer_events(
                 else:
                     yield progress
         assert candidate is not None
+        telemetry["agent_requests"] = candidate.telemetry.get("requests", 0)
+        telemetry["agent_tool_calls"] = candidate.telemetry.get("tool_calls", 0)
+        yield {
+            "type": "metadata",
+            "prompt_version": prompt_version,
+            "pipeline_version": "pipeline_agentic_v1",
+            "agentic": candidate.telemetry,
+            "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
+        }
         if candidate.clarification is not None and candidate.failure_code is None:
             yield {"type": "clarification", **candidate.clarification}
             return
@@ -1534,15 +1563,19 @@ async def _support_unit_answer_events(
     telemetry["provider_prompt_tokens"] = observation.get("prompt_tokens")
     telemetry["provider_output_tokens"] = observation.get("output_tokens")
     try:
-        parsed = parse_support_unit_answer(raw)
-        validation = validate_support_unit_answer(
-            parsed,
-            units,
-            validator_version=validator_version,
-            shadow_enabled=shadow_enabled,
-            architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
-            question=query,
-        )
+        with operation("answer.validate", attributes={"research.phase": "release"}) as check:
+            parsed = parse_support_unit_answer(raw)
+            validation = validate_support_unit_answer(
+                parsed,
+                units,
+                validator_version=validator_version,
+                shadow_enabled=shadow_enabled,
+                architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+                question=query,
+            )
+            check.set_attribute("validator.failure_codes", validation.failure_codes)
+            outcome(check, "rejected" if validation.failure_codes else "completed")
+
     except (ValueError, json.JSONDecodeError):
         parsed = None
         validation = SupportUnitValidation(

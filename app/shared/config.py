@@ -278,6 +278,16 @@ class Settings(BaseSettings):
 
     registry_db_path: str = "data/registry.db"
     research_feedback_db_path: str = "data/research-feedback.db"
+    request_trace_db_path: str = "data/request-traces.db"
+    external_trace_links_enabled: bool = False
+    model_pricing_json: str = Field(default="{}", max_length=64000)
+
+    @model_validator(mode="after")
+    def validate_model_pricing(self) -> Self:
+        from app.llm.agent_observability import load_prices
+
+        load_prices(self.model_pricing_json)
+        return self
 
     # Real folder LocalFilesystemConnector scans when wired for real.
     filesystem_root_path: str = "data/documents"

@@ -1,5 +1,6 @@
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
 import httpx
 
@@ -9,6 +10,12 @@ class SpanSummary:
     name: str
     duration_ms: float
     start_time_us: int
+    span_id: str | None = None
+    parent_span_id: str | None = None
+    status: str = "unset"
+    attributes: dict[str, Any] = field(default_factory=dict)
+    tenant_id: str | None = None
+    user_id: str | None = None
 
 
 def _chat_request_subtree(spans: list[dict]) -> list[dict]:
@@ -31,7 +38,9 @@ def _chat_request_subtree(spans: list[dict]) -> list[dict]:
     }
 
     def in_subtree(span_id: str | None) -> bool:
-        while span_id is not None:
+        seen: set[str] = set()
+        while span_id is not None and span_id not in seen:
+            seen.add(span_id)
             if span_id == root_id:
                 return True
             span_id = parent_of.get(span_id)
@@ -40,20 +49,88 @@ def _chat_request_subtree(spans: list[dict]) -> list[dict]:
     return [s for s in spans if in_subtree(s.get("spanID"))]
 
 
+# Explicit schema, not prefix-based: credentials, content and arbitrary SDK
+# attributes/events never reach the browser through this endpoint.
+SAFE_ATTRIBUTES = frozenset(
+    {
+        "document.action",
+        "document.returned_passages",
+        "document.scan_limited",
+        "document.has_more",
+        "tool.returned_blocks",
+        "tool.added_blocks",
+        "tool.verified",
+        "tool.resolved",
+        "tool.has_more",
+        "tool.scan_limited",
+        "research.outcome",
+        "research.pipeline",
+        "research.phase",
+        "research.attempt",
+        "research.model_role",
+        "research.parent_trace_id",
+        "research.request_index",
+        "research.retry_count",
+        "gen_ai.request.model",
+        "gen_ai.provider.name",
+        "gen_ai.operation.name",
+        "gen_ai.tool.name",
+        "gen_ai.tool.call.id",
+        "gen_ai.usage.input_tokens",
+        "gen_ai.usage.output_tokens",
+        "gen_ai.usage.cache_read.input_tokens",
+        "gen_ai.response.finish_reasons",
+        "usage.available",
+        "cost.status",
+        "cost.usd",
+        "cost.currency",
+        "cost.pricing_id",
+        "error.type",
+        "validator.failure_codes",
+        "research.llm_requests",
+        "research.input_tokens",
+        "research.output_tokens",
+        "research.cached_tokens",
+        "research.tool_calls",
+        "research.retries",
+        "research.cost_complete",
+        "research.usage_complete",
+        "research.known_cost_usd",
+        "research.priced_requests",
+        "generate.agent_requests",
+        "generate.agent_tool_calls",
+    }
+)
+
+
+def _summary(span: dict) -> SpanSummary:
+    tags = {t["key"]: t.get("value") for t in span.get("tags", []) if "key" in t}
+    status = str(tags.get("otel.status_code", "unset")).lower()
+    if tags.get("error") is True:
+        status = "error"
+    return SpanSummary(
+        name=span["operationName"],
+        duration_ms=max(0, span["duration"]) / 1000,
+        start_time_us=span["startTime"],
+        span_id=span.get("spanID"),
+        parent_span_id=next(
+            (r["spanID"] for r in span.get("references", []) if r.get("refType") == "CHILD_OF"),
+            None,
+        ),
+        status=status,
+        attributes={k: v for k, v in tags.items() if k in SAFE_ATTRIBUTES},
+        tenant_id=tags.get("security.tenant_id"),
+        user_id=tags.get("research.user_id"),
+    )
+
+
 def _parse_spans(payload: dict) -> list[SpanSummary]:
     traces = payload.get("data") or []
     if not traces:
         return []
     spans = _chat_request_subtree(traces[0].get("spans") or [])
     return sorted(
-        (
-            SpanSummary(
-                name=s["operationName"],
-                duration_ms=s["duration"] / 1000,
-                start_time_us=s["startTime"],
-            )
-            for s in spans
-        ),
+        (_summary(s) for s in spans),
         key=lambda span: span.start_time_us,
     )
 

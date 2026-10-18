@@ -18,6 +18,7 @@ from app.api.sync import router as sync_router
 from app.api.ui import router as ui_router
 from app.registry.store import DocumentRegistry
 from app.research.feedback import FeedbackStore
+from app.research.traces import TraceStore
 from app.security.auth import TokenAuthenticator
 from app.security.rate_limit import SlidingWindowRateLimiter
 from app.shared.config import Settings
@@ -74,6 +75,7 @@ def create_app(
     settings: Settings | None = None,
     tracer_provider: TracerProvider | None = None,
     research_feedback_store: FeedbackStore | None = None,
+    request_trace_store: TraceStore | None = None,
 ) -> FastAPI:
     """Factory, not a module-level app instance — tests build one with fake
     components (no real Qdrant/Ollama/Notion needed), avoiding the
@@ -131,6 +133,7 @@ def create_app(
     app.state.sync_history = sync_history
     app.state.registry = registry
     app.state.research_feedback_store = research_feedback_store
+    app.state.request_trace_store = request_trace_store
     app.state.chat_deps = chat_deps
     app.state.list_ollama_models = list_ollama_models
     app.state.readiness_check = readiness_check
