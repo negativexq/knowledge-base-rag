@@ -157,3 +157,32 @@ describe("Evidence Inspector", () => {
     expect(screen.getByText("chat_request")).toBeInTheDocument()
   })
 })
+
+describe("Agent trace inspection", () => {
+  it("shows safe failure details and unknown prices without offering a direct Jaeger link", () => {
+    render(<TraceWaterfall trace={{
+      trace_id: "t", available: true, jaeger_url: "http://jaeger",
+      spans: [
+        { name: "chat_request", span_id: "root", duration_ms: 20, offset_ms: 0 },
+        { name: "llm.request", span_id: "child", parent_span_id: "root", duration_ms: 10, offset_ms: 2, status: "error", attributes: { "research.outcome": "timeout", "error.type": "TimeoutError", "gen_ai.usage.input_tokens": 10 } },
+      ],
+    }} />)
+    expect(screen.getByText("Unknown")).toBeInTheDocument()
+    expect(screen.getAllByText("timeout")).toHaveLength(2)
+    expect(screen.getByText("TimeoutError")).toBeInTheDocument()
+    expect(screen.getByText("10 / 0 (partial)")).toBeInTheDocument()
+    expect(screen.getByText("llm.request").closest("li")).toHaveStyle({ paddingLeft: "10px" })
+    expect(screen.queryByRole("link", { name: "Open in Jaeger" })).not.toBeInTheDocument()
+  })
+
+  it("distinguishes complete estimates from partial known subtotals", () => {
+    const trace = { trace_id: "t", available: true, jaeger_url: "http://jaeger", spans: [
+      { name: "llm.request", duration_ms: 10, offset_ms: 0, attributes: { "cost.status": "estimated", "cost.usd": 0.001 } },
+    ] }
+    const { rerender } = render(<TraceWaterfall trace={trace} />)
+    expect(screen.getByText("$0.001000")).toBeInTheDocument()
+    rerender(<TraceWaterfall trace={{ ...trace, spans: [...trace.spans, { name: "llm.request", duration_ms: 10, offset_ms: 10 }] }} />)
+    expect(screen.getByText("Unknown")).toBeInTheDocument()
+    expect(screen.getByText(/known subtotal \$0.001000/)).toBeInTheDocument()
+  })
+})

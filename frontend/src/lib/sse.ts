@@ -43,6 +43,7 @@ export interface ChatHistoryTurn {
 }
 
 export interface ChatRequestOptions {
+  parent_trace_id?: string
   source_ids?: string[]
   clarification?: ClarificationReply
 }

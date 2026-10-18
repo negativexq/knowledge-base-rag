@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { useSearchParams } from "react-router-dom"
 import { useState } from "react"
 
 import { classifyError } from "@/api/client"
@@ -13,37 +14,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatRelativeTime } from "@/lib/utils"
 
 export default function Traces() {
-  const [selectedTraceId, setSelectedTraceId] = useState<string | null>(null)
+  const [params] = useSearchParams()
+  const [selectedTraceId, setSelectedTraceId] = useState<string | null>(params.get("trace"))
+  const [offset, setOffset] = useState(0)
+  const chats = useQuery({ queryKey: ["chat-traces", offset], queryFn: () => uiApi.chatTraces(offset), refetchInterval: 5000 })
   const [statusFilter, setStatusFilter] = useState<string>("all")
 
-  // Sprint 24: this platform doesn't persist a general trace index —
-  // the real, currently available source of past trace_ids is sync run
-  // history (app/api/ui.py::sync_runs). A chat request's trace_id is
-  // only known to the Playground session that made it; there is no
-  // server-side store of past chat traces to list here yet. This page
-  // is honest about that rather than fabricating a trace search feature
-  // the backend doesn't back.
   const runs = useQuery({ queryKey: ["sync-runs"], queryFn: () => syncApi.allRuns(50) })
   const trace = useQuery({
     queryKey: ["trace", selectedTraceId],
     queryFn: () => uiApi.trace(selectedTraceId!),
     enabled: Boolean(selectedTraceId),
+    refetchInterval: (query) => query.state.data?.available ? false : 2000,
   })
-
-  if (runs.isLoading) {
-    return (
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        <LoadingRows rows={5} />
-      </div>
-    )
-  }
-  if (runs.isError) {
-    return (
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        <ErrorState kind={classifyError(runs.error)} detail={(runs.error as Error).message} />
-      </div>
-    )
-  }
 
   const tracedRuns = (runs.data ?? []).filter((r) => r.trace_id)
   const filtered =
@@ -68,8 +51,7 @@ export default function Traces() {
       </div>
 
       <p className="text-xs text-[var(--color-muted-foreground)]">
-        Traces from sync runs (chat traces are visible per-conversation in Research, under Inspect → Trace
-        tab — this platform doesn't persist a general chat trace index yet).
+        Chat traces contain operational metadata only. Users see their own requests; operators can inspect requests within their tenant.
       </p>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -78,7 +60,16 @@ export default function Traces() {
             <CardTitle>Recent traces</CardTitle>
           </CardHeader>
           <CardContent>
-            {filtered.length === 0 ? (
+            <h2 className="mb-2 text-xs font-medium">Research requests</h2>
+            {chats.isLoading && <LoadingRows rows={3} />}
+            {chats.isError && <p role="alert" className="text-xs">Chat traces could not be loaded. <button onClick={() => void chats.refetch()}>Retry</button></p>}
+            {chats.data?.length === 0 && <p className="mb-3 text-xs">No recorded research requests.</p>}
+            <ul aria-label="Research traces" className="mb-3 space-y-1">{chats.data?.map((request) => <li key={request.trace_id}><button onClick={() => setSelectedTraceId(request.trace_id)} className="flex w-full items-start justify-between gap-2 rounded border border-[var(--color-border)] p-2 text-left text-xs hover:bg-[var(--color-surface-hover)]"><span className="min-w-0"><span className="block truncate">{request.pipeline}</span><span className="block">{formatRelativeTime(request.started_at)}</span><span className="block truncate font-technical">{request.trace_id}</span></span><span>{request.outcome}</span></button></li>)}</ul>
+            <div className="mb-4 flex gap-3 text-xs"><button disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - 50))}>Previous</button><button disabled={chats.data?.length !== 50} onClick={() => setOffset(offset + 50)}>Next</button></div>
+            <h2 className="mb-2 text-xs font-medium">Sync requests</h2>
+            {runs.isLoading ? <LoadingRows rows={3} /> : runs.isError ? (
+              <ErrorState kind={classifyError(runs.error)} detail={(runs.error as Error).message} />
+            ) : filtered.length === 0 ? (
               <EmptyState title="No traced sync runs yet" />
             ) : (
               <ul className="flex flex-col gap-1">
@@ -114,6 +105,8 @@ export default function Traces() {
           <CardContent>
             {!selectedTraceId ? (
               <EmptyState title="Select a trace" description="Choose a trace on the left to see its span waterfall." />
+            ) : trace.isError ? (
+              <ErrorState kind={classifyError(trace.error)} detail={(trace.error as Error).message} />
             ) : trace.data ? (
               <TraceWaterfall trace={trace.data} />
             ) : (

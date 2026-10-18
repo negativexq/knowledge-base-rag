@@ -278,7 +278,21 @@ export interface PromptInjectionEvaluation {
   available: boolean
 }
 
+export interface UsageSummary {
+  llm_requests: number; input_tokens: number; output_tokens: number; cached_tokens: number
+  tool_calls: number; retries: number; usage_complete: boolean
+  priced_requests: number; cost_complete: boolean; cost_usd: number | null; known_cost_usd: number
+}
+export interface RequestTrace {
+  trace_id: string; span_id: string; started_at: string; duration_ms?: number
+  outcome: string; pipeline: string; error_type?: string | null
+  parent_trace_id?: string | null; usage?: UsageSummary
+}
 export interface TraceSpan {
+  span_id?: string | null
+  parent_span_id?: string | null
+  status?: string
+  attributes?: Record<string, string | number | boolean | string[]>
   name: string
   duration_ms: number
   offset_ms: number
@@ -289,6 +303,8 @@ export interface TraceDetail {
   available: boolean
   jaeger_url: string
   spans: TraceSpan[]
+  request?: RequestTrace | null
+  can_open_external?: boolean
 }
 
 // ---- /chat SSE contracts (app/api/chat.py, app/llm/generate.py) ----
@@ -398,6 +414,9 @@ export interface SupportUnitRef {
 }
 
 export interface ChatMetadata {
+  parent_trace_id?: string | null
+  phase?: string
+  agentic?: { observability?: UsageSummary; requests?: number; tool_calls?: number }
   prompt_version: string
   trace_id: string
   untrusted_context_enabled?: boolean

@@ -162,7 +162,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
     })
   }
 
-  async function ask(overrideQuestion?: string, clarification?: ClarificationReply, sourceIds?: string[]) {
+  async function ask(overrideQuestion?: string, clarification?: ClarificationReply, sourceIds?: string[], parentTraceId?: string) {
     const q = (overrideQuestion ?? question).trim()
     if (!q || current?.streaming) return
     const history = historyFrom(turns)
@@ -244,7 +244,14 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
             return copy
           })
         },
-        onMetadata: (metadata) => patchTurn({ metadata: metadata as ChatMetadata }),
+        onMetadata: (metadata) => {
+          if (controller.signal.aborted) return
+          setTurns((prev) => {
+            const copy = [...prev], turn = copy[copy.length - 1]
+            copy[copy.length - 1] = { ...turn, metadata: { ...turn.metadata, ...(metadata as ChatMetadata) } }
+            return copy
+          })
+        },
         onToken: (token) => {
           if (firstTokenAt === null) firstTokenAt = performance.now()
           answerBuffer += token
@@ -256,7 +263,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
         onError: (message) => patchTurn({ streaming: false, errorMessage: message }),
       },
       controller.signal,
-      { ...(sourceIds?.length ? { source_ids: sourceIds } : {}), ...(clarification ? { clarification } : {}) },
+      { ...(sourceIds?.length ? { source_ids: sourceIds } : {}), ...(clarification ? { clarification } : {}), ...(parentTraceId && /^[a-f0-9]{32}$/.test(parentTraceId) ? { parent_trace_id: parentTraceId } : {}) },
     )
   }
 
@@ -466,7 +473,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                       </span>
                       <div className="flex min-w-0 flex-1 flex-col gap-3">
                         <ResearchActivity steps={turn.steps ?? []} streaming={turn.streaming} />
-                        {turn.clarification && <ClarificationPrompt clarification={turn.clarification} disabled={Boolean(current?.streaming) || i !== turns.length - 1} onReply={(answer) => void ask(turn.question, { question: turn.clarification!.question, answer }, turn.sourceIds)} />}
+                        {turn.clarification && <ClarificationPrompt clarification={turn.clarification} disabled={Boolean(current?.streaming) || i !== turns.length - 1} onReply={(answer) => void ask(turn.question, { question: turn.clarification!.question, answer }, turn.sourceIds, turn.metadata?.trace_id)} />}
                         <div className="text-[15px] leading-7 text-[var(--color-foreground)]">
                           {turn.errorMessage && turn.answer === "" ? (
                             <span className="text-[var(--color-error)]">{turn.errorMessage}</span>
