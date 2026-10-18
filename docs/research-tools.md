@@ -58,6 +58,9 @@ PDF tools require a current authorized filesystem support anchor and a renderer
 supporting version-checked snapshots. The indexed SHA-256 must match the exact
 bytes read; snapshots remain request-local, with a 64 MiB source-file limit.
 Every call checks the current ledger authorization even when a snapshot is cached.
+Ingestion, structural inspection and page rendering share a process-wide reentrant
+lock because PyMuPDF table extraction uses shared global state. CPU work remains
+off the event loop; this serializes PDF work within a worker, not across workers.
 No arbitrary file path, URL, shell, Python expression or model-selected rectangle
 is accepted. Region IDs are reconstructed from the pinned source by the server.
 

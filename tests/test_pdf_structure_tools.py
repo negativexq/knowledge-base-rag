@@ -273,3 +273,43 @@ async def test_pdf_tools_emit_content_free_spans(pdf, monkeypatch):
     assert "North" not in attributes and "Revenue" not in attributes
     assert "excludes discontinued" not in attributes and "input_image" not in attributes
     provider.shutdown()
+
+
+def test_ingestion_and_tool_table_extraction_share_a_process_lock(pdf, monkeypatch):
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Lock
+
+    from app.parsing.pdf_parser import extract_elements
+
+    original = fitz.Page.find_tables
+    mutex = Lock()
+    active = 0
+    maximum = 0
+
+    def observed(page, *args, **kwargs):
+        nonlocal active, maximum
+        with mutex:
+            active += 1
+            maximum = max(maximum, active)
+        try:
+            time.sleep(0.01)
+            return original(page, *args, **kwargs)
+        finally:
+            with mutex:
+                active -= 1
+
+    monkeypatch.setattr(fitz.Page, "find_tables", observed)
+    structure = PdfStructure(PdfSnapshot("report_pdf", pdf[1]))
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        tasks = [
+            pool.submit(structure.table, "P1.T1"),
+            pool.submit(extract_elements, str(pdf[0] / "report.pdf")),
+            pool.submit(structure.table, "P1.T1"),
+            pool.submit(extract_elements, str(pdf[0] / "report.pdf")),
+        ]
+        results = [task.result() for task in tasks]
+    assert maximum == 1
+    assert results[0]["rows"] == [["North", "12"], ["South", "8"]]
+    assert results[2]["rows"] == results[0]["rows"]
+    assert any(e.kind == "table" for e in results[1])

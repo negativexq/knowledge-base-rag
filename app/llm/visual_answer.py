@@ -25,6 +25,7 @@ import fitz
 
 from app.evidence.support_units import SupportUnit
 from app.llm.premise import unsupported_colors
+from app.parsing.pdf_lock import serialized_pdf
 from app.shared.slug import slugify
 
 PageRenderer = Callable[[str, int], bytes | None]
@@ -183,6 +184,7 @@ def candidate_pages(
     return pages
 
 
+@serialized_pdf
 def render_pdf_page(pdf_path: str, page_number: int, dpi: int = RENDER_DPI) -> bytes | None:
     """A 1-based PDF page as PNG, or None when the PDF has no such page."""
     with fitz.open(pdf_path) as doc:
@@ -197,6 +199,7 @@ class PdfSnapshot:
     source_id: str
     content: bytes
 
+    @serialized_pdf
     def __call__(self, source_id: str, page_number: int) -> bytes | None:
         if source_id != self.source_id:
             return None
@@ -211,6 +214,7 @@ class PdfSnapshot:
             png: bytes = page.get_pixmap(dpi=RENDER_DPI).tobytes("png")
             return png
 
+    @serialized_pdf
     def resolve(self, source_id: str, page: int) -> int | None:
         if source_id != self.source_id:
             return None
@@ -222,6 +226,7 @@ class PdfSnapshot:
                     return index + 1
             return page if 1 <= page <= doc.page_count else None
 
+    @serialized_pdf
     def by_position(self, source_id: str, page: int) -> bool:
         if source_id != self.source_id or page <= 0:
             return False
@@ -278,6 +283,7 @@ class PdfPages:
             and not self._printed(source_id, page)
         )
 
+    @serialized_pdf
     def _printed(self, source_id: str, page: int) -> bool:
         path = self._path(source_id)
         if path is None:
@@ -292,6 +298,7 @@ class PdfPages:
         lines = [line.strip() for line in pdf_page.get_text().splitlines() if line.strip()]
         return bool(lines) and str(page) in (lines[0], lines[-1])
 
+    @serialized_pdf
     def resolve(self, source_id: str, page: int) -> int | None:
         """The 1-based page a question means by "page N": the page labelled
         N, else the page printing N as its first or last line, else the Nth

@@ -14,6 +14,7 @@ from typing import Any
 import fitz
 
 from app.llm.visual_answer import MAX_SNAPSHOT_RENDER_PIXELS, RENDER_DPI, PdfSnapshot
+from app.parsing.pdf_lock import serialized_pdf
 from app.parsing.pdf_parser import _clean_rows, _table_text, _with_external_header
 
 MAX_ITEMS = 50
@@ -103,6 +104,7 @@ class PdfStructure:
                 )
         return elements
 
+    @serialized_pdf
     def list(self, page: int = 1, offset: int = 0) -> dict[str, Any]:
         with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
             elements = self._elements(doc, page)
@@ -123,6 +125,7 @@ class PdfStructure:
                 "may be missing. Inspect page images before drawing conclusions.",
             }
 
+    @serialized_pdf
     def element(self, element_id: str) -> PdfElement:
         match = re.fullmatch(r"P([1-9]\d{0,3})\.[TICH]([1-9]\d{0,3})", element_id)
         if not match:
@@ -133,6 +136,7 @@ class PdfStructure:
                     return element
         raise ValueError("UNKNOWN_ELEMENT_ID")
 
+    @serialized_pdf
     def table(self, element_id: str, offset: int = 0) -> dict[str, Any]:
         element = self.element(element_id)
         if element.kind != "table" or not element.rows:
@@ -172,6 +176,7 @@ class PdfStructure:
             "merged headers and footnotes must be checked against surrounding text/page images.",
         }
 
+    @serialized_pdf
     def render(self, element_id: str) -> tuple[PdfElement, bytes]:
         element = self.element(element_id)
         with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
