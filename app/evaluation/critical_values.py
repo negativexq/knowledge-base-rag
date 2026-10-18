@@ -445,6 +445,28 @@ def _v3_claim_version_specificity(claim: str) -> str:
     return "AMBIGUOUS"
 
 
+def _canonical_versions(text: str) -> list[tuple[int, ...]]:
+    from app.evaluation.critical_occurrences import extract_critical_occurrences
+
+    versions: list[tuple[int, ...]] = []
+    for occurrence in extract_critical_occurrences(text):
+        if occurrence.lexical_type != "VERSION":
+            continue
+        try:
+            versions.append(tuple(int(part) for part in occurrence.normalized_value.split(".")))
+        except ValueError:
+            continue
+    return versions
+
+
+def _release(value: tuple[int, ...]) -> tuple[int, ...]:
+    """A version without trailing zero components past major.minor: 7.5.2.0
+    and 7.5.2 name the same release."""
+    while len(value) > 2 and value[-1] == 0:
+        value = value[:-1]
+    return value
+
+
 def _v3_version_guard_status(
     claim: str,
     support: str,
@@ -455,8 +477,34 @@ def _v3_version_guard_status(
         list(claim_versions) if claim_versions is not None else _v3_version_values(claim)
     )
     support_versions = _v3_version_values(support)
+    if claim_versions is not None:
+        # The claim's versions came from the canonical extractor, which reads
+        # "8.5.0.1" whole; the support regex stops at three parts and splits
+        # it into 8.5.0 and 1. Read the support the same way as the claim.
+        support_versions = support_versions + _canonical_versions(support)
     if not claim_versions or not support_versions:
         return None
+    # A negated claim denies what a unit says a version supports ("8.5.0.2
+    # does not support TLS 1.2"). An unrelated "not" ("if that does not
+    # resolve it") and "support" in a URL or in "customer support" are not.
+    negated = bool(
+        re.search(
+            r"\b(?:not|no|never|doesn't|cannot|can't)\b[^.;,]{0,25}?\b(?:support|expose|return)s?\b",
+            claim,
+            re.IGNORECASE,
+        )
+        and re.search(
+            r"\b(?:supports?|exposes?|returns?)\b",
+            re.sub(r"\S+://\S+", " ", support),
+            re.IGNORECASE,
+        )
+    )
+    # Every version the claim names is printed in the units: supported,
+    # whatever the claim's first version looks like ("1.6" is not ambiguous
+    # when the unit says "version 1.6"). A negated claim keeps the guard below.
+    printed = {_release(value) for value in support_versions}
+    if not negated and all(_release(value) in printed for value in claim_versions):
+        return "DIRECT_SUPPORT"
     specificity = _v3_claim_version_specificity(claim)
     claim_value = claim_versions[0]
     if specificity == "EXACT":

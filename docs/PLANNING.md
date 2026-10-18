@@ -5890,3 +5890,36 @@ abstention wording since the MMLongBench work, and INDETERMINATE handling for
 answers with many VERSION values.
 
 `make test`: 1758 passed, 4 skipped.
+
+## Fix — version guard reads support versions whole and judges every claimed version (closing note)
+
+TechQA audit: in all 13 questions lost against the August run the gold fact was
+in the evidence the model saw (often more of it than in August), so retrieval
+and assembly are not the cause. Four losses were critical-value blocks of
+correct answers, all in the version guard:
+
+- the claim's versions come from the canonical extractor ("8.5.0.1" whole), the
+  support's from a regex that stops at three parts ("8.5.0" + "1"), so no
+  four-part IBM version could ever match;
+- only the claim's first version was judged, and a two-part first version
+  ("1.6", "8.5") made the whole claim INDETERMINATE even when the unit printed it;
+- the negation guard fired on any "not" in the claim plus any "support" in the
+  units, including "customer support" and `/support/` in a URL.
+
+The guard now also reads the support with the canonical extractor, passes a
+claim whose every version is printed in the cited units (7.5.2 = 7.5.2.0), and
+counts a claim as negated only when a negation governs support/expose/return in
+one clause, with URLs ignored. Offline on the saved outputs, Q146, Q149, Q166,
+Q220 and Q246 are no longer blocked.
+
+Prompt challenger, measured and reverted: replacing the "abstain on an unstated
+presupposition" sentence with the August "absence of a statement is not a
+statement of absence" rule recovered TechQA Q111 and made the model answer Q246,
+but on MMLongBench five of 16 unanswerable rows were then answered (365, 475,
+520, 521, 638). It fails the rule "no loss on the other benchmark" and is not
+adopted (`artifacts/ragbench/techqa-canary-v2`,
+`artifacts/mmlongbench-v2/luna-canary-v2`, 39 luna calls). The remaining TechQA
+refusals (Q157, Q181, Q085, Q205, Q251) are mostly documents about another
+product or platform.
+
+`make test`: 1767 passed, 4 skipped.
