@@ -68,11 +68,11 @@ existing hard total SDK limits remain in place.
 
 | Control | Default | Behavior |
 | --- | ---: | --- |
-| Research model responses | 3 | Includes the final research response; scope and nested model calls still share the hard total of six. |
+| Research model requests | 3 | Includes the first final candidate; scope and nested calls still share the hard total of six. |
 | Tool execution attempts | 4 | Includes failed execution attempts; checked inside each tool batch, not just before exposing tools. |
 | Consecutive no-progress steps | 2 | Close tools and ask for final output from existing evidence. |
 | Repeated identical action at unchanged evidence revision | 1 | Block the repeated execution and close research. |
-| Candidate repair allowance | 1 | A second recorded deterministic/scope rejection stops the run; no unvalidated draft is released. |
+| Candidate repair allowance | 1 | After research closes, one tools-closed candidate correction may use the remaining shared budget; a second rejected candidate stops the run. |
 | Tool deadline | 20 s | Close research on timeout; allow a final response if the outer budget permits. |
 | Model request deadline | 30 s | Stop and withhold on timeout, including verifier calls. |
 | Finalization time reserve | 30 s | Stop starting tools near the run deadline; reserve is clamped to at most one third of a custom run timeout. |
@@ -92,7 +92,12 @@ execution. No new planning model or summarization call is added. An empty result
 timeout or budget signal never establishes a factual absence.
 
 Soft closure does not bypass deterministic validation, scope receipts or the final
-release gate. One research turn is explicitly kept for finalization; one shared
+release gate. The first policy iteration did not leave a separate final-candidate
+repair slot: when the last research response was first rejected, the research
+turn cap prevented its allowed correction. The follow-up separates three research
+requests (including initial finalization) from at most one tools-closed repair.
+This does not open more searches or increase the shared hard total.
+One research turn is explicitly kept for finalization; one shared
 request slot and the existing token reserve remain for scope validation. If those
 resources are insufficient, the system still fails closed. The final answer and
 verifier are not guaranteed to fit merely because research closed early.
@@ -121,7 +126,8 @@ unverified cached-answer fallback was introduced.
 Offline agent-loop tests cover repeated unsuccessful search, two distinct empty
 results, progress resetting the counter, an oversized tool batch, recoverable tool
 timeout, terminal model timeout, validated server configuration, mandatory scope
-verification after soft closure and the one-repair rejection bound. Existing
+verification after soft closure and the one-repair rejection bound, including a separate tools-closed correction
+after research has closed. Existing
 security/receipt/release tests must continue passing. A live fixed-sample follow-up
 is recorded separately; no quality or cost improvement is asserted from passing
 unit tests alone.

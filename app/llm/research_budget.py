@@ -27,6 +27,7 @@ class ResearchBudget:
     policy: ResearchPolicy = field(default_factory=ResearchPolicy)
     deadline: float | None = None
     research_requests: int = 0
+    repair_requests: int = 0
     tool_attempts: int = 0
     blocked_tool_calls: int = 0
     no_progress: int = 0
@@ -99,6 +100,7 @@ class ResearchBudget:
         return {
             "policy": self.policy.model_dump(),
             "research_requests": self.research_requests,
+            "repair_requests": self.repair_requests,
             "tool_attempts": self.tool_attempts,
             "blocked_tool_calls": self.blocked_tool_calls,
             "consecutive_no_progress": self.no_progress,

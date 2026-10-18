@@ -299,3 +299,58 @@ async def test_rejected_scope_has_one_repair_and_cannot_be_released():
     assert json.loads(result.raw)["abstain"] and result.scope_receipt is None
     assert calls == 2 and checks == 1  # identical rejected candidate uses cached receipt
     assert result.telemetry["budget"]["research"]["terminal_reason"] == "VALIDATION_REPAIR_LIMIT"
+
+
+@pytest.mark.asyncio
+async def test_final_candidate_has_one_tools_closed_repair_inside_shared_limit():
+    calls = 0
+    checks = 0
+
+    def model(messages, info):
+        nonlocal calls
+        calls += 1
+        assert info.function_tools == []
+        claim = "The service uses TLS." if calls == 1 else "The backup uses SSH."
+        support = "E1.S1" if calls == 1 else "E1.S2"
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name,
+                    {"abstain": False, "answer_parts": [{"text": claim, "support_ids": [support]}]},
+                )
+            ]
+        )
+
+    def verifier(messages, info):
+        nonlocal checks
+        checks += 1
+        judgment = {
+            "claim_index": 0,
+            "verdict": "insufficient",
+            "reason": "SCOPE_NOT_ESTABLISHED",
+            "witnesses": [],
+        }
+        if checks == 2:
+            judgment = {
+                "claim_index": 0,
+                "verdict": "supported",
+                "reason": "NONE",
+                "witnesses": [{"support_id": "E1.S2", "quote": "The backup uses SSH."}],
+            }
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, {"checks": [judgment]})]
+        )
+
+    result = await run_agent(
+        FunctionModel(model),
+        deps(scope_validation_enabled=True),
+        scope_model=FunctionModel(verifier),
+        max_requests=4,
+        research_policy=ResearchPolicy(max_research_requests=1),
+    )
+    assert result.failure_code is None
+    assert calls == 2 and checks == 2 and result.telemetry["requests"] == 4
+    assert result.telemetry["budget"]["research"]["research_requests"] == 1
+    assert result.telemetry["budget"]["research"]["repair_requests"] == 1
+    assert result.scope_receipt is not None and not result.scope_receipt.failure_codes
+    assert "SSH" in result.raw

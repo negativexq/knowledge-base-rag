@@ -550,10 +550,18 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
     ) -> ModelResponse:
         deps = ctx.deps
         budget = deps.research_budget
+        repair_request = False
         if self.model_role == "agent":
             if budget.research_requests >= budget.policy.max_research_requests:
-                budget.terminate("RESEARCH_TURN_LIMIT")
-                raise UsageLimitExceeded("Research model turn allowance exhausted")
+                # A rejected final candidate may use its dedicated, tools-closed
+                # repair slot, still inside the shared hard request/token limits.
+                repair_request = (
+                    budget.validation_rejections > budget.repair_requests
+                    and budget.repair_requests < budget.policy.max_validation_repairs
+                )
+                if not repair_request:
+                    budget.terminate("RESEARCH_TURN_LIMIT")
+                    raise UsageLimitExceeded("Research model turn allowance exhausted")
         reserve_requests = deps.reserve_scope_requests if self.model_role == "agent" else 0
         reserve_tokens = deps.reserve_scope_tokens if self.model_role == "agent" else 0
         maximum = deps.scope_limits.request_limit
@@ -616,7 +624,10 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
         ) as span:
             mark_model(span, provider, model, self.model_role)
             if self.model_role == "agent":
-                budget.research_requests += 1
+                if repair_request:
+                    budget.repair_requests += 1
+                else:
+                    budget.research_requests += 1
             span.set_attribute("research.estimated_input_tokens", estimated_input)
             span.set_attribute("research.reserved_scope_tokens", reserve_tokens)
             try:
