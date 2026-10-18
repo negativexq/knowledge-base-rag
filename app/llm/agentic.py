@@ -11,29 +11,34 @@ import hashlib
 import json
 import logging
 import math
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Self
 
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic_ai import Agent, ModelRetry, RunContext
 from pydantic_ai.exceptions import UsageLimitExceeded
 from pydantic_ai.models import Model
+from pydantic_ai.settings import ModelSettings
+from pydantic_ai.tools import ToolDefinition
 from pydantic_ai.usage import RunUsage, UsageLimits
 
+from app.evaluation.critical_validator_runtime import ValidatorSelector
 from app.evaluation.forensic_capture import current_capture
-from app.evidence.support_units import build_support_units, serialize_support_units
+from app.evidence.support_units import SupportUnit, build_support_units, serialize_support_units
 from app.llm.calculation import Calculation, evaluate_expression, verify_calculation
 from app.llm.operand_resolver import Retrieve
 from app.llm.premise import missing_question_dates, missing_question_years
 from app.llm.structured_output import (
+    SupportUnitValidation,
     parse_support_unit_answer,
     validate_support_unit_answer,
 )
 from app.llm.visual_answer import PageRenderer, VisualAnswer, answer_from_pages, chunk_ranks
 from app.retrieval.hybrid_search import SearchResult
+from app.shared.config import Settings
 
 logger = logging.getLogger(__name__)
 PIPELINE_VERSION = "pipeline_agentic_v1"
@@ -84,7 +89,7 @@ class AgentAnswer(StrictModel):
     visual_reading_id: str | None = None
 
     @model_validator(mode="after")
-    def exclusive_outcome(self):
+    def exclusive_outcome(self) -> Self:
         if self.abstain and (self.answer_parts or self.visual_reading_id):
             raise ValueError("abstain cannot carry an answer")
         if not self.abstain and bool(self.answer_parts) == bool(self.visual_reading_id):
@@ -117,9 +122,11 @@ class EvidenceLedger:
         self._count = count_tokens
         self._budget = token_budget
         self._used = 0
-        self._keys: set[tuple] = set()
+        self._keys: set[tuple[Any, ...]] = set()
 
-    def add(self, blocks: list[SearchResult], *, allowance: int | None = None):
+    def add(
+        self, blocks: list[SearchResult], *, allowance: int | None = None
+    ) -> list[SearchResult]:
         added: list[SearchResult] = []
         remaining = min(self._budget - self._used, allowance or self._budget)
         for block in blocks:
@@ -153,7 +160,7 @@ class EvidenceLedger:
         return added
 
     @property
-    def units(self):
+    def units(self) -> list[SupportUnit]:
         return build_support_units(self.blocks)
 
     def text(self, blocks: list[SearchResult] | None = None) -> str:
@@ -173,13 +180,13 @@ class AgentDependencies:
     derived_answers: bool = False
     operand_resolver: bool = False
     visual_answers: bool = False
-    validator_version: str = "architecture_v2"
+    validator_version: ValidatorSelector = "architecture_v2"
     shadow_enabled: bool = False
     architecture_v2_shadow_enabled: bool = False
-    tool_events: list[dict] = field(default_factory=list)
+    tool_events: list[dict[str, Any]] = field(default_factory=list)
     visual_readings: dict[str, VisualAnswer] = field(default_factory=dict)
 
-    def validation(self, answer: AgentAnswer):
+    def validation(self, answer: AgentAnswer) -> SupportUnitValidation:
         return validate_support_unit_answer(
             parse_support_unit_answer(answer.raw_answer()),
             self.ledger.units,
@@ -189,18 +196,42 @@ class AgentDependencies:
             architecture_v2_shadow_enabled=self.architecture_v2_shadow_enabled,
         )
 
-    def check_premise(self):
+    def check_premise(self) -> None:
         texts = [unit.text for unit in self.ledger.units]
         if missing_question_years(self.question, texts) or missing_question_dates(
             self.question, texts
         ):
             raise ModelRetry("QUESTION_PREMISE_NOT_IN_EVIDENCE: find matching evidence or abstain")
 
-    def record(self, tool: str, **details):
+    def record(self, tool: str, **details: Any) -> None:
         self.tool_events.append({"tool": tool, **details})
 
 
-def build_agent(model: Model, *, retries: int = 2) -> Agent:
+def prepare_tool(
+    ctx: RunContext[AgentDependencies], definition: ToolDefinition
+) -> ToolDefinition | None:
+    deps = ctx.deps
+    if definition.name == "search" and deps.retrieve is None:
+        return None
+    if definition.name == "calculate" and not deps.derived_answers:
+        return None
+    if definition.name == "resolve_calculation" and not (
+        deps.derived_answers
+        and deps.operand_resolver
+        and getattr(deps.provider, "supports_structured", False)
+    ):
+        return None
+    if definition.name == "read_pages" and not (
+        deps.visual_answers
+        and deps.render_page
+        and getattr(deps.provider, "supports_images", False)
+        and getattr(deps.provider, "supports_structured", False)
+    ):
+        return None
+    return definition
+
+
+def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, AgentAnswer]:
     agent = Agent(
         model,
         deps_type=AgentDependencies,
@@ -210,8 +241,8 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
         name="knowledge_base_rag",
     )
 
-    @agent.tool(sequential=True)
-    async def search(ctx: RunContext[AgentDependencies], query: str) -> str:
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    async def search(ctx: RunContext[AgentDependencies], /, query: str) -> str:
         """Search authorized sources for a missing fact; returns stable support IDs."""
         deps = ctx.deps
         if not query.strip() or len(query) > 1000:
@@ -223,8 +254,8 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
         deps.record("search", returned_blocks=len(found), added_blocks=len(added))
         return deps.ledger.text(added) if added else "No new evidence within the evidence budget."
 
-    @agent.tool(sequential=True)
-    def read_document_section(ctx: RunContext[AgentDependencies], support_id: str) -> str:
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    def read_document_section(ctx: RunContext[AgentDependencies], /, support_id: str) -> str:
         """Inspect the authorized section containing a known support ID, with its other units."""
         deps = ctx.deps
         unit = next((u for u in deps.ledger.units if u.support_unit_id == support_id), None)
@@ -234,13 +265,14 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
         deps.record("read_document_section")
         return deps.ledger.text(blocks)
 
-    @agent.tool(sequential=True)
+    @agent.tool(sequential=True, prepare=prepare_tool)
     def calculate(
         ctx: RunContext[AgentDependencies],
+        /,
         expression: str,
         support_ids: list[str],
         decimals: int = 2,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Compute arithmetic from cited figures using the existing deterministic verifier."""
         deps = ctx.deps
         if not deps.derived_answers:
@@ -266,8 +298,8 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
         deps.record("calculate")
         return {"expression": expression, "result": result, "support_ids": support_ids}
 
-    @agent.tool(sequential=True)
-    async def resolve_calculation(ctx: RunContext[AgentDependencies]) -> dict:
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    async def resolve_calculation(ctx: RunContext[AgentDependencies], /) -> dict[str, Any]:
         """Bind operands to evidence and compute using the existing resolver."""
         from app.llm.operand_resolver import render_part_text, resolve_operands
 
@@ -289,6 +321,7 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
             return {
                 "resolved": False,
                 "failure_codes": trace.plan_codes,
+                "operand_codes": trace.operand_codes,
                 "next_action": "Search for the missing operand, then try again.",
             }
         return {
@@ -298,8 +331,8 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
             "calculation": {"expression": calculation.expression, "result": calculation.result},
         }
 
-    @agent.tool(sequential=True)
-    async def read_pages(ctx: RunContext[AgentDependencies], support_id: str) -> dict:
+    @agent.tool(sequential=True, prepare=prepare_tool)
+    async def read_pages(ctx: RunContext[AgentDependencies], /, support_id: str) -> dict[str, Any]:
         """Read and independently check page images of the source of a known support unit."""
         deps = ctx.deps
         if not (
@@ -313,7 +346,7 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
             raise ModelRetry("UNKNOWN_SUPPORT_ID: select a returned unit")
         deps.check_premise()
         source_units = [u for u in deps.ledger.units if u.source_id == unit.source_id]
-        trace: dict = {}
+        trace: dict[str, Any] = {}
         reading = await answer_from_pages(
             deps.question,
             source_units,
@@ -363,6 +396,32 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent:
     return agent
 
 
+class ToolProvider:
+    """Charge nested resolver/visual model calls to the same request budget."""
+
+    def __init__(self, provider: Any, usage: RunUsage, limits: UsageLimits) -> None:
+        self._provider, self._usage, self._limits = provider, usage, limits
+        self.supports_images = getattr(provider, "supports_images", False)
+        self.supports_structured = callable(getattr(provider, "chat_json", None))
+
+    async def chat_json(self, messages: list[dict[str, Any]], **kwargs: Any) -> str:
+        self._limits.check_before_request(self._usage)
+        self._usage.requests += 1
+        raw = await self._provider.chat_json(messages, **kwargs)
+        observation = getattr(self._provider, "last_call_observation", None) or {}
+        usage = observation.get("usage") or {}
+        self._usage.input_tokens += (
+            observation.get("prompt_tokens") or usage.get("input_tokens") or 0
+        )
+        self._usage.output_tokens += (
+            observation.get("output_tokens") or usage.get("output_tokens") or 0
+        )
+        self._limits.check_tokens(self._usage)
+        if not isinstance(raw, str):
+            raise TypeError("Tool model output must be a JSON string")
+        return raw
+
+
 async def run_agent(
     model: Model,
     deps: AgentDependencies,
@@ -372,10 +431,15 @@ async def run_agent(
     max_tokens: int = 60000,
     timeout_seconds: float = 120,
     retries: int = 2,
-    model_settings: dict | None = None,
+    model_settings: ModelSettings | None = None,
 ) -> AgentCandidate:
     agent = build_agent(model, retries=retries)
     usage = RunUsage()
+    limits = UsageLimits(
+        request_limit=max_requests, tool_calls_limit=max_tool_calls, total_tokens_limit=max_tokens
+    )
+    if deps.provider is not None:
+        deps.provider = ToolProvider(deps.provider, usage, limits)
     failure = None
     visual = None
     raw = '{"answer_parts":[],"abstain":true}'
@@ -388,15 +452,11 @@ async def run_agent(
                 + deps.ledger.text(),
                 deps=deps,
                 usage=usage,
-                usage_limits=UsageLimits(
-                    request_limit=max_requests,
-                    tool_calls_limit=max_tool_calls,
-                    total_tokens_limit=max_tokens,
-                ),
+                usage_limits=limits,
                 model_settings=model_settings,
             )
         raw = result.output.raw_answer()
-        visual = deps.visual_readings.get(result.output.visual_reading_id)
+        visual = deps.visual_readings.get(result.output.visual_reading_id or "")
     except UsageLimitExceeded:
         failure = "AGENT_BUDGET_EXCEEDED"
     except TimeoutError:
@@ -421,7 +481,7 @@ async def run_agent(
 
 
 @asynccontextmanager
-async def agent_model(settings):
+async def agent_model(settings: Settings) -> AsyncIterator[Model]:
     """Own and close native SDK clients; keep the existing generation provider usable by tools."""
     from app.llm.provider import default_chat_model
 

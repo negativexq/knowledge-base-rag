@@ -163,12 +163,21 @@ async def ask(deps, client: QdrantClient, question) -> dict:
     try:
 
         async def retrieve(query: str):
-            return await deps.search_fn(query, context, RetrievalReport())
+            found = await deps.search_fn(query, context, RetrievalReport())
+            if deps.agentic_rag_enabled and deps.evidence_fn:
+                return await deps.evidence_fn(found, context)
+            return found
 
-        extra = {"retrieve": retrieve} if deps.operand_resolver_enabled else {}
+        extra = (
+            {"retrieve": retrieve}
+            if (deps.operand_resolver_enabled or deps.agentic_rag_enabled)
+            else {}
+        )
         async for event in deps.stream_fn(question.question, blocks, **extra):
             if event["type"] == "token":
                 answer += event["content"]
+            elif event["type"] == "evidence_update":
+                blocks = event["blocks"]
             elif event["type"] == "metadata":
                 metadata = event
             elif event["type"] == "security_validation":
@@ -352,6 +361,7 @@ async def main() -> None:
             "top_n": settings.reranker_top_n,
             "candidate_k": settings.reranker_candidate_k,
             "flags": {
+                "AGENTIC_RAG_ENABLED": settings.agentic_rag_enabled,
                 "DERIVED_ANSWERS_ENABLED": settings.derived_answers_enabled,
                 "OPERAND_RESOLVER_ENABLED": settings.operand_resolver_enabled,
                 "VISUAL_ANSWERS_ENABLED": settings.visual_answers_enabled,

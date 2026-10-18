@@ -212,6 +212,77 @@ def build_chat_dependencies(
     page_renderer = pdf_page_renderer(settings.filesystem_root_path)
 
     async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None):
+        if settings.agentic_rag_enabled:
+            from app.llm.agentic import (
+                PIPELINE_VERSION,
+                AgentDependencies,
+                EvidenceLedger,
+                agent_model,
+                run_agent,
+            )
+
+            async def candidate_generator(query, initial_blocks):
+                context_tokens = default_context_tokens(settings)
+                budget = min(settings.agentic_evidence_token_budget, context_tokens // 2)
+                ledger = EvidenceLedger(count_prompt_tokens, budget)
+                ledger.add(initial_blocks)
+                agent_deps = AgentDependencies(
+                    query,
+                    ledger,
+                    retrieve=retrieve,
+                    provider=chat_provider,
+                    generation_kwargs={
+                        "model": default_chat_model(settings),
+                        "think": settings.ollama_thinking,
+                        "num_ctx": context_tokens,
+                        "num_predict": 1024,
+                        "temperature": 0.0,
+                    },
+                    derived_answers=settings.derived_answers_enabled,
+                    operand_resolver=settings.operand_resolver_enabled,
+                    visual_answers=settings.visual_answers_enabled,
+                    render_page=page_renderer,
+                    validator_version=settings.critical_validator_version,
+                    shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+                    architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+                )
+                model_settings = {"max_tokens": 1024, "temperature": 0.0}
+                if settings.generation_provider == "openai":
+                    model_settings["openai_reasoning_effort"] = "none"
+                elif settings.generation_provider == "ollama":
+                    model_settings["extra_body"] = {
+                        "options": {"num_ctx": context_tokens},
+                        "think": settings.ollama_thinking,
+                    }
+                async with agent_model(settings) as native_model:
+                    return await run_agent(
+                        native_model,
+                        agent_deps,
+                        max_requests=settings.agentic_max_requests,
+                        max_tool_calls=settings.agentic_max_tool_calls,
+                        max_tokens=settings.agentic_max_tokens,
+                        timeout_seconds=settings.agentic_timeout_seconds,
+                        retries=settings.agentic_output_retries,
+                        model_settings=model_settings,
+                    )
+
+            async for event in stream_support_unit_answer(
+                question,
+                chunks,
+                chat_provider,
+                model=default_chat_model(settings),
+                prompt_version=settings.support_id_prompt_version,
+                validator_version=settings.critical_validator_version,
+                shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+                architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+                derived_answers=settings.derived_answers_enabled,
+                num_ctx=default_context_tokens(settings),
+                candidate_generator=candidate_generator,
+            ):
+                if event["type"] == "metadata":
+                    event = {**event, "pipeline_version": PIPELINE_VERSION}
+                yield event
+            return
         if settings.support_ids_enabled:
             async for event in stream_support_unit_answer(
                 question,
@@ -268,8 +339,11 @@ def build_chat_dependencies(
             evidence_fn=evidence_fn
             if settings.rag_pipeline_v2 or settings.support_ids_enabled
             else None,
+            agentic_rag_enabled=settings.agentic_rag_enabled,
             pipeline_version=(
-                "pipeline_support_ids"
+                "pipeline_agentic_v1"
+                if settings.agentic_rag_enabled
+                else "pipeline_support_ids"
                 if settings.support_ids_enabled
                 else "pipeline_v2_2_evidence_backed"
                 if settings.rag_pipeline_v2

@@ -168,6 +168,7 @@ class ChatDependencies:
     # The answer path may search once more for a computed answer's missing
     # operands (app/llm/operand_resolver.py), within this request's scope.
     operand_resolver_enabled: bool = False
+    agentic_rag_enabled: bool = False
 
 
 @dataclass(frozen=True)
@@ -360,7 +361,11 @@ async def _sse_event_stream(
         if deps.evidence_fn is not None:
             chunks = await deps.evidence_fn(anchor_chunks, context)
             span.set_attribute("pipeline.evidence_block_count", len(chunks))
-        generation_skip_reason = _generation_skip_reason(observation.reason, chunks)
+        generation_skip_reason = (
+            None
+            if deps.agentic_rag_enabled
+            else _generation_skip_reason(observation.reason, chunks)
+        )
         span.set_attribute("answerability.generation_skipped", generation_skip_reason is not None)
         token_counts = [chunk.payload.get("token_count") for chunk in chunks]
         report.context.update(
@@ -436,7 +441,7 @@ async def _sse_event_stream(
                 chunks,
                 **(
                     {"retrieve": _scoped_retrieve(deps, context, scope)}
-                    if deps.operand_resolver_enabled
+                    if deps.operand_resolver_enabled or deps.agentic_rag_enabled
                     else {}
                 ),
             )
@@ -446,6 +451,9 @@ async def _sse_event_stream(
                 if screening is not None:
                     shown_tokens.append(event["content"])
                 yield f"data: {json.dumps({'token': event['content']})}\n\n"
+            elif event["type"] == "evidence_update":
+                sources = [source_payload(i, c) for i, c in enumerate(event["blocks"], 1)]
+                yield f"event: sources\ndata: {json.dumps({'sources': sources})}\n\n"
             elif event["type"] == "metadata":
                 payload = {k: v for k, v in event.items() if k != "type"}
                 yield f"event: metadata\ndata: {json.dumps(payload)}\n\n"
@@ -475,7 +483,10 @@ def _scoped_retrieve(deps: ChatDependencies, context: RetrievalContext, scope: d
     scope as the request's own search, with its own report."""
 
     async def retrieve(query: str) -> list[SearchResult]:
-        return await deps.search_fn(query, context, RetrievalReport(), **scope)
+        found = await deps.search_fn(query, context, RetrievalReport(), **scope)
+        if deps.agentic_rag_enabled and deps.evidence_fn is not None:
+            return await deps.evidence_fn(found, context)
+        return found
 
     return retrieve
 

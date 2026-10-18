@@ -259,3 +259,141 @@ async def test_unsupported_year_cannot_be_answered_from_nearby_evidence():
     result = await run_agent(FunctionModel(model), deps)
     assert json.loads(result.raw)["abstain"]
     assert result.failure_code is None
+
+
+@pytest.mark.asyncio
+async def test_verified_visual_reading_is_selected_without_rewriting_it(monkeypatch):
+    import app.llm.agentic as agentic
+    from app.llm.visual_answer import VisualAnswer
+
+    class Provider:
+        supports_images = True
+
+        async def chat_json(self, *args, **kwargs):
+            raise AssertionError("The reading is provided by the test double")
+
+    async def read(question, units, provider, renderer, **kwargs):
+        assert all(u.source_id == "manual" for u in units)
+        return VisualAnswer("Blue", "manual", 1)
+
+    monkeypatch.setattr(agentic, "answer_from_pages", read)
+
+    def model(messages, info):
+        if not returns(messages):
+            return ModelResponse(parts=[ToolCallPart("read_pages", {"support_id": "E1.S1"})])
+        reading_id = returns(messages)[0].content["visual_reading_id"]
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name,
+                    {
+                        "answer_parts": [],
+                        "abstain": False,
+                        "visual_reading_id": reading_id,
+                    },
+                )
+            ]
+        )
+
+    deps = dependencies(
+        [block(page_number=1)],
+        provider=Provider(),
+        visual_answers=True,
+        render_page=lambda *_: b"image",
+    )
+    result = await run_agent(FunctionModel(model), deps)
+    assert result.failure_code is None
+    assert result.visual == VisualAnswer("Blue", "manual", 1)
+    assert json.loads(result.raw)["answer_parts"] == []
+
+
+@pytest.mark.asyncio
+async def test_nested_model_requests_share_agent_budget():
+    calls = 0
+
+    class Provider:
+        supports_images = True
+        last_call_observation = {"usage": {"input_tokens": 20, "output_tokens": 10}}
+
+        async def chat_json(self, *args, **kwargs):
+            nonlocal calls
+            calls += 1
+            return '{"answer":"Blue","page":1,"observation":"a blue box","abstain":false}'
+
+    def model(messages, info):
+        return ModelResponse(parts=[ToolCallPart("read_pages", {"support_id": "E1.S1"})])
+
+    deps = dependencies(
+        [block(page_number=1)],
+        provider=Provider(),
+        visual_answers=True,
+        render_page=lambda *_: b"image",
+    )
+    result = await run_agent(FunctionModel(model), deps, max_requests=2)
+    assert result.failure_code == "AGENT_BUDGET_EXCEEDED"
+    assert result.visual is None
+    # One orchestration request plus the reading; no budget for its confirming call.
+    assert calls == 1
+    assert result.telemetry["requests"] == 2
+
+
+@pytest.mark.asyncio
+async def test_disabled_tools_are_not_exposed_to_model():
+    def model(messages, info):
+        assert [t.name for t in info.function_tools] == ["read_document_section"]
+        return refusal(info)
+
+    result = await run_agent(FunctionModel(model), dependencies())
+    assert result.failure_code is None
+
+
+@pytest.mark.asyncio
+async def test_complex_resolver_tool_uses_existing_binding_and_calculation():
+    class Provider:
+        async def chat_json(self, messages, **kwargs):
+            return json.dumps(
+                {
+                    "program": "a - b",
+                    "operands": [
+                        {
+                            "name": "a",
+                            "what": "Revenue",
+                            "value": "100",
+                            "support_id": "E1.S1",
+                            "labels": ["Revenue"],
+                            "search": None,
+                        },
+                        {
+                            "name": "b",
+                            "what": "Cost",
+                            "value": "60",
+                            "support_id": "E1.S1",
+                            "labels": ["Cost"],
+                            "search": None,
+                        },
+                    ],
+                    "result_label": "The difference",
+                    "percent": False,
+                    "decimals": 0,
+                }
+            )
+
+    def model(messages, info):
+        if not returns(messages):
+            return ModelResponse(parts=[ToolCallPart("resolve_calculation", {})])
+        candidate = returns(messages)[0].content
+        assert candidate["resolved"]
+        assert candidate["calculation"]["result"] == "40"
+        return answer(info, candidate["text"], calculation=candidate["calculation"])
+
+    deps = dependencies(
+        [block("Revenue: 100. Cost: 60.")],
+        provider=Provider(),
+        derived_answers=True,
+        operand_resolver=True,
+    )
+    deps.question = "What is the difference between revenue and cost?"
+    result = await run_agent(FunctionModel(model), deps)
+    assert result.failure_code is None
+    assert not json.loads(result.raw)["abstain"]
+    assert result.telemetry["requests"] == 3

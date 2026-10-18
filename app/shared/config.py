@@ -89,6 +89,21 @@ class Settings(BaseSettings):
     # (app/llm/visual_answer.py). Needs an image-capable provider; off by default.
     visual_answers_enabled: bool = False
 
+    # Agentic orchestration is opt-in until paired benchmark runs justify rollout.
+    agentic_rag_enabled: bool = False
+    agentic_max_requests: int = Field(default=6, ge=1, le=20)
+    agentic_max_tool_calls: int = Field(default=8, ge=1, le=30)
+    agentic_max_tokens: int = Field(default=60000, ge=1000, le=500000)
+    agentic_timeout_seconds: float = Field(default=120.0, gt=0, le=600)
+    agentic_output_retries: int = Field(default=2, ge=0, le=5)
+    agentic_evidence_token_budget: int = Field(default=24000, ge=100, le=50000)
+
+    @model_validator(mode="after")
+    def validate_agentic_profile(self) -> Self:
+        if self.agentic_rag_enabled and not self.support_ids_enabled:
+            raise ValueError("AGENTIC_RAG_ENABLED requires SUPPORT_IDS_ENABLED")
+        return self
+
     # Explicit local/debug forensic capture.  Both switches are required for
     # raw text; normal production telemetry remains bounded and unaffected.
     rag_forensic_capture_enabled: bool = False

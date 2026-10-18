@@ -7,10 +7,10 @@ import json
 import re
 import time
 import unicodedata
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from opentelemetry import trace
 
@@ -54,6 +54,11 @@ from app.llm.visual_answer import (
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer, mark_llm_generation
+
+if TYPE_CHECKING:
+    from app.llm.agentic import AgentCandidate
+
+CandidateGenerator = Callable[[str, list[SearchResult]], Awaitable["AgentCandidate"]]
 
 EVIDENCE_BACKED_OUTPUT_CONTRACT_VERSION = "output_contract_v2_2"
 EVIDENCE_BACKED_PIPELINE_VERSION = "pipeline_v2_2_evidence_backed"
@@ -1308,6 +1313,7 @@ async def stream_support_unit_answer(
     retrieve: Retrieve | None = None,
     visual_answers: bool = False,
     render_page: PageRenderer | None = None,
+    candidate_generator: CandidateGenerator | None = None,
 ):
     """Generate an answer whose citations are request-scoped support IDs.
 
@@ -1342,7 +1348,10 @@ async def stream_support_unit_answer(
         mark_llm_generation(span, model)
         span.set_attribute("generate.prompt_version", prompt_version)
         span.set_attribute("generate.context_chunk_count", len(blocks))
-        span.set_attribute("pipeline.version", SUPPORT_ID_PIPELINE_VERSION)
+        span.set_attribute(
+            "pipeline.version",
+            "pipeline_agentic_v1" if candidate_generator else SUPPORT_ID_PIPELINE_VERSION,
+        )
         trace_id = format(span.get_span_context().trace_id, "032x")
         telemetry: dict[str, Any] = {}
         async for event in _support_unit_answer_events(
@@ -1366,6 +1375,7 @@ async def stream_support_unit_answer(
             retrieve=retrieve,
             visual_answers=visual_answers,
             render_page=render_page,
+            candidate_generator=candidate_generator,
         ):
             for name, value in telemetry.items():
                 if value is not None:
@@ -1409,8 +1419,22 @@ async def _support_unit_answer_events(
     retrieve: Retrieve | None = None,
     visual_answers: bool = False,
     render_page: PageRenderer | None = None,
+    candidate_generator: CandidateGenerator | None = None,
 ):
     telemetry = telemetry if telemetry is not None else {}
+    candidate = None
+    if candidate_generator is not None:
+        candidate = await candidate_generator(query, blocks)
+        blocks = candidate.blocks
+        telemetry["agent_requests"] = candidate.telemetry.get("requests", 0)
+        telemetry["agent_tool_calls"] = candidate.telemetry.get("tool_calls", 0)
+        # Replaces the initial sources before the final support-ID map arrives.
+        yield {"type": "evidence_update", "blocks": blocks}
+    pipeline_version = (
+        candidate.telemetry.get("pipeline_version", "pipeline_agentic_v1")
+        if candidate is not None
+        else SUPPORT_ID_PIPELINE_VERSION
+    )
     instructions = SUPPORT_ID_OUTPUT_INSTRUCTIONS
     if derived_answers:
         instructions = f"{instructions}\n{DERIVED_ANSWER_INSTRUCTIONS}"
@@ -1427,7 +1451,7 @@ async def _support_unit_answer_events(
     units = build_support_units(blocks)
     messages = messages_for(units)
     prompt_fit: dict[str, int] | None = None
-    if count_tokens is not None:
+    if count_tokens is not None and candidate is None:
         built_count = len(units)
         units, messages, prompt_tokens = _fit_to_context(
             units, messages, messages_for, count_tokens, num_ctx
@@ -1455,10 +1479,11 @@ async def _support_unit_answer_events(
     yield {
         "type": "metadata",
         "prompt_version": prompt_version,
-        "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
+        "pipeline_version": pipeline_version,
         "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
         "support_units": support_unit_citation_map(units, blocks),
         "prompt_fit": prompt_fit,
+        **({"agentic": candidate.telemetry} if candidate is not None else {}),
     }
     generation_kwargs = {
         "model": model,
@@ -1474,10 +1499,22 @@ async def _support_unit_answer_events(
     if seed is not None:
         generation_kwargs["seed"] = seed
     generation_started = time.perf_counter()
-    raw = await provider.chat_json(messages, **generation_kwargs)
+    raw = (
+        candidate.raw
+        if candidate is not None
+        else await provider.chat_json(messages, **generation_kwargs)
+    )
     generation_ms = round((time.perf_counter() - generation_started) * 1000, 3)
     # Best effort: the provider's record of its most recent call.
-    observation = getattr(provider, "last_call_observation", None) or {}
+    observation = (
+        {
+            "done_reason": candidate.failure_code or "stop",
+            "prompt_tokens": candidate.telemetry.get("input_tokens"),
+            "output_tokens": candidate.telemetry.get("output_tokens"),
+        }
+        if candidate is not None
+        else getattr(provider, "last_call_observation", None) or {}
+    )
     done_reason = observation.get("done_reason")
     telemetry["done_reason"] = done_reason
     telemetry["provider_prompt_tokens"] = observation.get("prompt_tokens")
@@ -1541,6 +1578,15 @@ async def _support_unit_answer_events(
                 "architecture_v2_shadow_disagreements": [],
             },
         )
+    if candidate is not None and candidate.failure_code:
+        validation = replace(
+            validation,
+            valid_parts=[],
+            failure_codes=[candidate.failure_code],
+            model_abstain=False,
+            application_abstain=True,
+            top_level_valid=False,
+        )
     unit_texts = [unit.text for unit in units]
     missing_years = missing_question_years(query, unit_texts)
     missing_dates = missing_question_dates(query, unit_texts)
@@ -1559,7 +1605,7 @@ async def _support_unit_answer_events(
             },
         )
     withheld = validation.model_abstain or validation.application_abstain
-    if operand_resolver and withheld and not (missing_years or missing_dates):
+    if candidate is None and operand_resolver and withheld and not (missing_years or missing_dates):
         resolved, resolver_trace = await _resolved_validation(
             query,
             units,
@@ -1583,16 +1629,17 @@ async def _support_unit_answer_events(
                 yield {
                     "type": "metadata",
                     "prompt_version": prompt_version,
-                    "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
+                    "pipeline_version": pipeline_version,
                     "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
                     "support_units": support_unit_citation_map(
                         units, [*blocks, *resolver_trace.blocks]
                     ),
                     "prompt_fit": prompt_fit,
                 }
-    visual: VisualAnswer | None = None
+    visual: VisualAnswer | None = candidate.visual if candidate is not None else None
     if (
-        visual_answers
+        candidate is None
+        and visual_answers
         and render_page is not None
         and getattr(provider, "supports_images", False)
         and (validation.model_abstain or validation.application_abstain)
@@ -1613,6 +1660,8 @@ async def _support_unit_answer_events(
             if not capture.raw_text:
                 visual_trace = {"pages": visual_trace.get("pages", [])}
             capture.stage("visual_answer", {**visual_trace, "answered": visual is not None})
+    if missing_years or missing_dates:
+        visual = None
     final_abstain = validation.model_abstain or validation.application_abstain
     telemetry = validation.validator_telemetry
     if capture is not None:
@@ -1713,7 +1762,7 @@ async def _support_unit_answer_events(
         evaluation_observation.validated_output = rendered
         evaluation_observation.validated_output_available = user_visible
         evaluation_observation.user_visible_output_available = user_visible
-        evaluation_observation.pipeline_version = SUPPORT_ID_PIPELINE_VERSION
+        evaluation_observation.pipeline_version = pipeline_version
         evaluation_observation.output_contract_version = SUPPORT_ID_OUTPUT_CONTRACT_VERSION
         evaluation_observation.model_abstention = validation.model_abstain
         evaluation_observation.application_forced_abstention = (
