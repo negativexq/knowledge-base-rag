@@ -528,7 +528,13 @@ def build_agent(model: Model, *, retries: int = 2) -> Agent[AgentDependencies, A
             if answer.visual_reading_id not in deps.visual_readings:
                 raise ModelRetry("Choose a verified visual_reading_id returned by read_pages")
             return answer
-        if not deps.derived_answers and any(p.calculation or p.counts for p in answer.answer_parts):
+        if not deps.derived_answers and any(
+            p.calculation or p.counts
+            for p in [
+                *answer.answer_parts,
+                *(cell for row in answer.comparison for cell in row.cells),
+            ]
+        ):
             raise ModelRetry("Derived answers are disabled")
         validation = deps.validation(answer)
         if validation.failure_codes or validation.application_abstain:

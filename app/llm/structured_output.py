@@ -8,6 +8,7 @@ import re
 import time
 import unicodedata
 from collections.abc import Awaitable, Callable
+from contextlib import aclosing
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
@@ -1355,47 +1356,50 @@ async def stream_support_unit_answer(
         )
         trace_id = format(span.get_span_context().trace_id, "032x")
         telemetry: dict[str, Any] = {}
-        async for event in _support_unit_answer_events(
-            query,
-            blocks,
-            provider,
-            model=model,
-            prompt_version=prompt_version,
-            context_serializer=context_serializer,
-            evaluation_observation=evaluation_observation,
-            think=think,
-            num_ctx=num_ctx,
-            seed=seed,
-            validator_version=validator_version,
-            shadow_enabled=shadow_enabled,
-            architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
-            count_tokens=count_tokens,
-            telemetry=telemetry,
-            derived_answers=derived_answers,
-            operand_resolver=operand_resolver,
-            retrieve=retrieve,
-            visual_answers=visual_answers,
-            render_page=render_page,
-            candidate_generator=candidate_generator,
-        ):
-            for name, value in telemetry.items():
-                if value is not None:
-                    span.set_attribute(f"generate.{name}", value)
-            if event["type"] == "metadata":
-                event = {**event, "trace_id": trace_id}
-            elif event["type"] == "security_validation":
-                span.set_attribute("security.output_policy_passed", event["passed"])
-                span.set_attribute("generate.abstain", event["abstain"])
-                span.set_attribute(
-                    "generate.application_forced_abstention",
-                    event["application_forced_abstention"],
-                )
-                if event["validator_failure_codes"]:
+        async with aclosing(
+            _support_unit_answer_events(
+                query,
+                blocks,
+                provider,
+                model=model,
+                prompt_version=prompt_version,
+                context_serializer=context_serializer,
+                evaluation_observation=evaluation_observation,
+                think=think,
+                num_ctx=num_ctx,
+                seed=seed,
+                validator_version=validator_version,
+                shadow_enabled=shadow_enabled,
+                architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+                count_tokens=count_tokens,
+                telemetry=telemetry,
+                derived_answers=derived_answers,
+                operand_resolver=operand_resolver,
+                retrieve=retrieve,
+                visual_answers=visual_answers,
+                render_page=render_page,
+                candidate_generator=candidate_generator,
+            )
+        ) as events:
+            async for event in events:
+                for name, value in telemetry.items():
+                    if value is not None:
+                        span.set_attribute(f"generate.{name}", value)
+                if event["type"] == "metadata":
+                    event = {**event, "trace_id": trace_id}
+                elif event["type"] == "security_validation":
+                    span.set_attribute("security.output_policy_passed", event["passed"])
+                    span.set_attribute("generate.abstain", event["abstain"])
                     span.set_attribute(
-                        "generate.validator_failure_codes",
-                        tuple(event["validator_failure_codes"]),
+                        "generate.application_forced_abstention",
+                        event["application_forced_abstention"],
                     )
-            yield event
+                    if event["validator_failure_codes"]:
+                        span.set_attribute(
+                            "generate.validator_failure_codes",
+                            tuple(event["validator_failure_codes"]),
+                        )
+                yield event
 
 
 async def _support_unit_answer_events(
@@ -1425,11 +1429,12 @@ async def _support_unit_answer_events(
     telemetry = telemetry if telemetry is not None else {}
     candidate = None
     if candidate_generator is not None:
-        async for progress in with_progress(candidate_generator(query, blocks)):
-            if progress["type"] == "candidate":
-                candidate = progress["candidate"]
-            else:
-                yield progress
+        async with aclosing(with_progress(candidate_generator(query, blocks))) as progress_events:
+            async for progress in progress_events:
+                if progress["type"] == "candidate":
+                    candidate = progress["candidate"]
+                else:
+                    yield progress
         assert candidate is not None
         if candidate.clarification is not None and candidate.failure_code is None:
             yield {"type": "clarification", **candidate.clarification}

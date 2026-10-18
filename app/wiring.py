@@ -1,5 +1,6 @@
 import logging
 import time
+from contextlib import aclosing
 
 from fastapi import FastAPI
 from qdrant_client import QdrantClient
@@ -36,6 +37,7 @@ from app.migration.readiness import check_readiness
 from app.migration.startup_guard import ensure_embedding_schema_match
 from app.registry.store import DocumentRegistry
 from app.reranker.cross_encoder import CrossEncoderReranker
+from app.research.feedback import FeedbackStore
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.retrieval.search import search
@@ -268,22 +270,25 @@ def build_chat_dependencies(
                         model_settings=model_settings,
                     )
 
-            async for event in stream_support_unit_answer(
-                question,
-                chunks,
-                chat_provider,
-                model=default_chat_model(settings),
-                prompt_version=settings.support_id_prompt_version,
-                validator_version=settings.critical_validator_version,
-                shadow_enabled=settings.critical_validator_v3_shadow_enabled,
-                architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
-                derived_answers=settings.derived_answers_enabled,
-                num_ctx=default_context_tokens(settings),
-                candidate_generator=candidate_generator,
-            ):
-                if event["type"] == "metadata":
-                    event = {**event, "pipeline_version": PIPELINE_VERSION}
-                yield event
+            async with aclosing(
+                stream_support_unit_answer(
+                    question,
+                    chunks,
+                    chat_provider,
+                    model=default_chat_model(settings),
+                    prompt_version=settings.support_id_prompt_version,
+                    validator_version=settings.critical_validator_version,
+                    shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+                    architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+                    derived_answers=settings.derived_answers_enabled,
+                    num_ctx=default_context_tokens(settings),
+                    candidate_generator=candidate_generator,
+                )
+            ) as events:
+                async for event in events:
+                    if event["type"] == "metadata":
+                        event = {**event, "pipeline_version": PIPELINE_VERSION}
+                    yield event
             return
         if settings.support_ids_enabled:
             async for event in stream_support_unit_answer(
@@ -483,7 +488,12 @@ def build_app(settings: Settings) -> FastAPI:
     async def close_qdrant_client() -> None:
         qdrant_client.close()
 
-    on_shutdown = [ollama.aclose, chat_provider.aclose, close_qdrant_client]
+    feedback = FeedbackStore(settings.research_feedback_db_path)
+
+    async def close_feedback() -> None:
+        feedback.close()
+
+    on_shutdown = [ollama.aclose, chat_provider.aclose, close_qdrant_client, close_feedback]
     for connector in connectors.values():
         if hasattr(connector, "aclose"):
             on_shutdown.append(connector.aclose)
@@ -504,4 +514,5 @@ def build_app(settings: Settings) -> FastAPI:
         cors_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
         settings=settings,
         tracer_provider=tracer_provider,
+        research_feedback_store=feedback,
     )

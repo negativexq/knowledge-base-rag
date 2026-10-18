@@ -160,3 +160,48 @@ async def test_closing_progress_stream_cancels_underlying_work():
     assert (await anext(stream))["status"] == "running"
     await stream.aclose()
     assert cancelled.is_set()
+
+
+@pytest.mark.asyncio
+async def test_closing_answer_stream_cancels_agent_and_resets_request_context():
+    from app.api.chat import ChatDependencies, _sse_event_stream
+    from app.evaluation.forensic_capture import current_capture
+    from app.security.models import RetrievalContext
+
+    stopped = asyncio.Event()
+
+    async def generator(query, blocks):
+        try:
+            publish({"id": "search", "operation": "search", "status": "running"})
+            await asyncio.Event().wait()
+        finally:
+            stopped.set()
+
+    async def search(*args, **kwargs):
+        return deps().ledger.blocks
+
+    async def stream(query, blocks, **kwargs):
+        from contextlib import aclosing
+
+        async with aclosing(
+            stream_support_unit_answer(
+                query,
+                blocks,
+                None,
+                model="fake",
+                candidate_generator=generator,
+            )
+        ) as events:
+            async for event in events:
+                yield event
+
+    chat = ChatDependencies(
+        search_fn=search, stream_fn=stream, agentic_rag_enabled=True, forensic_capture_enabled=True
+    )
+    previous = current_capture()
+    events = _sse_event_stream("Question", chat, RetrievalContext("a"))
+    while "event: research_progress" not in await anext(events):
+        pass
+    await events.aclose()
+    assert stopped.is_set()
+    assert current_capture() is previous

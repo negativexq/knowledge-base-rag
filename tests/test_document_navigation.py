@@ -87,3 +87,56 @@ async def test_pagination_and_missing_documents_are_explicit(reader):
     missing = request()
     missing.document.document_version = "missing"
     assert (await reader.read(missing)).outline == []
+
+
+@pytest.mark.asyncio
+async def test_agent_reads_unseen_page_and_cites_new_stable_evidence(reader):
+    from pydantic_ai.messages import ModelResponse, ToolCallPart, ToolReturnPart
+    from pydantic_ai.models.function import FunctionModel
+
+    from app.llm.agentic import AgentDependencies, EvidenceLedger, run_agent
+
+    initial = await reader.read(request("page", page=1))
+    ledger = EvidenceLedger(lambda text: len(text.split()), 1000)
+    ledger.add(initial.blocks)
+
+    def model(messages, info):
+        returned = [p for m in messages for p in m.parts if isinstance(p, ToolReturnPart)]
+        if not returned:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        "navigate_document",
+                        {
+                            "support_id": "E1.S1",
+                            "action": "page",
+                            "page": 3,
+                        },
+                    )
+                ]
+            )
+        assert "E2.S1" in returned[0].content["evidence"]
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name,
+                    {
+                        "answer_parts": [
+                            {"text": "Windows instructions", "support_ids": ["E2.S1"]}
+                        ],
+                        "abstain": False,
+                    },
+                )
+            ]
+        )
+
+    result = await run_agent(
+        FunctionModel(model),
+        AgentDependencies(
+            "Find the Windows instructions",
+            ledger,
+            documents=reader,
+        ),
+    )
+    assert result.failure_code is None
+    assert len(result.blocks) == 2

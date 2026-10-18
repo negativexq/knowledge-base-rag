@@ -93,7 +93,7 @@ class DocumentReader:
         collection: str,
         context: RetrievalContext,
         source_ids: list[str] | None = None,
-    ):
+    ) -> None:
         self.client, self.collection, self.context = client, collection, context
         self.source_ids = frozenset(source_ids) if source_ids is not None else None
 
@@ -102,7 +102,7 @@ class DocumentReader:
         acl = build_acl_filter(self.context)
         if self.source_ids is not None and ref.source_id not in self.source_ids:
             return [], False
-        conditions = [
+        conditions: list[qm.Condition] = [
             qm.FieldCondition(key=k, match=qm.MatchValue(value=v))
             for k, v in ref.model_dump().items()
         ]

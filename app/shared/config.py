@@ -277,6 +277,7 @@ class Settings(BaseSettings):
     qdrant_collection_name: str = "kb_chunks"
 
     registry_db_path: str = "data/registry.db"
+    research_feedback_db_path: str = "data/research-feedback.db"
 
     # Real folder LocalFilesystemConnector scans when wired for real.
     filesystem_root_path: str = "data/documents"
