@@ -503,3 +503,12 @@ export interface FeedbackRecord extends FeedbackSubmission {
   id: string; user_id: string; status: "open" | "triaged" | "resolved" | "dismissed"
   created_at: string; updated_at: string; reviewer_note: string; snapshot_origin: "user_submitted"
 }
+
+export interface DocumentPolicy {
+  source_type: string
+  source_id: string
+  access: "tenant" | "restricted"
+  user_ids: string[]
+  group_ids: string[]
+  revision: number
+}

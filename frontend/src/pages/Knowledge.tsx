@@ -1,3 +1,4 @@
+import { DocumentPermissions } from "@/components/DocumentPermissions"
 import { DocumentExplorer } from "@/components/DocumentExplorer"
 import { useQuery } from "@tanstack/react-query"
 import { ChevronRight, Database, FileText } from "lucide-react"
@@ -96,6 +97,7 @@ export default function Knowledge() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
+      {identity?.is_admin && <DocumentPermissions scope={scope} />}
 
       {sources.data!.length === 0 ? (
         <EmptyState
