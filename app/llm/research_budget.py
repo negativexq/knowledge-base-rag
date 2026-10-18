@@ -17,7 +17,9 @@ class ResearchPolicy(BaseModel):
     max_tool_attempts: int = Field(default=4, ge=1, le=20)
     max_no_progress: int = Field(default=2, ge=1, le=5)
     max_validation_repairs: int = Field(default=1, ge=0, le=3)
-    tool_timeout_seconds: float = Field(default=20, gt=0, le=120)
+    # A research search reruns the request's retrieval and reranking; on local
+    # hardware that alone can exceed 20 s, which closed research before it began.
+    tool_timeout_seconds: float = Field(default=45, gt=0, le=120)
     model_timeout_seconds: float = Field(default=30, gt=0, le=120)
     finalize_reserve_seconds: float = Field(default=30, ge=0, le=120)
 

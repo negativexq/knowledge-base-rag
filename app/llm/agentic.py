@@ -660,6 +660,25 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
         deps = ctx.deps
         budget = deps.research_budget
         repair_request = False
+        if (
+            self.model_role == "agent"
+            and any(e["tool"] == "research_opened" for e in deps.tool_events)
+            and budget.tools_closed()
+            and len(deps.ledger.blocks) <= deps.initial_revision
+            and request_context.model_request_parameters.output_tools
+        ):
+            # The re-read abstained on this exact evidence and research added
+            # nothing, so another turn cannot see anything new: conclude with
+            # that abstention instead of spending a request (or the token budget).
+            deps.record("concluded_without_new_evidence")
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        request_context.model_request_parameters.output_tools[0].name,
+                        {"answer_parts": [], "abstain": True},
+                    )
+                ]
+            )
         if self.model_role == "agent":
             if budget.research_requests >= budget.policy.max_research_requests:
                 # A rejected final candidate may use its dedicated, tools-closed

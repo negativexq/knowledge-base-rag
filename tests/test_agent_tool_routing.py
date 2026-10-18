@@ -358,3 +358,22 @@ async def test_abstaining_on_reread_opens_research_without_spending_the_repair()
     assert result.failure_code is None and not json.loads(result.raw)["abstain"]
     assert [e["tool"] for e in result.telemetry["tools"]][0] == "research_opened"
     assert result.telemetry["budget"]["research"]["validation_rejections"] == 0
+
+
+@pytest.mark.asyncio
+async def test_research_that_found_nothing_concludes_without_another_model_turn():
+    calls = 0
+
+    def model(messages, info):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return final(info)
+        return ModelResponse(parts=[ToolCallPart("search", {"query": "backup"})])
+
+    result = await run_agent(FunctionModel(model), deps(retrieve=no_retrieve, reread_first=True))
+    # The re-read already abstained on unchanged evidence; a third turn could not
+    # see anything new, so code concludes with that abstention.
+    assert calls == 2
+    assert result.failure_code is None and json.loads(result.raw)["abstain"]
+    assert result.telemetry["tools"][-1]["tool"] == "concluded_without_new_evidence"
