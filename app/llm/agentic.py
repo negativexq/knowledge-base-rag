@@ -979,9 +979,20 @@ def build_agent(
         if sum(len(u.text) for u in units) > 30000:
             raise ModelRetry("Select fewer or shorter passages for comparison")
         ctx.deps.record("compare_evidence")
+        passages = [
+            {
+                **u.as_dict(),
+                "source_type": next(
+                    b.payload.get("source_type")
+                    for b in ctx.deps.ledger.blocks
+                    if b.payload["evidence_id"] == u.evidence_id
+                ),
+            }
+            for u in units
+        ]
         return {
-            "passages": [u.as_dict() for u in units],
-            "different_sources": len({u.source_id for u in units}) > 1,
+            "passages": passages,
+            "different_sources": len({(p["source_type"], p["source_id"]) for p in passages}) > 1,
             "different_versions": len({u.document_version for u in units}) > 1,
             "scope_check_required": True,
         }
