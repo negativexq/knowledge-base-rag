@@ -1,3 +1,5 @@
+import type { ClarificationReply } from "@/api/types"
+
 // Sprint 24: SSE client for POST /chat — follows the SSE parsing rule
 // exactly (an optional `event: <name>` line, one or more
 // `data:` lines, terminated by a blank line) and app/api/chat.py's real
@@ -14,36 +16,22 @@ export interface SSEEvent {
 
 export function parseSSEChunk(buffer: string): { events: SSEEvent[]; rest: string } {
   const events: SSEEvent[] = []
-  const lines = buffer.split("\n")
-  // Keep the last (possibly incomplete) line in `rest` — mirrors
-  // buffering a raw byte stream into complete lines before parsing.
-  const rest = lines.pop() ?? ""
-
-  let eventType = "message"
-  let dataLines: string[] = []
-
-  for (const rawLine of lines) {
-    const line = rawLine.replace(/\r$/, "")
-    if (line === "") {
-      if (dataLines.length > 0) {
-        try {
-          events.push({ event: eventType, data: JSON.parse(dataLines.join("\n")) })
-        } catch {
-          // malformed data payload — skip this event rather than crash
-          // the whole stream.
-        }
-      }
-      eventType = "message"
-      dataLines = []
-      continue
+  let rest = buffer.replace(/\r\n/g, "\n")
+  let boundary: number
+  while ((boundary = rest.indexOf("\n\n")) >= 0) {
+    const block = rest.slice(0, boundary)
+    rest = rest.slice(boundary + 2)
+    let event = "message"
+    const data: string[] = []
+    for (const line of block.split("\n")) {
+      if (line.startsWith("event:")) event = line.slice(6).trim()
+      else if (line.startsWith("data:")) data.push(line.slice(5).replace(/^ /, ""))
     }
-    if (line.startsWith("event:")) {
-      eventType = line.slice("event:".length).trim()
-    } else if (line.startsWith("data:")) {
-      dataLines.push(line.slice("data:".length).trim())
+    if (data.length) {
+      try { events.push({ event, data: JSON.parse(data.join("\n")) }) }
+      catch { /* Ignore malformed events and preserve the following frames. */ }
     }
   }
-
   return { events, rest }
 }
 
@@ -54,7 +42,15 @@ export interface ChatHistoryTurn {
   content: string
 }
 
+export interface ChatRequestOptions {
+  source_ids?: string[]
+  clarification?: ClarificationReply
+}
+
 export interface ChatStreamHandlers {
+  onProgress?: (step: unknown) => void
+  onClarification?: (clarification: unknown) => void
+  onComparison?: (comparison: unknown) => void
   onToken: (content: string) => void
   onSources: (sources: unknown) => void
   onRetrieval: (report: unknown) => void
@@ -82,6 +78,7 @@ export async function streamChat(
   handlers: ChatStreamHandlers,
   signal?: AbortSignal,
   history: ChatHistoryTurn[] = [],
+  options: ChatRequestOptions = {},
 ): Promise<void> {
   const headers = new Headers({ "Content-Type": "application/json" })
   if (token) headers.set("Authorization", `Bearer ${token}`)
@@ -91,7 +88,7 @@ export async function streamChat(
     response = await fetch(url, {
       method: "POST",
       headers,
-      body: JSON.stringify({ question, history }),
+      body: JSON.stringify({ question, history, ...options }),
       signal,
     })
   } catch {
@@ -126,6 +123,7 @@ export async function streamChat(
   const decoder = new TextDecoder()
   let buffer = ""
 
+  let terminal = false
   try {
     while (true) {
       const { done, value } = await reader.read()
@@ -133,12 +131,19 @@ export async function streamChat(
       buffer += decoder.decode(value, { stream: true })
       const { events, rest } = parseSSEChunk(buffer)
       buffer = rest
-      for (const evt of events) dispatch(evt, handlers)
+      for (const evt of events) {
+        if (evt.event === "done" || evt.event === "error") terminal = true
+        dispatch(evt, handlers)
+      }
     }
   } catch {
     if (signal?.aborted) return
+    terminal = true
     handlers.onError("The response stream was interrupted.")
+  } finally {
+    reader.releaseLock()
   }
+  if (!terminal && !signal?.aborted) handlers.onError("The response stream ended before completion.")
 }
 
 function dispatch(evt: SSEEvent, handlers: ChatStreamHandlers): void {
@@ -148,6 +153,15 @@ function dispatch(evt: SSEEvent, handlers: ChatStreamHandlers): void {
       if (typeof token === "string") handlers.onToken(token)
       break
     }
+    case "research_progress":
+      handlers.onProgress?.(evt.data)
+      break
+    case "clarification":
+      handlers.onClarification?.(evt.data)
+      break
+    case "comparison":
+      handlers.onComparison?.(evt.data)
+      break
     case "sources":
       handlers.onSources((evt.data as { sources?: unknown })?.sources ?? [])
       break

@@ -1,10 +1,15 @@
-import type { AnswerValidation, ChatMetadata, GroundingResult, Identity, RetrievalReportPayload, RetrievedSource } from "@/api/types"
+import type { ResearchStep, ClarificationReply, Clarification, ComparisonRow, AnswerValidation, ChatMetadata, GroundingResult, Identity, RetrievalReportPayload, RetrievedSource } from "@/api/types"
 import { API_BASE_URL } from "@/api/client"
 import { answerStatus } from "@/lib/answerStatus"
 import { splitAnswerIntoSegments } from "@/lib/citations"
 
 export interface ResearchTurn {
   question: string
+  sourceIds?: string[]
+  clarificationReply?: ClarificationReply
+  steps?: ResearchStep[]
+  clarification?: Clarification | null
+  comparison?: ComparisonRow[]
   answer: string
   sources: RetrievedSource[]
   report: RetrievalReportPayload | null

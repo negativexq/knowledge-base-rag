@@ -154,3 +154,20 @@ function handlersWith(onError: (message: string) => void) {
     onError,
   }
 }
+
+it("preserves progress event names across arbitrary transport chunk boundaries", async () => {
+  const text = 'event: research_progress\ndata: {"id":"s1","operation":"search","status":"running"}\n\nevent: clarification\ndata: {"question":"Platform?","options":[]}\n\nevent: done\ndata: {}\n\n'
+  const stream = new ReadableStream<Uint8Array>({ start(controller) {
+    for (const character of text) controller.enqueue(new TextEncoder().encode(character))
+    controller.close()
+  } })
+  vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(stream))
+  const handlers = { onToken: vi.fn(), onSources: vi.fn(), onRetrieval: vi.fn(), onMetadata: vi.fn(), onGrounding: vi.fn(), onDone: vi.fn(), onError: vi.fn(), onProgress: vi.fn(), onClarification: vi.fn() }
+  await streamChat("http://api.test/chat", null, "Question", handlers, undefined, [], { source_ids: ["manual"], clarification: { question: "Platform?", answer: "Linux" } })
+  expect(handlers.onProgress).toHaveBeenCalledWith({ id: "s1", operation: "search", status: "running" })
+  expect(handlers.onClarification).toHaveBeenCalledWith({ question: "Platform?", options: [] })
+  expect(handlers.onDone).toHaveBeenCalledOnce()
+  expect(handlers.onError).not.toHaveBeenCalled()
+  const request = vi.mocked(fetch).mock.calls.at(-1)![1]!
+  expect(JSON.parse(request.body as string)).toMatchObject({ source_ids: ["manual"], clarification: { answer: "Linux" } })
+})

@@ -1,3 +1,9 @@
+import { AnswerFeedback } from "@/components/AnswerFeedback"
+import { ResearchActivity } from "@/components/ResearchActivity"
+import { ClarificationPrompt } from "@/components/ClarificationPrompt"
+import { ComparisonTable } from "@/components/ComparisonTable"
+import { ComparisonComposer } from "@/components/ComparisonComposer"
+import type { ResearchStep, Clarification, ClarificationReply, ComparisonRow } from "@/api/types"
 import { useEffect, useRef, useState } from "react"
 import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Download, History, NotebookPen, Pin, Columns2, Search, Sparkles, Square } from "lucide-react"
 
@@ -50,7 +56,7 @@ function historyFrom(turns: Turn[]): ChatHistoryTurn[] {
   return turns
     .filter((turn) => !turn.streaming && !turn.errorMessage && turn.answer)
     .flatMap((turn) => [
-      { role: "user" as const, content: turn.question },
+      { role: "user" as const, content: turn.question + (turn.clarificationReply ? `\nClarification: ${turn.clarificationReply.answer}` : "") },
       { role: "assistant" as const, content: turn.answer },
     ])
 }
@@ -105,6 +111,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
   const organization = useOrganization(researchScope(identity))
   const turns = library.active.turns
   const setTurns = library.setTurns
+  const [compareOpen, setCompareOpen] = useState(false)
   const [exportError, setExportError] = useState("")
   const [copiedTurn, setCopiedTurn] = useState<number | null>(null)
   const [question, setQuestion] = useState("")
@@ -155,8 +162,8 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
     })
   }
 
-  async function ask() {
-    const q = question.trim()
+  async function ask(overrideQuestion?: string, clarification?: ClarificationReply, sourceIds?: string[]) {
+    const q = (overrideQuestion ?? question).trim()
     if (!q || current?.streaming) return
     const history = historyFrom(turns)
     setQuestion("")
@@ -165,6 +172,11 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
       ...prev,
       {
         question: q,
+        sourceIds,
+        clarificationReply: clarification,
+        steps: [],
+        clarification: null,
+        comparison: [],
         answer: "",
         sources: [],
         report: null,
@@ -187,17 +199,36 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
     const controller = new AbortController()
     abortRef.current = controller
 
+    const patchTurn = (patch: Partial<Turn>) => {
+      if (!controller.signal.aborted) updateCurrent(patch)
+    }
     let answerBuffer = ""
     let firstTokenAt: number | null = null
     await chatApi.ask(
       q,
       history,
       {
-        onSources: (sources) => updateCurrent({ sources: sources as RetrievedSource[] }),
-        onRetrieval: (report) => updateCurrent({ report: report as RetrievalReportPayload }),
+        onProgress: (payload) => {
+          if (controller.signal.aborted) return
+          const step = payload as ResearchStep
+          setTurns((prev) => {
+            const copy = [...prev]
+            const turn = copy[copy.length - 1]
+            const steps = [...(turn.steps ?? [])]
+            const index = steps.findIndex((item) => item.id === step.id)
+            if (index < 0) steps.push(step); else steps[index] = step
+            copy[copy.length - 1] = { ...turn, steps }
+            return copy
+          })
+        },
+        onClarification: (payload) => patchTurn({ clarification: payload as Clarification }),
+        onComparison: (payload) => patchTurn({ comparison: (payload as { rows: ComparisonRow[] }).rows }),
+        onSources: (sources) => patchTurn({ sources: sources as RetrievedSource[] }),
+        onRetrieval: (report) => patchTurn({ report: report as RetrievalReportPayload }),
         onSecurity: (security) => {
+          if (controller.signal.aborted) return
           if (isAnswerValidation(security)) {
-            updateCurrent({ validation: security, groundingAt: performance.now() })
+            patchTurn({ validation: security, groundingAt: performance.now() })
           }
           setTurns((prev) => {
             const copy = [...prev]
@@ -213,18 +244,19 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
             return copy
           })
         },
-        onMetadata: (metadata) => updateCurrent({ metadata: metadata as ChatMetadata }),
+        onMetadata: (metadata) => patchTurn({ metadata: metadata as ChatMetadata }),
         onToken: (token) => {
           if (firstTokenAt === null) firstTokenAt = performance.now()
           answerBuffer += token
-          updateCurrent({ answer: answerBuffer, firstTokenAt, lastTokenAt: performance.now() })
+          patchTurn({ answer: answerBuffer, firstTokenAt, lastTokenAt: performance.now() })
         },
         onGrounding: (grounding) =>
-          updateCurrent({ grounding: grounding as GroundingResult, groundingAt: performance.now() }),
-        onDone: () => updateCurrent({ streaming: false }),
-        onError: (message) => updateCurrent({ streaming: false, errorMessage: message }),
+          patchTurn({ grounding: grounding as GroundingResult, groundingAt: performance.now() }),
+        onDone: () => patchTurn({ streaming: false }),
+        onError: (message) => patchTurn({ streaming: false, errorMessage: message }),
       },
       controller.signal,
+      { ...(sourceIds?.length ? { source_ids: sourceIds } : {}), ...(clarification ? { clarification } : {}) },
     )
   }
 
@@ -361,6 +393,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
           <Download className="h-3.5 w-3.5" /><span className="hidden sm:inline">Export</span>
         </button>
         {organization.projects.length > 0 && <select aria-label="Research project" value={organization.assignments[library.active.id] ?? ""} onChange={(event) => organization.assign(library.active.id, event.target.value || null)} className="h-8 max-w-40 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-xs"><option value="">No project</option>{organization.projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select>}
+        <button type="button" aria-label="Compare documents" aria-expanded={compareOpen} onClick={() => setCompareOpen(!compareOpen)} className="rounded-md px-2.5 py-1.5 text-xs hover:bg-[var(--color-surface-hover)]">Compare documents</button>
         <ShareViewButton values={workspaceView.query} />
         <button type="button" aria-label="Open research notes" onClick={() => { setNoteLink(null); setActiveTab("notes"); setInspectorOpen(true) }} className="flex min-h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]"><NotebookPen className="h-3.5 w-3.5" /><span className="hidden sm:inline">Notes</span></button>
         <button type="button" aria-label={`Pinned evidence (${library.active.pins.length})`} onClick={() => { setActiveTab("pinned"); setInspectorOpen(true) }}
@@ -374,6 +407,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
         </button>
         </div>
       </div>
+      {compareOpen && <div className="shrink-0 overflow-y-auto border-b border-[var(--color-border)] p-4" style={{ maxHeight: "45vh" }}><ComparisonComposer disabled={Boolean(current?.streaming)} onCompare={(q, ids) => { setCompareOpen(false); void ask(q, undefined, ids) }} /></div>}
       {(library.storageError || organization.error || exportError) && <p role="status" className="border-b border-[var(--color-border)] px-6 py-2 text-xs text-[var(--color-warning)]">{exportError || organization.error || "Browser storage is unavailable or full. This research is available for this visit; export it to keep a copy."}</p>}
       {turns.length > 0 && <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-6 py-2 text-xs text-[var(--color-subtle-foreground)]"><span className="truncate" title={library.active.title}>{library.active.customTitle ? library.active.title : "Research session"}</span><span className="ml-auto shrink-0">Local research</span></div>}
       <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -415,6 +449,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                       <div className="whitespace-pre-wrap text-xl font-semibold leading-relaxed tracking-tight text-[var(--color-foreground)]">
                         {turn.question}
                       </div>
+                      {turn.clarificationReply && <p className="text-xs text-[var(--color-muted-foreground)]">Clarification: {turn.clarificationReply.answer}</p>}
                       {searchedAs(turn.report) && (
                         <div className="text-xs text-[var(--color-subtle-foreground)]">
                           Searched as: {searchedAs(turn.report)}
@@ -430,6 +465,8 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                         <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
                       </span>
                       <div className="flex min-w-0 flex-1 flex-col gap-3">
+                        <ResearchActivity steps={turn.steps ?? []} streaming={turn.streaming} />
+                        {turn.clarification && <ClarificationPrompt clarification={turn.clarification} disabled={Boolean(current?.streaming) || i !== turns.length - 1} onReply={(answer) => void ask(turn.question, { question: turn.clarification!.question, answer }, turn.sourceIds)} />}
                         <div className="text-[15px] leading-7 text-[var(--color-foreground)]">
                           {turn.errorMessage && turn.answer === "" ? (
                             <span className="text-[var(--color-error)]">{turn.errorMessage}</span>
@@ -445,12 +482,12 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                             </span>
                           ) : (
                             <>
-                              <AnswerBody
+                              {turn.comparison?.length ? <ComparisonTable rows={turn.comparison} sources={turn.sources} units={turn.metadata?.support_units ?? []} onCite={(rank, supportId) => { setInspectedTurn(i); focusSource(rank, supportId) }} /> : <AnswerBody
                                 answer={turn.answer}
                                 sources={turn.sources}
                                 supportUnits={turn.metadata?.support_units ?? []}
                                 onCite={(rank, supportId) => { setInspectedTurn(i); focusSource(rank, supportId) }}
-                              />
+                              />}
                               {turn.streaming && (
                                 <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-[var(--color-accent)]" />
                               )}
@@ -463,6 +500,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                             <FileText className="h-3.5 w-3.5" /> Supporting evidence <span className="font-technical">{turn.sources.length}</span>
                           </button>
                         )}
+                        {!turn.streaming && turn.answer && <AnswerFeedback turn={turn} />}
                         {!turn.streaming && turn.answer && (
                           <div className="flex items-start justify-between gap-2">
                             {statusOf(turn) ? <AnswerStatusLine status={statusOf(turn)!} /> : <span />}

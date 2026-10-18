@@ -1,3 +1,4 @@
+import { DocumentExplorer } from "@/components/DocumentExplorer"
 import { useQuery } from "@tanstack/react-query"
 import { ChevronRight, Database, FileText } from "lucide-react"
 import { useState } from "react"
@@ -56,6 +57,7 @@ function DocumentDetail({ doc, onClose }: { doc: DocumentRecord; onClose: () => 
           </div>
         ))}
       </dl>
+      <DocumentExplorer document={{ source_type: doc.source_type, source_id: doc.source_id, document_version: doc.content_hash }} />
       </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

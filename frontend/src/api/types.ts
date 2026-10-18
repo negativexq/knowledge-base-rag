@@ -437,3 +437,50 @@ export interface GroundingResult {
   citations_found: [string, string, string][]
   ungrounded_citations: [string, string, string][]
 }
+
+export interface ResearchStep {
+  id: string
+  operation: string
+  status: "running" | "completed" | "retrying" | "failed"
+  failure_codes?: string[]
+}
+export interface Clarification { question: string; options: string[] }
+export interface ClarificationReply { question: string; answer: string }
+export interface ComparisonCell {
+  source_id: string
+  text: string
+  support_ids: string[]
+  calculation?: { expression: string; result: string } | null
+}
+export interface ComparisonRow { aspect: string; cells: ComparisonCell[] }
+export interface DocumentReference { source_type: string; source_id: string; document_version: string }
+export interface DocumentReadRequest {
+  document: DocumentReference
+  action: "outline" | "search" | "section" | "page" | "neighbors"
+  query?: string
+  section_id?: string
+  page?: number
+  chunk_id?: string
+  offset?: number
+}
+export interface DocumentReadResult {
+  document: DocumentReference
+  passages: { chunk_id: string; text: string; page_number: number | null; page_end: number | null; section_id: string; heading_path: string[] }[]
+  outline: { section_id: string; title: string; page_number: number | null; chunk_count: number }[]
+  has_more: boolean
+  scan_limited: boolean
+  next_offset: number | null
+  indexed_at?: string | null
+  current_version?: string | null
+  status?: string | null
+}
+
+export type FeedbackReason = "incorrect" | "unsupported" | "outdated" | "incomplete" | "other"
+export interface FeedbackSubmission {
+  question: string; answer: string; claim: string; reason: FeedbackReason; note: string
+  support_ids: string[]; trace_id: string | null
+}
+export interface FeedbackRecord extends FeedbackSubmission {
+  id: string; user_id: string; status: "open" | "triaged" | "resolved" | "dismissed"
+  created_at: string; updated_at: string; reviewer_note: string; snapshot_origin: "user_submitted"
+}
