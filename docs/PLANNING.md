@@ -6150,4 +6150,23 @@ confirmed (365 another company's bankers, 475 a time off a timer picture). The
 wording gate stays; the visual reader and its check are not reliable enough to
 run on every withheld answer. The other changes are not measured live yet.
 
-`make test`: 1922 passed, 4 skipped.
+Agent-on canary after these fixes (same 10 MMLongBench rows plus TechQA Q018
+and Q239; `artifacts/mmlongbench-v2/agent-reasoning-canary-20261018`,
+`artifacts/ragbench/techqa-validator-canary-20261018`; agent spend on
+MMLongBench 17 requests, 181k input tokens):
+
+- TechQA Q018 is answered and released: the compact-version validator fix holds
+  live. Q239 produced a different answer that was again blocked as
+  INDETERMINATE; the classic stage's validator trace is overwritten by the
+  agent's, so the blocked value is not visible. The agent's TechQA search hit
+  the 45 s tool timeout.
+- MMLongBench: 521 is now correctly refused (it was answered); no other row
+  changed. 636 and 638 were answered wrongly by the fixed path's visual reading
+  (the check confirmed "Four" this time), before any escalation.
+- Every escalated run had one research tool turn, because the re-read counted
+  as a research turn; in five of eight runs that one call named an unknown
+  support ID and research closed. The re-read no longer counts, so research
+  has two tool turns, and a `tool_failed` event records the ID the model wrote.
+  Not yet measured live.
+
+`make test`: 1923 passed, 4 skipped.
