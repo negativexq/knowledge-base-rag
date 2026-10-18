@@ -5923,3 +5923,30 @@ refusals (Q157, Q181, Q085, Q205, Q251) are mostly documents about another
 product or platform.
 
 `make test`: 1767 passed, 4 skipped.
+
+
+## Agentic RAG — opt-in PydanticAI orchestration
+
+The `feat/pydanticai-agentic-rag` branch adds a single PydanticAI agent over
+existing scoped search/reranking, section evidence, checked arithmetic, operand
+resolution and independently confirmed visual reading. A request-local ledger
+keeps support IDs stable across searches. Validator reason codes can drive
+bounded correction; the final answer still passes the existing release path.
+An empty first retrieval may be retried under the same caller and source scope.
+Updated sources reach the UI before the final support-ID map and answer text.
+
+`AGENTIC_RAG_ENABLED` defaults to false. Derived/visual flags still control tool
+availability. Request, tool, token and wall-time budgets fail closed; nested
+operand/visual model calls share the request budget. Both production benchmark
+runners support the flag and retain agent telemetry; retrieval-only runs disable
+it. PydanticAI is pinned to 1.107.7 for compatibility with existing SDK pins.
+
+The native OpenAI Responses integration was smoke-tested with `gpt-6-luna` and
+synthetic evidence: one request, 601 input tokens, 41 output tokens, no tools, a
+supported answer with `E1.S1`. This is integration evidence, not a benchmark
+result. No full paired TechQA/MMLongBench run or new semantic grading has been
+performed; the feature must remain opt-in until those measurements support it.
+See `docs/agentic-rag.md` for the evaluation protocol and current limitations.
+
+Validation: `make test` equivalent: 1787 passed, 4 skipped, 5 live-model tests
+deselected. Ruff clean, mypy clean across 128 modules, `pip check` clean.

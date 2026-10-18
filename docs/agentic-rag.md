@@ -1,0 +1,114 @@
+# PydanticAI agentic RAG
+
+The optional agent replaces answer orchestration while retaining production
+retrieval, reranking, section-aware evidence, arithmetic/operand binding,
+visual reading and confirmation, and support-ID validation. The original path
+remains the default until paired benchmark measurements justify a rollout.
+There is one agent and no application graph or multi-agent workflow.
+
+Enable with `AGENTIC_RAG_ENABLED=true` and `SUPPORT_IDS_ENABLED=true`. Generation
+uses the configured provider/model: native OpenAI Responses, Anthropic, or the
+Ollama OpenAI-compatible endpoint. The pinned PydanticAI 1.107.7 release is
+compatible with the existing SDK pins. Its transitive `pydantic-graph`
+dependency does not introduce a graph into the application.
+
+## Request flow
+
+1. Existing search/reranker and section expansion produce the initial evidence.
+2. A request-local, append-only ledger assigns stable `E1.S1` support IDs.
+   Complete blocks fitting the evidence budget are admitted in retrieval order.
+   Unauthorized/hidden blocks, duplicates and blocks exceeding the remaining
+   budget are excluded. This can reduce visible context when budgets are tight.
+3. The agent answers immediately or chooses tools. An empty first search can
+   still be followed by an alternate query under the same authorization scope.
+4. The output validator checks the existing support-ID contract and validators.
+   Rejections return reason codes so the agent can correct, search or abstain.
+5. The candidate is checked again by the existing release path. Refreshed source
+   cards and the final support-ID map arrive before any answer text is released.
+
+Tools:
+
+| Tool | Behavior |
+| --- | --- |
+| `search` | Calls the request's existing scoped retrieval and reranker, then section expansion; admits new evidence within the ledger budget. |
+| `read_document_section` | Reopens the already admitted evidence block containing a known support ID. To find another section, use `search`. |
+| `calculate` | Evaluates restricted arithmetic and verifies every operand against cited evidence with the existing calculator. |
+| `resolve_calculation` | Uses the existing operand planner, binding checks and deterministic computation. Missing operands must be searched through `search`, keeping IDs and budgets consistent. |
+| `read_pages` | Uses the existing page reader and separate claim/condition check for an admitted source. The final answer selects the verified reading without rewriting it. |
+
+Search has no tenant, ACL, collection or document-scope argument. Those values
+are captured by the application, including question-document scope in the
+MMLongBench runner. New evidence retains provenance and is never promoted to
+instructions. Disabled tools are removed from the model's available tools.
+Derived and visual tools follow the existing feature flags. Operand/visual
+model calls share the agent's request/token budgets; SDK retries on the native
+agent clients are disabled. Tool-provider usage is counted when its existing
+adapter supplies usage metadata.
+
+Visual answers retain the existing independently confirmed, explicitly marked
+page-image contract. They are not presented as text-validated support claims.
+All released text answer parts still pass the existing support-ID validators.
+The model's ability to interpret a question, detect sufficient evidence, or
+read an image is not guaranteed by structured output.
+
+## Bounds and tracing
+
+| Setting | Default |
+| --- | ---: |
+| `AGENTIC_MAX_REQUESTS` | 6, including resolver/visual calls |
+| `AGENTIC_MAX_TOOL_CALLS` | 8 |
+| `AGENTIC_MAX_TOKENS` | 60000 cumulative reported input/output tokens |
+| `AGENTIC_TIMEOUT_SECONDS` | 120 for the agent run and tools |
+| `AGENTIC_OUTPUT_RETRIES` | 2 |
+| `AGENTIC_EVIDENCE_TOKEN_BUDGET` | 24000, capped at half the configured context window |
+
+The context cap leaves room for instructions, tool schemas and subsequent
+messages; it is not an exact provider context-size calculation. Large histories
+can still reach a provider limit, in which case the run fails closed. Token
+usage limits are checked around calls; the current call can exceed the remaining
+token budget before its reported usage is available.
+
+Budget exhaustion, timeout, provider errors and exhausted validation retries
+release no draft. They produce an application abstention with
+`AGENT_BUDGET_EXCEEDED`, `AGENT_TIMEOUT` or `AGENT_RUN_FAILED`. Tool choices,
+request/token counts and failure codes appear in metadata and the optional
+forensic capture's `agentic` stage. No raw question, evidence, tool arguments or
+model conversation is added to normal tracing. Native clients close after each
+request. The deployment environment and existing `.env` remain unchanged.
+
+## Measurement and rollout
+
+Use new output directories for every configuration. Keep the same dataset
+revision, corrected labels, model, corpus, retrieval scope, reranker, feature
+flags and validator version between the baseline and challenger. In particular,
+compare against the latest version-guard fix, not just an older saved report.
+Do not reuse existing result/checkpoint directories with changed settings.
+
+For TechQA, run `scripts/benchmarks/run_techqa_production.py` with the pinned
+`--parquet`, `--skip-ingest` and a fresh `--out`; run once with
+`AGENTIC_RAG_ENABLED=false` and once with `true`. Grade both result files blindly
+using the same semantic rubric. Existing semantic scores must not be reused
+for newly generated answers.
+
+For MMLongBench, run `scripts/benchmarks/run_mmlongbench_pilot.py` with
+`--manifest artifacts/mmlongbench-v2/manifest.json`,
+`--labels data/benchmarks/mmlongbench-doc-v2/samples.json`, `--skip-ingest`
+and fresh `--out` directories for the two values of `AGENTIC_RAG_ENABLED`.
+Keep the established question-document scope; use `--open-corpus` only for a
+separate, explicitly labeled experiment. `--no-generation` disables the agent
+too, so retrieval-only runs make no model calls.
+
+Report correct, partial, materially incorrect and unavailable answers; refusal
+accuracy on unanswerable questions; validator failures, citations and ACL
+leaks; and request/token counts and latency. Inspect per-question gains/losses
+and repeat variable cases. Existing MMLongBench scoring is a lenient numeric/
+contains match, not the official score. Previously inspected holdout rows are
+regression data, so improvements also need a fresh untouched evaluation set
+before claiming generalization.
+
+Validation so far: deterministic tests exercise the real PydanticAI loop,
+scoped follow-up search, calculation, operand resolution, visual selection,
+validation retries, budget/timeout failures and final release checks. A native
+`gpt-6-luna` synthetic-evidence smoke call passed. These establish integration,
+not an improvement on TechQA or MMLongBench; a paired full benchmark run and
+semantic grading remain necessary before enabling the feature by default.

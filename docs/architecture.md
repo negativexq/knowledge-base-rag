@@ -75,3 +75,11 @@ Runtime configuration is injected into the application state at boot. UI
 settings, active-index reporting, and tracing all read the same `Settings`
 instance used by the real wiring, so a custom runtime configuration cannot
 silently diverge from the values shown in the console.
+
+## Optional agentic orchestration
+
+`AGENTIC_RAG_ENABLED=true` selects a single PydanticAI agent over the existing
+retrieval, evidence, calculation and visual capabilities. The support-ID output
+contract, ACL boundaries and final validators remain authoritative. The feature
+is off by default pending paired benchmark measurement. See
+[Agentic RAG](agentic-rag.md) for tools, bounds, rollout and evaluation protocol.
