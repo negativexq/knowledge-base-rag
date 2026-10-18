@@ -5981,3 +5981,32 @@ backend suite: 1803 passed, 4 skipped, 5 live tests deselected. Mypy clean acros
 available; automated UI interactions and production build were checked.
 
 Final UI checks: 106 tests passed; TypeScript, ESLint and production build passed.
+
+
+## Agentic request observability and security review
+
+Agent requests now have a content-free, caller-owned SQLite trace index and an
+authenticated console listing. Every actual orchestration/resolver/visual/rewrite
+model call is a generation span; tool calls, document reads, validation, retries
+and final release are linked under the request. Outcomes preserve timeout,
+budget exhaustion, rejection and cancellation. The console exposes the tree,
+safe operational details, tokens and configured estimated USD costs; missing
+usage/pricing remains unknown. Wrapper spans no longer duplicate generations.
+
+The security review added independent ledger tenant/source checks, filesystem
+tenant/version/hash binding and immutable bounded PDF snapshots, task-local
+provider usage state, server-generated trace identity linked to the HTTP context,
+trace ownership/role authorization and an explicit safe attribute allowlist. Raw
+exception events and SDK-wide automatic message capture are disabled for the
+agent. Direct Jaeger links require ADMIN plus a deployment opt-in. Existing
+validators and fail-closed budget/error behavior remain in place.
+
+Configuration and operational limitations are documented in `agentic-rag.md`;
+findings and residual security boundaries are in `agentic-security-review.md`.
+Tenant-internal document ACLs, live injection/quality evaluations, service-level
+authentication and retention remain explicit deployment/follow-up work.
+
+No live LLM calls were made. Full backend suite: 1821 passed, 4 skipped, 5 live
+tests deselected, followed by targeted PDF raster-bound regression checks. Mypy
+checked 135 modules; Ruff passed. Frontend: 109 tests, TypeScript, ESLint and
+production build passed. Visual browser QA remains a manual deployment check.

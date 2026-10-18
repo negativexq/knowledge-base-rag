@@ -188,3 +188,68 @@ browser preview was unavailable in the development environment; it remains a
 manual deployment check alongside real-model behavior and benchmark quality.
 
 Final UI checks: 106 tests passed; TypeScript, ESLint and production build passed.
+
+## Request observability
+
+The authenticated **Traces** page now lists agentic chat requests as well as sync
+runs. A content-free SQLite index (`REQUEST_TRACE_DB_PATH`, default
+`data/request-traces.db`) records start/final status, duration, caller ownership,
+clarification parent and usage totals. Regular users see their own requests;
+OPERATOR/ADMIN can inspect requests within their tenant. Knowing a trace ID
+alone grants no access. Clarification replies use a fresh authorization check
+and an owned `parent_trace_id`; the UI links back to the previous request.
+
+Each chat receives a server-generated trace identity. An incoming HTTP trace is
+retained as an OTel link rather than allowed to select the ownership index key.
+The request subtree includes query rewriting, retrieval and evidence preparation,
+`agent.run`, every actual `llm.request`, `tool.*`, `document.read`, validation and
+retry spans, and the final `answer.validate` release check. Resolver and visual
+reading/checking model calls are nested under their tools. Wrapper spans are not
+also recorded as generations, avoiding double-counted calls. The root closes
+last, including on cancellation. Outcomes distinguish answered, abstained,
+clarification, rejection, timeout, exhausted budget, provider failure and cancel.
+
+Only operational values are recorded by the new agent spans: provider/model,
+call counts, tokens/cache, tool name and ID, retry counts, validator reason codes,
+and outcomes. New span contexts suppress automatic raw exception events. The
+browser endpoint forwards an explicit attribute allowlist and excludes arbitrary
+SDK attributes, events, prompts, evidence, answers, credentials and raw exception
+messages. Existing opt-in forensic captures are a separate, sensitive facility.
+
+Set `MODEL_PRICING_JSON` to an object keyed by `provider:model` (preferred) or
+model name. Each entry requires nonnegative `input_per_million` and
+`output_per_million` USD rates; add `cached_input_per_million` and
+`cache_write_per_million` when those token classes are reported. Example shape,
+with illustrative rates, not a price recommendation:
+
+```json
+{"openai:your-model":{"input_per_million":1,"output_per_million":4,"cached_input_per_million":0.1}}
+```
+
+Prices are operator-managed estimates, not fetched automatically or treated as
+provider invoices. Missing usage, an unconfigured model, or an unpriced cache
+class makes total cost **Unknown**; a known subtotal can still be shown. An
+unpriced model is never assigned zero cost. Request-local usage includes query
+rewriting; agent request/token limits apply to the agent and nested tool calls,
+while rewriting retains its own timeout. Embedding/reranking infrastructure cost
+is not included. Provider observations are task-local to prevent concurrent
+requests from mixing usage records.
+
+Jaeger/Langfuse export still uses the existing OTel configuration. The index can
+show completed/cancelled request summaries while Jaeger is unavailable; span
+waterfalls require successful export/indexing. SQLite write failures do not
+block answers and are logged by error class. There is no retention scheduler or
+crash recovery yet: a process killed before finalization can leave a `running`
+index record. Operators must manage persistent storage, access and retention.
+Direct Jaeger links are disabled by default; enabling
+`EXTERNAL_TRACE_LINKS_ENABLED` permits them only for ADMIN. Jaeger itself still
+requires deployment-level authentication/network protection.
+
+See [the security review](agentic-security-review.md) for audited boundaries,
+regression coverage and remaining limitations.
+
+Validation for this observability/security update: full backend suite 1821 passed,
+4 skipped and 5 live-service tests deselected; targeted PDF raster-bound checks
+followed the full run. Mypy checked 135 modules and Ruff passed. Frontend 109
+tests, TypeScript, ESLint and production build passed. No live LLM calls or new
+benchmark grading were performed.
