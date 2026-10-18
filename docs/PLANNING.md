@@ -6098,3 +6098,49 @@ final targeted smoke was 1/3 grounded, two token-preflight blocks. Do not presen
 numeric limits as a demonstrated accuracy fix or production-optimal thresholds.
 Further evaluation must isolate each change against the original 4/8 reference.
 No push, deployment or `.env` edit.
+
+### Classic-first escalation and the no-gain audit (2026-10-18, closing note)
+
+The agent now runs only when the fixed path withholds (`AGENTIC_MODE=escalate`;
+multi-document requests go to it directly). It first rereads the same evidence
+without tools, opens research only after an abstention, keeps validated parts
+when others are rejected, carries evidence once per request, and falls back to
+the fixed path over gathered evidence on budget/timeout. See
+[agentic-rag.md](agentic-rag.md).
+
+Escalation canary (27 MMLongBench rows, 11 TechQA rows before it was stopped
+for cost): 18 MMLongBench rows escalated, 0 recovered, 0 lost. Offline audit,
+no further model calls:
+
+- Retrieval was not the loss. On 210, 381 and 636 every gold page was in the
+  initial evidence (210: all 18 document chunks), so research search returned
+  nothing new; in all 13 earlier TechQA losses the gold fact was in evidence.
+- The reread was a repeat: the agent used the same model at reasoning `none`
+  and temperature 0 as the fixed path. It now reads with `AGENTIC_REASONING=low`.
+- The visual path never ran on 210 (chart) or 381 (table count): the
+  `asks_visual` keyword gate did not fire, and agent gating hid the visual
+  tools the same way. A withheld answer is now read from its renderable pages
+  whatever the wording; the independent check still decides. Page-element
+  detection was measured and rejected as a gate (almost every page has tables
+  or drawings). Page selection stays reranker-ordered: it holds a gold page in
+  9 of 10 answerable rows; reciprocal-rank page scores were worse; 636 (gold
+  page ranked eighth) needs page-level retrieval, not a reordering.
+- A tool's ModelRetry leaves the SDK handler as `ToolRetryError`, so failed
+  tool attempts were neither recorded nor counted as no-progress. Both are now
+  handled (`tool_failed` events with the code-written reason).
+- Runner traces redacted `input_tokens`/`output_tokens` as secrets; integer
+  token counts are now kept.
+- The TechQA runner bypassed `ResearchRetriever`, so anchored and literal
+  search failed there; it now uses the API's `_scoped_retrieve`.
+- Scoring: an answer that leads with the refusal sentence (520) is counted as
+  a model abstention.
+- Validator, re-audited on TechQA production-v1 with the current code: Q146,
+  Q149, Q166 and Q220 already pass; Q018 (support writes "BPM 7501" for
+  7.5.0.1) and Q239 (specificity read from "platform_7.5.0_" in a path, not the
+  judged 7.5.2) were still blocked and now pass. Replaying the current
+  validator over all 579 saved cited parts, against the previous code, changes
+  exactly these two parts.
+
+None of these changes has been measured live yet.
+
+`make test`: 1923 passed, 4 skipped.
