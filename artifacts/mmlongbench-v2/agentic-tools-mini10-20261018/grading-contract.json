@@ -1,0 +1,75 @@
+{
+  "grading": "Existing lenient deterministic contains-match, numbers within 1%; not official benchmark scoring. Manual review will be reported separately.",
+  "questions": [
+    {
+      "row_idx": 507,
+      "question": "What's the geographic market name for EPS Code AR01?\n\n",
+      "gold": "Little Rock",
+      "answerable": true,
+      "answer_format": "Str"
+    },
+    {
+      "row_idx": 366,
+      "question": "What was the value of absolute percentage shortfall in India's GDP growth from 2002 to 2003 compared to the forecast?",
+      "gold": "2.4%",
+      "answerable": true,
+      "answer_format": "Float"
+    },
+    {
+      "row_idx": 1016,
+      "question": "what is long-term debt of Costco in FY 2021, including long-term operating and finance lease liabilities? Anwser in millions.",
+      "gold": "10314",
+      "answerable": true,
+      "answer_format": "Float"
+    },
+    {
+      "row_idx": 381,
+      "question": "How many quizzes are there in the entire course?",
+      "gold": "7",
+      "answerable": true,
+      "answer_format": "Int"
+    },
+    {
+      "row_idx": 472,
+      "question": "How many grams of coffee can be put in the manual insert? Return me an integer.",
+      "gold": "16",
+      "answerable": true,
+      "answer_format": "Int"
+    },
+    {
+      "row_idx": 210,
+      "question": "What percentage of the party that holds the highest total percentage of good policy ideas and high ethical standards reported that they followed the news about congressional elections in their state very closely in the survey of U.S. adults conducted from April 25 to May 1, 2018?",
+      "gold": "21%",
+      "answerable": true,
+      "answer_format": "Int"
+    },
+    {
+      "row_idx": 732,
+      "question": "How many figures are related to Airbus?",
+      "gold": "5",
+      "answerable": true,
+      "answer_format": "Int"
+    },
+    {
+      "row_idx": 636,
+      "question": "How many prompts examples are shown in the paper's main body?",
+      "gold": "2",
+      "answerable": true,
+      "answer_format": "Int"
+    },
+    {
+      "row_idx": 660,
+      "question": "Which port has the alternative function that capture Trigger from port 10-13?",
+      "gold": "Not answerable",
+      "answerable": false,
+      "answer_format": "None"
+    },
+    {
+      "row_idx": 1084,
+      "question": "what is interest coverage ratio for AMCOR'FY 2020? round your answer to three decimal?",
+      "gold": "Not answerable",
+      "answerable": false,
+      "answer_format": "None"
+    }
+  ]
+}

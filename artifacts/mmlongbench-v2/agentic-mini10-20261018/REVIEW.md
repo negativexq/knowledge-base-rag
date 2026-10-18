@@ -37,7 +37,7 @@ benchmark questions, not a fresh blind holdout.
 
 | Row | Type | Gold | Observed outcome | Manual finding |
 | --- | --- | --- | --- | --- |
-| 210 | Chart/text | 21% | Abstained | Retrieved relevant page; duplicate-only search, no further useful tool use. |
+| 210 | Chart/text | 21% | Abstained | Retrieved relevant page; search added no new evidence. Old telemetry cannot distinguish duplicate results from budget exclusion. |
 | 366 | Text/calculation | 2.4% | Token budget exceeded | Existing numeric validator repeatedly rejected; scope checker was never reached. |
 | 381 | Table/count | 7 | 7 | Quiz #1–#7 supported by cited evidence. |
 | 472 | Layout | 16 | 16 | Cited text explicitly gives max. 16 g. |

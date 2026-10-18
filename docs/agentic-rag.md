@@ -326,3 +326,11 @@ request budget and performs local token preflight. See
 availability, extraction limitations and validation coverage. These additions do
 not establish that semantic scope checking is infallible or that detected images
 are an exhaustive list of figures.
+
+A fixed-sample Luna remeasurement after the extended tools reduced grounded
+answerable accuracy from 4/8 to 2/8 and raised budget-blocked outcomes from two to
+six. Tool availability did not establish effective tool selection. See the
+[extended-tools mini10 audit](../artifacts/mmlongbench-v2/agentic-tools-mini10-20261018/REVIEW.md)
+for the actual routes, costs, regressions and separation of runtime withholding
+from evidence-based refusal. Keep the existing opt-in rollout; this measurement
+does not justify a quality-improvement claim.

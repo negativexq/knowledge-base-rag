@@ -6062,3 +6062,22 @@ report and manual evidence audit are in
 `artifacts/mmlongbench-v2/agentic-mini10-20261018/REVIEW.md`. The semantic guard is
 not universally sufficient; wrong quantity binding, answerability and research
 recovery need further general validation rather than per-question prompt rules.
+
+### Extended agent research tools (2026-10-18)
+
+Implemented scoped hybrid/literal search with admission diagnostics, authorized
+document discovery, version-pinned PDF element/table/region inspection, evidence
+provenance comparison, shared PDF concurrency locking, verification budget
+reservation and local token preflight. Tools use the existing authorization,
+ledger, validators, progress events and content-free traces. See
+[tool contracts](research-tools.md).
+
+The same fixed Luna MMLongBench mini10 **regressed**: automatic answerables 3/8
+(previous 5/8), manually grounded 2/8 (previous 4/8), six budget blocks (previous
+two). Airbus quantity grounding still falsely passed; several unnecessary empty
+discovery calls and invalid scope judgments consumed recovery budget. New search
+did admit unseen evidence, but that alone did not solve the questions. Structural
+and visual tools were verified offline, not successfully selected in this live
+run. Keep opt-in rollout and measure generic routing/context/budget changes
+separately before claiming improvement. See the
+[recorded audit](../artifacts/mmlongbench-v2/agentic-tools-mini10-20261018/REVIEW.md).
