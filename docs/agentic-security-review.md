@@ -5,7 +5,8 @@ evidence ledger, calculation and visual tools, final release validation,
 cancellation, trace export and authenticated trace inspection. This is a local
 code review with deterministic regression tests; it is not an external
 penetration test, dependency vulnerability scan or live-model injection eval.
-No live model API calls were made for this review.
+The initial code review made no live model calls. A later authorized GPT-6 Luna
+synthetic smoke is recorded below.
 
 ## Findings and implemented fixes
 
@@ -81,3 +82,18 @@ frontend trace inspection tests.
 
 Keep `AGENTIC_RAG_ENABLED=false` by default until the paired TechQA/MMLongBench
 quality evaluation and adversarial authorization/injection checks support rollout.
+
+## Authorized live smoke follow-up — 2026-10-18
+
+A small live `gpt-6-luna` run now exercises the real agent and final release
+validators with synthetic retrieval fixtures. The explicit-scope fixture passed
+24/24 security and answer checks (12 cases, two repeats, 37 requests). A preceding
+pilot exposed entity-scope ambiguity: four answers applied a generic service's
+protocol to a backup service without searching, and passed final validation.
+Clarifying the fixture's primary-service label resolved those samples without
+changing prompts or validators; this does not prove the broader issue fixed.
+
+All pilot/final outputs, usage, scenario coverage and limitations are preserved in
+[the live smoke report](../artifacts/agentic-security-luna6/REPORT.md). This is
+limited evidence, not a production penetration test, full live adversarial corpus
+or benchmark improvement. Tenant-internal document ACLs remain follow-up work.
