@@ -1,0 +1,173 @@
+{
+  "meta": {
+    "dataset": "RAGBench TechQA HOLDOUT50",
+    "parquet_sha256": "426f360d12b5d3589b66293c3417d3686a9d69eba3e82938e93d3e1545681264",
+    "documents": 769,
+    "collection": "kb_bench_techqa",
+    "tenant": "bench-techqa",
+    "model": "gpt-6-luna",
+    "ingest": {
+      "chunks_upserted": "existing",
+      "seconds": 0
+    },
+    "retrieval_scope": "open_corpus",
+    "top_n": 14,
+    "candidate_k": 40,
+    "flags": {
+      "DERIVED_ANSWERS_ENABLED": true,
+      "OPERAND_RESOLVER_ENABLED": true,
+      "VISUAL_ANSWERS_ENABLED": true
+    }
+  },
+  "questions": 18,
+  "top_n": 14,
+  "candidate_k": 40,
+  "response_kinds": {
+    "answered": 11,
+    "model_abstained": 5,
+    "validator_blocked": 2
+  },
+  "retrieval_hit_top": {
+    "rate": 1.0,
+    "n": 16
+  },
+  "retrieval_hit_candidates": {
+    "rate": 1.0,
+    "n": 16
+  },
+  "citation_on_relevant": {
+    "rate": 0.8182,
+    "n": 11
+  },
+  "acl_leaks": 0,
+  "median_seconds": 31.3,
+  "semantic": null,
+  "per_question": [
+    {
+      "qid": "techqa_DEV_Q112",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q157",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q218",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q166",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q181",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q246",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q085",
+      "response_kind": "model_abstained",
+      "relevant_in_top": false,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q149",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q008",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q267",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q220",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q111",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q146",
+      "response_kind": "validator_blocked",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q238",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q051",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q205",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q032",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q251",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    }
+  ]
+}
