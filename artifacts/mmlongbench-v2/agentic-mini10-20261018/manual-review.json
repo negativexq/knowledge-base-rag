@@ -1,0 +1,562 @@
+{
+  "summary": {
+    "created_at": "2026-10-18T12:00:20.060420+00:00",
+    "questions": 10,
+    "answerable": 8,
+    "unanswerable": 2,
+    "automatic_answer_correct": 5,
+    "manually_grounded_answer_correct": 4,
+    "correct_refusals": 1,
+    "manual_task_successes": 5,
+    "automatic_task_successes": 6,
+    "answered_unanswerable": 1,
+    "budget_blocked_answerable": 2,
+    "model_abstained_answerable": 1,
+    "retrieval_page_hits": 8,
+    "acl_probe_leaks": 0,
+    "model_requests": 33,
+    "input_tokens": 335825,
+    "output_tokens": 2159,
+    "question_seconds_total": 239.9,
+    "median_seconds": 24.1,
+    "grading_note": "Automatic score is the existing lenient contains/numeric match, not official MMLongBench scoring. Manual review checks cited support; no separate model judge or paired baseline. Small development-visible sample."
+  },
+  "per_question": [
+    {
+      "row_idx": 210,
+      "gold": "21%",
+      "answer": "I could not find this in the document.",
+      "automatic_correct": false,
+      "manual_status": "missed_answer",
+      "manual_note": "Abstained after one duplicate-only search; no scope check or visual reading. Relevant page was retrieved.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        11,
+        13
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "search",
+          "returned_blocks": 1,
+          "added_blocks": 0
+        }
+      ],
+      "requests": 2,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 25917,
+        "output_tokens": 67
+      },
+      "seconds": 24.1,
+      "cited_units": []
+    },
+    {
+      "row_idx": 366,
+      "gold": "2.4%",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": false,
+      "manual_status": "blocked_token_budget",
+      "manual_note": "calculate succeeded; repeated CRITICAL_VALUE_DIRECT_CONFLICT / NO_VALID_SUPPORT_BACKED_CLAIMS; 63921 input + 368 output tokens crossed the 60000 cumulative-token limit. No scope check was reached.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        1
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "calculate"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "CRITICAL_VALUE_DIRECT_CONFLICT",
+            "NO_VALID_SUPPORT_BACKED_CLAIMS"
+          ]
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "CRITICAL_VALUE_DIRECT_CONFLICT",
+            "NO_VALID_SUPPORT_BACKED_CLAIMS"
+          ]
+        }
+      ],
+      "requests": 5,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 63921,
+        "output_tokens": 368
+      },
+      "seconds": 23.3,
+      "cited_units": []
+    },
+    {
+      "row_idx": 381,
+      "gold": "7",
+      "answer": "The course document identifies seven quizzes, numbered Quiz #1 through Quiz #7. [E1.S21] [E1.S31] [E1.S46] [E1.S55] [E1.S63] [E1.S73] [E1.S95] [E1.S97] [E1.S98]",
+      "automatic_correct": true,
+      "manual_status": "grounded_correct",
+      "manual_note": "Cited evidence enumerates Quiz #1 through Quiz #7, including Quiz #5 in the quarter-three table.",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          2
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          3
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          4
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          5
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          6
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          7
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          8
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          9
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          10
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          11
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          14
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          15
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          16
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          17
+        ]
+      ],
+      "gold_pages": [
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "search",
+          "returned_blocks": 1,
+          "added_blocks": 0
+        }
+      ],
+      "requests": 3,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 28745,
+        "output_tokens": 365
+      },
+      "seconds": 23.8,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S21",
+          "raw_support_text": "• Quiz #1: Twenty core concepts from Unit 1 and 2 • Critical Thinking Case Study-- UBER Hits a Bumpy Road:"
+        },
+        {
+          "support_unit_id": "E1.S31",
+          "raw_support_text": "• Quiz #2: Twenty Core Concepts on Unit 3 & 4 • …Continued Unit 3 & 4 Team Activity Divide the class into teams. Each team should choose a country and research its infrastructure to determine how it will help or hinder trade. Include a variety of countries, ranging from the most highly developed to the least developed. Report your Findings -(Resources, Interpersonal, Information, Technology) • Preparing for Tomorrow's Workplace Skills:"
+        },
+        {
+          "support_unit_id": "E1.S46",
+          "raw_support_text": "• Quiz #3- Comprehension of Twenty Core Concepts from Unit 5 & 6 • Preparing for Tomorrow's Workplace Skills: Self Reflection (1 paragraph per question submitted into Google Classroom)"
+        },
+        {
+          "support_unit_id": "E1.S55",
+          "raw_support_text": "• Quiz #4-Comprehension of Twenty Core Concepts from Unit 7 & 8 • Critical Thinking Case Study- Discrimination in the Workplace Continues—submit on Google Docs"
+        },
+        {
+          "support_unit_id": "E1.S63",
+          "raw_support_text": "• Quiz #6- Comprehension of Twenty Core Concepts from Unit 11 & 12 • Think of a product that you use regularly. Find several examples of how the manufacturer markets this product, such as ads in different media, sales promotions, and publicity. Assess each example for effectiveness in meeting one or more of the six promotional goals described in the chapter. Then analyze them for effectiveness in reaching you as a target consumer. Consider such factors as the media used, the style of the ad, and ad content. Present your findings to the class. (Information) • Working the Net"
+        },
+        {
+          "support_unit_id": "E1.S73",
+          "raw_support_text": "• Quiz #7- Comprehension of Twenty Core Concepts from Unit 13 & 14 • Working the Net"
+        },
+        {
+          "support_unit_id": "E1.S95",
+          "raw_support_text": "Table: QUARTER 1: UNIT 1 Predicting Your Success: TED TALK, GRIT: The Power of Passion and Perseverance; submit a written response on to Google Classroom. Unit 1& 2 Team Activity Form five to seven teams. Each team is responsible for one of the sectors of the external business environment discussed in the chapter (economic, political/legal, demographic, social, competitive, global, and technological). (Interpersonal, Resources, Information) Quiz #1: Twenty core concepts from Unit 1 & 2 Critical Thinking Case Study-- UBER Hits a Bumpy Road.: Unit 3 & 4 Team Activity Divide the class into teams. Each team should choose a country and research its infrastructure to determine how it will help or hinder trade. Include a variety of countries, ranging from the most highly developed to the least developed. Report your findings. -(Resources, Interpersonal, Information, Technology) Critical Thinking Case Study-- We Want Our MTV (International) Quiz #2: Twenty Core Concepts on Unit 3 & 4 …Continued Unit 3 & 4 Team Activity Divide the class into teams. Each team should choose a country and research its infrastructure to determine how it will help or hinder trade."
+        },
+        {
+          "support_unit_id": "E1.S97",
+          "raw_support_text": "Table: o Research them QUARTER 3: Preparing for Tomorrow's Workplace Skills- INTERVIEW o Are you motivated more by intrinsic rewards (satisfaction, sense of accomplishment, etc.) or by extrinsic rewards (money, bonuses, etc.)? Explain. o Interview some friends and classmates to find out what motivates them. Discuss your differences in perspective. (Interpersonal, Information) (Submit to Google Classroom through the provided Graphic Organizer. Team Activity o Assemble a team of three to five students. Imagine that you are the management team for a start-up business with limited resources but a need for a highly motivated, skilled workforce. Quiz #5: Comprehension of Twenty Core Concepts from Unit 9 & 10 Preparing for Tomorrow's Workplace Skills Use the Google search engine, http://www.google.com, to conduct a search for “supplier information,” and visit the websites of several firms (for example, Walmart, Northrop Grumman, Verizon, etc.). Compare the requirements companies set for their suppliers. How do they differ? How are they similar? Preparing for Tomorrow's Workplace Skills Pick a small business in your community. Preparing for Tomorrow's Workplace Skills Pick a specific product that you use frequently, such as a cosmetic or toiletry item, snack food, article of clothing, book, computer program, or video game. Using the Net -Considering a career in marketing?"
+        },
+        {
+          "support_unit_id": "E1.S98",
+          "raw_support_text": "they similar? Preparing for Tomorrow's Workplace Skills Pick a small business in your community. Preparing for Tomorrow's Workplace Skills Pick a specific product that you use frequently, such as a cosmetic or toiletry item, snack food, article of clothing, book, computer program, or video game. Using the Net -Considering a career in marketing? Quiz #6- Comprehension of Twenty Core Concepts from Unit 11 & 12-Think of a product that you use regularly. Working the Net-Visit Industry Week’s website at http://www.industryweek.com. Under Archives, do a search using the search term “supply-chain management.” | QUARTER 4: Preparing for Tomorrow's Workplace Skills Team Activity :Should companies outsource IT? Some executives believe that IT is too important to outsource and that application service providers don’t have a future. Yet spending for ASP subscriptions, MSPs, and other forms of IT outsourcing such as cloud computing continue to grow. Working the Net--Learn more about the CERT Coordination Center (CERT/CC), which serves as a center of internet security expertise. Unit 15 & Unit 16 Key Assignment: -Build Key Portfolio Stock Project: your Investment Firm has just received $100,000 to invest in 5 stocks FINAL (Introduced at the Start of 3rd QTR): Your Career in Business PART 1: PERSONAL REFLECTION: • How can you enhance your interpersonal skills? • Why is learning to plan so important in school and in the real world? • What skills should you develop in school that can transfer easily to your professional life and make it a success? • What are some strategies that will help you find, keep, and advance in your dream job? • What key attributes do employers look for when interviewing job candidates? PART 2: Student Companies FINAL ASSESSMENT: WORK-BASED LEARNING INTERNSHIP W/ AMAZON & OTHER PARTNERED LOGISTICS CENTERS"
+        }
+      ]
+    },
+    {
+      "row_idx": 472,
+      "gold": "16",
+      "answer": "16 [E1.S117]",
+      "automatic_correct": true,
+      "manual_status": "grounded_correct",
+      "manual_note": "Cited evidence explicitly says Insert ground coffee (max. 16 g).",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [
+        [
+          "User_Manual_1500S_Classic_EN_pdf",
+          24
+        ],
+        [
+          "User_Manual_1500S_Classic_EN_pdf",
+          25
+        ]
+      ],
+      "gold_pages": [
+        24,
+        25
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [],
+      "requests": 2,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 12864,
+        "output_tokens": 97
+      },
+      "seconds": 17.4,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S117",
+          "raw_support_text": " 6 Insert ground coffee (max. 16 g)"
+        }
+      ]
+    },
+    {
+      "row_idx": 507,
+      "gold": "Little Rock",
+      "answer": "The geographic market name for EPS Code AR01 is Little Rock. [E1.S289]",
+      "automatic_correct": true,
+      "manual_status": "grounded_correct",
+      "manual_note": "Cited table row explicitly binds Little Rock to AR01.",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [
+        [
+          "8dfc21ec151fb9d3578fc32d5c4e5df9_pdf",
+          8
+        ]
+      ],
+      "gold_pages": [
+        8
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "read_document_section"
+        }
+      ],
+      "requests": 3,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 48241,
+        "output_tokens": 129
+      },
+      "seconds": 12.5,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S289",
+          "raw_support_text": "1. | Little Rock | AR01\n2. | Northern Arkansas | AR02\nNew Mexico (NM)"
+        }
+      ]
+    },
+    {
+      "row_idx": 636,
+      "gold": "2",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": false,
+      "manual_status": "blocked_request_budget",
+      "manual_note": "Two SCOPE_NOT_ESTABLISHED rejections after duplicate search/navigation; six requests consumed, next request denied. Gold is two main-body prompt examples; no draft released.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        4
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 2,
+        "rejections": 2
+      },
+      "tool_events": [
+        {
+          "tool": "search",
+          "returned_blocks": 1,
+          "added_blocks": 0
+        },
+        {
+          "tool": "navigate_document",
+          "action": "section",
+          "added_blocks": 0,
+          "has_more": false,
+          "scan_limited": false
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        }
+      ],
+      "requests": 6,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 47808,
+        "output_tokens": 353
+      },
+      "seconds": 39.0,
+      "cited_units": []
+    },
+    {
+      "row_idx": 660,
+      "gold": "Not answerable",
+      "answer": "Port 1, specifically pin P1.1, has the alternative function T2EX (Timer/Counter 2 Capture/Reload Trigger). [E1.S66] [E1.S63]",
+      "automatic_correct": null,
+      "manual_status": "incorrect_answer_to_unanswerable",
+      "manual_note": "V2 labels this question Not answerable. Scope checker rejected once, then accepted the Port 1 / P1.1 T2EX answer from a nearby fact. Keep the fixed benchmark label; do not silently reinterpret port 10-13.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [
+        [
+          "DSA-278777_pdf",
+          4
+        ]
+      ],
+      "gold_pages": [],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 2,
+        "rejections": 1
+      },
+      "tool_events": [
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        },
+        {
+          "tool": "search",
+          "returned_blocks": 1,
+          "added_blocks": 0
+        }
+      ],
+      "requests": 5,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 43412,
+        "output_tokens": 321
+      },
+      "seconds": 34.8,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S63",
+          "raw_support_text": "In the 8032AH, 8052AH and 8752BH, Port 1 pins P1.O and P1.1 also serve the T2 and T2EX functions, respectively."
+        },
+        {
+          "support_unit_id": "E1.S66",
+          "raw_support_text": "P1.0 T2 (Timer/Counter 2 External Input) P1.1 T2EX (Timer/Counter 2 Capture/Reload Trigger)"
+        }
+      ]
+    },
+    {
+      "row_idx": 732,
+      "gold": "5",
+      "answer": "There are 5 figures related to Airbus (the report lists Airbus with 5). [E1.S117]",
+      "automatic_correct": true,
+      "manual_status": "numeric_match_wrong_evidence",
+      "manual_note": "Gold and output both say 5, but E1.S117 is a Twitter-activity/company table on page 16, not a count of Airbus figures on gold pages 7/11/14. Automatic contains-match is a false positive for the correct-and-grounded objective; scope checker accepted it.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [
+        [
+          "germanwingsdigitalcrisisanalysis-150403064828-conversion-gate01_95_pdf",
+          16
+        ]
+      ],
+      "gold_pages": [
+        7,
+        11,
+        14
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [],
+      "requests": 2,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 8956,
+        "output_tokens": 108
+      },
+      "seconds": 7.8,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S117",
+          "raw_support_text": "+ During the first 24 hours: | company | | eos\n+ Germanwings focuses the majority of its digital | Germanwings | 24\nactivity on Twitter — posting in both English (10) and Lufthansa | 42\nGerman (14)\n+ Germanwings and Lufthansa both see significant | Airbus | 5\nspikes in followers on Twitter due to the crash.\n(Germanwings) | (Airbus) | (Lufthansa)"
+        }
+      ]
+    },
+    {
+      "row_idx": 1016,
+      "gold": "10314",
+      "answer": "Costco’s FY 2021 long-term debt, including long-term operating and finance lease liabilities, was **$10,314 million**: $6,692 million of long-term debt excluding the current portion, plus $2,642 million of long-term operating lease liabilities and $980 million of long-term finance lease liabilities. (calculation: 6692 + 2642 + 980 = 10314) [E1.S55] [E1.S134]",
+      "automatic_correct": true,
+      "manual_status": "grounded_correct",
+      "manual_note": "Cited FY2021 tables establish 6692 long-term debt + 2642 long-term operating lease + 980 long-term finance lease = 10314 million; calculate tool used.",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [
+        [
+          "COSTCO_2021_10K_pdf",
+          38
+        ],
+        [
+          "COSTCO_2021_10K_pdf",
+          53
+        ],
+        [
+          "COSTCO_2021_10K_pdf",
+          54
+        ]
+      ],
+      "gold_pages": [
+        38,
+        53
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "calculate"
+        }
+      ],
+      "requests": 3,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 29177,
+        "output_tokens": 293
+      },
+      "seconds": 24.2,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S55",
+          "raw_support_text": "Table:  | August 29, 2021 | August 30, 2020\nASSETS\nCURRENT ASSETS\nCash and cash equivalents | August 29, 2021: $ 11,258 | August 30, 2020: $ 12,277\nShort-term investments | August 29, 2021: 917 | August 30, 2020: 1,028\nReceivables, net | August 29, 2021: 1,803 | August 30, 2020: 1,550\nMerchandise inventories | August 29, 2021: 14,215 | August 30, 2020: 12,242\nOther current assets | August 29, 2021: 1,312 | August 30, 2020: 1,023\nTotal current assets | August 29, 2021: 29,505 | August 30, 2020: 28,120\nOTHER ASSETS\nProperty and equipment, net | August 29, 2021: 23,492 | August 30, 2020: 21,807\nOperating lease right-of-use assets | August 29, 2021: 2,890 | August 30, 2020: 2,788\nOther long-term assets | August 29, 2021: 3,381 | August 30, 2020: 2,841\nTOTAL ASSETS | August 29, 2021: $ 59,268 | August 30, 2020: $ 55,556\nLIABILITIES AND EQUITY\nCURRENT LIABILITIES\nAccounts payable | August 29, 2021: $ 16,278 | August 30, 2020: $ 14,172\nAccrued salaries and benefits | August 29, 2021: 4,090 | August 30, 2020: 3,605\nAccrued member rewards | August 29, 2021: 1,671 | August 30, 2020: 1,393\nDeferred membership fees | August 29, 2021: 2,042 | August 30, 2020: 1,851\nCurrent portion of long-term debt | August 29, 2021: 799 | August 30, 2020: 95\nOther current liabilities | August 29, 2021: 4,561 | August 30, 2020: 3,728\nTotal current liabilities | August 29, 2021: 29,441 | August 30, 2020: 24,844\nOTHER LIABILITIES\nLong-term debt, excluding current portion | August 29, 2021: 6,692 | August 30, 2020: 7,514\nLong-term operating lease liabilities | August 29, 2021: 2,642 | August 30, 2020: 2,558\nOther long-term liabilities | August 29, 2021: 2,415 | August 30, 2020: 1,935\nTOTAL LIABILITIES | August 29, 2021: 41,190 | August 30, 2020: 36,851\nCOMMITMENTS AND CONTINGENCIES\nEQUITY\nPreferred stock $0.01 par value; 100,000,000 shares authorized; no shares issued and outstanding | August 29, 2021: — | August 30, 2020: —\nCommon stock $0.01 par value; 900,000,000 shares authorized; 441,825,000 and 441,255,000 shares issued and outstanding | August 29, 2021: 4 | August 30, 2020: 4\nAdditional paid-in capital | August 29, 2021: 7,031 | August 30, 2020: 6,698\nAccumulated other comprehensive loss | August 29, 2021: (1,137) | August 30, 2020: (1,297)\nRetained earnings | August 29, 2021: 11,666 | August 30, 2020: 12,879\nTotal Costco stockholders’ equity | August 29, 2021: 17,564 | August 30, 2020: 18,284\nNoncontrolling interests | August 29, 2021: 514 | August 30, 2020: 421\nTOTAL EQUITY | August 29, 2021: 18,078 | August 30, 2020: 18,705\nTOTAL LIABILITIES AND EQUITY | August 29, 2021: $ 59,268 | August 30, 2020: $ 55,556"
+        },
+        {
+          "support_unit_id": "E1.S134",
+          "raw_support_text": "Table:  | 2021 | 2020\nAssets\nOperating lease right-of-use assets | 2021: $ 2,890 | 2020: $ 2,788\nFinance lease assets(1) | 2021: 1,000 | 2020: 592\nTotal lease assets | 2021: $ 3,890 | 2020: $ 3,380\nLiabilities\nCurrent\nOperating lease liabilities(2) | 2021: $ 222 | 2020: $ 231\nFinance lease liabilities(2) | 2021: 72 | 2020: 31\nLong-term\nOperating lease liabilities | 2021: 2,642 | 2020: 2,558\nFinance lease liabilities(3) | 2021: 980 | 2020: 657\nTotal lease liabilities | 2021: $ 3,916 | 2020: $ 3,477"
+        }
+      ]
+    },
+    {
+      "row_idx": 1084,
+      "gold": "Not answerable",
+      "answer": "I could not find this in the document.",
+      "automatic_correct": null,
+      "manual_status": "correct_refusal",
+      "manual_note": "V2 labels this cross-company AMCOR question over the BESTBUY document Not answerable; model searched then abstained.",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [],
+      "gold_pages": [],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "search",
+          "returned_blocks": 1,
+          "added_blocks": 0
+        }
+      ],
+      "requests": 2,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 26784,
+        "output_tokens": 58
+      },
+      "seconds": 33.0,
+      "cited_units": []
+    }
+  ]
+}

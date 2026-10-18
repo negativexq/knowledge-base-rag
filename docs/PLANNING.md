@@ -6040,3 +6040,25 @@ candidate, search and answer correctly; 17/17 additional controls/probes passed.
 62 real calls in this follow-up. Full backend: 1856 passed, 4 skipped, 5 live tests
 deselected; mypy 137 modules, Ruff passed. Frontend: 111 tests, TypeScript, ESLint
 and production build passed. No push or paired full benchmark run was performed.
+
+## MMLongBench — agentic mini-10 after scope guard
+
+Completed a preselected ten-question run with GPT-6 Luna, agentic/scope guard,
+calculation/resolver/visual tools, existing Qwen3/BGE 40/14 retrieval and corrected
+V2 labels. Seed 20261018, eight answerable plus two unanswerable across ten PDFs;
+selection committed before inference. No prompt/budget adjustment or reruns.
+
+Automatic: 5/8 answerable correct, 1/2 correct refusals. Cited-evidence review:
+4/8 correct and grounded; row 732's numeric 5 matched gold but was taken from a
+Twitter-activity table instead of figure counting. Row 660 answered a V2-labeled
+unanswerable port question. Scope validation accepted both failures. Rows 366
+and 636 exhausted token/request budgets respectively; row 210 abstained.
+Retrieval hit an evidence page in 8/8, cross-tenant probe leaked nothing.
+33 model calls, 335825 input and 2159 output tokens; median 24.1 s per question.
+
+This is a small development-visible sample, with no paired baseline and no
+benchmark-improvement claim. Full configuration, corpus/label hashes, automatic
+report and manual evidence audit are in
+`artifacts/mmlongbench-v2/agentic-mini10-20261018/REVIEW.md`. The semantic guard is
+not universally sufficient; wrong quantity binding, answerability and research
+recovery need further general validation rather than per-question prompt rules.

@@ -120,3 +120,13 @@ and [deployment/permission instructions](document-permissions.md). Existing loca
 token authentication, connector-native permission synchronization, already-shared
 content, feedback/forensic storage and provider data handling retain their stated
 limitations.
+
+## Real benchmark mini-run follow-up
+
+The subsequent [MMLongBench mini-10 audit](../artifacts/mmlongbench-v2/agentic-mini10-20261018/REVIEW.md)
+provides counterexamples to relying on the semantic guard alone: it approved a
+Twitter-table count as support for a figure-count answer, and approved an answer
+to a V2-labeled unanswerable port question. Automatic answer accuracy was 5/8;
+correct-and-grounded review was 4/8, with 1/2 correct refusals. These are remaining
+semantic/answerability failures, not cross-tenant leaks. No prompt or budget was
+changed to fit these questions during the measurement.

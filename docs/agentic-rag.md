@@ -306,3 +306,12 @@ runs now reject the initial candidate with `SCOPE_NOT_ESTABLISHED`, search and
 answer SSH from the new evidence. A further 17-case run passed its checks,
 including version/environment/period binding, aliases and translated evidence.
 See [the measured follow-up](../artifacts/agentic-security-luna6/SCOPE-GUARD.md).
+
+A later real MMLongBench mini-10 run exposed limitations beyond the synthetic
+smoke: automatic scoring gave 5/8 answerable correct, but cited-evidence review
+accepted only 4/8. The extra numeric match used a Twitter count to answer a
+figure-count question; scope verification accepted it. One of two labeled
+unanswerable questions was also answered. Two answerable questions exhausted
+shared budgets. This is a concrete reason to keep rollout opt-in and evaluate
+semantic quantity binding and recovery further. See
+[the mini-10 audit](../artifacts/mmlongbench-v2/agentic-mini10-20261018/REVIEW.md).
