@@ -1,0 +1,211 @@
+{
+  "summary": {
+    "questions": 3,
+    "selection": "Targeted development smoke, not random or a new mini10",
+    "correct_grounded": 1,
+    "budget_blocked": 2,
+    "model_requests": 11,
+    "input_tokens": 121133,
+    "output_tokens": 923,
+    "summed_question_seconds": 114.9,
+    "dedicated_repair_requests": 0,
+    "interpretation": "No quality-improvement or efficiency claim. Dedicated final repair path is proven by deterministic agent-loop tests, not exercised by this live smoke; token preflight blocked it."
+  },
+  "per_question": [
+    {
+      "row_idx": 381,
+      "gold": "7",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "manual_note": "Scope rejection followed by token preflight withholding; dedicated repair request was not sent.",
+      "accepted_correct_grounded": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 40861,
+        "output_tokens": 255
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "token_preflight",
+            "role": "agent",
+            "estimated_input_tokens": "[REDACTED]"
+          }
+        ],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "repair_requests": 0,
+          "tool_attempts": 2,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 1,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": "TOKEN_PREFLIGHT_LIMIT"
+        }
+      },
+      "tools": [
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        }
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 1
+      },
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "seconds": 37.0
+    },
+    {
+      "row_idx": 507,
+      "gold": "Little Rock",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "manual_note": "Literal search returned zero blocks; token preflight withheld the next research turn. Earlier correct Little Rock behavior was not stable.",
+      "accepted_correct_grounded": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 33666,
+        "output_tokens": 76
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "token_preflight",
+            "role": "agent",
+            "estimated_input_tokens": "[REDACTED]"
+          }
+        ],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 2,
+          "repair_requests": 0,
+          "tool_attempts": 2,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 1,
+          "validation_rejections": 0,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": "TOKEN_PREFLIGHT_LIMIT"
+        }
+      },
+      "tools": [
+        {
+          "tool": "search",
+          "mode": "terms",
+          "has_more": false,
+          "scan_limited": false,
+          "next_offset": null,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0,
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "remaining_evidence_tokens": "[REDACTED]"
+        }
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "seconds": 34.7
+    },
+    {
+      "row_idx": 1016,
+      "gold": "10314",
+      "answer": "At Costco’s FY 2021 year-end (August 29, 2021), long-term debt excluding the current portion was $6,692 million. Adding long-term operating lease liabilities of $2,642 million and long-term finance lease liabilities of $980 million gives **$10,314 million**. (calculation: 6,692 + 2,642 + 980 = 10,314) [E1.S3] [E1.S55] [E1.S134]",
+      "manual_note": "Correct grounded 10314 from 6692+2642+980, after one SCOPE_CHECK_INVALID retry inside the three normal research turns. Dedicated post-research repair slot was not used.",
+      "accepted_correct_grounded": true,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S3",
+          "raw_support_text": "COSTCO WHOLESALE CORPORATION ANNUAL REPORT ON FORM 10-K FOR THE FISCAL YEAR ENDED AUGUST 29, 2021"
+        },
+        {
+          "support_unit_id": "E1.S55",
+          "raw_support_text": "Table:  | August 29, 2021 | August 30, 2020\nASSETS\nCURRENT ASSETS\nCash and cash equivalents | August 29, 2021: $ 11,258 | August 30, 2020: $ 12,277\nShort-term investments | August 29, 2021: 917 | August 30, 2020: 1,028\nReceivables, net | August 29, 2021: 1,803 | August 30, 2020: 1,550\nMerchandise inventories | August 29, 2021: 14,215 | August 30, 2020: 12,242\nOther current assets | August 29, 2021: 1,312 | August 30, 2020: 1,023\nTotal current assets | August 29, 2021: 29,505 | August 30, 2020: 28,120\nOTHER ASSETS\nProperty and equipment, net | August 29, 2021: 23,492 | August 30, 2020: 21,807\nOperating lease right-of-use assets | August 29, 2021: 2,890 | August 30, 2020: 2,788\nOther long-term assets | August 29, 2021: 3,381 | August 30, 2020: 2,841\nTOTAL ASSETS | August 29, 2021: $ 59,268 | August 30, 2020: $ 55,556\nLIABILITIES AND EQUITY\nCURRENT LIABILITIES\nAccounts payable | August 29, 2021: $ 16,278 | August 30, 2020: $ 14,172\nAccrued salaries and benefits | August 29, 2021: 4,090 | August 30, 2020: 3,605\nAccrued member rewards | August 29, 2021: 1,671 | August 30, 2020: 1,393\nDeferred membership fees | August 29, 2021: 2,042 | August 30, 2020: 1,851\nCurrent portion of long-term debt | August 29, 2021: 799 | August 30, 2020: 95\nOther current liabilities | August 29, 2021: 4,561 | August 30, 2020: 3,728\nTotal current liabilities | August 29, 2021: 29,441 | August 30, 2020: 24,844\nOTHER LIABILITIES\nLong-term debt, excluding current portion | August 29, 2021: 6,692 | August 30, 2020: 7,514\nLong-term operating lease liabilities | August 29, 2021: 2,642 | August 30, 2020: 2,558\nOther long-term liabilities | August 29, 2021: 2,415 | August 30, 2020: 1,935\nTOTAL LIABILITIES | August 29, 2021: 41,190 | August 30, 2020: 36,851\nCOMMITMENTS AND CONTINGENCIES\nEQUITY\nPreferred stock $0.01 par value; 100,000,000 shares authorized; no shares issued and outstanding | August 29, 2021: — | August 30, 2020: —\nCommon stock $0.01 par value; 900,000,000 shares authorized; 441,825,000 and 441,255,000 shares issued and outstanding | August 29, 2021: 4 | August 30, 2020: 4\nAdditional paid-in capital | August 29, 2021: 7,031 | August 30, 2020: 6,698\nAccumulated other comprehensive loss | August 29, 2021: (1,137) | August 30, 2020: (1,297)\nRetained earnings | August 29, 2021: 11,666 | August 30, 2020: 12,879\nTotal Costco stockholders’ equity | August 29, 2021: 17,564 | August 30, 2020: 18,284\nNoncontrolling interests | August 29, 2021: 514 | August 30, 2020: 421\nTOTAL EQUITY | August 29, 2021: 18,078 | August 30, 2020: 18,705\nTOTAL LIABILITIES AND EQUITY | August 29, 2021: $ 59,268 | August 30, 2020: $ 55,556"
+        },
+        {
+          "support_unit_id": "E1.S134",
+          "raw_support_text": "Table:  | 2021 | 2020\nAssets\nOperating lease right-of-use assets | 2021: $ 2,890 | 2020: $ 2,788\nFinance lease assets(1) | 2021: 1,000 | 2020: 592\nTotal lease assets | 2021: $ 3,890 | 2020: $ 3,380\nLiabilities\nCurrent\nOperating lease liabilities(2) | 2021: $ 222 | 2020: $ 231\nFinance lease liabilities(2) | 2021: 72 | 2020: 31\nLong-term\nOperating lease liabilities | 2021: 2,642 | 2020: 2,558\nFinance lease liabilities(3) | 2021: 980 | 2020: 657\nTotal lease liabilities | 2021: $ 3,916 | 2020: $ 3,477"
+        }
+      ],
+      "generation": {
+        "done_reason": "stop",
+        "prompt_tokens": 46606,
+        "output_tokens": 592
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "repair_requests": 0,
+          "tool_attempts": 1,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 1,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": null
+        }
+      },
+      "tools": [
+        {
+          "tool": "calculate"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_CHECK_INVALID"
+          ]
+        }
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 2,
+        "rejections": 1
+      },
+      "validator_failure_codes": [],
+      "seconds": 43.2
+    }
+  ]
+}

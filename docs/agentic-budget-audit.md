@@ -131,3 +131,27 @@ after research has closed. Existing
 security/receipt/release tests must continue passing. A live fixed-sample follow-up
 is recorded separately; no quality or cost improvement is asserted from passing
 unit tests alone.
+
+## Recorded live outcomes
+
+The [initial fixed mini10](../artifacts/mmlongbench-v2/agentic-budget-mini10-20261018/REVIEW.md)
+measured the first policy at `122c0ca`: 34 model requests, 387769 input tokens,
+305.4 seconds summed question latency, 2/8 grounded answerables and 1/2 correct
+model refusals. All questions stayed within three research requests; a repeated
+operation was blocked. Compared with the prior extended-tools run, this did **not**
+show token/latency savings or improved grounded correctness. It also exposed the
+missing final repair phase, subsequently fixed.
+
+The [final targeted smoke](../artifacts/mmlongbench-v2/agentic-budget-repair3-20261018/REVIEW.md)
+at `a4eb6df` produced one grounded correct answer out of three selected development
+cases; two were stopped by token preflight. The dedicated extra final repair
+slot was not exercised live because token preflight prevented it; it is verified
+in deterministic agent-loop tests. Do not call this a new mini10 or an improvement.
+
+Final offline validation: **1884 passed, 4 skipped, 5 live tests deselected**;
+Ruff and mypy passed. These checks establish control/security behavior, not answer
+quality. No thresholds are calibrated or recommended as production-optimal. Keep
+the existing opt-in rollout. The next evaluation should restore the original
+4/8-grounded reference as a control and isolate tool exposure, context growth,
+verification and budget policies one at a time; no further changes should be
+selected merely to improve these known sample answers.

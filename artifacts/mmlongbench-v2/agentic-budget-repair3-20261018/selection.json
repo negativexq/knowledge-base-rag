@@ -1,0 +1,9 @@
+{
+  "rows": [
+    381,
+    507,
+    1016
+  ],
+  "selection_rule": "Targeted development smoke for the previously failed quiz count, document-scope routing and calculation/verifier repair paths. Not random, not a new mini10, not used for a benchmark-wide accuracy claim.",
+  "locked_before_output": true
+}

@@ -1,0 +1,26 @@
+{
+  "grading": "Existing lenient deterministic contains-match, numbers within 1%; not official benchmark scoring. Manual review will be reported separately.",
+  "questions": [
+    {
+      "row_idx": 507,
+      "question": "What's the geographic market name for EPS Code AR01?\n\n",
+      "gold": "Little Rock",
+      "answerable": true,
+      "answer_format": "Str"
+    },
+    {
+      "row_idx": 1016,
+      "question": "what is long-term debt of Costco in FY 2021, including long-term operating and finance lease liabilities? Anwser in millions.",
+      "gold": "10314",
+      "answerable": true,
+      "answer_format": "Float"
+    },
+    {
+      "row_idx": 381,
+      "question": "How many quizzes are there in the entire course?",
+      "gold": "7",
+      "answerable": true,
+      "answer_format": "Int"
+    }
+  ]
+}

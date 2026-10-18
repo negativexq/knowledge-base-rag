@@ -6081,3 +6081,20 @@ and visual tools were verified offline, not successfully selected in this live
 run. Keep opt-in rollout and measure generic routing/context/budget changes
 separately before claiming improvement. See the
 [recorded audit](../artifacts/mmlongbench-v2/agentic-tools-mini10-20261018/REVIEW.md).
+
+### Agent budget audit and bounded research (2026-10-18)
+
+Added a validated server-side ResearchPolicy above existing hard shared SDK limits:
+three research requests, four execution attempts (including failures), two
+no-progress steps, duplicate suppression, per-operation timeouts, one candidate
+repair and a separate tools-closed final correction within the unchanged hard
+limits. Single-source requests hide document discovery. Stop and terminal reasons
+are separately observable. See [audit and primary references](agentic-budget-audit.md).
+
+Final offline validation: 1884 passed, 4 skipped, 5 live deselected; Ruff/mypy clean.
+Live evaluation did **not** establish an efficiency or quality gain: first-policy
+mini10 remained 2/8 grounded, with 34 model calls and increased input/elapsed totals;
+final targeted smoke was 1/3 grounded, two token-preflight blocks. Do not present
+numeric limits as a demonstrated accuracy fix or production-optimal thresholds.
+Further evaluation must isolate each change against the original 4/8 reference.
+No push, deployment or `.env` edit.

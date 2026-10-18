@@ -1,0 +1,610 @@
+{
+  "summary": {
+    "revision": "122c0caaa7a5059c4052d282833ebf0534988ba1",
+    "phase": "initial soft-policy measurement, before separate final repair slot",
+    "questions": 10,
+    "manual_grounded_correct_answerable": 2,
+    "answerable_total": 8,
+    "correct_refusals": 1,
+    "unanswerable_total": 2,
+    "budget_blocked": 5,
+    "model_requests": 34,
+    "input_tokens": 387769,
+    "output_tokens": 2307,
+    "summed_question_seconds": 305.4,
+    "recorded_completed_tools": {
+      "search": 3,
+      "calculate": 2,
+      "read_document_section": 2
+    },
+    "observed_tool_attempts": 14,
+    "max_research_requests_observed": 3,
+    "max_tool_attempts_observed": 2
+  },
+  "per_question": [
+    {
+      "row_idx": 210,
+      "question": "What percentage of the party that holds the highest total percentage of good policy ideas and high ethical standards reported that they followed the news about congressional elections in their state very closely in the survey of U.S. adults conducted from April 25 to May 1, 2018?",
+      "gold": "21%",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "manual_note": "Final candidate failed deterministic numeric validation after research turns were spent.",
+      "accepted_correct_grounded_or_refusal": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 40231,
+        "output_tokens": 252
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "tool_attempts": 2,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 1,
+          "validation_rejections": 1,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": "RESEARCH_TURN_LIMIT"
+        }
+      },
+      "tools": [
+        {
+          "tool": "search",
+          "mode": "hybrid",
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0,
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "remaining_evidence_tokens": "[REDACTED]"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "CRITICAL_VALUE_DIRECT_CONFLICT",
+            "NO_VALID_SUPPORT_BACKED_CLAIMS"
+          ]
+        }
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "seconds": 28.5
+    },
+    {
+      "row_idx": 366,
+      "question": "What was the value of absolute percentage shortfall in India's GDP growth from 2002 to 2003 compared to the forecast?",
+      "gold": "2.4%",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "manual_note": "Scope period rejection followed by an invalid calculation; repair limit stopped release.",
+      "accepted_correct_grounded_or_refusal": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 40075,
+        "output_tokens": 260
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 1
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "tool_attempts": 1,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 2,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": "VALIDATION_REPAIR_LIMIT"
+        }
+      },
+      "tools": [
+        {
+          "tool": "calculate"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_PERIOD_MISMATCH"
+          ]
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "CALCULATION_UNPARSEABLE",
+            "CRITICAL_VALUE_INDETERMINATE",
+            "NO_VALID_SUPPORT_BACKED_CLAIMS"
+          ]
+        }
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "seconds": 27.2
+    },
+    {
+      "row_idx": 381,
+      "question": "How many quizzes are there in the entire course?",
+      "gold": "7",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "manual_note": "A repeated operation was blocked; first final candidate failed scope validation after the third research request. This exposed the missing dedicated final repair slot.",
+      "accepted_correct_grounded_or_refusal": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 43122,
+        "output_tokens": 277
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 1
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "tool_attempts": 2,
+          "blocked_tool_calls": 1,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 1,
+          "stop_reason": "REPEATED_TOOL_CALL",
+          "terminal_reason": "RESEARCH_TURN_LIMIT"
+        }
+      },
+      "tools": [
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        }
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "seconds": 15.4
+    },
+    {
+      "row_idx": 472,
+      "question": "How many grams of coffee can be put in the manual insert? Return me an integer.",
+      "gold": "16",
+      "answer": "16 [E1.S117]",
+      "manual_note": "Correct 16 g answer backed by E1.S117.",
+      "accepted_correct_grounded_or_refusal": true,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S117",
+          "raw_support_text": " 6 Insert ground coffee (max. 16 g)"
+        }
+      ],
+      "generation": {
+        "done_reason": "stop",
+        "prompt_tokens": 37229,
+        "output_tokens": 153
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 2,
+          "tool_attempts": 1,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 0,
+          "stop_reason": null,
+          "terminal_reason": null
+        }
+      },
+      "tools": [
+        {
+          "tool": "read_document_section"
+        }
+      ],
+      "validator_failure_codes": [],
+      "seconds": 22.2
+    },
+    {
+      "row_idx": 507,
+      "question": "What's the geographic market name for EPS Code AR01?\n\n",
+      "gold": "Little Rock",
+      "answer": "The geographic market name for EPS Code AR01 is Little Rock. [E1.S287] [E1.S289]",
+      "manual_note": "Correct Little Rock answer backed by AR01 table E1.S289; no document discovery call.",
+      "accepted_correct_grounded_or_refusal": true,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S287",
+          "raw_support_text": "Arkansas (AR)"
+        },
+        {
+          "support_unit_id": "E1.S289",
+          "raw_support_text": "1. | Little Rock | AR01\n2. | Northern Arkansas | AR02\nNew Mexico (NM)"
+        }
+      ],
+      "generation": {
+        "done_reason": "stop",
+        "prompt_tokens": 34676,
+        "output_tokens": 163
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 2,
+          "tool_attempts": 1,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 0,
+          "stop_reason": null,
+          "terminal_reason": null
+        }
+      },
+      "tools": [],
+      "validator_failure_codes": [],
+      "seconds": 13.6
+    },
+    {
+      "row_idx": 636,
+      "question": "How many prompts examples are shown in the paper's main body?",
+      "gold": "2",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "manual_note": "14 unseen blocks were admitted, but scope was rejected after research turns were spent. No dedicated repair remained.",
+      "accepted_correct_grounded_or_refusal": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 45892,
+        "output_tokens": 215
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 1
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "tool_attempts": 2,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 1,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": "RESEARCH_TURN_LIMIT"
+        }
+      },
+      "tools": [
+        {
+          "tool": "search",
+          "mode": "hybrid",
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0,
+          "returned_blocks": 14,
+          "added_blocks": 14,
+          "remaining_evidence_tokens": "[REDACTED]"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        }
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "seconds": 42.9
+    },
+    {
+      "row_idx": 660,
+      "question": "Which port has the alternative function that capture Trigger from port 10-13?",
+      "gold": "Not answerable",
+      "answer": "The alternative function is on **Port 1**, specifically pin **P1.1 (T2EX)**, which is the Timer/Counter 2 Capture/Reload Trigger. [E1.S66] [E1.S63]",
+      "manual_note": "Wrong answer against pinned unanswerable label: nearby Port 1/P1.1/T2EX facts were accepted by the unchanged scope verifier.",
+      "accepted_correct_grounded_or_refusal": false,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S63",
+          "raw_support_text": "In the 8032AH, 8052AH and 8752BH, Port 1 pins P1.O and P1.1 also serve the T2 and T2EX functions, respectively."
+        },
+        {
+          "support_unit_id": "E1.S66",
+          "raw_support_text": "P1.0 T2 (Timer/Counter 2 External Input) P1.1 T2EX (Timer/Counter 2 Capture/Reload Trigger)"
+        }
+      ],
+      "generation": {
+        "done_reason": "stop",
+        "prompt_tokens": 42183,
+        "output_tokens": 203
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 2,
+          "tool_attempts": 1,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 0,
+          "stop_reason": null,
+          "terminal_reason": null
+        }
+      },
+      "tools": [
+        {
+          "tool": "read_document_section"
+        }
+      ],
+      "validator_failure_codes": [],
+      "seconds": 35.5
+    },
+    {
+      "row_idx": 732,
+      "question": "How many figures are related to Airbus?",
+      "gold": "5",
+      "answer": "I could not find this in the document.",
+      "manual_note": "Model abstained; did not repeat the earlier false Airbus figure-count answer, but missed an answerable question.",
+      "accepted_correct_grounded_or_refusal": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "stop",
+        "prompt_tokens": 25653,
+        "output_tokens": 121
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "tool_attempts": 2,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 0,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": null
+        }
+      },
+      "tools": [],
+      "validator_failure_codes": [],
+      "seconds": 26.4
+    },
+    {
+      "row_idx": 1016,
+      "question": "what is long-term debt of Costco in FY 2021, including long-term operating and finance lease liabilities? Anwser in millions.",
+      "gold": "10314",
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "manual_note": "Calculation ran; two SCOPE_CHECK_INVALID judgments exhausted the one-repair allowance.",
+      "accepted_correct_grounded_or_refusal": false,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 46619,
+        "output_tokens": 605
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 2,
+        "rejections": 2
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 3,
+          "tool_attempts": 1,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 2,
+          "stop_reason": "RESEARCH_TURN_LIMIT",
+          "terminal_reason": "VALIDATION_REPAIR_LIMIT"
+        }
+      },
+      "tools": [
+        {
+          "tool": "calculate"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_CHECK_INVALID"
+          ]
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_CHECK_INVALID"
+          ]
+        }
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "seconds": 31.3
+    },
+    {
+      "row_idx": 1084,
+      "question": "what is interest coverage ratio for AMCOR'FY 2020? round your answer to three decimal?",
+      "gold": "Not answerable",
+      "answer": "I could not find this in the document.",
+      "manual_note": "Correct model abstention on the AMCOR question over a BESTBUY document.",
+      "accepted_correct_grounded_or_refusal": true,
+      "cited_units": [],
+      "generation": {
+        "done_reason": "stop",
+        "prompt_tokens": 32089,
+        "output_tokens": 58
+      },
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [],
+        "research": {
+          "policy": {
+            "max_research_requests": 3,
+            "max_tool_attempts": 4,
+            "max_no_progress": 2,
+            "max_validation_repairs": 1,
+            "tool_timeout_seconds": 20,
+            "model_timeout_seconds": 30,
+            "finalize_reserve_seconds": 30
+          },
+          "research_requests": 2,
+          "tool_attempts": 1,
+          "blocked_tool_calls": 0,
+          "consecutive_no_progress": 0,
+          "validation_rejections": 0,
+          "stop_reason": null,
+          "terminal_reason": null
+        }
+      },
+      "tools": [
+        {
+          "tool": "search",
+          "mode": "hybrid",
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 9,
+          "returned_blocks": 14,
+          "added_blocks": 5,
+          "remaining_evidence_tokens": "[REDACTED]"
+        }
+      ],
+      "validator_failure_codes": [],
+      "seconds": 62.4
+    }
+  ]
+}
