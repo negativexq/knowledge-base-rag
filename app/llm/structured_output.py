@@ -44,6 +44,7 @@ from app.llm.premise import (
 )
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
+from app.llm.research_events import with_progress
 from app.llm.visual_answer import (
     PageRenderer,
     VisualAnswer,
@@ -1424,7 +1425,15 @@ async def _support_unit_answer_events(
     telemetry = telemetry if telemetry is not None else {}
     candidate = None
     if candidate_generator is not None:
-        candidate = await candidate_generator(query, blocks)
+        async for progress in with_progress(candidate_generator(query, blocks)):
+            if progress["type"] == "candidate":
+                candidate = progress["candidate"]
+            else:
+                yield progress
+        assert candidate is not None
+        if candidate.clarification is not None and candidate.failure_code is None:
+            yield {"type": "clarification", **candidate.clarification}
+            return
         blocks = candidate.blocks
         telemetry["agent_requests"] = candidate.telemetry.get("requests", 0)
         telemetry["agent_tool_calls"] = candidate.telemetry.get("tool_calls", 0)
@@ -1740,6 +1749,13 @@ async def _support_unit_answer_events(
             },
         )
     _record_validator_telemetry(telemetry)
+    if (
+        candidate is not None
+        and candidate.comparison
+        and not final_abstain
+        and not validation.failure_codes
+    ):
+        yield {"type": "comparison", "rows": candidate.comparison}
     rendered = render_support_unit_answer(validation.valid_parts, abstain=final_abstain)
     user_visible = validation.top_level_valid and bool(rendered)
     if capture is not None:

@@ -47,8 +47,14 @@ MAX_HISTORY_TURNS_IN_REQUEST = 50
 MAX_SCOPE_SOURCES = 50
 
 
+class ClarificationResponse(BaseModel):
+    question: str = Field(min_length=1, max_length=500)
+    answer: str = Field(min_length=1, max_length=2000)
+
+
 class ChatRequest(BaseModel):
     question: str
+    clarification: ClarificationResponse | None = None
     # Recent turns of this conversation, oldest first. Client-supplied and
     # therefore untrusted: used only to rewrite a follow-up question into a
     # standalone query (app/llm/query_rewrite.py), never sent to the answer
@@ -461,6 +467,9 @@ async def _sse_event_stream(
             elif event["type"] == "evidence_update":
                 sources = [source_payload(i, c) for i, c in enumerate(event["blocks"], 1)]
                 yield f"event: sources\ndata: {json.dumps({'sources': sources})}\n\n"
+            elif event["type"] in {"research_progress", "clarification", "comparison"}:
+                payload = {k: v for k, v in event.items() if k != "type"}
+                yield f"event: {event['type']}\ndata: {json.dumps(payload)}\n\n"
             elif event["type"] == "metadata":
                 payload = {k: v for k, v in event.items() if k != "type"}
                 yield f"event: metadata\ndata: {json.dumps(payload)}\n\n"
@@ -560,6 +569,13 @@ async def chat(
 ) -> StreamingResponse:
     _enforce_chat_rate_limit(request, user)
     question = _validated_question(request, chat_request.question)
+    if chat_request.clarification is not None:
+        question = _validated_question(
+            request,
+            question
+            + "\nUser clarification (request data): "
+            + chat_request.clarification.model_dump_json(),
+        )
     deps: ChatDependencies = request.app.state.chat_deps
     context = RetrievalContext.for_user(user)
     screening = _screen_question(request, user, question)
