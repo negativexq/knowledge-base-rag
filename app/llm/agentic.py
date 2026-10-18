@@ -11,6 +11,7 @@ import hashlib
 import json
 import logging
 import math
+import time
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
@@ -56,6 +57,7 @@ from app.llm.agent_observability import (
 from app.llm.calculation import Calculation, evaluate_expression, verify_calculation
 from app.llm.operand_resolver import Retrieve
 from app.llm.premise import missing_question_dates, missing_question_years
+from app.llm.research_budget import ResearchBudget, ResearchPolicy
 from app.llm.research_events import publish
 from app.llm.scope_validation import (
     MAX_SCOPE_PAYLOAD_CHARS,
@@ -335,6 +337,7 @@ class AgentDependencies:
     reserve_scope_requests: int = 0
     reserve_scope_tokens: int = 0
     budget_events: list[dict[str, Any]] = field(default_factory=list)
+    research_budget: ResearchBudget = field(default_factory=ResearchBudget)
 
     def validation(self, answer: AgentAnswer) -> SupportUnitValidation:
         return validate_support_unit_answer(
@@ -377,6 +380,14 @@ class AgentDependencies:
 
     def record(self, tool: str, **details: Any) -> None:
         self.tool_events.append({"tool": tool, **details})
+        if tool == "validation_retry":
+            self.research_budget.validation_rejections += 1
+            if (
+                self.research_budget.validation_rejections
+                > self.research_budget.policy.max_validation_repairs
+            ):
+                self.research_budget.terminate("VALIDATION_REPAIR_LIMIT")
+                raise UsageLimitExceeded("Validation repair allowance exhausted")
         span = trace.get_current_span()
         for key in {
             "returned_blocks",
@@ -406,6 +417,15 @@ def prepare_tool(
     ctx: RunContext[AgentDependencies], definition: ToolDefinition
 ) -> ToolDefinition | None:
     deps = ctx.deps
+    if deps.research_budget.tools_closed():
+        return None
+    # Discovery cannot widen a request fixed to one already known document.
+    if (
+        definition.name == "find_documents"
+        and deps.documents is not None
+        and (deps.documents.source_ids is not None and len(deps.documents.source_ids) == 1)
+    ):
+        return None
     request_limit = deps.scope_limits.request_limit
     if request_limit is not None:
         # Leave a research response and mandatory scope verification after tool work.
@@ -463,6 +483,8 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
     ) -> Any:
         event = {"id": call.tool_call_id, "operation": call.tool_name}
         ctx.deps.observations.tool_calls += 1
+        budget = ctx.deps.research_budget
+        revision = len(ctx.deps.ledger.blocks)
         with operation(
             "tool." + call.tool_name,
             kind="tool",
@@ -471,17 +493,52 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
                 "gen_ai.tool.call.id": call.tool_call_id,
                 "research.attempt": ctx.retry + 1,
             },
-        ):
+        ) as span:
             publish({**event, "status": "running"})
+            blocked = budget.before_tool(call.tool_name, args, revision)
+            if blocked:
+                span.set_attribute("research.stop_reason", blocked)
+                outcome(span, "blocked", blocked)
+                publish({**event, "status": "completed"})
+                return {
+                    "research_closed": True,
+                    "reason": blocked,
+                    "next_action": "Use current evidence, clarify or abstain. Research is closed.",
+                }
             try:
-                result = await handler(args)
+                async with asyncio.timeout(budget.tool_timeout()):
+                    result = await handler(args)
+            except TimeoutError:
+                budget.close("TOOL_TIMEOUT")
+                budget.after_tool(False)
+                outcome(span, "timeout", "TOOL_TIMEOUT")
+                publish({**event, "status": "completed"})
+                return {
+                    "research_closed": True,
+                    "reason": "TOOL_TIMEOUT",
+                    "next_action": "Use current evidence or abstain; timeout is not absence.",
+                }
             except ModelRetry:
+                budget.after_tool(False)
                 publish({**event, "status": "retrying"})
                 raise
             except BaseException:
                 publish({**event, "status": "failed"})
                 raise
             publish({**event, "status": "completed"})
+            progressed = len(ctx.deps.ledger.blocks) > revision
+            if call.tool_name in {
+                "calculate",
+                "read_document_section",
+                "compare_evidence",
+                "list_document_elements",
+            }:
+                progressed = True
+            if isinstance(result, dict) and (
+                result.get("verified") is True or result.get("resolved") is True
+            ):
+                progressed = True
+            budget.after_tool(progressed)
             return result
 
     async def wrap_model_request(
@@ -492,10 +549,16 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
         handler: WrapModelRequestHandler,
     ) -> ModelResponse:
         deps = ctx.deps
+        budget = deps.research_budget
+        if self.model_role == "agent":
+            if budget.research_requests >= budget.policy.max_research_requests:
+                budget.terminate("RESEARCH_TURN_LIMIT")
+                raise UsageLimitExceeded("Research model turn allowance exhausted")
         reserve_requests = deps.reserve_scope_requests if self.model_role == "agent" else 0
         reserve_tokens = deps.reserve_scope_tokens if self.model_role == "agent" else 0
         maximum = deps.scope_limits.request_limit
         if maximum is not None and ctx.usage.requests + reserve_requests >= maximum:
+            budget.terminate("HARD_REQUEST_RESERVE")
             deps.budget_events.append({"reason": "scope_request_reserve", "role": self.model_role})
             raise UsageLimitExceeded("Research would consume the reserved verification request")
         # Local preflight estimate; provider-reported usage remains authoritative.
@@ -521,6 +584,7 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
             ctx.usage.total_tokens + estimated_input + output_allowance + reserve_tokens
             > token_limit
         ):
+            budget.terminate("TOKEN_PREFLIGHT_LIMIT")
             deps.budget_events.append(
                 {
                     "reason": "token_preflight",
@@ -551,11 +615,16 @@ class ResearchProgress(AbstractCapability[AgentDependencies]):
             },
         ) as span:
             mark_model(span, provider, model, self.model_role)
+            if self.model_role == "agent":
+                budget.research_requests += 1
             span.set_attribute("research.estimated_input_tokens", estimated_input)
             span.set_attribute("research.reserved_scope_tokens", reserve_tokens)
             try:
-                response = await handler(request_context)
-            except BaseException:
+                async with asyncio.timeout(budget.policy.model_timeout_seconds):
+                    response = await handler(request_context)
+            except BaseException as exc:
+                if isinstance(exc, TimeoutError):
+                    budget.terminate("MODEL_TIMEOUT")
                 ctx.deps.observations.record(
                     span, provider=provider, model=model, input_tokens=None, output_tokens=None
                 )
@@ -599,6 +668,25 @@ def build_agent(
     # Keep content-free application spans authoritative even if another module
     # enables SDK-wide instrumentation with message capture.
     agent.instrument = False
+
+    @agent.instructions
+    def budget_instructions(ctx: RunContext[AgentDependencies]) -> str:
+        budget = ctx.deps.research_budget
+        if budget.tools_closed():
+            return (
+                "Research is closed by the server budget. Produce your final structured "
+                "answer using only current evidence, clarify or abstain. Do not request "
+                "more research tools. All answer validation requirements still apply."
+            )
+        return (
+            "Research budget: at most "
+            + str(budget.policy.max_research_requests)
+            + " research responses and "
+            + str(budget.policy.max_tool_attempts)
+            + " tool attempts. Use the initial evidence when sufficient; each tool "
+            "must address a missing fact. Stop when evidence is sufficient or further "
+            "research provides no new evidence. Do not repeat unsuccessful operations."
+        )
 
     @agent.tool(sequential=True, prepare=prepare_tool)
     async def search(
@@ -1179,8 +1267,7 @@ def build_agent(
             "page": reading.page,
         }
 
-    @agent.output_validator
-    async def validate_output(
+    async def validate_candidate(
         ctx: RunContext[AgentDependencies], answer: AgentAnswer
     ) -> AgentAnswer:
         with operation(
@@ -1260,6 +1347,20 @@ def build_agent(
                             "the claim, ask for clarification if needed, or abstain."
                         )
             return answer
+
+    @agent.output_validator
+    async def validate_output(
+        ctx: RunContext[AgentDependencies], answer: AgentAnswer
+    ) -> AgentAnswer:
+        before = ctx.deps.research_budget.validation_rejections
+        try:
+            return await validate_candidate(ctx, answer)
+        except ModelRetry:
+            # Premise/comparison/visual-ID checks must share the same candidate
+            # repair allowance as deterministic and scope validation failures.
+            if ctx.deps.research_budget.validation_rejections == before:
+                ctx.deps.record("validation_retry", failure_codes=["CANDIDATE_VALIDATION_FAILED"])
+            raise
 
     return agent
 
@@ -1370,6 +1471,7 @@ async def run_agent(
     retries: int = 2,
     model_settings: ModelSettings | None = None,
     scope_model: Model | None = None,
+    research_policy: ResearchPolicy | None = None,
 ) -> AgentCandidate:
     if current_usage() is not None:
         deps.observations = current_usage() or deps.observations
@@ -1379,6 +1481,14 @@ async def run_agent(
         request_limit=max_requests, tool_calls_limit=max_tool_calls, total_tokens_limit=max_tokens
     )
     deps.scope_limits = limits
+    policy = research_policy or ResearchPolicy()
+    # Tiny test/custom timeouts must not close research before it starts.
+    policy = policy.model_copy(
+        update={
+            "finalize_reserve_seconds": min(policy.finalize_reserve_seconds, timeout_seconds / 3)
+        }
+    )
+    deps.research_budget = ResearchBudget(policy, deadline=time.monotonic() + timeout_seconds)
     deps.reserve_scope_requests = 1 if deps.scope_validation_enabled else 0
     deps.reserve_scope_tokens = min(8000, max_tokens // 4) if deps.scope_validation_enabled else 0
     deps.scope_model_settings = model_settings
@@ -1418,8 +1528,10 @@ async def run_agent(
             comparison = [row.model_dump() for row in result.output.comparison]
             visual = deps.visual_readings.get(result.output.visual_reading_id or "")
         except UsageLimitExceeded:
+            deps.research_budget.terminate("HARD_USAGE_LIMIT")
             failure = "AGENT_BUDGET_EXCEEDED"
         except TimeoutError:
+            deps.research_budget.terminate("RUN_TIMEOUT")
             failure = "AGENT_TIMEOUT"
         except Exception as exc:
             # Do not release a partial draft or weaken validation on failure.
@@ -1438,6 +1550,7 @@ async def run_agent(
                 "scope_request_reserve": deps.reserve_scope_requests,
                 "scope_token_reserve": deps.reserve_scope_tokens,
                 "preflight_events": deps.budget_events,
+                "research": deps.research_budget.snapshot(),
             },
             "scope_validation": {
                 "enabled": deps.scope_validation_enabled,
@@ -1446,6 +1559,14 @@ async def run_agent(
             },
         }
         capture = current_capture()
+        run_span.set_attribute(
+            "research.stop_reason", deps.research_budget.stop_reason or "COMPLETED"
+        )
+        run_span.set_attribute("research.research_requests", deps.research_budget.research_requests)
+        run_span.set_attribute("research.tool_attempts", deps.research_budget.tool_attempts)
+        run_span.set_attribute("research.no_progress_steps", deps.research_budget.no_progress)
+        if deps.research_budget.terminal_reason:
+            run_span.set_attribute("research.terminal_reason", deps.research_budget.terminal_reason)
         if capture is not None:
             capture.stage("agentic", telemetry)
         publish(

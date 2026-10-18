@@ -11,6 +11,7 @@ from app.ingestion.chunking_config import (
     ChunkingConfig,
 )
 from app.llm.openai_client import OPENAI_MODEL
+from app.llm.research_budget import ResearchPolicy
 from app.reranker.config import (
     MULTILINGUAL_RERANKER_MODEL,
     RERANKER_BACKEND,
@@ -98,6 +99,7 @@ class Settings(BaseSettings):
     agentic_timeout_seconds: float = Field(default=120.0, gt=0, le=600)
     agentic_output_retries: int = Field(default=2, ge=0, le=5)
     agentic_evidence_token_budget: int = Field(default=24000, ge=100, le=50000)
+    agentic_research_policy: ResearchPolicy = Field(default_factory=ResearchPolicy)
 
     @model_validator(mode="after")
     def validate_agentic_profile(self) -> Self:

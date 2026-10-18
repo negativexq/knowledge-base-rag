@@ -301,6 +301,7 @@ def build_chat_dependencies(
                         max_tokens=settings.agentic_max_tokens,
                         timeout_seconds=settings.agentic_timeout_seconds,
                         retries=settings.agentic_output_retries,
+                        research_policy=settings.agentic_research_policy,
                         model_settings=model_settings,
                     )
 

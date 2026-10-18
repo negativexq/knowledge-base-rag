@@ -121,3 +121,9 @@ source-version mismatch, separate visual checking, cached snapshot revocation,
 content-free spans, comparisons and final verification request reservation.
 Live benchmark results belong in a separately recorded artifact; passing these
 integration checks alone does not establish an accuracy improvement.
+
+The later [research-budget audit](agentic-budget-audit.md) adds a server-owned soft
+stop policy above the original hard shared limits: bounded research turns and
+failed tool attempts, no-progress/duplicate detection, per-operation deadlines,
+one candidate repair and explicit finalization. Existing source/validator/release
+contracts are unchanged.
