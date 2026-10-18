@@ -10,6 +10,7 @@ from app.connectors.filesystem import LocalFilesystemConnector
 from app.connectors.notion import NotionConnector
 from app.evaluation.forensic_capture import current_capture, metadata_for_chunks
 from app.evaluation.semantic_answerability import OllamaSemanticEvaluator
+from app.evidence.documents import DocumentReader
 from app.evidence.section_aware import SectionAwareEvidenceBuilder, serialize_section_aware_context
 from app.ingestion.chunking_config import QWEN3_EMBEDDING_TOKENIZER, QWEN3_TOKENIZER_REVISION
 from app.ingestion.fingerprint import build_pipeline_fingerprint
@@ -211,7 +212,7 @@ def build_chat_dependencies(
 
     page_renderer = pdf_page_renderer(settings.filesystem_root_path)
 
-    async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None):
+    async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None, documents=None):
         if settings.agentic_rag_enabled:
             from app.llm.agentic import (
                 PIPELINE_VERSION,
@@ -230,6 +231,7 @@ def build_chat_dependencies(
                     query,
                     ledger,
                     retrieve=retrieve,
+                    documents=documents,
                     provider=chat_provider,
                     generation_kwargs={
                         "model": default_chat_model(settings),
@@ -340,6 +342,9 @@ def build_chat_dependencies(
             if settings.rag_pipeline_v2 or settings.support_ids_enabled
             else None,
             agentic_rag_enabled=settings.agentic_rag_enabled,
+            documents_factory=lambda context, source_ids: DocumentReader(
+                qdrant_client, collection_name, context, source_ids
+            ),
             pipeline_version=(
                 "pipeline_agentic_v1"
                 if settings.agentic_rag_enabled

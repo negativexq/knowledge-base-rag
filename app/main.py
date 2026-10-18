@@ -12,6 +12,7 @@ from app.api.chat import ChatDependencies
 from app.api.chat import router as chat_router
 from app.api.health import ListModelsFn
 from app.api.health import router as health_router
+from app.api.research import router as research_router
 from app.api.sources import router as sources_router
 from app.api.sync import router as sync_router
 from app.api.ui import router as ui_router
@@ -160,6 +161,7 @@ def create_app(
     app.include_router(sync_router)
     app.include_router(sources_router)
     app.include_router(chat_router)
+    app.include_router(research_router)
     app.include_router(health_router)
     app.include_router(ui_router)
 

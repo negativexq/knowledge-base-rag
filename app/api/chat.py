@@ -17,6 +17,7 @@ from app.evaluation.forensic_capture import (
     set_current_capture,
 )
 from app.evaluation.semantic_answerability import SemanticEvaluator
+from app.evidence.documents import DocumentReaderFactory
 from app.evidence.support_units import section_label
 from app.llm.citation_location import location_for
 from app.llm.prompt import NOT_FOUND_PHRASE
@@ -169,6 +170,7 @@ class ChatDependencies:
     # operands (app/llm/operand_resolver.py), within this request's scope.
     operand_resolver_enabled: bool = False
     agentic_rag_enabled: bool = False
+    documents_factory: DocumentReaderFactory | None = None
 
 
 @dataclass(frozen=True)
@@ -442,6 +444,11 @@ async def _sse_event_stream(
                 **(
                     {"retrieve": _scoped_retrieve(deps, context, scope)}
                     if deps.operand_resolver_enabled or deps.agentic_rag_enabled
+                    else {}
+                ),
+                **(
+                    {"documents": deps.documents_factory(context, source_ids)}
+                    if deps.agentic_rag_enabled and deps.documents_factory
                     else {}
                 ),
             )

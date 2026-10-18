@@ -350,6 +350,8 @@ async def ask(
             if (deps.operand_resolver_enabled or deps.agentic_rag_enabled)
             else {}
         )
+        if deps.agentic_rag_enabled and deps.documents_factory:
+            extra["documents"] = deps.documents_factory(context, scope or None)
         async for event in deps.stream_fn(question.question, blocks, **extra):
             if event["type"] == "token":
                 answer += event["content"]
