@@ -56,7 +56,7 @@ Tools are chosen by code, not offered all at once (`prepare_tool`):
 | `navigate_document` | A document reader is available: outline, section, page, term search or neighbours of a known support ID. |
 | `calculate`, `resolve_calculation` | Derived answers (and the operand resolver) are enabled. |
 | `inspect_table` | Versioned PDFs are available. Without an element ID it reads the first table on the support unit's page and lists the others. |
-| `read_pages`, `inspect_region`, `list_document_elements` | The question asks about something visual (`asks_visual`) and image reading is enabled. |
+| `read_pages`, `inspect_region`, `list_document_elements` | Image reading is enabled and the provider reads images; the question's wording does not gate them, since chart and table questions rarely name a figure. |
 | `find_documents` | The request has no fixed source scope. |
 | `compare_evidence` | Admitted evidence spans at least two sources. |
 
