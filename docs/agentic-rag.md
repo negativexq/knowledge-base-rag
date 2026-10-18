@@ -31,7 +31,8 @@ Tools:
 | Tool | Behavior |
 | --- | --- |
 | `search` | Calls the request's existing scoped retrieval and reranker, then section expansion; admits new evidence within the ledger budget. |
-| `read_document_section` | Reopens the already admitted evidence block containing a known support ID. To find another section, use `search`. |
+| `read_document_section` | Reopens the already admitted evidence block containing a known support ID. |
+| `navigate_document` | Lists headings, searches document terms, reads unseen sections/pages or adjacent passages. Keeps the anchor source/version and request scope; newly admitted passages receive stable support IDs. |
 | `calculate` | Evaluates restricted arithmetic and verifies every operand against cited evidence with the existing calculator. |
 | `resolve_calculation` | Uses the existing operand planner, binding checks and deterministic computation. Missing operands must be searched through `search`, keeping IDs and budgets consistent. |
 | `read_pages` | Uses the existing page reader and separate claim/condition check for an admitted source. The final answer selects the verified reading without rewriting it. |
@@ -112,3 +113,78 @@ validation retries, budget/timeout failures and final release checks. A native
 `gpt-6-luna` synthetic-evidence smoke call passed. These establish integration,
 not an improvement on TechQA or MMLongBench; a paired full benchmark run and
 semantic grading remain necessary before enabling the feature by default.
+
+
+## Research workspace features
+
+The Research toolbar's **Compare documents** control scopes a question to two
+through five selected documents. When the agent returns a comparison, each cell
+must cite its own source and pass the existing validators. The UI renders a
+citation-linked table; Markdown export preserves its aspects and footnotes.
+A missing cell does not assert that a feature is absent. With the agent disabled,
+the same scope can be used by the original answer path, which returns ordinary
+text rather than the agent comparison contract.
+
+When ambiguity requires user input, the agent may return a `clarification`
+outcome with choices. It contains no answer draft. A reply starts a new,
+authorized request with the original question, reply and source scope. There is
+no suspended provider session or server conversation to resume. The original
+permissions are re-evaluated on each request. Clarification replies and completed
+comparison results are included in the existing browser research history and
+export. Benchmark runners save clarification outcomes as unanswered questions;
+they do not invent a user reply or count them as correct answers.
+
+Research activity lists operation names and running/completed/retrying/failed
+states through SSE `research_progress` events, not model reasoning or raw tool
+arguments. Closing the response or cancelling in the composer closes the nested
+streams and cancels pending agent work. Already issued external operations cannot
+be undone. The client ignores late events after cancellation. SSE events retain
+their type and content when transport chunks split a frame at arbitrary bytes.
+
+**Read full context** on a source card, or opening a document in Knowledge, shows
+a text reader backed by the active Qdrant index. It can list headings, find terms,
+read sections/pages and fetch surrounding passages without embeddings or an LLM.
+It displays the evidence version, last synchronization and a version mismatch
+when registry metadata is available. This is indexed text, not a PDF page-image
+viewer. Manually viewed passages do not retroactively become verified evidence
+for an earlier answer.
+
+Document reads preserve source type, source ID and document version. The service
+applies the existing server-owned tenant ACL and chat source scope and verifies
+returned payloads again. Reads scan at most 2000 chunks, paginate up to 50
+results, and return whole passages within a 60000-character response budget.
+`scan_limited`, `has_more` and `next_offset` make incomplete results visible. The
+API does not introduce per-user connector permissions beyond the existing tenant
+security model.
+
+### Answer feedback
+
+**Report an issue** saves a selected/entered claim, issue category, explanation,
+question/answer snapshot, citation IDs and optional trace ID. The snapshot is
+explicitly user-submitted and never reintroduced as trusted retrieval evidence.
+The `/feedback` page shows a user's own reports; OPERATOR/ADMIN users can review
+only their tenant's reports, assign triaged/resolved/dismissed status and save a
+reviewer note. Submitted snapshots are stored on the server, unlike the existing
+browser-local research sessions.
+
+Set `RESEARCH_FEEDBACK_DB_PATH` to a persistent SQLite path (default
+`data/research-feedback.db`). Treat this database as application data: it contains
+submitted question and answer text. This implementation does not automatically
+train on reports or provide a retention scheduler.
+
+Authenticated endpoints:
+
+- `POST /research/documents/read`: versioned document reference plus read action.
+- `POST /research/feedback`: submit a bounded user report; shares the chat rate limiter.
+- `GET /research/feedback/mine?offset=0`: a user's reports in pages of 50.
+- `GET /research/feedback?status=open&offset=0`: tenant reviewer queue (OPERATOR+).
+- `POST /research/feedback/{id}/review`: update a report's review (OPERATOR+).
+
+The new workflow was developed without live LLM calls. Tests use FunctionModel,
+mock transports, in-memory Qdrant and temporary SQLite. Full backend validation:
+1803 passed, 4 skipped, 5 live-service tests deselected; mypy checked 133 modules.
+Browser component/interaction and production-build checks cover the UI. A visual
+browser preview was unavailable in the development environment; it remains a
+manual deployment check alongside real-model behavior and benchmark quality.
+
+Final UI checks: 106 tests passed; TypeScript, ESLint and production build passed.

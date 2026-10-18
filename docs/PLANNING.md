@@ -5950,3 +5950,34 @@ See `docs/agentic-rag.md` for the evaluation protocol and current limitations.
 
 Validation: `make test` equivalent: 1787 passed, 4 skipped, 5 live-model tests
 deselected. Ruff clean, mypy clean across 128 modules, `pip check` clean.
+
+
+## Research workflows — document navigation, clarification, comparisons and feedback
+
+Added bounded document navigation over the active index: headings, text search,
+sections, page text and adjacent passages. All navigation keeps the known source
+version and caller/source scope, and newly read agent evidence uses the existing
+append-only support-ID ledger. The authenticated document reader also powers
+source-card and Knowledge views with registry synchronization/version metadata.
+No model or embedding calls are needed for these read operations.
+
+Agent output now supports clarification and source-specific comparison cells.
+Clarification replies start a fresh authorized request and preserve the source
+scope; comparison cells are individually checked against their own source IDs
+and final validators before rendering. Research progress carries operation/status
+only, with cancellation propagated through nested streams. SSE framing survives
+arbitrary transport chunk boundaries. Browser history and Markdown export retain
+clarification replies and comparison tables with citation footnotes.
+
+Added persistent user-submitted answer feedback and a tenant-scoped OPERATOR+
+review queue with triaged/resolved/dismissed statuses. Feedback snapshots are
+explicitly untrusted reports, not indexed evidence. SQLite location is configured
+by RESEARCH_FEEDBACK_DB_PATH. Existing research sessions remain browser-local.
+
+No live LLM calls were made for this work. New tests use the real PydanticAI loop
+with FunctionModel, mocked HTTP, in-memory Qdrant and temporary SQLite. Full
+backend suite: 1803 passed, 4 skipped, 5 live tests deselected. Mypy clean across
+133 modules. Visual browser QA could not run because no browser surface was
+available; automated UI interactions and production build were checked.
+
+Final UI checks: 106 tests passed; TypeScript, ESLint and production build passed.
