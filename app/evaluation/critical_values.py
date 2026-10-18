@@ -428,7 +428,9 @@ def _v3_version_signal(text: str) -> bool:
     return any(len(value) >= 3 for value in _v3_version_values(text))
 
 
-def _v3_claim_version_specificity(claim: str) -> str:
+def _v3_claim_version_specificity(claim: str, first: tuple[int, ...] | None = None) -> str:
+    """``first`` is the version the guard judges; without it, the claim's
+    first regex match (which can be a fragment of a path or identifier)."""
     lower = claim.lower()
     if re.search(
         r"\b(?:family|series|major version|major release)\b|\.x\b|\bor\s+later\b",
@@ -439,8 +441,10 @@ def _v3_claim_version_specificity(claim: str) -> str:
         return "FAMILY_MAJOR"
     if re.search(r"\b(?:exact(?:ly)?|full version)\b", lower):
         return "EXACT"
-    values = _v3_version_values(claim)
-    if values and len(values[0]) >= 3:
+    if first is None:
+        values = _v3_version_values(claim)
+        first = values[0] if values else None
+    if first is not None and len(first) >= 3:
         return "EXACT"
     return "AMBIGUOUS"
 
@@ -467,6 +471,25 @@ def _release(value: tuple[int, ...]) -> tuple[int, ...]:
     return value
 
 
+def _compact_versions(
+    claim: str, support: str, claim_versions: Sequence[tuple[int, ...]]
+) -> list[tuple[int, ...]]:
+    """Claimed releases the support writes without dots after the same name:
+    IBM prints BPM 7.5.0.1 as "BPM 7501". Only single-digit parts are read
+    this way, and only after the word that names the release in the claim."""
+    found: list[tuple[int, ...]] = []
+    for version in claim_versions:
+        if len(version) < 3 or any(part > 9 for part in version):
+            continue
+        dotted = re.escape(".".join(map(str, version)))
+        compact = "".join(map(str, version))
+        for match in re.finditer(rf"\b([A-Za-z][\w-]*)\s+v?{dotted}\b", claim):
+            if re.search(rf"\b{re.escape(match[1])}\s+v?{compact}\b", support, re.IGNORECASE):
+                found.append(version)
+                break
+    return found
+
+
 def _v3_version_guard_status(
     claim: str,
     support: str,
@@ -482,6 +505,8 @@ def _v3_version_guard_status(
         # "8.5.0.1" whole; the support regex stops at three parts and splits
         # it into 8.5.0 and 1. Read the support the same way as the claim.
         support_versions = support_versions + _canonical_versions(support)
+    if claim_versions is not None:
+        support_versions = support_versions + _compact_versions(claim, support, claim_versions)
     if not claim_versions or not support_versions:
         return None
     # A negated claim denies what a unit says a version supports ("8.5.0.2
@@ -505,8 +530,8 @@ def _v3_version_guard_status(
     printed = {_release(value) for value in support_versions}
     if not negated and all(_release(value) in printed for value in claim_versions):
         return "DIRECT_SUPPORT"
-    specificity = _v3_claim_version_specificity(claim)
     claim_value = claim_versions[0]
+    specificity = _v3_claim_version_specificity(claim, claim_value)
     if specificity == "EXACT":
         if re.search(
             r"\b(?:not|no|never|does\s+not|doesn't|cannot|can't)\b",
