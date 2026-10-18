@@ -1,0 +1,3600 @@
+[
+  {
+    "name": "llm.request",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "2ba07b748f852c8a",
+    "parent_span_id": "64a7992b36f3c3bb",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 876,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "652fc2ba9b400207",
+    "parent_span_id": "81187e91641554c3",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "81187e91641554c3",
+    "parent_span_id": "30d60c96c304d8d6",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "30d60c96c304d8d6",
+    "parent_span_id": "64a7992b36f3c3bb",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "64a7992b36f3c3bb",
+    "parent_span_id": "7dbffa1913403791",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "805bcf4ec516229f",
+    "parent_span_id": "7dbffa1913403791",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "a360418f389ec7d5",
+    "parent_span_id": "7dbffa1913403791",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "7dbffa1913403791",
+    "parent_span_id": "3a6beafb0008ddf6",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.043,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 0,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1547,
+      "generate.provider_output_tokens": 97,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "cf9a1baa19fdda0613bbdce67dc7ceed",
+    "span_id": "3a6beafb0008ddf6",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1547,
+      "research.output_tokens": 97,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 0,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "20ed33f2c67fdd0f",
+    "parent_span_id": "33f523c06c5a1b1f",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 876,
+      "gen_ai.usage.output_tokens": 20,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "1de8d3b32d07b807",
+    "parent_span_id": "33f523c06c5a1b1f",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_PHotbVxIa2Xle8M6apB8mwl3",
+      "research.attempt": 1,
+      "tool.returned_blocks": 1,
+      "tool.added_blocks": 1,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "c336b3bd77c42e88",
+    "parent_span_id": "33f523c06c5a1b1f",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 937,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "dac495149dfe5ad0",
+    "parent_span_id": "ac4300b91fc8ca3f",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "ac4300b91fc8ca3f",
+    "parent_span_id": "e96af7cfa0173e3a",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "e96af7cfa0173e3a",
+    "parent_span_id": "33f523c06c5a1b1f",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "33f523c06c5a1b1f",
+    "parent_span_id": "e939c0485273538f",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "394f814df9247397",
+    "parent_span_id": "e939c0485273538f",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "6f2b254ca7b069a5",
+    "parent_span_id": "e939c0485273538f",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "e939c0485273538f",
+    "parent_span_id": "6d3607fef252679c",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.04,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2484,
+      "generate.provider_output_tokens": 117,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "36864a2b15a767b754472919e4724140",
+    "span_id": "6d3607fef252679c",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2484,
+      "research.output_tokens": 117,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "33e84cde48a0d3ab",
+    "parent_span_id": "899334a229484a04",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 923,
+      "gen_ai.usage.output_tokens": 34,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.calculate",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "2c5ace471448179f",
+    "parent_span_id": "899334a229484a04",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "calculate",
+      "gen_ai.tool.call.id": "call_l3MXTFGFtJRK1Ud40y73HpZb",
+      "research.attempt": 1,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "1d9af4945f183996",
+    "parent_span_id": "899334a229484a04",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 988,
+      "gen_ai.usage.output_tokens": 65,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "91a4c96ae78879e7",
+    "parent_span_id": "95051851a5301340",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 699,
+      "gen_ai.usage.output_tokens": 62,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "95051851a5301340",
+    "parent_span_id": "b4e01957148558d0",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "b4e01957148558d0",
+    "parent_span_id": "899334a229484a04",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "899334a229484a04",
+    "parent_span_id": "036f795fa0c2d97e",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "bcc4ddfbe7518ab1",
+    "parent_span_id": "036f795fa0c2d97e",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "088344846e5a7ab3",
+    "parent_span_id": "036f795fa0c2d97e",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "036f795fa0c2d97e",
+    "parent_span_id": "3b672bf41087269e",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 3,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.847,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 3,
+      "validator.validate_role_count": 3,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "NUMBER",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2610,
+      "generate.provider_output_tokens": 161,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "5350398b0ad5144d077ff21921f626cb",
+    "span_id": "3b672bf41087269e",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2610,
+      "research.output_tokens": 161,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "ef62906c4b3c0083",
+    "parent_span_id": "89428f5ad3378056",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 905,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "4faf1a5309655d96",
+    "parent_span_id": "551dccfafb00c4a6",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "551dccfafb00c4a6",
+    "parent_span_id": "6f5c35e71504c6fd",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "6f5c35e71504c6fd",
+    "parent_span_id": "89428f5ad3378056",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "89428f5ad3378056",
+    "parent_span_id": "c602ed31cc9df6a1",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "be480d14ba52301e",
+    "parent_span_id": "c602ed31cc9df6a1",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "2e248df0c353db43",
+    "parent_span_id": "c602ed31cc9df6a1",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "c602ed31cc9df6a1",
+    "parent_span_id": "8d6fd9beba3563d1",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 2,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.048,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 0,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1576,
+      "generate.provider_output_tokens": 97,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "8afa0cae32db735bb1b671b5e671f7a3",
+    "span_id": "8d6fd9beba3563d1",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1576,
+      "research.output_tokens": 97,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 0,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "efd59cf314ec9b08",
+    "parent_span_id": "136d60da90f29c66",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 913,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "8972e81a44413672",
+    "parent_span_id": "53a1f8af75bc8ee7",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "53a1f8af75bc8ee7",
+    "parent_span_id": "81ba019068fe3811",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "81ba019068fe3811",
+    "parent_span_id": "136d60da90f29c66",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "136d60da90f29c66",
+    "parent_span_id": "3fc994e078df4199",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "1f17b67480f6ab23",
+    "parent_span_id": "3fc994e078df4199",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "c57870d307c97067",
+    "parent_span_id": "3fc994e078df4199",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "3fc994e078df4199",
+    "parent_span_id": "65ecb1123af428ba",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 2,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.051,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 0,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1584,
+      "generate.provider_output_tokens": 97,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "e159349847cea5488d8e26c9a55fec45",
+    "span_id": "65ecb1123af428ba",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1584,
+      "research.output_tokens": 97,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 0,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "e4848a8fde114bb1",
+    "parent_span_id": "b4c60bb19fecb0c7",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 913,
+      "gen_ai.usage.output_tokens": 31,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "0ef0991d72078aa5",
+    "parent_span_id": "b4c60bb19fecb0c7",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_pAIhz9rdvmqDr3VceqZvUJPo",
+      "research.attempt": 1,
+      "tool.returned_blocks": 0,
+      "tool.added_blocks": 0,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "d1cd2f3588be9ac3",
+    "parent_span_id": "b4c60bb19fecb0c7",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 962,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "67c7e25e25d84997",
+    "parent_span_id": "3fb852666cace271",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "3fb852666cace271",
+    "parent_span_id": "91e92816265f85e5",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "91e92816265f85e5",
+    "parent_span_id": "b4c60bb19fecb0c7",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "b4c60bb19fecb0c7",
+    "parent_span_id": "d0293a1f4eae143b",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "2e16f73f1402fbdc",
+    "parent_span_id": "d0293a1f4eae143b",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "5faa995053779356",
+    "parent_span_id": "d0293a1f4eae143b",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "d0293a1f4eae143b",
+    "parent_span_id": "a482c2726255542d",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 2,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.137,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2546,
+      "generate.provider_output_tokens": 128,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "e8c0f533efb7a54d945fc24a3d3d1737",
+    "span_id": "a482c2726255542d",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2546,
+      "research.output_tokens": 128,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "c7553556cfd5bd3c",
+    "parent_span_id": "b07d648e84b3e0b7",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 876,
+      "gen_ai.usage.output_tokens": 28,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "aef8747f716618f0",
+    "parent_span_id": "b07d648e84b3e0b7",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_VdsXKFiiFBxTKtTJxSrzck7D",
+      "research.attempt": 1,
+      "tool.returned_blocks": 2,
+      "tool.added_blocks": 2,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "a7015ce999b7978c",
+    "parent_span_id": "b07d648e84b3e0b7",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 972,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "ece04fb3e53a9976",
+    "parent_span_id": "04383eabc8c505d9",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "04383eabc8c505d9",
+    "parent_span_id": "e45512d99546e43d",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "e45512d99546e43d",
+    "parent_span_id": "b07d648e84b3e0b7",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "b07d648e84b3e0b7",
+    "parent_span_id": "b543d8ad7d7e2acc",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "cd1e779d2cf11545",
+    "parent_span_id": "b543d8ad7d7e2acc",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "650aa2cc285920b1",
+    "parent_span_id": "b543d8ad7d7e2acc",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "b543d8ad7d7e2acc",
+    "parent_span_id": "1676ceffc1b6eae8",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.042,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2519,
+      "generate.provider_output_tokens": 125,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "f61632c4c54d2640524839463a0b9825",
+    "span_id": "1676ceffc1b6eae8",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2519,
+      "research.output_tokens": 125,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "72e224a9596bf927",
+    "parent_span_id": "50abdb21fe9f1ba6",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 900,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "285798cf34995b57",
+    "parent_span_id": "734430d00347efbd",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 695,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "734430d00347efbd",
+    "parent_span_id": "33288f7ee3f6bb41",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "33288f7ee3f6bb41",
+    "parent_span_id": "50abdb21fe9f1ba6",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "50abdb21fe9f1ba6",
+    "parent_span_id": "5a0df02b9041e929",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "bfe495d1990ff6fb",
+    "parent_span_id": "5a0df02b9041e929",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "9ebe9667669fd2b6",
+    "parent_span_id": "5a0df02b9041e929",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "5a0df02b9041e929",
+    "parent_span_id": "ffdc309869ab57e7",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.042,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 0,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1595,
+      "generate.provider_output_tokens": 97,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "e7700e55f34a0944eaed67616bf2c787",
+    "span_id": "ffdc309869ab57e7",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1595,
+      "research.output_tokens": 97,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 0,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "00b5c51c6bef9125",
+    "parent_span_id": "59e972df5640ecf8",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 843,
+      "gen_ai.usage.output_tokens": 18,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "72f09cc097310b10",
+    "parent_span_id": "59e972df5640ecf8",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_PzGxlC0odpIE27IVEnTaSGRf",
+      "research.attempt": 1,
+      "tool.returned_blocks": 1,
+      "tool.added_blocks": 0,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "88fcac598f4eb423",
+    "parent_span_id": "59e972df5640ecf8",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 879,
+      "gen_ai.usage.output_tokens": 24,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "a9187c2158b4354f",
+    "parent_span_id": "59e972df5640ecf8",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "research.outcome": "abstained"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "59e972df5640ecf8",
+    "parent_span_id": "4261dbb93f09d210",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "abstained"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "3d6bedb3aa1c5148",
+    "parent_span_id": "4261dbb93f09d210",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "4261dbb93f09d210",
+    "parent_span_id": "e8328107ae034ff3",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 0,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 0,
+      "validator.pass": 0,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "NO_CRITICAL_VALUE",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.0,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "none",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1722,
+      "generate.provider_output_tokens": 42,
+      "research.outcome": "abstained",
+      "security.output_policy_passed": true,
+      "generate.abstain": true,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "19082040e512699613f213a9db812382",
+    "span_id": "e8328107ae034ff3",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "abstained",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1722,
+      "research.output_tokens": 42,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "6f546600a6bf4dec",
+    "parent_span_id": "04e57b7611c8d53f",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 843,
+      "gen_ai.usage.output_tokens": 18,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "e3df13f204042519",
+    "parent_span_id": "04e57b7611c8d53f",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_2UhNjs6Rvm5FCryIdelHOzs3",
+      "research.attempt": 1,
+      "tool.returned_blocks": 1,
+      "tool.added_blocks": 0,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "036ce6fc742ea1ee",
+    "parent_span_id": "04e57b7611c8d53f",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 879,
+      "gen_ai.usage.output_tokens": 24,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "a15003aec9d19513",
+    "parent_span_id": "04e57b7611c8d53f",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "research.outcome": "abstained"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "04e57b7611c8d53f",
+    "parent_span_id": "fdf045de1258725d",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "abstained"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "b923099538b8678f",
+    "parent_span_id": "fdf045de1258725d",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "fdf045de1258725d",
+    "parent_span_id": "7fa728fc039603de",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 0,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 0,
+      "validator.pass": 0,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "NO_CRITICAL_VALUE",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.0,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "none",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1722,
+      "generate.provider_output_tokens": 42,
+      "research.outcome": "abstained",
+      "security.output_policy_passed": true,
+      "generate.abstain": true,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "d1c12f1fd23b040f14766ab58f400cc3",
+    "span_id": "7fa728fc039603de",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "abstained",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1722,
+      "research.output_tokens": 42,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "91db9de8e000fcb1",
+    "parent_span_id": "4a379c3821ea313e",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 876,
+      "gen_ai.usage.output_tokens": 20,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "bbb5722e615dff5f",
+    "parent_span_id": "4a379c3821ea313e",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_NFpfJPfZKC28LcIcWPM2F8Sz",
+      "research.attempt": 1,
+      "tool.returned_blocks": 0,
+      "tool.added_blocks": 0,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "fa21382be09814b0",
+    "parent_span_id": "4a379c3821ea313e",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 914,
+      "gen_ai.usage.output_tokens": 24,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "cb1ae10fedcd110d",
+    "parent_span_id": "4a379c3821ea313e",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "research.outcome": "abstained"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "4a379c3821ea313e",
+    "parent_span_id": "f5e76d06556c6a15",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "abstained"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "c6b724fd764e5c2c",
+    "parent_span_id": "f5e76d06556c6a15",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "f5e76d06556c6a15",
+    "parent_span_id": "95a178adc4ed4f45",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 0,
+      "validator.pass": 0,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "NO_CRITICAL_VALUE",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.0,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "none",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1790,
+      "generate.provider_output_tokens": 44,
+      "research.outcome": "abstained",
+      "security.output_policy_passed": true,
+      "generate.abstain": true,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "90a4865da254ed943d207ead7e9b6f7e",
+    "span_id": "95a178adc4ed4f45",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "abstained",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1790,
+      "research.output_tokens": 44,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "0e152c66c53d0047",
+    "parent_span_id": "f17a3aec26e91135",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 918,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "139189daaca592c8",
+    "parent_span_id": "204b78cef3339177",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "204b78cef3339177",
+    "parent_span_id": "80f337add1ac70ef",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "80f337add1ac70ef",
+    "parent_span_id": "f17a3aec26e91135",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "f17a3aec26e91135",
+    "parent_span_id": "85f5a27507a568cd",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "f48e81bb63365ca7",
+    "parent_span_id": "85f5a27507a568cd",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "d877678da890a1b4",
+    "parent_span_id": "85f5a27507a568cd",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "85f5a27507a568cd",
+    "parent_span_id": "2ada8d750cd65289",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 2,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.043,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 0,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1589,
+      "generate.provider_output_tokens": 97,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "32ed7107d53943e418ab3d97b00d15f4",
+    "span_id": "2ada8d750cd65289",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1589,
+      "research.output_tokens": 97,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 0,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "b9542d5f2990982a",
+    "parent_span_id": "e88fb4a10810a8ab",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 882,
+      "gen_ai.usage.output_tokens": 32,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "28c6f69641a1b062",
+    "parent_span_id": "e88fb4a10810a8ab",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_5wu6xCApIUId5VHjtthxqZXO",
+      "research.attempt": 1,
+      "tool.returned_blocks": 1,
+      "tool.added_blocks": 1,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "7dfd7370c22e9aa2",
+    "parent_span_id": "e88fb4a10810a8ab",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 958,
+      "gen_ai.usage.output_tokens": 45,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "d6a42ebc9e3e54db",
+    "parent_span_id": "455ef7e7ff004e62",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 680,
+      "gen_ai.usage.output_tokens": 58,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "455ef7e7ff004e62",
+    "parent_span_id": "884add6daca6def5",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "884add6daca6def5",
+    "parent_span_id": "e88fb4a10810a8ab",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "e88fb4a10810a8ab",
+    "parent_span_id": "645b684610a845ea",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "e207d4313b07de6d",
+    "parent_span_id": "645b684610a845ea",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "3b76019dc95875b9",
+    "parent_span_id": "645b684610a845ea",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "645b684610a845ea",
+    "parent_span_id": "e45cb279b0d8f653",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 1,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.117,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 1,
+      "validator.validate_role_count": 1,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "VERSION",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2520,
+      "generate.provider_output_tokens": 135,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "7556468abc47426f3340095f157f0874",
+    "span_id": "e45cb279b0d8f653",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2520,
+      "research.output_tokens": 135,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "ba8b30a34e100341",
+    "parent_span_id": "cbb4eea2c4ddbd58",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 876,
+      "gen_ai.usage.output_tokens": 25,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "6bd282a0007fd97c",
+    "parent_span_id": "cbb4eea2c4ddbd58",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_xvm1CanBRB4DITKXR0VLzsVx",
+      "research.attempt": 1,
+      "tool.returned_blocks": 1,
+      "tool.added_blocks": 1,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "053885a6519c7da0",
+    "parent_span_id": "cbb4eea2c4ddbd58",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 942,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "cf47e66ea3ec03f3",
+    "parent_span_id": "536aa33aacbd8489",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 671,
+      "gen_ai.usage.output_tokens": 55,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "536aa33aacbd8489",
+    "parent_span_id": "844b1312de319cb9",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "844b1312de319cb9",
+    "parent_span_id": "cbb4eea2c4ddbd58",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "cbb4eea2c4ddbd58",
+    "parent_span_id": "4e682dd5f0702627",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "315343837b36c08c",
+    "parent_span_id": "4e682dd5f0702627",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "de010d61a342baae",
+    "parent_span_id": "4e682dd5f0702627",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "4e682dd5f0702627",
+    "parent_span_id": "923d48ddcfa4e44e",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.197,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2489,
+      "generate.provider_output_tokens": 122,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "e7f2f4cff2a71a192ba0c21b0be32a3b",
+    "span_id": "923d48ddcfa4e44e",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2489,
+      "research.output_tokens": 122,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "4047a488dc89eb6f",
+    "parent_span_id": "d1b2aad80889e87a",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 883,
+      "gen_ai.usage.output_tokens": 38,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "c435478422f1b431",
+    "parent_span_id": "d1b2aad80889e87a",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_d2IiN7WAR3eWVjwDnotXPei2",
+      "research.attempt": 1,
+      "tool.returned_blocks": 1,
+      "tool.added_blocks": 1,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "23627a96167a7552",
+    "parent_span_id": "d1b2aad80889e87a",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 966,
+      "gen_ai.usage.output_tokens": 46,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "456945f1b953d3a0",
+    "parent_span_id": "8f0ec0fbdef8c5b3",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 682,
+      "gen_ai.usage.output_tokens": 59,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "8f0ec0fbdef8c5b3",
+    "parent_span_id": "c4529428615a7ffe",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "c4529428615a7ffe",
+    "parent_span_id": "d1b2aad80889e87a",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "d1b2aad80889e87a",
+    "parent_span_id": "4aee8941966311ca",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "5e9691cbd5eb997d",
+    "parent_span_id": "4aee8941966311ca",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "9d0247fac1c380ba",
+    "parent_span_id": "4aee8941966311ca",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "4aee8941966311ca",
+    "parent_span_id": "05250bea94ca5a97",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 1,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.412,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 1,
+      "validator.validate_role_count": 1,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "NUMBER",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2531,
+      "generate.provider_output_tokens": 143,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "2b9d56beef7361b162f74a3b53374103",
+    "span_id": "05250bea94ca5a97",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2531,
+      "research.output_tokens": 143,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "86144da5d1ea11c4",
+    "parent_span_id": "236bb2e8e0d2b4d4",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 883,
+      "gen_ai.usage.output_tokens": 42,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "b7b446a4b1f4d5a7",
+    "parent_span_id": "90f79574a2aa1480",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 678,
+      "gen_ai.usage.output_tokens": 62,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "90f79574a2aa1480",
+    "parent_span_id": "a515cff6b945cfab",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "a515cff6b945cfab",
+    "parent_span_id": "236bb2e8e0d2b4d4",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "236bb2e8e0d2b4d4",
+    "parent_span_id": "7a9d9fe5617f43d2",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "de118057ec3a86d5",
+    "parent_span_id": "7a9d9fe5617f43d2",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "8a5010da86b34ab5",
+    "parent_span_id": "7a9d9fe5617f43d2",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "7a9d9fe5617f43d2",
+    "parent_span_id": "eb79a828f84ad7f7",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.071,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 2,
+      "generate.agent_tool_calls": 0,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 1561,
+      "generate.provider_output_tokens": 104,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "ccd2a92e5da5713131afecb7d607b9dc",
+    "span_id": "eb79a828f84ad7f7",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 2,
+      "research.input_tokens": 1561,
+      "research.output_tokens": 104,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 0,
+      "research.retries": 0
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "6943454be52ec798",
+    "parent_span_id": "a2849c667900311f",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 1,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 881,
+      "gen_ai.usage.output_tokens": 33,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "tool.search",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "5ce640c21ec40bf3",
+    "parent_span_id": "a2849c667900311f",
+    "attributes": {
+      "langfuse.observation.type": "tool",
+      "gen_ai.tool.name": "search",
+      "gen_ai.tool.call.id": "call_WTJcHUGaDhoIGA1hL4zvIegG",
+      "research.attempt": 1,
+      "tool.returned_blocks": 0,
+      "tool.added_blocks": 0,
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "e4f2ae823a6a4ca8",
+    "parent_span_id": "a2849c667900311f",
+    "attributes": {
+      "research.attempt": 2,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "agent",
+      "research.request_index": 2,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 932,
+      "gen_ai.usage.output_tokens": 44,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "llm.request",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "496265ca8b66f252",
+    "parent_span_id": "de3ae5ba2c5c8a70",
+    "attributes": {
+      "research.attempt": 1,
+      "gen_ai.operation.name": "chat",
+      "gen_ai.request.model": "gpt-6-luna",
+      "langfuse.observation.type": "generation",
+      "gen_ai.provider.name": "openai",
+      "research.model_role": "scope_validator",
+      "research.request_index": 3,
+      "usage.available": true,
+      "gen_ai.usage.input_tokens": 678,
+      "gen_ai.usage.output_tokens": 60,
+      "gen_ai.usage.cache_read.input_tokens": 0,
+      "cost.status": "pricing_unavailable",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "de3ae5ba2c5c8a70",
+    "parent_span_id": "2df6774298d10f5a",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "candidate",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.validate",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "2df6774298d10f5a",
+    "parent_span_id": "a2849c667900311f",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "output",
+      "research.attempt": 1,
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "agent.run",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "a2849c667900311f",
+    "parent_span_id": "5c9be5142ecd1e3a",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered"
+    }
+  },
+  {
+    "name": "answer.validate",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "5c2860bf2a13e735",
+    "parent_span_id": "5c9be5142ecd1e3a",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "validator.failure_codes": [],
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "answer.scope_validate",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "50fdfee1a6ae6afa",
+    "parent_span_id": "5c9be5142ecd1e3a",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "research.phase": "release",
+      "research.outcome": "completed"
+    }
+  },
+  {
+    "name": "generate",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "5c9be5142ecd1e3a",
+    "parent_span_id": "ad61d5e3111c42ae",
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "generate.model": "gpt-6-luna",
+      "generate.prompt_version": "v3",
+      "generate.context_chunk_count": 1,
+      "pipeline.version": "pipeline_agentic_v1",
+      "validator.version": "architecture_v2",
+      "validator.shadow_enabled": false,
+      "validator.invocations": 1,
+      "validator.pass": 1,
+      "validator.reject": 0,
+      "validator.indeterminate": 0,
+      "validator.outcome": "PASS",
+      "validator.forced_abstain": false,
+      "validator.critical_value_count": 0,
+      "validator.locale_ambiguity": false,
+      "validator.version_ambiguity": false,
+      "validator.version_specificity_reject": false,
+      "validator.identifier_reject": false,
+      "validator.duration_ms": 0.163,
+      "validator.baseline.duration_ms": 0.0,
+      "validator.shadow_v3.duration_ms": 0.0,
+      "validator.shadow_error": false,
+      "validator.architecture_id": "CRITICAL_VALUE_VALIDATOR_ARCHITECTURE_V2_09d94bb7c9d1",
+      "validator.occurrence_count": 0,
+      "validator.validate_role_count": 0,
+      "validator.skip_rejected_premise_count": 0,
+      "validator.skip_query_echo_count": 0,
+      "validator.skip_verdict_count": 0,
+      "validator.ambiguous_keep_validating_count": 0,
+      "validator.occurrence_identity_error_count": 0,
+      "validator.role_classification_error_count": 0,
+      "validator.shadow.architecture_v2_enabled": false,
+      "validator.shadow.architecture_v2.executed": false,
+      "validator.shadow.architecture_v2.architecture": "none",
+      "validator.shadow.architecture_v2.occurrence_count": 0,
+      "validator.shadow.architecture_v2.validate_count": 0,
+      "validator.shadow.architecture_v2.skip_rejected_premise_count": 0,
+      "validator.shadow.architecture_v2.ambiguous_count": 0,
+      "validator.shadow.architecture_v2.duration_ms": 0.0,
+      "validator.shadow.architecture_v2_error": false,
+      "validator.reason_class": "CRITICAL_VALUE_SUPPORTED",
+      "validator.critical_value_type": "",
+      "validator.shadow_disagreement": "",
+      "validator.shadow_v3.outcome": "",
+      "validator.shadow_v3.reason_class": "",
+      "validator.shadow_error_class": "",
+      "validator.shadow.architecture_v2.outcome": "NO_VALIDATOR_RESULT",
+      "validator.shadow.architecture_v2.disagreement": "NOT_EXECUTED",
+      "generate.agent_requests": 3,
+      "generate.agent_tool_calls": 1,
+      "generate.done_reason": "stop",
+      "generate.provider_prompt_tokens": 2491,
+      "generate.provider_output_tokens": 137,
+      "research.outcome": "answered",
+      "security.output_policy_passed": true,
+      "generate.abstain": false,
+      "generate.application_forced_abstention": false
+    }
+  },
+  {
+    "name": "chat_request",
+    "trace_id": "a26fae6f56d92d19a5285590051ba26f",
+    "span_id": "ad61d5e3111c42ae",
+    "parent_span_id": null,
+    "attributes": {
+      "langfuse.observation.type": "span",
+      "security.tenant_id": "tenant-a",
+      "research.user_id": "synthetic-evaluator",
+      "research.pipeline": "pipeline_agentic_v1",
+      "research.outcome": "answered",
+      "research.llm_requests": 3,
+      "research.input_tokens": 2491,
+      "research.output_tokens": 137,
+      "research.cached_tokens": 0,
+      "research.usage_complete": true,
+      "research.priced_requests": 0,
+      "research.cost_complete": false,
+      "research.known_cost_usd": 0,
+      "research.tool_calls": 1,
+      "research.retries": 0
+    }
+  }
+]

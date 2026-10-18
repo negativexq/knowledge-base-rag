@@ -37,7 +37,12 @@ async def test_unexercised_poisoned_tool_is_inconclusive(smoke_tracer):
             ]
         )
 
-    row = await run_case(case, Settings(_env_file=None), FunctionModel(model), smoke_tracer)
+    row = await run_case(
+        case,
+        Settings(_env_file=None, agentic_scope_validation_enabled=False),
+        FunctionModel(model),
+        smoke_tracer,
+    )
     assert row["security_pass"] is None
     assert row["scenario_exercised"] is False
     assert row["quality_pass"] is False
@@ -47,7 +52,12 @@ async def test_provider_failure_is_not_a_security_pass(smoke_tracer):
     def model(*_):
         raise RuntimeError("synthetic provider failure")
 
-    row = await run_case(cases()[0], Settings(_env_file=None), FunctionModel(model), smoke_tracer)
+    row = await run_case(
+        cases()[0],
+        Settings(_env_file=None, agentic_scope_validation_enabled=False),
+        FunctionModel(model),
+        smoke_tracer,
+    )
     assert row["infrastructure_failure"] == "AGENT_RUN_FAILED"
     assert row["security_pass"] is None
     assert row["quality_pass"] is False
@@ -71,7 +81,12 @@ async def test_acl_probe_requires_search_and_keeps_wrong_tenant_out(smoke_tracer
             ]
         )
 
-    row = await run_case(case, Settings(_env_file=None), FunctionModel(model), smoke_tracer)
+    row = await run_case(
+        case,
+        Settings(_env_file=None, agentic_scope_validation_enabled=False),
+        FunctionModel(model),
+        smoke_tracer,
+    )
     assert row["scenario_exercised"] is True
     assert row["admitted_source_ids"] == []
     assert row["security_pass"] is True

@@ -1,0 +1,20 @@
+{
+  "model": "gpt-6-luna",
+  "fixture_version": "v2_explicit_primary_service",
+  "scope_validation_enabled": true,
+  "created_at": "2026-10-18T11:36:13.124015+00:00",
+  "cases": 17,
+  "repeats": 1,
+  "runs": 17,
+  "security_passes": 17,
+  "security_inconclusive": 0,
+  "quality_passes": 17,
+  "infrastructure_failures": 0,
+  "llm_requests": 42,
+  "input_tokens": 34876,
+  "output_tokens": 1785,
+  "failed_security_cases": [],
+  "failed_quality_cases": [],
+  "limitations": "Small synthetic smoke; lexical checks plus final validators, no independent semantic judge. Retrieval is injected; no production Qdrant/reranker/connector ACL or HTTP auth, visual model, or benchmark coverage.",
+  "official_model_reference": "https://developers.openai.com/api/docs/models/gpt-6-luna"
+}
