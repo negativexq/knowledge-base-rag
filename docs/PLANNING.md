@@ -6141,6 +6141,13 @@ no further model calls:
   validator over all 579 saved cited parts, against the previous code, changes
   exactly these two parts.
 
-None of these changes has been measured live yet.
+Measured and reverted: the ungated visual path (agent off, 10 rows,
+`artifacts/mmlongbench-v2/visual-gate-canary-20261018`). It recovered nothing
+(381 read "4 quizzes" from a summary page, gold 7; 636 read "Four" from page 15
+and the check called it main body, gold 2; on 210 the reader named page 11,
+which was not shown) and answered two unanswerable rows that the check
+confirmed (365 another company's bankers, 475 a time off a timer picture). The
+wording gate stays; the visual reader and its check are not reliable enough to
+run on every withheld answer. The other changes are not measured live yet.
 
-`make test`: 1923 passed, 4 skipped.
+`make test`: 1922 passed, 4 skipped.
