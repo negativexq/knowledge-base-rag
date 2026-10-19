@@ -190,3 +190,146 @@ def test_semantic_projection_keeps_count_operations_and_removes_inapplicable_ari
     counting_payload = semantic_draft(enumeration().model_copy(update={"count_mode": "distinct"}))
     assert counting_payload["count_mode"] == "distinct" and counting_payload["groups"]
     assert not {"operands", "expression", "decimals"} & counting_payload.keys()
+
+
+@pytest.mark.asyncio
+async def test_page_catalog_resolves_printed_labels_only_inside_admitted_ranges(tmp_path):
+    from app.llm.quantity_sources import source_catalog
+    from app.llm.research_state import ResearchState
+
+    path = tmp_path / "manual.pdf"
+    with fitz.open() as pdf:
+        for i in range(5):
+            page = pdf.new_page()
+            page.insert_text((30, 30), "Strategy Map" if i == 4 else "Cover information")
+            page.insert_text((30, 760), "2" if i == 4 else str(i + 1))
+        pdf.save(path)
+    active, _ = active_session(
+        "Broad indexed range omits precise page labels",
+        visual_answers=True,
+        render_page=PdfPages(str(tmp_path)),
+    )
+    parent = active.deps.ledger.blocks[0]
+    parent.payload.update(
+        source_id="manual_pdf",
+        document_version=hashlib.sha256(path.read_bytes()).hexdigest(),
+        page_number=2,
+        page_end=5,
+    )
+    active.deps.ledger.source_ids = frozenset({"manual_pdf"})
+    catalog = await source_catalog(active, list(active.units()))
+    assert {p.physical_page for p in catalog} == {2, 3, 4, 5}
+    target = next(p for p in catalog if p.physical_page == 5)
+    assert "2" in target.native_lines and "Strategy Map" in target.native_lines
+    assert target.location_hints_only and target.support_ids == ["E1.S1"]
+    restored = ResearchState.model_validate_json(active.state.model_dump_json())
+    assert restored.quantity_page_catalog == catalog
+    structure, _ = await active.deps.pdf_structure("E1.S1")
+    with pytest.raises(ValueError, match="PDF_CATALOG_PAGE_LIMIT"):
+        structure.page_catalog([2, 2])
+
+
+@pytest.mark.asyncio
+async def test_full_inventory_replacement_keeps_parent_without_requiring_four_images(tmp_path):
+    from app.llm.quantity_state import QuantityCheck, QuantityDraft, QuantityIssue, QuantityRecord
+
+    path = tmp_path / "manual.pdf"
+    with fitz.open() as pdf:
+        for text in [
+            "Committee: Alpha, Beta",
+            "Company identity",
+            "Full roster: Alpha Beta Gamma",
+            "End roster",
+        ]:
+            pdf.new_page().insert_text((30, 30), text)
+        pdf.save(path)
+    version = hashlib.sha256(path.read_bytes()).hexdigest()
+    active, need = active_session(
+        "Committee: Alpha, Beta", visual_answers=True, render_page=PdfPages(str(tmp_path))
+    )
+    active.deps.ledger.blocks[0].payload.update(source_id="manual_pdf", document_version=version)
+    active.deps.ledger.source_ids = frozenset({"manual_pdf"})
+    extra = block("Full company roster is on pages 2-4", id="roster", page_number=2)
+    extra.payload.update(source_id="manual_pdf", document_version=version, page_end=4)
+    active.deps.ledger.add([extra])
+    parent = QuantityRecord(
+        id="old",
+        need_id=need,
+        support_ids=["E1.S1"],
+        source_id="manual_pdf",
+        document_version=version,
+        pages=[1],
+        modality="image",
+        draft=QuantityDraft(
+            mode="list",
+            complete=True,
+            list_unique=True,
+            items=[
+                dict(text="Alpha", position=1, page=1, witness="Alpha"),
+                dict(text="Beta", position=2, page=1, witness="Beta"),
+            ],
+        ),
+        values=["Alpha", "Beta"],
+        check=QuantityCheck(accepted=False, complete=False, reason="incomplete"),
+        assessments=[
+            QuantityAssessment(
+                inputs="supported",
+                coverage="unknown",
+                operation="supported",
+                issues=[
+                    QuantityIssue(
+                        kind="boundary",
+                        target="item",
+                        index=0,
+                        page=1,
+                        witness="Committee",
+                        description="Company-wide roster is missing",
+                    )
+                ],
+            )
+        ],
+    )
+    active.state.quantities[parent.id] = parent
+    roles = []
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        roles.append(role)
+        if role == "quantity_selector":
+            return QuantitySource(
+                available=True,
+                operation_kind="list",
+                support_ids=["E2.S1"],
+                pages=[2, 3, 4],
+                modality="image",
+            )
+        assert data["inventory_replacement"] and len(images) == 3
+        assert [i["text"] for i in data["previous_inputs"]["items"]] == ["Alpha", "Beta"]
+        if role == "quantity_collector":
+            return output_type.model_validate(
+                dict(
+                    mode="list",
+                    complete=True,
+                    list_order="source",
+                    list_unique=True,
+                    items=[
+                        dict(
+                            text=name,
+                            position=i,
+                            source_object="Full roster",
+                            witness=name,
+                            image_ids=["image_2"],
+                        )
+                        for i, name in enumerate(["Alpha", "Beta", "Gamma"], 1)
+                    ],
+                )
+            )
+        return QuantityAssessment(inputs="supported", coverage="complete", operation="supported")
+
+    active.call = call
+    result = await collect(active, need, parent=parent, repairs_left=0)
+    assert result.answer_parts[0].text == '["Alpha", "Beta", "Gamma"]'
+    child = next(r for r in active.state.quantities.values() if r.parent_id)
+    assert child.inventory_replacement and child.pages == [2, 3, 4]
+    assert all(i.page == 3 for i in child.draft.items)
+    assert active.state.quantities[parent.id] == parent
+    assert roles == ["quantity_selector", "quantity_collector", "quantity_checker"]

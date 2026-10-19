@@ -10,7 +10,7 @@ test:
 
 # Fully offline: no models, credentials, Qdrant or parser downloads.
 test-adaptive:
-	$(VENV)/pytest -q tests/test_research_state.py tests/test_adaptive.py tests/test_adaptive_observability.py tests/test_adaptive_fast_path.py tests/test_research_needs.py tests/test_quantities.py tests/test_quantity_review.py tests/test_quantity_sources.py
+	$(VENV)/pytest -q tests/test_research_state.py tests/test_adaptive.py tests/test_adaptive_observability.py tests/test_adaptive_fast_path.py tests/test_research_needs.py tests/test_quantities.py tests/test_quantity_review.py tests/test_quantity_sources.py tests/test_quantity_contracts.py tests/test_quantity_scope_repair.py
 
 test-ollama:
 	$(VENV)/pytest -q -m "ollama_e2e"

@@ -29,6 +29,8 @@ question too. A generic or unnamed entity does not establish a specifically
 qualified entity in the question or claim. Different names are allowed when the
 cited text or section heading establishes the relationship, including pronouns,
 aliases, paraphrases and translations. Do not require literal word overlap.
+Evaluate the actual question and claim, including an explicit interpretation and unit.
+Do not add requirements for an unspecified period, precision, or alternative presentation.
 Return supported only when the scope of the entire claim is established.
 Return mismatch when it conflicts, insufficient when a material scope binding
 cannot be established. A missing binding is not evidence of absence. For a

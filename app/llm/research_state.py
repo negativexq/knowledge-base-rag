@@ -13,7 +13,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.llm.answer_repair import AnswerRepair
-from app.llm.quantity_state import QuantityRecord, QuantitySourceInspection
+from app.llm.quantity_state import QuantityCatalogPage, QuantityRecord, QuantitySourceInspection
 from app.llm.scope_diagnostics import ScopeDiagnostic
 
 
@@ -284,6 +284,7 @@ class ResearchState(BaseModel):
     text_computations: dict[str, TextCalculationResult] = Field(default_factory=dict)
     quantities: dict[str, QuantityRecord] = Field(default_factory=dict)
     quantity_source_inspections: list[QuantitySourceInspection] = Field(default_factory=list)
+    quantity_page_catalog: list[QuantityCatalogPage] = Field(default_factory=list, max_length=72)
     quantity_repairs: int = 0
     quantity_scope_diagnostics: list[ScopeDiagnostic] = Field(default_factory=list)
     answer_repairs: list[AnswerRepair] = Field(default_factory=list)

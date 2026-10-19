@@ -180,6 +180,7 @@ async def run(args):
                 "app/llm/search_context.py",
                 "app/llm/quantities.py",
                 "app/llm/quantity_state.py",
+                "app/llm/quantity_contracts.py",
                 "app/llm/quantity_review.py",
                 "app/llm/quantity_sources.py",
                 "app/evidence/pdf_structure.py",
