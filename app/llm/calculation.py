@@ -15,6 +15,7 @@ import ast
 import operator
 import re
 from dataclasses import dataclass
+from decimal import ROUND_HALF_EVEN, Decimal, DecimalException, localcontext
 
 # Numbers an expression may use without a citation: the whole of a
 # percentage, for remainders such as 100 - 59.
@@ -160,6 +161,36 @@ def _parse(expression: str) -> ast.Expression:
 
 def evaluate_expression(expression: str) -> float:
     return _evaluate(_parse(expression))
+
+
+def evaluate_decimal_expression(expression: str, decimals: int) -> str:
+    """Bounded application arithmetic for a source-checked text plan."""
+    if len(expression) > 500 or "," in expression or not 0 <= decimals <= 10:
+        raise ValueError("Use canonical numeric literals and bounded precision")
+    tree = _parse(expression)
+    if len(list(ast.walk(tree))) > 100:
+        raise ValueError("Calculation too complex")
+
+    def evaluate(node: ast.AST) -> Decimal:
+        if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+            return Decimal(str(node.value))
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
+            value = evaluate(node.operand)
+            return -value if isinstance(node.op, ast.USub) else value
+        if isinstance(node, ast.BinOp) and type(node.op) in _OPERATORS:
+            return Decimal(_OPERATORS[type(node.op)](evaluate(node.left), evaluate(node.right)))
+        raise ValueError("Only numeric arithmetic is allowed")
+
+    try:
+        with localcontext() as context:
+            context.prec = 128
+            context.rounding = ROUND_HALF_EVEN
+            value = evaluate(tree.body)
+            if not value.is_finite() or abs(value) > Decimal("1e30"):
+                raise ValueError("Non-finite or unbounded result")
+            return f"{value:.{decimals}f}"
+    except DecimalException as exc:
+        raise ValueError("Invalid decimal arithmetic") from exc
 
 
 def _decimals(text: str) -> int:

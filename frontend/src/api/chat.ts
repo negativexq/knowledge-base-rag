@@ -1,6 +1,6 @@
 import { getToken } from "@/api/auth"
 import { API_BASE_URL } from "@/api/client"
-import { type ChatHistoryTurn, type ChatStreamHandlers, streamChat } from "@/lib/sse"
+import { type ChatRequestOptions, type ChatHistoryTurn, type ChatStreamHandlers, streamChat } from "@/lib/sse"
 
 export const chatApi = {
   ask: (
@@ -8,5 +8,6 @@ export const chatApi = {
     history: ChatHistoryTurn[],
     handlers: ChatStreamHandlers,
     signal?: AbortSignal,
-  ) => streamChat(`${API_BASE_URL}/chat`, getToken(), question, handlers, signal, history),
+    options?: ChatRequestOptions,
+  ) => streamChat(`${API_BASE_URL}/chat`, getToken(), question, handlers, signal, history, options),
 }

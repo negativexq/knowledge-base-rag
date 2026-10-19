@@ -1,10 +1,15 @@
-import type { AnswerValidation, ChatMetadata, GroundingResult, Identity, RetrievalReportPayload, RetrievedSource } from "@/api/types"
+import type { ResearchStep, ClarificationReply, Clarification, ComparisonRow, AnswerValidation, ChatMetadata, GroundingResult, Identity, RetrievalReportPayload, RetrievedSource } from "@/api/types"
 import { API_BASE_URL } from "@/api/client"
 import { answerStatus } from "@/lib/answerStatus"
 import { splitAnswerIntoSegments } from "@/lib/citations"
 
 export interface ResearchTurn {
   question: string
+  sourceIds?: string[]
+  clarificationReply?: ClarificationReply
+  steps?: ResearchStep[]
+  clarification?: Clarification | null
+  comparison?: ComparisonRow[]
   answer: string
   sources: RetrievedSource[]
   report: RetrievalReportPayload | null
@@ -62,6 +67,11 @@ const record = (value: unknown): value is Record<string, unknown> => typeof valu
 function isTurn(value: unknown): value is ResearchTurn {
   if (!record(value) || typeof value.question !== "string" || typeof value.answer !== "string" || !Array.isArray(value.sources)) return false
   if (!value.sources.every((source) => record(source) && typeof source.rank === "number" && typeof source.snippet === "string" && Array.isArray(source.heading_path))) return false
+  if (value.sourceIds != null && (!Array.isArray(value.sourceIds) || !value.sourceIds.every((id) => typeof id === "string"))) return false
+  if (value.steps != null && (!Array.isArray(value.steps) || !value.steps.every((step) => record(step) && typeof step.id === "string" && typeof step.operation === "string" && ["running", "completed", "retrying", "failed"].includes(String(step.status))))) return false
+  if (value.clarification != null && (!record(value.clarification) || typeof value.clarification.question !== "string" || !Array.isArray(value.clarification.options) || !value.clarification.options.every((item) => typeof item === "string"))) return false
+  if (value.clarificationReply != null && (!record(value.clarificationReply) || typeof value.clarificationReply.question !== "string" || typeof value.clarificationReply.answer !== "string")) return false
+  if (value.comparison != null && (!Array.isArray(value.comparison) || !value.comparison.every((row) => record(row) && typeof row.aspect === "string" && Array.isArray(row.cells) && row.cells.every((cell) => record(cell) && typeof cell.source_id === "string" && typeof cell.text === "string" && Array.isArray(cell.support_ids) && cell.support_ids.every((id) => typeof id === "string"))))) return false
   if (value.report != null && (!record(value.report) || !Array.isArray(value.report.stages))) return false
   if (value.metadata != null && (!record(value.metadata) || (value.metadata.support_units != null && !Array.isArray(value.metadata.support_units)))) return false
   if (value.validation != null && (!record(value.validation) || !Array.isArray(value.validation.validator_failure_codes))) return false
@@ -125,7 +135,23 @@ export function researchMarkdown(session: ResearchSession): string {
       return `[^${references.get(key)!.id}]`
     }).join("")
     const status = answerStatus({ ...turn, citesUnits: segments.some((segment) => Boolean(segment.valid && segment.unit)) })
-    output.push(`## Question ${index + 1}`, plain(turn.question), "### Answer", answer || "No answer returned.")
+    output.push(`## Question ${index + 1}`, plain(turn.question))
+    if (turn.clarificationReply) output.push(`Clarification: ${plain(turn.clarificationReply.question)} — ${plain(turn.clarificationReply.answer)}`)
+    if (turn.clarification) output.push(`Clarification requested: ${plain(turn.clarification.question)}`)
+    if (turn.comparison?.length) {
+      const docs = [...new Set(turn.comparison.flatMap((row) => row.cells.map((cell) => cell.source_id)))]
+      output.push("### Comparison", `| Aspect | ${docs.map(plain).join(" | ")} |`, `| --- | ${docs.map(() => "---").join(" | ")} |`)
+      for (const row of turn.comparison) output.push(`| ${plain(row.aspect)} | ${docs.map((doc) => {
+        const cell = row.cells.find((item) => item.source_id === doc)
+        if (!cell) return "—"
+        const cites = cell.support_ids.map((id) => {
+          const unit = turn.metadata?.support_units?.find((item) => item.support_id === id)
+          const ref = references.get(`${unit?.source_rank}:${id}`)
+          return ref ? `[^${ref.id}]` : `${plain(id)} (unresolved citation)`
+        }).join(" ")
+        return `${plain(cell.text)} ${cites}`
+      }).join(" | ")} |`)
+    } else output.push("### Answer", answer || "No answer returned.")
     if (turn.errorMessage) output.push(`Request status: ${plain(turn.errorMessage)}`)
     output.push(`Validation: ${status?.title ?? "Not reported"}`)
     if (status?.reasons.length) output.push(...status.reasons.map((reason) => `- ${plain(reason)}`))

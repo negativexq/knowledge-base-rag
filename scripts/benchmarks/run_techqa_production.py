@@ -36,6 +36,7 @@ sys.path.insert(0, str(ROOT))
 import pyarrow.parquet as pq
 from qdrant_client import QdrantClient
 
+from app.api.chat import _scoped_retrieve
 from app.connectors.filesystem import LocalFilesystemConnector
 from app.evaluation.forensic_capture import (
     ForensicCapture,
@@ -159,16 +160,34 @@ async def ask(deps, client: QdrantClient, question) -> dict:
     candidate_ids = stages.get("reranker", {}).get("input_candidate_ids", [])
     blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
     answer, metadata, validation = "", {}, {}
+    clarification = None
+    comparison = []
     token = set_current_capture(report.forensic_capture)
     try:
-
-        async def retrieve(query: str):
-            return await deps.search_fn(query, context, RetrievalReport())
-
-        extra = {"retrieve": retrieve} if deps.operand_resolver_enabled else {}
+        # The request's own retriever (ACL, evidence assembly and the
+        # anchored/literal search modes research tools use), as in the API.
+        retrieve = _scoped_retrieve(deps, context, {})
+        extra = (
+            {"retrieve": retrieve}
+            if (deps.operand_resolver_enabled or deps.agentic_rag_enabled)
+            else {}
+        )
+        if deps.agentic_rag_enabled and deps.documents_factory:
+            extra["documents"] = deps.documents_factory(context, None)
         async for event in deps.stream_fn(question.question, blocks, **extra):
             if event["type"] == "token":
                 answer += event["content"]
+            elif event["type"] == "clarification":
+                clarification = {k: v for k, v in event.items() if k != "type"}
+                validation = {
+                    "abstain": True,
+                    "passed": True,
+                    "application_forced_abstention": False,
+                }
+            elif event["type"] == "comparison":
+                comparison = event["rows"]
+            elif event["type"] == "evidence_update":
+                blocks = event["blocks"]
             elif event["type"] == "metadata":
                 metadata = event
             elif event["type"] == "security_validation":
@@ -191,6 +210,8 @@ async def ask(deps, client: QdrantClient, question) -> dict:
         "reference": question.reference,
         "relevant_sources": list(question.relevant_sources),
         "answer": answer,
+        "clarification": clarification,
+        "comparison": comparison,
         "abstain": validation.get("abstain"),
         "application_forced_abstention": validation.get("application_forced_abstention"),
         "passed": validation.get("passed"),
@@ -352,6 +373,8 @@ async def main() -> None:
             "top_n": settings.reranker_top_n,
             "candidate_k": settings.reranker_candidate_k,
             "flags": {
+                "AGENTIC_RAG_ENABLED": settings.agentic_rag_enabled,
+                "AGENTIC_MODE": settings.agentic_mode,
                 "DERIVED_ANSWERS_ENABLED": settings.derived_answers_enabled,
                 "OPERAND_RESOLVER_ENABLED": settings.operand_resolver_enabled,
                 "VISUAL_ANSWERS_ENABLED": settings.visual_answers_enabled,

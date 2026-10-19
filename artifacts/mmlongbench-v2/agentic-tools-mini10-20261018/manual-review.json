@@ -1,0 +1,680 @@
+{
+  "summary": {
+    "automatic_answerable_correct": 3,
+    "answerable_total": 8,
+    "manual_grounded_correct": 2,
+    "unanswerable_total": 2,
+    "model_correct_refusals": 1,
+    "budget_blocked_unanswerables": 1,
+    "automatic_combined_correct": 5,
+    "manual_grounded_plus_model_refusal": 3,
+    "manual_grounded_plus_all_unanswerable_withholding": 4,
+    "budget_blocked_total": 6,
+    "model_requests": 35,
+    "scope_checks": 8,
+    "input_tokens": 379472,
+    "output_tokens": 2284,
+    "question_seconds_sum": 212.5,
+    "observed_tool_attempts": 17,
+    "recorded_tool_completions": {
+      "search": 2,
+      "find_documents": 6,
+      "calculate": 1
+    },
+    "note": "Completed-tool events omit attempts failing before the tool body records completion. Usage is from actual provider generation metadata; forensic token-name redaction is not interpreted as zero. Scope and retrieval remain probabilistic/bounded."
+  },
+  "per_question": [
+    {
+      "row_idx": 210,
+      "question": "What percentage of the party that holds the highest total percentage of good policy ideas and high ethical standards reported that they followed the news about congressional elections in their state very closely in the survey of U.S. adults conducted from April 25 to May 1, 2018?",
+      "gold": "21%",
+      "answerable": true,
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": false,
+      "manual_status": "budget_blocked",
+      "manual_note": "Search admitted zero blocks; research token preflight stopped further generation. No verified answer.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        11,
+        13
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "search",
+          "mode": "hybrid",
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0,
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "remaining_evidence_tokens": "[REDACTED]"
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "token_preflight",
+            "role": "agent",
+            "estimated_input_tokens": "[REDACTED]"
+          }
+        ]
+      },
+      "requests": 3,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 40919,
+        "output_tokens": 240
+      },
+      "seconds": 20.7,
+      "cited_units": []
+    },
+    {
+      "row_idx": 366,
+      "question": "What was the value of absolute percentage shortfall in India's GDP growth from 2002 to 2003 compared to the forecast?",
+      "gold": "2.4%",
+      "answerable": true,
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": false,
+      "manual_status": "budget_blocked",
+      "manual_note": "Scope verifier rejected PERIOD_MISMATCH; recovery stopped by token preflight. No verified answer.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        1
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 1
+      },
+      "tool_events": [
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_PERIOD_MISMATCH"
+          ]
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "token_preflight",
+            "role": "agent",
+            "estimated_input_tokens": "[REDACTED]"
+          }
+        ]
+      },
+      "requests": 4,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 40721,
+        "output_tokens": 230
+      },
+      "seconds": 22.0,
+      "cited_units": []
+    },
+    {
+      "row_idx": 381,
+      "question": "How many quizzes are there in the entire course?",
+      "gold": "7",
+      "answerable": true,
+      "answer": "The course outline identifies seven quizzes, numbered Quiz #1 through Quiz #7. [E1.S21] [E1.S31] [E1.S46] [E1.S55] [E1.S63] [E1.S73] [E1.S95] [E1.S96] [E1.S97] [E1.S98]",
+      "automatic_correct": true,
+      "manual_status": "correct_grounded",
+      "manual_note": "Cited units enumerate Quiz #1 through #7, including #5 in E1.S97. Seven supported.",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          2
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          3
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          4
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          5
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          6
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          7
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          8
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          9
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          10
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          11
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          14
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          15
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          16
+        ],
+        [
+          "f8d3a162ab9507e021d83dd109118b60_pdf",
+          17
+        ]
+      ],
+      "gold_pages": [
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "find_documents",
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": []
+      },
+      "requests": 4,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 43788,
+        "output_tokens": 433
+      },
+      "seconds": 17.2,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S21",
+          "raw_support_text": "• Quiz #1: Twenty core concepts from Unit 1 and 2 • Critical Thinking Case Study-- UBER Hits a Bumpy Road:"
+        },
+        {
+          "support_unit_id": "E1.S31",
+          "raw_support_text": "• Quiz #2: Twenty Core Concepts on Unit 3 & 4 • …Continued Unit 3 & 4 Team Activity Divide the class into teams. Each team should choose a country and research its infrastructure to determine how it will help or hinder trade. Include a variety of countries, ranging from the most highly developed to the least developed. Report your Findings -(Resources, Interpersonal, Information, Technology) • Preparing for Tomorrow's Workplace Skills:"
+        },
+        {
+          "support_unit_id": "E1.S46",
+          "raw_support_text": "• Quiz #3- Comprehension of Twenty Core Concepts from Unit 5 & 6 • Preparing for Tomorrow's Workplace Skills: Self Reflection (1 paragraph per question submitted into Google Classroom)"
+        },
+        {
+          "support_unit_id": "E1.S55",
+          "raw_support_text": "• Quiz #4-Comprehension of Twenty Core Concepts from Unit 7 & 8 • Critical Thinking Case Study- Discrimination in the Workplace Continues—submit on Google Docs"
+        },
+        {
+          "support_unit_id": "E1.S63",
+          "raw_support_text": "• Quiz #6- Comprehension of Twenty Core Concepts from Unit 11 & 12 • Think of a product that you use regularly. Find several examples of how the manufacturer markets this product, such as ads in different media, sales promotions, and publicity. Assess each example for effectiveness in meeting one or more of the six promotional goals described in the chapter. Then analyze them for effectiveness in reaching you as a target consumer. Consider such factors as the media used, the style of the ad, and ad content. Present your findings to the class. (Information) • Working the Net"
+        },
+        {
+          "support_unit_id": "E1.S73",
+          "raw_support_text": "• Quiz #7- Comprehension of Twenty Core Concepts from Unit 13 & 14 • Working the Net"
+        },
+        {
+          "support_unit_id": "E1.S95",
+          "raw_support_text": "Table: QUARTER 1: UNIT 1 Predicting Your Success: TED TALK, GRIT: The Power of Passion and Perseverance; submit a written response on to Google Classroom. Unit 1& 2 Team Activity Form five to seven teams. Each team is responsible for one of the sectors of the external business environment discussed in the chapter (economic, political/legal, demographic, social, competitive, global, and technological). (Interpersonal, Resources, Information) Quiz #1: Twenty core concepts from Unit 1 & 2 Critical Thinking Case Study-- UBER Hits a Bumpy Road.: Unit 3 & 4 Team Activity Divide the class into teams. Each team should choose a country and research its infrastructure to determine how it will help or hinder trade. Include a variety of countries, ranging from the most highly developed to the least developed. Report your findings. -(Resources, Interpersonal, Information, Technology) Critical Thinking Case Study-- We Want Our MTV (International) Quiz #2: Twenty Core Concepts on Unit 3 & 4 …Continued Unit 3 & 4 Team Activity Divide the class into teams. Each team should choose a country and research its infrastructure to determine how it will help or hinder trade."
+        },
+        {
+          "support_unit_id": "E1.S96",
+          "raw_support_text": "Technology) Critical Thinking Case Study-- We Want Our MTV (International) Quiz #2: Twenty Core Concepts on Unit 3 & 4 …Continued Unit 3 & 4 Team Activity Divide the class into teams. Each team should choose a country and research its infrastructure to determine how it will help or hinder trade. Include a variety of countries, ranging from the most highly developed to the least developed. Report your Findings -(Resources, Interpersonal, Information, Technology) Preparing for Tomorrow's Workplace Skills: o Do you have what it takes to be a successful franchisee? Working the Net: o Select three franchises that interest you. | QUARTER 2: Preparing Working the Net: Business Plan o Visit Sample Business Plans at http://www.bplans.com to review examples of all types of business plans. o Select an idea for a company in a field that interests you and, using information from the site, prepare an outline for its business plan. Quiz #3- Comprehension of Twenty Core Concepts from Unit 5 & 6 Preparing for Tomorrow's Workplace Skills: Self Reflection (1 paragraph per question submitted into Google Classroom) Unit 7 Ethics Activity-Ethics Report; Training IT Replacement Working the Net Using a search engine, look for the term “company organizational charts,” and find at least three examples of organizational charts for corporations, not-for-profits, or government agencies. Unit 8 Key Assignments: • Quiz #4-Comprehension of Twenty Core Concepts from Unit 7 & 8 • Critical Thinking Case Study- Discrimination in the Workplace Continues—submit on Google Docs Semester Final Assessments: Part 1: Ethics Self-Assessment Part 2: Comprehensive Final on Key Concepts from Unit 1-8 o Students will be in 8 teams of 4 assigned to 1 Unit each. o They will choose the key concepts from each unit to teach and add to the final. (A form of Reciprocal Teaching)"
+        },
+        {
+          "support_unit_id": "E1.S97",
+          "raw_support_text": "Table: o Research them QUARTER 3: Preparing for Tomorrow's Workplace Skills- INTERVIEW o Are you motivated more by intrinsic rewards (satisfaction, sense of accomplishment, etc.) or by extrinsic rewards (money, bonuses, etc.)? Explain. o Interview some friends and classmates to find out what motivates them. Discuss your differences in perspective. (Interpersonal, Information) (Submit to Google Classroom through the provided Graphic Organizer. Team Activity o Assemble a team of three to five students. Imagine that you are the management team for a start-up business with limited resources but a need for a highly motivated, skilled workforce. Quiz #5: Comprehension of Twenty Core Concepts from Unit 9 & 10 Preparing for Tomorrow's Workplace Skills Use the Google search engine, http://www.google.com, to conduct a search for “supplier information,” and visit the websites of several firms (for example, Walmart, Northrop Grumman, Verizon, etc.). Compare the requirements companies set for their suppliers. How do they differ? How are they similar? Preparing for Tomorrow's Workplace Skills Pick a small business in your community. Preparing for Tomorrow's Workplace Skills Pick a specific product that you use frequently, such as a cosmetic or toiletry item, snack food, article of clothing, book, computer program, or video game. Using the Net -Considering a career in marketing?"
+        },
+        {
+          "support_unit_id": "E1.S98",
+          "raw_support_text": "they similar? Preparing for Tomorrow's Workplace Skills Pick a small business in your community. Preparing for Tomorrow's Workplace Skills Pick a specific product that you use frequently, such as a cosmetic or toiletry item, snack food, article of clothing, book, computer program, or video game. Using the Net -Considering a career in marketing? Quiz #6- Comprehension of Twenty Core Concepts from Unit 11 & 12-Think of a product that you use regularly. Working the Net-Visit Industry Week’s website at http://www.industryweek.com. Under Archives, do a search using the search term “supply-chain management.” | QUARTER 4: Preparing for Tomorrow's Workplace Skills Team Activity :Should companies outsource IT? Some executives believe that IT is too important to outsource and that application service providers don’t have a future. Yet spending for ASP subscriptions, MSPs, and other forms of IT outsourcing such as cloud computing continue to grow. Working the Net--Learn more about the CERT Coordination Center (CERT/CC), which serves as a center of internet security expertise. Unit 15 & Unit 16 Key Assignment: -Build Key Portfolio Stock Project: your Investment Firm has just received $100,000 to invest in 5 stocks FINAL (Introduced at the Start of 3rd QTR): Your Career in Business PART 1: PERSONAL REFLECTION: • How can you enhance your interpersonal skills? • Why is learning to plan so important in school and in the real world? • What skills should you develop in school that can transfer easily to your professional life and make it a success? • What are some strategies that will help you find, keep, and advance in your dream job? • What key attributes do employers look for when interviewing job candidates? PART 2: Student Companies FINAL ASSESSMENT: WORK-BASED LEARNING INTERNSHIP W/ AMAZON & OTHER PARTNERED LOGISTICS CENTERS"
+        }
+      ]
+    },
+    {
+      "row_idx": 472,
+      "question": "How many grams of coffee can be put in the manual insert? Return me an integer.",
+      "gold": "16",
+      "answerable": true,
+      "answer": "16 [E1.S117]",
+      "automatic_correct": true,
+      "manual_status": "correct_grounded",
+      "manual_note": "E1.S117 explicitly states ground coffee max. 16 g.",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [
+        [
+          "User_Manual_1500S_Classic_EN_pdf",
+          24
+        ],
+        [
+          "User_Manual_1500S_Classic_EN_pdf",
+          25
+        ]
+      ],
+      "gold_pages": [
+        24,
+        25
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": []
+      },
+      "requests": 2,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 13525,
+        "output_tokens": 130
+      },
+      "seconds": 18.9,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S117",
+          "raw_support_text": " 6 Insert ground coffee (max. 16 g)"
+        }
+      ]
+    },
+    {
+      "row_idx": 507,
+      "question": "What's the geographic market name for EPS Code AR01?\n\n",
+      "gold": "Little Rock",
+      "answerable": true,
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": false,
+      "manual_status": "budget_regression",
+      "manual_note": "Document discovery returned zero anchors; token preflight prevented another research call. Previous run answered Little Rock correctly.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        8
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "find_documents",
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "token_preflight",
+            "role": "agent",
+            "estimated_input_tokens": "[REDACTED]"
+          }
+        ]
+      },
+      "requests": 2,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 33721,
+        "output_tokens": 83
+      },
+      "seconds": 13.4,
+      "cited_units": []
+    },
+    {
+      "row_idx": 636,
+      "question": "How many prompts examples are shown in the paper's main body?",
+      "gold": "2",
+      "answerable": true,
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": false,
+      "manual_status": "budget_blocked",
+      "manual_note": "Search admitted 14 new blocks, but scope was not established; token preflight blocked recovery.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        4
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 1
+      },
+      "tool_events": [
+        {
+          "tool": "search",
+          "mode": "hybrid",
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0,
+          "returned_blocks": 14,
+          "added_blocks": 14,
+          "remaining_evidence_tokens": "[REDACTED]"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "token_preflight",
+            "role": "agent",
+            "estimated_input_tokens": "[REDACTED]"
+          }
+        ]
+      },
+      "requests": 4,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 46596,
+        "output_tokens": 210
+      },
+      "seconds": 35.9,
+      "cited_units": []
+    },
+    {
+      "row_idx": 660,
+      "question": "Which port has the alternative function that capture Trigger from port 10-13?",
+      "gold": "Not answerable",
+      "answerable": false,
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": null,
+      "manual_status": "budget_blocked_unanswerable",
+      "manual_note": "No unsupported answer released, but this is a budget error rather than an evidence-based model refusal. Automatic scorer credits it as a correct refusal.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 1
+      },
+      "tool_events": [
+        {
+          "tool": "find_documents",
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_NOT_ESTABLISHED"
+          ]
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "token_preflight",
+            "role": "agent",
+            "estimated_input_tokens": "[REDACTED]"
+          }
+        ]
+      },
+      "requests": 4,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 43782,
+        "output_tokens": 184
+      },
+      "seconds": 20.9,
+      "cited_units": []
+    },
+    {
+      "row_idx": 732,
+      "question": "How many figures are related to Airbus?",
+      "gold": "5",
+      "answerable": true,
+      "answer": "There are 5 figures related to Airbus, as shown in the corporate activity figures for Airbus. [E1.S117]",
+      "automatic_correct": true,
+      "manual_status": "wrong_grounding",
+      "manual_note": "Gold number matches 5, but E1.S117 describes first-24-hour Twitter activity and Airbus 5. It does not count figures. Scope verifier again accepted the wrong quantity.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [
+        [
+          "germanwingsdigitalcrisisanalysis-150403064828-conversion-gate01_95_pdf",
+          16
+        ]
+      ],
+      "gold_pages": [
+        7,
+        11,
+        14
+      ],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 1,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "find_documents",
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": []
+      },
+      "requests": 4,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 27215,
+        "output_tokens": 181
+      },
+      "seconds": 12.4,
+      "cited_units": [
+        {
+          "support_unit_id": "E1.S117",
+          "raw_support_text": "+ During the first 24 hours: | company | | eos\n+ Germanwings focuses the majority of its digital | Germanwings | 24\nactivity on Twitter — posting in both English (10) and Lufthansa | 42\nGerman (14)\n+ Germanwings and Lufthansa both see significant | Airbus | 5\nspikes in followers on Twitter due to the crash.\n(Germanwings) | (Airbus) | (Lufthansa)"
+        }
+      ]
+    },
+    {
+      "row_idx": 1016,
+      "question": "what is long-term debt of Costco in FY 2021, including long-term operating and finance lease liabilities? Anwser in millions.",
+      "gold": "10314",
+      "answerable": true,
+      "answer": "I could not produce a verified answer from the documents. Please try rephrasing the question.",
+      "automatic_correct": false,
+      "manual_status": "budget_regression",
+      "manual_note": "Calculate completed; scope checker returned SCOPE_CHECK_INVALID twice. Reserved verification request prevented another research attempt. Previous run answered 10314 with correct evidence.",
+      "accepted_for_correct_and_grounded_objective": false,
+      "cited_pages": [],
+      "gold_pages": [
+        38,
+        53
+      ],
+      "validator_failure_codes": [
+        "AGENT_BUDGET_EXCEEDED"
+      ],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 2,
+        "rejections": 2
+      },
+      "tool_events": [
+        {
+          "tool": "calculate"
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_CHECK_INVALID"
+          ]
+        },
+        {
+          "tool": "validation_retry",
+          "failure_codes": [
+            "SCOPE_CHECK_INVALID"
+          ]
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": [
+          {
+            "reason": "scope_request_reserve",
+            "role": "agent"
+          }
+        ]
+      },
+      "requests": 5,
+      "generation_usage": {
+        "done_reason": "AGENT_BUDGET_EXCEEDED",
+        "prompt_tokens": 46998,
+        "output_tokens": 508
+      },
+      "seconds": 29.2,
+      "cited_units": []
+    },
+    {
+      "row_idx": 1084,
+      "question": "what is interest coverage ratio for AMCOR'FY 2020? round your answer to three decimal?",
+      "gold": "Not answerable",
+      "answerable": false,
+      "answer": "I could not find this in the document.",
+      "automatic_correct": null,
+      "manual_status": "correct_refusal",
+      "manual_note": "Model abstained for a question asking AMCOR FY2020 data in a BESTBUY document; consistent with pinned unanswerable label.",
+      "accepted_for_correct_and_grounded_objective": true,
+      "cited_pages": [],
+      "gold_pages": [],
+      "validator_failure_codes": [],
+      "scope_validation": {
+        "enabled": true,
+        "checks": 0,
+        "rejections": 0
+      },
+      "tool_events": [
+        {
+          "tool": "find_documents",
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0
+        },
+        {
+          "tool": "find_documents",
+          "returned_blocks": 0,
+          "added_blocks": 0,
+          "has_more": false,
+          "scan_limited": false,
+          "duplicate_blocks": 0,
+          "empty_blocks": 0,
+          "budget_excluded_blocks": 0
+        }
+      ],
+      "budget": {
+        "scope_request_reserve": 1,
+        "scope_token_reserve": "[REDACTED]",
+        "preflight_events": []
+      },
+      "requests": 3,
+      "generation_usage": {
+        "done_reason": "stop",
+        "prompt_tokens": 42207,
+        "output_tokens": 85
+      },
+      "seconds": 21.9,
+      "cited_units": []
+    }
+  ]
+}

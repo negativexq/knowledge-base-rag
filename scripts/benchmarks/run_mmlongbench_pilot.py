@@ -286,6 +286,8 @@ def validation_trace(stages: dict) -> dict:
         "critical_validator": validation.get("critical_validator"),
         "cited_units": validation.get("cited_units"),
         "operand_resolver": stages.get("operand_resolver"),
+        **({"agentic": stages["agentic"]} if "agentic" in stages else {}),
+        **({"escalation": stages["escalation"]} if "escalation" in stages else {}),
         "visual_answer": stages.get("visual_answer"),
     }
 
@@ -333,18 +335,36 @@ async def ask(
         evidence = "retrieved"
         blocks = await deps.evidence_fn(results, context) if deps.evidence_fn else results
     answer, metadata, validation = "", {}, {}
+    clarification = None
+    comparison = []
     token = set_current_capture(report.forensic_capture)
     try:
 
-        async def retrieve(query: str):
-            return await deps.search_fn(
-                query, context, RetrievalReport(), **({"source_ids": scope} if scope else {})
-            )
+        from app.api.chat import _scoped_retrieve
 
-        extra = {"retrieve": retrieve} if deps.operand_resolver_enabled else {}
+        retrieve = _scoped_retrieve(deps, context, {"source_ids": scope} if scope else {})
+
+        extra = (
+            {"retrieve": retrieve}
+            if (deps.operand_resolver_enabled or deps.agentic_rag_enabled)
+            else {}
+        )
+        if deps.agentic_rag_enabled and deps.documents_factory:
+            extra["documents"] = deps.documents_factory(context, scope or None)
         async for event in deps.stream_fn(question.question, blocks, **extra):
             if event["type"] == "token":
                 answer += event["content"]
+            elif event["type"] == "clarification":
+                clarification = {k: v for k, v in event.items() if k != "type"}
+                validation = {
+                    "abstain": True,
+                    "passed": True,
+                    "application_forced_abstention": False,
+                }
+            elif event["type"] == "comparison":
+                comparison = event["rows"]
+            elif event["type"] == "evidence_update":
+                blocks = event["blocks"]
             elif event["type"] == "metadata":
                 metadata = event
             elif event["type"] == "security_validation":
@@ -368,6 +388,8 @@ async def ask(
         "answer_format": question.answer_format,
         "gold": question.answer,
         "answer": answer,
+        "clarification": clarification,
+        "comparison": comparison,
         "abstain": validation.get("abstain"),
         "application_forced_abstention": validation.get("application_forced_abstention"),
         "passed": validation.get("passed"),
@@ -474,7 +496,11 @@ async def run_questions(
     ollama = OllamaClient(base_url=settings.ollama_base_url)
     # Page images for visual answers come from the manifest's own PDFs.
     settings = settings.model_copy(
-        update={"filesystem_root_path": str(manifest_documents(root, manifest, COLLECTION))}
+        update={
+            "filesystem_root_path": str(manifest_documents(root, manifest, COLLECTION)),
+            "filesystem_tenant_id": TENANT,
+            "agentic_rag_enabled": settings.agentic_rag_enabled and generate,
+        }
     )
     deps, chat_provider = build_chat_dependencies(
         settings, client, ollama, SparseEncoder(), COLLECTION
@@ -624,6 +650,14 @@ async def main() -> None:
             "evidence": args.evidence,
             "retrieval_scope": "open_corpus" if args.open_corpus else "question_document",
             "labels": str(args.labels) if args.labels else "v1",
+            "agentic": {
+                "enabled": settings.agentic_rag_enabled and not args.no_generation,
+                "mode": settings.agentic_mode,
+                "max_requests": settings.agentic_max_requests,
+                "max_tool_calls": settings.agentic_max_tool_calls,
+                "max_tokens": settings.agentic_max_tokens,
+                "timeout_seconds": settings.agentic_timeout_seconds,
+            },
         }
         out.mkdir(parents=True, exist_ok=True)
         (out / "results.jsonl").write_text(

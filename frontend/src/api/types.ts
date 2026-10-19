@@ -278,7 +278,21 @@ export interface PromptInjectionEvaluation {
   available: boolean
 }
 
+export interface UsageSummary {
+  llm_requests: number; input_tokens: number; output_tokens: number; cached_tokens: number
+  tool_calls: number; retries: number; usage_complete: boolean
+  priced_requests: number; cost_complete: boolean; cost_usd: number | null; known_cost_usd: number
+}
+export interface RequestTrace {
+  trace_id: string; span_id: string; started_at: string; duration_ms?: number
+  outcome: string; pipeline: string; error_type?: string | null
+  parent_trace_id?: string | null; usage?: UsageSummary
+}
 export interface TraceSpan {
+  span_id?: string | null
+  parent_span_id?: string | null
+  status?: string
+  attributes?: Record<string, string | number | boolean | string[]>
   name: string
   duration_ms: number
   offset_ms: number
@@ -289,6 +303,8 @@ export interface TraceDetail {
   available: boolean
   jaeger_url: string
   spans: TraceSpan[]
+  request?: RequestTrace | null
+  can_open_external?: boolean
 }
 
 // ---- /chat SSE contracts (app/api/chat.py, app/llm/generate.py) ----
@@ -398,6 +414,9 @@ export interface SupportUnitRef {
 }
 
 export interface ChatMetadata {
+  parent_trace_id?: string | null
+  phase?: string
+  agentic?: { observability?: UsageSummary; requests?: number; tool_calls?: number }
   prompt_version: string
   trace_id: string
   untrusted_context_enabled?: boolean
@@ -436,4 +455,60 @@ export interface GroundingResult {
   has_citations: boolean
   citations_found: [string, string, string][]
   ungrounded_citations: [string, string, string][]
+}
+
+export interface ResearchStep {
+  id: string
+  operation: string
+  status: "running" | "completed" | "retrying" | "failed"
+  failure_codes?: string[]
+}
+export interface Clarification { question: string; options: string[] }
+export interface ClarificationReply { question: string; answer: string }
+export interface ComparisonCell {
+  source_id: string
+  text: string
+  support_ids: string[]
+  calculation?: { expression: string; result: string } | null
+}
+export interface ComparisonRow { aspect: string; cells: ComparisonCell[] }
+export interface DocumentReference { source_type: string; source_id: string; document_version: string }
+export interface DocumentReadRequest {
+  document: DocumentReference
+  action: "outline" | "search" | "section" | "page" | "neighbors"
+  query?: string
+  section_id?: string
+  page?: number
+  chunk_id?: string
+  offset?: number
+}
+export interface DocumentReadResult {
+  document: DocumentReference
+  passages: { chunk_id: string; text: string; page_number: number | null; page_end: number | null; section_id: string; heading_path: string[] }[]
+  outline: { section_id: string; title: string; page_number: number | null; chunk_count: number }[]
+  has_more: boolean
+  scan_limited: boolean
+  next_offset: number | null
+  indexed_at?: string | null
+  current_version?: string | null
+  status?: string | null
+}
+
+export type FeedbackReason = "incorrect" | "unsupported" | "outdated" | "incomplete" | "other"
+export interface FeedbackSubmission {
+  question: string; answer: string; claim: string; reason: FeedbackReason; note: string
+  support_ids: string[]; trace_id: string | null
+}
+export interface FeedbackRecord extends FeedbackSubmission {
+  id: string; user_id: string; status: "open" | "triaged" | "resolved" | "dismissed"
+  created_at: string; updated_at: string; reviewer_note: string; snapshot_origin: "user_submitted"
+}
+
+export interface DocumentPolicy {
+  source_type: string
+  source_id: string
+  access: "tenant" | "restricted"
+  user_ids: string[]
+  group_ids: string[]
+  revision: number
 }

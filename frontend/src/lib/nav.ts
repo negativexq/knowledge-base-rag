@@ -5,6 +5,7 @@ import {
   Folders,
   History,
   LayoutDashboard,
+  MessageSquare,
   type LucideIcon,
   RefreshCw,
   Settings,
@@ -68,6 +69,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Quality",
     items: [
+      { to: "/feedback", label: "Answer feedback", description: "Reported answer issues and reviews", icon: MessageSquare },
       {
         to: "/evaluations",
         label: "Evaluations",

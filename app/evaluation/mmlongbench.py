@@ -23,6 +23,8 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
+from app.llm.prompt import NOT_FOUND_PHRASE
+
 NOT_ANSWERABLE = "Not answerable"
 
 # Evidence-source labels as the dataset writes them, mapped to short slice
@@ -507,7 +509,10 @@ def response_kind(result: dict[str, Any]) -> str:
     if abstain is None and codes is None:
         return "no_verdict"
     if not abstain:
-        return "answered"
+        # A released answer that leads with the refusal sentence is a refusal
+        # the model chose to explain; the user reads it as one.
+        answer = _SUPPORT_ID.sub(" ", str(result.get("answer") or "")).strip()
+        return "model_abstained" if answer.startswith(NOT_FOUND_PHRASE) else "answered"
     codes = codes or []
     if any(code.endswith("_INVALID") for code in codes):
         return "output_invalid"

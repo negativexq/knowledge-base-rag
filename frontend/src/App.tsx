@@ -11,6 +11,7 @@ const Starred = lazy(() => import("@/pages/Starred"))
 const Projects = lazy(() => import("@/pages/Projects"))
 const Collections = lazy(() => import("@/pages/Collections"))
 const HistoryPage = lazy(() => import("@/pages/History"))
+const Feedback = lazy(() => import("@/pages/Feedback"))
 const Evaluations = lazy(() => import("@/pages/Evaluations"))
 const Knowledge = lazy(() => import("@/pages/Knowledge"))
 const Overview = lazy(() => import("@/pages/Overview"))
@@ -44,6 +45,7 @@ export default function App() {
                     <Route path="/playground/history" element={<HistoryPage />} />
                     <Route path="/knowledge" element={<Knowledge />} />
                     <Route path="/sync-runs" element={<SyncRuns />} />
+                    <Route path="/feedback" element={<Feedback />} />
                     <Route path="/evaluations" element={<Evaluations />} />
                     <Route path="/traces" element={<Traces />} />
                     <Route path="/settings" element={<SettingsPage />} />

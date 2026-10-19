@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, permitted_records
 from app.security.models import UserContext
 
 router = APIRouter()
@@ -27,7 +27,11 @@ async def list_sources(
         {
             "source_type": source_type,
             "document_count": len(
-                registry.list_documents(tenant_id=user.tenant_id, source_type=source_type)
+                permitted_records(
+                    request,
+                    user,
+                    registry.list_documents(tenant_id=user.tenant_id, source_type=source_type),
+                )
             ),
             "is_running": manager.is_running(source_type),
         }

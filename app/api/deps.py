@@ -16,7 +16,7 @@ docs/security.md.
 from fastapi import Depends, HTTPException, Request
 
 from app.security.audit import AUTHENTICATION_FAILED, AUTHORIZATION_DENIED, log_audit_event
-from app.security.models import Role, UserContext
+from app.security.models import RetrievalContext, Role, UserContext
 
 _DEV_BYPASS_USER = UserContext(
     user_id="dev-bypass", tenant_id="local-dev", roles=frozenset({Role.ADMIN})
@@ -73,3 +73,20 @@ def require_role(required: Role):
         return user
 
     return _dependency
+
+
+def retrieval_context(request: Request, user: UserContext) -> RetrievalContext:
+    store = getattr(request.app.state, "document_permission_store", None)
+    return RetrievalContext.for_user(user, store.for_user(user) if store is not None else None)
+
+
+def permitted_records(request: Request, user: UserContext, records: list) -> list:
+    context = retrieval_context(request, user)
+    if context.document_permissions is None:
+        return records
+    rules = context.document_permissions.rules()
+    return [
+        r
+        for r in records
+        if r.tenant_id == user.tenant_id and rules.allows(r.source_type, r.source_id)
+    ]

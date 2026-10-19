@@ -6,6 +6,8 @@ httpx==0.28.1
 anthropic==0.120.2
 trafilatura==2.2.0
 pydantic-settings==2.14.2
+# Compatible with the pinned OpenAI/Anthropic SDKs; no application graph layer.
+pydantic-ai-slim[openai,anthropic]==1.107.7
 pymupdf==1.25.2
 qdrant-client==1.12.1
 fastembed==0.8.0

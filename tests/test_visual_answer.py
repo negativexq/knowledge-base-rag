@@ -198,6 +198,12 @@ async def test_a_reading_from_a_page_that_was_not_shown_is_dropped():
     assert validation["abstain"] is True
 
 
+# visual-gate-canary-20261018: reading every withheld answer from its pages
+# recovered nothing (381 and 636 misread) and answered two unanswerable rows
+# (365 another company's bankers, 475 a timer picture) that the check
+# confirmed. The wording gate stays.
+
+
 @pytest.mark.asyncio
 async def test_a_text_question_or_a_disabled_path_makes_no_visual_call():
     provider = _Provider(ABSTAIN, READ, YES)

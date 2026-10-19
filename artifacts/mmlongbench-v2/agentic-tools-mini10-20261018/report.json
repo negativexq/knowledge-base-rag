@@ -1,0 +1,463 @@
+{
+  "meta": {
+    "dataset": "yubo2333/MMLongBench-Doc",
+    "revision": "2ff6aa9237fc777b6627dc57a486e9225ac5fb86",
+    "documents": 10,
+    "questions": 10,
+    "collection": "kb_bench_mmlongbench_v2",
+    "tenant": "bench-mmlongbench",
+    "model": "gpt-6-luna",
+    "top_n": 14,
+    "candidate_k": 40,
+    "ingest": {
+      "chunks_upserted": "existing",
+      "seconds": 0
+    },
+    "median_seconds": 20.9,
+    "ocr_available": true,
+    "evidence": "retrieved",
+    "retrieval_scope": "question_document",
+    "labels": "data/benchmarks/mmlongbench-doc-v2/samples.json",
+    "agentic": {
+      "enabled": true,
+      "max_requests": 6,
+      "max_tool_calls": 8,
+      "max_tokens": 60000,
+      "timeout_seconds": 120.0
+    }
+  },
+  "overall": {
+    "questions": 10,
+    "ingestion_evidence_page_coverage": {
+      "rate": 1.0,
+      "n": 8
+    },
+    "retrieval_hit_at_14": {
+      "rate": 1.0,
+      "n": 8
+    },
+    "retrieval_hit_at_40": {
+      "rate": 1.0,
+      "n": 8
+    },
+    "gold_in_page_text": {
+      "rate": 0.5,
+      "n": 2
+    },
+    "gold_in_evidence": {
+      "rate": 0.5,
+      "n": 2
+    },
+    "evidence_page_seen": {
+      "rate": 1.0,
+      "n": 8
+    },
+    "answer_accuracy": {
+      "rate": 0.375,
+      "n": 8
+    },
+    "citation_accuracy": {
+      "rate": 0.6667,
+      "n": 3
+    }
+  },
+  "slices": {
+    "text": {
+      "questions": 5,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 5
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 5
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 5
+      },
+      "gold_in_page_text": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "gold_in_evidence": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 5
+      },
+      "answer_accuracy": {
+        "rate": 0.2,
+        "n": 5
+      },
+      "citation_accuracy": {
+        "rate": 0.0,
+        "n": 1
+      }
+    },
+    "layout": {
+      "questions": 2,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "answer_accuracy": {
+        "rate": 0.5,
+        "n": 2
+      },
+      "citation_accuracy": {
+        "rate": 1.0,
+        "n": 1
+      }
+    },
+    "table": {
+      "questions": 2,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "gold_in_page_text": {
+        "rate": 0.0,
+        "n": 1
+      },
+      "gold_in_evidence": {
+        "rate": 0.0,
+        "n": 1
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 2
+      },
+      "answer_accuracy": {
+        "rate": 0.5,
+        "n": 2
+      },
+      "citation_accuracy": {
+        "rate": 1.0,
+        "n": 1
+      }
+    },
+    "chart": {
+      "questions": 1,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "answer_accuracy": {
+        "rate": 0.0,
+        "n": 1
+      },
+      "citation_accuracy": {
+        "rate": null,
+        "n": 0
+      }
+    },
+    "figure": {
+      "questions": 1,
+      "ingestion_evidence_page_coverage": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "retrieval_hit_at_14": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "retrieval_hit_at_40": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "gold_in_page_text": {
+        "rate": null,
+        "n": 0
+      },
+      "gold_in_evidence": {
+        "rate": null,
+        "n": 0
+      },
+      "evidence_page_seen": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "answer_accuracy": {
+        "rate": 1.0,
+        "n": 1
+      },
+      "citation_accuracy": {
+        "rate": 0.0,
+        "n": 1
+      }
+    }
+  },
+  "answerability": {
+    "unanswerable_correctly_refused": {
+      "rate": 1.0,
+      "n": 2
+    },
+    "answerable_coverage": {
+      "rate": 0.375,
+      "n": 8
+    }
+  },
+  "response_kinds": {
+    "answered": 3,
+    "model_abstained": 1,
+    "validator_blocked": 6
+  },
+  "loss_stages": {
+    "generation": 1,
+    "not_in_page_text": 1,
+    "unmeasured": 3
+  },
+  "acl_leaks": 0,
+  "per_question": [
+    {
+      "row_idx": 210,
+      "doc_id": "05-03-18-political-release.pdf",
+      "evidence_types": [
+        "chart",
+        "text"
+      ],
+      "answerable": true,
+      "response_kind": "validator_blocked",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": "unmeasured",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 366,
+      "doc_id": "afe620b9beac86c1027b96d31d396407.pdf",
+      "evidence_types": [
+        "text"
+      ],
+      "answerable": true,
+      "response_kind": "validator_blocked",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": "unmeasured",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 381,
+      "doc_id": "f8d3a162ab9507e021d83dd109118b60.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "response_kind": "answered",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": true,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 472,
+      "doc_id": "User_Manual_1500S_Classic_EN.pdf",
+      "evidence_types": [
+        "layout"
+      ],
+      "answerable": true,
+      "response_kind": "answered",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": true,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 507,
+      "doc_id": "8dfc21ec151fb9d3578fc32d5c4e5df9.pdf",
+      "evidence_types": [
+        "text"
+      ],
+      "answerable": true,
+      "response_kind": "validator_blocked",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": true,
+      "gold_in_evidence": true,
+      "evidence_page_seen": true,
+      "loss_stage": "generation",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 636,
+      "doc_id": "2023.acl-long.386.pdf",
+      "evidence_types": [
+        "layout",
+        "text"
+      ],
+      "answerable": true,
+      "response_kind": "validator_blocked",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": "unmeasured",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 660,
+      "doc_id": "DSA-278777.pdf",
+      "evidence_types": [],
+      "answerable": false,
+      "response_kind": "validator_blocked",
+      "ingested": null,
+      "hit_top": null,
+      "hit_candidates": null,
+      "answered": false,
+      "correct": null,
+      "citation_on_evidence": null,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": null,
+      "loss_stage": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 732,
+      "doc_id": "germanwingsdigitalcrisisanalysis-150403064828-conversion-gate01_95.pdf",
+      "evidence_types": [
+        "figure",
+        "text"
+      ],
+      "answerable": true,
+      "response_kind": "answered",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": true,
+      "correct": true,
+      "citation_on_evidence": false,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": true,
+      "loss_stage": null,
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 1016,
+      "doc_id": "COSTCO_2021_10K.pdf",
+      "evidence_types": [
+        "table"
+      ],
+      "answerable": true,
+      "response_kind": "validator_blocked",
+      "ingested": true,
+      "hit_top": true,
+      "hit_candidates": true,
+      "answered": false,
+      "correct": false,
+      "citation_on_evidence": null,
+      "gold_in_page_text": false,
+      "gold_in_evidence": false,
+      "evidence_page_seen": true,
+      "loss_stage": "not_in_page_text",
+      "acl_leaks": 0
+    },
+    {
+      "row_idx": 1084,
+      "doc_id": "BESTBUY_2023_10K.pdf",
+      "evidence_types": [],
+      "answerable": false,
+      "response_kind": "model_abstained",
+      "ingested": null,
+      "hit_top": null,
+      "hit_candidates": null,
+      "answered": false,
+      "correct": null,
+      "citation_on_evidence": null,
+      "gold_in_page_text": null,
+      "gold_in_evidence": null,
+      "evidence_page_seen": null,
+      "loss_stage": null,
+      "acl_leaks": 0
+    }
+  ]
+}

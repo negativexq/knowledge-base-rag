@@ -1,8 +1,10 @@
 import logging
 import time
+from contextlib import aclosing
 
 from fastapi import FastAPI
 from qdrant_client import QdrantClient
+from qdrant_client.http import models as qm
 
 from app.api.chat import ChatDependencies
 from app.connectors.base import Connector
@@ -10,6 +12,7 @@ from app.connectors.filesystem import LocalFilesystemConnector
 from app.connectors.notion import NotionConnector
 from app.evaluation.forensic_capture import current_capture, metadata_for_chunks
 from app.evaluation.semantic_answerability import OllamaSemanticEvaluator
+from app.evidence.documents import DocumentReader
 from app.evidence.section_aware import SectionAwareEvidenceBuilder, serialize_section_aware_context
 from app.ingestion.chunking_config import QWEN3_EMBEDDING_TOKENIZER, QWEN3_TOKENIZER_REVISION
 from app.ingestion.fingerprint import build_pipeline_fingerprint
@@ -28,18 +31,22 @@ from app.llm.provider import (
 )
 from app.llm.query_rewrite import ChatTurn, RewriteResult, rewrite_query
 from app.llm.structured_output import stream_evidence_backed_answer, stream_support_unit_answer
-from app.llm.visual_answer import pdf_page_renderer
+from app.llm.visual_answer import asks_visual, pdf_page_renderer
 from app.main import create_app
 from app.migration.aliasing import resolve_active_collection_name
 from app.migration.readiness import check_readiness
 from app.migration.startup_guard import ensure_embedding_schema_match
 from app.registry.store import DocumentRegistry
 from app.reranker.cross_encoder import CrossEncoderReranker
+from app.research.feedback import FeedbackStore
+from app.research.traces import TraceStore
+from app.retrieval.filters import build_filter, combine_filters, filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.retrieval.report import RetrievalReport
 from app.retrieval.search import search
 from app.retrieval.sparse import SparseEncoder
 from app.security.auth import build_token_authenticator
+from app.security.document_permissions import DocumentPermissionStore
 from app.security.models import RetrievalContext
 from app.shared.config import Settings
 from app.shared.tracing import langfuse_export_from, setup_tracing
@@ -151,6 +158,7 @@ def build_chat_dependencies(
         context: RetrievalContext,
         report: RetrievalReport,
         source_ids: list[str] | None = None,
+        filters: qm.Filter | None = None,
     ) -> list[SearchResult]:
         return await search(
             question,
@@ -167,6 +175,7 @@ def build_chat_dependencies(
             dimensions=embed_config.output_dimension,
             report=report,
             source_ids=source_ids,
+            filters=combine_filters(build_filter(source_ids=source_ids), filters),
         )
 
     async def evidence_fn(
@@ -198,8 +207,21 @@ def build_chat_dependencies(
         return result.blocks
 
     async def rewrite_fn(question: str, history: list[ChatTurn]) -> RewriteResult:
+        rewrite_provider = chat_provider
+        if settings.agentic_rag_enabled or settings.adaptive_rag_enabled:
+            from pydantic_ai.usage import RunUsage, UsageLimits
+
+            from app.llm.agentic import ToolProvider
+
+            rewrite_provider = ToolProvider(
+                chat_provider,
+                RunUsage(),
+                UsageLimits(),
+                provider_name=settings.generation_provider,
+                role="query_rewrite",
+            )
         return await rewrite_query(
-            chat_provider,
+            rewrite_provider,
             question,
             history,
             model=default_chat_model(settings),
@@ -211,27 +233,202 @@ def build_chat_dependencies(
 
     page_renderer = pdf_page_renderer(settings.filesystem_root_path)
 
-    async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None):
-        if settings.support_ids_enabled:
-            async for event in stream_support_unit_answer(
+    def classic_stream(question: str, chunks: list[SearchResult], retrieve=None):
+        return stream_support_unit_answer(
+            question,
+            chunks,
+            chat_provider,
+            model=default_chat_model(settings),
+            prompt_version=settings.support_id_prompt_version,
+            think=settings.ollama_thinking,
+            num_ctx=default_context_tokens(settings),
+            validator_version=settings.critical_validator_version,
+            shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+            architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+            count_tokens=count_prompt_tokens,
+            derived_answers=settings.derived_answers_enabled,
+            operand_resolver=settings.derived_answers_enabled and settings.operand_resolver_enabled,
+            retrieve=retrieve,
+            visual_answers=settings.visual_answers_enabled,
+            render_page=page_renderer,
+        )
+
+    async def agent_stream(question: str, chunks: list[SearchResult], retrieve, documents, first):
+        from app.llm.agentic import (
+            PIPELINE_VERSION,
+            AgentDependencies,
+            EvidenceLedger,
+            agent_model,
+            agent_model_settings,
+            run_agent,
+        )
+
+        if settings.adaptive_rag_enabled:
+            from app.llm.adaptive import PIPELINE_VERSION, run_adaptive_agent
+
+            runner = run_adaptive_agent
+        else:
+            runner = run_agent
+
+        # Operations the withheld fixed path already ran on this same evidence.
+        tried: set[str] = set()
+        if first is not None:
+            if settings.derived_answers_enabled and settings.operand_resolver_enabled:
+                tried.add("resolve_calculation")
+            if (
+                settings.visual_answers_enabled
+                and getattr(chat_provider, "supports_images", False)
+                and asks_visual(question)
+            ):
+                tried.add("read_pages")
+
+        async def candidate_generator(query, initial_blocks):
+            context_tokens = default_context_tokens(settings)
+            budget = min(settings.agentic_evidence_token_budget, context_tokens // 2)
+            ledger = EvidenceLedger(
+                count_prompt_tokens,
+                budget,
+                context=documents.context if documents is not None else None,
+                source_ids=documents.source_ids if documents is not None else None,
+            )
+            ledger.add(initial_blocks)
+            from app.llm.agent_observability import RequestUsage, load_prices
+
+            agent_deps = AgentDependencies(
+                query,
+                ledger,
+                retrieve=retrieve,
+                documents=documents,
+                observations=RequestUsage(load_prices(settings.model_pricing_json)),
+                provider=chat_provider,
+                provider_name=settings.generation_provider,
+                scope_validation_enabled=settings.agentic_scope_validation_enabled,
+                generation_kwargs={
+                    "model": default_chat_model(settings),
+                    "think": settings.ollama_thinking,
+                    "num_ctx": context_tokens,
+                    "num_predict": 1024,
+                    "temperature": 0.0,
+                },
+                derived_answers=settings.derived_answers_enabled,
+                operand_resolver=settings.operand_resolver_enabled,
+                visual_answers=settings.visual_answers_enabled,
+                render_page=(
+                    page_renderer
+                    if documents is not None
+                    and documents.context.tenant_id == settings.filesystem_tenant_id
+                    else None
+                ),
+                validator_version=settings.critical_validator_version,
+                shadow_enabled=settings.critical_validator_v3_shadow_enabled,
+                architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
+                classic_tried=frozenset(tried),
+                classic_failure_codes=first.failure_codes if first is not None else (),
+                reread_first=first is not None,
+            )
+            model_settings = agent_model_settings(settings, context_tokens)
+            async with agent_model(settings) as native_model:
+                return await runner(
+                    native_model,
+                    agent_deps,
+                    max_requests=settings.agentic_max_requests,
+                    max_tool_calls=settings.agentic_max_tool_calls,
+                    max_tokens=settings.agentic_max_tokens,
+                    timeout_seconds=settings.agentic_timeout_seconds,
+                    retries=settings.agentic_output_retries,
+                    research_policy=settings.agentic_research_policy,
+                    model_settings=model_settings,
+                    **(
+                        {
+                            "fast_path": settings.adaptive_fast_path_enabled,
+                            "evidence_needs_enabled": settings.adaptive_evidence_needs_enabled,
+                        }
+                        if settings.adaptive_rag_enabled
+                        else {}
+                    ),
+                    **(
+                        {
+                            "role_model_settings": {
+                                role: {
+                                    "openai_reasoning_effort": effort,
+                                    "max_tokens": 8192 if effort != "none" else 1024,
+                                    # A None override omits inherited temperature for reasoning.
+                                    "temperature": None if effort != "none" else 0.0,
+                                }
+                                for role, effort in {
+                                    "extractor": settings.adaptive_extraction_reasoning,
+                                    "extraction_checker": settings.adaptive_extraction_reasoning,
+                                    "finalizer": settings.adaptive_final_reasoning,
+                                    "answerer": settings.adaptive_final_reasoning,
+                                    "need_planner": settings.adaptive_final_reasoning,
+                                    "source_selector": settings.adaptive_final_reasoning,
+                                    "quantity_selector": settings.adaptive_final_reasoning,
+                                    "quantity_collector": settings.adaptive_final_reasoning,
+                                    "quantity_checker": settings.adaptive_final_reasoning,
+                                    "answer_repair": settings.adaptive_final_reasoning,
+                                    "scoped_extraction_checker": settings.adaptive_final_reasoning,
+                                    "scope_validator": settings.adaptive_final_reasoning,
+                                }.items()
+                            }
+                        }
+                        if settings.adaptive_rag_enabled
+                        and settings.generation_provider == "openai"
+                        else {}
+                    ),
+                )
+
+        async with aclosing(
+            stream_support_unit_answer(
                 question,
                 chunks,
                 chat_provider,
                 model=default_chat_model(settings),
                 prompt_version=settings.support_id_prompt_version,
-                think=settings.ollama_thinking,
-                num_ctx=default_context_tokens(settings),
                 validator_version=settings.critical_validator_version,
                 shadow_enabled=settings.critical_validator_v3_shadow_enabled,
                 architecture_v2_shadow_enabled=settings.critical_validator_arch_v2_shadow_enabled,
-                count_tokens=count_prompt_tokens,
                 derived_answers=settings.derived_answers_enabled,
-                operand_resolver=settings.derived_answers_enabled
-                and settings.operand_resolver_enabled,
-                retrieve=retrieve,
-                visual_answers=settings.visual_answers_enabled,
-                render_page=page_renderer,
-            ):
+                num_ctx=default_context_tokens(settings),
+                candidate_generator=candidate_generator,
+            )
+        ) as events:
+            async for event in events:
+                if event["type"] == "metadata":
+                    event = {**event, "pipeline_version": PIPELINE_VERSION}
+                yield event
+
+    async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None, documents=None):
+        if settings.adaptive_rag_enabled:
+            async with aclosing(
+                agent_stream(question, chunks, retrieve, documents, None)
+            ) as events:
+                async for event in events:
+                    yield event
+            return
+        if settings.agentic_rag_enabled:
+            from app.llm.escalation import classic_first
+
+            scope = documents.source_ids if documents is not None else None
+            async with aclosing(
+                classic_first(
+                    chunks,
+                    lambda blocks: classic_stream(question, blocks, retrieve),
+                    lambda first: agent_stream(question, chunks, retrieve, documents, first),
+                    # Multi-document requests (comparisons) need the agent's contract.
+                    direct=settings.agentic_mode == "always"
+                    or (scope is not None and len(scope) > 1),
+                    authorize=(
+                        (lambda blocks: filter_authorized_candidates(blocks, documents.context))
+                        if documents is not None
+                        else None
+                    ),
+                )
+            ) as events:
+                async for event in events:
+                    yield event
+            return
+        if settings.support_ids_enabled:
+            async for event in classic_stream(question, chunks, retrieve):
                 yield event
             return
         if settings.rag_pipeline_v2:
@@ -268,8 +465,16 @@ def build_chat_dependencies(
             evidence_fn=evidence_fn
             if settings.rag_pipeline_v2 or settings.support_ids_enabled
             else None,
+            agentic_rag_enabled=settings.agentic_rag_enabled or settings.adaptive_rag_enabled,
+            documents_factory=lambda context, source_ids: DocumentReader(
+                qdrant_client, collection_name, context, source_ids
+            ),
             pipeline_version=(
-                "pipeline_support_ids"
+                "pipeline_adaptive_v1"
+                if settings.adaptive_rag_enabled
+                else "pipeline_agentic_v1"
+                if settings.agentic_rag_enabled
+                else "pipeline_support_ids"
                 if settings.support_ids_enabled
                 else "pipeline_v2_2_evidence_backed"
                 if settings.rag_pipeline_v2
@@ -404,7 +609,18 @@ def build_app(settings: Settings) -> FastAPI:
     async def close_qdrant_client() -> None:
         qdrant_client.close()
 
-    on_shutdown = [ollama.aclose, chat_provider.aclose, close_qdrant_client]
+    feedback = FeedbackStore(settings.research_feedback_db_path)
+    request_traces = TraceStore(settings.request_trace_db_path)
+    document_permissions = DocumentPermissionStore(
+        settings.document_permissions_db_path, settings.document_default_access
+    )
+
+    async def close_feedback() -> None:
+        feedback.close()
+        request_traces.close()
+        document_permissions.close()
+
+    on_shutdown = [ollama.aclose, chat_provider.aclose, close_qdrant_client, close_feedback]
     for connector in connectors.values():
         if hasattr(connector, "aclose"):
             on_shutdown.append(connector.aclose)
@@ -425,4 +641,7 @@ def build_app(settings: Settings) -> FastAPI:
         cors_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
         settings=settings,
         tracer_provider=tracer_provider,
+        research_feedback_store=feedback,
+        request_trace_store=request_traces,
+        document_permission_store=document_permissions,
     )

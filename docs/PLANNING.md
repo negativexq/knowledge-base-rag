@@ -5923,3 +5923,275 @@ refusals (Q157, Q181, Q085, Q205, Q251) are mostly documents about another
 product or platform.
 
 `make test`: 1767 passed, 4 skipped.
+
+
+## Agentic RAG — opt-in PydanticAI orchestration
+
+The `feat/pydanticai-agentic-rag` branch adds a single PydanticAI agent over
+existing scoped search/reranking, section evidence, checked arithmetic, operand
+resolution and independently confirmed visual reading. A request-local ledger
+keeps support IDs stable across searches. Validator reason codes can drive
+bounded correction; the final answer still passes the existing release path.
+An empty first retrieval may be retried under the same caller and source scope.
+Updated sources reach the UI before the final support-ID map and answer text.
+
+`AGENTIC_RAG_ENABLED` defaults to false. Derived/visual flags still control tool
+availability. Request, tool, token and wall-time budgets fail closed; nested
+operand/visual model calls share the request budget. Both production benchmark
+runners support the flag and retain agent telemetry; retrieval-only runs disable
+it. PydanticAI is pinned to 1.107.7 for compatibility with existing SDK pins.
+
+The native OpenAI Responses integration was smoke-tested with `gpt-6-luna` and
+synthetic evidence: one request, 601 input tokens, 41 output tokens, no tools, a
+supported answer with `E1.S1`. This is integration evidence, not a benchmark
+result. No full paired TechQA/MMLongBench run or new semantic grading has been
+performed; the feature must remain opt-in until those measurements support it.
+See `docs/agentic-rag.md` for the evaluation protocol and current limitations.
+
+Validation: `make test` equivalent: 1787 passed, 4 skipped, 5 live-model tests
+deselected. Ruff clean, mypy clean across 128 modules, `pip check` clean.
+
+
+## Research workflows — document navigation, clarification, comparisons and feedback
+
+Added bounded document navigation over the active index: headings, text search,
+sections, page text and adjacent passages. All navigation keeps the known source
+version and caller/source scope, and newly read agent evidence uses the existing
+append-only support-ID ledger. The authenticated document reader also powers
+source-card and Knowledge views with registry synchronization/version metadata.
+No model or embedding calls are needed for these read operations.
+
+Agent output now supports clarification and source-specific comparison cells.
+Clarification replies start a fresh authorized request and preserve the source
+scope; comparison cells are individually checked against their own source IDs
+and final validators before rendering. Research progress carries operation/status
+only, with cancellation propagated through nested streams. SSE framing survives
+arbitrary transport chunk boundaries. Browser history and Markdown export retain
+clarification replies and comparison tables with citation footnotes.
+
+Added persistent user-submitted answer feedback and a tenant-scoped OPERATOR+
+review queue with triaged/resolved/dismissed statuses. Feedback snapshots are
+explicitly untrusted reports, not indexed evidence. SQLite location is configured
+by RESEARCH_FEEDBACK_DB_PATH. Existing research sessions remain browser-local.
+
+No live LLM calls were made for this work. New tests use the real PydanticAI loop
+with FunctionModel, mocked HTTP, in-memory Qdrant and temporary SQLite. Full
+backend suite: 1803 passed, 4 skipped, 5 live tests deselected. Mypy clean across
+133 modules. Visual browser QA could not run because no browser surface was
+available; automated UI interactions and production build were checked.
+
+Final UI checks: 106 tests passed; TypeScript, ESLint and production build passed.
+
+
+## Agentic request observability and security review
+
+Agent requests now have a content-free, caller-owned SQLite trace index and an
+authenticated console listing. Every actual orchestration/resolver/visual/rewrite
+model call is a generation span; tool calls, document reads, validation, retries
+and final release are linked under the request. Outcomes preserve timeout,
+budget exhaustion, rejection and cancellation. The console exposes the tree,
+safe operational details, tokens and configured estimated USD costs; missing
+usage/pricing remains unknown. Wrapper spans no longer duplicate generations.
+
+The security review added independent ledger tenant/source checks, filesystem
+tenant/version/hash binding and immutable bounded PDF snapshots, task-local
+provider usage state, server-generated trace identity linked to the HTTP context,
+trace ownership/role authorization and an explicit safe attribute allowlist. Raw
+exception events and SDK-wide automatic message capture are disabled for the
+agent. Direct Jaeger links require ADMIN plus a deployment opt-in. Existing
+validators and fail-closed budget/error behavior remain in place.
+
+Configuration and operational limitations are documented in `agentic-rag.md`;
+findings and residual security boundaries are in `agentic-security-review.md`.
+Tenant-internal document ACLs, live injection/quality evaluations, service-level
+authentication and retention remain explicit deployment/follow-up work.
+
+No live LLM calls were made. Full backend suite: 1821 passed, 4 skipped, 5 live
+tests deselected, followed by targeted PDF raster-bound regression checks. Mypy
+checked 135 modules; Ruff passed. Frontend: 109 tests, TypeScript, ESLint and
+production build passed. Visual browser QA remains a manual deployment check.
+
+## Scope binding and per-document grants
+
+Added a stateless claim-scope verifier over each candidate's own cited authorized
+units, preserving the answer agent prompt and deterministic validators. Exact
+witness/coverage checks reject malformed judgments. Reason codes drive bounded
+research repair; final release validates a server-owned receipt bound to the
+question, candidate and provenance. Verifier calls share request/token/time
+limits and are visible as scope_validator generations. Payload size is bounded.
+
+Added persistent tenant/document policies with user/group grants, default deny,
+ADMIN-only revisioned management API and a Knowledge permission editor. Qdrant
+query filters, postfilters, section expansion, ledgers, document readers and
+pending answer release enforce live policies. Listing/count metadata is filtered;
+ADMIN may manage policy identifiers without implicit content access. In-flight
+revocation withholds new content, including legacy resolver citation metadata.
+Filesystem ingestion rejects source-identity slug collisions. Production factories
+require permission storage; deployment wiring provides and closes it.
+
+Existing documents require explicit grants after upgrade. Group membership comes
+from validated server-side identity configuration; connector-native/IdP ACL sync
+is not automatic. Historical browser content, submitted feedback/forensic storage
+and previously issued provider calls cannot be revoked retroactively. See
+`document-permissions.md` and `agentic-rag.md` for rollout and remaining limits.
+
+Live GPT-6 Luna: 4/4 formerly failing ambiguous-scope cases now reject the first
+candidate, search and answer correctly; 17/17 additional controls/probes passed.
+62 real calls in this follow-up. Full backend: 1856 passed, 4 skipped, 5 live tests
+deselected; mypy 137 modules, Ruff passed. Frontend: 111 tests, TypeScript, ESLint
+and production build passed. No push or paired full benchmark run was performed.
+
+## MMLongBench — agentic mini-10 after scope guard
+
+Completed a preselected ten-question run with GPT-6 Luna, agentic/scope guard,
+calculation/resolver/visual tools, existing Qwen3/BGE 40/14 retrieval and corrected
+V2 labels. Seed 20261018, eight answerable plus two unanswerable across ten PDFs;
+selection committed before inference. No prompt/budget adjustment or reruns.
+
+Automatic: 5/8 answerable correct, 1/2 correct refusals. Cited-evidence review:
+4/8 correct and grounded; row 732's numeric 5 matched gold but was taken from a
+Twitter-activity table instead of figure counting. Row 660 answered a V2-labeled
+unanswerable port question. Scope validation accepted both failures. Rows 366
+and 636 exhausted token/request budgets respectively; row 210 abstained.
+Retrieval hit an evidence page in 8/8, cross-tenant probe leaked nothing.
+33 model calls, 335825 input and 2159 output tokens; median 24.1 s per question.
+
+This is a small development-visible sample, with no paired baseline and no
+benchmark-improvement claim. Full configuration, corpus/label hashes, automatic
+report and manual evidence audit are in
+`artifacts/mmlongbench-v2/agentic-mini10-20261018/REVIEW.md`. The semantic guard is
+not universally sufficient; wrong quantity binding, answerability and research
+recovery need further general validation rather than per-question prompt rules.
+
+### Extended agent research tools (2026-10-18)
+
+Implemented scoped hybrid/literal search with admission diagnostics, authorized
+document discovery, version-pinned PDF element/table/region inspection, evidence
+provenance comparison, shared PDF concurrency locking, verification budget
+reservation and local token preflight. Tools use the existing authorization,
+ledger, validators, progress events and content-free traces. See
+[tool contracts](research-tools.md).
+
+The same fixed Luna MMLongBench mini10 **regressed**: automatic answerables 3/8
+(previous 5/8), manually grounded 2/8 (previous 4/8), six budget blocks (previous
+two). Airbus quantity grounding still falsely passed; several unnecessary empty
+discovery calls and invalid scope judgments consumed recovery budget. New search
+did admit unseen evidence, but that alone did not solve the questions. Structural
+and visual tools were verified offline, not successfully selected in this live
+run. Keep opt-in rollout and measure generic routing/context/budget changes
+separately before claiming improvement. See the
+[recorded audit](../artifacts/mmlongbench-v2/agentic-tools-mini10-20261018/REVIEW.md).
+
+### Agent budget audit and bounded research (2026-10-18)
+
+Added a validated server-side ResearchPolicy above existing hard shared SDK limits:
+three research requests, four execution attempts (including failures), two
+no-progress steps, duplicate suppression, per-operation timeouts, one candidate
+repair and a separate tools-closed final correction within the unchanged hard
+limits. Single-source requests hide document discovery. Stop and terminal reasons
+are separately observable. See [audit and primary references](agentic-budget-audit.md).
+
+Final offline validation: 1884 passed, 4 skipped, 5 live deselected; Ruff/mypy clean.
+Live evaluation did **not** establish an efficiency or quality gain: first-policy
+mini10 remained 2/8 grounded, with 34 model calls and increased input/elapsed totals;
+final targeted smoke was 1/3 grounded, two token-preflight blocks. Do not present
+numeric limits as a demonstrated accuracy fix or production-optimal thresholds.
+Further evaluation must isolate each change against the original 4/8 reference.
+No push, deployment or `.env` edit.
+
+### Classic-first escalation and the no-gain audit (2026-10-18, closing note)
+
+The agent now runs only when the fixed path withholds (`AGENTIC_MODE=escalate`;
+multi-document requests go to it directly). It first rereads the same evidence
+without tools, opens research only after an abstention, keeps validated parts
+when others are rejected, carries evidence once per request, and falls back to
+the fixed path over gathered evidence on budget/timeout. See
+[agentic-rag.md](agentic-rag.md).
+
+Escalation canary (27 MMLongBench rows, 11 TechQA rows before it was stopped
+for cost): 18 MMLongBench rows escalated, 0 recovered, 0 lost. Offline audit,
+no further model calls:
+
+- Retrieval was not the loss. On 210, 381 and 636 every gold page was in the
+  initial evidence (210: all 18 document chunks), so research search returned
+  nothing new; in all 13 earlier TechQA losses the gold fact was in evidence.
+- The reread was a repeat: the agent used the same model at reasoning `none`
+  and temperature 0 as the fixed path. It now reads with `AGENTIC_REASONING=low`.
+- The visual path never ran on 210 (chart) or 381 (table count): the
+  `asks_visual` keyword gate did not fire, and agent gating hid the visual
+  tools the same way. A withheld answer is now read from its renderable pages
+  whatever the wording; the independent check still decides. Page-element
+  detection was measured and rejected as a gate (almost every page has tables
+  or drawings). Page selection stays reranker-ordered: it holds a gold page in
+  9 of 10 answerable rows; reciprocal-rank page scores were worse; 636 (gold
+  page ranked eighth) needs page-level retrieval, not a reordering.
+- A tool's ModelRetry leaves the SDK handler as `ToolRetryError`, so failed
+  tool attempts were neither recorded nor counted as no-progress. Both are now
+  handled (`tool_failed` events with the code-written reason).
+- Runner traces redacted `input_tokens`/`output_tokens` as secrets; integer
+  token counts are now kept.
+- The TechQA runner bypassed `ResearchRetriever`, so anchored and literal
+  search failed there; it now uses the API's `_scoped_retrieve`.
+- Scoring: an answer that leads with the refusal sentence (520) is counted as
+  a model abstention.
+- Validator, re-audited on TechQA production-v1 with the current code: Q146,
+  Q149, Q166 and Q220 already pass; Q018 (support writes "BPM 7501" for
+  7.5.0.1) and Q239 (specificity read from "platform_7.5.0_" in a path, not the
+  judged 7.5.2) were still blocked and now pass. Replaying the current
+  validator over all 579 saved cited parts, against the previous code, changes
+  exactly these two parts.
+
+Measured and reverted: the ungated visual path (agent off, 10 rows,
+`artifacts/mmlongbench-v2/visual-gate-canary-20261018`). It recovered nothing
+(381 read "4 quizzes" from a summary page, gold 7; 636 read "Four" from page 15
+and the check called it main body, gold 2; on 210 the reader named page 11,
+which was not shown) and answered two unanswerable rows that the check
+confirmed (365 another company's bankers, 475 a time off a timer picture). The
+wording gate stays; the visual reader and its check are not reliable enough to
+run on every withheld answer. The other changes are not measured live yet.
+
+Agent-on canary after these fixes (same 10 MMLongBench rows plus TechQA Q018
+and Q239; `artifacts/mmlongbench-v2/agent-reasoning-canary-20261018`,
+`artifacts/ragbench/techqa-validator-canary-20261018`; agent spend on
+MMLongBench 17 requests, 181k input tokens):
+
+- TechQA Q018 is answered and released: the compact-version validator fix holds
+  live. Q239 produced a different answer that was again blocked as
+  INDETERMINATE; the classic stage's validator trace is overwritten by the
+  agent's, so the blocked value is not visible. The agent's TechQA search hit
+  the 45 s tool timeout.
+- MMLongBench: 521 is now correctly refused (it was answered); no other row
+  changed. 636 and 638 were answered wrongly by the fixed path's visual reading
+  (the check confirmed "Four" this time), before any escalation.
+- Every escalated run had one research tool turn, because the re-read counted
+  as a research turn; in five of eight runs that one call named an unknown
+  support ID and research closed. The re-read no longer counts, so research
+  has two tool turns, and a `tool_failed` event records the ID the model wrote.
+  Not yet measured live.
+
+`make test`: 1923 passed, 4 skipped.
+
+### Parser audit: is the gold readable on its evidence pages? (2026-10-18)
+
+Offline, no model calls: the 62 answerable MMLongBench chart/table questions of
+`luna-full-v9` (13 documents), current index (PyMuPDF `pymupdf_elements_v9`)
+against Docling 2.140.0 (layout + TableFormer, OCR off), judged line by line on
+the evidence pages with the benchmark's lenient matcher.
+
+- Gold readable on its pages: ours 22/62, Docling 21/62. Most of the rest are
+  computed answers (ratios, differences) that no parser prints.
+- Tables: no difference. The index keeps rows as `label | column: value`, but a
+  whole table is one support unit (Costco's balance sheet: 2,631 characters).
+- Bar charts: Docling groups a chart's labels and values under one picture and
+  keeps their positions; rebuilding rows from same-height items recovers the
+  answer row on 210 (`Dem/Lean Dem | 21 | 52`), 212 and 214, where the index
+  has the numbers detached from their labels. Line charts (641, 642) do not
+  rebuild this way; their values need the axis, i.e. a chart-to-table model.
+- Ours ahead on 519/524 (image slides; the index uses OCR, the Docling run did
+  not) and 372.
+- 381's missing "Quiz #5" is in the index (a pages 7-8 chunk); it was not in
+  that question's evidence, a selection loss rather than a parsing one.
+
+So the parser is not the general loss. The specific gap is chart structure:
+values detached from their labels. Rebuilding rows needs a figure region plus
+positions, which Docling supplies; tables do not justify a parser switch.

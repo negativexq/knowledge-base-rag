@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "dataset": "RAGBench TechQA HOLDOUT50",
+    "parquet_sha256": "426f360d12b5d3589b66293c3417d3686a9d69eba3e82938e93d3e1545681264",
+    "documents": 769,
+    "collection": "kb_bench_techqa",
+    "tenant": "bench-techqa",
+    "model": "gpt-6-luna",
+    "ingest": {
+      "chunks_upserted": "existing",
+      "seconds": 0
+    },
+    "retrieval_scope": "open_corpus",
+    "top_n": 14,
+    "candidate_k": 40,
+    "flags": {
+      "AGENTIC_RAG_ENABLED": true,
+      "AGENTIC_MODE": "escalate",
+      "DERIVED_ANSWERS_ENABLED": true,
+      "OPERAND_RESOLVER_ENABLED": true,
+      "VISUAL_ANSWERS_ENABLED": true
+    }
+  },
+  "questions": 2,
+  "top_n": 14,
+  "candidate_k": 40,
+  "response_kinds": {
+    "answered": 1,
+    "model_abstained": 1
+  },
+  "retrieval_hit_top": {
+    "rate": 1.0,
+    "n": 2
+  },
+  "retrieval_hit_candidates": {
+    "rate": 1.0,
+    "n": 2
+  },
+  "citation_on_relevant": {
+    "rate": 1.0,
+    "n": 1
+  },
+  "acl_leaks": 0,
+  "median_seconds": 128.3,
+  "semantic": null,
+  "per_question": [
+    {
+      "qid": "techqa_DEV_Q018",
+      "response_kind": "answered",
+      "relevant_in_top": true,
+      "cited_relevant": true,
+      "semantic": null
+    },
+    {
+      "qid": "techqa_DEV_Q239",
+      "response_kind": "model_abstained",
+      "relevant_in_top": true,
+      "cited_relevant": false,
+      "semantic": null
+    }
+  ]
+}

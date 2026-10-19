@@ -30,12 +30,44 @@ def build_acl_filter(context: RetrievalContext) -> qmodels.Filter | None:
             "build an unrestricted retrieval filter. Use RetrievalContext.system() if "
             "cross-tenant access is genuinely intended."
         )
-    return qmodels.Filter(
+    tenant = qmodels.Filter(
         must=[
             qmodels.FieldCondition(
                 key="tenant_id", match=qmodels.MatchValue(value=context.tenant_id)
             )
         ]
+    )
+    if context.document_permissions is None:
+        return tenant
+    rules = context.document_permissions.rules()
+    pairs = rules.allowed if rules.default_access == "restricted" else rules.denied
+
+    def pair(source_type: str, source_id: str) -> qmodels.Filter:
+        return qmodels.Filter(
+            must=[
+                qmodels.FieldCondition(
+                    key="source_type", match=qmodels.MatchValue(value=source_type)
+                ),
+                qmodels.FieldCondition(key="source_id", match=qmodels.MatchValue(value=source_id)),
+            ]
+        )
+
+    if rules.default_access == "restricted":
+        permission = (
+            qmodels.Filter(should=[pair(*key) for key in sorted(pairs)])
+            if pairs
+            else qmodels.Filter(
+                must=[qmodels.FieldCondition(key="source_id", match=qmodels.MatchAny(any=[]))]
+            )
+        )
+    else:
+        permission = qmodels.Filter(must_not=[pair(*key) for key in sorted(pairs)] or None)
+    return qmodels.Filter(
+        must=[tenant, permission],
+        must_not=[
+            qmodels.IsEmptyCondition(is_empty=qmodels.PayloadField(key="source_type")),
+            qmodels.IsEmptyCondition(is_empty=qmodels.PayloadField(key="source_id")),
+        ],
     )
 
 
@@ -61,10 +93,19 @@ def filter_authorized_candidates(candidates: list, context: RetrievalContext) ->
     inside the Qdrant query (build_acl_filter + combine_filters)."""
     if context.is_system:
         return list(candidates)
+    if not context.tenant_id:
+        raise MissingTenantContextError("Missing tenant for authorization")
+    rules = context.document_permissions.rules() if context.document_permissions else None
     return [
         candidate
         for candidate in candidates
         if candidate.payload.get("tenant_id") == context.tenant_id
+        and (
+            rules is None
+            or rules.allows(
+                candidate.payload.get("source_type", ""), candidate.payload.get("source_id", "")
+            )
+        )
     ]
 
 

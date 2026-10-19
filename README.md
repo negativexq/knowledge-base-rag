@@ -1,43 +1,128 @@
 # Knowledge Base Research Workspace
 
-Ask questions across your documents and get answers you can check: every
-claim is cited to the passage it came from, calculations are recomputed
-deterministically, and answers that live in a chart or a scanned table are
-read from the page image itself.
+**Agentic document research with PydanticAI, a typed research graph, and
+answers you can trace back to their evidence.**
 
-**Python** · **FastAPI** · **Qdrant** · **React** · **Ollama / OpenAI / Claude** ·
-**OpenTelemetry**
+Ask questions across documents, complex tables, charts, and scanned PDFs.
+The research workflow finds the relevant sources, collects missing evidence,
+reads original page images when needed, and runs calculations in application
+code. Each step operates within explicit request, token, tool, and time budgets.
+Answers carry citations you can open in the research workspace.
+
+**PydanticAI** · **Typed research graph** · **Python / FastAPI** · **Qdrant** ·
+**React** · **Ollama / OpenAI / Claude** · **OpenTelemetry**
+
+[Architecture and tool contracts](docs/adaptive-workflow.md) ·
+[Answered questions](docs/adaptive-solved-questions.md) ·
+[Quickstart](#quickstart)
 
 ![Research workspace with the evidence inspector open](docs/assets/research-workspace.jpg)
 
-## Highlights
+## Agentic research, built around evidence
 
-- **Research workspace.** A chat-style workspace where each answer carries
-  numbered citations. Click one and the evidence inspector shows the exact
-  passage, its page, and how the claim relates to it.
-- **Verified citations.** The model may only cite evidence it was actually
-  shown. Unknown, hidden, or cross-tenant references are rejected before the
-  answer is released, and critical values (numbers, dates, versions, units)
-  are checked against the cited text.
-- **Calculations you can trust.** For "how much did X grow" or "what is the
-  ratio" questions, the model names its operands and the server does the
-  arithmetic. A resolver fills in operands the model could not find and
-  refuses when the inputs are not in the evidence.
-- **Answers from charts and tables.** When the text layer is not enough, the
-  visual path renders the most relevant pages, reads them with an
-  image-capable model, and runs a second check that the claimed value is
-  really shown on the claimed page.
-- **Table-aware ingestion with OCR.** PDFs keep their table structure and
-  captions; scanned pages fall back to Tesseract OCR (English and Turkish).
+PydanticAI agents handle the semantic work: interpreting the question,
+identifying missing evidence, choosing source regions, extracting data, and
+checking whether the result answers the question. The application controls
+state, graph transitions, tool permissions, calculations, and stopping rules.
+
+- **A short path for direct questions.** When the available text answers the
+  question, the workflow can produce and check the answer without entering a
+  research tool loop.
+- **Focused research for missing evidence.** Search the authorized index,
+  open a source page, inspect its structure, or extract a table. Each operation
+  addresses a concrete evidence gap.
+- **Original images for visual data.** Quantitative reads of image-only PDF
+  pages are routed to the original page image. Category, series, period, unit,
+  and label–value relationships stay attached to the extracted inputs.
+- **Application-owned working state.** `ResearchState` stores typed evidence,
+  checked inputs, calculations, unresolved issues, and provenance. Each agent
+  receives a task-specific projection of that state.
+- **Deterministic maths.** Prepared operands and formulas run directly in
+  application code. Arithmetic, item counts, and total-versus-distinct
+  comparisons do not require another model to invent the result.
+- **Independent finalization.** Research can stop while successful extraction
+  and calculation results remain available for the final answer and checks.
+
+### The research graph
+
+```mermaid
+flowchart TD
+    Q["Question"] --> Retrieve["Tenant-scoped hybrid retrieval and reranking"]
+    Retrieve --> Ledger["Authorized EvidenceLedger"]
+    Ledger --> State["Typed ResearchState"]
+    State --> Agent["PydanticAI: assess evidence and choose the next step"]
+    Agent -->|"Enough evidence"| Candidate["Cited answer candidate"]
+    Agent -->|"Evidence gap"| Gate["Application tool and budget gate"]
+    Gate --> Search["Search documents"]
+    Gate --> Read["Read source chunks or a page"]
+    Gate --> Extract["Inspect and extract text or images"]
+    Search --> State
+    Read --> State
+    Extract --> State
+    State -->|"Operands and formula ready"| Calculate["Application: calculate or count"]
+    Calculate --> State
+    State -->|"Research stops"| Finalize["Finalize from saved results"]
+    Candidate --> Check["Source, value, and question-scope checks"]
+    Finalize --> Check
+    Check --> Output["Answer with citations or explicit evidence limits"]
+```
+
+This is an application-controlled research graph using typed PydanticAI agent
+calls. Prepared calculations and known transitions can execute directly; the
+model is called where a semantic decision is needed.
+
+### Narrow tools, clear responsibilities
+
+| Operation | Responsibility | Boundary |
+| --- | --- | --- |
+| Search | Find missing passages in the authorized document scope. | Cannot expand tenant access or write an answer. |
+| Read | Open admitted chunks or a bounded physical PDF page. | Keeps source identity, version, headings, and page context. |
+| Inspect | Locate PDF tables, image regions, and structural elements. | Does not claim an exhaustive semantic figure inventory. |
+| Extract / collect inputs | Return structured values or item inventories with source witnesses. | Cannot guess unreadable values, calculate the result, or write the final answer. |
+| Calculate / count | Execute a permitted formula or count checked source items. | Requires source-backed inputs; no arbitrary code execution. |
+
+The application validates tool arguments and source access before execution.
+Numeric sources and contextual sources are tracked separately, so a table value
+can travel with the evidence explaining which entity or definition it belongs to.
+
+### From a table cell to a checked answer
+
+```mermaid
+flowchart LR
+    Source["Authorized source and immutable PDF version"] --> Select["Relevant page and context"]
+    Select --> Quality{"Usable native text for numeric inputs?"}
+    Quality -->|"Yes"| Text["Text references"]
+    Quality -->|"No"| Image["Original page image"]
+    Text --> Inputs["Typed labels, values, units, periods, and witnesses"]
+    Image --> Inputs
+    Inputs --> Review["Independent input and coverage check"]
+    Review --> Math["Application calculation or count"]
+    Context["Definition and entity relationship evidence"] --> Scope["Question-scope check"]
+    Math --> Scope
+    Scope --> Answer["Cited answer"]
+```
+
+OpenTelemetry spans connect retrieval, evidence admission and selection,
+source inspection, extraction, computation, validation, and release. They make
+it possible to locate where a value was lost, misread, or rejected.
+
+## Workspace and platform features
+
+- **Research workspace.** A chat-style workspace with numbered citations.
+  Open a citation to inspect the passage, page, and claim relationship.
+- **Verified source references.** The model can cite only evidence it was
+  shown. Unknown, hidden, or cross-tenant references are rejected before release.
+- **Table-aware ingestion with OCR.** PDFs preserve table structure and
+  captions; scanned pages can use Tesseract OCR in English and Turkish.
 - **Research library.** Search history, starred answers, pinned evidence,
-  notes linked to a source page, projects and collections, plus Markdown
-  export. The library lives in the browser and is scoped per tenant and user.
-- **Inspect mode.** For each answer, see why it was produced: retrieval
-  candidates, reranker scores, security decisions, timing, and the full trace.
-- **Tenant-safe by design.** Tenant and role filters run on the server before
-  reranking or generation; the UI is never the authorization boundary.
-- **Multilingual.** Turkish and English questions work against documents in
-  either language, with a multilingual reranker.
+  source-linked notes, projects, collections, and Markdown export. Browser
+  storage is scoped per tenant and user.
+- **Inspect mode.** Retrieval candidates, reranker scores, security decisions,
+  stage timing, and trace details sit alongside the answer.
+- **Tenant and role isolation.** Server-side access filters apply before
+  reranking and generation. Tool calls recheck authorized sources and versions.
+- **Multilingual retrieval.** Turkish and English questions work against
+  documents in either language with multilingual embeddings and reranking.
 
 ## A closer look
 
@@ -51,32 +136,24 @@ read from the page image itself.
 | --- | --- |
 | ![Connected sources and their documents](docs/assets/knowledge.jpg) | <img src="docs/assets/mobile-evidence.jpg" alt="Evidence sheet on a phone" width="260"> |
 
-## How it works
+## Retrieval and trust boundaries
 
-```mermaid
-flowchart TD
-    Q[Question] --> ACL[Tenant / role filter]
-    ACL --> Dense[Dense search]
-    ACL --> Sparse[BM25 search]
-    Dense --> RRF[Rank fusion]
-    Sparse --> RRF
-    RRF --> Rerank[BGE multilingual reranker]
-    Rerank --> Evidence[Section-aware evidence blocks]
-    Evidence --> LLM[LLM: answer + cited support IDs]
-    LLM --> Validate[Support-ID and critical-value checks]
-    Validate --> Derived[Deterministic calculation + operand resolver]
-    Derived --> Visual{Needs a page image?}
-    Visual -- yes --> Pages[Read ranked pages + claim check]
-    Visual -- no --> Answer[Answer with citations]
-    Pages --> Answer
-    Answer -. metadata only .-> OTel[OpenTelemetry / Jaeger]
-```
+Tenant and role filters constrain dense and BM25 search. Rank fusion and BGE
+reranking select source passages, and section-aware assembly keeps tables near
+their headings and captions. The agentic layer builds on this evidence pipeline.
 
-Retrieval can be scoped to the documents a question names. Evidence is packed
-in document order so tables stay next to their captions. Every answer has a
-trace, and normal telemetry carries metadata only: no raw questions, answers,
-or evidence. See [docs/architecture.md](docs/architecture.md) and
-[docs/security.md](docs/security.md) for the details.
+The original question defines the requested scope. Retrieved content is
+untrusted data, and gold answers are excluded from runtime generation and
+verification. Source identity and access checks run in code; numerical checks
+and semantic scope checks address different failure modes.
+
+Normal telemetry carries bounded metadata. Raw questions, answers, evidence,
+and model outputs require explicit forensic capture settings. Local raw run
+files are ignored by Git; small Markdown reports record the outcomes.
+
+See [system architecture](docs/architecture.md),
+[research workflow](docs/adaptive-workflow.md), and
+[security](docs/security.md).
 
 ## Quickstart
 
@@ -99,94 +176,109 @@ Jaeger on `:16686`. Sign in with an operator identity and run a sync from the
 Knowledge page so the workspace has something to search.
 
 For host-native backend work, run `docker compose up -d qdrant jaeger` and
-then `make dev`. OCR then needs Tesseract on the host
-(`brew install tesseract tesseract-lang`); the Docker image already has it.
+then `make dev`. OCR needs Tesseract on the host
+(`brew install tesseract tesseract-lang`); the Docker image includes it.
 
-### Optional features
+### Agentic research profile
 
-Calculation checks and visual answers are off by default. Turn them on in
-`.env`:
+Enable the typed research graph in `.env`:
 
 ```bash
+ADAPTIVE_RAG_ENABLED=true
+AGENTIC_RAG_ENABLED=false
+ADAPTIVE_FAST_PATH_ENABLED=true
+ADAPTIVE_EVIDENCE_NEEDS_ENABLED=true
+SUPPORT_IDS_ENABLED=true
 DERIVED_ANSWERS_ENABLED=true
-OPERAND_RESOLVER_ENABLED=true
 VISUAL_ANSWERS_ENABLED=true
 ```
 
-Visual answers need an image-capable provider such as `GENERATION_PROVIDER=openai`.
+Configure an image-capable model and credentials for visual reads. Provider
+selection is independent of the graph; see [`.env.example`](.env.example).
+The adaptive and alternative agentic runner flags are mutually exclusive.
+
+The recent document runs used 10 model requests, a 120,000-token ceiling,
+a 240-second deadline, at most six research tool attempts, and a 60-second
+finalization reserve. These are configurable limits; their complete profile is
+in the [workflow documentation](docs/adaptive-workflow.md#budgets-and-finalization).
 
 ## Configuration
 
-| Setting | Default | What it does |
+| Setting | Default | Purpose |
 | --- | --- | --- |
+| `ADAPTIVE_RAG_ENABLED` | `false` | Typed, state-driven agentic research graph. |
+| `ADAPTIVE_FAST_PATH_ENABLED` | `false` | Try a supported answer before opening a research loop. |
+| `ADAPTIVE_EVIDENCE_NEEDS_ENABLED` | `false` | Track question-bound evidence needs and source selection. |
 | `GENERATION_PROVIDER` | `ollama` | `ollama`, `openai`, or `claude`. |
-| `OLLAMA_MODEL` / `CLAUDE_MODEL` | `qwen3.5:4b` / `claude-haiku-4-5-20251001` | Model per provider. |
-| `DERIVED_ANSWERS_ENABLED` | `false` | Server-side arithmetic for calculation questions. |
-| `OPERAND_RESOLVER_ENABLED` | `false` | Finds missing operands in the evidence; needs derived answers. |
-| `VISUAL_ANSWERS_ENABLED` | `false` | Reads page images for chart, table, and figure questions. |
+| `DERIVED_ANSWERS_ENABLED` | `false` | Source-backed arithmetic and counting. |
+| `VISUAL_ANSWERS_ENABLED` | `false` | Original-page image reading and input checking. |
+| `AGENTIC_MAX_REQUESTS` / `AGENTIC_MAX_TOKENS` | `6` / `60000` | Shared model usage ceilings. |
+| `AGENTIC_MAX_TOOL_CALLS` / `AGENTIC_TIMEOUT_SECONDS` | `8` / `120` | Tool and end-to-end time ceilings. |
+| `AGENTIC_RESEARCH_POLICY` | See `.env.example` | Research steps, retries, timeouts, and finalization reserve. |
+| `ADAPTIVE_FINAL_REASONING` | `medium` | Effort for final interpretation, source selection, and semantic checks. |
 | `RERANKER_CANDIDATE_K` / `RERANKER_TOP_N` | `20` / `5` | Candidates reranked and passages kept. |
-| `CRITICAL_VALIDATOR_VERSION` | `architecture_v2` | Critical-value validator: `baseline`, `v3`, or `architecture_v2`. |
-| `AUTH_ENABLED` | `true` | Token auth with tenant and role claims. |
+| `CRITICAL_VALIDATOR_VERSION` | `architecture_v2` | Claim-local critical-value validation. |
+| `AUTH_ENABLED` | `true` | Token authentication with tenant and role claims. |
 
-Keys such as `OPENAI_API_KEY` and `CLAUDE_API_KEY` come from the environment.
-The full list is in [`.env.example`](.env.example). Validator and pipeline
-choices are server-side only; no request field can change them.
+Credentials come from the environment. Pipeline selection and research budgets
+are server-side settings; user requests cannot widen them.
 
 ## Quality and evaluation
 
-Changes ship only when they pass a decision rule written down before the
-result is known. Rejected experiments stay in the repo next to the accepted
-ones.
+The [answered-question ledger](docs/adaptive-solved-questions.md) records each
+source-supported result once, with its run, answer, latency, and model-call count.
 
-| Benchmark | Result | Notes |
+| Evaluation | Result | Scope |
 | --- | --- | --- |
-| MMLongBench-Doc (120 questions, 13 long PDFs) | **79/120 (66%)** overall; 19/21 unanswerable questions refused | [report](artifacts/mmlongbench-v2/luna-full-v3/report.md); lenient contains-match, not the official score |
-| TechQA HOLDOUT50 (50 questions, 769 documents) | **26/50 (52%)** useful on the current production path, 2% materially incorrect; the August pipeline reached 35/50 (70%) | [current](artifacts/ragbench/techqa-production-v1/report.md), [August](artifacts/ragbench/canonical/techqa-reranker-corrected-holdout-execution-v2/); one reviewer, canonical rubric |
-| Multilingual reranker selection (220 questions) | Recall@5 1.00 TR→EN and EN→TR | [decision](docs/reranking.md) |
-| Citation safety (TechQA) | 0 unknown or unauthorized support IDs accepted | Deterministic contract checks |
+| Current agentic flow | **7/7** selected questions: 2 calculations and 5 direct lookups | Same code and settings; independent original-PDF reviews. |
+| Historical answered-question ledger | **15** distinct questions with a source-supported published answer | Eight earlier successes have not been rerun with the latest code. |
+| Earlier MMLongBench-Doc pipeline | **79/120 (66%)**; 19/21 unanswerable questions refused | [Report](artifacts/mmlongbench-v2/luna-full-v3/report.md); lenient contains-match, not the official score. |
+| TechQA HOLDOUT50 | **26/50 (52%)** useful on the evaluated production path; 2% materially incorrect | [Report](artifacts/ragbench/techqa-production-v1/report.md); a separate pipeline evaluation. |
+| Multilingual reranker selection | Recall@5 1.00 TR→EN and EN→TR, 220 questions | [Decision](docs/reranking.md). |
 
-The validator design, its occurrence ledger, and the full experiment history
-are in [docs/critical-validator-architecture-v2-rollout.md](docs/critical-validator-architecture-v2-rollout.md),
-[docs/research-history.md](docs/research-history.md), and
-[docs/PLANNING.md](docs/PLANNING.md).
+The seven current runs are selected development checks, not a full benchmark
+or a stability estimate. Successful abstention is evaluated separately from
+answerable-question accuracy; an operational stop is not evidence that the
+answer is absent. Failed runs remain in the local history and report summaries.
 
 ## Testing
 
 ```bash
 make test
+make lint
 ```
 
-The backend suite (1752 passed, 4 skipped) makes no provider calls.
-`make test-ollama` runs the checks that use a local model. For the frontend
-(96 tests):
+The latest recorded backend run passed **2,112 tests**, with four skips and
+five deselected tests. The normal suite makes no paid provider calls.
+`make test-ollama` runs the checks that use a local model.
 
 ```bash
-cd frontend && npm test && npm run typecheck && npm run lint
+cd frontend
+npm test
+npm run typecheck
+npm run lint
+npm run build
 ```
 
-## Limitations
+## Current boundaries and next steps
 
-- Visual answers can still misread a chart, and printed page numbers that
-  differ from PDF page numbers can point the visual path at the wrong page.
-- The model sometimes declines a question it could have answered (a table
-  lookup, or a TechQA support question whose document was retrieved), and the
-  critical-value validator blocks some correct answers that list many
-  versions. Conservative refusal is a deliberate trade-off, but on TechQA it
-  now costs more than it did in August.
-- The critical-value validator checks literals, not general meaning.
-- The research library is stored in the browser, not synced across devices.
-- Local demo authentication is not a full production identity setup.
-
-## Roadmap
-
-- Map printed page labels to PDF pages for the visual path.
-- Server-side research library with sharing.
-- More connectors beyond the filesystem and Notion.
-- Larger multilingual evaluation sets with long documents.
+- Image reading and semantic judges can still make mistakes. Native-text
+  inspection identifies image-heavy pages; it is not a universal OCR accuracy score.
+- Broader document-held-out evaluation and repeated runs are needed to measure
+  answer coverage, incorrect acceptance, unnecessary refusal, and stability.
+- `ResearchState` is typed and serializable; automatic cross-request checkpoint
+  recovery and long-term memory are separate persistence work.
+- The research library currently lives in browser storage.
+- The repository's local demo authentication is not a complete identity platform.
 
 ## Documentation
 
-- [Architecture](docs/architecture.md)
+- [Agentic workflow, graph, tools, and budgets](docs/adaptive-workflow.md)
+- [Answered questions and run summaries](docs/adaptive-solved-questions.md)
+- [System architecture](docs/architecture.md)
+- [Design rationale and roadmap](docs/adaptive-rag-research-design.md)
+- [PydanticAI orchestration research](docs/pydantic-workflow-research.md)
+- [Semantic validation and evaluation](docs/rag-validation-research.md)
 - [Security model](docs/security.md)
 - [Reranking decision](docs/reranking.md)
 - [Chunking decision](docs/chunking.md)

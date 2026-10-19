@@ -51,3 +51,22 @@ describe("Local research data", () => {
     expect(resolvePin(session, { turnIndex: 0, sourceRank: 99, supportId: "E1.S2" })).toBeNull()
   })
 })
+
+it("exports comparison aspects and clarification replies with resolved footnotes", () => {
+  const session = researchFixture()
+  const turn = session.turns[0]
+  turn.clarificationReply = { question: "Which environment?", answer: "Production" }
+  turn.comparison = [{ aspect: "Root cause", cells: [{ source_id: "incident.pdf", text: "Configuration drift", support_ids: ["E1.S2"] }] }]
+  const output = researchMarkdown(session)
+  expect(output).toContain("Clarification: Which environment? — Production")
+  expect(output).toContain("| Aspect | incident.pdf |")
+  expect(output).toContain("| Root cause | Configuration drift [^a1r1] |")
+})
+
+it("rejects malformed saved workflow payloads instead of crashing the workspace", () => {
+  const session = researchFixture()
+  const malformed = { ...session, turns: [{ ...session.turns[0], comparison: [{ cells: "invalid" }] }] }
+  expect(readResearchSessions("workflow", JSON.stringify([malformed]))).toEqual([])
+  const valid = { ...session, turns: [{ ...session.turns[0], steps: [{ id: "s", operation: "search", status: "completed" }] }] }
+  expect(readResearchSessions("workflow", JSON.stringify([valid]))).toHaveLength(1)
+})

@@ -39,3 +39,13 @@ artifacts/**/evidence-snapshots/
 artifacts/**/03-captures/records/
 artifacts/chunking-benchmark-sprint27/cases.json
 artifacts/reranker-benchmark-sprint26/cases.json
+
+# Adaptive RAG experiment outputs stay local; retain only small root Markdown reports.
+/artifacts/mmlongbench-v2/adaptive-*/*
+!/artifacts/mmlongbench-v2/adaptive-*/*.md
+
+# Raw trace and per-request outputs from older agent runs also stay local.
+/artifacts/**/spans.json
+/artifacts/**/span.json
+/artifacts/**/results.json
+/artifacts/**/result.json

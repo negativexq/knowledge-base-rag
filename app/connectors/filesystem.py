@@ -24,7 +24,7 @@ class LocalFilesystemConnector:
             for p in self._root.iterdir()
             if p.is_file() and p.suffix.lower() in _EXTENSION_TO_CONTENT_TYPE
         )
-        return [
+        documents = [
             ConnectorDocument(
                 # strip_extension=False: a folder can hold "handbook.pdf"
                 # and "handbook.md" side by side — stripping the extension
@@ -36,6 +36,9 @@ class LocalFilesystemConnector:
             )
             for p in paths
         ]
+        if len({document.source_id for document in documents}) != len(documents):
+            raise ValueError("Filesystem document identifiers collide; rename duplicate slugs")
+        return documents
 
     async def fetch_content(self, document: ConnectorDocument) -> bytes:
         return document.path.read_bytes()

@@ -43,7 +43,13 @@ class _CountingSearch:
         self.calls += 1
         # One chunk, so the request reaches the (stubbed) model: with no
         # evidence, /chat answers not-found without generating.
-        return [SearchResult(score=0.9, id="c1", payload={"text": "Refunds take 30 days."})]
+        return [
+            SearchResult(
+                score=0.9,
+                id="c1",
+                payload={"text": "Refunds take 30 days.", "tenant_id": context.tenant_id},
+            )
+        ]
 
 
 def _stream_of(tokens):

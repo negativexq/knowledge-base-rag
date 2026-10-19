@@ -130,7 +130,10 @@ async def rewrite_query(
     tracer = tracer or get_tracer(__name__)
     started = time.perf_counter()
     with tracer.start_as_current_span("rewrite_query") as span:
-        mark_llm_generation(span, model)
+        if getattr(provider, "observations", None) is None:
+            mark_llm_generation(span, model)
+        else:
+            span.set_attribute("langfuse.observation.type", "span")
         span.set_attribute("query_rewrite.history_turns", len(history))
         outcome: RewriteOutcome
         result_question = question

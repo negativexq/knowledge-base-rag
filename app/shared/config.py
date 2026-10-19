@@ -11,6 +11,7 @@ from app.ingestion.chunking_config import (
     ChunkingConfig,
 )
 from app.llm.openai_client import OPENAI_MODEL
+from app.llm.research_budget import ResearchPolicy
 from app.reranker.config import (
     MULTILINGUAL_RERANKER_MODEL,
     RERANKER_BACKEND,
@@ -88,6 +89,42 @@ class Settings(BaseSettings):
     # read from the top pages' images and confirmed by a second call
     # (app/llm/visual_answer.py). Needs an image-capable provider; off by default.
     visual_answers_enabled: bool = False
+
+    # Agentic orchestration is opt-in until paired benchmark runs justify rollout.
+    agentic_rag_enabled: bool = False
+    # Typed application-owned workflow; mutually exclusive with the legacy agent.
+    adaptive_rag_enabled: bool = False
+    adaptive_fast_path_enabled: bool = False
+    adaptive_evidence_needs_enabled: bool = False
+    adaptive_extraction_reasoning: Literal["none", "low", "medium", "high"] = "low"
+    adaptive_final_reasoning: Literal["none", "low", "medium", "high"] = "medium"
+    # "escalate": the fixed answer path runs first and the agent only handles
+    # withheld answers (and multi-document requests); "always": agent first.
+    agentic_mode: Literal["escalate", "always"] = "escalate"
+    agentic_scope_validation_enabled: bool = True
+    agentic_max_requests: int = Field(default=6, ge=1, le=20)
+    agentic_max_tool_calls: int = Field(default=8, ge=1, le=30)
+    agentic_max_tokens: int = Field(default=60000, ge=1000, le=500000)
+    agentic_timeout_seconds: float = Field(default=120.0, gt=0, le=600)
+    agentic_output_retries: int = Field(default=2, ge=0, le=5)
+    agentic_evidence_token_budget: int = Field(default=24000, ge=100, le=50000)
+    # The agent only sees answers the fixed path withheld; rereading them with
+    # the same non-reasoning model reproduces the same decision.
+    agentic_reasoning: Literal["none", "low", "medium", "high"] = "low"
+    agentic_research_policy: ResearchPolicy = Field(default_factory=ResearchPolicy)
+
+    @model_validator(mode="after")
+    def validate_agentic_profile(self) -> Self:
+        if self.agentic_rag_enabled and not self.support_ids_enabled:
+            raise ValueError("AGENTIC_RAG_ENABLED requires SUPPORT_IDS_ENABLED")
+        if self.adaptive_rag_enabled:
+            if not self.support_ids_enabled:
+                raise ValueError("ADAPTIVE_RAG_ENABLED requires SUPPORT_IDS_ENABLED")
+            if self.agentic_rag_enabled:
+                raise ValueError("Enable only one of ADAPTIVE_RAG_ENABLED and AGENTIC_RAG_ENABLED")
+            if self.agentic_max_requests < 1 + int(self.agentic_scope_validation_enabled):
+                raise ValueError("Adaptive finalization needs an answer and scope request budget")
+        return self
 
     # Explicit local/debug forensic capture.  Both switches are required for
     # raw text; normal production telemetry remains bounded and unaffected.
@@ -262,6 +299,19 @@ class Settings(BaseSettings):
     qdrant_collection_name: str = "kb_chunks"
 
     registry_db_path: str = "data/registry.db"
+    research_feedback_db_path: str = "data/research-feedback.db"
+    request_trace_db_path: str = "data/request-traces.db"
+    document_permissions_db_path: str = "data/document-permissions.db"
+    document_default_access: Literal["tenant", "restricted"] = "restricted"
+    external_trace_links_enabled: bool = False
+    model_pricing_json: str = Field(default="{}", max_length=64000)
+
+    @model_validator(mode="after")
+    def validate_model_pricing(self) -> Self:
+        from app.llm.agent_observability import load_prices
+
+        load_prices(self.model_pricing_json)
+        return self
 
     # Real folder LocalFilesystemConnector scans when wired for real.
     filesystem_root_path: str = "data/documents"

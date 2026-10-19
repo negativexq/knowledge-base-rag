@@ -56,6 +56,7 @@ async def _fake_search(
         SearchResult(
             score=0.9,
             payload={
+                "tenant_id": context.tenant_id,
                 "source_type": "filesystem",
                 "source_id": "handbook",
                 "page_number": 1,
@@ -115,7 +116,7 @@ async def test_sse_event_stream_calls_search_fn_with_the_question_and_passes_res
         question: str, context: RetrievalContext, report: RetrievalReport
     ) -> list[SearchResult]:
         received["question"] = question
-        return [SearchResult(score=1.0, payload={"text": "x"})]
+        return [SearchResult(score=1.0, payload={"text": "x", "tenant_id": context.tenant_id})]
 
     async def stream_fn(question: str, chunks: list[SearchResult]):
         received["chunks"] = chunks

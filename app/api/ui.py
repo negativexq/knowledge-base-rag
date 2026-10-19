@@ -25,7 +25,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, permitted_records
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.llm.embedding_models import active_embedding_config
 from app.llm.provider import default_chat_model
@@ -202,7 +202,7 @@ async def overview(request: Request, user: UserContext = Depends(get_current_use
     history = request.app.state.sync_history
     tenant_ids: dict[str, str] = getattr(request.app.state, "tenant_ids", {})
 
-    documents = registry.list_documents(tenant_id=user.tenant_id)
+    documents = permitted_records(request, user, registry.list_documents(tenant_id=user.tenant_id))
     tracked = [d.chunk_count for d in documents if d.chunk_count is not None]
 
     owned_source_types = [
@@ -271,7 +271,9 @@ async def documents(
     can never enumerate another tenant's documents.
     """
     registry = request.app.state.registry
-    records = registry.list_documents(tenant_id=user.tenant_id, source_type=source_type)
+    records = permitted_records(
+        request, user, registry.list_documents(tenant_id=user.tenant_id, source_type=source_type)
+    )
     return [
         {
             "tenant_id": record.tenant_id,
@@ -465,6 +467,23 @@ async def evaluations(user: UserContext = Depends(get_current_user)) -> dict:
     }
 
 
+@router.get("/chat-traces")
+async def chat_traces(
+    request: Request, offset: int = 0, user: UserContext = Depends(get_current_user)
+) -> list[dict]:
+    from app.research.traces import TraceStore
+    from app.security.models import Role
+
+    store = getattr(request.app.state, "request_trace_store", None)
+    if not isinstance(store, TraceStore):
+        return []
+    if offset < 0 or offset > 100000:
+        raise HTTPException(422, "Invalid trace offset")
+    return store.list(
+        user.tenant_id, None if user.has_role(Role.OPERATOR) else user.user_id, offset=offset
+    )
+
+
 @router.get("/traces/{trace_id}")
 async def trace_detail(
     trace_id: str, request: Request, user: UserContext = Depends(get_current_user)
@@ -474,10 +493,19 @@ async def trace_detail(
     `available: false` (not a 500) when Jaeger is unreachable or the
     trace isn't indexed yet — both are ordinary, renderable states.
 
-    Only span NAMES and timings are returned; span attributes (which can
-    carry question text) are deliberately not forwarded to the browser.
+    Only explicitly allowlisted operational attributes are returned. Raw
+    content, arbitrary SDK attributes and exception events are excluded.
     """
+    from app.research.traces import TraceStore
+    from app.security.models import Role
     from app.shared.trace_client import fetch_trace_spans
+
+    store = getattr(request.app.state, "request_trace_store", None)
+    owner = (
+        store.get(trace_id, user.tenant_id, None if user.has_role(Role.OPERATOR) else user.user_id)
+        if isinstance(store, TraceStore)
+        else None
+    )
 
     settings = _runtime_settings(request)
     jaeger_url = settings.otel_exporter_otlp_endpoint.replace(":4317", ":16686")
@@ -494,16 +522,41 @@ async def trace_detail(
     if not spans:
         return {"trace_id": trace_id, "available": False, "spans": [], "jaeger_url": jaeger_url}
 
+    # Possession of a trace ID is not authorization. Permit an owned chat
+    # record, a root with matching owner tags, or a tenant-owned sync run.
+    root = next((s for s in spans if s.name == "chat_request"), None)
+    tagged_owner = (
+        root is not None
+        and root.tenant_id == user.tenant_id
+        and (root.user_id == user.user_id or user.has_role(Role.OPERATOR))
+    )
+    tenant_sources = {
+        name for name, tenant in request.app.state.tenant_ids.items() if tenant == user.tenant_id
+    }
+    known_sync = any(
+        run.trace_id == trace_id and run.source_type in tenant_sources
+        for run in request.app.state.sync_history.list_runs(limit=10000)
+    )
+    if owner is None and not tagged_owner and not known_sync:
+        return {"trace_id": trace_id, "available": False, "spans": [], "jaeger_url": jaeger_url}
     origin = min(s.start_time_us for s in spans)
     return {
         "trace_id": trace_id,
         "available": True,
         "jaeger_url": jaeger_url,
+        "request": owner,
+        "can_open_external": bool(
+            user.has_role(Role.ADMIN) and settings.external_trace_links_enabled
+        ),
         "spans": [
             {
                 "name": s.name,
                 "duration_ms": s.duration_ms,
                 "offset_ms": (s.start_time_us - origin) / 1000,
+                "span_id": s.span_id,
+                "parent_span_id": s.parent_span_id,
+                "status": s.status,
+                "attributes": s.attributes,
             }
             for s in spans
         ],

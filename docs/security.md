@@ -345,9 +345,9 @@ is bounded. They take about 1 ms on a 2000-character question.
 - **Prompt injection is not "solved."** The documented trust
   boundary, structured serialization, deterministic output checks, and an
   adversarial suite. Fast mode can expose unsafe tokens before the post-check;
-  strict mode is the release-gated option. Neither mode provides claim-level
-  semantic grounding, and non-deterministic model behavior means a single run
-  is not proof of security.
+  strict mode is the release-gated option. Agentic text/comparison candidates now
+  have an additional claim-scope verifier and release receipt; this remains a
+  probabilistic check, and a single run is not proof of security.
 - **The output checks are intentionally narrow.** They catch hidden-policy
   disclosure markers, unauthorized/fake citations, and citation suppression;
   they are not a general-purpose injection classifier or malware scanner.
@@ -369,7 +369,9 @@ is bounded. They take about 1 ms on a 2000-character question.
   addressed here.
 - **`visibility` payload field is schema-only.** Every chunk is written
   with `visibility="tenant"`; nothing produces or enforces a `private`
-  (single-user) visibility level yet.
+  (single-user) visibility level. User/group access is instead enforced through
+  the server-managed document policy store, independently of this payload field;
+  see [document permissions](document-permissions.md).
 - **No structured audit-event persistence.** `authentication_failed`/
   `authorization_denied`/`sync_denied` are observable as HTTP status
   codes (401/403) and span attributes, but there is no dedicated,
@@ -379,3 +381,13 @@ is bounded. They take about 1 ms on a 2000-character question.
   must manually reassign existing rows to their real tenant_id after
   the automatic migration runs — there is no way for the migration
   itself to infer the correct tenant retroactively.
+
+## Application document permissions and claim scope
+
+The agentic branch adds persistent document user/group grants, default deny,
+ADMIN policy management, current-policy retrieval/read/release checks, and a
+claim-scope verifier with server-owned release receipts. Existing documents need
+explicit grants after this upgrade. Connector-native ACL and IdP synchronization
+remain separate integrations. See [document permissions](document-permissions.md),
+[agentic validation](agentic-rag.md#claim-scope-validation-and-document-grants),
+and [the security review](agentic-security-review.md).

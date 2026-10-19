@@ -8,6 +8,7 @@ from functools import cache
 import fitz
 
 from app.parsing.models import DocumentElement, Paragraph, ParseReport
+from app.parsing.pdf_lock import serialized_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -600,6 +601,7 @@ def _is_heading_text(text: str) -> bool:
     )
 
 
+@serialized_pdf
 def extract_elements(pdf_path: str, report: ParseReport | None = None) -> list[DocumentElement]:
     """Parse a PDF into typed elements in reading order.
 

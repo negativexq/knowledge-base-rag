@@ -102,3 +102,41 @@ def test_support_in_a_url_is_not_a_verb():
         "[http://www-01.ibm.com/support/docview.wss?uid=swg24038012]"
     )
     assert outcome(claim, support) == "PASS"
+
+
+# TechQA production-v1, re-audited on the current validator: Q018 and Q239
+# were still forced to abstain with the right fact cited.
+
+
+def test_a_compact_version_after_the_same_product_name_is_the_same_release():
+    # IBM writes BPM 7.5.0.1 as "BPM 7501".
+    claim = "BPM 7.5.0.1 did not account for acronyms belonging to archived snapshots."
+    support = "Acronym generation code in BPM 7501 did not take into consideration archived ones."
+    assert outcome(claim, support) == "PASS"
+
+
+@pytest.mark.parametrize(
+    ("claim", "support"),
+    [
+        # Another product's compact number is not this product's release.
+        ("BPM 7.5.0.1 fixes it.", "Acronym generation code in WAS 7501 fixes it."),
+        # Digits that do not spell the claimed release.
+        ("BPM 7.5.0.1 fixes it.", "Acronym generation code in BPM 7502 fixes it."),
+    ],
+)
+def test_a_compact_number_that_is_not_the_claimed_release_still_fails(claim, support):
+    assert outcome(claim, support) != "PASS"
+
+
+def test_version_specificity_follows_the_judged_version_not_a_path():
+    # "platform_7.5.0_????" inside a path made the guard read "5" as the
+    # claim's first version and call the claim ambiguous.
+    claim = (
+        "Delete the `.eclipse/ibm.software.delivery.platform_7.5.0_????` directory. "
+        "The reference describes Rational Application Developer 7.5.2, not RFT 8.2."
+    )
+    support = (
+        "Delete the user's .eclipse/ibm.software.delivery.platform_7.5.0_???? directory. "
+        "Rational Application Developer for WebSphere Software 7.5.2 All Editions"
+    )
+    assert outcome(claim, support) == "PASS"

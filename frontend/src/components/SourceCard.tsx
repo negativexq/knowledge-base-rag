@@ -1,3 +1,4 @@
+import { DocumentExplorer } from "@/components/DocumentExplorer"
 import { useState } from "react"
 import { ChevronRight, FileText, Pin } from "lucide-react"
 
@@ -20,6 +21,7 @@ export function SourceCard({ source, cited, highlighted, technical = false, sear
   highlightedUnitId?: string | null
   cardRef?: (el: HTMLDivElement | null) => void
 }) {
+  const [reading, setReading] = useState(false)
   const [expanded, setExpanded] = useState<boolean | null>(null)
   const open = Boolean(searchQuery.trim()) || (expanded ?? highlighted)
   const location = source.heading_path?.length ? source.heading_path.join(" / ") : null
@@ -75,6 +77,11 @@ export function SourceCard({ source, cited, highlighted, technical = false, sear
           <summary className="cursor-pointer text-[11px] font-medium">Source excerpt</summary>
           <p className="mt-2 whitespace-pre-wrap text-[13px] leading-6"><HighlightedPassage text={source.snippet || "No preview available."} query={searchQuery} prefix={`source-${source.rank}:snippet`} activeId={activeMatchId} /></p>
         </details>
+        {source.document_version && <div className="mt-3 text-xs text-[var(--color-muted-foreground)]">
+          <span title={source.document_version}>Evidence version {source.document_version.slice(0, 12)}</span>
+          <button type="button" onClick={() => setReading(!reading)} aria-expanded={reading} className="ml-3 rounded px-2 py-1 text-[var(--color-accent)]">{reading ? "Close document reader" : "Read full context"}</button>
+        </div>}
+        {reading && source.document_version && source.source_id && source.source_type && <DocumentExplorer document={{ source_type: source.source_type, source_id: source.source_id, document_version: source.document_version }} initialPage={source.page_number ?? 1} />}
         {technical && <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 border-t border-[var(--color-border)] pt-2 font-technical text-[11px] text-[var(--color-subtle-foreground)]">
           <span>{source.source_type}</span>
           {source.token_count != null && <span>{source.token_count} tokens</span>}

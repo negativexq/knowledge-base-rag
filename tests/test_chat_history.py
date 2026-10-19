@@ -51,7 +51,13 @@ class _Pipeline:
 
     async def search(self, question, context, report):
         self.searched.append(question)
-        return [SearchResult(score=0.9, id="c1", payload={"text": "nimbus logout"})]
+        return [
+            SearchResult(
+                score=0.9,
+                id="c1",
+                payload={"text": "nimbus logout", "tenant_id": context.tenant_id},
+            )
+        ]
 
     async def stream(self, question, chunks):
         self.generated.append(question)

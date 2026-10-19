@@ -7,10 +7,11 @@ import json
 import re
 import time
 import unicodedata
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
+from contextlib import aclosing
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from opentelemetry import trace
 
@@ -23,6 +24,7 @@ from app.evidence.support_units import (
     serialize_support_units,
     support_unit_map,
 )
+from app.llm.agent_observability import operation, outcome
 from app.llm.calculation import (
     Calculation,
     calculation_result,
@@ -44,6 +46,7 @@ from app.llm.premise import (
 )
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
+from app.llm.research_events import with_progress
 from app.llm.visual_answer import (
     PageRenderer,
     VisualAnswer,
@@ -51,9 +54,15 @@ from app.llm.visual_answer import (
     asks_visual,
     chunk_ranks,
 )
+from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 from app.shared.config import SecurityValidationMode
 from app.shared.tracing import get_tracer, mark_llm_generation
+
+if TYPE_CHECKING:
+    from app.llm.agentic import AgentCandidate
+
+CandidateGenerator = Callable[[str, list[SearchResult]], Awaitable["AgentCandidate"]]
 
 EVIDENCE_BACKED_OUTPUT_CONTRACT_VERSION = "output_contract_v2_2"
 EVIDENCE_BACKED_PIPELINE_VERSION = "pipeline_v2_2_evidence_backed"
@@ -1308,6 +1317,7 @@ async def stream_support_unit_answer(
     retrieve: Retrieve | None = None,
     visual_answers: bool = False,
     render_page: PageRenderer | None = None,
+    candidate_generator: CandidateGenerator | None = None,
 ):
     """Generate an answer whose citations are request-scoped support IDs.
 
@@ -1337,54 +1347,80 @@ async def stream_support_unit_answer(
     question, evidence or answer text.
     """
     tracer = tracer or get_tracer(__name__)
-    with tracer.start_as_current_span("generate") as span:
+    with operation("generate", tracer=tracer) as span:
         span.set_attribute("generate.model", model)
-        mark_llm_generation(span, model)
+        if candidate_generator is None:
+            mark_llm_generation(span, model)
         span.set_attribute("generate.prompt_version", prompt_version)
         span.set_attribute("generate.context_chunk_count", len(blocks))
-        span.set_attribute("pipeline.version", SUPPORT_ID_PIPELINE_VERSION)
+        span.set_attribute(
+            "pipeline.version",
+            "pipeline_agentic_v1" if candidate_generator else SUPPORT_ID_PIPELINE_VERSION,
+        )
         trace_id = format(span.get_span_context().trace_id, "032x")
         telemetry: dict[str, Any] = {}
-        async for event in _support_unit_answer_events(
-            query,
-            blocks,
-            provider,
-            model=model,
-            prompt_version=prompt_version,
-            context_serializer=context_serializer,
-            evaluation_observation=evaluation_observation,
-            think=think,
-            num_ctx=num_ctx,
-            seed=seed,
-            validator_version=validator_version,
-            shadow_enabled=shadow_enabled,
-            architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
-            count_tokens=count_tokens,
-            telemetry=telemetry,
-            derived_answers=derived_answers,
-            operand_resolver=operand_resolver,
-            retrieve=retrieve,
-            visual_answers=visual_answers,
-            render_page=render_page,
-        ):
-            for name, value in telemetry.items():
-                if value is not None:
-                    span.set_attribute(f"generate.{name}", value)
-            if event["type"] == "metadata":
-                event = {**event, "trace_id": trace_id}
-            elif event["type"] == "security_validation":
-                span.set_attribute("security.output_policy_passed", event["passed"])
-                span.set_attribute("generate.abstain", event["abstain"])
-                span.set_attribute(
-                    "generate.application_forced_abstention",
-                    event["application_forced_abstention"],
-                )
-                if event["validator_failure_codes"]:
-                    span.set_attribute(
-                        "generate.validator_failure_codes",
-                        tuple(event["validator_failure_codes"]),
+        async with aclosing(
+            _support_unit_answer_events(
+                query,
+                blocks,
+                provider,
+                model=model,
+                prompt_version=prompt_version,
+                context_serializer=context_serializer,
+                evaluation_observation=evaluation_observation,
+                think=think,
+                num_ctx=num_ctx,
+                seed=seed,
+                validator_version=validator_version,
+                shadow_enabled=shadow_enabled,
+                architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+                count_tokens=count_tokens,
+                telemetry=telemetry,
+                derived_answers=derived_answers,
+                operand_resolver=operand_resolver,
+                retrieve=retrieve,
+                visual_answers=visual_answers,
+                render_page=render_page,
+                candidate_generator=candidate_generator,
+            )
+        ) as events:
+            async for event in events:
+                for name, value in telemetry.items():
+                    if value is not None:
+                        span.set_attribute(f"generate.{name}", value)
+                if event["type"] == "clarification":
+                    outcome(span, "clarification")
+                if event["type"] == "metadata":
+                    event = {**event, "trace_id": trace_id}
+                elif event["type"] == "security_validation":
+                    codes = event.get("validator_failure_codes") or []
+                    outcome(
+                        span,
+                        "timeout"
+                        if "AGENT_TIMEOUT" in codes
+                        else "budget_exceeded"
+                        if "AGENT_BUDGET_EXCEEDED" in codes
+                        else "failed"
+                        if "AGENT_RUN_FAILED" in codes
+                        else "rejected"
+                        if event["application_forced_abstention"]
+                        else "abstained"
+                        if event["abstain"]
+                        else "answered",
+                        codes[0] if codes else None,
                     )
-            yield event
+                    span.set_attribute("security.output_policy_passed", event["passed"])
+                    span.set_attribute("generate.abstain", event["abstain"])
+                    span.set_attribute(
+                        "generate.application_forced_abstention",
+                        event["application_forced_abstention"],
+                    )
+                    if event["validator_failure_codes"]:
+                        span.set_attribute(
+                            "generate.validator_failure_codes",
+                            tuple(event["validator_failure_codes"]),
+                        )
+                yield event
 
 
 async def _support_unit_answer_events(
@@ -1409,8 +1445,47 @@ async def _support_unit_answer_events(
     retrieve: Retrieve | None = None,
     visual_answers: bool = False,
     render_page: PageRenderer | None = None,
+    candidate_generator: CandidateGenerator | None = None,
 ):
     telemetry = telemetry if telemetry is not None else {}
+    candidate = None
+    if candidate_generator is not None:
+        async with aclosing(with_progress(candidate_generator(query, blocks))) as progress_events:
+            async for progress in progress_events:
+                if progress["type"] == "candidate":
+                    candidate = progress["candidate"]
+                else:
+                    yield progress
+        assert candidate is not None
+        if not candidate.access_current():
+            candidate.failure_code = "DOCUMENT_ACCESS_REVOKED"
+            candidate.clarification, candidate.visual, candidate.comparison = None, None, []
+            if candidate.authorization_context is not None:
+                candidate.blocks = filter_authorized_candidates(
+                    candidate.blocks, candidate.authorization_context
+                )
+        telemetry["agent_requests"] = candidate.telemetry.get("requests", 0)
+        telemetry["agent_tool_calls"] = candidate.telemetry.get("tool_calls", 0)
+        yield {
+            "type": "metadata",
+            "prompt_version": prompt_version,
+            "pipeline_version": "pipeline_agentic_v1",
+            "agentic": candidate.telemetry,
+            "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
+        }
+        if candidate.clarification is not None and candidate.failure_code is None:
+            yield {"type": "clarification", **candidate.clarification}
+            return
+        blocks = candidate.blocks
+        telemetry["agent_requests"] = candidate.telemetry.get("requests", 0)
+        telemetry["agent_tool_calls"] = candidate.telemetry.get("tool_calls", 0)
+        # Replaces the initial sources before the final support-ID map arrives.
+        yield {"type": "evidence_update", "blocks": blocks}
+    pipeline_version = (
+        candidate.telemetry.get("pipeline_version", "pipeline_agentic_v1")
+        if candidate is not None
+        else SUPPORT_ID_PIPELINE_VERSION
+    )
     instructions = SUPPORT_ID_OUTPUT_INSTRUCTIONS
     if derived_answers:
         instructions = f"{instructions}\n{DERIVED_ANSWER_INSTRUCTIONS}"
@@ -1427,7 +1502,7 @@ async def _support_unit_answer_events(
     units = build_support_units(blocks)
     messages = messages_for(units)
     prompt_fit: dict[str, int] | None = None
-    if count_tokens is not None:
+    if count_tokens is not None and candidate is None:
         built_count = len(units)
         units, messages, prompt_tokens = _fit_to_context(
             units, messages, messages_for, count_tokens, num_ctx
@@ -1455,10 +1530,11 @@ async def _support_unit_answer_events(
     yield {
         "type": "metadata",
         "prompt_version": prompt_version,
-        "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
+        "pipeline_version": pipeline_version,
         "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
         "support_units": support_unit_citation_map(units, blocks),
         "prompt_fit": prompt_fit,
+        **({"agentic": candidate.telemetry} if candidate is not None else {}),
     }
     generation_kwargs = {
         "model": model,
@@ -1474,24 +1550,40 @@ async def _support_unit_answer_events(
     if seed is not None:
         generation_kwargs["seed"] = seed
     generation_started = time.perf_counter()
-    raw = await provider.chat_json(messages, **generation_kwargs)
+    raw = (
+        candidate.raw
+        if candidate is not None
+        else await provider.chat_json(messages, **generation_kwargs)
+    )
     generation_ms = round((time.perf_counter() - generation_started) * 1000, 3)
     # Best effort: the provider's record of its most recent call.
-    observation = getattr(provider, "last_call_observation", None) or {}
+    observation = (
+        {
+            "done_reason": candidate.failure_code or "stop",
+            "prompt_tokens": candidate.telemetry.get("input_tokens"),
+            "output_tokens": candidate.telemetry.get("output_tokens"),
+        }
+        if candidate is not None
+        else getattr(provider, "last_call_observation", None) or {}
+    )
     done_reason = observation.get("done_reason")
     telemetry["done_reason"] = done_reason
     telemetry["provider_prompt_tokens"] = observation.get("prompt_tokens")
     telemetry["provider_output_tokens"] = observation.get("output_tokens")
     try:
-        parsed = parse_support_unit_answer(raw)
-        validation = validate_support_unit_answer(
-            parsed,
-            units,
-            validator_version=validator_version,
-            shadow_enabled=shadow_enabled,
-            architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
-            question=query,
-        )
+        with operation("answer.validate", attributes={"research.phase": "release"}) as check:
+            parsed = parse_support_unit_answer(raw)
+            validation = validate_support_unit_answer(
+                parsed,
+                units,
+                validator_version=validator_version,
+                shadow_enabled=shadow_enabled,
+                architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
+                question=query,
+            )
+            check.set_attribute("validator.failure_codes", validation.failure_codes)
+            outcome(check, "rejected" if validation.failure_codes else "completed")
+
     except (ValueError, json.JSONDecodeError):
         parsed = None
         validation = SupportUnitValidation(
@@ -1541,6 +1633,28 @@ async def _support_unit_answer_events(
                 "architecture_v2_shadow_disagreements": [],
             },
         )
+    if candidate is not None and candidate.failure_code:
+        validation = replace(
+            validation,
+            valid_parts=[],
+            failure_codes=[candidate.failure_code],
+            model_abstain=False,
+            application_abstain=True,
+            top_level_valid=False,
+        )
+    if candidate is not None and candidate.scope_validation_required and validation.valid_parts:
+        with operation("answer.scope_validate", attributes={"research.phase": "release"}) as check:
+            receipt = candidate.scope_receipt
+            if receipt is None or not receipt.accepts(query, raw, units):
+                code = "SCOPE_RELEASE_UNVERIFIED"
+                check.set_attribute("validator.failure_codes", [code])
+                outcome(check, "rejected", code)
+                validation = replace(
+                    validation,
+                    valid_parts=[],
+                    failure_codes=[*validation.failure_codes, code],
+                    application_abstain=True,
+                )
     unit_texts = [unit.text for unit in units]
     missing_years = missing_question_years(query, unit_texts)
     missing_dates = missing_question_dates(query, unit_texts)
@@ -1559,7 +1673,7 @@ async def _support_unit_answer_events(
             },
         )
     withheld = validation.model_abstain or validation.application_abstain
-    if operand_resolver and withheld and not (missing_years or missing_dates):
+    if candidate is None and operand_resolver and withheld and not (missing_years or missing_dates):
         resolved, resolver_trace = await _resolved_validation(
             query,
             units,
@@ -1583,16 +1697,17 @@ async def _support_unit_answer_events(
                 yield {
                     "type": "metadata",
                     "prompt_version": prompt_version,
-                    "pipeline_version": SUPPORT_ID_PIPELINE_VERSION,
+                    "pipeline_version": pipeline_version,
                     "output_contract_version": SUPPORT_ID_OUTPUT_CONTRACT_VERSION,
                     "support_units": support_unit_citation_map(
                         units, [*blocks, *resolver_trace.blocks]
                     ),
                     "prompt_fit": prompt_fit,
                 }
-    visual: VisualAnswer | None = None
+    visual: VisualAnswer | None = candidate.visual if candidate is not None else None
     if (
-        visual_answers
+        candidate is None
+        and visual_answers
         and render_page is not None
         and getattr(provider, "supports_images", False)
         and (validation.model_abstain or validation.application_abstain)
@@ -1613,6 +1728,17 @@ async def _support_unit_answer_events(
             if not capture.raw_text:
                 visual_trace = {"pages": visual_trace.get("pages", [])}
             capture.stage("visual_answer", {**visual_trace, "answered": visual is not None})
+    if missing_years or missing_dates:
+        visual = None
+    if candidate is not None and not candidate.access_current():
+        validation = replace(
+            validation,
+            valid_parts=[],
+            failure_codes=["DOCUMENT_ACCESS_REVOKED"],
+            application_abstain=True,
+            model_abstain=False,
+        )
+        visual = None
     final_abstain = validation.model_abstain or validation.application_abstain
     telemetry = validation.validator_telemetry
     if capture is not None:
@@ -1691,7 +1817,25 @@ async def _support_unit_answer_events(
             },
         )
     _record_validator_telemetry(telemetry)
+    if (
+        candidate is not None
+        and candidate.comparison
+        and not final_abstain
+        and not validation.failure_codes
+    ):
+        yield {"type": "comparison", "rows": candidate.comparison}
     rendered = render_support_unit_answer(validation.valid_parts, abstain=final_abstain)
+    if (
+        final_abstain
+        and validation.model_abstain
+        and not validation.failure_codes
+        and candidate is not None
+        and candidate.telemetry.get("pipeline_version") == "pipeline_adaptive_v1"
+        and candidate.telemetry.get("abstention_reason") == "INSUFFICIENT_EVIDENCE"
+    ):
+        # Failed research is not proof that the document contains no answer.
+        # Keep this application-owned; never release an unvalidated draft.
+        rendered = "I could not obtain enough evidence to answer this question."
     user_visible = validation.top_level_valid and bool(rendered)
     if capture is not None:
         capture.set_visible_outcome(
@@ -1713,7 +1857,7 @@ async def _support_unit_answer_events(
         evaluation_observation.validated_output = rendered
         evaluation_observation.validated_output_available = user_visible
         evaluation_observation.user_visible_output_available = user_visible
-        evaluation_observation.pipeline_version = SUPPORT_ID_PIPELINE_VERSION
+        evaluation_observation.pipeline_version = pipeline_version
         evaluation_observation.output_contract_version = SUPPORT_ID_OUTPUT_CONTRACT_VERSION
         evaluation_observation.model_abstention = validation.model_abstain
         evaluation_observation.application_forced_abstention = (

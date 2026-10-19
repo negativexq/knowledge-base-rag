@@ -736,4 +736,36 @@ describe("Playground answer confidence and why-this-answer", () => {
     expect(vi.mocked(chatApi.ask).mock.calls[0][0]).toBe("First line\nSecond line")
     expect(await screen.findByText("Citation integrity verified")).toBeInTheDocument()
   })
+  it("continues after clarification and retains the user's reply", async () => {
+    vi.mocked(chatApi.ask).mockImplementationOnce(async (_question, _history, handlers) => {
+      handlers.onProgress?.({ id: "s1", operation: "search", status: "completed" })
+      handlers.onClarification?.({ question: "Which platform?", options: ["Linux", "Windows"] })
+      handlers.onDone()
+    })
+    renderPlayground()
+    fireEvent.change(screen.getByLabelText("Question"), { target: { value: "How do I install it?" } })
+    fireEvent.keyDown(screen.getByLabelText("Question"), { key: "Enter" })
+    fireEvent.click(await screen.findByRole("button", { name: "Linux" }))
+    await waitFor(() => expect(chatApi.ask).toHaveBeenCalledTimes(2))
+    expect(vi.mocked(chatApi.ask).mock.calls[1][0]).toBe("How do I install it?")
+    expect(vi.mocked(chatApi.ask).mock.calls[1][4]).toEqual({ clarification: { question: "Which platform?", answer: "Linux" } })
+    expect(await screen.findByText("Clarification: Linux")).toBeInTheDocument()
+  })
+
+  it("aborts a running request and ignores late model events", async () => {
+    let handlers: Parameters<typeof chatApi.ask>[2] | undefined
+    vi.mocked(chatApi.ask).mockImplementation(async (_question, _history, incoming) => {
+      handlers = incoming
+      incoming.onProgress?.({ id: "s1", operation: "search", status: "running" })
+    })
+    renderPlayground()
+    fireEvent.change(screen.getByLabelText("Question"), { target: { value: "Investigate" } })
+    fireEvent.keyDown(screen.getByLabelText("Question"), { key: "Enter" })
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel" }))
+    expect(vi.mocked(chatApi.ask).mock.calls[0][3]?.aborted).toBe(true)
+    handlers!.onToken("Late answer that must not appear")
+    expect(screen.queryByText("Late answer that must not appear")).not.toBeInTheDocument()
+    expect(screen.getByText("Stopped")).toBeInTheDocument()
+  })
+
 })
