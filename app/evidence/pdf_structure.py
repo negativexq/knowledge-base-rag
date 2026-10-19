@@ -105,6 +105,49 @@ class PdfStructure:
         return elements
 
     @serialized_pdf
+    def page_catalog(self, pages: list[int]) -> list[dict[str, Any]]:
+        """Exact native location hints, not summaries or answer evidence."""
+        if not pages or len(pages) > 36 or len(set(pages)) != len(pages):
+            raise ValueError("PDF_CATALOG_PAGE_LIMIT")
+        budget = min(600, 12000 // len(pages))
+        result = []
+        with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
+            for number in pages:
+                if not 1 <= number <= min(doc.page_count, 2000):
+                    raise ValueError("PDF_PAGE_OUT_OF_RANGE")
+                page = doc[number - 1]
+                if page.rect.width * page.rect.height > MAX_PAGE_AREA:
+                    raise ValueError("PDF_PAGE_TOO_LARGE")
+                lines = [line.strip() for line in page.get_text(sort=True).splitlines()]
+                lines = [line for line in lines if line]
+                indexes = list(
+                    dict.fromkeys(
+                        [
+                            i
+                            for pair in zip(
+                                range(min(3, len(lines))),
+                                range(len(lines) - 1, max(-1, len(lines) - 4), -1),
+                            )
+                            for i in pair
+                        ]
+                    )
+                )
+                chosen = []
+                size = 0
+                for i in indexes:
+                    if len(lines[i]) <= 160 and size + len(lines[i]) <= budget:
+                        chosen.append(i)
+                        size += len(lines[i])
+                result.append(
+                    dict(
+                        physical_page=number,
+                        pdf_page_label=page.get_label(),
+                        native_lines=[lines[i] for i in sorted(chosen)],
+                    )
+                )
+        return result
+
+    @serialized_pdf
     def page_quality(self, page_number: int) -> dict[str, Any]:
         """Cheap original-page provenance check, not an OCR accuracy guarantee."""
         with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:

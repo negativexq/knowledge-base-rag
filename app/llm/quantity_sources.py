@@ -7,7 +7,11 @@ import time
 from typing import TYPE_CHECKING
 
 from app.llm.agent_observability import operation
-from app.llm.quantity_state import QuantityPageQuality, QuantitySourceInspection
+from app.llm.quantity_state import (
+    QuantityCatalogPage,
+    QuantityPageQuality,
+    QuantitySourceInspection,
+)
 
 if TYPE_CHECKING:
     from app.llm.adaptive import AdaptiveSession
@@ -82,3 +86,76 @@ async def inspect_pages(
         span.set_attribute("source.native_text_chars", [p.native_text_chars for p in quality])
         span.set_attribute("source.requires_image", any(p.requires_image for p in quality))
         return quality
+
+
+async def source_catalog(session: AdaptiveSession, ranked: list[str]) -> list[QuantityCatalogPage]:
+    """Inspect only pages already covered by admitted, visible PDF source ranges."""
+    if not getattr(session.deps.render_page, "snapshot", None):
+        return []
+    units = session.units()
+    pdf_evidence = {
+        b.payload["evidence_id"]
+        for b in session.deps.ledger.blocks
+        if b.payload.get("source_type") == "filesystem"
+    }
+    groups: dict[tuple[str, str], dict[int, list[str]]] = {}
+    total = 0
+    for key in ranked:
+        u = units[key]
+        if (
+            not u.authorized
+            or not u.model_visible
+            or not u.source_id
+            or not u.document_version
+            or not u.page_number
+            or u.evidence_id not in pdf_evidence
+        ):
+            continue
+        identity = (u.source_id, u.document_version)
+        if identity not in groups and len(groups) >= 3:
+            continue
+        pages = groups.setdefault(identity, {})
+        for number in range(u.page_number, min(u.page_end or u.page_number, 2000) + 1):
+            if number not in pages:
+                if total >= 36:
+                    continue
+                pages[number] = []
+                total += 1
+            if key not in pages[number] and len(pages[number]) < 3:
+                pages[number].append(key)
+    result: list[QuantityCatalogPage] = []
+    for (source, version), pages in groups.items():
+        if not pages:
+            continue
+        seed = next(iter(pages.values()))[0]
+        session.require([seed])
+        with operation("quantity.source.catalog") as span:
+            async with asyncio.timeout(
+                min(
+                    session.policy.tool_timeout_seconds,
+                    max(0, session.research_deadline - time.monotonic()),
+                )
+            ):
+                structure, _ = await session.deps.pdf_structure(seed)
+                hints = await asyncio.to_thread(structure.page_catalog, list(pages))
+            result.extend(
+                QuantityCatalogPage(
+                    **hint,
+                    source_id=source,
+                    document_version=version,
+                    support_ids=pages[hint["physical_page"]],
+                )
+                for hint in hints
+            )
+            span.set_attribute("evidence.source_id", source)
+            span.set_attribute("evidence.physical_pages", list(pages))
+            span.set_attribute(
+                "evidence.catalog_support_ids",
+                list(dict.fromkeys(key for keys in pages.values() for key in keys)),
+            )
+    history = {
+        (p.source_id, p.document_version, p.physical_page): p
+        for p in [*session.state.quantity_page_catalog, *result]
+    }
+    session.state.quantity_page_catalog = list(history.values())[-72:]
+    return result

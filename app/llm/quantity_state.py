@@ -6,12 +6,17 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.llm.scope_diagnostics import ScopeDiagnostic
+
+QuantityMode = Literal["read", "arithmetic", "count", "select", "list"]
+
 
 class QuantityData(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
 class QuantitySource(QuantityData):
+    operation_kind: QuantityMode = "arithmetic"
     support_ids: list[str] = Field(default_factory=list, max_length=3)
     context_support_ids: list[str] = Field(default_factory=list, max_length=3)
     pages: list[int] = Field(
@@ -42,6 +47,7 @@ class QuantityItem(QuantityData):
     witness: str = Field(default="", max_length=1500)
     source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
     page: int | None = Field(default=None, ge=1, le=2000)
+    image_ids: list[str] = Field(default_factory=list, max_length=3)
 
 
 class QuantityGroup(QuantityData):
@@ -61,10 +67,13 @@ class QuantityOperand(QuantityData):
     witness: str = Field(default="", max_length=1500)
     source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
     page: int | None = Field(default=None, ge=1, le=2000)
+    image_ids: list[str] = Field(default_factory=list, max_length=3)
 
 
 class QuantityOperation(QuantityData):
-    mode: Literal["arithmetic", "count", "select", "list"]
+    mode: QuantityMode
+    result_unit: str = Field(default="", max_length=100)
+    interpretation: str = Field(default="", max_length=300)
     count_mode: Literal["per_group", "total", "distinct"] = "per_group"
     select_mode: Literal["minimum", "maximum"] = "minimum"
     list_order: Literal["source", "ascending", "descending"] = "source"
@@ -82,13 +91,15 @@ class QuantityDraft(QuantityOperation):
 
     @model_validator(mode="after")
     def coherent(self) -> QuantityDraft:
-        if self.mode in {"arithmetic", "select"}:
+        if self.mode in {"read", "arithmetic", "select"}:
             if not self.operands or self.groups or self.items or self.count_mode != "per_group":
                 raise ValueError("Numeric operations require named inputs, no item groups")
             if self.mode == "arithmetic" and not self.expression:
                 raise ValueError("Arithmetic requires a formula")
             if self.mode == "select" and (self.expression or len(self.operands) < 2):
                 raise ValueError("Selection requires at least two inputs, no formula")
+            if self.mode == "read" and self.expression:
+                raise ValueError("Reading returns source values, not formulas")
             if len({o.name for o in self.operands}) != len(self.operands):
                 raise ValueError("Duplicate operand names")
         elif self.mode == "count":
@@ -139,6 +150,23 @@ class QuantityAssessment(QuantityData):
     )
 
 
+class QuantityCatalogPage(QuantityData):
+    source_id: str
+    document_version: str
+    physical_page: int = Field(ge=1, le=2000)
+    pdf_page_label: str = ""
+    native_lines: list[str] = Field(default_factory=list, max_length=6)
+    support_ids: list[str] = Field(min_length=1, max_length=3)
+    location_hints_only: Literal[True] = True
+
+
+class QuantityImageBinding(QuantityData):
+    image_id: str
+    source_id: str
+    document_version: str | None
+    physical_page: int
+
+
 class QuantityRecord(QuantityData):
     id: str
     need_id: str
@@ -160,6 +188,9 @@ class QuantityRecord(QuantityData):
     provisional_values: list[str] = Field(default_factory=list)
     ambiguity_results: dict[str, list[str]] = Field(default_factory=dict)
     execution_status: Literal["pending", "completed", "failed"] = "pending"
+    image_bindings: list[QuantityImageBinding] = Field(default_factory=list)
+    scope_diagnostic: ScopeDiagnostic | None = None
+    inventory_replacement: bool = False
 
 
 class TextQuantityOperand(QuantityOperand):
@@ -191,7 +222,9 @@ class TextQuantityDraft(QuantityOperation):
 
 
 class QuantityRepairRequirement(QuantityData):
-    evidence_kind: Literal["source_correction", "entity_inventory"]
+    evidence_kind: Literal[
+        "source_correction", "entity_inventory", "coverage_completion", "scope_research"
+    ]
     previous_support_ids: list[str] = Field(default_factory=list)
 
 

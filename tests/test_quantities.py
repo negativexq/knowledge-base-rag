@@ -54,11 +54,21 @@ def enumeration():
 
 
 def text_arithmetic():
-    data = arithmetic().model_dump()
+    data = arithmetic().model_dump(
+        include={
+            "mode",
+            "operands",
+            "expression",
+            "decimals",
+            "complete",
+            "result_unit",
+            "interpretation",
+        }
+    )
     for operand in data["operands"]:
-        operand.update(
-            witness="", source_ranges=[{"support_id": "E1.S1", "start_line": 1, "end_line": 2}]
-        )
+        for field in ("witness", "page", "image_ids"):
+            operand.pop(field, None)
+        operand["source_ranges"] = [{"support_id": "E1.S1", "start_line": 1, "end_line": 2}]
     return data
 
 
@@ -399,27 +409,32 @@ async def test_count_requests_inventory_before_fast_answer_and_checks_completene
         if "modality" in props and "available" in props:
             seen.append("select")
             return reply(
-                info, {"available": True, "support_ids": ["E1.S1"], "context_support_ids": []}
+                info,
+                {
+                    "available": True,
+                    "support_ids": ["E1.S1"],
+                    "context_support_ids": [],
+                    "operation_kind": "count",
+                },
             )
-        if "operands" in props:
+        if "groups" in props:
             seen.append("collect")
             return reply(
                 info,
                 {
                     "mode": "count",
+                    "count_mode": "per_group",
                     "complete": True,
                     "groups": [
                         {
                             "label": "Benefits",
                             "complete": True,
-                            "boundary_witness": "",
                             "boundary_ranges": [
                                 {"support_id": "E1.S1", "start_line": 1, "end_line": 1}
                             ],
                             "items": [
                                 {
                                     "text": "Fast",
-                                    "witness": "",
                                     "position": 1,
                                     "source_ranges": [
                                         {"support_id": "E1.S1", "start_line": 1, "end_line": 1}
@@ -427,7 +442,6 @@ async def test_count_requests_inventory_before_fast_answer_and_checks_completene
                                 },
                                 {
                                     "text": "Reliable",
-                                    "witness": "",
                                     "position": 2,
                                     "source_ranges": [
                                         {"support_id": "E1.S1", "start_line": 1, "end_line": 1}
@@ -776,13 +790,21 @@ async def test_visual_label_list_survives_admission_and_independent_finalization
         if role == "quantity_selector":
             return QuantitySource(
                 available=True,
+                operation_kind="list",
                 support_ids=["E1.S1"],
                 modality="image",
                 pages=[1],
             )
         assert len(images) == 1 and images[0].startswith(b"\x89PNG")
         if role == "quantity_collector":
-            return output_type.model_validate(label_draft().model_dump())
+            raw = label_draft().model_dump(
+                include={"mode", "complete", "items", "list_order", "list_unique"}
+            )
+            for item in raw["items"]:
+                item.pop("page")
+                item.pop("source_ranges")
+                item["image_ids"] = [data["source_images"][0]["image_id"]]
+            return output_type.model_validate(raw)
         assert role == "quantity_checker"
         assert "items" in data["draft"] and "groups" not in data["draft"]
         return QuantityCheck(accepted=True, complete=True, reason="supported")
@@ -790,6 +812,7 @@ async def test_visual_label_list_survives_admission_and_independent_finalization
     active.call = call
     result = await collect(active, need)
     record = next(iter(active.state.quantities.values()))
+    assert record.image_bindings[0].physical_page == 1
     assert record.proof_support_ids and record.execution_status == "completed"
     assert json.loads(result.answer_parts[0].text) == ["Analyzer", "Verifier"]
     active.state.research_stop = "RESEARCH_TURN_LIMIT"

@@ -74,6 +74,71 @@ checked inventories and source positions. Application results are saved before
 release, and checked transcriptions are explicitly distinguished from original
 PDF text. Source routing and two-model agreement do not guarantee OCR accuracy.
 
+Before source selection, a bounded native-PDF page catalog exposes location hints
+inside already admitted page ranges. It carries document versions, physical pages,
+original header/footer lines and live support IDs in typed application state.
+This distinguishes printed page labels from physical positions and makes pages
+inside broad indexed ranges individually discoverable. Catalog hints locate
+sources; they do not certify answer values or layout. The catalog uses local PDF
+reading, not an additional model call, and is bounded to 36 pages across at most
+three source snapshots per attempt.
+
+Source selection also identifies the required operation: direct numeric reading,
+arithmetic, counting, minimum/maximum selection, or listing. The application
+exposes only that operation's typed extraction contract. Arithmetic extraction
+carries a reviewed output unit and explicit interpretation, which are displayed
+with the application result. It cannot emit count settings or a model-written
+result; a direct value reading
+does not require artificial comparison operands. This reuses the source-selection
+call rather than adding a planning call.
+
+For image extraction, the application assigns source-image handles and stores
+their document version and physical-page mapping. The model selects supplied
+handles; printed page labels are not accepted as physical-page identity. Text
+extraction selects bounded line ranges from the supplied support IDs.
+
+```mermaid
+flowchart LR
+    Select["Select source + operation"] --> Contract["Application selects typed contract"]
+    Contract --> Extract["Extract inputs + evidence handles"]
+    Extract --> Bind["Resolve source identity in code"]
+    Bind --> Review["Check inputs, coverage and operation"]
+    Review -->|Supported and complete| Execute["Read / calculate / count / select / list"]
+    Review -->|Incomplete list| Complete["Seek missing coverage; preserve list goal"]
+    Complete --> Contract
+    Execute --> Receipt["Persist checked result for independent finalization"]
+```
+
+Coverage completion differs from correcting an invalid input slot. An incomplete
+or unknown coverage assessment with a grounded inventory gap can request the
+missing source; unknown alone cannot. Repair candidates are ranked against the
+concrete evidence gap within already authorized units. A list repair
+keeps verified existing items, seeks a new source view for missing items, and
+preserves the original listing operation. The combined inventory is checked
+again before execution. If the existing bindings are unresolved, the repair reads
+a fresh inventory instead of unioning unconfirmed items. Parent receipts remain
+in state; completion is not an
+implicit approval of the larger inventory. Existing request, source-window and
+repair budgets still bound this path. If retaining old source images would
+exceed the window, the old receipt stays in state while a full replacement
+inventory is checked in a fresh bounded window. Coverage review checks that
+prior supported items remain represented in the new source; spelling/alias
+variants require source support rather than literal answer-format matching.
+
+A grounded final-scope objection can also trigger one bounded source-repair
+attempt. The original input receipt and objection stay in state, the operation
+stays fixed, and replacement evidence passes input review and final scope review
+again. An ungrounded objection does not authorize a repair. A known scope-rejected
+receipt is not repeatedly retried as a complete answer during finalization.
+Arithmetic review asks whether the explicitly presented interpretation is valid;
+another possible interpretation alone does not invalidate a defensible answer.
+Reviewer contracts expose only the actual operation slots: a list issue targets
+an item or the operation, never a nonexistent numeric operand. One bounded
+diagnostic-receipt correction is separate from the source-repair slot; both share
+the same hard request, token and time ceilings.
+The input checker reserves a final scope call, since an accepted prepared result
+can be finalized directly by application code without another answer-writing call.
+
 ## Trust and release boundaries
 
 ```mermaid

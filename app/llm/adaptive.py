@@ -666,7 +666,7 @@ class AdaptiveSession:
         images: list[bytes] | None = None,
     ) -> Any:
         reserved = 1 + int(self.deps.scope_validation_enabled) if research else 0
-        if role in {"finalizer", "answer_repair"}:
+        if role in {"finalizer", "answer_repair", "quantity_checker"}:
             reserved = int(self.deps.scope_validation_enabled)
         request_limit = self.limits.request_limit
         if request_limit is not None and self.usage.requests + reserved >= request_limit:
@@ -708,7 +708,12 @@ class AdaptiveSession:
         agent.instrument = False
         prompt: Any = text
         if images:
-            prompt = [text, *[BinaryContent(data=b, media_type="image/png") for b in images]]
+            prompt = [text]
+            bindings = payload.get("source_images", [])
+            for index, blob in enumerate(images):
+                if len(bindings) == len(images):
+                    prompt.append(json.dumps({"source_image": bindings[index]}, ensure_ascii=False))
+                prompt.append(BinaryContent(data=blob, media_type="image/png"))
         before_in, before_out = self.usage.input_tokens, self.usage.output_tokens
         before_requests = self.usage.requests
         before_cached = self.usage.cache_read_tokens
@@ -1635,6 +1640,57 @@ class AdaptiveSession:
         return answer, receipt
 
 
+async def verify_prepared_quantity(
+    session: AdaptiveSession,
+    prepared: AgentAnswer,
+    need_id: str,
+    *,
+    allow_scope_repair: bool,
+) -> tuple[AgentAnswer, ScopeReceipt | None] | None:
+    """Route a grounded release objection back to evidence, never another answer guess."""
+    before = len(session.state.quantity_scope_diagnostics)
+    try:
+        return await session.verify(prepared)
+    except ValueError:
+        diagnostics = session.state.quantity_scope_diagnostics[before:]
+        if not diagnostics or diagnostics[-1].diagnostic_errors:
+            raise
+        diagnostic = diagnostics[-1]
+        if not diagnostic.judgment.objections:
+            raise
+        cited = {key for part in prepared.answer_parts for key in part.support_ids}
+        parents = [
+            r
+            for r in session.state.quantities.values()
+            if r.check and r.check.accepted and set(r.proof_support_ids) & cited
+        ]
+        if len(parents) != 1:
+            raise
+        parent = parents[0].model_copy(update={"scope_diagnostic": diagnostic})
+        session.state.quantities[parent.id] = parent
+    # Preserve the input receipt but stop re-verifying this known incomplete answer.
+    cap = min(
+        session.limits.tool_calls_limit or session.policy.max_tool_attempts,
+        session.policy.max_tool_attempts,
+    )
+    limit = session.limits.request_limit
+    if (
+        not allow_scope_repair
+        or session.deps.observations.tool_calls >= cap
+        or (limit is not None and limit - session.usage.requests < 4)
+    ):
+        return None
+    session.state.quantity_repairs += 1
+    session.deps.observations.tool_calls += 1
+    with operation("quantity.repair.scope") as span:
+        span.set_attribute("quantity.parent_id", parent.id)
+        span.set_attribute("validator.objection_count", len(diagnostic.judgment.objections))
+        repaired = await collect_quantities(session, need_id, parent=parent, repairs_left=0)
+        if repaired is None:
+            return None
+        return await verify_prepared_quantity(session, repaired, need_id, allow_scope_repair=False)
+
+
 async def finalize_research(session: AdaptiveSession) -> tuple[AgentAnswer, ScopeReceipt | None]:
     """Tools are closed here. Successful data survives independently of research."""
     with operation("research.finalize") as span:
@@ -1651,7 +1707,7 @@ async def _finalize(session: AdaptiveSession) -> tuple[AgentAnswer, ScopeReceipt
         and not session.state.computations
         and not session.state.text_computations
         and not any(
-            record.values and record.check and record.check.accepted
+            record.values and record.check and record.check.accepted and not record.scope_diagnostic
             for record in session.state.quantities.values()
         )
     ):
@@ -1659,7 +1715,7 @@ async def _finalize(session: AdaptiveSession) -> tuple[AgentAnswer, ScopeReceipt
         return AgentAnswer(answer_parts=[], abstain=True), None
     # Reuse checked application results before asking a finalizer to paraphrase.
     for record in reversed(list(session.state.quantities.values())):
-        if record.values and record.check and record.check.accepted:
+        if record.values and record.check and record.check.accepted and not record.scope_diagnostic:
             if record.modality == "image" and not record.proof_support_ids:
                 continue
             try:
@@ -1832,11 +1888,21 @@ async def run_adaptive_agent(
                             # Each semantic stage is bounded by call(); the shared
                             # research deadline and reserved finalization still apply.
                             prepared = await collect_quantities(session, collection_need)
+                            if prepared is not None:
+                                verified = await verify_prepared_quantity(
+                                    session,
+                                    prepared,
+                                    collection_need,
+                                    allow_scope_repair=(
+                                        state.quantity_repairs - before_repairs
+                                        < policy.max_validation_repairs
+                                    ),
+                                )
+                                if verified is not None:
+                                    candidate, receipt = verified
+                                    collect_status = "ok"
                         finally:
                             attempts += state.quantity_repairs - before_repairs
-                        if prepared is not None:
-                            candidate, receipt = await session.verify(prepared)
-                            collect_status = "ok"
                         span.set_attribute("research.progressed", collect_status == "ok")
                         span.set_attribute(
                             "evidence.added_support_ids", sorted(set(session.units()) - before_ids)

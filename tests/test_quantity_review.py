@@ -448,7 +448,6 @@ async def test_inventory_repair_rejects_unchanged_source_before_extraction():
 
 @pytest.mark.asyncio
 async def test_inventory_repair_reads_new_source_and_keeps_original_numbers():
-    from app.llm.quantity_state import TextEntityInventoryDraft
     from tests.test_adaptive import block
 
     active, need = active_session()
@@ -463,7 +462,7 @@ async def test_inventory_repair_reads_new_source_and_keeps_original_numbers():
             assert data["candidates"][0]["support_id"] == "E2.S1"
             return QuantitySource(available=True, support_ids=["E2.S1"])
         if role == "quantity_collector":
-            assert output_type is TextEntityInventoryDraft
+            assert output_type.model_json_schema()["properties"]["mode"]["const"] == "count"
             assert not data["preserve_other_inputs"]
             groups = []
             for line, (label, names) in enumerate(

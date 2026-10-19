@@ -9,6 +9,7 @@ from app.llm.quantity_state import (
     QuantityCheck,
     QuantityDraft,
     QuantityIssue,
+    QuantityItem,
     QuantityRecord,
     QuantityRepairRequirement,
 )
@@ -21,8 +22,11 @@ A supported input remains supported even if the operation is ambiguous. Read cat
 continuations until the next heading, including supplied continuation pages.
 
 Use the question's actual requirements. Do not add uniqueness, rounding, unit or period
-requirements the question does not establish. A plausible alternative interpretation is
-ambiguity, not a proven contradiction. For material count ambiguity list the alternative
+requirements the question does not establish. Assess the proposed operation together
+with its explicit interpretation and output unit.
+Another possible interpretation alone does not invalidate a defensible, clearly labeled
+one. Use ambiguous when a material choice cannot be responsibly stated; mismatch needs
+a conflict with the actual question or source. For material count ambiguity list the alternative
 operations using total for a scalar sum, per_group for a vector, and distinct for a unique
 entity union. Set issue evidence_kind=entity_inventory when resolving the defect requires
 individual entity labels or overlap information rather than aggregate printed values.
@@ -35,7 +39,12 @@ index or operation, the defect, and the evidence needed to resolve it. In text m
 source_ranges; in image mode give a supplied physical page and transcribe its visible
 anchor in witness. Point missing-item issues to the omitted source item; point boundary
 issues to the actual continuation/category boundary. Operation issues also select the
-one-based question segment range establishing the requirement. Do not merely repeat
+one-based question segment range establishing the requirement.
+When inventory_replacement is true, verify the full new source inventory against the
+original question AND that previously supported items in previous_inputs remain covered,
+allowing source-supported spelling/alias variants. Missing a valid prior item is incomplete
+coverage; previous_inputs alone is not proof of its presence in the new source.
+Do not merely repeat
 'incomplete' or 'wrong_scope'. If you cannot locate a defect, use unknown, never invent
 counterevidence or treat uncertainty as a factual mismatch. Supported/complete judgments
 must follow actual inspection; lack of a valid objection alone is not approval.
@@ -172,9 +181,53 @@ def verdict(review: QuantityAssessment, errors: list[str]) -> tuple[QuantityChec
     return QuantityCheck(accepted=accepted, complete=accepted, reason=reason), status
 
 
-def merge_repair(original: QuantityRecord, replacement: QuantityDraft) -> QuantityDraft:
+def merge_repair(
+    original: QuantityRecord, replacement: QuantityDraft, *, replace_inventory: bool = False
+) -> QuantityDraft:
     """Keep unaffected data byte-for-byte; the complete result is checked again."""
+    if repair_requirement(original).evidence_kind == "scope_research":
+        if replacement.mode != original.draft.mode:
+            raise ValueError("REPAIR_CHANGED_GOAL_OPERATION")
+        return replacement
     issues = original.assessments[-1].issues
+    if repair_requirement(original).evidence_kind == "coverage_completion":
+        if replacement.mode != original.draft.mode:
+            raise ValueError("REPAIR_CHANGED_GOAL_OPERATION")
+        if replace_inventory:
+            # Keep the old receipt in state; independently recheck the complete
+            # fresh inventory without requiring its old images in this window.
+            return replacement.model_copy(
+                update={
+                    "list_order": original.draft.list_order,
+                    "list_unique": original.draft.list_unique,
+                }
+            )
+
+        # Completing an inventory is not editing its existing item slots. Keep
+        # verified source items and add new names; recheck the combined draft.
+        def identity(item: QuantityItem) -> tuple[str] | tuple[str, int | None, int, str]:
+            name = " ".join(item.text.casefold().split())
+            return (
+                (name,)
+                if original.draft.list_unique
+                else (
+                    name,
+                    item.page,
+                    item.position,
+                    item.source_object,
+                )
+            )
+
+        found = {identity(i): i for i in original.draft.items}
+        for item in replacement.items:
+            found.setdefault(identity(item), item)
+        return replacement.model_copy(
+            update={
+                "items": list(found.values()),
+                "list_order": original.draft.list_order,
+                "list_unique": original.draft.list_unique,
+            }
+        )
     if (
         any(i.target == "operation" for i in issues)
         or repair_requirement(original).evidence_kind == "entity_inventory"
@@ -187,6 +240,8 @@ def merge_repair(original: QuantityRecord, replacement: QuantityDraft) -> Quanti
     items = {i.index for i in issues if i.target == "item"}
     if (
         replacement.mode != original.draft.mode
+        or replacement.result_unit != original.draft.result_unit
+        or replacement.interpretation != original.draft.interpretation
         or replacement.expression != original.draft.expression
         or replacement.count_mode != original.draft.count_mode
         or replacement.select_mode != original.draft.select_mode
@@ -223,7 +278,22 @@ def merge_repair(original: QuantityRecord, replacement: QuantityDraft) -> Quanti
 
 def repair_requirement(record: QuantityRecord) -> QuantityRepairRequirement:
     """Derive the missing evidence contract, never a desired answer or number."""
+    if record.scope_diagnostic is not None:
+        return QuantityRepairRequirement(
+            evidence_kind="scope_research", previous_support_ids=record.support_ids
+        )
     review = record.assessments[-1]
+    if (
+        record.draft.mode == "list"
+        and review.coverage in {"incomplete", "unknown"}
+        and any(i.kind in {"missing_item", "boundary"} for i in review.issues)
+    ):
+        return QuantityRepairRequirement(
+            evidence_kind="coverage_completion"
+            if review.inputs == "supported"
+            else "scope_research",
+            previous_support_ids=record.support_ids,
+        )
     inventory = record.draft.mode in {"arithmetic", "count"} and (
         any(i.evidence_kind == "entity_inventory" for i in review.issues)
         or (

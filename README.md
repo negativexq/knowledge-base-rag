@@ -34,6 +34,9 @@ state, graph transitions, tool permissions, calculations, and stopping rules.
 - **Original images for visual data.** Quantitative reads of image-only PDF
   pages are routed to the original page image. Category, series, period, unit,
   and label–value relationships stay attached to the extracted inputs.
+- **Operation-specific contracts.** Direct value reads, arithmetic, counts,
+  extrema, and lists expose only their own fields. Computed answers retain
+  reviewed output units and explicit interpretations.
 - **Application-owned working state.** `ResearchState` stores typed evidence,
   checked inputs, calculations, unresolved issues, and provenance. Each agent
   receives a task-specific projection of that state.
@@ -230,13 +233,13 @@ source-supported result once, with its run, answer, latency, and model-call coun
 
 | Evaluation | Result | Scope |
 | --- | --- | --- |
-| Current agentic flow | **2/2** [targeted rechecks](artifacts/mmlongbench-v2/adaptive-selection-strict-20261019/REPORT.md) of earlier failures | Native strict output and typed selection/list operations; six calls and no retries per question. |
-| Historical answered-question ledger | **20** distinct questions answered out of **20** tried | Eighteen earlier successes have not been rerun with the final revision; this is not a current 20/20 stability result. |
+| Agentic question coverage | **30 distinct questions tried: 28 source-correct answers, 1 correct refusal, 1 unresolved** | [Answered questions and evidence](docs/adaptive-solved-questions.md); historical results across development revisions. |
 | Earlier MMLongBench-Doc pipeline | **79/120 (66%)**; 19/21 unanswerable questions refused | [Report](artifacts/mmlongbench-v2/luna-full-v3/report.md); lenient contains-match, not the official score. |
 | TechQA HOLDOUT50 | **26/50 (52%)** useful on the evaluated production path; 2% materially incorrect | [Report](artifacts/ragbench/techqa-production-v1/report.md); a separate pipeline evaluation. |
 | Multilingual reranker selection | Recall@5 1.00 TR→EN and EN→TR, 220 questions | [Decision](docs/reranking.md). |
 
-The seven current runs are selected development checks, not a full benchmark
+The agentic total counts each question once; reruns do not increase coverage.
+Historical results across revisions are not a full current-version benchmark
 or a stability estimate. Successful abstention is evaluated separately from
 answerable-question accuracy; an operational stop is not evidence that the
 answer is absent. Failed runs remain in the local history and report summaries.
