@@ -6,15 +6,207 @@ import asyncio
 import time
 from typing import TYPE_CHECKING
 
+from app.evidence.documents import DocumentRead, DocumentRef
 from app.llm.agent_observability import operation
 from app.llm.quantity_state import (
     QuantityCatalogPage,
+    QuantityGapSearch,
     QuantityPageQuality,
+    QuantityRecord,
+    QuantitySource,
     QuantitySourceInspection,
 )
+from app.llm.research_state import SearchEvidence
+from app.llm.search_context import targeted_chunks
 
 if TYPE_CHECKING:
     from app.llm.adaptive import AdaptiveSession
+
+
+async def complete_sources(
+    session: AdaptiveSession, parent: QuantityRecord
+) -> QuantityGapSearch | None:
+    """Locate a grounded missing input in the same authorized document, without an LLM."""
+    if session.deps.documents is None or not parent.assessments:
+        return None
+    gaps = [
+        i.needed_evidence
+        for i in parent.assessments[-1].issues
+        if i.kind in {"missing_item", "boundary"} and i.needed_evidence.strip()
+    ]
+    if not gaps:
+        return None
+    cap = min(
+        session.limits.tool_calls_limit or session.policy.max_tool_attempts,
+        session.policy.max_tool_attempts,
+    )
+    if session.deps.observations.tool_calls >= cap:
+        return None
+    session.require(parent.support_ids)
+    unit = session.units()[parent.support_ids[0]]
+    block = next(
+        b for b in session.deps.ledger.blocks if b.payload["evidence_id"] == unit.evidence_id
+    )
+    if not unit.source_id or not unit.document_version:
+        return None
+    # Descriptions locate evidence, never supply source facts or page guesses.
+    # Keep the actual task authoritative: a draft/reviewer can itself misbind a
+    # population. Its missing-field description must not replace the question.
+    query = (session.state.task.question + " " + " ".join(dict.fromkeys(gaps)))[:500]
+    session.deps.observations.tool_calls += 1
+    before = set(session.units())
+    with operation("quantity.source.complete") as span:
+        span.set_attribute("quantity.parent_id", parent.id)
+        span.set_attribute("evidence.gap_query", query)
+        async with asyncio.timeout(
+            min(
+                session.policy.tool_timeout_seconds,
+                max(0, session.research_deadline - time.monotonic()),
+            )
+        ):
+            found = await session.deps.documents.read(
+                DocumentRead(
+                    document=DocumentRef(
+                        source_type=block.payload.get("source_type", "doc"),
+                        source_id=unit.source_id,
+                        document_version=unit.document_version,
+                    ),
+                    action="search",
+                    query=query,
+                    search_mode="ranked",
+                    limit=3,
+                )
+            )
+        chunks = targeted_chunks(found.blocks, query)
+        session.admit(chunks, search_query=query)
+        chunk_ids = {str(c.id) for c in chunks}
+        candidates = {
+            key: u
+            for key, u in session.units().items()
+            if u.source_id == unit.source_id
+            and u.document_version == unit.document_version
+            and chunk_ids.intersection(u.contributing_chunk_ids)
+        }
+        ranked = session.ranked_ids(candidates, query_text=query, preserve_anchors=False)
+        # Prefer the complete chunks returned by this search over their detached
+        # pre-existing paragraphs. This retains captions, populations and values.
+        chunk_texts = {str(c.payload.get("text", "")) for c in chunks}
+        selected = sorted(ranked, key=lambda key: candidates[key].text not in chunk_texts)[:6]
+        if selected:
+            session.selected = tuple(selected)
+        admitted = sorted(set(session.units()) - before)
+        session.state.search_evidence.append(
+            SearchEvidence(
+                query=query,
+                need_id=parent.need_id,
+                admitted_support_ids=admitted,
+                selected_support_ids=selected,
+            )
+        )
+        span.set_attribute("evidence.admitted_support_ids", admitted)
+        span.set_attribute("evidence.selected_ids", selected)
+        span.set_attribute("evidence.search_has_more", found.has_more)
+        span.set_attribute("evidence.search_scan_limited", found.scan_limited)
+        receipt = QuantityGapSearch(
+            parent_id=parent.id,
+            requirements=parent.assessments[-1].issues,
+            query=query,
+            candidate_support_ids=selected,
+            status="located" if selected else "unresolved",
+        )
+        session.state.quantity_gap_searches[parent.id] = receipt
+        return receipt
+
+
+def fresh_source_view(
+    session: AdaptiveSession, parent: QuantityRecord, selection: QuantitySource
+) -> bool:
+    """Moving an old source ID between input/context roles is not new evidence."""
+    units = session.units()
+    old_ids = [*parent.support_ids, *parent.context_support_ids]
+    selected_ids = [*selection.support_ids, *selection.context_support_ids]
+    session.require([*old_ids, *selected_ids])
+    old_text = {
+        (units[key].source_id, units[key].document_version, units[key].text) for key in old_ids
+    }
+    # In image mode, a different paragraph ID on an already inspected full page
+    # does not create a fresh visual observation. A genuinely new context passage
+    # outside those pages still can establish a missing relationship.
+    if parent.modality == selection.modality == "image":
+        if set(selection.pages) - set(parent.pages):
+            return True
+        return any(
+            (units[key].source_id, units[key].document_version, units[key].text) not in old_text
+            and not set(
+                range(
+                    units[key].page_number or 1,
+                    (units[key].page_end or units[key].page_number or 1) + 1,
+                )
+            )
+            <= set(parent.pages)
+            for key in selection.context_support_ids
+        )
+    if selection.modality != parent.modality:
+        return True
+    return any(
+        (units[key].source_id, units[key].document_version, units[key].text) not in old_text
+        for key in selected_ids
+    )
+
+
+def bind_gap_source(
+    session: AdaptiveSession,
+    parent: QuantityRecord,
+    selection: QuantitySource,
+    gap: QuantityGapSearch,
+) -> QuantitySource:
+    """Carry one bounded fresh search candidate into inspection, without asserting its truth."""
+    units = session.units()
+    for key in gap.candidate_support_ids:
+        session.require([key])
+        unit = units[key]
+        if (unit.source_id, unit.document_version) != (parent.source_id, parent.document_version):
+            continue
+        pages = list(range(unit.page_number or 1, (unit.page_end or unit.page_number or 1) + 1))
+        if selection.modality == "image" and len(pages) > 3:
+            continue  # A broad candidate requires explicit bounded page selection.
+        ids = [key, *[s for s in selection.support_ids if s != key]]
+        if selection.modality == "image":
+            # Full-page images cover same-page paragraph aliases; replace those
+            # redundant seeds rather than overflowing the three-source window.
+            ids = [
+                key,
+                *[
+                    s
+                    for s in ids[1:]
+                    if not set(
+                        range(
+                            units[s].page_number or 1,
+                            (units[s].page_end or units[s].page_number or 1) + 1,
+                        )
+                    )
+                    <= set(pages)
+                ],
+            ]
+        chosen_pages = sorted(set([*selection.pages, *pages]))
+        if len(ids) > 3 or len(chosen_pages) > 3:
+            continue
+        proposed = selection.model_copy(
+            update={
+                "support_ids": ids,
+                "pages": chosen_pages,
+                "available": True,
+            }
+        )
+        if not fresh_source_view(session, parent, proposed):
+            continue
+        with operation("quantity.gap.bind") as span:
+            span.set_attribute("quantity.parent_id", parent.id)
+            span.set_attribute("evidence.gap_candidate_id", key)
+            span.set_attribute("evidence.input_support_ids", ids)
+            span.set_attribute("evidence.physical_pages", chosen_pages)
+        return proposed
+    return selection
 
 
 async def inspect_pages(

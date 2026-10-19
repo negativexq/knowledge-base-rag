@@ -7,13 +7,18 @@ import hashlib
 import json
 import operator
 import re
-from decimal import ROUND_HALF_EVEN, Decimal, localcontext
+from decimal import ROUND_HALF_EVEN, Decimal, DecimalException, localcontext
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.llm.answer_repair import AnswerRepair
-from app.llm.quantity_state import QuantityCatalogPage, QuantityRecord, QuantitySourceInspection
+from app.llm.quantity_state import (
+    QuantityCatalogPage,
+    QuantityGapSearch,
+    QuantityRecord,
+    QuantitySourceInspection,
+)
 from app.llm.scope_diagnostics import ScopeDiagnostic
 
 
@@ -285,6 +290,7 @@ class ResearchState(BaseModel):
     quantities: dict[str, QuantityRecord] = Field(default_factory=dict)
     quantity_source_inspections: list[QuantitySourceInspection] = Field(default_factory=list)
     quantity_page_catalog: list[QuantityCatalogPage] = Field(default_factory=list, max_length=72)
+    quantity_gap_searches: dict[str, QuantityGapSearch] = Field(default_factory=dict)
     quantity_repairs: int = 0
     quantity_scope_diagnostics: list[ScopeDiagnostic] = Field(default_factory=list)
     answer_repairs: list[AnswerRepair] = Field(default_factory=list)
@@ -396,7 +402,10 @@ def decimal_value(value: str | None) -> Decimal:
     # Deliberately no guessing of locale/thousands separators.
     if value is None or len(value) > 100 or "," in value:
         raise ValueError("A canonical decimal value is required")
-    number = Decimal(value)
+    try:
+        number = Decimal(value)
+    except DecimalException as exc:
+        raise ValueError("A canonical decimal value is required") from exc
     if not number.is_finite() or abs(number) > Decimal("1e30"):
         raise ValueError("Invalid numeric value")
     return number

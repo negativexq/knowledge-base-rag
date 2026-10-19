@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.llm.scope_diagnostics import ScopeDiagnostic
 
-QuantityMode = Literal["read", "arithmetic", "count", "select", "list"]
+QuantityMode = Literal["read", "arithmetic", "count", "select", "lookup", "list"]
+NumberFormat = Literal["canonical", "decimal_point", "decimal_comma", "space_grouped"]
+NumberScale = Literal["1", "1000", "100000", "1000000", "10000000", "1000000000"]
+SourceNumber = Annotated[
+    str, Field(min_length=1, max_length=100, pattern=r"^[0-9+\-−.,() \u00a0\u202f]+$")
+]
 
 
 class QuantityData(BaseModel):
@@ -62,12 +67,45 @@ class QuantityGroup(QuantityData):
 class QuantityOperand(QuantityData):
     name: str = Field(pattern=r"^[a-z][a-z0-9_]{0,30}$")
     label: str = Field(min_length=1, max_length=200)
-    value: str = Field(min_length=1, max_length=100)
+    value: str | None = Field(default=None, max_length=100)
     unit: str = Field(default="", max_length=100)
     witness: str = Field(default="", max_length=1500)
     source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
     page: int | None = Field(default=None, ge=1, le=2000)
     image_ids: list[str] = Field(default_factory=list, max_length=3)
+
+
+class NumericReading(QuantityData):
+    value: SourceNumber | None
+    value_status: Literal["readable", "not_found", "unreadable", "ambiguous"] = "readable"
+    number_format: NumberFormat = "canonical"
+    source_scale: NumberScale = Field(
+        default="1", description="Printed unit multiplier to base units"
+    )
+
+    @model_validator(mode="after")
+    def status_matches_value(self) -> NumericReading:
+        if (self.value_status == "readable") != (self.value is not None):
+            raise ValueError("Only a readable numeric input carries a source value")
+        return self
+
+
+class QuantityNumericOperand(QuantityOperand, NumericReading):
+    pass
+
+
+class QuantityReadOperand(QuantityNumericOperand):
+    output_unit: str = Field(default="", max_length=100)
+    output_scale: NumberScale = Field(
+        default="1", description="Requested unit multiplier to base units"
+    )
+    sign_convention: Literal["signed", "magnitude"] = "signed"
+
+
+class QuantityLookupOperand(QuantityNumericOperand):
+    population: str = Field(default="", max_length=300)
+    series: str = Field(default="", max_length=200)
+    period: str = Field(default="", max_length=200)
 
 
 class QuantityOperation(QuantityData):
@@ -80,18 +118,40 @@ class QuantityOperation(QuantityData):
     list_unique: bool = False
 
 
+class QuantityLookupChoice(QuantityData):
+    """Source identity joins a comparison expression to a different requested metric."""
+
+    label: str = Field(min_length=1, max_length=200)
+    score_expression: str = Field(min_length=1, max_length=500)
+    value_operand: str = Field(pattern=r"^[a-z][a-z0-9_]{0,30}$")
+
+
+class QuantityAbsence(QuantityData):
+    """An inspected source region with no items satisfying the requested condition."""
+
+    source_object: str = Field(min_length=1, max_length=500)
+    witness: str = Field(default="", max_length=1500)
+    source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
+    page: int | None = Field(default=None, ge=1, le=2000)
+    image_ids: list[str] = Field(default_factory=list, max_length=3)
+
+
 class QuantityDraft(QuantityOperation):
-    operands: list[QuantityOperand] = Field(default_factory=list, max_length=20)
+    operands: list[
+        QuantityOperand | QuantityNumericOperand | QuantityLookupOperand | QuantityReadOperand
+    ] = Field(default_factory=list, max_length=20)
     # A named-input formula, never a model-written result.
     expression: str = Field(default="", max_length=500)
     decimals: int = Field(default=3, ge=0, le=10)
     groups: list[QuantityGroup] = Field(default_factory=list, max_length=10)
     items: list[QuantityItem] = Field(default_factory=list, max_length=200)
+    choices: list[QuantityLookupChoice] = Field(default_factory=list, max_length=10)
+    absence: QuantityAbsence | None = None
     complete: bool = False
 
     @model_validator(mode="after")
     def coherent(self) -> QuantityDraft:
-        if self.mode in {"read", "arithmetic", "select"}:
+        if self.mode in {"read", "arithmetic", "select", "lookup"}:
             if not self.operands or self.groups or self.items or self.count_mode != "per_group":
                 raise ValueError("Numeric operations require named inputs, no item groups")
             if self.mode == "arithmetic" and not self.expression:
@@ -100,16 +160,27 @@ class QuantityDraft(QuantityOperation):
                 raise ValueError("Selection requires at least two inputs, no formula")
             if self.mode == "read" and self.expression:
                 raise ValueError("Reading returns source values, not formulas")
+            if self.mode == "lookup" and (self.expression or len(self.choices) < 2):
+                raise ValueError("Conditional lookup requires comparison choices, no final formula")
             if len({o.name for o in self.operands}) != len(self.operands):
                 raise ValueError("Duplicate operand names")
         elif self.mode == "count":
             if not self.groups or self.operands or self.expression or self.items:
                 raise ValueError("Counting requires item groups, no arithmetic")
-        elif not self.items or self.operands or self.expression or self.groups:
+        elif (
+            bool(self.items) == (self.absence is not None)
+            or self.operands
+            or self.expression
+            or self.groups
+        ):
             raise ValueError("Listing requires source items, no arithmetic or count groups")
+        if self.mode != "lookup" and self.choices:
+            raise ValueError("Comparison choices only apply to conditional lookup")
+        if self.mode != "list" and self.absence is not None:
+            raise ValueError("Absence evidence only applies to listing")
         if self.mode != "list" and (self.list_order != "source" or self.list_unique):
             raise ValueError("List formatting only applies to listing")
-        if self.mode != "select" and self.select_mode != "minimum":
+        if self.mode not in {"select", "lookup"} and self.select_mode != "minimum":
             raise ValueError("Selection operation only applies to selection")
         return self
 
@@ -123,7 +194,7 @@ class QuantityCheck(QuantityData):
 
 class QuantityIssue(QuantityData):
     kind: Literal["wrong_binding", "missing_item", "boundary", "operation", "unreadable"]
-    target: Literal["operand", "group", "item", "operation"]
+    target: Literal["operand", "group", "item", "absence", "operation"]
     index: int | None = Field(default=None, ge=0, le=199)
     description: str = Field(min_length=1, max_length=600)
     source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
@@ -167,6 +238,31 @@ class QuantityImageBinding(QuantityData):
     physical_page: int
 
 
+class QuantityGapSearch(QuantityData):
+    """Application-owned link from an unresolved receipt to candidate evidence and inspection."""
+
+    parent_id: str
+    requirements: list[QuantityIssue] = Field(max_length=10)
+    query: str = Field(max_length=500)
+    candidate_support_ids: list[str] = Field(default_factory=list, max_length=6)
+    inspected_support_ids: list[str] = Field(default_factory=list)
+    inspected_pages: list[int] = Field(default_factory=list, max_length=3)
+    status: Literal["located", "inspected", "resolved", "unresolved"] = "located"
+
+
+class QuantityNumberReceipt(QuantityData):
+    name: str
+    source_value: str | None
+    canonical_value: str | None = None
+    source_scale: str = "1"
+    output_scale: str = "1"
+    sign_convention: Literal["signed", "magnitude"] = "signed"
+    output_value: str | None = None
+    output_unit: str = ""
+    value_status: Literal["readable", "not_found", "unreadable", "ambiguous", "invalid"]
+    errors: list[str] = Field(default_factory=list)
+
+
 class QuantityRecord(QuantityData):
     id: str
     need_id: str
@@ -191,6 +287,20 @@ class QuantityRecord(QuantityData):
     image_bindings: list[QuantityImageBinding] = Field(default_factory=list)
     scope_diagnostic: ScopeDiagnostic | None = None
     inventory_replacement: bool = False
+    numeric_inputs: list[QuantityNumberReceipt] = Field(default_factory=list)
+    absence_confirmed: bool = False
+
+    @property
+    def has_result(self) -> bool:
+        return (
+            bool(self.values)
+            or (self.absence_confirmed and self.execution_status == "completed")
+            or bool(
+                self.draft.mode == "list"
+                and self.draft.absence
+                and self.execution_status == "completed"
+            )
+        )
 
 
 class TextQuantityOperand(QuantityOperand):
@@ -218,6 +328,8 @@ class TextQuantityDraft(QuantityOperation):
     decimals: int = Field(default=3, ge=0, le=10)
     groups: list[TextQuantityGroup] = Field(default_factory=list, max_length=10)
     items: list[TextQuantityItem] = Field(default_factory=list, max_length=200)
+    choices: list[QuantityLookupChoice] = Field(default_factory=list, max_length=10)
+    absence: QuantityAbsence | None = None
     complete: bool = False
 
 
@@ -268,6 +380,8 @@ class ImageQuantityDraft(QuantityOperation):
     decimals: int = Field(default=3, ge=0, le=10)
     groups: list[ImageQuantityGroup] = Field(default_factory=list, max_length=10)
     items: list[ImageQuantityItem] = Field(default_factory=list, max_length=200)
+    choices: list[QuantityLookupChoice] = Field(default_factory=list, max_length=10)
+    absence: QuantityAbsence | None = None
     complete: bool
 
     @model_validator(mode="after")

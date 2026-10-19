@@ -233,7 +233,7 @@ source-supported result once, with its run, answer, latency, and model-call coun
 
 | Evaluation | Result | Scope |
 | --- | --- | --- |
-| Agentic question coverage | **30 distinct questions tried: 28 source-correct answers, 1 correct refusal, 1 unresolved** | [Answered questions and evidence](docs/adaptive-solved-questions.md); historical results across development revisions. |
+| Agentic question coverage | **65 distinct questions tried: 56 source-correct answers, 4 correct refusals, 5 unresolved** | [Answered questions and evidence](docs/adaptive-solved-questions.md); historical results across development revisions. |
 | Earlier MMLongBench-Doc pipeline | **79/120 (66%)**; 19/21 unanswerable questions refused | [Report](artifacts/mmlongbench-v2/luna-full-v3/report.md); lenient contains-match, not the official score. |
 | TechQA HOLDOUT50 | **26/50 (52%)** useful on the evaluated production path; 2% materially incorrect | [Report](artifacts/ragbench/techqa-production-v1/report.md); a separate pipeline evaluation. |
 | Multilingual reranker selection | Recall@5 1.00 TR→EN and EN→TR, 220 questions | [Decision](docs/reranking.md). |
