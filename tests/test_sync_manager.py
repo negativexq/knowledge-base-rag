@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 import pytest
 from qdrant_client import QdrantClient
@@ -248,32 +247,36 @@ async def test_is_running_reflects_current_state(tmp_path):
 
 @pytest.mark.asyncio
 async def test_concurrent_sync_of_the_same_connector_rejects_the_second_attempt(tmp_path):
-    """The real race-condition proof: two trigger_sync() calls for the SAME
-    connector, launched genuinely concurrently via asyncio.gather, with the
-    embed step artificially slowed so there's a real window for a race. Only
-    one may actually perform the ingest; the other must be rejected
-    immediately, not queued behind it.
-    """
+    """Reject the competing call while the first ingest is still blocked."""
     docs_dir = tmp_path / "docs"
     docs_dir.mkdir()
     (docs_dir / "readme.md").write_text("# A\n\nSome content.")
-    delay = 0.2
-    manager, store, _ = _make_manager(tmp_path, _slow_embed_fn(delay), docs_dir)
+    embedding_started = asyncio.Event()
+    release_embedding = asyncio.Event()
 
-    start = time.monotonic()
-    first, second = await asyncio.gather(
-        manager.trigger_sync("filesystem", TRIGGER_MANUAL),
-        manager.trigger_sync("filesystem", TRIGGER_MANUAL),
-    )
-    elapsed = time.monotonic() - start
+    async def embed(text):
+        embedding_started.set()
+        await release_embedding.wait()
+        return [0.01] * EMBEDDING_DIM
 
-    statuses = {first.status, second.status}
+    manager, store, _ = _make_manager(tmp_path, embed, docs_dir)
+    tasks = [
+        asyncio.create_task(manager.trigger_sync("filesystem", TRIGGER_MANUAL)) for _ in range(2)
+    ]
+    try:
+        await asyncio.wait_for(embedding_started.wait(), timeout=10)
+        done, pending = await asyncio.wait(tasks, timeout=10, return_when=asyncio.FIRST_COMPLETED)
+        assert len(done) == len(pending) == 1
+        assert next(iter(done)).result().status == STATUS_REJECTED
+        assert manager.is_running("filesystem")
+        assert store.upsert_calls == 0  # rejected before the first ingest can finish
+    finally:
+        release_embedding.set()
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    statuses = {result.status for result in results}
     assert statuses == {STATUS_SUCCESS, STATUS_REJECTED}
     assert store.upsert_calls == 1  # only the successful run actually wrote anything
-
-    # If the rejected call had instead queued/waited for the first to
-    # finish and then run for real, this would take ~2x delay. It doesn't.
-    assert elapsed < delay * 1.5
 
 
 @pytest.mark.asyncio
