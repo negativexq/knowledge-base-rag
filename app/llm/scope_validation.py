@@ -47,20 +47,24 @@ class Witness(BaseModel):
     quote: str = Field(min_length=1, max_length=1600)
 
 
+ScopeVerdict = Literal["supported", "mismatch", "insufficient"]
+ScopeReason = Literal[
+    "NONE",
+    "ENTITY_MISMATCH",
+    "VERSION_MISMATCH",
+    "PERIOD_MISMATCH",
+    "ENVIRONMENT_MISMATCH",
+    "POPULATION_MISMATCH",
+    "UNIT_MISMATCH",
+    "SCOPE_NOT_ESTABLISHED",
+]
+
+
 class ScopeCheck(BaseModel):
     model_config = ConfigDict(extra="forbid")
     claim_index: int = Field(ge=0)
-    verdict: Literal["supported", "mismatch", "insufficient"]
-    reason: Literal[
-        "NONE",
-        "ENTITY_MISMATCH",
-        "VERSION_MISMATCH",
-        "PERIOD_MISMATCH",
-        "ENVIRONMENT_MISMATCH",
-        "POPULATION_MISMATCH",
-        "UNIT_MISMATCH",
-        "SCOPE_NOT_ESTABLISHED",
-    ]
+    verdict: ScopeVerdict
+    reason: ScopeReason
     witnesses: list[Witness] = Field(default_factory=list, max_length=20)
 
 
@@ -161,3 +165,110 @@ def validate_judgment(payload: dict[str, Any], judgment: ScopeJudgment) -> Scope
     if invalid:
         codes.add("SCOPE_CHECK_INVALID")
     return ScopeReceipt(fingerprint(payload), tuple(sorted(codes)), tuple(rejected))
+
+
+# Reuse the same semantic policy and release receipt. The model selects source
+# locations; only the application constructs verbatim witnesses.
+LINE_SCOPE_INSTRUCTIONS = (
+    SCOPE_INSTRUCTIONS[: SCOPE_INSTRUCTIONS.index("Return exactly one check per claim index.")]
+    + """Return exactly one check per claim index. For supported checks use reason NONE
+and select source segment ranges establishing the binding. Segments are exact contiguous
+source slices, splitting long physical lines without rewriting them. Indexes are one-based and
+inclusive; select separate ranges for noncontiguous evidence. Select field text or
+section_label and an authorized support_id from this claim's cited evidence.
+Do not write or paraphrase quotations. For other checks select the reason code.
+"""
+)
+
+
+class LineWitness(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    support_id: str = Field(min_length=1, max_length=100)
+    field: Literal["text", "section_label"] = "text"
+    start_line: int = Field(ge=1)
+    end_line: int = Field(ge=1)
+
+
+class LineScopeCheck(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    claim_index: int = Field(ge=0)
+    verdict: ScopeVerdict
+    reason: ScopeReason
+    witnesses: list[LineWitness] = Field(default_factory=list, max_length=20)
+
+
+class LineScopeJudgment(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    checks: list[LineScopeCheck] = Field(min_length=1, max_length=200)
+
+
+def scope_lines(text: str) -> list[str]:
+    """Exact source slices, including long parser rows, with no text rewritten."""
+    result = []
+    for line in text.splitlines(keepends=True):
+        while len(line) > 800:
+            # Keep words together when possible, without dropping whitespace or
+            # inserting a newline that would invalidate the original witness.
+            cut = line.rfind(" ", 400, 800)
+            cut = cut + 1 if cut >= 400 else 800
+            result.append(line[:cut])
+            line = line[cut:]
+        if line:
+            result.append(line)
+    return result
+
+
+def line_scope_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    """Make an independent model projection; preserve original receipt payload."""
+    projected: dict[str, Any] = json.loads(json.dumps(payload))
+    projected["question_segments"] = [
+        {"line": i, "content": line}
+        for i, line in enumerate(scope_lines(str(payload.get("question", ""))), 1)
+    ]
+    for claim in projected["claims"]:
+        for unit in claim["cited_evidence"]:
+            unit["support_id"] = unit.pop("support_unit_id")
+            unit.pop("evidence_id", None)
+            for name in ("text", "section_label"):
+                unit[name] = [
+                    {"line": i, "content": line}
+                    for i, line in enumerate(scope_lines(unit[name] or ""), 1)
+                ]
+    return projected
+
+
+def resolve_line_judgment(payload: dict[str, Any], judgment: LineScopeJudgment) -> ScopeJudgment:
+    """Resolve claim-local references exactly, never fuzzy-match generated text."""
+    claims = {c["claim_index"]: c for c in payload["claims"]}
+    checks = []
+    for check in judgment.checks:
+        claim = claims.get(check.claim_index)
+        if claim is None:
+            raise ValueError("SCOPE_CHECK_INVALID")
+        units = {u["support_unit_id"]: u for u in claim["cited_evidence"]}
+        witnesses = []
+        for ref in check.witnesses:
+            unit = units.get(ref.support_id)
+            if unit is None:
+                raise ValueError("SCOPE_CHECK_INVALID")
+            lines = scope_lines(unit[ref.field] or "")
+            if not (1 <= ref.start_line <= ref.end_line <= len(lines)):
+                raise ValueError("SCOPE_CHECK_INVALID")
+            quote = "".join(lines[ref.start_line - 1 : ref.end_line])
+            if not quote.strip():
+                raise ValueError("SCOPE_CHECK_INVALID")
+            # Selecting a range is equivalent to selecting its bounded slices.
+            # Resolve them locally; never call a model just to shorten a quote.
+            chunk = ""
+            for segment in lines[ref.start_line - 1 : ref.end_line]:
+                if len(chunk) + len(segment) > 1600:
+                    if chunk.strip():
+                        witnesses.append(Witness(support_id=ref.support_id, quote=chunk))
+                    chunk = ""
+                chunk += segment
+            if chunk.strip():
+                witnesses.append(Witness(support_id=ref.support_id, quote=chunk))
+            if len(witnesses) > 20:
+                raise ValueError("SCOPE_CHECK_INVALID")
+        checks.append(ScopeCheck(**check.model_dump(exclude={"witnesses"}), witnesses=witnesses))
+    return ScopeJudgment(checks=checks)

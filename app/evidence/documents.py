@@ -5,6 +5,9 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import math
+import re
+from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Literal
@@ -31,6 +34,7 @@ class DocumentRead(BaseModel):
     document: DocumentRef
     action: Literal["outline", "search", "section", "page", "neighbors"] = "outline"
     query: str = Field(default="", max_length=500)
+    search_mode: Literal["all_terms", "ranked"] = "all_terms"
     section_id: str = Field(default="", max_length=100)
     page: int = Field(default=1, ge=1, le=100000)
     chunk_id: str = Field(default="", max_length=200)
@@ -55,6 +59,26 @@ def order(block: SearchResult) -> tuple[int, int, int, str]:
         int((p.get("char_range") or [0])[0]),
         str(block.id),
     )
+
+
+def ranked_document_matches(blocks: list[SearchResult], query: str) -> list[SearchResult]:
+    """Local lexical ranking within an already authorized immutable document."""
+
+    def words(text: str) -> set[str]:
+        text = re.sub(r"\bfy\s*(\d{4})\b", r"\1", text.casefold())
+        return set(re.findall(r"\w{3,}", text))
+
+    terms = words(query)
+    documents = [words(str(b.payload.get("text", ""))) for b in blocks]
+    frequency = Counter(term for d in documents for term in d)
+    scores = [
+        sum(math.log(1 + len(blocks) / (1 + frequency[t])) for t in d & terms)
+        / (1 + 0.001 * len(d))
+        for d in documents
+    ]
+    return [
+        blocks[i] for i in sorted(range(len(blocks)), key=lambda i: -scores[i]) if scores[i] > 0
+    ]
 
 
 @dataclass
@@ -288,11 +312,15 @@ class DocumentReader:
             terms = request.query.casefold().split()
             if not terms:
                 raise ValueError("Search requires a query")
-            selected = [
-                b
-                for b in blocks
-                if all(t in str(b.payload.get("text", "")).casefold() for t in terms)
-            ]
+            selected = (
+                ranked_document_matches(blocks, request.query)
+                if request.search_mode == "ranked"
+                else [
+                    b
+                    for b in blocks
+                    if all(t in str(b.payload.get("text", "")).casefold() for t in terms)
+                ]
+            )
         elif request.action == "section":
             selected = [b for b in blocks if section_id(b.payload) == request.section_id]
         elif request.action == "page":

@@ -20,9 +20,9 @@ agent calls and two verifier calls), within the production request budget of six
 The old smoke harness used a cap of four; the harness now uses six to include the
 new verifier/repair work. No failed answer was concealed by editing the fixture.
 
-Outputs: [results](scope-guard-ambiguous-20261018/results.json),
-[usage summary](scope-guard-ambiguous-20261018/summary.json),
-[spans](scope-guard-ambiguous-20261018/spans.json).
+Local raw outputs: `scope-guard-ambiguous-20261018/results.json` and
+`scope-guard-ambiguous-20261018/spans.json` (ignored by Git).
+The small [usage summary](scope-guard-ambiguous-20261018/summary.json) remains versioned.
 
 ## Regression and additional scope probes
 
@@ -34,9 +34,9 @@ cases produced the expected answer; the three unsupported/unauthorized questions
 abstained. The scope checks did not reject those final supported candidates.
 No attack/canary marker was released or sent in a search query.
 
-Outputs: [results](scope-guard-regression-20261018/results.json),
-[usage summary](scope-guard-regression-20261018/summary.json),
-[spans](scope-guard-regression-20261018/spans.json).
+Local raw outputs: `scope-guard-regression-20261018/results.json` and
+`scope-guard-regression-20261018/spans.json` (ignored by Git).
+The small [usage summary](scope-guard-regression-20261018/summary.json) remains versioned.
 
 Combined follow-up usage: **21 runs, 62 actual model calls, 51848 input and 2583
 output tokens**. Both exports contain `agent` and `scope_validator` model roles;

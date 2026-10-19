@@ -120,7 +120,11 @@ def build_support_units(blocks: list[SearchResult]) -> list[SupportUnit]:
             for chunk_text, section, label, contributing, pages in _sections(
                 payload, str(block.id) if block.id else None
             )
-            for text in _units_for_text(chunk_text)
+            for text in (
+                [chunk_text]
+                if payload.get("reading_method") == "parser_chunk"
+                else _units_for_text(chunk_text)
+            )
         ]
         for unit_index, (text, section, label, contributing, pages) in enumerate(unit_texts, 1):
             units.append(

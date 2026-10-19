@@ -1,4 +1,4 @@
-.PHONY: dev test test-ollama lint up down bench-up langfuse-up langfuse-down
+.PHONY: dev test test-adaptive test-ollama lint up down bench-up langfuse-up langfuse-down
 
 VENV := .venv/bin
 
@@ -7,6 +7,10 @@ dev:
 
 test:
 	$(VENV)/pytest -q -m "not ollama_e2e"
+
+# Fully offline: no models, credentials, Qdrant or parser downloads.
+test-adaptive:
+	$(VENV)/pytest -q tests/test_research_state.py tests/test_adaptive.py tests/test_adaptive_observability.py tests/test_adaptive_fast_path.py tests/test_research_needs.py tests/test_quantities.py tests/test_quantity_review.py tests/test_quantity_sources.py
 
 test-ollama:
 	$(VENV)/pytest -q -m "ollama_e2e"

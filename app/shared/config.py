@@ -92,6 +92,12 @@ class Settings(BaseSettings):
 
     # Agentic orchestration is opt-in until paired benchmark runs justify rollout.
     agentic_rag_enabled: bool = False
+    # Typed application-owned workflow; mutually exclusive with the legacy agent.
+    adaptive_rag_enabled: bool = False
+    adaptive_fast_path_enabled: bool = False
+    adaptive_evidence_needs_enabled: bool = False
+    adaptive_extraction_reasoning: Literal["none", "low", "medium", "high"] = "low"
+    adaptive_final_reasoning: Literal["none", "low", "medium", "high"] = "medium"
     # "escalate": the fixed answer path runs first and the agent only handles
     # withheld answers (and multi-document requests); "always": agent first.
     agentic_mode: Literal["escalate", "always"] = "escalate"
@@ -111,6 +117,13 @@ class Settings(BaseSettings):
     def validate_agentic_profile(self) -> Self:
         if self.agentic_rag_enabled and not self.support_ids_enabled:
             raise ValueError("AGENTIC_RAG_ENABLED requires SUPPORT_IDS_ENABLED")
+        if self.adaptive_rag_enabled:
+            if not self.support_ids_enabled:
+                raise ValueError("ADAPTIVE_RAG_ENABLED requires SUPPORT_IDS_ENABLED")
+            if self.agentic_rag_enabled:
+                raise ValueError("Enable only one of ADAPTIVE_RAG_ENABLED and AGENTIC_RAG_ENABLED")
+            if self.agentic_max_requests < 1 + int(self.agentic_scope_validation_enabled):
+                raise ValueError("Adaptive finalization needs an answer and scope request budget")
         return self
 
     # Explicit local/debug forensic capture.  Both switches are required for

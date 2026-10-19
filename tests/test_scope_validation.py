@@ -294,3 +294,100 @@ async def test_token_preflight_blocks_call_before_sending_an_oversized_history()
     assert candidate.failure_code == "AGENT_BUDGET_EXCEEDED"
     assert seen == 0
     assert candidate.telemetry["budget"]["preflight_events"][0]["reason"] == "token_preflight"
+
+
+def line_judgment(**reference):
+    from app.llm.scope_validation import LineScopeJudgment
+
+    return LineScopeJudgment.model_validate(
+        {
+            "checks": [
+                {
+                    "claim_index": 0,
+                    "verdict": "supported",
+                    "reason": "NONE",
+                    "witnesses": [
+                        {"support_id": "E1.S1", "start_line": 1, "end_line": 1, **reference}
+                    ],
+                }
+            ]
+        }
+    )
+
+
+def test_line_references_resolve_original_whitespace_and_bind_original_receipt():
+    from app.llm.scope_validation import line_scope_payload, resolve_line_judgment
+
+    units = [replace(ledger().units[0], text="Header\r\n  The service uses TLS.\r\nFooter")]
+    original = scope_payload("Protocol?", raw("The service uses TLS."), units)
+    before = json.dumps(original)
+    projected = line_scope_payload(original)
+    assert json.dumps(original) == before
+    evidence = projected["claims"][0]["cited_evidence"][0]
+    assert evidence["support_id"] == "E1.S1" and "evidence_id" not in evidence
+    assert evidence["text"][1] == {"line": 2, "content": "  The service uses TLS.\r\n"}
+    checked = resolve_line_judgment(original, line_judgment(start_line=2, end_line=2))
+    assert checked.checks[0].witnesses[0].quote == "  The service uses TLS.\r\n"
+    receipt = validate_judgment(original, checked)
+    assert receipt.accepts("Protocol?", raw("The service uses TLS."), units)
+    assert not receipt.accepts("Other question", raw("The service uses TLS."), units)
+
+
+@pytest.mark.parametrize(
+    "reference",
+    [
+        {"support_id": "E99.S1"},
+        {"end_line": 999},
+        {"start_line": 2, "end_line": 1},
+    ],
+)
+def test_invalid_line_references_fail_closed(reference):
+    from app.llm.scope_validation import resolve_line_judgment
+
+    with pytest.raises(ValueError, match="SCOPE_CHECK_INVALID"):
+        resolve_line_judgment(
+            scope_payload("Protocol?", raw(), ledger().units), line_judgment(**reference)
+        )
+
+
+@pytest.mark.parametrize("text", [" \n"])
+def test_empty_or_oversized_line_witnesses_fail_closed(text):
+    from app.llm.scope_validation import resolve_line_judgment
+
+    units = [replace(ledger().units[0], text=text)]
+    with pytest.raises(ValueError, match="SCOPE_CHECK_INVALID"):
+        resolve_line_judgment(
+            scope_payload("Protocol?", raw(), units),
+            line_judgment(end_line=3 if len(text) > 1600 else 1),
+        )
+
+
+def test_long_source_row_can_be_cited_without_loosening_witness_limits_or_rewriting_text():
+    from app.llm.scope_validation import line_scope_payload, resolve_line_judgment
+
+    text = "source metadata " * 150 + "The service uses TLS. " + "remaining cells " * 100
+    units = [replace(ledger().units[0], text=text)]
+    original = scope_payload("Protocol?", raw("The service uses TLS."), units)
+    projected = line_scope_payload(original)
+    rows = projected["claims"][0]["cited_evidence"][0]["text"]
+    assert "".join(r["content"] for r in rows) == text
+    selected = next(r["line"] for r in rows if "The service uses TLS." in r["content"])
+    checked = resolve_line_judgment(original, line_judgment(start_line=selected, end_line=selected))
+    quote = checked.checks[0].witnesses[0].quote
+    assert quote in text and len(quote) <= 1600
+    assert validate_judgment(original, checked).accepts(
+        "Protocol?", raw("The service uses TLS."), units
+    )
+    resolved = resolve_line_judgment(original, line_judgment(start_line=1, end_line=len(rows)))
+    witnesses = resolved.checks[0].witnesses
+    assert all(len(w.quote) <= 1600 and w.quote in text for w in witnesses)
+    assert "".join(w.quote for w in witnesses) == text
+
+
+def test_locally_split_source_ranges_still_enforce_witness_count_limit():
+    from app.llm.scope_validation import line_scope_payload, resolve_line_judgment
+
+    original = scope_payload("Protocol?", raw(), [replace(ledger().units[0], text="x" * 40000)])
+    count = len(line_scope_payload(original)["claims"][0]["cited_evidence"][0]["text"])
+    with pytest.raises(ValueError, match="SCOPE_CHECK_INVALID"):
+        resolve_line_judgment(original, line_judgment(start_line=1, end_line=count))

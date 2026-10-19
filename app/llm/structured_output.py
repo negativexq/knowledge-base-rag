@@ -1825,6 +1825,17 @@ async def _support_unit_answer_events(
     ):
         yield {"type": "comparison", "rows": candidate.comparison}
     rendered = render_support_unit_answer(validation.valid_parts, abstain=final_abstain)
+    if (
+        final_abstain
+        and validation.model_abstain
+        and not validation.failure_codes
+        and candidate is not None
+        and candidate.telemetry.get("pipeline_version") == "pipeline_adaptive_v1"
+        and candidate.telemetry.get("abstention_reason") == "INSUFFICIENT_EVIDENCE"
+    ):
+        # Failed research is not proof that the document contains no answer.
+        # Keep this application-owned; never release an unvalidated draft.
+        rendered = "I could not obtain enough evidence to answer this question."
     user_visible = validation.top_level_valid and bool(rendered)
     if capture is not None:
         capture.set_visible_outcome(

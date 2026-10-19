@@ -105,6 +105,29 @@ class PdfStructure:
         return elements
 
     @serialized_pdf
+    def page_quality(self, page_number: int) -> dict[str, Any]:
+        """Cheap original-page provenance check, not an OCR accuracy guarantee."""
+        with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
+            if not 1 <= page_number <= min(doc.page_count, 2000):
+                raise ValueError("PDF_PAGE_OUT_OF_RANGE")
+            page = doc[page_number - 1]
+            area = page.rect.width * page.rect.height
+            if area > MAX_PAGE_AREA:
+                raise ValueError("PDF_PAGE_TOO_LARGE")
+            native_chars = len(page.get_text().strip())
+            image_area = sum(
+                max(0, (fitz.Rect(info["bbox"]) & page.rect).get_area())
+                for info in page.get_image_info()[:MAX_ITEMS]
+            )
+            coverage = min(1.0, image_area / max(1, area))
+            return {
+                "page": page_number,
+                "native_text_chars": native_chars,
+                "image_area_fraction": coverage,
+                "requires_image": native_chars == 0 or (native_chars < 40 and coverage >= 0.5),
+            }
+
+    @serialized_pdf
     def list(self, page: int = 1, offset: int = 0) -> dict[str, Any]:
         with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
             elements = self._elements(doc, page)

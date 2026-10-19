@@ -208,7 +208,7 @@ def build_chat_dependencies(
 
     async def rewrite_fn(question: str, history: list[ChatTurn]) -> RewriteResult:
         rewrite_provider = chat_provider
-        if settings.agentic_rag_enabled:
+        if settings.agentic_rag_enabled or settings.adaptive_rag_enabled:
             from pydantic_ai.usage import RunUsage, UsageLimits
 
             from app.llm.agentic import ToolProvider
@@ -262,6 +262,13 @@ def build_chat_dependencies(
             agent_model_settings,
             run_agent,
         )
+
+        if settings.adaptive_rag_enabled:
+            from app.llm.adaptive import PIPELINE_VERSION, run_adaptive_agent
+
+            runner = run_adaptive_agent
+        else:
+            runner = run_agent
 
         # Operations the withheld fixed path already ran on this same evidence.
         tried: set[str] = set()
@@ -321,7 +328,7 @@ def build_chat_dependencies(
             )
             model_settings = agent_model_settings(settings, context_tokens)
             async with agent_model(settings) as native_model:
-                return await run_agent(
+                return await runner(
                     native_model,
                     agent_deps,
                     max_requests=settings.agentic_max_requests,
@@ -331,6 +338,43 @@ def build_chat_dependencies(
                     retries=settings.agentic_output_retries,
                     research_policy=settings.agentic_research_policy,
                     model_settings=model_settings,
+                    **(
+                        {
+                            "fast_path": settings.adaptive_fast_path_enabled,
+                            "evidence_needs_enabled": settings.adaptive_evidence_needs_enabled,
+                        }
+                        if settings.adaptive_rag_enabled
+                        else {}
+                    ),
+                    **(
+                        {
+                            "role_model_settings": {
+                                role: {
+                                    "openai_reasoning_effort": effort,
+                                    "max_tokens": 8192 if effort != "none" else 1024,
+                                    # A None override omits inherited temperature for reasoning.
+                                    "temperature": None if effort != "none" else 0.0,
+                                }
+                                for role, effort in {
+                                    "extractor": settings.adaptive_extraction_reasoning,
+                                    "extraction_checker": settings.adaptive_extraction_reasoning,
+                                    "finalizer": settings.adaptive_final_reasoning,
+                                    "answerer": settings.adaptive_final_reasoning,
+                                    "need_planner": settings.adaptive_final_reasoning,
+                                    "source_selector": settings.adaptive_final_reasoning,
+                                    "quantity_selector": settings.adaptive_final_reasoning,
+                                    "quantity_collector": settings.adaptive_final_reasoning,
+                                    "quantity_checker": settings.adaptive_final_reasoning,
+                                    "answer_repair": settings.adaptive_final_reasoning,
+                                    "scoped_extraction_checker": settings.adaptive_final_reasoning,
+                                    "scope_validator": settings.adaptive_final_reasoning,
+                                }.items()
+                            }
+                        }
+                        if settings.adaptive_rag_enabled
+                        and settings.generation_provider == "openai"
+                        else {}
+                    ),
                 )
 
         async with aclosing(
@@ -354,6 +398,13 @@ def build_chat_dependencies(
                 yield event
 
     async def stream_fn(question: str, chunks: list[SearchResult], retrieve=None, documents=None):
+        if settings.adaptive_rag_enabled:
+            async with aclosing(
+                agent_stream(question, chunks, retrieve, documents, None)
+            ) as events:
+                async for event in events:
+                    yield event
+            return
         if settings.agentic_rag_enabled:
             from app.llm.escalation import classic_first
 
@@ -414,12 +465,14 @@ def build_chat_dependencies(
             evidence_fn=evidence_fn
             if settings.rag_pipeline_v2 or settings.support_ids_enabled
             else None,
-            agentic_rag_enabled=settings.agentic_rag_enabled,
+            agentic_rag_enabled=settings.agentic_rag_enabled or settings.adaptive_rag_enabled,
             documents_factory=lambda context, source_ids: DocumentReader(
                 qdrant_client, collection_name, context, source_ids
             ),
             pipeline_version=(
-                "pipeline_agentic_v1"
+                "pipeline_adaptive_v1"
+                if settings.adaptive_rag_enabled
+                else "pipeline_agentic_v1"
                 if settings.agentic_rag_enabled
                 else "pipeline_support_ids"
                 if settings.support_ids_enabled
