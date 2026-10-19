@@ -210,7 +210,7 @@ in the [workflow documentation](docs/adaptive-workflow.md#budgets-and-finalizati
 | `ADAPTIVE_FAST_PATH_ENABLED` | `false` | Try a supported answer before opening a research loop. |
 | `ADAPTIVE_EVIDENCE_NEEDS_ENABLED` | `false` | Track question-bound evidence needs and source selection. |
 | `GENERATION_PROVIDER` | `ollama` | `ollama`, `openai`, or `claude`. |
-| `DERIVED_ANSWERS_ENABLED` | `false` | Source-backed arithmetic and counting. |
+| `DERIVED_ANSWERS_ENABLED` | `false` | Source-backed arithmetic, counting, label selection, and list ordering. |
 | `VISUAL_ANSWERS_ENABLED` | `false` | Original-page image reading and input checking. |
 | `AGENTIC_MAX_REQUESTS` / `AGENTIC_MAX_TOKENS` | `6` / `60000` | Shared model usage ceilings. |
 | `AGENTIC_MAX_TOOL_CALLS` / `AGENTIC_TIMEOUT_SECONDS` | `8` / `120` | Tool and end-to-end time ceilings. |
@@ -230,8 +230,8 @@ source-supported result once, with its run, answer, latency, and model-call coun
 
 | Evaluation | Result | Scope |
 | --- | --- | --- |
-| Current agentic flow | **7/7** selected questions: 2 calculations and 5 direct lookups | Same code and settings; independent original-PDF reviews. |
-| Historical answered-question ledger | **15** distinct questions with a source-supported published answer | Eight earlier successes have not been rerun with the latest code. |
+| Current agentic flow | **2/2** [targeted rechecks](artifacts/mmlongbench-v2/adaptive-selection-strict-20261019/REPORT.md) of earlier failures | Native strict output and typed selection/list operations; six calls and no retries per question. |
+| Historical answered-question ledger | **20** distinct questions answered out of **20** tried | Eighteen earlier successes have not been rerun with the final revision; this is not a current 20/20 stability result. |
 | Earlier MMLongBench-Doc pipeline | **79/120 (66%)**; 19/21 unanswerable questions refused | [Report](artifacts/mmlongbench-v2/luna-full-v3/report.md); lenient contains-match, not the official score. |
 | TechQA HOLDOUT50 | **26/50 (52%)** useful on the evaluated production path; 2% materially incorrect | [Report](artifacts/ragbench/techqa-production-v1/report.md); a separate pipeline evaluation. |
 | Multilingual reranker selection | Recall@5 1.00 TR→EN and EN→TR, 220 questions | [Decision](docs/reranking.md). |
@@ -248,7 +248,7 @@ make test
 make lint
 ```
 
-The latest recorded backend run passed **2,112 tests**, with four skips and
+The latest recorded backend run passed **2,125 tests**, with four skips and
 five deselected tests. The normal suite makes no paid provider calls.
 `make test-ollama` runs the checks that use a local model.
 

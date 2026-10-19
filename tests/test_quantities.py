@@ -603,3 +603,343 @@ async def test_question_driven_collection_survives_invalid_optional_plan():
     assert result.failure_code is None and seen == ["select", "inputs", "check"]
     assert json.loads(result.raw)["answer_parts"][0]["text"] == "10"
     assert state.need_planning == "failed" and not state.evidence_needs
+
+
+def selection_draft():
+    return QuantityDraft.model_validate(
+        {
+            "mode": "select",
+            "select_mode": "minimum",
+            "complete": True,
+            "operands": [
+                {
+                    "name": "spring",
+                    "label": "Spring",
+                    "value": "2.10",
+                    "unit": "%",
+                    "witness": "Spring 2.10%",
+                },
+                {
+                    "name": "autumn",
+                    "label": "Autumn",
+                    "value": "2.1",
+                    "unit": "%",
+                    "witness": "Autumn 2.1%",
+                },
+                {
+                    "name": "winter",
+                    "label": "Winter",
+                    "value": "9",
+                    "unit": "%",
+                    "witness": "Winter 9%",
+                },
+            ],
+        }
+    )
+
+
+def label_draft():
+    return QuantityDraft.model_validate(
+        {
+            "mode": "list",
+            "list_order": "ascending",
+            "list_unique": True,
+            "complete": True,
+            "items": [
+                {"position": 1, "page": 1, "text": "Verifier", "witness": "Blue box: Verifier"},
+                {"position": 2, "page": 1, "text": "Analyzer", "witness": "Blue box: Analyzer"},
+                {"position": 3, "page": 1, "text": "verifier", "witness": "Blue box: verifier"},
+            ],
+        }
+    )
+
+
+def test_selection_uses_decimal_measurements_returns_labels_and_preserves_ties():
+    draft = selection_draft()
+    assert execute(draft) == (["Spring", "Autumn"], "")
+    assert execute(draft.model_copy(update={"select_mode": "maximum"})) == (["Winter"], "")
+    # Exact decimals, rather than a lexical ordering or binary float roundoff.
+    assert execute(
+        draft.model_copy(
+            update={
+                "operands": [
+                    draft.operands[0].model_copy(update={"value": "10.00000000000000001"}),
+                    draft.operands[1].model_copy(update={"value": "10"}),
+                ]
+            }
+        )
+    )[0] == ["Autumn"]
+
+
+def test_selection_rejects_mixed_units_and_formula_injection():
+    from pydantic import ValidationError
+
+    draft = selection_draft()
+    operands = [*draft.operands]
+    operands[1] = operands[1].model_copy(update={"unit": "USD"})
+    with pytest.raises(ValueError, match="INCOMPATIBLE_UNITS"):
+        execute(draft.model_copy(update={"operands": operands}))
+    for expression in ["spring < winter", "__import__('os')"]:
+        with pytest.raises(ValidationError):
+            QuantityDraft.model_validate({**draft.model_dump(), "expression": expression})
+
+
+def test_categorical_listing_orders_and_deduplicates_only_as_requested():
+    draft = label_draft()
+    assert execute(draft) == (["Analyzer", "Verifier"], "")
+    assert execute(
+        draft.model_copy(
+            update={
+                "list_order": "source",
+                "list_unique": False,
+            }
+        )
+    )[0] == ["Verifier", "Analyzer", "verifier"]
+    assert execute(draft.model_copy(update={"list_order": "descending"}))[0] == [
+        "Verifier",
+        "Analyzer",
+    ]
+    with pytest.raises(ValueError, match="DUPLICATE_SOURCE_OCCURRENCE"):
+        execute(draft.model_copy(update={"items": [draft.items[0], draft.items[0]]}))
+
+
+def test_operation_projection_excludes_inapplicable_count_and_math_defaults():
+    from app.llm.quantities import semantic_draft
+
+    assert set(semantic_draft(selection_draft())) == {
+        "mode",
+        "complete",
+        "operands",
+        "select_mode",
+    }
+    assert set(semantic_draft(label_draft())) == {
+        "mode",
+        "complete",
+        "items",
+        "list_order",
+        "list_unique",
+    }
+    # The numeric executor remains arithmetic-only; comparison has its own typed path.
+    with pytest.raises(ValueError, match="Only numeric arithmetic"):
+        execute(arithmetic().model_copy(update={"expression": "a < b"}))
+
+
+@pytest.mark.asyncio
+async def test_invalid_execution_preserves_checked_inputs_and_failure_diagnostic():
+    active, need = active_session()
+    fake_calls(active, draft=arithmetic().model_copy(update={"expression": "a < b"}))
+    assert await collect(active, need) is None
+    record = next(iter(active.state.quantities.values()))
+    assert record.draft.operands and record.check.accepted
+    assert record.execution_status == "failed" and not record.values
+    assert "Only numeric arithmetic is allowed" in record.diagnostic_errors
+    restored = type(active.state).model_validate_json(active.state.model_dump_json())
+    assert next(iter(restored.quantities.values())).execution_status == "failed"
+
+
+@pytest.mark.asyncio
+async def test_selection_candidate_carries_labels_without_claiming_arithmetic():
+    active, need = active_session("Spring 2.10%\nAutumn 2.1%\nWinter 9%")
+    fake_calls(active, draft=selection_draft())
+    result = await collect(active, need)
+    assert json.loads(result.answer_parts[0].text) == ["Spring", "Autumn"]
+    assert result.answer_parts[0].calculation is None
+    assert not result.answer_parts[0].counts
+    active.state.research_stop = "REQUEST_RESERVE"
+    # No finalizer call needed; finalization reuses the stored selection receipt.
+    final, _ = await finalize_research(active)
+    assert final.answer_parts[0].text == result.answer_parts[0].text
+
+
+@pytest.mark.asyncio
+async def test_visual_label_list_survives_admission_and_independent_finalization(tmp_path):
+    path = tmp_path / "manual.pdf"
+    with fitz.open() as pdf:
+        page = pdf.new_page()
+        page.insert_text((30, 30), "Blue box: Verifier\nBlue box: Analyzer\nBlue box: verifier")
+        pdf.save(path)
+    active, need = active_session(
+        "Color information is absent from parser text",
+        visual_answers=True,
+        render_page=PdfPages(str(tmp_path)),
+    )
+    parent = active.deps.ledger.blocks[0]
+    parent.payload.update(
+        source_id="manual_pdf",
+        document_version=hashlib.sha256(path.read_bytes()).hexdigest(),
+    )
+    active.deps.ledger.source_ids = frozenset({"manual_pdf"})
+    calls = []
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        calls.append(role)
+        if role == "quantity_selector":
+            return QuantitySource(
+                available=True,
+                support_ids=["E1.S1"],
+                modality="image",
+                pages=[1],
+            )
+        assert len(images) == 1 and images[0].startswith(b"\x89PNG")
+        if role == "quantity_collector":
+            return output_type.model_validate(label_draft().model_dump())
+        assert role == "quantity_checker"
+        assert "items" in data["draft"] and "groups" not in data["draft"]
+        return QuantityCheck(accepted=True, complete=True, reason="supported")
+
+    active.call = call
+    result = await collect(active, need)
+    record = next(iter(active.state.quantities.values()))
+    assert record.proof_support_ids and record.execution_status == "completed"
+    assert json.loads(result.answer_parts[0].text) == ["Analyzer", "Verifier"]
+    active.state.research_stop = "RESEARCH_TURN_LIMIT"
+    restored = type(active.state).model_validate_json(active.state.model_dump_json())
+    active.state = restored
+    final, _ = await finalize_research(active)
+    assert final.answer_parts[0].text == result.answer_parts[0].text
+    assert calls == ["quantity_selector", "quantity_collector", "quantity_checker"]
+
+
+@pytest.mark.asyncio
+async def test_list_wrong_visual_condition_is_never_admitted():
+    active, need = active_session("Blue box: Verifier\nBlue box: Analyzer\nBlue box: verifier")
+    fake_calls(
+        active,
+        draft=label_draft(),
+        check=QuantityCheck(
+            accepted=False,
+            complete=True,
+            reason="wrong_binding",
+        ),
+    )
+    assert await collect(active, need, repairs_left=0) is None
+    record = next(iter(active.state.quantities.values()))
+    assert record.draft.items and not record.values and not record.proof_support_ids
+
+
+def test_context_closure_preserves_heading_but_never_crosses_source_boundaries():
+    from dataclasses import replace
+
+    from app.llm.quantities import context_closure
+
+    active, _ = active_session("Tools")
+    base = active.units()["E1.S1"]
+    base = replace(
+        base,
+        source_id="a",
+        document_version="v1",
+        page_number=3,
+        page_end=3,
+        contributing_chunk_ids=("page3",),
+        tenant_id="t1",
+    )
+    units = {"tools": base, "heading": replace(base, text="Platform measurement tools")}
+    for name, change in [
+        ("wrong_source", {"source_id": "b"}),
+        ("wrong_version", {"document_version": "v2"}),
+        ("wrong_page", {"page_number": 4, "page_end": 4}),
+        ("wrong_tenant", {"tenant_id": "t2"}),
+        ("wrong_chunk", {"contributing_chunk_ids": ("different",)}),
+        ("hidden", {"model_visible": False}),
+        ("denied", {"authorized": False}),
+        ("wrong_parent", {"parent_evidence_block_id": "different"}),
+        ("oversized", {"text": "x" * 6001}),
+    ]:
+        units[name] = replace(base, **change)
+    assert context_closure(["tools"], units) == ["tools", "heading"]
+    assert context_closure([], units) == []
+    for i in range(10):
+        units[str(i)] = replace(base, text="Small same-page paragraph")
+    assert len(context_closure(["tools"], units)) == 6
+
+
+@pytest.mark.asyncio
+async def test_context_heading_reaches_checker_receipt_and_final_citations():
+    active, need = active_session("North 3\nSouth 7\n\nPlatform measurement tools\n\nTools")
+    # Paragraphs 2 and 3 share the source chunk and physical page with paragraph 1.
+    selection = QuantitySource(support_ids=["E1.S1"], context_support_ids=["E1.S3"], available=True)
+    seen_context = []
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        if role == "quantity_selector":
+            return selection
+        seen_context.extend(x["support_id"] for x in data["context_sources"])
+        if role == "quantity_collector":
+            return arithmetic()
+        return QuantityCheck(accepted=True, complete=True, reason="supported")
+
+    active.call = call
+    result = await collect(active, need)
+    record = next(iter(active.state.quantities.values()))
+    assert "E1.S2" in seen_context
+    assert "E1.S2" in record.context_support_ids
+    assert "E1.S2" in result.answer_parts[0].support_ids
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "unique,expected",
+    [
+        (True, ["Analyzer", "Verifier"]),
+        (False, ["Analyzer", "Verifier", "verifier"]),
+    ],
+)
+async def test_checked_list_policy_changes_presentation_without_discarding_source_occurrences(
+    unique,
+    expected,
+):
+    from app.llm.quantity_state import QuantityAssessment
+
+    active, need = active_session("Blue box: Verifier\nBlue box: Analyzer\nBlue box: verifier")
+    draft = label_draft().model_copy(update={"list_unique": not unique})
+    roles = fake_calls(
+        active,
+        draft=draft,
+        check=QuantityAssessment(
+            inputs="supported",
+            coverage="complete",
+            operation="supported",
+            entity_identity="supported",
+            list_unique=unique,
+        ),
+    )
+    result = await collect(active, need)
+    record = next(iter(active.state.quantities.values()))
+    assert json.loads(result.answer_parts[0].text) == expected
+    assert len(record.draft.items) == 3
+    assert record.assessments[0].list_unique is unique
+    assert roles == ["quantity_selector", "quantity_collector", "quantity_checker"]
+
+
+@pytest.mark.asyncio
+async def test_openai_uses_strict_output_without_retrying_or_defaulting_missing_completeness():
+    from pydantic_ai.profiles.openai import OpenAIJsonSchemaTransformer
+
+    from app.llm.quantity_state import ImageQuantityDraft
+
+    seen = []
+
+    def model(messages, info):
+        tool = info.output_tools[0]
+        seen.append(tool.strict)
+        schema = OpenAIJsonSchemaTransformer(tool.parameters_json_schema, strict=tool.strict).walk()
+        assert "complete" in schema["required"]
+        assert set(schema["required"]) == set(schema["properties"])
+        assert schema["additionalProperties"] is False
+        group = schema["$defs"]["ImageQuantityGroup"]
+        assert group["additionalProperties"] is False and "page" not in group["properties"]
+        data = label_draft().model_dump()
+        return reply(info, data)
+
+    active, _ = active_session()
+    active.deps.provider_name = "openai"
+    active.model = FunctionModel(model)
+    draft = await active.call(
+        "quantity_collector",
+        ImageQuantityDraft,
+        "Extract source inputs",
+        {"question": "List blue labels"},
+        research=True,
+    )
+    assert draft.complete and seen == [True]
+    assert active.usage.requests == 1

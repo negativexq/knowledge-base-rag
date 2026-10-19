@@ -1,10 +1,10 @@
 # Answered questions — source-verified results
 
 Updated: **19 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **15**. Each question appears once; rerunning
+source-supported published answer: **20**, out of **20 distinct questions tried**. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 15 have passed on the
+This is a historical success ledger, not a claim that all 20 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -27,6 +27,11 @@ runtime release checks.
 | 472 | Maximum coffee weight in the manual insert. `User_Manual_1500S_Classic_EN.pdf` | **16 grams**; integer answer 16 | [Report](../artifacts/mmlongbench-v2/adaptive-easy-five-20261019/REPORT.md) | 16.33 s / 3 |
 | 507 | Geographic market for EPS Code AR01. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **Little Rock** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-five-20261019/REPORT.md) | 13.90 s / 3 |
 | 1076 | Cash and cash equivalents on January 28, 2023. `BESTBUY_2023_10K.pdf` | **1,874 million USD** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-five-20261019/REPORT.md) | 20.21 s / 3 |
+| 1077 | Best Buy merchandise inventory accounting policy. `BESTBUY_2023_10K.pdf` | **Lower of cost or net realizable value; weighted-average costing** | [Report](../artifacts/mmlongbench-v2/adaptive-mixed-five-20261019/REPORT.md) | 25.71 s / 3 |
+| 370 | Executive directors attending more than six Board Meetings. `afe620b9beac86c1027b96d31d396407.pdf` | **Mr. S.V. Shanbhag — 7 meetings** | [Report](../artifacts/mmlongbench-v2/adaptive-mixed-five-20261019/REPORT.md) | 21.93 s / 3 |
+| 1024 | FY2021 operating cash flow / current liabilities. `COSTCO_2021_10K.pdf` | **0.304** = 8958/29441 | [Report](../artifacts/mmlongbench-v2/adaptive-mixed-five-20261019/REPORT.md) | 34.74 s / 6 |
+| 524 | Lower rural-user percentage in 2013–2014 for the platform identified by its tools. `measuringsuccessonfacebooktwitterlinkedin-160317142140_95.pdf` | **2013**, 11% versus 17% | [Report](../artifacts/mmlongbench-v2/adaptive-selection-strict-20261019/REPORT.md) | 40.07 s / 6 |
+| 634 | Blue-background execution-function names in Figure 1. `2023.acl-long.386.pdf` | **["Fact Checker"]**; Functions column | [Report](../artifacts/mmlongbench-v2/adaptive-selection-strict-20261019/REPORT.md) | 37.72 s / 6 |
 
 Row 642's stored gold label is `[64.3, 62.4, 62.2]`. The PDF values 64.35 and
 62.46 do not match that label under standard one-decimal rounding. This ledger
@@ -36,10 +41,24 @@ answer. The linked reports retain the details.
 
 ## Latest runs
 
-The latest implementation passed **7/7 selected questions: two calculations and
-five direct lookups**, with the same code/settings. The other eight historical
-successes have not been rerun on this version. This is not a 15/15 stability
-claim or a complete benchmark score.
+The final strict-output workflow passed **2/2 targeted rechecks**: rows 524 and
+634, each with six model calls, one collection tool, no retries, and one passing
+final scope check. No finalizer model was called. The other **18 historical
+successes have not been rerun on this final revision**; this is not a current
+20/20 stability claim or a complete benchmark score.
+
+The [repair report](../artifacts/mmlongbench-v2/adaptive-selection-strict-20261019/REPORT.md)
+retains every intermediate version: an alternate diagram-region answer, a false
+input rejection over repeated names, and a missing required completeness field.
+The final workflow separates typed selection/list operations, source-object
+bindings, input accuracy, reviewed list presentation, and strict output shape.
+It does not feed gold labels or question-specific values into runtime prompts.
+
+The preceding main revision answered 10/12 selected questions: **7/7** in the
+first selection plus **3/5** in the mixed selection. The
+[mixed-five report](../artifacts/mmlongbench-v2/adaptive-mixed-five-20261019/REPORT.md)
+preserves the two original abstentions, rather than replacing them with later
+successes. The earlier observations below remain historical records.
 
 - **729:** 41, 33.03 seconds / 6 calls. Original images supplied the correct 12
   instead of the indexed OCR value 42.
