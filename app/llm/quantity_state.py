@@ -34,6 +34,11 @@ class QuantityItem(QuantityData):
         ge=1, le=1000, description="Item ordinal in this category on its source page"
     )
     text: str = Field(min_length=1, max_length=500)
+    source_object: str = Field(
+        default="",
+        max_length=500,
+        description="Source heading/column/region owning this item, not a nearby object",
+    )
     witness: str = Field(default="", max_length=1500)
     source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
     page: int | None = Field(default=None, ge=1, le=2000)
@@ -52,35 +57,49 @@ class QuantityOperand(QuantityData):
     name: str = Field(pattern=r"^[a-z][a-z0-9_]{0,30}$")
     label: str = Field(min_length=1, max_length=200)
     value: str = Field(min_length=1, max_length=100)
+    unit: str = Field(default="", max_length=100)
     witness: str = Field(default="", max_length=1500)
     source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
     page: int | None = Field(default=None, ge=1, le=2000)
 
 
-class QuantityDraft(QuantityData):
-    mode: Literal["arithmetic", "count"]
+class QuantityOperation(QuantityData):
+    mode: Literal["arithmetic", "count", "select", "list"]
     count_mode: Literal["per_group", "total", "distinct"] = "per_group"
+    select_mode: Literal["minimum", "maximum"] = "minimum"
+    list_order: Literal["source", "ascending", "descending"] = "source"
+    list_unique: bool = False
+
+
+class QuantityDraft(QuantityOperation):
     operands: list[QuantityOperand] = Field(default_factory=list, max_length=20)
     # A named-input formula, never a model-written result.
     expression: str = Field(default="", max_length=500)
     decimals: int = Field(default=3, ge=0, le=10)
     groups: list[QuantityGroup] = Field(default_factory=list, max_length=10)
+    items: list[QuantityItem] = Field(default_factory=list, max_length=200)
     complete: bool = False
 
     @model_validator(mode="after")
     def coherent(self) -> QuantityDraft:
-        if self.mode == "arithmetic":
-            if (
-                self.count_mode != "per_group"
-                or not self.operands
-                or not self.expression
-                or self.groups
-            ):
-                raise ValueError("Arithmetic requires named inputs and formula, no groups")
+        if self.mode in {"arithmetic", "select"}:
+            if not self.operands or self.groups or self.items or self.count_mode != "per_group":
+                raise ValueError("Numeric operations require named inputs, no item groups")
+            if self.mode == "arithmetic" and not self.expression:
+                raise ValueError("Arithmetic requires a formula")
+            if self.mode == "select" and (self.expression or len(self.operands) < 2):
+                raise ValueError("Selection requires at least two inputs, no formula")
             if len({o.name for o in self.operands}) != len(self.operands):
                 raise ValueError("Duplicate operand names")
-        elif not self.groups or self.operands or self.expression:
-            raise ValueError("Counting requires item groups, no arithmetic")
+        elif self.mode == "count":
+            if not self.groups or self.operands or self.expression or self.items:
+                raise ValueError("Counting requires item groups, no arithmetic")
+        elif not self.items or self.operands or self.expression or self.groups:
+            raise ValueError("Listing requires source items, no arithmetic or count groups")
+        if self.mode != "list" and (self.list_order != "source" or self.list_unique):
+            raise ValueError("List formatting only applies to listing")
+        if self.mode != "select" and self.select_mode != "minimum":
+            raise ValueError("Selection operation only applies to selection")
         return self
 
 
@@ -93,7 +112,7 @@ class QuantityCheck(QuantityData):
 
 class QuantityIssue(QuantityData):
     kind: Literal["wrong_binding", "missing_item", "boundary", "operation", "unreadable"]
-    target: Literal["operand", "group", "operation"]
+    target: Literal["operand", "group", "item", "operation"]
     index: int | None = Field(default=None, ge=0, le=199)
     description: str = Field(min_length=1, max_length=600)
     source_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
@@ -110,6 +129,10 @@ class QuantityAssessment(QuantityData):
     coverage: Literal["complete", "incomplete", "unknown"]
     operation: Literal["supported", "mismatch", "ambiguous", "unknown"]
     entity_identity: Literal["supported", "unknown"] = "unknown"
+    list_unique: bool | None = Field(
+        default=None,
+        description="Question's name-set versus occurrence policy; null for other modes",
+    )
     issues: list[QuantityIssue] = Field(default_factory=list, max_length=10)
     alternatives: list[Literal["per_group", "total", "distinct"]] = Field(
         default_factory=list, max_length=3
@@ -136,6 +159,7 @@ class QuantityRecord(QuantityData):
     parent_id: str | None = None
     provisional_values: list[str] = Field(default_factory=list)
     ambiguity_results: dict[str, list[str]] = Field(default_factory=dict)
+    execution_status: Literal["pending", "completed", "failed"] = "pending"
 
 
 class TextQuantityOperand(QuantityOperand):
@@ -157,13 +181,12 @@ class TextQuantityGroup(QuantityData):
     complete: bool = False
 
 
-class TextQuantityDraft(QuantityData):
-    mode: Literal["arithmetic", "count"]
-    count_mode: Literal["per_group", "total", "distinct"] = "per_group"
+class TextQuantityDraft(QuantityOperation):
     operands: list[TextQuantityOperand] = Field(default_factory=list, max_length=20)
     expression: str = Field(default="", max_length=500)
     decimals: int = Field(default=3, ge=0, le=10)
     groups: list[TextQuantityGroup] = Field(default_factory=list, max_length=10)
+    items: list[TextQuantityItem] = Field(default_factory=list, max_length=200)
     complete: bool = False
 
 
@@ -206,13 +229,12 @@ class ImageQuantityGroup(QuantityData):
     complete: bool
 
 
-class ImageQuantityDraft(QuantityData):
-    mode: Literal["arithmetic", "count"]
-    count_mode: Literal["per_group", "total", "distinct"] = "per_group"
+class ImageQuantityDraft(QuantityOperation):
     operands: list[ImageQuantityOperand] = Field(default_factory=list, max_length=20)
     expression: str = Field(default="", max_length=500)
     decimals: int = Field(default=3, ge=0, le=10)
     groups: list[ImageQuantityGroup] = Field(default_factory=list, max_length=10)
+    items: list[ImageQuantityItem] = Field(default_factory=list, max_length=200)
     complete: bool
 
     @model_validator(mode="after")

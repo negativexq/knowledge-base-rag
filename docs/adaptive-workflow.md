@@ -20,7 +20,7 @@ flowchart TD
     Decision -->|"Supported candidate"| Verify["Source and scope validation"]
     Decision -->|"Missing evidence"| Tool["Authorized narrow operation"]
     Tool --> State["Application-owned ResearchState"]
-    State -->|"Ready computation"| Calculate["Decimal arithmetic or item count"]
+    State -->|"Ready computation"| Calculate["Arithmetic, count, label selection or list ordering"]
     Calculate --> State
     State --> Context
     State -->|"Research closes"| Finalize["Independent finalization"]
@@ -106,7 +106,13 @@ additional source is needed.
 Both lists must reference authorized, model-visible units presented to the
 selector. Numeric inputs come from one source/version; context remains
 separately traceable. The selector can choose at most three numeric sources,
-three context sources, and three numeric input pages.
+three context seed sources, and three numeric input pages. The application retains
+bounded sibling paragraphs around a context seed when they share the same source
+snapshot, tenant, parent block, physical page, and contributing chunk. This keeps
+a detached heading with its list without another model call. Expansion adds only
+already authorized, visible units, up to six context IDs and within a 6,000-character
+expansion allowance; selected seed text is never silently truncated. The
+`quantity.context.bind` span records selected seeds and the retained IDs.
 
 The application partitions page references by evidence role. If the selector
 includes an authorized context page in the common page list, it remains context
@@ -164,6 +170,14 @@ The text output schema does not ask the model to copy free-form quotations,
 shorten them with ellipses, or repair an existing quotation through another call.
 Detached headings and values can be bound using separate bounded ranges.
 
+Native OpenAI semantic stages use PydanticAI `ToolOutput(..., strict=True)`.
+The provider enforces JSON shape during generation, including required completeness
+fields and disallowed extra fields. Local Pydantic validation still checks cross-field
+coherence. Other providers retain their compatibility path and local validation.
+This is a data contract, not an answer-template constraint: it does not set source
+values, expected labels, or a gold answer, and does not add a schema-repair call.
+Each model span records `research.output_strict`; SDK retries remain zero.
+
 Image quantity schemas require explicit page, witness, and completeness fields.
 Page numbers are not inferred from witness prose. Each item must refer to a
 supplied physical page. A complete flag is a proposal, not independent approval.
@@ -174,6 +188,29 @@ supplied physical page. A complete flag is a proposal, not independent approval.
   Compatibility fields such as `count_mode=per_group` are omitted.
 - Counting: groups, item positions, boundaries, completeness, and the actual
   `per_group`, `total`, or `distinct` operation. Arithmetic fields are omitted.
+- Selection: source identity labels, decimal measurements, units, and the typed
+  `minimum` or `maximum` operation. The application returns every tied label.
+  Mixed units require an explicit conversion elsewhere; comparison syntax is
+  never enabled in the arithmetic evaluator.
+- Listing: flat source items with positions, page witnesses, and owning source
+  objects/columns, plus the requested ordering and uniqueness policy. Code
+  orders and optionally deduplicates checked items. The independent assessment returns
+  the question's uniqueness policy separately from transcription accuracy; two
+  correctly read source occurrences are not invalid inputs merely because the
+  output asks for a set of names. Lists are not count groups;
+  an item page belongs on the item, not an invented group field.
+
+The source checker inspects the requested object's role as well as the visible
+condition. A neighboring diagram object with the same color is not sufficient
+without a binding to the object requested by the question. Unknown or conflicting
+bindings remain review failures; the application does not resolve them with gold
+answers or dataset-specific vocabulary.
+
+Execution receipts distinguish pending, completed, and failed execution. A failed
+operation retains its input draft, source witnesses, independent assessment, and
+execution diagnostic. Successful selections/lists are stored before proof admission
+and can be reused by independent finalization without a new answer-writing call.
+Unknown JSON fields remain rejected; this does not relax schema validation.
 
 This projection is used by input checking, repair payloads, checked proof records,
 and finalizer context. It prevents an irrelevant default from becoming a new
@@ -185,7 +222,7 @@ instruction while retaining the complete typed record for checkpoint compatibili
 It also records whether entity labels support identity comparison. A correct
 number remains correct even when the requested operation is unresolved.
 
-Nonpassing decisions require a `QuantityIssue`: target operand/group/operation,
+Nonpassing decisions require a `QuantityIssue`: target operand/group/item/operation,
 source location, explanation, and the evidence needed to resolve the issue.
 The application checks target indexes, selected page/range bounds, and question
 segment references. Bounds checks do not prove a semantic objection is true.
@@ -294,7 +331,7 @@ Small root Markdown reports and the English answered-question ledger are retaine
 
 ## Validation and remaining work
 
-The latest recorded backend suite passed 2,112 tests, with four skips and five
+The latest recorded backend suite passed 2,125 tests, with four skips and five
 deselected tests; lint and mypy passed. The source-authority changes also passed
 66 focused tests. Seven selected questions were answered correctly with the same
 code/settings: two calculations and five direct lookups. Fifteen distinct questions

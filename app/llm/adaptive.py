@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from pydantic import Field, model_validator
-from pydantic_ai import Agent, BinaryContent, capture_run_messages
+from pydantic_ai import Agent, BinaryContent, ToolOutput, capture_run_messages
 from pydantic_ai.exceptions import UnexpectedModelBehavior
 from pydantic_ai.messages import ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models import Model
@@ -694,9 +694,13 @@ class AdaptiveSession:
         ):
             raise ResearchClosed("TOKEN_RESERVE")
         model = self.scope_model if role == "scope_validator" and self.scope_model else self.model
+        strict_output = self.deps.provider_name == "openai"
         agent = Agent(
             model,
-            output_type=output_type,
+            # Enforce shape at generation time, not with another repair call.
+            # Native OpenAI supports strict tool output. Other providers retain
+            # their existing compatibility path and local Pydantic validation.
+            output_type=ToolOutput(output_type, strict=True) if strict_output else output_type,
             instructions=instructions,
             retries=0,
             name=f"adaptive_{role}",
@@ -712,6 +716,7 @@ class AdaptiveSession:
             mark_model(span, self.deps.provider_name, model.model_name, role)
             span.set_attribute("budget.reserved_requests", reserved)
             span.set_attribute("budget.estimated_input_tokens", estimated)
+            span.set_attribute("research.output_strict", strict_output)
             if settings.get("openai_reasoning_effort") is not None:
                 span.set_attribute(
                     "gen_ai.request.reasoning_effort", str(settings.get("openai_reasoning_effort"))
