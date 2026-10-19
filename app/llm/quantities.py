@@ -11,6 +11,7 @@ import ast
 import asyncio
 import json
 import time
+from decimal import DecimalException
 from typing import TYPE_CHECKING, Any
 
 from app.evidence.support_units import SupportUnit
@@ -18,6 +19,7 @@ from app.llm.agent_observability import operation, outcome
 from app.llm.agentic import AgentAnswer, AgentAnswerPart, AgentCalculation, AgentCount
 from app.llm.calculation import Calculation, evaluate_decimal_expression, verify_calculation
 from app.llm.quantity_contracts import bind_collection, collection_contract, review_contract
+from app.llm.quantity_numbers import normalize_inputs
 from app.llm.quantity_review import (
     CHECK,
     assessment,
@@ -26,7 +28,13 @@ from app.llm.quantity_review import (
     repair_requirement,
     verdict,
 )
-from app.llm.quantity_sources import inspect_pages, source_catalog
+from app.llm.quantity_sources import (
+    bind_gap_source,
+    complete_sources,
+    fresh_source_view,
+    inspect_pages,
+    source_catalog,
+)
 from app.llm.quantity_state import (
     EntityInventoryDraft,
     QuantityDraft,
@@ -50,6 +58,9 @@ Set operation_kind to the actual operation: read for source-printed values (incl
 single table Min/Max cell or a visual level); arithmetic for a formula; select for the
 label with the extreme among TWO OR MORE measurements; list for names; count for counts.
 Do not confuse a source's minimum specification with selecting between several values.
+Use lookup when a comparison selects an entity, then the question asks for a DIFFERENT
+measurement belonging to that entity. Locate both the comparison and output sources;
+do not select the entity by maximizing the requested output measurement instead.
 For an ordinary nonnumeric factual lookup requiring none of these, return available=false.
 Available means a plausible authorized source region can be inspected, not that its
 answer is already readable in parser text. For visual layout or label requests, use
@@ -76,7 +87,8 @@ Do not repeat the previous source selection with the same pages and modality: th
 view was already insufficient. A new image/page view of that source is eligible.
 Return available=false if the required entity evidence is absent.
 For scope_research, use repair_only and scope_objections to locate a missing binding or fuller
-source object. Preserve the original operation. Source context may establish identity
+source object. Preserve the task; a grounded operation objection permits correcting a
+misplanned operation (for example select to lookup). Source context may establish identity
 or definitions; an unspecified question period is not a request for current-year data.
 For coverage_completion, locate the full inventory or missing continuation satisfying
 the ORIGINAL question. A smaller subgroup is not complete just because it has category
@@ -94,12 +106,33 @@ The application supplies one operation-specific output contract. Use only that o
 For read, transcribe the requested value(s) without a formula or a comparison. Distinguish
 what is printed from a grounded visual relation in the witness; never guess an unreadable
 value. Do not add fields from other operations.
+Numeric operands keep the original printed numeric display in value and declare its
+number_format. canonical means plain decimal; decimal_point uses '.' decimals and ','
+thousands; decimal_comma uses ',' decimals and '.' thousands; space_grouped uses spaces
+and '.' decimals. Accounting parentheses represent a signed negative source movement.
+source_scale is the printed unit multiplier to base units, not a result.
+For read, output_unit/output_scale describe the requested unit, and sign_convention
+is signed unless the question requests an amount/count magnitude. Code performs the
+reviewed sign/scale conversion; do not calculate it yourself.
+Use value=null with value_status=not_found, unreadable or ambiguous when appropriate.
+Never put an explanation into value or use zero as a missing-value placeholder.
+not_found and complete=true require inspection of the whole requested source object,
+including its question-required location. A missing value in a partial view is incomplete.
 For images select the supplied image_ids, not page numbers seen inside the document.
 The application maps these handles to immutable source snapshots and physical pages.
 Choose select for which label/year/category has the minimum or maximum numeric value:
 provide ALL comparison operands with label as the source identity to return, value as
 the comparable measurement, and its unit. Set select_mode minimum or maximum.
 Preserve ties. Never put comparisons into an arithmetic expression.
+For lookup transcribe the comparison inputs AND the requested values into operands.
+Keep each operand's population, series and period explicit (empty only if unstated).
+Determine their roles from the original question and source captions, rather than
+copying a prior draft's population assumptions.
+For each candidate entity provide a choice: its source label, score_expression using
+the comparison operand names, and value_operand naming its requested output value.
+The application computes the scores, selects minimum/maximum, and returns the linked
+value. Do not calculate scores or pick a winner yourself. Preserve entity, population,
+period and unit bindings across sources. All prerequisite inputs must remain present.
 Choose list to return names/labels rather than a numeric count. Transcribe individual
 source occurrences into the flat items array with position and source handles.
 Include source_object: the actual source heading, column or region owning the item.
@@ -110,10 +143,14 @@ Set list_order from the question. Use list_unique=true for names/types as a set,
 false for a list of individual occurrences. Do not pre-sort, deduplicate or count items.
 The witness must bind each item to the requested condition (e.g. its box color).
 List mode uses items, not groups. No numeric formula.
+When the entire requested source object is readable and no item satisfies the condition,
+return items=[] with absence containing the inspected source_object and source locator.
+Describe the observed distinguishing features in its witness. Use absence=null when
+items exist. An unreadable, partial or missing view is not a complete empty inventory.
 Choose arithmetic when source-printed numbers and a formula suffice: give each input a
-name, label, canonical decimal value and witness, and a formula using those names. Never
-supply a computed result. State result_unit and a short interpretation describing the
-chosen operation, not an answer. These will be reviewed and displayed with the result.
+name, label, source numeric display with its notation and witness, and a formula using
+those names. Never supply a computed result. State result_unit and a short interpretation
+describing the chosen operation, not an answer. These are reviewed and displayed with the result.
 Choose count when individual items must be enumerated: list
 each source item separately under its category, in the requested category order.
 Use count_mode per_group for separate category counts, total for a requested sum of
@@ -147,17 +184,98 @@ def semantic_draft(draft: QuantityDraft) -> dict[str, Any]:
         "arithmetic": {"operands", "expression", "decimals", "result_unit", "interpretation"},
         "count": {"groups", "count_mode"},
         "select": {"operands", "select_mode"},
-        "list": {"items", "list_order", "list_unique"},
+        "lookup": {"operands", "choices", "select_mode"},
+        "list": {"items", "list_order", "list_unique", "absence"},
     }
-    return draft.model_dump(include={"mode", "complete", *fields[draft.mode]})
+    data = draft.model_dump(include={"mode", "complete", *fields[draft.mode]})
+    if data.get("absence") is None:
+        data.pop("absence", None)
+    return data
+
+
+def execute_lookup(draft: QuantityDraft) -> tuple[list[str], str]:
+    """Execute a reviewed comparison-to-value join without a model call."""
+    inputs = {o.name: o for o in draft.operands}
+    scores = []
+    used: set[str] = set()
+    score_units: set[str] = set()
+    for choice in draft.choices:
+        if choice.value_operand not in inputs:
+            raise ValueError("LOOKUP_UNKNOWN_VALUE_OPERAND")
+        names = {
+            n.id
+            for n in ast.walk(ast.parse(choice.score_expression, mode="eval"))
+            if isinstance(n, ast.Name)
+        }
+        if not names or not names <= inputs.keys() or choice.value_operand in names:
+            raise ValueError("LOOKUP_INVALID_COMPARISON_INPUTS")
+        if len({inputs[n].unit.casefold().strip() for n in names}) != 1:
+            raise ValueError("LOOKUP_INCOMPATIBLE_SCORE_UNITS")
+        score_units.update(inputs[n].unit.casefold().strip() for n in names)
+        score_draft = QuantityDraft(
+            mode="arithmetic",
+            complete=True,
+            expression=choice.score_expression,
+            decimals=10,
+            operands=[inputs[n] for n in inputs if n in names],
+        )
+        score_values, expanded = execute(score_draft)
+        score = score_values[0]
+        failures = verify_calculation(
+            Calculation(expanded, score), [inputs[n].witness for n in names], score
+        )
+        if failures:
+            raise ValueError(";".join(failures))
+        scores.append(decimal_value(score))
+        used.update(names | {choice.value_operand})
+    if used != set(inputs) or len({c.label for c in draft.choices}) != len(draft.choices):
+        raise ValueError("LOOKUP_UNBOUND_INPUT_OR_DUPLICATE_ENTITY")
+    units = {inputs[c.value_operand].unit.casefold().strip() for c in draft.choices}
+    if len(score_units) != 1:
+        raise ValueError("LOOKUP_INCOMPATIBLE_SCORE_UNITS")
+    if len(units) != 1:
+        raise ValueError("LOOKUP_INCOMPATIBLE_OUTPUT_UNITS")
+    extreme = min(scores) if draft.select_mode == "minimum" else max(scores)
+    with operation("quantity.lookup") as span:
+        span.set_attribute("quantity.comparison_labels", [c.label for c in draft.choices])
+        span.set_attribute("quantity.comparison_scores", [str(s) for s in scores])
+        span.set_attribute(
+            "quantity.selected_labels",
+            [c.label for c, s in zip(draft.choices, scores, strict=True) if s == extreme],
+        )
+        span.set_attribute(
+            "quantity.lookup_value_operands",
+            [c.value_operand for c, s in zip(draft.choices, scores, strict=True) if s == extreme],
+        )
+    return [
+        str(decimal_value(inputs[c.value_operand].value))
+        for c, score in zip(draft.choices, scores, strict=True)
+        if score == extreme
+    ], ""
 
 
 def execute(draft: QuantityDraft) -> tuple[list[str], str]:
     """No model-written results or arbitrary code; named inputs expand to decimals."""
     if not draft.complete:
         raise ValueError("QUANTITY_INCOMPLETE")
+    numeric = normalize_inputs(draft)
+    if draft.mode == "read" and numeric and all(n.value_status == "not_found" for n in numeric):
+        return [], ""
+    if any(n.value_status != "readable" or n.errors for n in numeric):
+        raise ValueError("QUANTITY_NUMERIC_INPUT_UNRESOLVED")
     if draft.mode == "read":
-        return [str(decimal_value(o.value)) for o in draft.operands], ""
+        return [str(decimal_value(n.output_value)) for n in numeric], ""
+    if numeric:
+        draft = draft.model_copy(
+            update={
+                "operands": [
+                    o.model_copy(update={"value": n.canonical_value, "number_format": "canonical"})
+                    for o, n in zip(draft.operands, numeric, strict=True)
+                ]
+            }
+        )
+    if draft.mode == "lookup":
+        return execute_lookup(draft)
     if draft.mode == "select":
         if len({o.unit.casefold().strip() for o in draft.operands}) != 1:
             raise ValueError("SELECTION_INCOMPATIBLE_UNITS")
@@ -246,9 +364,11 @@ def candidate(record: QuantityRecord) -> AgentAnswer:
         or not record.check.accepted
         or not record.check.complete
         or record.check.reason != "supported"
-        or not record.values
+        or (not record.has_result)
     ):
         raise ValueError("QUANTITY_NOT_CHECKED")
+    if record.absence_confirmed:
+        return AgentAnswer(answer_parts=[], abstain=True)
     ids = list(
         dict.fromkeys([*record.proof_support_ids, *record.support_ids, *record.context_support_ids])
     )
@@ -263,14 +383,22 @@ def candidate(record: QuantityRecord) -> AgentAnswer:
             calculation=AgentCalculation(expression=record.expression, result=record.values[0]),
         )
     elif record.draft.mode == "read":
+        numbers = record.numeric_inputs or normalize_inputs(record.draft)
         part = AgentAnswerPart(
             text="; ".join(
                 (f"{o.label}: " if len(record.values) > 1 else "")
                 + value
-                + (f" {o.unit}" if o.unit else "")
-                for o, value in zip(record.draft.operands, record.values, strict=True)
+                + (f" {n.output_unit}" if n.output_unit else "")
+                for o, n, value in zip(record.draft.operands, numbers, record.values, strict=True)
             ),
             support_ids=ids,
+        )
+    elif record.draft.mode == "lookup":
+        unit = next(
+            o.unit for o in record.draft.operands if o.name == record.draft.choices[0].value_operand
+        )
+        part = AgentAnswerPart(
+            text="; ".join(v + (f" {unit}" if unit else "") for v in record.values), support_ids=ids
         )
     elif record.draft.mode in {"select", "list"}:
         part = AgentAnswerPart(
@@ -346,7 +474,14 @@ def resolve_draft(draft: QuantityDraft, sources: dict[str, str]) -> QuantityDraf
     items = [
         i.model_copy(update={"witness": witness(i.source_ranges, i.witness)}) for i in draft.items
     ]
-    return draft.model_copy(update={"operands": operands, "groups": groups, "items": items})
+    absence = draft.absence
+    if absence is not None:
+        absence = absence.model_copy(
+            update={"witness": witness(absence.source_ranges, absence.witness)}
+        )
+    return draft.model_copy(
+        update={"operands": operands, "groups": groups, "items": items, "absence": absence}
+    )
 
 
 def context_closure(ids: list[str], units: dict[str, SupportUnit]) -> list[str]:
@@ -405,6 +540,9 @@ async def collect(
     inventory_repair = requirement is not None and requirement.evidence_kind == "entity_inventory"
     coverage_repair = requirement is not None and requirement.evidence_kind == "coverage_completion"
     scope_repair = requirement is not None and requirement.evidence_kind == "scope_research"
+    gap_search = None
+    if scope_repair and parent and parent.scope_diagnostic is None:
+        gap_search = await complete_sources(session, parent)
     units = session.units()
     previous = set(requirement.previous_support_ids) if requirement else set()
 
@@ -423,7 +561,19 @@ async def collect(
         preserve_anchors=not (coverage_repair or scope_repair or inventory_repair),
     )
     catalog = await source_catalog(session, ranked)
-    keys = sorted(ranked, key=previous_view)[:12]
+    # Keep prerequisites and the prior selected source visible during a repair;
+    # they are immutable source units, not a generated research summary.
+    keys = list(
+        dict.fromkeys(
+            [
+                *(gap_search.candidate_support_ids if gap_search else []),
+                *sorted(ranked, key=previous_view)[:8],
+                *(parent.support_ids if parent else []),
+                *(parent.context_support_ids if parent else []),
+                *sorted(ranked, key=previous_view),
+            ]
+        )
+    )[:12]
     # Whole support units only; no silent truncation of a continuation.
     candidates = []
     size = 0
@@ -445,6 +595,7 @@ async def collect(
             "can_read_images": bool(session.deps.visual_answers and session.deps.render_page),
             "candidates": candidates,
             "page_catalog": [p.model_dump() for p in catalog],
+            "completion_search": gap_search.model_dump() if gap_search else None,
             **(
                 {
                     "repair_only": [i.model_dump() for i in parent.assessments[-1].issues],
@@ -472,13 +623,12 @@ async def collect(
     session.require([*selection.support_ids, *selection.context_support_ids])
     if not set([*selection.support_ids, *selection.context_support_ids]) <= presented:
         raise ValueError("QUANTITY_SOURCE_NOT_PRESENTED")
+    if gap_search and parent:
+        selection = bind_gap_source(session, parent, selection, gap_search)
     if (
         (inventory_repair or coverage_repair or scope_repair)
         and parent
-        and set(selection.support_ids) <= set(parent.support_ids)
-        and set(selection.pages) <= set(parent.pages)
-        and selection.modality == parent.modality
-        and set(selection.context_support_ids) <= set(parent.context_support_ids)
+        and not fresh_source_view(session, parent, selection)
     ):
         raise ValueError("REPAIR_REUSED_INSUFFICIENT_SOURCE")
     inventory_replacement = False
@@ -508,6 +658,8 @@ async def collect(
         raise ValueError("QUANTITY_SOURCE_VERSION_MISMATCH")
     unit = selected[0]
     context_ids = context_closure(selection.context_support_ids, session.units())
+    if parent:
+        context_ids = list(dict.fromkeys([*parent.context_support_ids, *context_ids]))[:6]
     if context_ids:
         session.require(context_ids)
     with operation("quantity.context.bind") as span:
@@ -632,8 +784,17 @@ async def collect(
             else {}
         ),
     }
+    operation_repair = bool(
+        parent
+        and parent.assessments
+        and any(i.target == "operation" for i in parent.assessments[-1].issues)
+    )
     kind = (
-        "count" if inventory_repair else parent.draft.mode if parent else selection.operation_kind
+        "count"
+        if inventory_repair
+        else parent.draft.mode
+        if parent and not operation_repair
+        else selection.operation_kind
     )
     output_type = collection_contract(kind, image_bindings, selection.support_ids)
     with operation("quantity.contract") as span:
@@ -650,6 +811,15 @@ async def collect(
         research=True,
         images=images,
     )
+    if gap_search:
+        gap_search = gap_search.model_copy(
+            update={
+                "inspected_support_ids": [*selection.support_ids, *context_ids],
+                "inspected_pages": selection.pages,
+                "status": "inspected",
+            }
+        )
+        session.state.quantity_gap_searches[gap_search.parent_id] = gap_search
     draft = bind_collection(collected, image_bindings, session.units())
     if inventory_repair:
         EntityInventoryDraft.model_validate(draft.model_dump())
@@ -690,9 +860,21 @@ async def collect(
             [(o.page, o.witness) for o in draft.operands]
             + [(i.page, i.witness) for g in draft.groups for i in g.items]
             + [(i.page, i.witness) for i in draft.items]
+            + ([(draft.absence.page, draft.absence.witness)] if draft.absence else [])
         )
         if any(page not in selection.pages or not witness.strip() for page, witness in locations):
             raise ValueError("QUANTITY_ITEM_PAGE_INVALID")
+    numeric_inputs = normalize_inputs(draft)
+    record = record.model_copy(update={"numeric_inputs": numeric_inputs})
+    session.state.quantities[record.id] = record
+    payload["numeric_inputs"] = [n.model_dump() for n in numeric_inputs]
+    with operation("quantity.normalize") as span:
+        span.set_attribute("quantity.id", record.id)
+        span.set_attribute("quantity.numeric_inputs", json.dumps(payload["numeric_inputs"]))
+        span.set_attribute("quantity.input_statuses", [n.value_status for n in numeric_inputs])
+        span.set_attribute(
+            "quantity.normalization_errors", [e for n in numeric_inputs for e in n.errors]
+        )
     checker_type = review_contract(draft)
     reviewed = await session.call(
         "quantity_checker",
@@ -713,12 +895,7 @@ async def collect(
     )
     history = [review]
     early_check, early_status = verdict(review, errors)
-    early_provisional = []
-    if review.inputs == "supported" and draft.complete:
-        try:
-            early_provisional = execute(draft)[0]
-        except ValueError:
-            pass  # Keep the input review even when the prepared formula is invalid.
+    early_provisional: list[str] = []
     record = record.model_copy(
         update={
             "assessments": history,
@@ -729,6 +906,15 @@ async def collect(
         }
     )
     session.state.quantities[record.id] = record
+    # Checkpoint review BEFORE any provisional execution. A numeric conversion
+    # failure cannot erase a returned assessment or prevent its repair route.
+    if review.inputs == "supported" and draft.complete:
+        try:
+            early_provisional = execute(draft)[0]
+        except (ValueError, DecimalException):
+            pass
+        record = record.model_copy(update={"provisional_values": early_provisional})
+        session.state.quantities[record.id] = record
     if errors and repairs_left:
         # Repair an invalid diagnostic receipt, not the answer or source values.
         # One diagnostic correction does not consume the independent source-repair
@@ -792,6 +978,17 @@ async def collect(
             draft = draft.model_copy(update={"count_mode": "total"})
             review = review.model_copy(update={"operation": "supported", "issues": []})
     check, status = verdict(review, errors)
+    if gap_search:
+        gap_search = gap_search.model_copy(
+            update={
+                "status": "resolved" if check.accepted and draft.complete else "unresolved",
+            }
+        )
+        session.state.quantity_gap_searches[gap_search.parent_id] = gap_search
+        with operation("quantity.gap.review") as span:
+            span.set_attribute("quantity.parent_id", gap_search.parent_id)
+            span.set_attribute("quantity.gap_status", gap_search.status)
+            span.set_attribute("evidence.inspected_support_ids", gap_search.inspected_support_ids)
     # Execution failure must not erase source inputs or the completed input review.
     provisional = early_provisional
     record = record.model_copy(
@@ -836,7 +1033,7 @@ async def collect(
         return None
     try:
         values, expression = execute(draft)
-    except ValueError as exc:
+    except (ValueError, DecimalException) as exc:
         record = record.model_copy(
             update={
                 "execution_status": "failed",
@@ -861,6 +1058,9 @@ async def collect(
             "values": values,
             "expression": expression,
             "execution_status": "completed",
+            "absence_confirmed": bool(numeric_inputs)
+            and draft.mode == "read"
+            and all(n.value_status == "not_found" for n in numeric_inputs),
         }
     )
     # Successful computation is stored before admission and survives a full ledger.
@@ -880,7 +1080,7 @@ async def collect(
             {
                 "checked_input_summary": (
                     [f"{o.label}: {o.value}" for o in draft.operands]
-                    if draft.mode in {"read", "arithmetic", "select"}
+                    if draft.mode in {"read", "arithmetic", "select", "lookup"}
                     else [i.text for i in draft.items]
                     if draft.mode == "list"
                     else [f"{g.label}: {len(g.items)} source items; complete" for g in draft.groups]
@@ -890,6 +1090,8 @@ async def collect(
                 "context_support_ids": record.context_support_ids,
                 **({"count_mode": draft.count_mode} if draft.mode == "count" else {}),
                 "application_results": values,
+                "numeric_inputs": [n.model_dump() for n in numeric_inputs],
+                "absence_confirmed": record.absence_confirmed,
                 "interpretation_results": record.ambiguity_results,
                 "draft": semantic_draft(draft),
                 "expanded_expression": expression,

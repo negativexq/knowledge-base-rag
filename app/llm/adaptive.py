@@ -468,7 +468,7 @@ class AdaptiveSession:
                 for r in self.state.quantities.values()
                 if r.check
                 and r.check.accepted
-                and r.values
+                and r.has_result
                 and all(s in available for s in r.support_ids)
             ],
             "extraction_coverage": [
@@ -1508,7 +1508,7 @@ class AdaptiveSession:
             {
                 proof: [*record.support_ids, *record.context_support_ids]
                 for record in self.state.quantities.values()
-                if record.check and record.check.accepted and record.values
+                if record.check and record.check.accepted and record.has_result
                 for proof in record.proof_support_ids
             }
         )
@@ -1539,7 +1539,7 @@ class AdaptiveSession:
                 for r in self.state.quantities.values()
                 if r.check
                 and r.check.accepted
-                and r.values
+                and r.has_result
                 and set(r.proof_support_ids) & set(part.support_ids)
             ]
             targets = (
@@ -1707,7 +1707,10 @@ async def _finalize(session: AdaptiveSession) -> tuple[AgentAnswer, ScopeReceipt
         and not session.state.computations
         and not session.state.text_computations
         and not any(
-            record.values and record.check and record.check.accepted and not record.scope_diagnostic
+            record.has_result
+            and record.check
+            and record.check.accepted
+            and not record.scope_diagnostic
             for record in session.state.quantities.values()
         )
     ):
@@ -1715,7 +1718,12 @@ async def _finalize(session: AdaptiveSession) -> tuple[AgentAnswer, ScopeReceipt
         return AgentAnswer(answer_parts=[], abstain=True), None
     # Reuse checked application results before asking a finalizer to paraphrase.
     for record in reversed(list(session.state.quantities.values())):
-        if record.values and record.check and record.check.accepted and not record.scope_diagnostic:
+        if (
+            record.has_result
+            and record.check
+            and record.check.accepted
+            and not record.scope_diagnostic
+        ):
             if record.modality == "image" and not record.proof_support_ids:
                 continue
             try:
@@ -1935,7 +1943,7 @@ async def run_adaptive_agent(
                         state.computations
                         or state.text_computations
                         or any(
-                            r.values and r.check and r.check.accepted
+                            r.has_result and r.check and r.check.accepted
                             for r in state.quantities.values()
                         )
                     ):

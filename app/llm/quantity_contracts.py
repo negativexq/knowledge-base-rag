@@ -10,12 +10,16 @@ from pydantic import BaseModel, Field, create_model
 from app.evidence.support_units import SupportUnit
 from app.llm.quantity_state import (
     ImageQuantityDraft,
+    NumberScale,
+    NumericReading,
     QuantityAssessment,
     QuantityData,
     QuantityDraft,
     QuantityImageBinding,
     QuantityIssue,
+    QuantityLookupChoice,
     QuantityMode,
+    SourceNumber,
     TextQuantityDraft,
 )
 
@@ -44,13 +48,29 @@ def collection_contract(
             end_line=(int, Field(ge=1)),
         )
         locator = {"source_ranges": (GenericAlias(list, ref), Field(min_length=1, max_length=4))}
+    bindings_fields: dict[str, Any] = (
+        {
+            "population": (str, Field(max_length=300)),
+            "series": (str, Field(max_length=200)),
+            "period": (str, Field(max_length=200)),
+        }
+        if kind == "lookup"
+        else {}
+    )
+    if kind == "read":
+        bindings_fields.update(
+            output_unit=(str, Field(default="", max_length=100)),
+            output_scale=(NumberScale, "1"),
+            sign_convention=(Literal["signed", "magnitude"], "signed"),
+        )
     operand = create_model(
         "CollectionOperand",
-        __base__=QuantityData,
+        __base__=NumericReading,
         name=(str, Field(pattern=r"^[a-z][a-z0-9_]{0,30}$")),
         label=(str, Field(min_length=1, max_length=200)),
-        value=(str, Field(min_length=1, max_length=100)),
+        value=(SourceNumber | None, ...),
         unit=(str, Field(max_length=100)),
+        **bindings_fields,
         **locator,
     )
     item = create_model(
@@ -62,7 +82,7 @@ def collection_contract(
         **locator,
     )
     fields: dict[str, Any] = {"mode": (Literal[kind], kind), "complete": (bool, ...)}
-    if kind in {"read", "arithmetic", "select"}:
+    if kind in {"read", "arithmetic", "select", "lookup"}:
         fields["operands"] = (
             GenericAlias(list, operand),
             Field(min_length=2 if kind == "select" else 1, max_length=20),
@@ -74,11 +94,20 @@ def collection_contract(
             result_unit=(str, Field(max_length=100)),
             interpretation=(str, Field(max_length=300)),
         )
-    elif kind == "select":
+    elif kind in {"select", "lookup"}:
         fields["select_mode"] = (Literal["minimum", "maximum"], ...)
+        if kind == "lookup":
+            fields["choices"] = (list[QuantityLookupChoice], Field(min_length=2, max_length=10))
     elif kind == "list":
+        absence = create_model(
+            "CollectionAbsence",
+            __base__=QuantityData,
+            source_object=(str, Field(min_length=1, max_length=500)),
+            **locator,
+        )
         fields.update(
-            items=(GenericAlias(list, item), Field(min_length=1, max_length=200)),
+            items=(GenericAlias(list, item), Field(max_length=200)),
+            absence=(absence | None, None),
             list_order=(Literal["source", "ascending", "descending"], ...),
             list_unique=(bool, ...),
         )
@@ -117,6 +146,8 @@ def bind_collection(
         return QuantityDraft.model_validate(data)
     images = {b.image_id: b for b in bindings}
     entries = [*data.get("operands", []), *data.get("items", [])]
+    if data.get("absence") is not None:
+        entries.append(data["absence"])
     entries.extend(item for group in data.get("groups", []) for item in group["items"])
     for entry in entries:
         if images:
@@ -151,6 +182,13 @@ def review_contract(draft: QuantityDraft) -> type[QuantityAssessment]:
         target=(Literal[target], ...),
         index=(int, Field(ge=0, le=max(0, count - 1))),
     )
+    if draft.absence is not None:
+        issue = create_model(
+            "AbsenceIssue",
+            __base__=QuantityIssue,
+            target=(Literal["absence"], "absence"),
+            index=(Literal[None], None),
+        )
     operation_issue = create_model(
         "OperationIssue",
         __base__=QuantityIssue,

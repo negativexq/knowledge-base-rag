@@ -192,13 +192,20 @@ supplied physical page. A complete flag is a proposal, not independent approval.
   `minimum` or `maximum` operation. The application returns every tied label.
   Mixed units require an explicit conversion elsewhere; comparison syntax is
   never enabled in the arithmetic evaluator.
+- Conditional lookup: source operands and typed choices join each candidate's
+  comparison expression to its requested output operand. Code computes the
+  comparison and returns the linked value, retaining ties. Lookup operands keep
+  population, series and period explicit; comparison and output can legitimately
+  refer to different populations, which are reviewed for their individual roles.
 - Listing: flat source items with positions, page witnesses, and owning source
   objects/columns, plus the requested ordering and uniqueness policy. Code
   orders and optionally deduplicates checked items. The independent assessment returns
   the question's uniqueness policy separately from transcription accuracy; two
   correctly read source occurrences are not invalid inputs merely because the
   output asks for a set of names. Lists are not count groups;
-  an item page belongs on the item, not an invented group field.
+  an item page belongs on the item, not an invented group field. A complete empty
+  inventory requires a source-bound `absence` record identifying the inspected
+  object and condition. An unreadable or partial view is not evidence of absence.
 
 The source checker inspects the requested object's role as well as the visible
 condition. A neighboring diagram object with the same color is not sufficient
@@ -222,14 +229,14 @@ instruction while retaining the complete typed record for checkpoint compatibili
 It also records whether entity labels support identity comparison. A correct
 number remains correct even when the requested operation is unresolved.
 
-Nonpassing decisions require a `QuantityIssue`: target operand/group/item/operation,
+Nonpassing decisions require a `QuantityIssue`: target operand/group/item/absence/operation,
 source location, explanation, and the evidence needed to resolve the issue.
 The application checks target indexes, selected page/range bounds, and question
 segment references. Bounds checks do not prove a semantic objection is true.
 A missing or invalid objection is indeterminate, not approval.
 
-There is at most one corrective allowance in this workflow: either correct an
-invalid diagnostic receipt or recollect the specifically defective inputs.
+One invalid diagnostic receipt can be corrected without consuming the independent,
+single source-repair allowance. Both use the same hard request/token/time budgets.
 Untargeted operands and groups remain unchanged. Operation repair may require
 a different representation, while the original record and provisional result
 remain available through `parent_id`.
@@ -239,6 +246,27 @@ count cannot distinguish total memberships from a distinct entity union, the
 repair requires individual entity labels. Repeating aggregate counts cannot
 complete that contract. An identical source/page/modality view is not treated
 as new evidence; another image/page view of a broad source can still be useful.
+
+For a grounded missing numeric input, application code can search the same
+authorized document/version without an LLM. The original question stays in the
+query so a mistaken draft population does not become the sole search criterion.
+`ResearchState.quantity_gap_searches` stores a typed `QuantityGapSearch`: parent
+receipt, evidence requirements, candidate IDs, actually inspected IDs/pages, and
+located/inspected/resolved/unresolved status. Located candidates are not facts.
+
+Bounded fresh search candidates are carried into the collector's source window
+even if the selector repeats the previous view. Redundant same-page seeds can be
+replaced by their complete source region while retaining the three-page ceiling.
+A candidate requiring a larger image window is not expanded arbitrarily. The old
+receipt remains available; the new extraction and independent source/coverage/
+operation checks must still pass before the gap is marked resolved. Moving an
+existing source between input and context roles, or changing its ID while keeping
+the same content/page view, is not evidence of progress.
+
+`quantity.source.complete`, `quantity.gap.bind`, `quantity.gap.review`, and
+`quantity.lookup` spans expose the search-to-inspection handoff, review status,
+comparison scores and selected value bindings. These records improve traceability;
+they do not make model-based population or visual-condition judgments infallible.
 
 The application can compare total and distinct counts when the inventory is
 complete, identities are supported, and those are the reviewer's explicit

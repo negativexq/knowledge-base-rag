@@ -1,11 +1,11 @@
 # Answered questions — source-verified results
 
 Updated: **19 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **28**, across **30 distinct questions tried**.
-There is also **one correct refusal** and **one unresolved question**, tracked separately below. Each question appears once; rerunning
+source-supported published answer: **56**, across **65 distinct questions tried**.
+There are also **four correct refusals** and **five unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 28 have passed on the
+This is a historical success ledger, not a claim that all 56 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -41,6 +41,35 @@ runtime release checks.
 | 519 | Audience-data source for the platform identified by its metrics. `measuringsuccessonfacebooktwitterlinkedin-160317142140_95.pdf` | **eMarketer**, Facebook audience | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md) | 22.60 s / 3 |
 | 372 | All non-executive and independent company directors. `afe620b9beac86c1027b96d31d396407.pdf` | **R.A. Shah; Lalit Bhasin; Anup N. Kothari; C.M. Maniar; O.P. Vaish** | [Report](../artifacts/mmlongbench-v2/adaptive-inventory-window-20261019/REPORT.md) | 58.28 s / 10 |
 | 221 | Male 65+ internet use minus home broadband use. `PIP_Seniors-and-Tech-Use_040314.pdf` | **12 percentage points** = 65−53; actual male rows on physical pages 16–17 | [Report](../artifacts/mmlongbench-v2/adaptive-scope-handoffs-20261019/REPORT.md) | 44.07 s / 6 |
+| 477 | Number of coffee quality levels. `User_Manual_1500S_Classic_EN.pdf` | **7**; complete 1–7 list | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-five-20261019/REPORT.md) | 44.49 s / 5 |
+| 1078 | Goodwill on January 28, 2023. `BESTBUY_2023_10K.pdf` | **USD 1,383 million** | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-five-20261019/REPORT.md) | 23.92 s / 3 |
+| 1023 | FY2021 total debt / assets, including all lease liabilities. `COSTCO_2021_10K.pdf` | **19.246 percent** = (799+6692+3916)/59268×100 | [Report](../artifacts/mmlongbench-v2/adaptive-evidence-completion-20261019/REPORT.md) | 57.96 s / 6 |
+| 212 | Compare public party attributes, then read congressional support for the selected party. `05-03-18-political-release.pdf` | **92%**; public comparison 50+42 versus 50+41, then Democratic registered-voter support | [Report](../artifacts/mmlongbench-v2/adaptive-gap-consumption-20261019/REPORT.md) | 123.41 s / 9 |
+| 383 | Producer of the document revised May 2016. `e79deb02a0c0e87511080836c5d4347b.pdf` | **Florida Department of Health** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 26.46 s / 3 |
+| 1082 | Best Buy FY2023 total current assets. `BESTBUY_2023_10K.pdf` | **USD 8,802 million** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 58.35 s / 9 |
+| 1019 | Costco FY2021 total liabilities. `COSTCO_2021_10K.pdf` | **USD 41,190 million** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 20.41 s / 3 |
+| 832 | Unit 1 and Unit 2 names in Semester 1, Quarter 1. `f8d3a162ab9507e021d83dd109118b60.pdf` | **Understanding Economic Systems and Business; Making Ethical Decisions and Managing a Socially Responsible Business** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 22.14 s / 3 |
+| 1083 | Best Buy FY2023 basic earnings per share. `BESTBUY_2023_10K.pdf` | **USD 6.31/share** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 24.99 s / 3 |
+| 1028 | Costco membership warehouse count in 2021. `COSTCO_2021_10K.pdf` | **815 worldwide** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 14.48 s / 3 |
+| 833 | Unit 8 case-study title. `f8d3a162ab9507e021d83dd109118b60.pdf` | **Discrimination in the Workplace Continues** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 18.12 s / 3 |
+| 727 | Germanwings tweets minus Lufthansa tweets. `germanwingsdigitalcrisisanalysis-150403064828-conversion-gate01_95.pdf` | **12 Tweets** = 24−12; image corrected indexed 42 to 12 | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 28.42 s / 6 |
+| 386 | Second Regulatory Efficiency objective. `e79deb02a0c0e87511080836c5d4347b.pdf` | **By December 31, 2018, reduce average facility-license issuance from 60 days (2015) to 45 days** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 25.73 s / 3 |
+| 1081 | Best Buy FY2023 Domestic store count. `BESTBUY_2023_10K.pdf` | **978** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 23.21 s / 3 |
+| 836 | Unit 14 topic. `f8d3a162ab9507e021d83dd109118b60.pdf` | **Using Financial Information and Accounting** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 15.26 s / 3 |
+| 1013 | Costco FY2021 total equity including noncontrolling interests. `COSTCO_2021_10K.pdf` | **USD 18,078 million** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 22.30 s / 3 |
+| 515 | Recorded Demonstrations video count. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **5**; complete original pages 1–2 | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 48.69 s / 8 |
+| 1080 | Female employees in new salaried field positions, Best Buy FY2023. `BESTBUY_2023_10K.pdf` | **25%** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 25.71 s / 3 |
+| 373 | Proposed dividend for fiscal 2002 minus fiscal 2003. `afe620b9beac86c1027b96d31d396407.pdf` | **155.980 Rupees in lacs** = 1923.78−1767.8 | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 43.03 s / 6 |
+| 835 | Unit 8 learning-outcome count. `f8d3a162ab9507e021d83dd109118b60.pdf` | **10**; complete original pages 6–7 | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 42.54 s / 5 |
+| 364 | Godfrey Phillips bankers. `afe620b9beac86c1027b96d31d396407.pdf` | **State Bank of India; Bank of Baroda; Bank of India; Citibank N.A.; State Bank of Hyderabad; State Bank of Travancore; The Hongkong and Shanghai Banking Corporation; Union Bank of India** | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 19.16 s / 3 |
+| 516 | Whether CA03 belongs to the San Francisco Bay Area. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **No**; CA03 is Sacramento County, Bay Area is CA04–CA11 | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 20.46 s / 3 |
+| 741 | English-language percentage of Germanwings tweets. `germanwingsdigitalcrisisanalysis-150403064828-conversion-gate01_95.pdf` | **41.667%** = 10/24×100 | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 34.61 s / 6 |
+| 1027 | Operations responsible for 86% of net sales and 81% of operating income. `COSTCO_2021_10K.pdf` | **U.S. and Canadian operations** | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 25.42 s / 3 |
+| 1071 | Best Buy FY2022 activity type with highest cash flow. `BESTBUY_2023_10K.pdf` | **Operating activities**, USD 3,252 million; investing −1,372, financing −4,297 | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 20.89 s / 3 |
+| 513 | Los Angeles Area geographic-market name count. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **13** | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 41.36 s / 5 |
+
+| 1026 | Costco FY2021 common-stock repurchase spending. `COSTCO_2021_10K.pdf` | **USD 495 million**; reviewed magnitude from signed `(495)` | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-pair-20261019/REPORT.md) | 41.80 s / 6 |
+| 1025 | Costco FY2021 repurchased common shares. `COSTCO_2021_10K.pdf` | **1,358,000 shares**; reviewed magnitude and thousand-share conversion | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-pair-20261019/REPORT.md) | 39.20 s / 6 |
 
 Row 642's stored gold label is `[64.3, 62.4, 62.2]`. The PDF values 64.35 and
 62.46 do not match that label under standard one-decimal rounding. This ledger
@@ -49,6 +78,54 @@ three incorrect intermediate calculation drafts before releasing the correct
 answer. The linked reports retain the details.
 
 ## Latest runs
+
+The [four-question numeric recheck](../artifacts/mmlongbench-v2/adaptive-numeric-four-20261019/REPORT.md)
+converts rows 471 and 388 from error-ended abstentions into clean checked refusals.
+In that attempt, rows 1026 and 1025 remained unanswered: numeric notation/scale boundary defects
+were exposed, and 1026 additionally stopped on a checker API error. The failed
+attempt is retained; the [two-question follow-up](../artifacts/mmlongbench-v2/adaptive-numeric-pair-20261019/REPORT.md)
+then publishes both financial answers correctly after the shared fix. The two
+frozen revisions are recorded separately, not presented as an unchanged four-row
+pass. This is targeted failure recovery, not paid regression coverage
+of previously successful questions.
+
+The [third frozen ten-question batch](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md)
+added **six clearly source-supported answers and one correct refusal**. Two rows
+ended with numeric/type failures and one merged-table count remains disputed
+(model/reviewer 4, reference 2). Across **30 disjoint questions on identical runtime
+hashes**, there are **22 verified published answers, one clean refusal and seven
+unresolved workflows/outcomes**. Four rows reproduce numeric-representation or
+absence-to-number failures. No patches were applied during those three batches.
+
+The [second mostly-easy ten-question batch](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md)
+added **eight source-supported answers**. Row 1026 remained unanswered despite
+extracting the repurchase entry; row 471 returned a source-consistent abstention
+through an execution error. Both hit Decimal `InvalidOperation` before the checker
+assessment was checkpointed, now tracked as NUM-001. Runtime hashes matched the
+preceding ten-question batch; no fixes, substitutions or reruns occurred. The two
+complete multi-page counts do not close the earlier false-completeness defect.
+
+The [ten mostly easy unseen questions](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md)
+produced **eight source-supported answers**, one wrong USB-function count, and
+one source-consistent refusal with a repair/output error. Direct original-page
+inspection completed row 832's missing Unit 2 verification and confirmed that
+row 508's AR03 entry is absent. The latter remains an unresolved workflow because
+its refusal followed a tool-contract error rather than a clean absence receipt.
+The sequential batch used one frozen runtime, with no reruns or substitutions.
+
+The [source-gap consumption recheck](../artifacts/mmlongbench-v2/adaptive-gap-consumption-20261019/REPORT.md)
+answered row 212 correctly in **123.41 seconds and nine calls**. Missing comparison
+evidence was searched, carried into the original-image collection, checked for its
+public population, then joined to the separate registered-voter support value.
+This is one successful recheck; the wrong grey-background answer remains unresolved.
+
+The [five unseen rows](../artifacts/mmlongbench-v2/adaptive-unseen-five-20261019/REPORT.md)
+added two source-supported answers. A [three-row recheck](../artifacts/mmlongbench-v2/adaptive-evidence-completion-20261019/REPORT.md)
+then answered row 1023 correctly, left row 212 unanswered, and incorrectly released
+Fact Checker for row 635's grey-background condition. Original Figure 1 shows a
+blue box; the separate reviewer had no reference image. The earlier label-compatible
+abstention for 635 had a repair exception and is not counted as a clean refusal.
+These are frozen sequential batches on different revisions, not a current 31/35 score.
 
 The [complete-director recheck](../artifacts/mmlongbench-v2/adaptive-inventory-window-20261019/REPORT.md)
 answered row 372 from the original page 9 category table in **58.28 seconds and
@@ -136,12 +213,24 @@ as a source-supported published answer in the table above.
 | Row | Question | Outcome | Run |
 | --- | --- | --- | --- |
 | 220 | Requested 2022 survey headcount from a report published in 2014 using 2013 survey data. | Correct abstention; nine calls and four repeated searches expose a termination-efficiency issue. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md) |
+| 475 | Start time of a red bar in the manual image on page 50. | Correct abstention; original chart has green/blue bars, no red time bar. Nine calls and a diagnostic correction indicate inefficient termination, without an execution exception. | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) |
+
+| 471 | Milk temperature for yellow; the original legend lists green, white and caramel only. | Checked `not_found` receipt completes cleanly; five calls, no conversion exception. Earlier error retained in the preceding batch report. | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-four-20261019/REPORT.md) |
+| 388 | Governor named on the document's last page; none appears on Appendix E. | Partial evidence rejected, complete last page inspected, checked absence retained; nine calls. Textual tool routing remains a separate architectural issue. | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-four-20261019/REPORT.md) |
 
 ## Unresolved questions
+
+Inventory closure, typed tool routing, and numeric-input/checkpoint defects are
+recorded in the [open-issue register](adaptive-open-issues.md), which separates
+implemented corrections from unresolved outcomes.
 
 | Row | Required result / evidence | Observed failure | Run |
 | --- | --- | --- | --- |
 | 661 | Reference answer 0.0 V for the P2.7 ENABLE low/baseline waveform. | Scalar reading routed as multi-input selection; later source inference remained unverified. The voltage is not explicitly annotated on that trace. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md) |
+| 635 | Grey-background execution functions in Figure 1; none are shown. | Initial repair exception; subsequent run incorrectly accepted a blue Fact Checker box as grey. | [Report](../artifacts/mmlongbench-v2/adaptive-evidence-completion-20261019/REPORT.md) |
+| 476 | Complete USB data-exchange function inventory: nine across pages 56–57. | Published five after treating a page footer as the inventory boundary; input and scope review accepted the incomplete collection. | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) |
+| 508 | Geographic market for EPS Code AR03; the original Arkansas listing contains only AR01 and AR02. | Source-consistent abstention, but wrong AL03/AR03 binding and numeric operation were followed by an invalid repair output. Not counted as a clean refusal. | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) |
+| 658 | N-prefix part count in the merged PACKAGES table. | Published 4, reference 2; automatic review agrees with 4, but counting unit and merged-cell membership need adjudication. No verified success claimed. | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) |
 
 ## Adding a result
 
