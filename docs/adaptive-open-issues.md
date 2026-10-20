@@ -1,177 +1,78 @@
 # Open adaptive workflow issues
 
-Recorded on 19 October 2026. The issue families below track open work and partial fixes; implemented changes
-and measured outcomes are identified explicitly. Three disjoint ten-row batches used one frozen runtime. The second added NUM-001;
-the third reproduced numeric/type failures and added a counting-unit finding.
+Updated 20 October 2026. This register separates confirmed code defects, semantic
+acceptance failures, partial fixes and source/metric adjudication. The detailed
+[code-and-trace audit](adaptive-issue-audit.md) contains source anchors and offline
+replays. Prior run reports retain unsuccessful attempts.
 
-## INV-001: Page completion is mistaken for inventory completion
+There are **46 unresolved question/workflow outcomes** in the
+[120-row ledger](adaptive-solved-questions.md). That is not 46 independently proven
+code bugs. One row can exercise multiple families; counts below are not additive.
+The shared matcher scores and strict source/workflow audit remain separate.
 
-**Observed case:** row 476, USB data-exchange functions. The application published
-five instead of nine. Original physical page 56 contains five functions; page 57
-continues with four more. The collector marked the group complete based on the
-last item, blank page area and footer. Independent input/coverage review accepted
-that boundary. With no coverage objection, source-gap completion was not invoked.
+## Current priorities
 
-**General failure:** the application can execute an item count without a separate,
-source-grounded receipt establishing closure of the requested inventory. A page
-boundary does not establish a category or section boundary. Accurately transcribed
-items can therefore form an incomplete but incorrectly accepted whole-list answer.
+| Issue | Priority / status | Confirmed evidence and boundary | Next correction |
+| --- | --- | --- | --- |
+| REPAIR-001: exact text equality in input repair | P0; live + offline confirmed | 366, 1016 and 1070 raise `REPAIR_CHANGED_UNTARGETED_STRUCTURE`. Equivalent interpretation text triggers rejection; 1070 expressions have identical ASTs. | Application-owned operation fields and operand-only patch contract. Preserve protections against genuinely changed operations. |
+| REPAIR-002: text locators inside image repair | P0; live + offline confirmed | 1072 fresh pages [40,39,39] become [40,null,null] when untargeted old text operands are restored; then `QUANTITY_ITEM_PAGE_INVALID`. | Preserve per-operand provenance independently from current observation modality; do not invalidate prior evidence with a record-wide image requirement. |
+| PAGE-001: required visual page dropped as context | P0; live + offline confirmed | 641 requests pages 7/8 but comparison source is a context-role unit; input-page filtering sends only page 8 to the collector. | Validate visual evidence roles; retain/promote required authorized pages or return a typed mismatch, within existing budgets. |
+| FLOW-001 / ROUTE-001: universal quantity fallback | P0; code confirmed; semantic failures observed | Failed fast text answers also enter numeric collection; 508/511/517/520 show incompatible result types. A created unsuccessful quantity draft terminates the general research path. | Dispatch by required evidence/result type and return typed compatibility/missing-evidence outcomes to the bounded application policy. |
+| INV-001: page or subset mistaken for whole inventory | P0; source-confirmed wrong release | 476 publishes 5 instead of 9 USB functions; 381 publishes 6 instead of 7 course quizzes. A footer/current page is not inventory closure. | Separate item observations from source-grounded inventory closure; accumulate coverage across bounded windows. |
+| MEMBER-001 / SCOPE-001: group membership and target constraints | P0; source-confirmed wrong/incomplete release | 399 counts neighboring-category names; 660 ignores port range; 638 counts top figure for bottom request; 510 lacks Oxford binding; 831 omits available tasks. | Validate sibling-heading membership, requested object/location/conditions and answer completeness separately from transcription. |
+| REPAIR-003: wrong freshness requirement | P1; exact guard confirmed | 214/380/637 raise `REPAIR_REUSED_INSUFFICIENT_SOURCE`; all scope diagnostics become fresh-source research even for a unit transform or page relationship. | Classify missing source, interpretation, provenance, presentation and actual mismatch before choosing repair. Retain freshness for real missing-source searches. |
+| PROV-001: header/entity/period/page binding | P1; observed + code boundary confirmed | 1070 issuer context; 366 period context; 637 physical/printed page; 1014/1086 recover missing unit context. Immutable document identity alone is not semantic issuer proof. | Carry verified title/table/period/unit/location links as typed evidence available to each independent check. |
+| NUM-001: numeric displays and absence | Partially fixed; remaining sensitivity | Original crash/checkpoint cases 471/1026/1025/388 recovered. Grouped display with incompatible notation still fails in 1016/1021/1074. | Retain display/canonical separation and checkpoint-before-execution; preflight notation compatibility without guessing locale or treating absence as zero. |
+| UNITS-001: arithmetic output transformation | P1; observed + code boundary confirmed | 380 subtracts lac-denominated inputs but labels result rupees; arithmetic normalization does not apply scalar-read output transforms. | Typed input/output units and explicit application-checked transforms; do not silently change formulas or signs. |
+| CALC-001: named function becomes missing operand | P1; offline confirmed latent failure | 366 would hit `QUANTITY_UNKNOWN_OPERAND` on `abs` after merge recovery. Generic abs/min/max/mean reproduce it in quantity execution. | Declare operator capabilities; use bounded supported deterministic operators and report unsupported function distinctly. No arbitrary Python execution. |
+| COVER-001: incomplete source-object coverage | P1; observed, not all cases arithmetic bugs | 730/728 lack Boeing object closure; 662/663 lack guide-wide inventory; 1017 misses a lease note; 641 also has PAGE-001. | Accumulated coverage and typed missing roles. Search exhaustion is not source absence; do not raise page limits before correcting handoff. |
+| COMPOSE-001: denominator/population/plan composition | P1; observed; some reference assumptions disputed | 206/225/219 require approximate survey headcounts; 216 cannot borrow Dem/Lean Dem base for Democrats; 1015 needs a stated EBITDA definition. | Keep population, denominator, period, metric definition and approximation status with observations. |
+| STOP-001: mismatch, absence and no progress conflated | P1; observed | 207/222/365/367/830/1084 repeat searches or stop without verified terminal receipts; 384 ends in ModelRetry. | Grounded source-scoped mismatch/absence receipts, distinct from partial search and execution error; terminate deterministically when justified. |
+| OBS-001: safe domain errors missing from spans | P1; confirmed | Spans retain exception class only, but local `ResearchState.needs` retains exact guard codes; previous audits overlooked this. | Allowlisted domain codes in spans/typed failures; preserve the privacy boundary against arbitrary messages/content. |
+| EVAL-001: judge/image coverage and missed constraints | P1; confirmed audit weakness | Reference-page-only review omits images for many negative rows and relevant pages for 1086/834. Reviewers approve wrong grouping/range/location in 399/660/638. | Audit actual observed pages and independent required source scope; calibrate both false acceptance and false refusal. |
+| VIS-001: visual-condition acceptance | P1; semantic defect open | 635 accepts blue Fact Checker as grey; 475 correctly rejects a non-red bar but does not close the color defect. | Original-source visual condition and object binding; no color-specific document rule. |
+| COUNT-001 / INTERPRET-001 | Adjudication + observed workflow failures | 658 merged N-prefix memberships; 663 connection-graph unit; 366 relative shortfall vs percentage points; 732 panels vs numeric figure; 1075 current-debt inclusion. | Establish task/counting unit/metric definition before certifying or forcing a reference answer. |
+| SRC-001 | Source limitation open | 661 waveform low voltage is not explicitly annotated; 0 V interpretation is not independently established. | Source adjudication, not a prompt rule requiring the gold number. |
 
-**Proposed correction:** retain item observations separately from inventory
-closure. Record the requested source object, inspected ranges and actual boundary
-evidence. Inspect a bounded continuation when closure remains unknown, using the
-same shared budgets and preserving extracted items. A new section/category heading,
-explicit source end marker or source-stated total can support closure; footer/blank
-space alone cannot. Do not add document-specific page or expected-count rules.
+## What changed in this audit
 
-**Acceptance evidence:** offline tests for a same-section page continuation, an
-actual next-section boundary, an inventory ending before a page footer, and a
-budget stop with preserved partial observations. Recheck the failure and additional
-unseen inventories; a single corrected case is not generalization evidence.
+The previous register recorded many symptoms but did not identify the exact
+repair guards. The audit checks `ResearchState.needs`, raw model outputs, typed
+receipts and source code together. Corrections to prior diagnoses:
 
-## ROUTE-001: Textual key matching is routed as numeric conditional lookup
+- **1070, 366, 1016:** exact failure is `REPAIR_CHANGED_UNTARGETED_STRUCTURE`, not an
+  unspecified ValueError or proven source-ID admission failure.
+- **1072:** exact failure is `QUANTITY_ITEM_PAGE_INVALID`; saved fresh image handles
+  bind correctly before merge restores untargeted text locators.
+- **636:** exact failure is `QUANTITY_REFERENCE_TOO_LARGE`, the bounded witness
+  resolver, not proof that the model cannot read the figure.
+- **641:** the selector does request both pages. The application role/page filter
+  removes one, so this cannot be assigned only to model source selection.
+- **NUM-001:** original Decimal-exception containment and review checkpoint fixes
+  remain implemented. New notation, unit and dispatch failures do not mean the
+  original fix was absent.
+- **CALC-001:** offline execution after a controlled merge recovery exposes a
+  second failure in 366. This was not its initial live stop.
 
-**Observed case:** row 508, geographic market for EPS Code AR03. The initial
-source was Alabama page 7 and the proposed value Mobile belonged to AL03. The
-collector used the numeric conditional-lookup contract, inserting string codes
-and names into numeric operands and comparison choices. Input review rejected
-the binding and operation. Repair then failed the output contract with
-`UnexpectedModelBehavior: Exceeded maximum output retries (0)`.
+Three live merge failures were replayed offline. In 1016, retaining the original
+operation text is sufficient for the existing extracted values to execute to
+10314 without a new model call. That is not a published live success or a code fix.
+The original failed run and score remain unchanged.
 
-Direct post-run inspection of original physical page 8 confirms the Arkansas
-listing contains AR01 (Little Rock) and AR02 (Northern Arkansas), then changes
-to New Mexico. The final abstention is source-consistent, but the error-terminated
-workflow is not recorded as a clean supported refusal.
+## Acceptance and implementation policy
 
-**General failure:** textual key-to-value matching and numeric conditional lookup
-lack a sufficiently clear dispatch/type boundary. A structurally valid draft can
-still route strings through a numeric comparison plan. A missing match, an
-unreadable entry and a failed tool output are also distinct terminal conditions.
+First fix the reproduced repair/locator/page handoff failures, then typed dispatch
+and final-scope repair selection. In parallel preserve tests against false closure,
+wrong category membership and missed target conditions. A release policy must not
+trade fewer abstentions for more unsupported answers.
 
-**Proposed correction:** separate source key matching, numeric extreme selection,
-and comparison-driven value lookup by their input/output types. Check operation
-compatibility before dispatch and numeric validity before computation; keys such as
-catalog codes remain strings. Represent source-grounded no-match, incomplete
-inspection and tool failure separately. Preserve exact entity/key bindings and
-authorized source scope. Do not add code-prefix, state-name or benchmark-row rules.
+Keep all changes general: no expected counts, gold values, row IDs, color names,
+company prefixes or document-specific pages in runtime. Model effort, embedding,
+reranking and global prompt tightening are not first-line responses to these
+confirmed code failures. Existing ACL, document-version checks and budgets remain
+required. No runtime edits or paid calls were made for this audit.
 
-**Acceptance evidence:** matching and absent textual keys, near-identical keys,
-numeric-looking identifiers, numeric comparisons, conditional value joins and
-malformed tool results. Verify ordinary direct lookups still use the fast path.
-
-## NUM-001: Noncanonical or missing numeric input aborts before review checkpoint
-
-**Observed cases:** rows 471 and 1026 in the
-[second frozen ten-question batch](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md).
-Row 471 supplied `Not stated; yellow is not listed` as the value of a numeric read
-operand and marked it complete. Row 1026 supplied the accounting display `(495)`
-as its numeric value. Decimal conversion raised `InvalidOperation` in both runs.
-The first refusal is consistent with the original milk-nozzle legend, while the
-second question is answerable: Costco reported approximately USD 495 million spent.
-
-**General failure:** source-display strings, canonical numeric values and absence
-of a value are not sufficiently separated in the read contract. Provisional
-execution occurs after the checker returns but before its assessment is saved.
-Only `ValueError` is handled locally, so a Decimal exception skips the review
-checkpoint and the possible interpretation/source-repair route. In row 1026 the
-checker had already identified the signed equity reduction versus positive
-spending-magnitude distinction, but the assessment was not retained in the typed
-receipt when numeric conversion failed. The original draft and raw model outputs
-remain available.
-
-**Implemented correction:** distinguish readable numeric values, source-grounded
-absence, unreadability and tool failure; preserve the original display while
-validating a separate canonical number. Save independent review before provisional
-execution, and record numeric-conversion failure as typed data rather than losing
-the review. Accounting sign normalization must not silently decide whether the
-question requests signed movement or spending magnitude. Keep source checking,
-interpretation and arithmetic as separate responsibilities.
-
-**Acceptance evidence:** ordinary and parenthesized numeric displays, unavailable
-values, incompatible numeric strings, checker objections followed by conversion
-failure, and successful extraction surviving finalization after an execution
-error. No expected amount, color or document-specific rule belongs in runtime code.
-
-**Measured status:** partially corrected. The [four-row recheck](../artifacts/mmlongbench-v2/adaptive-numeric-four-20261019/REPORT.md)
-finishes 471 and 388 with accepted typed absence and no execution exception.
-1025 preserves its accepted assessment but rejects the valid `000s` spelling;
-1026 rejects accounting parentheses under canonical separator notation and then
-stops on a checker `ModelAPIError`, before any returned assessment. These two
-new boundary defects were corrected in the follow-up. Accounting sign
-handling is now independent of separator notation, common thousand-unit spellings
-are supported, and identical explicitly scaled source/output units resolve default
-multipliers deterministically without changing the displayed unit. The [separate frozen pair](../artifacts/mmlongbench-v2/adaptive-numeric-pair-20261019/REPORT.md)
-publishes 495 million dollars and 1,358,000 shares, with independent original-PDF
-support. The live share-count draft uses `thousand shares`; `000s` itself is
-verified offline, not isolated by that successful live run. The previous checker
-API error did not recur; its cause is not established. All four original NUM-001
-examples have successful outcomes across two revisions. Wider numeric/routing
-stability remains unproven. No previously successful live
-controls have been rerun; offline contracts do not establish zero regressions.
-
-## VIS-001: A requested visual condition can be falsely accepted
-
-**Observed case:** row 635, grey-background execution-function names. The released
-Fact Checker answer is incorrect: original Figure 1 has blue Fact Checker, pink
-QA Model and green Logical Reasoner boxes. The collector described blue as
-“pale gray-blue” and independent input review accepted it. The after-run reviewer
-had no image because the reference-page list is empty. Direct original-page
-inspection identified the mismatch. See the
-[three-row report](../artifacts/mmlongbench-v2/adaptive-evidence-completion-20261019/REPORT.md).
-
-**Status:** open semantic visual-condition defect. Row 475 is a successful control:
-the same runtime rejected a green-bar time as unsupported for a red-bar question.
-One correct rejection does not prove reliable color-condition checking.
-
-## COUNT-001: Merged-table counting unit and membership need adjudication
-
-**Observed case:** row 658 in the
-[third ten-row report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md).
-The published answer is four N-associated part names; the reference is two. The
-automatic original-page reviewer agrees with four, but direct source inspection
-shows two explicit N entries and merged/grouped part/package cells. Counting
-prefix entries and counting named parts are different operations, and the
-membership implied by the merged layout is not conclusively established by this
-audit. Neither automatic reviewer agreement nor the reference value settles it.
-
-**Status:** unresolved verification finding, not a confirmed arithmetic defect or
-an assertion that the benchmark label is wrong. Establish the requested counting
-unit and original-table membership before adding this row to the success ledger.
-Do not introduce an expected count into the runtime.
-
-## SRC-001: Waveform baseline is not explicitly annotated
-
-**Observed case:** row 661, reference answer 0.0 V for the P2.7 ENABLE waveform
-baseline. The trace does not explicitly annotate that voltage. A later proposed
-VSS interpretation was not independently established. See the
-[unseen-ten report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md).
-
-**Status:** source-evidence limitation requiring adjudication, not proof that a
-model must be forced to output the reference. Keep it separate from reproduced
-execution failures and from reliable source-supported answers.
-
-## Reproduction across the last thirty questions
-
-The [three-batch comparison](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md)
-uses 30 disjoint questions with identical runtime hashes. NUM-001 occurs in rows
-471, 1026, 1025 and 388. In 1025, `(1,358)` produced a canonical-number ValueError;
-its draft and review survived, but execution failed. In 388, `Not mentioned` was
-used as a complete numeric-read value and raised Decimal `InvalidOperation`
-before review checkpointing. Its person-name request also overlaps ROUTE-001.
-The same type/representation family thus spans four source objects; its exception
-handling paths are not identical. INV-001 remains confirmed only by row 476;
-several other complete inventory counts passed without fixing that defect.
-
-There are **five distinct unresolved questions/workflows**: 476, 508, 635, 658
-and 661. Rows may overlap issue families; do not sum per-family
-counts as if they were disjoint. Rows 220, 475, 471 and 388 are clean correct refusals,
-tracked separately in the question ledger.
-
-## Evidence and measurement policy
-
-The [frozen ten-question report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md)
-retains both failures. The [question ledger](adaptive-solved-questions.md) tracks
-historical source-supported answers and unresolved workflows separately.
-Subsequent runs must retain unsuccessful attempts, freeze code/settings during
-each batch and avoid turning gold values or reference pages into runtime rules.
-Raw JSON, captures, source renders and spans remain local and ignored.
+The [audit](adaptive-issue-audit.md) specifies code locations, proof strength,
+acceptance boundaries and remaining uncertainty. Detailed run evidence remains in
+the linked ledger and reports. Raw captures, JSON, spans and renders remain local
+and ignored.
