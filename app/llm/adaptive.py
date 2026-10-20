@@ -98,6 +98,7 @@ from app.llm.scope_validation import (
     validate_judgment,
 )
 from app.llm.search_context import chunk_identity, complete_chunks, targeted_chunks
+from app.llm.source_acquisition import locate_visual
 from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
 
@@ -1961,6 +1962,68 @@ async def run_adaptive_agent(
                 and deps.derived_answers
                 and any(n.spec.operation == "count" for n in quantitative)
             )
+            visual_need = next(
+                (
+                    n
+                    for n in state.evidence_needs.values()
+                    if n.spec.acquisition == "image"
+                    and n.spec.operation not in {"count", "calculate"}
+                    and n.status != "satisfied"
+                ),
+                None,
+            )
+            if (
+                visual_need
+                and not quantitative
+                and session.need_workflow is not None
+                and deps.visual_answers
+                and getattr(deps.render_page, "snapshot", None)
+                and session.units()
+                and max_tool_calls > 0
+                and deps.observations.tool_calls < min(max_tool_calls, policy.max_tool_attempts)
+            ):
+                attempts += 1
+                deps.observations.tool_calls += 1
+                with operation("research.acquire.visual") as span:
+                    span.set_attribute("research.need_ids", [visual_need.id])
+                    before_ids = set(session.units())
+                    acquisition_status: Literal["ok", "not_found", "error"] = "not_found"
+                    try:
+                        location = await locate_visual(session, visual_need.id)
+                        if location.available:
+                            span.set_attribute("evidence.input_support_ids", [location.support_id])
+                            span.set_attribute(
+                                "evidence.physical_page", location.physical_page or 0
+                            )
+                            progressed = await session.extract(
+                                ResearchDecision(
+                                    action="extract",
+                                    need_id=visual_need.id,
+                                    support_ids=[location.support_id],
+                                    page=location.physical_page,
+                                    modality="image",
+                                )
+                            )
+                            acquisition_status = "ok" if progressed else "not_found"
+                    except ResearchClosed:
+                        raise
+                    except (ValueError, UnexpectedModelBehavior, TimeoutError) as exc:
+                        acquisition_status = "error"
+                        state.needs.append(f"Visual acquisition unresolved: {type(exc).__name__}")
+                    span.set_attribute("research.acquisition_status", acquisition_status)
+                    span.set_attribute(
+                        "evidence.added_support_ids", sorted(set(session.units()) - before_ids)
+                    )
+                    state.events.append(
+                        ResearchEvent(
+                            operation="extract",
+                            signature=signature("visual_acquisition", {"need": visual_need.id}, 0),
+                            status=acquisition_status,
+                            added_support_ids=sorted(set(session.units()) - before_ids),
+                        )
+                    )
+                if all(n.status == "satisfied" for n in state.evidence_needs.values()):
+                    raise ResearchClosed("EVIDENCE_NEEDS_SATISFIED")
             collection_operation = "count" if needs_inventory else "unknown"
             if quantitative and not needs_inventory:
                 collection_operation = "calculate"
@@ -2038,6 +2101,7 @@ async def run_adaptive_agent(
                 collect_status: Literal["ok", "not_found", "error"] = "not_found"
                 before_ids = set(session.units())
                 before_repairs = state.quantity_repairs
+                before_tools = deps.observations.tool_calls
                 before_quantities = set(state.quantities)
                 try:
                     with operation("tool.collect") as span:
@@ -2063,7 +2127,7 @@ async def run_adaptive_agent(
                                     candidate, receipt = verified
                                     collect_status = "ok"
                         finally:
-                            attempts += state.quantity_repairs - before_repairs
+                            attempts += deps.observations.tool_calls - before_tools
                         span.set_attribute("research.progressed", collect_status == "ok")
                         span.set_attribute(
                             "evidence.added_support_ids", sorted(set(session.units()) - before_ids)

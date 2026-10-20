@@ -1,12 +1,12 @@
 # Answered questions — source-verified results
 
 Updated: **20 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **76**, across **120 distinct questions tried**.
+source-supported published answer: **77**, across **120 distinct questions tried**.
 There is also **one qualified interpreted calculation**, alongside **four correct refusals**
-and **39 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+and **38 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 76 have passed on the
+This is a historical success ledger, not a claim that all 77 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -90,6 +90,7 @@ runtime release checks.
 | 381 | Quizzes across the entire course. `f8d3a162ab9507e021d83dd109118b60.pdf` | **7**; Quiz #1–#6 in the summary plus Quiz #7 in the detailed assignments | [Report](../artifacts/mmlongbench-v2/adaptive-inventory-scope-20261020/REPORT.md) | 67.33 s / 5 |
 | 511 | Orange box text on physical page 17. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **Start new search**; original orange button manually verified | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) | 64.00 s / 8 |
 | 637 | Complete in-context examples in the top figure on printed page 6985. `2023.acl-long.386.pdf` | **1**; physical page 5, Figure 2; placeholders excluded | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) | 64.74 s / 5 |
+| 517 | Larger geographic market: CA19 or Covina and West Covina. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **Covina and West Covina (CA23)**; original-map qualitative comparison, no numeric area claim | [Report](../artifacts/mmlongbench-v2/adaptive-source-acquisition-20261020/REPORT.md) | 50.20 s / 7 |
 
 Row 642's stored gold label is `[64.3, 62.4, 62.2]`. The PDF values 64.35 and
 62.46 do not match that label under standard one-decimal rounding. This ledger
@@ -108,6 +109,13 @@ They are counted separately from source-verified answers and unresolved workflow
 | 1072 | Best Buy ROCE for the fiscal year ending January 28, 2023. | **26.304%** using operating income / (ending total assets − ending current liabilities); approximately 0.263 as a three-decimal ratio. The published answer states the formula; the source does not define ROCE. | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md); 57.12 s / 6 calls |
 
 ## Latest runs
+
+The [source acquisition follow-up](../artifacts/mmlongbench-v2/adaptive-source-acquisition-20261020/REPORT.md)
+recovers 517 with an original-map qualitative comparison. The 511/382/477 controls remain
+correct. In 380, both operands now reach extraction, but arithmetic scale conversion
+still blocks release. The report preserves the initial 517 schema-capacity failure
+and the final 517/511 sequential pair. Current historical totals: **77 supported,
+1 qualified calculation, 4 verified refusals and 38 unresolved**, across 120 questions.
 
 The [typed routing and scope-repair regression](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md)
 recovers 511 (Start new search) and 637 (one complete example), retains both 382/477
@@ -332,7 +340,6 @@ implemented corrections from unresolved outcomes.
 | 660 | Capture trigger in requested port range 10–13. | Published P1.1 from actual ports 0–3, ignoring requested range; reviewer also overlooks constraint. Not certified as a label error. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 206 | Survey respondents rating ethical standards poor. | No answer; value/denominator not composed. About 541 is an estimate from 36% of 1503, not an exact observed count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 732 | Airbus-related figures. | Published one chart panel; label/reviewer use Tweet value 5. Original page contains both; intended task/counting unit remains disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
-| 517 | Larger geographic region, CA19 or Covina and West Covina. | Numeric misrouting removed; qualitative map comparison still uses repeated text searches without inspecting the relevant map. No answer published. | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) |
 | 207 | Among the adults conducted the survey on April 25 - May 1 2022, how many adults rated Trump's government ethical standards as poor? | Expected by label; requested 2022 survey differs from the 2018 source. Stops with no progress, not a checked absence result. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 209 | According to the survey on April 25 - May 1, 2018, what are the domains with the highest percentage that adults are very confident and not at all confident of  Joe Biden's govenment? Please write the answer in the list format and with alphabetical order, e.g., ["A","B"] | Expected by label; Trump evidence rejected for Biden. No complete accepted mismatch/absence receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 214 | What is the percentage gap between the youngest age group and the oldest age group that strongly disapproves of the way the president, who started his job in 2018, was handling his job in the survey of U.S. adults conducted April 25-May 1, 2018? Please write the answer in float format | Original image produces 65−49=16.000; the 2018-start premise remains unestablished. Request reserve and finalization failure; no released answer. The label 7.0 is disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) |
@@ -341,7 +348,7 @@ implemented corrections from unresolved outcomes.
 | 222 | What is the gap between the percentage of 65+ age group who go online in 2000 and the percentage of 80+ age group still go online on 2022? | Expected by label; source predates requested 2022 statistic. No-progress termination rather than a checked mismatch result. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 365 | What are the bankers' names associated with Apple Inc? | Expected by label; Apple query in GPI source. Repeated searches reach tool-attempt limit. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 367 | What was the percentage shortfall in Japan's GDP growth from 2002 to 2023 compared to the forecast? | Expected by label; Japan 2002–2023 premise unsupported by the selected source. No-progress termination. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
-| 380 | For the year ended March 31,2003, how much less were the shareholders' funds compared to the income in rupees? | Income operand still missing after collection repair, and lakh-to-rupee output conversion remains open. No released result. | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) |
+| 380 | For the year ended March 31,2003, how much less were the shareholders' funds compared to the income in rupees? | Both correct operands now reach the collector through selected-page reads. Arithmetic ignores the declared source scale when expressing rupees; independent review rejects it. No released answer. | [Report](../artifacts/mmlongbench-v2/adaptive-source-acquisition-20261020/REPORT.md) |
 | 393 | What are the top2 texts of the red words in the document? | Visual ordered red-heading task does not acquire the relevant strategy-map page. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 510 | According to this document, how many geographic markers in the Oxford? | Unsupported Oxford-to-Northern-Mississippi membership inference. Original page labels neither Oxford nor its location; no verified geographic join. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 520 | According to this slides, What is the Source of the data for the audience of Google? | Numeric misrouting removed; Google-audience source attribution remains unresolved. No certified whole-source absence. | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) |

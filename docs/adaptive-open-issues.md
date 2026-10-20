@@ -5,7 +5,7 @@ acceptance failures, partial fixes and source/metric adjudication. The detailed
 [code-and-trace audit](adaptive-issue-audit.md) contains source anchors and offline
 replays. Prior run reports retain unsuccessful attempts.
 
-There are **39 unresolved question/workflow outcomes** in the
+There are **38 unresolved question/workflow outcomes** in the
 [120-row ledger](adaptive-solved-questions.md). One additional question has a qualified interpreted calculation. That is not 41 independently proven
 code bugs. One row can exercise multiple families; counts below are not additive.
 The shared matcher scores and strict source/workflow audit remain separate.
@@ -17,13 +17,14 @@ The shared matcher scores and strict source/workflow audit remain separate.
 | REPAIR-001: exact text equality in input repair | P0; implemented; targeted checks pass; end-to-end blockers remain | 366, 1016 and 1070 raise `REPAIR_CHANGED_UNTARGETED_STRUCTURE`. Equivalent interpretation text triggers rejection; 1070 expressions have identical ASTs. | Application-owned operation fields and operand-only patch contract. Preserve protections against genuinely changed operations. |
 | REPAIR-002: text locators inside image repair | P0; implemented; targeted checks pass; end-to-end blockers remain | 1072 fresh pages [40,39,39] become [40,null,null] when untargeted old text operands are restored; then `QUANTITY_ITEM_PAGE_INVALID`. | Preserve per-operand provenance independently from current observation modality; do not invalidate prior evidence with a record-wide image requirement. |
 | PAGE-001: required visual page dropped as context | Handoff fixed; row 641 relationship review remains open | Earlier 641 lost the comparison page through role filtering. The follow-up retains both required pages and delivers definition evidence E1.S60; independent review still rejects the evaluation-population join. | Preserve required-page authority and context budget. Investigate the remaining semantic relationship under COMPOSE-001 rather than repeating the page-filter fix. |
-| FLOW-001 / ROUTE-001: universal quantity fallback | Implemented; prose dispatch verified live; remaining source gaps | Prior 508/511/517/520 entered incompatible numeric collection. Dispatch now uses typed count/calculation needs or a compatible fast-answer capability hint. Failed collection returns an application-owned receipt and resumes bounded research. | All four target prose cases avoid numeric collection; 511 is recovered. Resolve map acquisition in 517 and source-scoped absence in 508/520. Failed drafts remain checkpointed. |
+| FLOW-001 / ROUTE-001: universal quantity fallback | Implemented; prose dispatch verified live; remaining source gaps | Prior 508/511/517/520 entered incompatible numeric collection. Dispatch now uses typed count/calculation needs or a compatible fast-answer capability hint. Failed collection returns an application-owned receipt and resumes bounded research. | All four target prose cases avoid numeric collection; 511 and 517 are recovered. Source-scoped absence in 508/520 remains unresolved. Failed drafts remain checkpointed. |
+| ACQUIRE-001: located source not opened in the required representation | Implemented; targeted acquisition verified live | 517 now inspects the map and releases the correct qualitative answer. Page opening delivers both correct operands in 380; scale conversion remains under UNITS-001. Controls 511/382/477 retain correct answers. | Broaden acquisition coverage without forcing all PDFs through vision or treating partial reads as complete. See [report](../artifacts/mmlongbench-v2/adaptive-source-acquisition-20261020/REPORT.md). |
 | INV-001: page or subset mistaken for whole inventory | P0; targeted counts recovered; broader accumulation open | Prior 476/381 releases were 5/6 instead of 9/7. The follow-up now publishes 9/7 from the original source. Optional parser metadata is not a release gate. | Keep independent coverage review and source-scoped document-window dispatch. Accumulate independently checked partial inventories when no three-page window suffices. |
 | MEMBER-001 / SCOPE-001: group membership and target constraints | P0; targeted group count recovered; semantic cases remain | 399 now releases 4+3=7 from the correct groups. Prior 660/638/510 unsafe answers are withheld; their final dispositions remain unresolved. 831 completeness still needs a targeted check. | Retain quoted question restrictions, independently checked inventories and original native source witnesses. Validate remaining location/relationship/list cases without treating missing parser text as a factual contradiction. |
 | REPAIR-003: wrong freshness requirement | Implemented; local reuse verified offline; live scope gaps remain | Prior 214/380/637 reached `REPAIR_REUSED_INSUFFICIENT_SOURCE`. Grounded scope diagnostics now distinguish existing-source binding, interpretation, unit transformation and presentation from missing source or contradiction. | 637 now releases 1 without repair. 214 has an unestablished premise and 380 lacks income; neither exercises local reuse live. Same-source repairs still require independent review. UNITS-001 remains separate. |
 | PROV-001: header/entity/period/page binding | P1; observed + code boundary confirmed | 1070 issuer context; 366 period context; 637 physical/printed page; 1014/1086 recover missing unit context. Immutable document identity alone is not semantic issuer proof. | Carry verified title/table/period/unit/location links as typed evidence available to each independent check. |
 | NUM-001: numeric displays and absence | Partially fixed; remaining sensitivity | Original crash/checkpoint cases 471/1026/1025/388 recovered. The numeric-authority follow-up recovers 1016/1021; 1074 remains unresolved and has not been remeasured after that fix. | Retain display/canonical separation and checkpoint-before-execution; preflight notation compatibility without guessing locale or treating absence as zero. |
-| UNITS-001: arithmetic output transformation | P1; observed + code boundary confirmed | 380 subtracts lac-denominated inputs but labels result rupees; arithmetic normalization does not apply scalar-read output transforms. | Typed input/output units and explicit application-checked transforms; do not silently change formulas or signs. |
+| UNITS-001: arithmetic output transformation | P1; observed + code boundary confirmed | 380 now acquires both operands with source_scale=100000, but arithmetic normalization retains raw values while labelling the result rupees. Source acquisition is no longer its blocker. | Typed input/output units and explicit application-checked transforms; do not silently change formulas or signs. |
 | CALC-001: named function becomes missing operand | P1; offline confirmed latent failure | 366 would hit `QUANTITY_UNKNOWN_OPERAND` on `abs` after merge recovery. Generic abs/min/max/mean reproduce it in quantity execution. | Declare operator capabilities; use bounded supported deterministic operators and report unsupported function distinctly. No arbitrary Python execution. |
 | COVER-001: incomplete source-object coverage | P1; observed, not all cases arithmetic bugs | 730/728 lack Boeing object closure; 662/663 lack guide-wide inventory; 1017 misses a lease note. Row 641 now retains both pages but its evaluation-population join remains unresolved. | Accumulated coverage and typed missing roles. Search exhaustion is not source absence; do not raise page limits before correcting handoff. |
 | COMPOSE-001: denominator/population/plan composition | P1; observed; some reference assumptions disputed | 206/225/219 require approximate survey headcounts; 216 cannot borrow Dem/Lean Dem base for Democrats; 1015 needs a stated EBITDA definition. | Keep population, denominator, period, metric definition and approximation status with observations. |
@@ -135,3 +136,22 @@ outcomes; 214 has a premise defect and 380 still lacks income plus a scale conve
 The local-reuse scope branch is covered offline but not exercised by these live targets.
 The current historical ledger is **76 supported / 1 qualified / 4 verified refusals /
 39 unresolved**, with 120 unique questions.
+
+
+## Source acquisition audit
+
+The [read-only source handoff audit](adaptive-source-handoff-audit.md) confirms that
+380's income amount already exists in the index and is returned by the existing
+authorized page reader. It also confirms that 517 never inspects its available map.
+ACQUIRE-001 records the missing locate-to-open-to-extract handoff; no runtime fix or
+additional paid run has been made for this audit.
+
+
+## Source acquisition implementation follow-up
+
+The [implementation and live report](../artifacts/mmlongbench-v2/adaptive-source-acquisition-20261020/REPORT.md)
+recovers 517, retains 511/382/477, and verifies that 380 now receives both operands.
+The initial 517 attempt lost a correct qualitative extraction at a generic text-value
+capacity limit; its correction preserves full relationships while retaining numeric
+execution bounds. UNITS-001 remains open for 380. Current historical totals are
+**77 supported / 1 qualified / 4 verified refusals / 38 unresolved** across 120 questions.

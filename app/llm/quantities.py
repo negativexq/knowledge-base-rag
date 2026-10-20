@@ -64,6 +64,7 @@ from app.llm.quantity_state import (
 )
 from app.llm.research_state import decimal_value, signature
 from app.llm.scope_validation import scope_lines
+from app.llm.source_acquisition import open_quantity_pages
 from app.retrieval.hybrid_search import SearchResult
 
 if TYPE_CHECKING:
@@ -856,6 +857,7 @@ async def collect(
                 }
             )
     session.require([*selection.support_ids, *selection.context_support_ids])
+    selection = await open_quantity_pages(session, selection)
     selected = [session.units()[key] for key in selection.support_ids]
     identities = {(u.source_id, u.document_version) for u in selected}
     if len(identities) != 1:

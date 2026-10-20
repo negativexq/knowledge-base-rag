@@ -338,3 +338,15 @@ for 511; manual original-page inspection verifies the orange button on physical 
 Application and harness hashes remain identical throughout the sequential batch.
 The ledger now records 76 supported, one qualified calculation, four verified refusals
 and 39 unresolved outcomes. Earlier audit scores and historical reports stay frozen.
+
+
+## Source acquisition follow-up
+
+The [source handoff diagnosis](adaptive-source-handoff-audit.md) proves that 380's income
+is already indexed and available through a bounded page read. The subsequent
+[implementation report](../artifacts/mmlongbench-v2/adaptive-source-acquisition-20261020/REPORT.md)
+records recovery of 517 via original-image comparison and delivery of both operands in
+380, whose arithmetic scale conversion remains open. Three controls retain correct
+answers. An initial valid qualitative extraction was lost at a 100-character value
+limit; its correction is measured separately and does not relax numeric execution.
+Historical totals are 77 supported, one qualified, four verified refusals and 38 unresolved.
