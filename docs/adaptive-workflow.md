@@ -541,3 +541,24 @@ This dispatch change does not implement missing unit-conversion capabilities.
 spans expose the chosen capability, checkpoint IDs and freshness requirement without
 copying source content into span attributes. Existing request, tool, time and repair
 budgets apply to continuation as well as initial collection.
+
+
+## Opening located source evidence
+
+A source locator is not an extraction receipt. Explicit quantitative text pages can be
+opened through the existing bounded document reader before collection. Application-owned
+page-acquisition records bind source, immutable version, requested page, admitted view
+IDs and scan flags. Full visible reads can be reused; partial reads retain their limits.
+Opening charges the shared tool budget and does not change retrieval or embeddings.
+
+A question-grounded `acquisition=image` need can dispatch a narrow visual page locator,
+then the existing original-image object matcher, extractor and independent checker.
+The locator only chooses where to inspect; the matcher establishes scope and the
+extractor records observations. Nonnumeric relationships stay text, without fabricated
+measurements. Generic text observations allow 1,000 characters; deterministic numeric
+execution retains its separate bounds. Successful observations remain available to
+finalization even when later research cannot continue.
+
+`research.acquire.visual` and `quantity.source.open` spans show physical pages, evidence
+lineage and partial-read flags. Same-version authorization, source constraints, operation
+checks, final scope validation and all existing budgets remain in force.

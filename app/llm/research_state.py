@@ -35,6 +35,15 @@ class CollectionOutcome(ResearchRecord):
     source_ids: list[str] = Field(default_factory=list)
 
 
+class PageAcquisition(ResearchRecord):
+    source_id: str
+    document_version: str
+    page: int = Field(ge=1, le=2000)
+    support_ids: list[str] = Field(max_length=3)
+    has_more: bool
+    scan_limited: bool
+
+
 class TaskSpec(ResearchRecord):
     question: str = Field(min_length=1, max_length=16000)
 
@@ -50,7 +59,14 @@ class ObservedValue(ResearchRecord):
     category: str = Field(min_length=1, max_length=500)
     series: str = Field(default="", max_length=500)
     period: str = Field(default="", max_length=200)
-    value: str | None = Field(default=None, max_length=100)
+    value: str | None = Field(
+        default=None,
+        max_length=1000,
+        description=(
+            "Printed value or qualitative source relationship; "
+            "numeric execution has separate bounds"
+        ),
+    )
     unit: str = Field(default="", max_length=100)
     scale: str = Field(default="", max_length=100)
     qualifiers: list[str] = Field(default_factory=list, max_length=10)
@@ -198,6 +214,7 @@ class EvidenceNeedSpec(ResearchRecord):
         description="Unknown axes to discover in the source, not fixed scope restrictions",
     )
     constraints: list[NeedConstraint] = Field(min_length=1, max_length=12)
+    acquisition: Literal["unknown", "text", "image"] = "unknown"
     operation: Literal["lookup", "compare", "calculate", "sort", "count"] = "lookup"
     presentation: NumericPresentation | None = None
 
@@ -301,6 +318,7 @@ class ResearchState(BaseModel):
     quantity_page_catalog: list[QuantityCatalogPage] = Field(default_factory=list, max_length=72)
     quantity_gap_searches: dict[str, QuantityGapSearch] = Field(default_factory=dict)
     collection_outcomes: list[CollectionOutcome] = Field(default_factory=list)
+    page_acquisitions: list[PageAcquisition] = Field(default_factory=list)
     quantity_repairs: int = 0
     quantity_scope_diagnostics: list[ScopeDiagnostic] = Field(default_factory=list)
     answer_repairs: list[AnswerRepair] = Field(default_factory=list)
