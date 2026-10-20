@@ -13,7 +13,7 @@ import math
 import re
 import time
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 from pydantic import Field, model_validator
@@ -74,6 +74,14 @@ from app.llm.scope_diagnostics import (
     DiagnosticScopeJudgment,
     ScopeDiagnostic,
     validate_objections,
+)
+from app.llm.scope_requirements import (
+    INSTRUCTIONS as REQUIREMENT_INSTRUCTIONS,
+)
+from app.llm.scope_requirements import (
+    RequiredScopeJudgment,
+    range_conflicts,
+    validate_requirements,
 )
 from app.llm.scope_validation import (
     LINE_SCOPE_INSTRUCTIONS,
@@ -1586,39 +1594,77 @@ class AdaptiveSession:
         with operation("answer.scope") as span:
             span.set_attribute("evidence.cited_support_ids", cited)
             judge_payload = payload
-            if (
-                self.need_workflow is not None
-                and self.state.need_planning == "ready"
-                and not set(cited) & set(owned)
-            ):
+            question_requirements = []
+            seen_quotes = set()
+            if self.state.need_planning == "ready":
+                for need in self.state.evidence_needs.values():
+                    for constraint in need.spec.constraints:
+                        quote = constraint.question_quote
+                        if (
+                            quote not in self.deps.question
+                            or quote in seen_quotes
+                            or (
+                                constraint.dimension == "metric"
+                                and re.fullmatch(
+                                    r"(?:how many|count|number|total|sum|difference|ratio)[? .]*",
+                                    quote,
+                                    re.I,
+                                )
+                            )
+                        ):
+                            continue
+                        seen_quotes.add(quote)
+                        question_requirements.append(
+                            {
+                                "dimension": constraint.dimension,
+                                "question_quote": quote,
+                            }
+                        )
+            if question_requirements:
                 judge_payload = {
                     **payload,
-                    "evidence_requirements": [
-                        n.spec.model_dump() for n in self.state.evidence_needs.values()
-                    ],
+                    "question_requirements": question_requirements,
+                    "generated_support_ids": sorted(owned),
                 }
+            requirement_errors: list[str] = []
             judge_payload, scoped_records = semantic_scope_projection(
                 judge_payload, self.state.quantities.values()
             )
             scope_instructions = "\n" + QUANTITY_SCOPE_INSTRUCTIONS if scoped_records else ""
             span.set_attribute("quantity.scope_projection_ids", scoped_records)
-            if self.compact_context:
+            if self.compact_context or question_requirements:
                 projected = line_scope_payload(judge_payload)
                 if len(json.dumps(projected)) > MAX_SCOPE_PAYLOAD_CHARS:
                     raise ValueError("SCOPE_CHECK_TOO_LARGE")
                 references: LineScopeJudgment = await self.call(
                     "scope_validator",
-                    DiagnosticScopeJudgment if set(cited) & set(owned) else LineScopeJudgment,
+                    RequiredScopeJudgment
+                    if question_requirements
+                    else DiagnosticScopeJudgment
+                    if set(cited) & set(owned)
+                    else LineScopeJudgment,
                     LINE_SCOPE_INSTRUCTIONS
                     + scope_instructions
+                    + ("\n" + REQUIREMENT_INSTRUCTIONS if question_requirements else "")
                     + ("\n" + SCOPE_DIAGNOSTIC_INSTRUCTIONS if set(cited) & set(owned) else ""),
                     projected,
                     research=False,
                 )
+                if isinstance(references, RequiredScopeJudgment):
+                    requirement_errors = validate_requirements(
+                        payload, question_requirements, references, set(owned)
+                    )
+                    span.set_attribute("validator.requirement_failure_codes", requirement_errors)
                 if isinstance(references, DiagnosticScopeJudgment):
                     errors = validate_objections(payload, references)
                     self.state.quantity_scope_diagnostics.append(
-                        ScopeDiagnostic(judgment=references, diagnostic_errors=errors)
+                        ScopeDiagnostic(
+                            judgment=references,
+                            diagnostic_errors=errors,
+                            requirement_bindings=references.model_dump().get(
+                                "requirement_bindings", []
+                            ),
+                        )
                     )
                     span.set_attribute("validator.objection_count", len(references.objections))
                     span.set_attribute("validator.diagnostic_errors", errors)
@@ -1634,6 +1680,16 @@ class AdaptiveSession:
                     research=False,
                 )
             receipt = validate_judgment(payload, checked)
+            if range_conflicts(self.deps.question, payload["claims"]):
+                requirement_errors.append("SCOPE_REQUEST_RANGE_MISMATCH")
+            if requirement_errors:
+                receipt = replace(
+                    receipt,
+                    failure_codes=tuple(
+                        sorted(set(receipt.failure_codes) | set(requirement_errors))
+                    ),
+                    rejected_claims=tuple(range(len(payload["claims"]))),
+                )
             span.set_attribute("validator.failure_codes", list(receipt.failure_codes))
             span.set_attribute("validator.rejected_claims", list(receipt.rejected_claims))
             if receipt.failure_codes:

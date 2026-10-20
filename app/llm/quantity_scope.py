@@ -15,6 +15,12 @@ application. The claim shown is a semantic projection, not a new answer. Check t
 entity, period, population, source-unit bindings and whether the named-input formula
 answers the actual question. Do not recompute a quotient or invent a competing result.
 checked_inputs are independently reviewed transcriptions; they are not original PDF text.
+For count operations, checked_inputs includes independently reviewed source items and
+boundaries. Verify that this inventory's category, location and coverage answer the
+question. Do not reject a checked image item merely because the indexed text omitted
+it or require the image transcription to be printed as a numeric total. Concrete
+source contradictions remain grounds for rejection. Counting checked items and
+formatting their scalar/vector result belong to the application.
 The original source IDs remain available for source-grounded witnesses and objections.
 An explicitly declared, independently reviewed conventional formula is an interpretation,
 not a claim that the document defines or reports that metric. It need not appear in the
@@ -40,7 +46,10 @@ def semantic_scope_projection(
     for claim in projected["claims"]:
         actual = claim["claim"]
         for record in records:
-            if record.draft.mode != "arithmetic" or record.execution_status != "completed":
+            if (
+                record.draft.mode not in {"arithmetic", "count"}
+                or record.execution_status != "completed"
+            ):
                 continue
             try:
                 expected = candidate(record).answer_parts[0].model_dump(mode="json")
@@ -51,21 +60,38 @@ def semantic_scope_projection(
                 continue
             if actual != expected:
                 continue
-            operation = {
-                "claim_index": claim["claim_index"],
-                "record_id": record.id,
-                "formula": record.draft.expression,
-                "interpretation": record.draft.interpretation,
-                "result_unit": record.draft.result_unit,
-                "decimals": record.draft.decimals,
-                "checked_inputs": semantic_draft(record.draft)["operands"],
-                "source_support_ids": record.support_ids,
-                "context_support_ids": record.context_support_ids,
-                "execution_authority": "application_decimal",
-                "definition_policy": "declared_interpretation_unless_question_or_source_conflicts",
-            }
+            if record.draft.mode == "count":
+                operation = {
+                    "claim_index": claim["claim_index"],
+                    "record_id": record.id,
+                    "operation": "count",
+                    "count_mode": record.draft.count_mode,
+                    "checked_inputs": semantic_draft(record.draft)["groups"],
+                    "source_support_ids": record.support_ids,
+                    "context_support_ids": record.context_support_ids,
+                    "execution_authority": "application_inventory_count",
+                    "input_authority": "independently_checked_original_images"
+                    if record.modality == "image"
+                    else "independently_checked_source_text",
+                }
+            else:
+                operation = {
+                    "claim_index": claim["claim_index"],
+                    "record_id": record.id,
+                    "formula": record.draft.expression,
+                    "interpretation": record.draft.interpretation,
+                    "result_unit": record.draft.result_unit,
+                    "decimals": record.draft.decimals,
+                    "checked_inputs": semantic_draft(record.draft)["operands"],
+                    "source_support_ids": record.support_ids,
+                    "context_support_ids": record.context_support_ids,
+                    "execution_authority": "application_decimal",
+                    "definition_policy": (
+                        "declared_interpretation_unless_question_or_source_conflicts"
+                    ),
+                }
             claim["claim"] = {
-                "text": "Computed result under the declared named-input operation.",
+                "text": "Computed result under the independently reviewed source-input operation.",
                 "support_ids": actual["support_ids"],
             }
             # Generated proof text contains the result. The scope model receives

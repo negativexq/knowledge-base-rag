@@ -418,7 +418,9 @@ async def source_catalog(session: AdaptiveSession, ranked: list[str]) -> list[Qu
                 )
             ):
                 structure, _ = await session.deps.pdf_structure(seed)
-                hints = await asyncio.to_thread(structure.page_catalog, list(pages))
+                hints = await asyncio.to_thread(
+                    structure.page_catalog, list(pages), session.state.task.question
+                )
             result.extend(
                 QuantityCatalogPage(
                     **hint,

@@ -277,9 +277,9 @@ explicitly requested by the question. Source values and execution receipts retai
 their original precision; only the published display is rounded deterministically.
 Source-only repair preserves this output convention with the operation contract.
 
-For an exact application-owned arithmetic answer, final scope validation receives a
+For an exact application-owned arithmetic or count answer, final scope validation receives a
 semantic projection after local reexecution verifies the saved result. Checked inputs,
-formula, interpretation and units remain visible; the computed number and generated
+formula, interpretation, inventory membership and units remain visible; the computed number and generated
 result proof are withheld from the model's scope task. It still must positively
 verify source bindings and operation compatibility. Ordinary or modified claims do
 not use this projection. The release receipt remains bound to the complete original
@@ -290,8 +290,10 @@ source definitions remain authoritative.
 `QuantityRepairRequirement` carries the missing evidence type. When an arithmetic
 count cannot distinguish total memberships from a distinct entity union, the
 repair requires individual entity labels. Repeating aggregate counts cannot
-complete that contract. An identical source/page/modality view is not treated
-as new evidence; another image/page view of a broad source can still be useful.
+complete that contract. If the independent checker identifies the individual roster
+on already inspected images, the application reuses that view under a count contract;
+this corrects the extraction representation and does not claim new evidence. A real
+coverage gap still requires a fuller source view.
 
 For a grounded missing numeric input, application code can search the same
 authorized document/version without an LLM. The original question stays in the
@@ -320,6 +322,78 @@ alternatives. Equal scalar results resolve a material ambiguity. Different
 results, unresolved aliases, or a per-group vector do not become a scalar answer
 by silent normalization. Distinct comparison uses exact case/whitespace-normalized
 labels; it does not invent external entity aliases.
+
+### Inventory validation without parser-specific answer constraints
+
+Original question requirements govern scope. Models may identify and interpret the
+appropriate source object; parser line IDs, font styles and inferred heading boundaries
+are optional observation aids. Missing structural metadata is not a factual mismatch.
+An independent source review still verifies item membership and completeness. Native
+checks flag concrete observed counterexamples, such as a textual item after the stated
+sibling boundary, an omitted explicit identifier in the inspected inventory, or selecting
+the top caption when the question explicitly asks for the bottom figure. Bold numeric
+row labels are not sibling categories. A footer or native heading handle alone does not
+certify inventory completeness.
+
+A count input review can propose exactly one alternative operation when only scalar,
+vector or distinct presentation is wrong. With independently supported, complete input
+groups and no source objections, the application patches the operation, preserves the
+original review and computes locally. It never changes the item observations. A distinct
+operation additionally requires supported entity identity. Ambiguous alternatives and
+incomplete coverage remain unresolved; they are not repaired by silently summing.
+
+The final scope reviewer receives the checked inventory and its original source IDs.
+It judges whether that inventory answers the requested category, location and scope;
+it does not demand that every checked image label also survive parser extraction. This
+extends the existing arithmetic responsibility split to counting. Local reexecution and
+exact candidate matching protect the projection; changed or unchecked claims retain full
+validation. No extra model stage or budget increase is introduced.
+
+`quantity.inventory.observe`, `quantity.inventory.validate` and
+`quantity.operation.correct` spans expose native observations, concrete counterexamples
+and application-owned operation changes. A source catalog may include literal lines
+matching question terms from the middle of a page, within its existing six-line and
+page limits. These remain location hints, not a complete inventory or an approval receipt. The
+catalog also exposes bounded literal numbered labels, sharing its existing character
+budget with line hints. This lets source selection see detailed entries that an
+incomplete summary omits. If an inspected original page contains numbered labels absent
+from the selected indexed text, the application supplies those same authorized pages as
+images to the existing collector/checker; it adds no model stage and stays within the
+three-page ceiling. Contiguous one- or two-page count selections can use the remaining
+window capacity for continuation/boundary pages; disjoint selections are not filled
+arbitrarily.
+
+Optional object/closure descriptions have the same bounded text capacity as other source
+locators. A descriptive locator cannot discard an otherwise valid typed extraction solely
+because it exceeds a short native-ID limit. Checked empty categories retain their zero
+contribution in the application computation and source receipt; the candidate omits empty
+legacy occurrence-count claims, whose validator correctly rejects unsupported empty lists.
+An unchecked empty extraction still cannot become a zero answer.
+
+Numeric collection declares `value_origin`: a source-printed display or an item count.
+If an arithmetic reader locates counted items, the application preserves its observation
+and hands the same known source view to the count contract. It does not treat an internal
+headcount as a printed number or ask another selector to rediscover the roster. The
+handoff obeys the shared tool/repair/model budgets, and execution still requires the
+independently reviewed individual inventory.
+
+Text source ranges remain authoritative even when their complete contents exceed the
+optional quote field. The application retains the exact ranges and original source;
+it leaves the optional copied witness empty rather than truncating it or rejecting the
+extraction. Retained text inputs in an image repair are resolved from those ranges for
+numeric verification. Invalid or unauthorized ranges still fail.
+
+After accepted count execution, bounded native PDF observations are admitted as original
+source units with their immutable document version and actual physical page. They are
+separate from generated checked-transcription/result proofs and are cited alongside them.
+Final scope can therefore inspect actual Unit/category/caption text omitted by the index,
+without demanding another extraction. Native model views keep every line ID and literal
+text, while attaching coordinates/font metadata only to structural hints. The full native
+observation remains in application state; this is deterministic serialization, not an
+LLM-written summary. A boundary objection requests a fuller source window; a visible
+boundary witness is not a reason to recollect the same insufficient pages. `quantity.source.native` records their source IDs;
+`quantity.source.handoff` records a numeric-to-inventory handoff. Neither uses a model
+summary as original source evidence or changes the index.
 
 ## Deterministic execution and finalization
 
@@ -416,3 +490,22 @@ model calls, label discrepancies, failed intermediate versions, and format limit
 These development checks do not establish a complete benchmark score or stability.
 Broader document-held-out evaluation, repeated runs, mixed-layout extraction,
 and durable request-spanning persistence remain separate work.
+
+
+### Bounded document-inventory location policy
+
+Source selection declares `inventory_scope` as document-wide, a bounded object/subset,
+or unknown. For a declared document-wide count with one matching numbered-label family,
+application code can prefer a same-document/version window that strictly covers more
+of the already observed identifiers. The window remains within three physical pages
+and three authorized, model-visible source seeds. It changes the acquisition location,
+not the question, item membership, computed answer or completeness verdict. Bounded and
+unknown scopes keep their selected windows. Multiple matching families are left to
+semantic source selection rather than collapsed into one list.
+
+The candidate windows are generated from literal native label observations with a bounded
+coverage heuristic. No expected answer, fixed document name or reference page is supplied.
+`quantity.source.window` records old/new pages and source IDs. Independent source review
+still inspects the original pages against the actual question. This policy does not solve
+arbitrary inventories requiring more than one three-page window; reusable partial-coverage
+accumulation remains a separate extension.

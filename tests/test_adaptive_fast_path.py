@@ -21,6 +21,22 @@ def line_scope(messages, info, support, quote="The service uses TLS."):
     return reply(
         info,
         {
+            **(
+                {
+                    "requirement_bindings": [
+                        dict(
+                            requirement_index=i,
+                            verdict="supported",
+                            binding_basis="explicit",
+                            claim_indexes=[0],
+                            witnesses=[dict(support_id=support, start_line=line, end_line=line)],
+                        )
+                        for i in range(len(payload(messages)["question_requirements"]))
+                    ]
+                }
+                if payload(messages).get("question_requirements")
+                else {}
+            ),
             "checks": [
                 {
                     "claim_index": 0,
@@ -28,7 +44,7 @@ def line_scope(messages, info, support, quote="The service uses TLS."):
                     "reason": "NONE",
                     "witnesses": [{"support_id": support, "start_line": line, "end_line": line}],
                 }
-            ]
+            ],
         },
     )
 

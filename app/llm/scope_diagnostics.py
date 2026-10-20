@@ -30,6 +30,7 @@ class ScopeDiagnostic(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     judgment: DiagnosticScopeJudgment
     diagnostic_errors: list[str]
+    requirement_bindings: list[dict[str, Any]] = Field(default_factory=list)
 
 
 INSTRUCTIONS = """For every non-supported check, also return exactly one objection identifying

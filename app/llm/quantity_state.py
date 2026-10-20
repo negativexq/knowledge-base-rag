@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -21,6 +21,7 @@ class QuantityData(BaseModel):
 
 
 class QuantitySource(QuantityData):
+    inventory_scope: Literal["document", "bounded_object", "unknown"] = "unknown"
     operation_kind: QuantityMode = "arithmetic"
     support_ids: list[str] = Field(default_factory=list, max_length=3)
     context_support_ids: list[str] = Field(default_factory=list, max_length=3)
@@ -57,7 +58,10 @@ class QuantityItem(QuantityData):
 
 class QuantityGroup(QuantityData):
     label: str = Field(min_length=1, max_length=200)
-    items: list[QuantityItem] = Field(min_length=1, max_length=200)
+    items: list[QuantityItem] = Field(max_length=200)
+    object_anchor: str = Field(default="", max_length=500)
+    closure_basis: Literal["bounded_object", "declared_inventory", "unresolved"] = "unresolved"
+    closure_anchor: str = Field(default="", max_length=500)
     # Describes source boundaries, not a model's assertion of a total.
     boundary_witness: str = Field(default="", max_length=1500)
     boundary_ranges: list[SourceRange] = Field(default_factory=list, max_length=4)
@@ -76,6 +80,7 @@ class QuantityOperand(QuantityData):
 
 
 class NumericReading(QuantityData):
+    value_origin: Literal["source_printed", "counted_items"] = "source_printed"
     value: SourceNumber | None
     value_status: Literal["readable", "not_found", "unreadable", "ambiguous"] = "readable"
     number_format: NumberFormat = "canonical"
@@ -242,6 +247,7 @@ class QuantityCatalogPage(QuantityData):
     pdf_page_label: str = ""
     native_lines: list[str] = Field(default_factory=list, max_length=6)
     support_ids: list[str] = Field(min_length=1, max_length=3)
+    numbered_items: list[str] = Field(default_factory=list, max_length=40)
     location_hints_only: Literal[True] = True
 
 
@@ -305,6 +311,8 @@ class QuantityRecord(QuantityData):
     inventory_replacement: bool = False
     numeric_inputs: list[QuantityNumberReceipt] = Field(default_factory=list)
     absence_confirmed: bool = False
+    inventory_context: dict[str, Any] = Field(default_factory=dict)
+    inventory_errors: list[str] = Field(default_factory=list)
 
     @property
     def has_result(self) -> bool:
@@ -331,6 +339,9 @@ class TextQuantityItem(QuantityItem):
 
 
 class TextQuantityGroup(QuantityData):
+    object_anchor: str = ""
+    closure_basis: Literal["bounded_object", "declared_inventory", "unresolved"] = "unresolved"
+    closure_anchor: str = ""
     label: str = Field(min_length=1, max_length=200)
     items: list[TextQuantityItem] = Field(min_length=1, max_length=200)
     boundary_witness: Literal[""] = ""
@@ -383,6 +394,9 @@ class ImageQuantityItem(QuantityItem):
 
 
 class ImageQuantityGroup(QuantityData):
+    object_anchor: str = ""
+    closure_basis: Literal["bounded_object", "declared_inventory", "unresolved"] = "unresolved"
+    closure_anchor: str = ""
     label: str = Field(min_length=1, max_length=200)
     items: list[ImageQuantityItem] = Field(min_length=1, max_length=200)
     boundary_witness: str = Field(min_length=1, max_length=1500)

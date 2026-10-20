@@ -28,7 +28,10 @@ Another possible interpretation alone does not invalidate a defensible, clearly 
 one. Use ambiguous when a material choice cannot be responsibly stated; mismatch needs
 a conflict with the actual question or source. For material count ambiguity list the alternative
 operations using total for a scalar sum, per_group for a vector, and distinct for a unique
-entity union. Set issue evidence_kind=entity_inventory when resolving the defect requires
+entity union. If the inputs are correct and only count_mode needs changing, put the
+single intended mode in alternatives; the application can apply that operation without
+reading the same source again. A single group's per_group and total are equivalent.
+Set issue evidence_kind=entity_inventory when resolving the defect requires
 individual entity labels or overlap information rather than aggregate printed values.
 For numeric inputs, value is the original display; numeric_inputs records the application's
 notation conversion separately. Verify the source unit and scale from its actual headers
@@ -180,6 +183,35 @@ def grounded_issues(
     ):
         errors.append("DISTINCT_IDENTITY_UNCONFIRMED")
     return valid, list(dict.fromkeys(errors))
+
+
+def correct_count_operation(
+    draft: QuantityDraft, review: QuantityAssessment
+) -> tuple[QuantityDraft, QuantityAssessment]:
+    """Apply a reviewed operation-only patch without retranscribing checked inputs."""
+    if (
+        draft.mode != "count"
+        or not draft.complete
+        or not all(g.complete for g in draft.groups)
+        or review.inputs != "supported"
+        or review.coverage != "complete"
+        or review.operation not in {"mismatch", "ambiguous"}
+        or not review.issues
+        or any(i.target != "operation" for i in review.issues)
+    ):
+        return draft, review
+    choices = set(review.alternatives)
+    if len(draft.groups) == 1 and draft.count_mode == "per_group" and choices <= {"total"}:
+        choices = {"total"}
+    if len(choices) != 1:
+        return draft, review
+    mode = next(iter(choices))
+    if mode == "distinct" and review.entity_identity != "supported":
+        return draft, review
+    return (
+        draft.model_copy(update={"count_mode": mode}),
+        review.model_copy(update={"operation": "supported", "issues": [], "alternatives": []}),
+    )
 
 
 def verdict(review: QuantityAssessment, errors: list[str]) -> tuple[QuantityCheck, str]:
@@ -342,7 +374,27 @@ def repair_requirement(record: QuantityRecord) -> QuantityRepairRequirement:
         return QuantityRepairRequirement(
             evidence_kind="scope_research", previous_support_ids=record.support_ids
         )
+    if record.inventory_errors and all(
+        code
+        in {
+            "INVENTORY_SOURCE_ITEMS_OMITTED",
+            "INVENTORY_MEMBER_OUTSIDE_OBJECT",
+            "INVENTORY_OBJECT_LOCATION_MISMATCH",
+            "INVENTORY_OBJECT_TARGET_MISMATCH",
+        }
+        for code in record.inventory_errors
+    ):
+        # Counterevidence is already in the inspected immutable source. Correct
+        # its extraction, rather than demanding a fresh page for the same item.
+        return QuantityRepairRequirement(evidence_kind="source_correction")
     review = record.assessments[-1]
+    review = record.assessments[-1]
+    if record.draft.mode in {"arithmetic", "count"} and any(
+        i.evidence_kind == "entity_inventory" for i in review.issues
+    ):
+        return QuantityRepairRequirement(
+            evidence_kind="entity_inventory", previous_support_ids=record.support_ids
+        )
     if (
         record.draft.mode != "list"
         and review.coverage in {"incomplete", "unknown"}
