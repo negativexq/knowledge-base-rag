@@ -1,6 +1,6 @@
 # Answered questions — source-verified results
 
-Latest positive regression check: [ten answerable controls](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/normal-ten/REPORT.md) produce **9 correct answers and one withheld answer (727)**. In 727, two independent image checks retain 24 and 12 and application arithmetic computes 12, but scope review rejects it using parser text that incorrectly reads Lufthansa as 42. This is a current regression among historical successes; no new distinct questions or historical promotions are added.
+Latest follow-up: [checked visual scope authority](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) recovers **727 = 12 Tweets** in six calls / 42.16 seconds. The four answerable controls and one missing-input control pass **5/5 expected outcomes**. The earlier ten-answerable batch remains recorded at 9/10; 727's image/OCR regression is now recovered in the targeted recheck. These are reruns, so historical totals do not increase.
 
 Earlier follow-up on 21 October: [three sequential regression controls](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/answer-local-validation/REPORT.md)
 retain the correct 380 calculation and 387 prose answer. 508 safely returns generic
@@ -60,7 +60,7 @@ runtime release checks.
 | 1083 | Best Buy FY2023 basic earnings per share. `BESTBUY_2023_10K.pdf` | **USD 6.31/share** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 24.99 s / 3 |
 | 1028 | Costco membership warehouse count in 2021. `COSTCO_2021_10K.pdf` | **815 worldwide** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 14.48 s / 3 |
 | 833 | Unit 8 case-study title. `f8d3a162ab9507e021d83dd109118b60.pdf` | **Discrimination in the Workplace Continues** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 18.12 s / 3 |
-| 727 | Germanwings tweets minus Lufthansa tweets. `germanwingsdigitalcrisisanalysis-150403064828-conversion-gate01_95.pdf` | **12 Tweets** = 24−12; image corrected indexed 42 to 12 | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) | 28.42 s / 6 |
+| 727 | Germanwings tweets minus Lufthansa tweets. `germanwingsdigitalcrisisanalysis-150403064828-conversion-gate01_95.pdf` | **12 Tweets** = 24−12; image corrected indexed 42 to 12 | [Report](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) | 42.16 s / 6 |
 | 386 | Second Regulatory Efficiency objective. `e79deb02a0c0e87511080836c5d4347b.pdf` | **By December 31, 2018, reduce average facility-license issuance from 60 days (2015) to 45 days** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 25.73 s / 3 |
 | 1081 | Best Buy FY2023 Domestic store count. `BESTBUY_2023_10K.pdf` | **978** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 23.21 s / 3 |
 | 836 | Unit 14 topic. `f8d3a162ab9507e021d83dd109118b60.pdf` | **Using Financial Information and Accounting** | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-next-20261019/REPORT.md) | 15.26 s / 3 |

@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
+import asyncio
 import copy
+import time
 from collections.abc import Iterable
 from decimal import DecimalException
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from app.llm.quantities import candidate, execute, semantic_draft
 from app.llm.quantity_numbers import normalize_inputs
 from app.llm.quantity_state import QuantityRecord
 from app.llm.quantity_units import arithmetic_conversion
+
+if TYPE_CHECKING:
+    from app.llm.adaptive import AdaptiveSession
 
 INSTRUCTIONS = """For verified_operations, arithmetic execution and rounding belong to the
 application. The claim shown is a semantic projection, not a new answer. Check the
@@ -20,7 +25,13 @@ checked_inputs are independently reviewed transcriptions; they are not original 
 For arithmetic with input_authority=independently_checked_original_images, image_bindings
 identify the original document/version/pages already reviewed. Check the formula and
 the inputs' entity, period and unit relationships. Missing indexed/OCR text alone is
-not a contradiction of independently checked image inputs. A concrete contradictory
+not a contradiction of independently checked image inputs. The supplied source_images
+are those same original version-bound pages. For an input bound to a reviewed image,
+the original image and checked transcription take precedence over differing digits
+in indexed/parser text. Parser text is derivative context, not a competing original
+reading. Use each input's image_ids/source_ranges to distinguish visual inputs from
+retained text inputs. Do not reject solely because parser digits disagree; use the
+original page to assess the binding. A concrete contradictory
 source binding or unsupported interpretation still requires rejection.
 For count operations, checked_inputs includes independently reviewed source items and
 boundaries. Verify that this inventory's category, location and coverage answer the
@@ -36,6 +47,56 @@ explicit question/source definition; reject a materially unjustified interpretat
 Different defensible conventions alone are not a contradiction. Never certify a reported
 source metric by substituting an unstated calculation for it.
 """
+
+
+async def checked_scope_images(
+    session: AdaptiveSession, record_ids: list[str]
+) -> tuple[list[bytes], list[dict[str, Any]]]:
+    """Reuse only reviewed original pages in the existing semantic scope call."""
+    pages: dict[tuple[str, str, int], dict[str, Any]] = {}
+    units = session.units()
+    for record_id in record_ids:
+        record = session.state.quantities[record_id]
+        if record.modality != "image":
+            continue
+        if not record.image_bindings:
+            raise ValueError("CHECKED_IMAGE_BINDING_UNAVAILABLE")
+        for binding in record.image_bindings:
+            session.require(binding.support_ids)
+            if (
+                not record.document_version
+                or (binding.source_id, binding.document_version)
+                != (record.source_id, record.document_version)
+                or any(
+                    not units[key].authorized
+                    or not units[key].model_visible
+                    or (units[key].source_id, units[key].document_version)
+                    != (binding.source_id, binding.document_version)
+                    or not units[key].page_number
+                    or not units[key].page_number
+                    <= binding.physical_page
+                    <= (units[key].page_end or units[key].page_number)
+                    for key in binding.support_ids
+                )
+            ):
+                raise ValueError("CHECKED_IMAGE_BINDING_STALE")
+            identity = (binding.source_id, record.document_version, binding.physical_page)
+            page = pages.setdefault(identity, {**binding.model_dump(), "reviewed_bindings": []})
+            page["reviewed_bindings"].append({"record_id": record.id, "image_id": binding.image_id})
+    images = []
+    for page in pages.values():
+        structure, _ = await session.deps.pdf_structure(page["support_ids"][0])
+        async with asyncio.timeout(
+            min(session.policy.tool_timeout_seconds, max(0, session.deadline - time.monotonic()))
+        ):
+            image = await asyncio.to_thread(
+                structure.snapshot, page["source_id"], page["physical_page"]
+            )
+        if image is None:
+            raise ValueError("CHECKED_IMAGE_PAGE_UNAVAILABLE")
+        images.append(image)
+        page["image_id"] = f"scope_image_{len(images)}"
+    return images, list(pages.values())
 
 
 def semantic_scope_projection(
@@ -85,6 +146,7 @@ def semantic_scope_projection(
                     "input_authority": "independently_checked_original_images"
                     if record.modality == "image"
                     else "independently_checked_source_text",
+                    "image_bindings": [b.model_dump() for b in record.image_bindings],
                 }
             else:
                 operation = {
