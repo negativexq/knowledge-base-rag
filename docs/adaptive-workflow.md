@@ -241,6 +241,52 @@ Untargeted operands and groups remain unchanged. Operation repair may require
 a different representation, while the original record and provisional result
 remain available through `parent_id`.
 
+Source-correction collection uses an operand-only schema. The application restores
+its existing operation, formula, rounding, lookup choices and read-output conventions;
+the model cannot regenerate these fields while correcting a source value. Operand
+identities remain fixed, and the targeted merge preserves untargeted observations.
+A genuine operation objection follows the separate operation-repair contract.
+
+Evidence is resolved per operand or item. During an image repair, retained text
+references remain bound to their authorized literal source ranges and are included
+in independent checking. Retained image references are rebound by document identity,
+version and physical page, rather than by a previous image handle's ordinal.
+Explicitly requested visual context pages are retained with their input pages when
+all belong to the same authorized document version, within the existing three-page
+ceiling. Input and context roles remain distinct in the receipt.
+
+The source checker can return indexed notation corrections when a readable display
+has invalid notation metadata. Code validates each correction without changing the
+literal display or reinterpreting a valid number, then checkpoints the new receipt.
+A tentative numeric reading and an unknown entity join are distinct from missing
+values. Ambiguous readings and unverified lookup joins cannot execute. Relationship
+objections may search the same authorized snapshot and carry candidate definition
+passages as bounded context; finding a passage does not certify an alias.
+
+Lookup relationship recovery follows the operation and grounded objection rather than
+requiring the model to emit a particular optional diagnostic tag. Already admitted,
+authorized definition passages for contrasted source labels can be supplied directly
+with the prior input window. The application dispatches that bounded collection and
+independent review without another LLM source-selection request. Such passages may
+establish a distinction; locating them never certifies equivalence. Explicit context
+seeds reserve the six-unit/6,000-character context budget before optional search hits
+or previous closure paragraphs, so packing cannot silently evict requested page authority.
+
+Numeric read and lookup contracts expose nullable `output_decimals` for precision
+explicitly requested by the question. Source values and execution receipts retain
+their original precision; only the published display is rounded deterministically.
+Source-only repair preserves this output convention with the operation contract.
+
+For an exact application-owned arithmetic answer, final scope validation receives a
+semantic projection after local reexecution verifies the saved result. Checked inputs,
+formula, interpretation and units remain visible; the computed number and generated
+result proof are withheld from the model's scope task. It still must positively
+verify source bindings and operation compatibility. Ordinary or modified claims do
+not use this projection. The release receipt remains bound to the complete original
+answer and evidence. A declared conventional operation is an interpretation, distinct
+from a claim that the source defines or reports that metric; explicit question or
+source definitions remain authoritative.
+
 `QuantityRepairRequirement` carries the missing evidence type. When an arithmetic
 count cannot distinguish total memberships from a distinct entity union, the
 repair requires individual entity labels. Repeating aggregate counts cannot
