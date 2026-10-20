@@ -593,7 +593,14 @@ async def test_question_driven_collection_survives_invalid_optional_plan():
     def model(messages, info):
         props = info.output_tools[0].parameters_json_schema["properties"]
         if "missing" in props:
-            return reply(info, {"answer": None, "missing": ["Need to total source inputs"]})
+            return reply(
+                info,
+                {
+                    "answer": None,
+                    "missing": ["Need to total source inputs"],
+                    "evidence_operation": "calculate",
+                },
+            )
         if "available" in props:
             assert payload(messages)["need"] is None
             assert payload(messages)["question"] == dependencies.question

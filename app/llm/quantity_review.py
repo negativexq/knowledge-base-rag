@@ -251,7 +251,7 @@ def merge_repair(
     original: QuantityRecord, replacement: QuantityDraft, *, replace_inventory: bool = False
 ) -> QuantityDraft:
     """Keep unaffected data byte-for-byte; the complete result is checked again."""
-    if repair_requirement(original).evidence_kind == "scope_research":
+    if repair_requirement(original).evidence_kind in {"scope_research", "existing_scope"}:
         operation_objection = original.assessments and any(
             i.target == "operation" for i in original.assessments[-1].issues
         )
@@ -371,8 +371,19 @@ def merge_repair(
 def repair_requirement(record: QuantityRecord) -> QuantityRepairRequirement:
     """Derive the missing evidence contract, never a desired answer or number."""
     if record.scope_diagnostic is not None:
+        diagnostic = record.scope_diagnostic
+        reuse = (
+            not diagnostic.diagnostic_errors
+            and bool(diagnostic.judgment.objections)
+            and all(
+                o.repair_kind
+                in {"source_binding", "interpretation", "unit_transform", "presentation"}
+                for o in diagnostic.judgment.objections
+            )
+        )
         return QuantityRepairRequirement(
-            evidence_kind="scope_research", previous_support_ids=record.support_ids
+            evidence_kind="existing_scope" if reuse else "scope_research",
+            previous_support_ids=[] if reuse else record.support_ids,
         )
     if record.inventory_errors and all(
         code
@@ -387,7 +398,6 @@ def repair_requirement(record: QuantityRecord) -> QuantityRepairRequirement:
         # Counterevidence is already in the inspected immutable source. Correct
         # its extraction, rather than demanding a fresh page for the same item.
         return QuantityRepairRequirement(evidence_kind="source_correction")
-    review = record.assessments[-1]
     review = record.assessments[-1]
     if record.draft.mode in {"arithmetic", "count"} and any(
         i.evidence_kind == "entity_inventory" for i in review.issues

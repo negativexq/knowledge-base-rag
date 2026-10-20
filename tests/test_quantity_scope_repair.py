@@ -177,3 +177,150 @@ async def test_application_result_check_reserves_one_final_scope_request():
         await active.call(
             "quantity_checker", QuantityAssessment, "Review inputs", {}, research=True
         )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "kind", ["source_binding", "interpretation", "unit_transform", "presentation"]
+)
+async def test_existing_source_scope_repair_skips_selector_but_rechecks_inputs(kind):
+    from app.llm.quantities import collect
+    from app.llm.quantity_review import repair_requirement
+    from app.llm.quantity_state import QuantityAssessment
+    from tests.test_quantities import fake_calls
+
+    active, need = active_session()
+    parent = record().model_copy(
+        update={
+            "need_id": need,
+            "draft": arithmetic(),
+            "values": ["10"],
+            "assessments": [
+                QuantityAssessment(inputs="supported", coverage="complete", operation="supported")
+            ],
+            "scope_diagnostic": diagnostic().model_copy(
+                update={
+                    "judgment": diagnostic().judgment.model_copy(
+                        update={
+                            "objections": [
+                                diagnostic()
+                                .judgment.objections[0]
+                                .model_copy(update={"repair_kind": kind})
+                            ]
+                        }
+                    )
+                }
+            ),
+        }
+    )
+    active.state.quantities[parent.id] = parent
+    roles = fake_calls(active)
+    assert repair_requirement(parent).evidence_kind == "existing_scope"
+    result = await collect(active, need, parent=parent, repairs_left=0)
+    assert result is not None and result.answer_parts[0].text == "10"
+    assert roles == ["quantity_collector", "quantity_checker"]
+    child = list(active.state.quantities.values())[-1]
+    assert child.check.accepted and child.support_ids == parent.support_ids
+    assert active.state.quantities[parent.id].scope_diagnostic is not None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kind", ["missing_source", "mismatch"])
+async def test_real_missing_source_or_mismatch_still_rejects_unchanged_view(kind):
+    from app.llm.quantities import collect
+    from app.llm.quantity_review import repair_requirement
+    from app.llm.quantity_state import QuantityAssessment
+    from tests.test_quantities import fake_calls
+
+    active, need = active_session()
+    parent = record().model_copy(
+        update={
+            "need_id": need,
+            "draft": arithmetic(),
+            "pages": [],
+            "assessments": [
+                QuantityAssessment(inputs="supported", coverage="complete", operation="supported")
+            ],
+            "scope_diagnostic": diagnostic().model_copy(
+                update={
+                    "judgment": diagnostic().judgment.model_copy(
+                        update={
+                            "objections": [
+                                diagnostic()
+                                .judgment.objections[0]
+                                .model_copy(update={"repair_kind": kind})
+                            ]
+                        }
+                    )
+                }
+            ),
+        }
+    )
+    roles = fake_calls(active)
+    assert repair_requirement(parent).evidence_kind == "scope_research"
+    with pytest.raises(ValueError, match="REPAIR_REUSED_INSUFFICIENT_SOURCE"):
+        await collect(active, need, parent=parent, repairs_left=0)
+    assert roles == ["quantity_selector"]
+
+
+def test_mixed_or_invalid_scope_objections_cannot_disable_freshness():
+    from app.llm.quantity_review import repair_requirement
+
+    d = diagnostic()
+    local = d.judgment.objections[0].model_copy(update={"repair_kind": "presentation"})
+    for objections, errors in [
+        ([local, d.judgment.objections[0]], []),
+        ([local], ["SCOPE_OBJECTION_SOURCE_INVALID"]),
+        ([], []),
+    ]:
+        p = record().model_copy(
+            update={
+                "scope_diagnostic": d.model_copy(
+                    update={
+                        "diagnostic_errors": errors,
+                        "judgment": d.judgment.model_copy(update={"objections": objections}),
+                    }
+                )
+            }
+        )
+        assert repair_requirement(p).evidence_kind == "scope_research"
+
+
+@pytest.mark.asyncio
+async def test_same_source_repair_is_not_automatic_acceptance():
+    from app.llm.quantities import collect
+    from app.llm.quantity_state import QuantityAssessment, QuantityCheck
+    from tests.test_quantities import fake_calls
+
+    active, need = active_session()
+    d = diagnostic()
+    d = d.model_copy(
+        update={
+            "judgment": d.judgment.model_copy(
+                update={
+                    "objections": [
+                        d.judgment.objections[0].model_copy(
+                            update={"repair_kind": "unit_transform"}
+                        )
+                    ]
+                }
+            )
+        }
+    )
+    parent = record().model_copy(
+        update={
+            "draft": arithmetic(),
+            "values": ["10"],
+            "scope_diagnostic": d,
+            "assessments": [
+                QuantityAssessment(inputs="supported", coverage="complete", operation="supported")
+            ],
+        }
+    )
+    roles = fake_calls(
+        active, check=QuantityCheck(accepted=False, complete=False, reason="wrong_scope")
+    )
+    assert await collect(active, need, parent=parent, repairs_left=0) is None
+    assert roles == ["quantity_collector", "quantity_checker"]
+    child = list(active.state.quantities.values())[-1]
+    assert not child.check.accepted and not child.values

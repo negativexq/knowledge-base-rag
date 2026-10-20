@@ -362,7 +362,11 @@ class TextQuantityDraft(QuantityOperation):
 
 class QuantityRepairRequirement(QuantityData):
     evidence_kind: Literal[
-        "source_correction", "entity_inventory", "coverage_completion", "scope_research"
+        "source_correction",
+        "entity_inventory",
+        "coverage_completion",
+        "scope_research",
+        "existing_scope",
     ]
     previous_support_ids: list[str] = Field(default_factory=list)
 
