@@ -31,6 +31,7 @@ def collection_contract(
     support_ids: list[str],
     *,
     repair_operation: QuantityDraft | None = None,
+    inventory_anchors: list[str] | None = None,
 ) -> type[BaseModel]:
     """Expose exactly one executable operation, with bounded source handles."""
     image = bool(bindings)
@@ -140,8 +141,14 @@ def collection_contract(
             "CollectionGroup",
             __base__=QuantityData,
             label=(str, Field(min_length=1, max_length=200)),
-            items=(GenericAlias(list, item), Field(min_length=1, max_length=200)),
+            items=(GenericAlias(list, item), Field(max_length=200)),
             complete=(bool, ...),
+            object_anchor=(str, Field(default="", max_length=500)),
+            closure_basis=(
+                Literal["bounded_object", "declared_inventory", "unresolved"],
+                "unresolved",
+            ),
+            closure_anchor=(str, Field(default="", max_length=500)),
             **boundaries,
         )
         fields.update(

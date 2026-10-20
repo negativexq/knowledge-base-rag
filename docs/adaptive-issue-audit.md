@@ -298,3 +298,29 @@ reexecuted application arithmetic. It restores 1021's correct quotient despite
 another false arithmetic objection from the separate after-run reviewer, and
 records the remaining relationship-context investigation for 641. Historical audit
 scores above remain frozen.
+
+
+## Inventory and scope handoff follow-up
+
+The [targeted follow-up](../artifacts/mmlongbench-v2/adaptive-inventory-scope-20261020/REPORT.md)
+recovers 476 (9), 399 (4+3=7) and 381 (7), with control checks on 382/477. It also records
+an initial eight-abstention regression and intermediate failures rather than hiding them.
+
+Optional native IDs/typography and copied-quote capacities no longer veto independently
+supported image inputs. Complete source references survive without shortened quotations.
+Checked zero-item groups retain their computational contribution without invalid legacy
+empty-count claims. Numeric collection declares whether a value is printed or counted;
+application code can hand an already located roster to the inventory tool. Source review
+and final scope share original native PDF evidence, distinct from generated result proofs.
+
+Document-wide numbered inventories can use an authorized, same-version three-page window
+with strictly greater observed identifier coverage. This changes source acquisition,
+not the answer or coverage verdict, and does not apply to bounded/unknown subset scopes.
+Full native observations stay in state; compact model views preserve all literal lines.
+A boundary gap requires new evidence instead of rereading the same partial view.
+
+Remaining work includes partial-coverage accumulation beyond one bounded window, broader
+semantic/visual acceptance checks and adjudication of 638/660/510. Those abstentions are
+not automatically certified as correct source absence. Frozen aggregate scores remain
+unchanged; the historical distinct-question ledger now records 74 supported answers,
+one qualified calculation, four verified refusals and 41 unresolved outcomes.

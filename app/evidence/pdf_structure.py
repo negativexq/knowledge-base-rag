@@ -22,6 +22,11 @@ MAX_TABLE_CELLS = 20000
 MAX_PAGE_AREA = 12_000_000
 
 
+def numbered_labels(text: str) -> list[str]:
+    """Literal numbered labels are location aids, never an inventory total."""
+    return list(dict.fromkeys(re.findall(r"\b[A-Za-z][A-Za-z-]{1,30}\s*#\s*\d+", text)))[:40]
+
+
 @dataclass(frozen=True)
 class PdfElement:
     element_id: str
@@ -44,6 +49,56 @@ class PdfElement:
 class PdfStructure:
     def __init__(self, snapshot: PdfSnapshot):
         self.snapshot = snapshot
+
+    @serialized_pdf
+    def inventory_context(self, pages: list[int]) -> dict[str, Any]:
+        """Literal native lines and typography, never a semantic inventory assertion."""
+        if not pages or len(pages) > 3 or len(set(pages)) != len(pages):
+            raise ValueError("PDF_INVENTORY_PAGE_LIMIT")
+        result = []
+        remaining = 24000
+        with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
+            for number in pages:
+                if not 1 <= number <= min(doc.page_count, 2000):
+                    raise ValueError("PDF_PAGE_OUT_OF_RANGE")
+                page = doc[number - 1]
+                lines: list[dict[str, Any]] = []
+                limited = False
+                for block in page.get_text("dict")["blocks"]:
+                    if block["type"] != 0:
+                        continue
+                    for line in block["lines"]:
+                        text = "".join(s["text"] for s in line["spans"]).strip()
+                        if not text:
+                            continue
+                        if len(text) > remaining or len(lines) >= 500:
+                            limited = True
+                            continue
+                        remaining -= len(text)
+                        size = max(s["size"] for s in line["spans"])
+                        bold = all(s["flags"] & 16 for s in line["spans"] if s["text"].strip())
+                        caption = bool(re.match(r"^(?:fig(?:ure)?\.?|table)\s*\d", text, re.I))
+                        lines.append(
+                            dict(
+                                id=f"P{number}.L{len(lines)+1}",
+                                text=text,
+                                bbox=[
+                                    round(
+                                        v / (page.rect.width if i % 2 == 0 else page.rect.height), 4
+                                    )
+                                    for i, v in enumerate(line["bbox"])
+                                ],
+                                size=round(size, 2),
+                                heading=bool(bold or (text.isupper() and len(text) > 3)),
+                                caption=caption,
+                            )
+                        )
+                result.append(dict(page=number, lines=lines, limited=limited))
+            return dict(
+                page_count=doc.page_count,
+                pages=result,
+                authority="native PDF text/typography; reading order can be ambiguous",
+            )
 
     def _elements(self, doc: fitz.Document, page_number: int) -> list[PdfElement]:
         if not 1 <= page_number <= min(doc.page_count, 2000):
@@ -105,7 +160,7 @@ class PdfStructure:
         return elements
 
     @serialized_pdf
-    def page_catalog(self, pages: list[int]) -> list[dict[str, Any]]:
+    def page_catalog(self, pages: list[int], query: str = "") -> list[dict[str, Any]]:
         """Exact native location hints, not summaries or answer evidence."""
         if not pages or len(pages) > 36 or len(set(pages)) != len(pages):
             raise ValueError("PDF_CATALOG_PAGE_LIMIT")
@@ -120,9 +175,16 @@ class PdfStructure:
                     raise ValueError("PDF_PAGE_TOO_LARGE")
                 lines = [line.strip() for line in page.get_text(sort=True).splitlines()]
                 lines = [line for line in lines if line]
+                terms = {w[:4] for w in re.findall(r"[a-z]{4,}", query.casefold())}
+                relevant = [
+                    i
+                    for i, line in enumerate(lines)
+                    if any(re.search(r"\b" + re.escape(term), line, re.I) for term in terms)
+                ][:2]
                 indexes = list(
                     dict.fromkeys(
-                        [
+                        relevant
+                        + [
                             i
                             for pair in zip(
                                 range(min(3, len(lines))),
@@ -132,17 +194,23 @@ class PdfStructure:
                         ]
                     )
                 )
-                chosen = []
+                chosen: list[int] = []
                 size = 0
                 for i in indexes:
-                    if len(lines[i]) <= 160 and size + len(lines[i]) <= budget:
+                    if len(chosen) < 6 and len(lines[i]) <= 160 and size + len(lines[i]) <= budget:
                         chosen.append(i)
                         size += len(lines[i])
+                labels = []
+                for label in numbered_labels("\n".join(lines)):
+                    if size + len(label) <= budget:
+                        labels.append(label)
+                        size += len(label)
                 result.append(
                     dict(
                         physical_page=number,
                         pdf_page_label=page.get_label(),
                         native_lines=[lines[i] for i in sorted(chosen)],
+                        numbered_items=labels,
                     )
                 )
         return result

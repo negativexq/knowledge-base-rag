@@ -1,12 +1,12 @@
 # Answered questions — source-verified results
 
 Updated: **20 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **71**, across **120 distinct questions tried**.
+source-supported published answer: **74**, across **120 distinct questions tried**.
 There is also **one qualified interpreted calculation**, alongside **four correct refusals**
-and **44 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+and **41 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 71 have passed on the
+This is a historical success ledger, not a claim that all 74 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -85,6 +85,9 @@ runtime release checks.
 | 1022 | Costco FY2021 total liabilities. `COSTCO_2021_10K.pdf` | **USD 41,190 million**; direct lookup | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 19.43 s / 3 |
 | 1073 | Best Buy after-tax return on average equity, fiscal year ending January 28, 2023. `BESTBUY_2023_10K.pdf` | **48.805%**, equivalent to ratio **0.488** at three decimals; explicit average-equity formula | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 42.78 s / 6 |
 | 1016 | Costco FY2021 long-term debt including long-term operating and finance leases. `COSTCO_2021_10K.pdf` | **10,314 million** = 6692+2642+980 | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md) | 51.19 s / 6 |
+| 476 | Complete USB data-exchange function inventory. `User_Manual_1500S_Classic_EN.pdf` | **9**; five on physical page 56 and four on 57; page 58 starts the next section. Firmware update is service-only. | [Report](../artifacts/mmlongbench-v2/adaptive-inventory-scope-20261020/REPORT.md) | 44.67 s / 5 |
+| 399 | MQA Executive Leadership plus Prosecution Services Staff. `e79deb02a0c0e87511080836c5d4347b.pdf` | **7 people** = 4+3; neighboring categories excluded | [Report](../artifacts/mmlongbench-v2/adaptive-inventory-scope-20261020/REPORT.md) | 51.08 s / 6 |
+| 381 | Quizzes across the entire course. `f8d3a162ab9507e021d83dd109118b60.pdf` | **7**; Quiz #1–#6 in the summary plus Quiz #7 in the detailed assignments | [Report](../artifacts/mmlongbench-v2/adaptive-inventory-scope-20261020/REPORT.md) | 67.33 s / 5 |
 
 Row 642's stored gold label is `[64.3, 62.4, 62.2]`. The PDF values 64.35 and
 62.46 do not match that label under standard one-decimal rounding. This ledger
@@ -103,6 +106,16 @@ They are counted separately from source-verified answers and unresolved workflow
 | 1072 | Best Buy ROCE for the fiscal year ending January 28, 2023. | **26.304%** using operating income / (ending total assets − ending current liabilities); approximately 0.263 as a three-decimal ratio. The published answer states the formula; the source does not define ROCE. | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md); 57.12 s / 6 calls |
 
 ## Latest runs
+
+The [inventory and scope follow-up](../artifacts/mmlongbench-v2/adaptive-inventory-scope-20261020/REPORT.md)
+recovers 476 (9 USB functions), 399 (7 people) and 381 (7 quizzes). It retains the
+source-correct 382/477 controls. Optional metadata and quote limits no longer discard
+valid evidence; original native PDF observations reach final scope separately from
+model-generated proofs. Typed numeric-to-inventory handoff and bounded document-window
+selection avoid unnecessary rereads. Earlier regressions and the remaining ambiguous
+638/660/510 outcomes are retained in the report, not counted as verified refusals.
+These are reruns; the distinct-question total remains 120.
+
 
 The [numeric authority follow-up](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md)
 remeasured the same five questions sequentially. It recovers 1016, restores 1021,
@@ -297,7 +310,6 @@ implemented corrections from unresolved outcomes.
 | --- | --- | --- | --- |
 | 661 | Reference answer 0.0 V for the P2.7 ENABLE low/baseline waveform. | Scalar reading routed as multi-input selection; later source inference remained unverified. The voltage is not explicitly annotated on that trace. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md) |
 | 635 | Grey-background execution functions in Figure 1; none are shown. | Initial repair exception; subsequent run incorrectly accepted a blue Fact Checker box as grey. | [Report](../artifacts/mmlongbench-v2/adaptive-evidence-completion-20261019/REPORT.md) |
-| 476 | Complete USB data-exchange function inventory: nine across pages 56–57. | Published five after treating a page footer as the inventory boundary; input and scope review accepted the incomplete collection. | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) |
 | 508 | Geographic market for EPS Code AR03; the original Arkansas listing contains only AR01 and AR02. | Source-consistent abstention, but wrong AL03/AR03 binding and numeric operation were followed by an invalid repair output. Not counted as a clean refusal. | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) |
 | 658 | N-prefix part count in the merged PACKAGES table. | Published 4, reference 2; automatic review agrees with 4, but counting unit and merged-cell membership need adjudication. No verified success claimed. | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) |
 | 730 | Boeing-attributed Tweet count; reference is unanswerable. | Incorrect chart binding rejected, but follow-up inspection remains incomplete; no verified absence receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
@@ -309,9 +321,7 @@ implemented corrections from unresolved outcomes.
 | 384 | Producer of a document revised May 2018; recorded source says May 2016. | Source-consistent abstention, but ModelRetry termination; no clean mismatch receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 637 | Complete in-context examples in top figure on printed page 6985: 1. | Accepted count retained but final scope cannot bind printed page to physical page 5; no released answer. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 225 | 65+ sample headcount online every day or 3–5 times weekly. | No answer; denominator/composition missing. About 738 is a rounded estimate, not a directly reported exact count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
-| 399 | MQA Executive Leadership plus Prosecution Services Staff: 4+3=7. | Published 20 by adding 13 names under other column/group context; automatic reviewer repeats grouping error. Manual headings check overrides approval. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 660 | Capture trigger in requested port range 10–13. | Published P1.1 from actual ports 0–3, ignoring requested range; reviewer also overlooks constraint. Not certified as a label error. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
-| 381 | Entire-course quiz count: 7, including Unit 14 Quiz #7. | Published 6 after inspecting an incomplete inventory and approving closure; manual physical page 10 confirms omitted Quiz #7. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 206 | Survey respondents rating ethical standards poor. | No answer; value/denominator not composed. About 541 is an estimate from 36% of 1503, not an exact observed count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 732 | Airbus-related figures. | Published one chart panel; label/reviewer use Tweet value 5. Original page contains both; intended task/counting unit remains disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 517 | Larger geographic region, CA19 or Covina and West Covina. | Qualitative map comparison routed to numeric select; no numeric area values, then execution fails. No answer published. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
@@ -330,7 +340,7 @@ implemented corrections from unresolved outcomes.
 | 521 | According to this slides, what age range accounts for the most users of the Amazon? | Label-compatible; Facebook demographic chart rejected for Amazon. Incomplete object search, no certified whole-source absence. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 636 | How many prompts examples are shown in the paper's main body? | Shown prompt-example inventory unresolved. K=20 examples used by a model is a different scope from examples shown in the paper; do not accept reviewer substitution. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 638 | How many complete in-context examples are shown in the figure at the bottom of page 6985? Please write down the answer with integer format. | Question asks bottom figure on printed 6985; accepted Figure 2 example is at top. Manual page inspection overrides reviewer approval. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
-| 641 | What is the performance of the InstructGPT model with Self-Ask in the closed-book setting on the dataset with the highest ProgramFC retrieval recall at 10? Please write down the answer in float format with 1 decimal. | Comparison graph and answer table not acquired together; correct answer can be 56.8, but runtime image contract lacks needed comparison page. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 641 | What is the performance of the InstructGPT model with Self-Ask in the closed-book setting on the dataset with the highest ProgramFC retrieval recall at 10? Please write down the answer in float format with 1 decimal. | Graph/table values and dataset-definition context now reach independent review; the evaluation-population join is still not accepted, so no answer is released. | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md) |
 | 662 | How many waveform figures are contained in the guidebook for 272318? List the page numbers in the list format in ascending order,e.g., ["1","2"] | Whole-guide waveform page inventory incomplete; three-page windows do not establish all pages. Figure count and page list also differ. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 663 | How many connection graphs are contained in the guidebook? | Connection-diagram counting unit/scope unresolved. Reviewer sees at least four diagrams on two pages but cannot certify guide-wide closure. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 728 | How many more Tweets are attributed to Germanwings than Boeing? | Label-compatible; Boeing operand unavailable and search incomplete. Wrong chart binding rejected, but absence not established. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |

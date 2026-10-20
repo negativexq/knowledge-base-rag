@@ -14,15 +14,24 @@ import time
 from decimal import DecimalException
 from typing import TYPE_CHECKING, Any, TypeVar
 
+from app.evidence.pdf_structure import numbered_labels
 from app.evidence.support_units import SupportUnit
 from app.llm.agent_observability import operation, outcome
 from app.llm.agentic import AgentAnswer, AgentAnswerPart, AgentCalculation, AgentCount
 from app.llm.calculation import Calculation, evaluate_decimal_expression, verify_calculation
+from app.llm.inventory_evidence import (
+    extend_inventory_window,
+    inventory_issues,
+    inventory_model_view,
+    numbered_window_hints,
+    prefer_document_inventory_window,
+)
 from app.llm.quantity_contracts import bind_collection, collection_contract, review_contract
 from app.llm.quantity_numbers import apply_notation_corrections, normalize_inputs
 from app.llm.quantity_review import (
     CHECK,
     assessment,
+    correct_count_operation,
     grounded_issues,
     merge_repair,
     repair_requirement,
@@ -40,9 +49,12 @@ from app.llm.quantity_sources import (
 from app.llm.quantity_state import (
     EntityInventoryDraft,
     QuantityAbsence,
+    QuantityAssessment,
+    QuantityCheck,
     QuantityDraft,
     QuantityGroup,
     QuantityImageBinding,
+    QuantityIssue,
     QuantityItem,
     QuantityOperand,
     QuantityRecord,
@@ -59,6 +71,10 @@ if TYPE_CHECKING:
 
 SELECT = """Locate the source region needed for a source-input operation: arithmetic,
 counting, selecting a minimum/maximum, or listing labels under a visual/source condition.
+For count, set inventory_scope=document when the question spans the entire source,
+bounded_object for a specified section, object or subset, and unknown if unestablished.
+The application may choose a better-covered bounded source window for a declared document
+inventory. Still filter and verify the items against the original question.
 Set operation_kind to the actual operation: read for source-printed values (including a
 single table Min/Max cell or a visual level); arithmetic for a formula; select for the
 label with the extreme among TWO OR MORE measurements; list for names; count for counts.
@@ -113,6 +129,9 @@ the repair schema. The application retains the original formula and output conve
 For read, transcribe the requested value(s) without a formula or a comparison. Distinguish
 what is printed from a grounded visual relation in the witness; never guess an unreadable
 value. Do not add fields from other operations.
+Declare value_origin=source_printed for a number displayed by the source, or
+counted_items if obtaining it requires enumerating individual source items. The
+application routes counted_items to the inventory tool; do not hide that method.
 Numeric operands keep the original printed numeric display in value and declare its
 number_format. canonical means plain decimal; decimal_point uses '.' decimals and ','
 thousands; decimal_comma uses ',' decimals and '.' thousands; space_grouped uses spaces
@@ -164,6 +183,11 @@ name, label, source numeric display with its notation and witness, and a formula
 those names. Never supply a computed result. State result_unit and a short interpretation
 describing the chosen operation, not an answer. These are reviewed and displayed with the result.
 Choose count when individual items must be enumerated: list
+When native_inventory is supplied, its line IDs and typography are optional location
+hints. Bind object_anchor and closure_anchor when useful; a missing native heading
+must not override readable image evidence. Establish membership and completeness from
+the actual source object, including any visible continuation or comprehensive summary.
+Empty items are valid for an inspected object with no qualifying occurrences. List
 each source item separately under its category, in the requested category order.
 Use count_mode per_group for separate category counts, total for a requested sum of
 occurrences across groups, or distinct for a requested number of unique entities across
@@ -441,9 +465,13 @@ def candidate(record: QuantityRecord) -> AgentAnswer:
             else record.values[0]
         )
         counts = (
-            [AgentCount(items=distinct_items(record.draft))]
+            (
+                [AgentCount(items=distinct_items(record.draft))]
+                if any(g.items for g in record.draft.groups)
+                else []
+            )
             if record.draft.count_mode == "distinct"
-            else [AgentCount(items=count_items(g)) for g in record.draft.groups]
+            else [AgentCount(items=count_items(g)) for g in record.draft.groups if g.items]
         )
         part = AgentAnswerPart(
             text=text,
@@ -484,9 +512,11 @@ def resolve_draft(
                 raise ValueError("QUANTITY_REFERENCE_INVALID")
             passages.append("".join(lines[ref.start_line - 1 : ref.end_line]))
         text = "\n".join(passages)
-        if not text.strip() or len(text) > 1500:
-            raise ValueError("QUANTITY_REFERENCE_TOO_LARGE")
-        return text
+        if not text.strip():
+            raise ValueError("QUANTITY_REFERENCE_EMPTY")
+        # Source ranges remain the complete immutable reference. Do not reject
+        # or truncate source evidence merely to fill an optional quote field.
+        return text if len(text) <= 1500 else ""
 
     current_images = {b.image_id: b for b in image_bindings or []}
     by_page = {
@@ -628,10 +658,21 @@ async def collect(
     coverage_repair = requirement is not None and requirement.evidence_kind == "coverage_completion"
     scope_repair = requirement is not None and requirement.evidence_kind == "scope_research"
     relationship_ids = relationship_context(parent, session.units()) if parent else []
+    known_inventory = bool(
+        inventory_repair
+        and parent
+        and parent.modality == "image"
+        and parent.pages
+        and all(i.page in parent.pages for i in parent.assessments[-1].issues)
+        # A visible boundary witness can establish that more source is needed;
+        # it does not mean the missing inventory is on this already-read page.
+        and all(i.kind != "boundary" for i in parent.assessments[-1].issues)
+    )
     gap_search = None
     if (
         parent
         and not relationship_ids
+        and not known_inventory
         and parent.scope_diagnostic is None
         and (
             scope_repair
@@ -684,7 +725,23 @@ async def collect(
             {"support_id": key, "page": u.page_number, "page_end": u.page_end, "text": u.text}
         )
     selection: QuantitySource
-    if parent and parent.draft.mode == "lookup" and relationship_ids:
+    if parent and (
+        known_inventory
+        or (
+            parent.inventory_errors
+            and requirement
+            and requirement.evidence_kind == "source_correction"
+        )
+    ):
+        selection = QuantitySource(
+            operation_kind="count" if known_inventory else parent.draft.mode,
+            support_ids=parent.support_ids,
+            context_support_ids=parent.context_support_ids[:3],
+            pages=parent.pages,
+            modality=parent.modality,
+            available=True,
+        )
+    elif parent and parent.draft.mode == "lookup" and relationship_ids:
         # The inputs are already located. New authorized relationship context is
         # sufficient to dispatch another bounded inspection; selection need not
         # confuse uncertainty of the answer with availability of its source.
@@ -712,6 +769,9 @@ async def collect(
                 "can_read_images": bool(session.deps.visual_answers and session.deps.render_page),
                 "candidates": candidates,
                 "page_catalog": [p.model_dump() for p in catalog],
+                "numbered_label_windows": numbered_window_hints(
+                    catalog, session.state.task.question
+                ),
                 "completion_search": gap_search.model_dump() if gap_search else None,
                 "relationship_context_candidates": relationship_ids,
                 **(
@@ -735,6 +795,17 @@ async def collect(
         )
     if not selection.available:
         return None
+    previous_selection = selection
+    if session.deps.visual_answers:
+        selection = prefer_document_inventory_window(
+            selection, catalog, session.state.task.question, units
+        )
+    if selection != previous_selection:
+        with operation("quantity.source.window") as span:
+            span.set_attribute("evidence.previous_physical_pages", previous_selection.pages)
+            span.set_attribute("evidence.physical_pages", selection.pages)
+            span.set_attribute("evidence.input_support_ids", selection.support_ids)
+            span.set_attribute("source.window_policy", "declared_document_numbered_inventory")
     presented = {c["support_id"] for c in candidates} | {
         key for page in catalog for key in page.support_ids
     }
@@ -746,8 +817,10 @@ async def collect(
     )
     if gap_search and parent and not relationship_gap:
         selection = bind_gap_source(session, parent, selection, gap_search)
+    if getattr(session.deps.render_page, "snapshot", None):
+        selection = extend_inventory_window(selection, session.units())
     if (
-        (inventory_repair or coverage_repair or scope_repair)
+        (coverage_repair or scope_repair or (inventory_repair and not known_inventory))
         and parent
         and not fresh_source_view(session, parent, selection)
     ):
@@ -840,6 +913,36 @@ async def collect(
             selection = selection.model_copy(
                 update={"modality": "image", "pages": [p.page for p in quality]}
             )
+    native_inventory: dict[str, Any] = {}
+    if (
+        selection.operation_kind == "count"
+        and selection.pages
+        and getattr(session.deps.render_page, "snapshot", None)
+    ):
+        structure, _ = await session.deps.pdf_structure(selection.support_ids[0])
+        with operation("quantity.inventory.observe") as span:
+            native_inventory = await asyncio.to_thread(structure.inventory_context, selection.pages)
+            span.set_attribute("evidence.physical_pages", selection.pages)
+            span.set_attribute(
+                "inventory.observed_line_count",
+                sum(len(p["lines"]) for p in native_inventory["pages"]),
+            )
+    missing_native_labels = []
+    if native_inventory and selection.modality != "image":
+        native_labels = set(
+            numbered_labels(
+                "\n".join(
+                    line["text"] for page in native_inventory["pages"] for line in page["lines"]
+                )
+            )
+        )
+        indexed_labels = set(numbered_labels("\n".join(u.text for u in selected)))
+        missing_native_labels = sorted(native_labels - indexed_labels)
+        if missing_native_labels:
+            # Original items exist outside the indexed excerpt. Inspect those
+            # same authorized pages rather than pretending text locators can
+            # point to content they do not contain. No extra model stage.
+            selection = selection.model_copy(update={"modality": "image"})
     if selection.modality == "image":
         selection = selection.model_copy(
             update={"pages": requested_pages or selection.pages or sorted(numeric_pages)}
@@ -854,7 +957,11 @@ async def collect(
         span.set_attribute("quantity.modality", selection.modality)
         span.set_attribute("evidence.context_support_ids", selection.context_support_ids)
         span.set_attribute("evidence.image_support_ids", image_support_ids)
-        span.set_attribute("source.forced_image", any(p.requires_image for p in quality))
+        span.set_attribute(
+            "source.forced_image",
+            any(p.requires_image for p in quality) or bool(missing_native_labels),
+        )
+        span.set_attribute("source.native_items_missing_from_index", missing_native_labels)
         span.set_attribute(
             "quantity.required_evidence", requirement.evidence_kind if requirement else "initial"
         )
@@ -915,6 +1022,7 @@ async def collect(
         "physical_pages": selection.pages,
         "source_images": [b.model_dump() for b in image_bindings],
         "inventory_replacement": inventory_replacement,
+        "native_inventory": inventory_model_view(native_inventory),
         "context_sources": [
             {
                 "support_id": u.support_unit_id,
@@ -967,7 +1075,16 @@ async def collect(
         else selection.operation_kind
     )
     output_type = collection_contract(
-        kind, image_bindings, selection.support_ids, repair_operation=repair_operation
+        kind,
+        image_bindings,
+        selection.support_ids,
+        repair_operation=repair_operation,
+        inventory_anchors=[
+            line["id"]
+            for page in native_inventory.get("pages", [])
+            for line in page["lines"]
+            if line["heading"] or line["caption"]
+        ],
     )
     with operation("quantity.contract") as span:
         span.set_attribute("quantity.mode", kind)
@@ -1022,6 +1139,7 @@ async def collect(
         parent_id=parent.id if parent else None,
         image_bindings=image_bindings,
         inventory_replacement=inventory_replacement,
+        inventory_context=native_inventory,
     )
     # Draft survives a checker timeout, but cannot be used as accepted evidence.
     session.state.quantities[record.id] = record
@@ -1033,6 +1151,52 @@ async def collect(
     )
     record = record.model_copy(update={"draft": draft})
     session.state.quantities[record.id] = record
+    counted = [
+        (index, operand)
+        for index, operand in enumerate(draft.operands)
+        if getattr(operand, "value_origin", "source_printed") == "counted_items"
+    ]
+    if counted:
+        # A numeric reader has located a roster, not printed aggregate inputs.
+        # Preserve that observation and dispatch the narrow inventory contract.
+        review = QuantityAssessment(
+            inputs="unknown",
+            coverage="unknown",
+            operation="supported",
+            issues=[
+                QuantityIssue(
+                    target="operand",
+                    index=index,
+                    kind="missing_item",
+                    description="This input is a derived item count, not a source-printed number.",
+                    page=operand.page,
+                    source_ranges=operand.source_ranges,
+                    witness=operand.witness,
+                    needed_evidence="Individual source items and their category membership",
+                    evidence_kind="entity_inventory",
+                )
+                for index, operand in counted
+            ],
+        )
+        record = record.model_copy(
+            update={
+                "check": QuantityCheck(accepted=False, complete=False, reason="incomplete"),
+                "assessments": [review],
+                "review_status": "indeterminate",
+            }
+        )
+        session.state.quantities[record.id] = record
+        with operation("quantity.source.handoff") as span:
+            span.set_attribute("quantity.parent_id", record.id)
+            span.set_attribute("quantity.required_evidence", "entity_inventory")
+            if not repairs_left or session.deps.observations.tool_calls >= min(
+                session.limits.tool_calls_limit or session.policy.max_tool_attempts,
+                session.policy.max_tool_attempts,
+            ):
+                return None
+            session.state.quantity_repairs += 1
+            session.deps.observations.tool_calls += 1
+            return await collect(session, need_id, parent=record, repairs_left=repairs_left - 1)
     # An image repair can retain independently grounded text operands. Supply
     # exactly their literal referenced lines so the checker can recheck all data.
     if images:
@@ -1085,7 +1249,34 @@ async def collect(
         images=images,
     )
     session.require(selection.support_ids)
-    review = assessment(reviewed)
+    original_review = assessment(reviewed)
+    draft, review = correct_count_operation(draft, original_review)
+    if draft != record.draft:
+        with operation("quantity.operation.correct") as span:
+            span.set_attribute("quantity.id", record.id)
+            span.set_attribute("quantity.count_mode", draft.count_mode)
+        record = record.model_copy(update={"draft": draft})
+        session.state.quantities[record.id] = record
+    native_issues = inventory_issues(draft, native_inventory, session.state.task.question)
+    if native_issues:
+        review = review.model_copy(
+            update={
+                "issues": [*review.issues, *native_issues],
+                "inputs": "mismatch"
+                if any(i.kind == "wrong_binding" for i in native_issues)
+                else review.inputs,
+                "coverage": "incomplete"
+                if any(i.kind == "boundary" for i in native_issues)
+                else review.coverage,
+            }
+        )
+        record = record.model_copy(
+            update={"inventory_errors": [i.description.split(":")[0] for i in native_issues]}
+        )
+        session.state.quantities[record.id] = record
+        with operation("quantity.inventory.validate") as span:
+            span.set_attribute("quantity.id", record.id)
+            span.set_attribute("inventory.failure_codes", record.inventory_errors)
     if review.notation_corrections:
         draft = apply_notation_corrections(draft, review)
         numeric_inputs = normalize_inputs(draft)
@@ -1101,10 +1292,10 @@ async def collect(
         review,
         draft,
         {u.support_unit_id: u.text for u in [*selected, *context_units]},
-        selection.pages if images else [],
+        selection.pages if images or native_inventory else [],
         session.state.task.question,
     )
-    history = [review]
+    history = [original_review, review] if original_review != review else [review]
     early_check, early_status = verdict(review, errors)
     early_provisional: list[str] = []
     record = record.model_copy(
@@ -1147,7 +1338,19 @@ async def collect(
             images=images,
         )
         session.require(selection.support_ids)
-        review = assessment(reviewed)
+        draft, review = correct_count_operation(draft, assessment(reviewed))
+        if native_issues:
+            review = review.model_copy(
+                update={
+                    "issues": [*review.issues, *native_issues],
+                    "inputs": "mismatch"
+                    if any(i.kind == "wrong_binding" for i in native_issues)
+                    else review.inputs,
+                    "coverage": "incomplete"
+                    if any(i.kind == "boundary" for i in native_issues)
+                    else review.coverage,
+                }
+            )
         if review.notation_corrections:
             draft = apply_notation_corrections(draft, review)
             numeric_inputs = normalize_inputs(draft)
@@ -1157,7 +1360,7 @@ async def collect(
             review,
             draft,
             {u.support_unit_id: u.text for u in [*selected, *context_units]},
-            selection.pages if images else [],
+            selection.pages if images or native_inventory else [],
             session.state.task.question,
         )
     # Compare only the interpretations explicitly raised by the reviewer, and
@@ -1273,10 +1476,34 @@ async def collect(
     if draft.mode == "arithmetic":
         # Images have been independently checked. Text inputs additionally need
         # literal source numeric support, even if the semantic checker accepts.
-        texts = [o.witness for o in draft.operands] if images else [u.text for u in selected]
+        texts = (
+            [
+                "\n".join(
+                    "".join(
+                        scope_lines(session.units()[ref.support_id].text)[
+                            ref.start_line - 1 : ref.end_line
+                        ]
+                    )
+                    for ref in operand.source_ranges
+                )
+                if operand.source_ranges
+                else operand.witness
+                for operand in draft.operands
+            ]
+            if images
+            else [u.text for u in selected]
+        )
         failures = verify_calculation(Calculation(expression, values[0]), texts, values[0])
         if failures:
-            raise ValueError(";".join(failures))
+            record = record.model_copy(
+                update={
+                    "execution_status": "failed",
+                    "diagnostic_errors": failures,
+                    "check": QuantityCheck(accepted=False, complete=False, reason="wrong_binding"),
+                }
+            )
+            session.state.quantities[record.id] = record
+            return None
     record = record.model_copy(
         update={
             "values": values,
@@ -1300,6 +1527,54 @@ async def collect(
         span.set_attribute("evidence.input_support_ids", selection.support_ids)
         span.set_attribute("evidence.physical_pages", selection.pages)
         # A checked transcription, explicitly distinguished from original PDF text.
+        if native_inventory:
+            original = next(
+                b
+                for b in session.deps.ledger.blocks
+                if b.payload["evidence_id"] == unit.evidence_id
+            )
+            native_ids = []
+            with operation("quantity.source.native") as native_span:
+                for native_page in native_inventory["pages"]:
+                    if not native_page["lines"]:
+                        continue
+                    block_id = f"native-{record.id}-{native_page['page']}"
+                    before = set(session.units())
+                    session.admit(
+                        [
+                            SearchResult(
+                                id=block_id,
+                                score=0,
+                                payload={
+                                    **original.payload,
+                                    "text": "\n".join(
+                                        line["text"] for line in native_page["lines"]
+                                    ),
+                                    "section_chunks": [],
+                                    "evidence_block_id": block_id,
+                                    "contributing_chunk_ids": [block_id],
+                                    "page_number": native_page["page"],
+                                    "page_end": native_page["page"],
+                                    "heading_path": [],
+                                    "section_path": ["Original PDF native text"],
+                                    "reading_method": "native_pdf_text",
+                                    "source_caption_context": "",
+                                    "parent_support_ids": record.support_ids,
+                                },
+                            )
+                        ]
+                    )
+                    native_ids.extend(sorted(set(session.units()) - before))
+                record = record.model_copy(
+                    update={
+                        "context_support_ids": list(
+                            dict.fromkeys([*record.context_support_ids, *native_ids])
+                        )
+                    }
+                )
+                session.state.quantities[record.id] = record
+                native_span.set_attribute("evidence.native_support_ids", native_ids)
+                native_span.set_attribute("evidence.physical_pages", record.pages)
         text = "Checked source input transcription (not original PDF text):\n" + json.dumps(
             {
                 "checked_input_summary": (

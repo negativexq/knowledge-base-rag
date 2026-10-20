@@ -423,7 +423,8 @@ async def test_need_aware_final_scope_uses_original_release_receipt():
         if "evidence_needs" in props:
             return reply(info, {"evidence_needs": [spec().model_dump()]})
         if "checks" in props:
-            assert data["evidence_requirements"][0]["constraints"]
+            assert data["question_requirements"]
+            assert all(r["question_quote"] in QUESTION for r in data["question_requirements"])
             return line_scope(messages, info, support="E1.S1", quote="Model-X F1 Small gold 12")
         return reply(
             info,
