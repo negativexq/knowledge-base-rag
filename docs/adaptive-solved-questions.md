@@ -1,11 +1,11 @@
 # Answered questions — source-verified results
 
-Updated: **19 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **56**, across **65 distinct questions tried**.
-There are also **four correct refusals** and **five unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+Updated: **20 October 2026**. Historical distinct questions with a correct,
+source-supported published answer: **70**, across **120 distinct questions tried**.
+There are also **four correct refusals** and **46 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 56 have passed on the
+This is a historical success ledger, not a claim that all 70 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -67,9 +67,22 @@ runtime release checks.
 | 1027 | Operations responsible for 86% of net sales and 81% of operating income. `COSTCO_2021_10K.pdf` | **U.S. and Canadian operations** | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 25.42 s / 3 |
 | 1071 | Best Buy FY2022 activity type with highest cash flow. `BESTBUY_2023_10K.pdf` | **Operating activities**, USD 3,252 million; investing −1,372, financing −4,297 | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 20.89 s / 3 |
 | 513 | Los Angeles Area geographic-market name count. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **13** | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) | 41.36 s / 5 |
-
 | 1026 | Costco FY2021 common-stock repurchase spending. `COSTCO_2021_10K.pdf` | **USD 495 million**; reviewed magnitude from signed `(495)` | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-pair-20261019/REPORT.md) | 41.80 s / 6 |
 | 1025 | Costco FY2021 repurchased common shares. `COSTCO_2021_10K.pdf` | **1,358,000 shares**; reviewed magnitude and thousand-share conversion | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-pair-20261019/REPORT.md) | 39.20 s / 6 |
+| 398 | Document appendix count. `e79deb02a0c0e87511080836c5d4347b.pdf` | **5**; Appendix A–E | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) | 65.03 s / 9 |
+| 1014 | Costco FY2021 total long-term liabilities. `COSTCO_2021_10K.pdf` | **USD 11,749 million** = 6692+2642+2415 | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) | 59.93 s / 9 |
+| 509 | Greater Houston geographic-market count. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **4**; markets 15–18 | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) | 37.82 s / 5 |
+| 227 | College-graduate 65+ cell-phone/tablet ownership gap. `PIP_Seniors-and-Tech-Use_040314.pdf` | **56 percentage points** = 87−31; source-supported, label 301 disputed | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) | 34.57 s / 6 |
+| 829 | Yellow-highlighted lines on first page. `f8d3a162ab9507e021d83dd109118b60.pdf` | **2** | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) | 37.76 s / 5 |
+| 379 | Other-company board memberships for the chairman and Society of Indian Law Firms Western Region president. `afe620b9beac86c1027b96d31d396407.pdf` | **14**; R.A. Shah | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) | 41.65 s / 7 |
+| 659 | Port/pin with capture-trigger alternative function. `DSA-278777.pdf` | **Port 1 / P1.1**, T2EX | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) | 30.79 s / 3 |
+| 1021 | Costco FY2021 current liabilities / total liabilities. `COSTCO_2021_10K.pdf` | **0.715** = 29441/41190, rounded to three decimals | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) | 59.66 s / 9 |
+| 1086 | Best Buy invested capital as defined by assets less cash, January 28, 2023. `BESTBUY_2023_10K.pdf` | **USD 13,929 million** = 15803−1874; original balance sheet manually verified | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) | 62.61 s / 9 |
+| 1085 | Best Buy effective tax ratio, fiscal year ending January 28, 2023. `BESTBUY_2023_10K.pdf` | **20.7%** = 370/1788×100 | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) | 39.91 s / 6 |
+| 229 | Male 65+ internet-use/home-broadband gap. `PIP_Seniors-and-Tech-Use_040314.pdf` | **12 percentage points** = 65−53; separate manifest row similar to 221 | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 40.20 s / 6 |
+| 834 | Critical Thinking Case Studies across course assignments. `f8d3a162ab9507e021d83dd109118b60.pdf` | **3**; full-year summary manually checked | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 41.38 s / 5 |
+| 1022 | Costco FY2021 total liabilities. `COSTCO_2021_10K.pdf` | **USD 41,190 million**; direct lookup | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 19.43 s / 3 |
+| 1073 | Best Buy after-tax return on average equity, fiscal year ending January 28, 2023. `BESTBUY_2023_10K.pdf` | **48.805%**, equivalent to ratio **0.488** at three decimals; explicit average-equity formula | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 42.78 s / 6 |
 
 Row 642's stored gold label is `[64.3, 62.4, 62.2]`. The PDF values 64.35 and
 62.46 do not match that label under standard one-decimal rounding. This ledger
@@ -78,6 +91,33 @@ three incorrect intermediate calculation drafts before releasing the correct
 answer. The linked reports retain the details.
 
 ## Latest runs
+
+**All 120 manifest rows have now been tried.** The [full-set audit](../artifacts/mmlongbench-v2/adaptive-full-set-audit-20261020/REPORT.md)
+reports the shared automatic comparison: earlier 79/120 versus adaptive latest
+saved results 84/120. On the exact 55 questions run under the current frozen
+runtime, however, the earlier archive scores 34/55 versus adaptive 25/55. Both
+results are retained; aggregate gains must not hide this cohort's regressions.
+The [final thirty](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md)
+add four source-supported answers and 26 unresolved outcomes; ten abstentions
+match unanswerable labels but lack certified terminal coverage/mismatch receipts.
+
+The [fifteen-question batch](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md)
+adds **three source-supported answers and twelve unresolved outcomes**. Manual
+original-page review overturns the automatic approval of row 399's multi-column
+personnel grouping and row 660's ignored port-range constraint; neither is counted
+as a success. Original balance-sheet inspection closes row 1086's reviewer-page
+gap. Other findings include an incomplete quiz inventory, textual/spatial tasks
+routed through numeric tools, a printed/physical page binding failure, approximate
+headcount composition and ambiguous metrics. This and the preceding ten use the
+same runtime: **ten verified answers and fifteen unresolved outcomes on 25 new
+questions**, separate from historical cumulative counts.
+
+The [next ten unseen questions](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md)
+add **seven source-supported answers and three unresolved outcomes** on one frozen
+runtime. Row 730 abstains without verified complete inspection, row 1070 finds
+correct numeric inputs but fails identity/context repair, and row 831 publishes an
+incomplete broad-scope answer. Row 227's source-supported 56 percentage points
+conflicts with label 301; the source evidence and discrepancy are retained.
 
 The [four-question numeric recheck](../artifacts/mmlongbench-v2/adaptive-numeric-four-20261019/REPORT.md)
 converts rows 471 and 388 from error-ended abstentions into clean checked refusals.
@@ -214,7 +254,6 @@ as a source-supported published answer in the table above.
 | --- | --- | --- | --- |
 | 220 | Requested 2022 survey headcount from a report published in 2014 using 2013 survey data. | Correct abstention; nine calls and four repeated searches expose a termination-efficiency issue. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md) |
 | 475 | Start time of a red bar in the manual image on page 50. | Correct abstention; original chart has green/blue bars, no red time bar. Nine calls and a diagnostic correction indicate inefficient termination, without an execution exception. | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) |
-
 | 471 | Milk temperature for yellow; the original legend lists green, white and caramel only. | Checked `not_found` receipt completes cleanly; five calls, no conversion exception. Earlier error retained in the preceding batch report. | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-four-20261019/REPORT.md) |
 | 388 | Governor named on the document's last page; none appears on Appendix E. | Partial evidence rejected, complete last page inspected, checked absence retained; nine calls. Textual tool routing remains a separate architectural issue. | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-four-20261019/REPORT.md) |
 
@@ -231,6 +270,47 @@ implemented corrections from unresolved outcomes.
 | 476 | Complete USB data-exchange function inventory: nine across pages 56–57. | Published five after treating a page footer as the inventory boundary; input and scope review accepted the incomplete collection. | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) |
 | 508 | Geographic market for EPS Code AR03; the original Arkansas listing contains only AR01 and AR02. | Source-consistent abstention, but wrong AL03/AR03 binding and numeric operation were followed by an invalid repair output. Not counted as a clean refusal. | [Report](../artifacts/mmlongbench-v2/adaptive-easy-ten-20261019/REPORT.md) |
 | 658 | N-prefix part count in the merged PACKAGES table. | Published 4, reference 2; automatic review agrees with 4, but counting unit and merged-cell membership need adjudication. No verified success claimed. | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) |
+| 730 | Boeing-attributed Tweet count; reference is unanswerable. | Incorrect chart binding rejected, but follow-up inspection remains incomplete; no verified absence receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
+| 1070 | Best Buy FY2022-to-FY2021 gross-margin change. | Correct numeric inputs normalized, but isolated-table identity review and context repair fail; no answer. Direction/unit semantics differ from unsigned label. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
+| 831 | Quarter 3 workplace-skills activities. | Selected evidence includes additional relevant tasks, but published answer covers only motivation interview/team activities; scope checks pass. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
+| 1015 | Costco FY2021 EBITDA, with explicit definition. | No answer; period/header and operand binding unresolved. Common operating-income-plus-D&A definition gives 8489 million. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 511 | Orange box text on page 17: Start new search. | No answer; text extraction routed to numeric read and marked unreadable despite visible text. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 366 | India GDP forecast 6.7% versus actual 4.3%. | No answer; period binding/repair fail. Percentage-point gap 2.4 and relative shortfall about 35.8% require different semantics. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 384 | Producer of a document revised May 2018; recorded source says May 2016. | Source-consistent abstention, but ModelRetry termination; no clean mismatch receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 637 | Complete in-context examples in top figure on printed page 6985: 1. | Accepted count retained but final scope cannot bind printed page to physical page 5; no released answer. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 225 | 65+ sample headcount online every day or 3–5 times weekly. | No answer; denominator/composition missing. About 738 is a rounded estimate, not a directly reported exact count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 399 | MQA Executive Leadership plus Prosecution Services Staff: 4+3=7. | Published 20 by adding 13 names under other column/group context; automatic reviewer repeats grouping error. Manual headings check overrides approval. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 660 | Capture trigger in requested port range 10–13. | Published P1.1 from actual ports 0–3, ignoring requested range; reviewer also overlooks constraint. Not certified as a label error. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 381 | Entire-course quiz count: 7, including Unit 14 Quiz #7. | Published 6 after inspecting an incomplete inventory and approving closure; manual physical page 10 confirms omitted Quiz #7. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 206 | Survey respondents rating ethical standards poor. | No answer; value/denominator not composed. About 541 is an estimate from 36% of 1503, not an exact observed count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 732 | Airbus-related figures. | Published one chart panel; label/reviewer use Tweet value 5. Original page contains both; intended task/counting unit remains disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 517 | Larger geographic region, CA19 or Covina and West Covina. | Qualitative map comparison routed to numeric select; no numeric area values, then execution fails. No answer published. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
+| 207 | Among the adults conducted the survey on April 25 - May 1 2022, how many adults rated Trump's government ethical standards as poor? | Expected by label; requested 2022 survey differs from the 2018 source. Stops with no progress, not a checked absence result. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 209 | According to the survey on April 25 - May 1, 2018, what are the domains with the highest percentage that adults are very confident and not at all confident of  Joe Biden's govenment? Please write the answer in the list format and with alphabetical order, e.g., ["A","B"] | Expected by label; Trump evidence rejected for Biden. No complete accepted mismatch/absence receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 214 | What is the percentage gap between the youngest age group and the oldest age group that strongly disapproves of the way the president, who started his job in 2018, was handling his job in the survey of U.S. adults conducted April 25-May 1, 2018? Please write the answer in float format | Computed 46−39=7 accepted, then question premise about starting office in 2018 fails scope. Preserve the premise defect separately from calculation correctness. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 216 | How many Demoncratic people in the survey of U.S. adults conducted April 25- May 1, 2018 said neither the Republican Party nor the Democratic Party  has ‘high ethical standards'? | Exact Democratic headcount unsupported by subgroup denominator; 128 assumes 18% of Dem/Lean Dem n=710. Population/estimate adjudication needed. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 219 | How many people who do not go online or only use SNS in the Older Adults and Technology by Princeton Survey Research Associates International from July 18 to September 30, 2013? | Approximate 1038 could be derived from 68% of n=1526, with weighting/rounding caveats. Composition remains unresolved. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 222 | What is the gap between the percentage of 65+ age group who go online in 2000 and the percentage of 80+ age group still go online on 2022? | Expected by label; source predates requested 2022 statistic. No-progress termination rather than a checked mismatch result. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 365 | What are the bankers' names associated with Apple Inc? | Expected by label; Apple query in GPI source. Repeated searches reach tool-attempt limit. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 367 | What was the percentage shortfall in Japan's GDP growth from 2002 to 2023 compared to the forecast? | Expected by label; Japan 2002–2023 premise unsupported by the selected source. No-progress termination. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 380 | For the year ended March 31,2003, how much less were the shareholders' funds compared to the income in rupees? | Lac-to-rupee conversion missing: (109638.91−25966.14)×100000 = 8367277000. Review catches unit mismatch; repair fails. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 393 | What are the top2 texts of the red words in the document? | Visual ordered red-heading task does not acquire the relevant strategy-map page. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 510 | According to this document, how many geographic markers in the Oxford? | Unsupported Oxford-to-Northern-Mississippi membership inference. Original page labels neither Oxford nor its location; no verified geographic join. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 520 | According to this slides, What is the Source of the data for the audience of Google? | Label-compatible, but Google Analytics box is not a source for Google audience demographics. Collector/repair also routes text through numeric read. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 521 | According to this slides, what age range accounts for the most users of the Amazon? | Label-compatible; Facebook demographic chart rejected for Amazon. Incomplete object search, no certified whole-source absence. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 636 | How many prompts examples are shown in the paper's main body? | Shown prompt-example inventory unresolved. K=20 examples used by a model is a different scope from examples shown in the paper; do not accept reviewer substitution. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 638 | How many complete in-context examples are shown in the figure at the bottom of page 6985? Please write down the answer with integer format. | Question asks bottom figure on printed 6985; accepted Figure 2 example is at top. Manual page inspection overrides reviewer approval. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 641 | What is the performance of the InstructGPT model with Self-Ask in the closed-book setting on the dataset with the highest ProgramFC retrieval recall at 10? Please write down the answer in float format with 1 decimal. | Comparison graph and answer table not acquired together; correct answer can be 56.8, but runtime image contract lacks needed comparison page. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 662 | How many waveform figures are contained in the guidebook for 272318? List the page numbers in the list format in ascending order,e.g., ["1","2"] | Whole-guide waveform page inventory incomplete; three-page windows do not establish all pages. Figure count and page list also differ. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 663 | How many connection graphs are contained in the guidebook? | Connection-diagram counting unit/scope unresolved. Reviewer sees at least four diagrams on two pages but cannot certify guide-wide closure. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 728 | How many more Tweets are attributed to Germanwings than Boeing? | Label-compatible; Boeing operand unavailable and search incomplete. Wrong chart binding rejected, but absence not established. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 830 | When will the market open? | Label-compatible; market/time request underspecified in a course document. Repeated no-progress searches; reviewer source_answer is itself uninformative. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 1016 | what is long-term debt of Costco in FY 2021, including long-term operating and finance lease liabilities? Anwser in millions. | Grouped numeric displays rejected under incompatible notation; subsequent repair fails. Required long-term debt+leases total is 10314 million. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 1017 | what is total debt of COSTCO in FY 2021, taking total debt as long-term debt including its current portion as reported on the balance sheet, plus all operating and finance lease liabilities? Answer in millions. | Lease evidence not fully consumed; missing note page prevents total 11407 million from being assembled. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 1072 | what is Return on Capital Employed for the fiscal year ending January 28, 2023? round your answer to three decimal places | Scale/header context repair raises ValueError. Common stated ROCE interpretation could yield 0.263; source does not define formula. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 1074 | What is Interest to Average Total Debt for the fiscal year ending January 28, 2023? Answer in percentage term, round to three decimal places | Header/scale context and notation repair remain unresolved; reviewer derives 2.911% under stated debt definition. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 1075 | what is capitalization ratio for Best Buy for the fiscal year ending January 28, 2023? Answer in percentage term, round to one decimal places. | Formula choice remains disputed. Excluding current portion gives 29.3%; adding current long-term debt 16 to 1160 gives 29.6%. Do not declare reference wrong from arithmetic alone. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 1084 | what is interest coverage ratio for AMCOR'FY 2020? round your answer to three decimal? | Expected by label; AMCOR FY2020 request in Best Buy source. No-progress termination, no verified mismatch receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 
 ## Adding a result
 
