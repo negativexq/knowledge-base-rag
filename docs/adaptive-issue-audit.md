@@ -429,3 +429,7 @@ The [frozen sequential check](../artifacts/mmlongbench-v2/adaptive-source-dispos
 ## Answerable-control follow-up: visual authority conflict
 
 The [ten-question measurement](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/normal-ten/REPORT.md) yields 9/10 correct positive answers. In 727, independent image collection/review succeeds twice and deterministic arithmetic computes 12, but two scope judgments prefer parser 42 over the checked visual 12. The system withholds a correct answer after ten requests. PROV-002 records this source-authority conflict; no runtime changes or paid after-run reviewer were used.
+
+## Checked visual authority correction
+
+The [follow-up](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) reuses the independently checked original page inside the existing scope model call. Same-source/version/page and visibility checks gate this handoff; conflicting parser digits remain derivative context. 727 now publishes 12 in six requests, and all five selected controls have the expected outcome. Semantic source binding still requires approval and release fingerprints are unchanged. No extra model loop is introduced. Offline checks: 2,387 passed, four skipped, five deselected; Ruff and mypy pass.

@@ -44,7 +44,7 @@ from app.llm.quantities import collect as collect_quantities
 from app.llm.quantities import semantic_draft
 from app.llm.quantity_review import repair_requirement
 from app.llm.quantity_scope import INSTRUCTIONS as QUANTITY_SCOPE_INSTRUCTIONS
-from app.llm.quantity_scope import semantic_scope_projection
+from app.llm.quantity_scope import checked_scope_images, semantic_scope_projection
 from app.llm.quantity_sources import inspect_pages
 from app.llm.research_budget import ResearchPolicy
 from app.llm.research_dispositions import (
@@ -1904,6 +1904,13 @@ class AdaptiveSession:
             )
             scope_instructions = "\n" + QUANTITY_SCOPE_INSTRUCTIONS if scoped_records else ""
             span.set_attribute("quantity.scope_projection_ids", scoped_records)
+            scope_images, source_images = await checked_scope_images(self, scoped_records)
+            if source_images:
+                judge_payload["source_images"] = source_images
+            span.set_attribute("evidence.scope_image_count", len(scope_images))
+            span.set_attribute(
+                "evidence.scope_image_pages", [p["physical_page"] for p in source_images]
+            )
             references: LineScopeJudgment | None = None
             if self.compact_context or question_requirements:
                 projected = line_scope_payload(judge_payload)
@@ -1922,6 +1929,7 @@ class AdaptiveSession:
                     + ("\n" + SCOPE_DIAGNOSTIC_INSTRUCTIONS if set(cited) & set(owned) else ""),
                     projected,
                     research=False,
+                    images=scope_images or None,
                 )
                 if isinstance(references, RequiredScopeJudgment):
                     requirement_errors = validate_requirements(
@@ -1952,6 +1960,7 @@ class AdaptiveSession:
                     SCOPE_INSTRUCTIONS + scope_instructions,
                     judge_payload,
                     research=False,
+                    images=scope_images or None,
                 )
             receipt = validate_judgment(payload, checked)
             if range_conflicts(self.deps.question, payload["claims"]):
