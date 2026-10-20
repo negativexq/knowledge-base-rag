@@ -2,18 +2,20 @@
 
 from __future__ import annotations
 
-import asyncio
+import re
 import time
 from typing import TYPE_CHECKING
 
 from pydantic import Field
 
-from app.evidence.documents import DocumentRead, DocumentRef
 from app.llm.agent_observability import operation
 from app.llm.agentic import StrictModel
+from app.llm.page_acquisition import read_complete_page
 from app.llm.quantity_sources import source_catalog, visual_page_supports
 from app.llm.quantity_state import QuantitySource
-from app.llm.research_state import PageAcquisition
+from app.llm.research_state import PageAcquisition, signature
+from app.retrieval.filters import filter_authorized_candidates
+from app.retrieval.hybrid_search import SearchResult
 
 if TYPE_CHECKING:
     from app.llm.adaptive import AdaptiveSession
@@ -142,23 +144,11 @@ async def open_quantity_pages(
         remaining = session.research_deadline - time.monotonic()
         if remaining <= 0:
             break
-        session.deps.observations.tool_calls += 1
         before = set(session.units())
         with operation("quantity.source.open") as span:
             span.set_attribute("evidence.input_support_ids", selection.support_ids)
             span.set_attribute("evidence.physical_page", page)
-            async with asyncio.timeout(min(session.policy.tool_timeout_seconds, remaining)):
-                result = await session.deps.documents.read(
-                    DocumentRead(
-                        document=DocumentRef(
-                            source_type="filesystem",
-                            source_id=unit.source_id,
-                            document_version=unit.document_version,
-                        ),
-                        action="page",
-                        page=page,
-                    )
-                )
+            result = await read_complete_page(session, selection.support_ids[0], page)
             blocks = [
                 b
                 for b in result.blocks
@@ -169,27 +159,68 @@ async def open_quantity_pages(
                 <= page
                 <= (b.payload.get("page_end") or b.payload.get("page_number") or 1)
             ]
-            session.admit(blocks)
-            block_ids = {str(b.id) for b in blocks}
-            source_units = [
-                u
-                for u in session.units().values()
-                if (u.source_id, u.document_version) == (unit.source_id, unit.document_version)
-                and block_ids.intersection(u.contributing_chunk_ids)
+            # Admit one complete page view, not its fragments followed by a
+            # duplicate concatenation. Never launder denied child text through
+            # the authorized parent's metadata.
+            if session.deps.ledger.context is not None:
+                blocks = filter_authorized_candidates(blocks, session.deps.ledger.context)
+            blocks = [
+                b
+                for b in blocks
+                if b.payload.get("authorized", True) is True
+                and b.payload.get("model_visible", True) is True
+                and (
+                    session.deps.ledger.context is None
+                    or session.deps.ledger.context.is_system
+                    or b.payload.get("tenant_id") == session.deps.ledger.context.tenant_id
+                )
             ]
+            unique = {str(b.id): b for b in blocks}
+            text = "Parser page reading (may include overlapping chunk context):\n" + "\n".join(
+                # Keep the complete page as one reading unit, as in source_view.
+                re.sub(r"\n\s*\n", "\n", str(b.payload.get("text", "")))
+                for b in unique.values()
+            )
             view_ids = []
-            if source_units:
-                session.source_view(unit, parent, source_units, page, session.selected)
+            if unique:
+                view_id = "page-view-" + signature(
+                    "page",
+                    {
+                        "source": unit.source_id,
+                        "version": unit.document_version,
+                        "page": page,
+                        "text": text,
+                    },
+                    0,
+                )
+                session.admit(
+                    [
+                        SearchResult(
+                            id=view_id,
+                            score=0,
+                            payload={
+                                **parent.payload,
+                                "text": text,
+                                "section_chunks": [],
+                                "evidence_block_id": view_id,
+                                "contributing_chunk_ids": list(unique),
+                                "page_number": min(
+                                    b.payload.get("page_number") or page for b in blocks
+                                ),
+                                "page_end": max(b.payload.get("page_end") or page for b in blocks),
+                                "heading_path": [],
+                                "section_path": ["Parser page reading"],
+                                "requested_page": page,
+                                "reading_method": "parser_page_view",
+                                "parent_support_ids": selection.support_ids,
+                            },
+                        )
+                    ]
+                )
                 view_ids = [
                     key
-                    for key in session.selected
-                    if key in session.units()
-                    and any(
-                        b.payload["evidence_id"] == session.units()[key].evidence_id
-                        and b.payload.get("reading_method") == "parser_page_view"
-                        and b.payload.get("requested_page") == page
-                        for b in session.deps.ledger.blocks
-                    )
+                    for key, u in session.units().items()
+                    if u.parent_evidence_block_id == view_id
                 ]
             receipt = PageAcquisition(
                 source_id=unit.source_id,

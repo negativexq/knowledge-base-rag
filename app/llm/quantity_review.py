@@ -34,7 +34,11 @@ reading the same source again. A single group's per_group and total are equivale
 Set issue evidence_kind=entity_inventory when resolving the defect requires
 individual entity labels or overlap information rather than aggregate printed values.
 For numeric inputs, value is the original display; numeric_inputs records the application's
-notation conversion separately. Verify the source unit and scale from its actual headers
+notation conversion separately. For arithmetic, arithmetic_conversion is the application's
+source-to-base and result-unit conversion plan. The original value is still printed
+in source units; numeric_inputs.output_value is the converted base-unit value. Check
+both against the original source and requested formula/unit; do not require the printed
+source value to already be converted. Verify the source unit and scale from its actual headers
 and context. For read, also assess output unit/scale and signed versus magnitude convention
 against the ORIGINAL question. Accounting parentheses mean a negative source movement;
 they alone do not authorize a positive answer or a unit conversion.

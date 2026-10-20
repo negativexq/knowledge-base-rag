@@ -35,6 +35,32 @@ class CollectionOutcome(ResearchRecord):
     source_ids: list[str] = Field(default_factory=list)
 
 
+class AcquiredPageChunk(ResearchRecord):
+    id: str
+    payload: dict[str, Any]
+
+
+class PageReadCheckpoint(ResearchRecord):
+    source_id: str
+    document_version: str
+    page: int
+    chunks: list[AcquiredPageChunk] = Field(default_factory=list, max_length=300)
+    offsets: list[int] = Field(default_factory=list)
+    next_offset: int | None = None
+    has_more: bool = True
+    scan_limited: bool = False
+    stop_reason: str = "not_started"
+
+
+class PageContextReceipt(ResearchRecord):
+    source_id: str
+    document_version: str
+    page: int
+    support_ids: list[str] = Field(default_factory=list, max_length=3)
+    limited: bool
+    line_count: int
+
+
 class PageAcquisition(ResearchRecord):
     source_id: str
     document_version: str
@@ -319,6 +345,8 @@ class ResearchState(BaseModel):
     quantity_gap_searches: dict[str, QuantityGapSearch] = Field(default_factory=dict)
     collection_outcomes: list[CollectionOutcome] = Field(default_factory=list)
     page_acquisitions: list[PageAcquisition] = Field(default_factory=list)
+    page_read_checkpoints: dict[str, PageReadCheckpoint] = Field(default_factory=dict)
+    page_contexts: list[PageContextReceipt] = Field(default_factory=list)
     quantity_repairs: int = 0
     quantity_scope_diagnostics: list[ScopeDiagnostic] = Field(default_factory=list)
     answer_repairs: list[AnswerRepair] = Field(default_factory=list)
@@ -517,12 +545,19 @@ def _evaluate(
             else (value, dimension, text)
         )
     if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-        if node.func.id not in {"mean", "min", "max"} or node.keywords or not node.args:
+        if (
+            node.func.id not in {"abs", "mean", "min", "max"}
+            or node.keywords
+            or not node.args
+            or (node.func.id == "abs" and len(node.args) != 1)
+        ):
             raise ValueError("Unsupported aggregate")
         args = [_evaluate(arg, values) for arg in node.args]
         if len({dimension for _, dimension, _ in args}) != 1:
             raise ValueError("Aggregate requires the same dimensions")
         numbers = [n for n, _, _ in args]
+        if node.func.id == "abs":
+            return abs(numbers[0]), args[0][1], f"abs({args[0][2]})"
         if node.func.id == "mean":
             return (
                 sum(numbers, Decimal(0)) / len(numbers),

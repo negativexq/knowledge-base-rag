@@ -42,16 +42,25 @@ def evidence(text: str) -> SearchResult:
 
 @pytest.mark.parametrize(
     ("expression", "value"),
-    [("100 - 59", 41), ("(8873.49 - 913.01)", 7960.48), ("59 / 2", 29.5), ("-3 + 5 * 2", 7)],
+    [
+        ("100 - 59", 41),
+        ("(8873.49 - 913.01)", 7960.48),
+        ("59 / 2", 29.5),
+        ("-3 + 5 * 2", 7),
+        ("abs(-3)", 3),
+        ("min(3,7)", 3),
+        ("max(3,7)", 7),
+        ("mean(3,7)", 5),
+    ],
 )
 def test_arithmetic_expressions_are_evaluated(expression, value):
     assert evaluate_expression(expression) == pytest.approx(value)
 
 
 @pytest.mark.parametrize(
-    "expression", ["__import__('os').system('x')", "2 ** 10", "abs(-3)", "1 / 0", "x + 1", ""]
+    "expression", ["__import__('os').system('x')", "2 ** 10", "abs(-3,2)", "1 / 0", "x + 1", ""]
 )
-def test_anything_but_plain_arithmetic_is_refused(expression):
+def test_unsupported_arithmetic_is_refused(expression):
     with pytest.raises(ValueError):
         evaluate_expression(expression)
 

@@ -350,3 +350,42 @@ records recovery of 517 via original-image comparison and delivery of both opera
 answers. An initial valid qualitative extraction was lost at a 100-character value
 limit; its correction is measured separately and does not relax numeric execution.
 Historical totals are 77 supported, one qualified, four verified refusals and 38 unresolved.
+
+
+## Unit execution follow-up — 20 October 2026
+
+The [implementation and sequential measurement](../artifacts/mmlongbench-v2/adaptive-unit-arithmetic-20261020/REPORT.md)
+recovers 380 through explicit source-to-base/output factors, and makes abs/min/max/mean
+bounded application operators. Row 366 now releases a correct relative-shortfall
+calculation, retained as qualified because the reference uses percentage-point difference.
+The source inputs and arithmetic are correct under the stated convention.
+
+Controls 741 and 1021 release correct answers. The 1021 collector still hits the valid-notation
+correction guard and recovers via sourced text calculation. Row 1086 independently checks
+and computes 13,929 million but fails proof admission/finalization in the initial batch.
+This is a publication-budget boundary, not an arithmetic failure. The report preserves
+that attempt and the separate compact-proof follow-up, which also abstains despite a correct calculation. FINAL-001 tracks proof admission/finalization; serialization alone is insufficient. Current historical counts are
+**78 supported / 2 qualified / 4 verified refusals / 36 unresolved**, across 120 questions.
+
+
+## Protected-result publication follow-up
+
+The [new report](../artifacts/mmlongbench-v2/adaptive-result-reservation-20261020/REPORT.md)
+confirms targeted publication recovery for 1086 and a correct 380 answer in the preceding
+frozen pair. FINAL-001 now has a tested bounded allocation inside the existing total;
+source views admit once rather than charging fragments then their duplicate aggregate.
+The introduced paragraph/window mismatch is documented, regression-tested and corrected.
+Full validation passes 2,317 tests. Source-scale context can still require an image repair;
+no claim is made that all selection calls or broader scope failures are eliminated.
+
+
+## Context and coverage acquisition follow-up
+
+The [report](../artifacts/mmlongbench-v2/adaptive-context-coverage-20261020/REPORT.md)
+adds version-bound original-page context and resumable page/search cursor receipts.
+1086 retains its correct result in six requests; 1017 releases 11,407 million from its
+balance sheet and Note 6. The latter succeeds through general reader/search/finalizer
+routing, not the narrow gap-query path; mixed actions and repeated finalization remain
+an observed efficiency defect. Whole-guide visual inventory in 662 and document-wide
+absence proof in 730 remain open. Counts are now 79 supported / 2 qualified / 4 verified
+refusals / 35 unresolved, across 120 distinct questions.

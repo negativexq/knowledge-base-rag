@@ -8,13 +8,13 @@ from typing import Literal
 
 from app.llm.quantity_state import (
     NumberFormat,
-    NumberScale,
     QuantityAssessment,
     QuantityDraft,
     QuantityNumberReceipt,
     QuantityNumericOperand,
     QuantityReadOperand,
 )
+from app.llm.quantity_units import normalize_arithmetic, unit_scale
 from app.llm.research_state import decimal_value
 
 
@@ -42,24 +42,6 @@ def source_decimal(value: str, notation: NumberFormat) -> Decimal:
     if len(value) > 100 or not re.fullmatch(pattern, text):
         raise ValueError("NUMERIC_NOTATION_INVALID")
     return decimal_value(("-" if negative else "") + normalized)
-
-
-def unit_scale(unit: str) -> NumberScale:
-    """Check declared scale consistency; source semantics still need independent review."""
-    found: list[NumberScale] = []
-    patterns: list[tuple[str, NumberScale]] = [
-        (r"\b(?:billions?)\b", "1000000000"),
-        (r"\b(?:crores?)\b", "10000000"),
-        (r"\b(?:millions?)\b", "1000000"),
-        (r"\b(?:lacs?|lakhs?)\b", "100000"),
-        (r"\b(?:thousands?)\b|\b000(?:['’]?s)?\b", "1000"),
-    ]
-    for pattern, scale in patterns:
-        if re.search(pattern, unit, re.IGNORECASE):
-            found.append(scale)
-    if len(found) > 1:
-        raise ValueError("NUMERIC_SCALE_AMBIGUOUS")
-    return found[0] if found else "1"
 
 
 def normalize_inputs(draft: QuantityDraft) -> list[QuantityNumberReceipt]:
@@ -123,7 +105,7 @@ def normalize_inputs(draft: QuantityDraft) -> list[QuantityNumberReceipt]:
             receipts.append(
                 base.model_copy(update={"value_status": "invalid", "errors": [str(exc)]})
             )
-    return receipts
+    return normalize_arithmetic(draft, receipts)
 
 
 def apply_notation_corrections(draft: QuantityDraft, review: QuantityAssessment) -> QuantityDraft:
@@ -142,12 +124,19 @@ def apply_notation_corrections(draft: QuantityDraft, review: QuantityAssessment)
         # It is not permissible to reinterpret an already valid number (e.g.
         # 1,234 between decimal-comma and decimal-point conventions).
         try:
-            source_decimal(old.value, old.number_format)
+            original = source_decimal(old.value, old.number_format)
         except ValueError:
-            pass
-        else:
+            original = None
+        try:
+            proposed = source_decimal(old.value, correction.number_format)
+        except ValueError:
+            if original is not None:
+                # An unusable metadata suggestion must not destroy a valid
+                # transcription or prevent independent source-context repair.
+                continue
+            raise
+        if original is not None and original != proposed:
             raise ValueError("NUMERIC_NOTATION_ALREADY_VALID")
-        source_decimal(old.value, correction.number_format)
         operands[correction.index] = old.model_copy(
             update={"number_format": correction.number_format}
         )

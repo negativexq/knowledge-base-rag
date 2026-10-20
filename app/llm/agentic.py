@@ -316,6 +316,7 @@ class EvidenceLedger:
         token_budget: int,
         context: RetrievalContext | None = None,
         source_ids: frozenset[str] | None = None,
+        result_reserve_tokens: int = 0,
     ):
         if context is not None and not context.is_system and not context.tenant_id:
             raise ValueError("Evidence ledger requires a tenant")
@@ -324,15 +325,23 @@ class EvidenceLedger:
         self._count = count_tokens
         self._budget = token_budget
         self._used = 0
+        if not 0 <= result_reserve_tokens <= token_budget:
+            raise ValueError("Invalid result evidence reservation")
+        self._result_reserve = result_reserve_tokens
         self._keys: set[tuple[Any, ...]] = set()
         self.last_admission: dict[str, int] = {}
 
     def add(
-        self, blocks: list[SearchResult], *, allowance: int | None = None
+        self,
+        blocks: list[SearchResult],
+        *,
+        allowance: int | None = None,
+        checked_result: bool = False,
     ) -> list[SearchResult]:
         added: list[SearchResult] = []
         remaining = min(
-            self._budget - self._used, allowance if allowance is not None else self._budget
+            self._budget - self._used - (0 if checked_result else self._result_reserve),
+            allowance if allowance is not None else self._budget,
         )
         self.last_admission = {
             "duplicate_blocks": 0,
@@ -379,11 +388,17 @@ class EvidenceLedger:
             added.append(stored)
             self._keys.add(key)
             self._used += cost
+            if checked_result:
+                self._result_reserve = max(0, self._result_reserve - cost)
             remaining -= cost
         return added
 
     @property
     def remaining_tokens(self) -> int:
+        return max(0, self._budget - self._used - self._result_reserve)
+
+    @property
+    def remaining_result_tokens(self) -> int:
         return max(0, self._budget - self._used)
 
     def estimate_tokens(self, text: str) -> int:
