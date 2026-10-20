@@ -214,7 +214,7 @@ async def test_equivalent_count_interpretations_are_compared_by_application():
 
 
 @pytest.mark.asyncio
-async def test_failed_review_does_not_start_a_guessing_answer_loop():
+async def test_failed_review_resumes_research_without_releasing_an_unchecked_guess():
     dependencies = deps("North 3\nSouth 7", question="Total?", derived_answers=True)
     state = ResearchState(task=TaskSpec(question="Total?"), need_planning="failed")
     calls = []
@@ -224,7 +224,10 @@ async def test_failed_review_does_not_start_a_guessing_answer_loop():
         props = info.output_tools[0].parameters_json_schema["properties"]
         calls.append(list(props))
         if "missing" in props:
-            return reply(info, {"answer": None, "missing": ["Need arithmetic"]})
+            return reply(
+                info,
+                {"answer": None, "missing": ["Need arithmetic"], "evidence_operation": "calculate"},
+            )
         if "available" in props:
             return reply(
                 info, {"available": True, "support_ids": ["E1.S1"], "context_support_ids": []}
@@ -235,13 +238,31 @@ async def test_failed_review_does_not_start_a_guessing_answer_loop():
             return reply(
                 info, {"inputs": "supported", "coverage": "unknown", "operation": "supported"}
             )
-        pytest.fail("Reader/finalizer must not regenerate numbers after an unresolved review")
+        if "action" in props:
+            # The same numeric guess is not released, even if it omits calculation.
+            from tests.test_adaptive import payload
+
+            if not payload(messages)["needs"][-1].startswith("Candidate requires correction"):
+                return reply(
+                    info,
+                    {
+                        "action": "answer",
+                        "answer": {
+                            "abstain": False,
+                            "answer_parts": [{"text": "10", "support_ids": ["E1.S1"]}],
+                        },
+                    },
+                )
+            return reply(info, {"action": "stop"})
+        pytest.fail("Finalizer must not regenerate numbers from unchanged rejected inputs")
 
     result = await run_adaptive_agent(
         FunctionModel(model), dependencies, state=state, fast_path=True, max_requests=10
     )
-    assert json.loads(result.raw)["abstain"] and state.research_stop == "QUANTITY_REVIEW_UNRESOLVED"
-    assert len(calls) == 5
+    assert json.loads(result.raw)["abstain"] and state.research_stop == "MODEL_STOP"
+    assert len(calls) == 7
+    assert state.collection_outcomes[-1].status == "review_unresolved"
+    assert any("QUANTITY_REVIEW_REQUIRES_EVIDENCE" in n for n in state.needs)
 
 
 def test_scope_rejection_requires_claim_question_and_source_locations():

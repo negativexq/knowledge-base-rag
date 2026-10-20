@@ -657,6 +657,7 @@ async def collect(
     inventory_repair = requirement is not None and requirement.evidence_kind == "entity_inventory"
     coverage_repair = requirement is not None and requirement.evidence_kind == "coverage_completion"
     scope_repair = requirement is not None and requirement.evidence_kind == "scope_research"
+    existing_scope = requirement is not None and requirement.evidence_kind == "existing_scope"
     relationship_ids = relationship_context(parent, session.units()) if parent else []
     known_inventory = bool(
         inventory_repair
@@ -668,6 +669,14 @@ async def collect(
         # it does not mean the missing inventory is on this already-read page.
         and all(i.kind != "boundary" for i in parent.assessments[-1].issues)
     )
+    if requirement:
+        with operation("quantity.repair.route") as span:
+            span.set_attribute("quantity.parent_id", parent.id if parent else "")
+            span.set_attribute("quantity.repair_kind", requirement.evidence_kind)
+            span.set_attribute(
+                "quantity.requires_fresh_source",
+                scope_repair or coverage_repair or (inventory_repair and not known_inventory),
+            )
     gap_search = None
     if (
         parent
@@ -727,6 +736,7 @@ async def collect(
     selection: QuantitySource
     if parent and (
         known_inventory
+        or existing_scope
         or (
             parent.inventory_errors
             and requirement
@@ -828,7 +838,7 @@ async def collect(
     inventory_replacement = False
     if (
         parent
-        and not (inventory_repair or scope_repair)
+        and not (inventory_repair or scope_repair or existing_scope)
         and not any(i.target == "operation" for i in parent.assessments[-1].issues)
     ):
         ids = list(dict.fromkeys([*parent.support_ids, *selection.support_ids]))
@@ -1045,7 +1055,9 @@ async def collect(
                 "scope_objections": parent.scope_diagnostic.model_dump()
                 if parent.scope_diagnostic
                 else None,
-                "preserve_other_inputs": not (coverage_repair or inventory_repair or scope_repair)
+                "preserve_other_inputs": not (
+                    coverage_repair or inventory_repair or scope_repair or existing_scope
+                )
                 and not any(i.target == "operation" for i in parent.assessments[-1].issues),
                 "goal_operation": parent.draft.mode,
             }

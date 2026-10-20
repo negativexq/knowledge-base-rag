@@ -26,6 +26,15 @@ class ResearchRecord(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
+class CollectionOutcome(ResearchRecord):
+    """Application-owned receipt; a failed tool does not close research."""
+
+    need_id: str = ""
+    status: Literal["ok", "not_found", "review_unresolved", "error"]
+    record_ids: list[str] = Field(default_factory=list)
+    source_ids: list[str] = Field(default_factory=list)
+
+
 class TaskSpec(ResearchRecord):
     question: str = Field(min_length=1, max_length=16000)
 
@@ -291,6 +300,7 @@ class ResearchState(BaseModel):
     quantity_source_inspections: list[QuantitySourceInspection] = Field(default_factory=list)
     quantity_page_catalog: list[QuantityCatalogPage] = Field(default_factory=list, max_length=72)
     quantity_gap_searches: dict[str, QuantityGapSearch] = Field(default_factory=dict)
+    collection_outcomes: list[CollectionOutcome] = Field(default_factory=list)
     quantity_repairs: int = 0
     quantity_scope_diagnostics: list[ScopeDiagnostic] = Field(default_factory=list)
     answer_repairs: list[AnswerRepair] = Field(default_factory=list)

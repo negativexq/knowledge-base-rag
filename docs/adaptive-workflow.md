@@ -509,3 +509,35 @@ coverage heuristic. No expected answer, fixed document name or reference page is
 still inspects the original pages against the actual question. This policy does not solve
 arbitrary inventories requiring more than one three-page window; reusable partial-coverage
 accumulation remains a separate extension.
+
+
+## Typed collection dispatch and scope repair
+
+A failed fast answer is not itself a numeric task. Count and calculation needs dispatch
+the corresponding bounded collection capability. Otherwise the existing fast-answer
+call can declare text, numeric lookup or source-list requirements; unknown tasks
+continue ordinary research. A compatible numeric/list hint can refine a lookup, sort
+or comparison plan, while a generic calculation hint cannot replace a planned lookup.
+The selected evidence-need ID and its constraints are carried into source collection.
+This adds no separate router model request.
+
+The application stores each collection outcome as a typed receipt in `ResearchState`:
+status, need ID, record IDs and source support IDs. Missing sources, unresolved reviews
+and errors return to the bounded reader rather than closing research merely because
+a draft exists. Unchecked quantities stay checkpointed and are not presented as verified
+results. Repeating the rejected result against unchanged source evidence cannot certify
+it. Independently checked facts, calculations and newly acquired source evidence remain
+available to finalization, including after the research tool budget ends.
+
+Grounded scope objections declare a repair kind. Missing observations or contradictory
+scope require a fresh source view. Existing-source relationships, interpretation, unit
+transformation and presentation may reuse the original authorized source and skip the
+selector. These are repair proposals, not acceptance receipts: the replacement still
+passes independent input/coverage/operation review, deterministic execution and final
+scope validation. A mixed, unknown or invalid diagnostic retains the fresh-source path.
+This dispatch change does not implement missing unit-conversion capabilities.
+
+`research.collection.route`, `research.collection.resume` and `quantity.repair.route`
+spans expose the chosen capability, checkpoint IDs and freshness requirement without
+copying source content into span attributes. Existing request, tool, time and repair
+budgets apply to continuation as well as initial collection.

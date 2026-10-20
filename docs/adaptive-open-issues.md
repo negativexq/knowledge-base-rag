@@ -5,7 +5,7 @@ acceptance failures, partial fixes and source/metric adjudication. The detailed
 [code-and-trace audit](adaptive-issue-audit.md) contains source anchors and offline
 replays. Prior run reports retain unsuccessful attempts.
 
-There are **41 unresolved question/workflow outcomes** in the
+There are **39 unresolved question/workflow outcomes** in the
 [120-row ledger](adaptive-solved-questions.md). One additional question has a qualified interpreted calculation. That is not 41 independently proven
 code bugs. One row can exercise multiple families; counts below are not additive.
 The shared matcher scores and strict source/workflow audit remain separate.
@@ -17,10 +17,10 @@ The shared matcher scores and strict source/workflow audit remain separate.
 | REPAIR-001: exact text equality in input repair | P0; implemented; targeted checks pass; end-to-end blockers remain | 366, 1016 and 1070 raise `REPAIR_CHANGED_UNTARGETED_STRUCTURE`. Equivalent interpretation text triggers rejection; 1070 expressions have identical ASTs. | Application-owned operation fields and operand-only patch contract. Preserve protections against genuinely changed operations. |
 | REPAIR-002: text locators inside image repair | P0; implemented; targeted checks pass; end-to-end blockers remain | 1072 fresh pages [40,39,39] become [40,null,null] when untargeted old text operands are restored; then `QUANTITY_ITEM_PAGE_INVALID`. | Preserve per-operand provenance independently from current observation modality; do not invalidate prior evidence with a record-wide image requirement. |
 | PAGE-001: required visual page dropped as context | Handoff fixed; row 641 relationship review remains open | Earlier 641 lost the comparison page through role filtering. The follow-up retains both required pages and delivers definition evidence E1.S60; independent review still rejects the evaluation-population join. | Preserve required-page authority and context budget. Investigate the remaining semantic relationship under COMPOSE-001 rather than repeating the page-filter fix. |
-| FLOW-001 / ROUTE-001: universal quantity fallback | P0; code confirmed; semantic failures observed | Failed fast text answers also enter numeric collection; 508/511/517/520 show incompatible result types. A created unsuccessful quantity draft terminates the general research path. | Dispatch by required evidence/result type and return typed compatibility/missing-evidence outcomes to the bounded application policy. |
+| FLOW-001 / ROUTE-001: universal quantity fallback | Implemented; prose dispatch verified live; remaining source gaps | Prior 508/511/517/520 entered incompatible numeric collection. Dispatch now uses typed count/calculation needs or a compatible fast-answer capability hint. Failed collection returns an application-owned receipt and resumes bounded research. | All four target prose cases avoid numeric collection; 511 is recovered. Resolve map acquisition in 517 and source-scoped absence in 508/520. Failed drafts remain checkpointed. |
 | INV-001: page or subset mistaken for whole inventory | P0; targeted counts recovered; broader accumulation open | Prior 476/381 releases were 5/6 instead of 9/7. The follow-up now publishes 9/7 from the original source. Optional parser metadata is not a release gate. | Keep independent coverage review and source-scoped document-window dispatch. Accumulate independently checked partial inventories when no three-page window suffices. |
 | MEMBER-001 / SCOPE-001: group membership and target constraints | P0; targeted group count recovered; semantic cases remain | 399 now releases 4+3=7 from the correct groups. Prior 660/638/510 unsafe answers are withheld; their final dispositions remain unresolved. 831 completeness still needs a targeted check. | Retain quoted question restrictions, independently checked inventories and original native source witnesses. Validate remaining location/relationship/list cases without treating missing parser text as a factual contradiction. |
-| REPAIR-003: wrong freshness requirement | P1; exact guard confirmed | 214/380/637 raise `REPAIR_REUSED_INSUFFICIENT_SOURCE`; all scope diagnostics become fresh-source research even for a unit transform or page relationship. | Classify missing source, interpretation, provenance, presentation and actual mismatch before choosing repair. Retain freshness for real missing-source searches. |
+| REPAIR-003: wrong freshness requirement | Implemented; local reuse verified offline; live scope gaps remain | Prior 214/380/637 reached `REPAIR_REUSED_INSUFFICIENT_SOURCE`. Grounded scope diagnostics now distinguish existing-source binding, interpretation, unit transformation and presentation from missing source or contradiction. | 637 now releases 1 without repair. 214 has an unestablished premise and 380 lacks income; neither exercises local reuse live. Same-source repairs still require independent review. UNITS-001 remains separate. |
 | PROV-001: header/entity/period/page binding | P1; observed + code boundary confirmed | 1070 issuer context; 366 period context; 637 physical/printed page; 1014/1086 recover missing unit context. Immutable document identity alone is not semantic issuer proof. | Carry verified title/table/period/unit/location links as typed evidence available to each independent check. |
 | NUM-001: numeric displays and absence | Partially fixed; remaining sensitivity | Original crash/checkpoint cases 471/1026/1025/388 recovered. The numeric-authority follow-up recovers 1016/1021; 1074 remains unresolved and has not been remeasured after that fix. | Retain display/canonical separation and checkpoint-before-execution; preflight notation compatibility without guessing locale or treating absence as zero. |
 | UNITS-001: arithmetic output transformation | P1; observed + code boundary confirmed | 380 subtracts lac-denominated inputs but labels result rupees; arithmetic normalization does not apply scalar-read output transforms. | Typed input/output units and explicit application-checked transforms; do not silently change formulas or signs. |
@@ -117,3 +117,21 @@ records the initial over-rejection, intermediate failures and successful recover
 The historical ledger is now 74 source-supported answers, one qualified calculation,
 four verified refusals and 41 unresolved outcomes across the same 120 questions.
 The frozen full-set matcher scores above are not recomputed from these targeted reruns.
+
+
+## Typed dispatch and repair classification follow-up
+
+The [routing and repair report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md)
+tracks the FLOW-001/ROUTE-001 and REPAIR-003 implementation and the completed nine-row
+sequential regression. Application-owned collection receipts preserve failed and successful
+work separately; a failed numeric draft no longer automatically terminates research.
+Existing-source scope repairs avoid a redundant selector and freshness veto while
+retaining independent review. Unknown, missing-source, contradictory or invalid
+diagnostics do not disable freshness. No ledger question is promoted by offline tests.
+
+The live batch recovers 511 and 637 and retains both 382/477 controls. All four prose
+targets avoid numeric collection. Rows 508/517/520 remain evidence-acquisition or absence
+outcomes; 214 has a premise defect and 380 still lacks income plus a scale conversion.
+The local-reuse scope branch is covered offline but not exercised by these live targets.
+The current historical ledger is **76 supported / 1 qualified / 4 verified refusals /
+39 unresolved**, with 120 unique questions.

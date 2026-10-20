@@ -324,3 +324,17 @@ semantic/visual acceptance checks and adjudication of 638/660/510. Those abstent
 not automatically certified as correct source absence. Frozen aggregate scores remain
 unchanged; the historical distinct-question ledger now records 74 supported answers,
 one qualified calculation, four verified refusals and 41 unresolved outcomes.
+
+
+## Typed routing and repair classification follow-up
+
+The [nine-row regression](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md)
+records removal of numeric collection from four prose/qualitative tasks, recovery of
+511 and 637, and retention of 382/477 controls. It also records the five unresolved
+target outcomes, including the disputed source/premise/label in 214 and missing income
+in 380. The `existing_scope` repair branch is validated offline and is not claimed as
+exercised by these live rows. The separate reviewer missed the runtime target image
+for 511; manual original-page inspection verifies the orange button on physical 17.
+Application and harness hashes remain identical throughout the sequential batch.
+The ledger now records 76 supported, one qualified calculation, four verified refusals
+and 39 unresolved outcomes. Earlier audit scores and historical reports stay frozen.
