@@ -118,6 +118,22 @@ def _is_average(node: ast.BinOp) -> bool:
     )
 
 
+SUPPORTED_FUNCTIONS = frozenset({"abs", "min", "max", "mean"})
+
+
+def numeric_function(node: ast.Call) -> str:
+    """The complete function allowlist; attributes, kwargs and empty calls fail closed."""
+    if (
+        not isinstance(node.func, ast.Name)
+        or node.func.id not in SUPPORTED_FUNCTIONS
+        or node.keywords
+        or not 1 <= len(node.args) <= 20
+        or (node.func.id == "abs" and len(node.args) != 1)
+    ):
+        raise ValueError("Unsupported numeric function or arguments")
+    return node.func.id
+
+
 def _literals(node: ast.AST) -> list[float]:
     """The numbers an expression takes from its evidence; an average's
     divisor (the count of its terms) is not one."""
@@ -129,6 +145,9 @@ def _literals(node: ast.AST) -> list[float]:
         return _literals(node.left) + _literals(node.right)
     if isinstance(node, ast.UnaryOp):
         return _literals(node.operand)
+    if isinstance(node, ast.Call):
+        numeric_function(node)
+        return [value for arg in node.args for value in _literals(arg)]
     if isinstance(node, ast.Constant):
         return [float(node.value)]
     return []
@@ -142,6 +161,14 @@ def _evaluate(node: ast.AST) -> float:
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
         value = _evaluate(node.operand)
         return -value if isinstance(node.op, ast.USub) else value
+    if isinstance(node, ast.Call):
+        name = numeric_function(node)
+        values = [_evaluate(arg) for arg in node.args]
+        if name == "abs":
+            return abs(values[0])
+        if name == "mean":
+            return sum(values) / len(values)
+        return min(values) if name == "min" else max(values)
     if isinstance(node, ast.BinOp) and type(node.op) in _OPERATORS:
         left, right = _evaluate(node.left), _evaluate(node.right)
         if isinstance(node.op, ast.Div) and right == 0:
@@ -154,7 +181,13 @@ def _parse(expression: str) -> ast.Expression:
     if not expression.strip():
         raise ValueError("empty expression")
     try:
-        return ast.parse(expression.replace(",", ""), mode="eval")
+        # Commas in a function call are argument separators, never grouping.
+        source = (
+            expression
+            if re.search(r"[A-Za-z_]\w*\s*\(", expression)
+            else expression.replace(",", "")
+        )
+        return ast.parse(source, mode="eval")
     except SyntaxError as exc:
         raise ValueError("unparseable expression") from exc
 
@@ -163,9 +196,11 @@ def evaluate_expression(expression: str) -> float:
     return _evaluate(_parse(expression))
 
 
-def evaluate_decimal_expression(expression: str, decimals: int) -> str:
-    """Bounded application arithmetic for a source-checked text plan."""
-    if len(expression) > 500 or "," in expression or not 0 <= decimals <= 10:
+def evaluate_decimal_value(expression: str) -> Decimal:
+    """Unrounded, bounded Decimal evaluation; no arbitrary Python evaluation."""
+    if len(expression) > 500 or (
+        "," in expression and not re.search(r"[A-Za-z_]\w*\s*\(", expression)
+    ):
         raise ValueError("Use canonical numeric literals and bounded precision")
     tree = _parse(expression)
     if len(list(ast.walk(tree))) > 100:
@@ -173,7 +208,15 @@ def evaluate_decimal_expression(expression: str, decimals: int) -> str:
 
     def evaluate(node: ast.AST) -> Decimal:
         if isinstance(node, ast.Constant) and type(node.value) in (int, float):
-            return Decimal(str(node.value))
+            return Decimal(ast.get_source_segment(expression, node) or str(node.value))
+        if isinstance(node, ast.Call):
+            name = numeric_function(node)
+            values = [evaluate(arg) for arg in node.args]
+            if name == "abs":
+                return abs(values[0])
+            if name == "mean":
+                return sum(values, Decimal(0)) / len(values)
+            return min(values) if name == "min" else max(values)
         if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
             value = evaluate(node.operand)
             return -value if isinstance(node.op, ast.USub) else value
@@ -188,9 +231,19 @@ def evaluate_decimal_expression(expression: str, decimals: int) -> str:
             value = evaluate(tree.body)
             if not value.is_finite() or abs(value) > Decimal("1e30"):
                 raise ValueError("Non-finite or unbounded result")
-            return f"{value:.{decimals}f}"
+            return value
     except DecimalException as exc:
         raise ValueError("Invalid decimal arithmetic") from exc
+
+
+def evaluate_decimal_expression(expression: str, decimals: int) -> str:
+    """Round only the final result of bounded application arithmetic."""
+    if not 0 <= decimals <= 10:
+        raise ValueError("Use canonical numeric literals and bounded precision")
+    with localcontext() as context:
+        context.prec = 128
+        context.rounding = ROUND_HALF_EVEN
+        return f"{evaluate_decimal_value(expression):.{decimals}f}"
 
 
 def _decimals(text: str) -> int:

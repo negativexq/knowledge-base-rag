@@ -5,8 +5,8 @@ acceptance failures, partial fixes and source/metric adjudication. The detailed
 [code-and-trace audit](adaptive-issue-audit.md) contains source anchors and offline
 replays. Prior run reports retain unsuccessful attempts.
 
-There are **38 unresolved question/workflow outcomes** in the
-[120-row ledger](adaptive-solved-questions.md). One additional question has a qualified interpreted calculation. That is not 41 independently proven
+There are **35 unresolved question/workflow outcomes** in the
+[120-row ledger](adaptive-solved-questions.md). Two additional questions have qualified interpreted calculations. These are not independently proven
 code bugs. One row can exercise multiple families; counts below are not additive.
 The shared matcher scores and strict source/workflow audit remain separate.
 
@@ -22,12 +22,14 @@ The shared matcher scores and strict source/workflow audit remain separate.
 | INV-001: page or subset mistaken for whole inventory | P0; targeted counts recovered; broader accumulation open | Prior 476/381 releases were 5/6 instead of 9/7. The follow-up now publishes 9/7 from the original source. Optional parser metadata is not a release gate. | Keep independent coverage review and source-scoped document-window dispatch. Accumulate independently checked partial inventories when no three-page window suffices. |
 | MEMBER-001 / SCOPE-001: group membership and target constraints | P0; targeted group count recovered; semantic cases remain | 399 now releases 4+3=7 from the correct groups. Prior 660/638/510 unsafe answers are withheld; their final dispositions remain unresolved. 831 completeness still needs a targeted check. | Retain quoted question restrictions, independently checked inventories and original native source witnesses. Validate remaining location/relationship/list cases without treating missing parser text as a factual contradiction. |
 | REPAIR-003: wrong freshness requirement | Implemented; local reuse verified offline; live scope gaps remain | Prior 214/380/637 reached `REPAIR_REUSED_INSUFFICIENT_SOURCE`. Grounded scope diagnostics now distinguish existing-source binding, interpretation, unit transformation and presentation from missing source or contradiction. | 637 now releases 1 without repair. 214 has an unestablished premise and 380 lacks income; neither exercises local reuse live. Same-source repairs still require independent review. UNITS-001 remains separate. |
-| PROV-001: header/entity/period/page binding | P1; observed + code boundary confirmed | 1070 issuer context; 366 period context; 637 physical/printed page; 1014/1086 recover missing unit context. Immutable document identity alone is not semantic issuer proof. | Carry verified title/table/period/unit/location links as typed evidence available to each independent check. |
+| PROV-001: header/entity/period/page binding | Partially implemented; 1086 context verified live | Version-bound original-page context now reaches first text collection/review; 1086 retains 13,929 million with six requests. Issuer/relationship cases such as 1070 remain. | Broaden binding coverage without inferring units or treating a file identity as semantic issuer proof. [Report](../artifacts/mmlongbench-v2/adaptive-context-coverage-20261020/REPORT.md). |
 | NUM-001: numeric displays and absence | Partially fixed; remaining sensitivity | Original crash/checkpoint cases 471/1026/1025/388 recovered. The numeric-authority follow-up recovers 1016/1021; 1074 remains unresolved and has not been remeasured after that fix. | Retain display/canonical separation and checkpoint-before-execution; preflight notation compatibility without guessing locale or treating absence as zero. |
-| UNITS-001: arithmetic output transformation | P1; observed + code boundary confirmed | 380 now acquires both operands with source_scale=100000, but arithmetic normalization retains raw values while labelling the result rupees. Source acquisition is no longer its blocker. | Typed input/output units and explicit application-checked transforms; do not silently change formulas or signs. |
-| CALC-001: named function becomes missing operand | P1; offline confirmed latent failure | 366 would hit `QUANTITY_UNKNOWN_OPERAND` on `abs` after merge recovery. Generic abs/min/max/mean reproduce it in quantity execution. | Declare operator capabilities; use bounded supported deterministic operators and report unsupported function distinctly. No arbitrary Python execution. |
-| COVER-001: incomplete source-object coverage | P1; observed, not all cases arithmetic bugs | 730/728 lack Boeing object closure; 662/663 lack guide-wide inventory; 1017 misses a lease note. Row 641 now retains both pages but its evaluation-population join remains unresolved. | Accumulated coverage and typed missing roles. Search exhaustion is not source absence; do not raise page limits before correcting handoff. |
+| UNITS-001: arithmetic output transformation | Implemented; 380 recovered live | Typed source/base/output receipts produce **8,367,277,000 rupees** from source amounts in lacs. Ratios and percentages remain correct in controls. | Keep source-scale and metric review; no exchange-rate inference or silent formula rewriting. [Report](../artifacts/mmlongbench-v2/adaptive-unit-arithmetic-20261020/REPORT.md). |
+| CALC-001: named function becomes missing operand | Implemented; abs verified live, min/max/mean offline | Bounded allowlisted functions now execute as operators, with every argument source-checked. Row 366 releases 35.821% under an explicit relative-shortfall convention. | Metric adjudication remains INTERPRET-001; support for an operator does not establish the intended formula. |
+| FINAL-001: completed calculation cannot publish proof | Implemented; targeted publication recovered | A protected allocation inside the existing evidence total preserves checked proofs; page reads no longer pay for fragments plus a duplicate view. 1086 now publishes 13,929 million; 380 publishes 8,367,277,000 rupees in the preceding frozen pair. | Broaden coverage for oversized/multiple results; initial unit-context repair can still cost another image pass. Source/scope review remains mandatory. [Report](../artifacts/mmlongbench-v2/adaptive-result-reservation-20261020/REPORT.md). |
+| COVER-001: incomplete source-object coverage | Partially implemented; 1017 recovered, visual closure remains open | Page/search cursors and authorized source buffers survive checkpoints. 1017 now releases 11,407 million from the balance sheet and lease note. 730/728 lack document-wide absence closure; 662/663 lack guide-wide visual inventory; 641 population join remains unresolved. | Multi-window inventory accumulation/closure and source-scoped negative receipts; acquisition exhaustion alone is not semantic completeness. |
 | COMPOSE-001: denominator/population/plan composition | P1; observed; some reference assumptions disputed | 206/225/219 require approximate survey headcounts; 216 cannot borrow Dem/Lean Dem base for Democrats; 1015 needs a stated EBITDA definition. | Keep population, denominator, period, metric definition and approximation status with observations. |
+| CALL-001: mixed answer/calculate decisions and repeated finalization | Observed; open efficiency defect | 1017 has the correct six-input formula by request 5, but two reader outputs mix answer and calculation actions. Search repeats; a broad source locator also causes a finalizer retry. Final answer is correct at ten requests. | Operation-specific decision contracts and prepared-calculation handoff; preserve source/unit/scope validation rather than accepting malformed mixed actions. |
 | STOP-001: mismatch, absence and no progress conflated | P1; observed | 207/222/365/367/830/1084 repeat searches or stop without verified terminal receipts; 384 ends in ModelRetry. | Grounded source-scoped mismatch/absence receipts, distinct from partial search and execution error; terminate deterministically when justified. |
 | OBS-001: safe domain errors missing from spans | P1; confirmed | Spans retain exception class only, but local `ResearchState.needs` retains exact guard codes; previous audits overlooked this. | Allowlisted domain codes in spans/typed failures; preserve the privacy boundary against arbitrary messages/content. |
 | JUDGE-001: false arithmetic veto over checked calculation | P0; runtime correction implemented; live answer restored | Prior 1021 computes 29441/41190 = 0.714760… → 0.715 correctly, but scope validator twice insists on 0.716; after-run reviewer repeats the error. | Exact application candidates are locally reexecuted and receive semantic-only scope projection; source/formula/scope challenges remain. After-run reviewer arithmetic remains an EVAL-001 concern. |
@@ -153,5 +155,60 @@ The [implementation and live report](../artifacts/mmlongbench-v2/adaptive-source
 recovers 517, retains 511/382/477, and verifies that 380 now receives both operands.
 The initial 517 attempt lost a correct qualitative extraction at a generic text-value
 capacity limit; its correction preserves full relationships while retaining numeric
-execution bounds. UNITS-001 remains open for 380. Current historical totals are
+execution bounds. At that measurement UNITS-001 remained open for 380. Its historical totals were
 **77 supported / 1 qualified / 4 verified refusals / 38 unresolved** across 120 questions.
+
+## Unit arithmetic and named-function follow-up
+
+The [new measurement](../artifacts/mmlongbench-v2/adaptive-unit-arithmetic-20261020/REPORT.md) recovers 380 and moves 366 to qualified interpretation. Historical totals are now **78 supported / 2 qualified / 4 verified refusals / 36 unresolved**, across the same 120 questions.
+
+- **1021:** correct 0.715 is released via the sourced text calculator. Its initial collector still fails when a reviewer proposes incompatible canonical notation for an already-valid comma-grouped display (`NUMERIC_NOTATION_ALREADY_VALID` in offline replay). Do not describe that collector path as recovered.
+- **1086:** 13,929 million is independently checked and executed, but proof admission fails at the evidence budget and finalization fails. Compact JSON serialization preserves all fields and witnesses; a separate follow-up run also abstains (71.00 s / nine requests). This is a result-publication boundary, not incorrect subtraction.
+
+
+## Protected proof and page-view follow-up
+
+The [sequential measurements](../artifacts/mmlongbench-v2/adaptive-result-reservation-20261020/REPORT.md)
+recover publication for 1086 (13,929 million, nine requests) and retain a source-correct
+380 answer in the preceding pair (8,367,277,000 rupees, six requests). A full-source
+reservation stays inside the existing hard total; it does not bypass release checks.
+The page-view handoff's 21-paragraph/three-ID regression was reproduced, tested and
+corrected, with its failed paid run preserved. 382 retains two quizzes in both control
+batches. Invalid notation suggestions preserve a valid original display without approving
+unknown source bindings; numerically different interpretations remain rejected.
+
+The result-publication defect is recovered for these targeted cases. Initial text
+selection can still omit unit context, causing another selected image pass; this is
+remaining acquisition efficiency work, not permission to infer units or skip review.
+Historical distinct-question totals remain unchanged.
+
+
+## Context and acquisition coverage follow-up
+
+The [new report](../artifacts/mmlongbench-v2/adaptive-context-coverage-20261020/REPORT.md)
+records original-page context, resumable authorized page reads and scoped search cursors.
+1086 retains its correct amount in six requests; 1017 recovers 11,407 million in ten.
+The successful 1017 follow-up uses the general reader/search/finalizer path, so it does
+not certify the newly implemented narrow gap-query route. Its extra decision/repair
+calls remain CALL-001. 730 and 662 remain open; neither is upgraded because a reviewer
+approves cautious abstention. Current totals: **79 supported / 2 qualified / 4 verified
+refusals / 35 unresolved**, across 120 distinct questions.
+
+
+## Primary-blocker distribution of the 35 unresolved questions
+
+This is a mutually exclusive grouping by each row's latest recorded principal blocker,
+not a count of implementation bugs or a new current-code measurement. Several rows have
+secondary issues. Known unsupported premises and disputed references still need source
+adjudication; they are not automatically verified refusals.
+
+| Primary blocker | Questions | Rows |
+| --- | --- | --- |
+| Source mismatch, missing-data or underspecified-request disposition | 13 | 207, 209, 222, 365, 367, 384, 508, 520, 521, 728, 730, 830, 1084 |
+| Incomplete inventory or source-object coverage | 4 | 636, 662, 663, 831 |
+| Visual condition or target-location acquisition | 4 | 393, 635, 638, 660 |
+| Entity/period/unit binding and cross-source relationships | 5 | 510, 641, 1015, 1070, 1074 |
+| Population, denominator and approximate headcount composition | 4 | 206, 216, 219, 225 |
+| Question, counting-unit or formula adjudication | 4 | 214, 658, 732, 1075 |
+| Unestablished source reading | 1 | 661 |
+| **Total** | **35** | Each unresolved ledger row appears once. |

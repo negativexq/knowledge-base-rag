@@ -290,6 +290,9 @@ def build_chat_dependencies(
                 budget,
                 context=documents.context if documents is not None else None,
                 source_ids=documents.source_ids if documents is not None else None,
+                result_reserve_tokens=min(6000, budget // 4)
+                if settings.adaptive_rag_enabled
+                else 0,
             )
             ledger.add(initial_blocks)
             from app.llm.agent_observability import RequestUsage, load_prices

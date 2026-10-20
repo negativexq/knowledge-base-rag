@@ -186,6 +186,17 @@ supplied physical page. A complete flag is a proposal, not independent approval.
 
 - Arithmetic: named operands, expression, precision, completeness, and witnesses.
   Compatibility fields such as `count_mode=per_group` are omitted.
+  The bounded evaluator supports `+`, `-`, `*`, `/`, unary signs and
+  `abs`, `min`, `max`, `mean`; function names are operators, never operand IDs.
+  Every argument remains source-checked, including unselected `min`/`max` arguments.
+  Decimal evaluation preserves literal precision and rounds only the final result.
+  For scaled inputs, application-owned conversion receipts retain original displays,
+  canonical numbers, source factors, units, the named formula and expanded expression.
+  Lakh/crore/thousand/million/billion conversions use those factors; equal currency
+  scales cancel in ratios. This is magnitude conversion, not currency exchange.
+  Unit mismatches, unsupported compound units and invalid functions fail before execution.
+  The independent checker still reviews source bindings, scale and metric interpretation;
+  final semantic projection requires an exact locally reexecuted conversion receipt.
 - Counting: groups, item positions, boundaries, completeness, and the actual
   `per_group`, `total`, or `distinct` operation. Arithmetic fields are omitted.
 - Selection: source identity labels, decimal measurements, units, and the typed
@@ -562,3 +573,63 @@ finalization even when later research cannot continue.
 `research.acquire.visual` and `quantity.source.open` spans show physical pages, evidence
 lineage and partial-read flags. Same-version authorization, source constraints, operation
 checks, final scope validation and all existing budgets remain in force.
+
+
+## Checked-result evidence reservation
+
+Adaptive sessions reserve one quarter of the existing evidence token budget, capped
+at 6,000 tokens, before admitting initial retrieval blocks. This is an allocation
+inside the same hard total, not extra context or extra requests. Raw source reads,
+page views and native-text expansion cannot spend the reservation. Only application
+proof admission after successful independent review and deterministic execution can
+use it. The same tenant/source authorization and complete-block rules still apply.
+A proof that exceeds all remaining capacity is rejected, never truncated or auto-approved.
+
+The proof contains full checked witnesses, source lineage, numeric receipts, formula,
+conversion and result; the typed completed record is checkpointed before admission.
+Source-evidence and total remaining capacity are recorded in admission spans. Once
+admitted, the existing finalizer can verify the prepared candidate directly, without
+asking another model to rewrite the answer. Final scope/release verification remains
+mandatory. This targets result publication, not semantic approval or a higher budget.
+
+The tradeoff is less capacity for raw source accumulation. Partial page reads do not
+become complete and missing headers/units still require further evidence or abstention.
+The reservation cannot guarantee publication for arbitrary proof sizes or many results;
+source selection and context acquisition remain separate, bounded operations.
+
+
+Located text-page acquisition admits one complete authorized page view, keeping heading,
+period and values together where the returned page supplies them. It does not first
+charge the ledger for each fragment and then again for the same combined text. Child
+ACL/visibility/source/version/page checks precede combination; the original chunk IDs
+remain in lineage. Incomplete reads retain their partial status; no missing unit or
+period is inferred. Independently checked arithmetic image inputs carry explicit image
+bindings to the final semantic checker, as counting inputs already do.
+
+
+## Original-page context and resumable source coverage
+
+Before text quantity extraction, the application can attach literal native text from
+exactly the selected, version-checked PDF pages as separate context sources. The full
+supplied page lines carry titles, periods, units and footnotes when those actually
+exist in the native text. Context is not inferred from a neighboring page or a file name.
+The collector/checker receive the original support IDs, physical pages, line locators,
+line-count/limited receipts and the existing quality assessment. Source-scale literal
+verification includes this authorized context. A scan or unreadable layout can still
+require image extraction; native context is not a substitute for independent review.
+
+Page reading follows the document reader's forward `next_offset`, subject to the same
+shared tool/time limits and unchanged slice size. `PageReadCheckpoint` holds typed,
+source/version/page-bound chunks, visited offsets, the continuation cursor, scan-limit
+flag and stop reason. Budget stops retain partial data; a resumed request can continue
+from the cursor rather than reopening the first slice. Cached chunks are reauthorized.
+Only admitted evidence enters model context: summaries expose coverage metadata, never
+unadmitted checkpoint text. Stalled/invalid cursors remain partial and cannot certify absence.
+
+Grounded missing-object searches likewise retain source/version/query, offset,
+continuation and scan-limit receipts. A repeated identical gap advances to the next
+reader-issued search slice and retains earlier candidate references. Exhausted or
+stalled search returns an unresolved receipt, never a verified absence claim. These
+receipts describe reading/search coverage, not semantic completeness of a whole-document
+inventory. Multi-window visual inventories still require independent object closure;
+reading three pages cannot silently establish a complete guide-wide list.

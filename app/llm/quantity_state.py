@@ -264,6 +264,12 @@ class QuantityGapSearch(QuantityData):
     """Application-owned link from an unresolved receipt to candidate evidence and inspection."""
 
     parent_id: str
+    source_id: str = ""
+    document_version: str = ""
+    offset: int = 0
+    next_offset: int | None = None
+    has_more: bool = False
+    scan_limited: bool = False
     requirements: list[QuantityIssue] = Field(max_length=10)
     query: str = Field(max_length=500)
     candidate_support_ids: list[str] = Field(default_factory=list, max_length=6)
@@ -283,6 +289,16 @@ class QuantityNumberReceipt(QuantityData):
     output_unit: str = ""
     value_status: Literal["readable", "not_found", "unreadable", "ambiguous", "invalid"]
     errors: list[str] = Field(default_factory=list)
+
+
+class QuantityArithmeticConversion(QuantityData):
+    source_formula: str
+    source_factors: dict[str, str]
+    source_units: dict[str, str]
+    output_unit: str
+    output_scale: str
+    result_dimension: str
+    expression: str
 
 
 class QuantityRecord(QuantityData):
@@ -310,6 +326,7 @@ class QuantityRecord(QuantityData):
     scope_diagnostic: ScopeDiagnostic | None = None
     inventory_replacement: bool = False
     numeric_inputs: list[QuantityNumberReceipt] = Field(default_factory=list)
+    arithmetic_conversion: QuantityArithmeticConversion | None = None
     absence_confirmed: bool = False
     inventory_context: dict[str, Any] = Field(default_factory=dict)
     inventory_errors: list[str] = Field(default_factory=list)

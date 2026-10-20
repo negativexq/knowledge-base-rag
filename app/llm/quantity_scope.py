@@ -8,13 +8,20 @@ from decimal import DecimalException
 from typing import Any
 
 from app.llm.quantities import candidate, execute, semantic_draft
+from app.llm.quantity_numbers import normalize_inputs
 from app.llm.quantity_state import QuantityRecord
+from app.llm.quantity_units import arithmetic_conversion
 
 INSTRUCTIONS = """For verified_operations, arithmetic execution and rounding belong to the
 application. The claim shown is a semantic projection, not a new answer. Check the
 entity, period, population, source-unit bindings and whether the named-input formula
 answers the actual question. Do not recompute a quotient or invent a competing result.
 checked_inputs are independently reviewed transcriptions; they are not original PDF text.
+For arithmetic with input_authority=independently_checked_original_images, image_bindings
+identify the original document/version/pages already reviewed. Check the formula and
+the inputs' entity, period and unit relationships. Missing indexed/OCR text alone is
+not a contradiction of independently checked image inputs. A concrete contradictory
+source binding or unsupported interpretation still requires rejection.
 For count operations, checked_inputs includes independently reviewed source items and
 boundaries. Verify that this inventory's category, location and coverage answer the
 question. Do not reject a checked image item merely because the indexed text omitted
@@ -58,6 +65,11 @@ def semantic_scope_projection(
                 continue
             if values != record.values or expression != record.expression:
                 continue
+            if (
+                arithmetic_conversion(record.draft, normalize_inputs(record.draft))
+                != record.arithmetic_conversion
+            ):
+                continue
             if actual != expected:
                 continue
             if record.draft.mode == "count":
@@ -83,9 +95,16 @@ def semantic_scope_projection(
                     "result_unit": record.draft.result_unit,
                     "decimals": record.draft.decimals,
                     "checked_inputs": semantic_draft(record.draft)["operands"],
+                    "unit_conversion": record.arithmetic_conversion.model_dump()
+                    if record.arithmetic_conversion
+                    else None,
                     "source_support_ids": record.support_ids,
                     "context_support_ids": record.context_support_ids,
                     "execution_authority": "application_decimal",
+                    "input_authority": "independently_checked_original_images"
+                    if record.modality == "image"
+                    else "independently_checked_source_text",
+                    "image_bindings": [b.model_dump() for b in record.image_bindings],
                     "definition_policy": (
                         "declared_interpretation_unless_question_or_source_conflicts"
                     ),

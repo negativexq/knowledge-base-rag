@@ -335,3 +335,59 @@ def test_qualitative_value_capacity_does_not_relax_numeric_execution_limits():
         decimal_value(observation.value)
     with pytest.raises(ValueError):
         decimal_value("9" * 101)
+
+
+@pytest.mark.asyncio
+async def test_page_context_admits_once_and_never_inherits_denied_child_text(tmp_path):
+    active, _, _ = native_session(tmp_path)
+    version = active.deps.ledger.blocks[0].payload["document_version"]
+
+    async def read(request):
+        return DocumentResult(
+            [
+                block(
+                    "Amounts in millions; year 2023",
+                    "header",
+                    source_id="manual_pdf",
+                    document_version=version,
+                    page_end=1,
+                ),
+                block(
+                    "North 3\n\nSouth 7",
+                    "value",
+                    source_id="manual_pdf",
+                    document_version=version,
+                    page_end=1,
+                ),
+                block(
+                    "DENIED-TENANT",
+                    "foreign",
+                    source_id="manual_pdf",
+                    document_version=version,
+                    page_end=1,
+                    tenant_id="other",
+                ),
+                block(
+                    "DENIED-VISIBILITY",
+                    "hidden",
+                    source_id="manual_pdf",
+                    document_version=version,
+                    page_end=1,
+                    model_visible=False,
+                ),
+            ],
+            [],
+        )
+
+    active.deps.documents = SimpleNamespace(read=read)
+    before = len(active.deps.ledger.blocks)
+    opened = await open_quantity_pages(
+        active, QuantitySource(available=True, support_ids=["E1.S1"], pages=[1])
+    )
+    text = "\n".join(active.units()[key].text for key in opened.support_ids)
+    assert "Amounts in millions; year 2023" in text and "North 3" in text
+    assert "South 7" in text and len(opened.support_ids) == 1
+    assert "DENIED" not in text
+    assert len(active.deps.ledger.blocks) == before + 1
+    view = active.deps.ledger.blocks[-1]
+    assert view.payload["contributing_chunk_ids"] == ["header", "value"]

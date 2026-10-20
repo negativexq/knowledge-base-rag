@@ -112,6 +112,7 @@ completed. Extraction returns data, not an answer. For arithmetic return a sourc
 plan; the application executes it. Preserve entity, period, population,
 units and qualifications. Equivalent expressions and valid unit conversions are allowed.
 For averages or extrema use mean(a,b), min(a,b), max(a,b) over sourced operands.
+Use abs(a-b) when the requested operation requires an absolute difference.
 Use only actions listed in allowed_actions. Do not infer absence from an empty search.
 Search locates missing evidence. Read only opens the supplied support IDs' existing
 chunks, or an explicit physical page in that same document. Read does not search:
@@ -502,6 +503,10 @@ class AdaptiveSession:
                 if record.evidence.support_id in visible
             ],
             "collection_outcomes": [r.model_dump() for r in self.state.collection_outcomes[-3:]],
+            "page_read_coverage": [
+                r.model_dump(exclude={"chunks"})
+                for r in list(self.state.page_read_checkpoints.values())[-6:]
+            ],
             "needs": self.state.needs[-4:],
             "recent_operations": [e.model_dump() for e in self.state.events[-4:]],
             "research_stop": self.state.research_stop,
@@ -1085,10 +1090,23 @@ class AdaptiveSession:
             support_ids=list(self.selected),
         )
 
-    def admit(self, blocks: list[SearchResult], *, search_query: str | None = None) -> bool:
+    def admit(
+        self,
+        blocks: list[SearchResult],
+        *,
+        search_query: str | None = None,
+        checked_result: bool = False,
+    ) -> bool:
         with operation("evidence.admit") as span:
             span.set_attribute("evidence.input_block_ids", [str(b.id) for b in blocks])
-            added = self.deps.ledger.add(blocks)
+            added = self.deps.ledger.add(blocks, checked_result=checked_result)
+            span.set_attribute("evidence.checked_result", checked_result)
+            span.set_attribute(
+                "evidence.remaining_source_tokens", self.deps.ledger.remaining_tokens
+            )
+            span.set_attribute(
+                "evidence.remaining_result_tokens", self.deps.ledger.remaining_result_tokens
+            )
             span.set_attribute("evidence.admitted_block_ids", [str(b.id) for b in added])
             admitted_ids = {str(b.id) for b in added}
             span.set_attribute(

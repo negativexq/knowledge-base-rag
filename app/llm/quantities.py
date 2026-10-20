@@ -18,7 +18,12 @@ from app.evidence.pdf_structure import numbered_labels
 from app.evidence.support_units import SupportUnit
 from app.llm.agent_observability import operation, outcome
 from app.llm.agentic import AgentAnswer, AgentAnswerPart, AgentCalculation, AgentCount
-from app.llm.calculation import Calculation, evaluate_decimal_expression, verify_calculation
+from app.llm.calculation import (
+    Calculation,
+    evaluate_decimal_expression,
+    numeric_function,
+    verify_calculation,
+)
 from app.llm.inventory_evidence import (
     extend_inventory_window,
     inventory_issues,
@@ -26,6 +31,7 @@ from app.llm.inventory_evidence import (
     numbered_window_hints,
     prefer_document_inventory_window,
 )
+from app.llm.page_acquisition import attach_original_context
 from app.llm.quantity_contracts import bind_collection, collection_contract, review_contract
 from app.llm.quantity_numbers import apply_notation_corrections, normalize_inputs
 from app.llm.quantity_review import (
@@ -62,6 +68,7 @@ from app.llm.quantity_state import (
     QuantitySource,
     SourceRange,
 )
+from app.llm.quantity_units import arithmetic_conversion
 from app.llm.research_state import decimal_value, signature
 from app.llm.scope_validation import scope_lines
 from app.llm.source_acquisition import open_quantity_pages
@@ -138,6 +145,10 @@ number_format. canonical means plain decimal; decimal_point uses '.' decimals an
 thousands; decimal_comma uses ',' decimals and '.' thousands; space_grouped uses spaces
 and '.' decimals. Accounting parentheses represent a signed negative source movement.
 source_scale is the printed unit multiplier to base units, not a result.
+For arithmetic, keep every original display and declare its base unit and source scale.
+Give the named-input mathematical operation; application code inserts source/output
+scale conversions. Formula constants describe the mathematical operation, not a second
+copy of a unit conversion. Percentage formulas may still use their factor of 100.
 For read, output_unit/output_scale describe the requested unit, and sign_convention
 is signed unless the question requests an amount/count magnitude. Code performs the
 reviewed sign/scale conversion; do not calculate it yourself.
@@ -306,6 +317,11 @@ def execute(draft: QuantityDraft) -> tuple[list[str], str]:
         raise ValueError("QUANTITY_ENTITY_BINDING_UNRESOLVED")
     if draft.mode == "read":
         return [str(decimal_value(n.output_value)) for n in numeric], ""
+    conversion = arithmetic_conversion(draft, numeric)
+    if conversion is not None:
+        return [
+            evaluate_decimal_expression(conversion.expression, draft.decimals)
+        ], conversion.expression
     if numeric:
         draft = draft.model_copy(
             update={
@@ -363,6 +379,11 @@ def execute(draft: QuantityDraft) -> tuple[list[str], str]:
     used: set[str] = set()
 
     class Expand(ast.NodeTransformer):
+        def visit_Call(self, node: ast.Call) -> ast.AST:
+            numeric_function(node)
+            node.args = [self.visit(arg) for arg in node.args]
+            return node
+
         def visit_Name(self, node: ast.Name) -> ast.AST:
             if node.id not in inputs:
                 raise ValueError("QUANTITY_UNKNOWN_OPERAND")
@@ -858,6 +879,7 @@ async def collect(
             )
     session.require([*selection.support_ids, *selection.context_support_ids])
     selection = await open_quantity_pages(session, selection)
+    selection = await attach_original_context(session, selection)
     selected = [session.units()[key] for key in selection.support_ids]
     identities = {(u.source_id, u.document_version) for u in selected}
     if len(identities) != 1:
@@ -1045,6 +1067,18 @@ async def collect(
             for u in context_units
         ],
         "source_quality": [p.model_dump() for p in quality],
+        "source_page_coverage": [
+            r.model_dump(exclude={"chunks"})
+            for r in session.state.page_read_checkpoints.values()
+            if (r.source_id, r.document_version) == (unit.source_id, unit.document_version)
+            and r.page in selection.pages
+        ],
+        "original_page_context": [
+            r.model_dump()
+            for r in session.state.page_contexts
+            if (r.source_id, r.document_version) == (unit.source_id, unit.document_version)
+            and r.page in selection.pages
+        ],
         "question_segments": [
             {"line": i, "content": line}
             for i, line in enumerate(scope_lines(session.state.task.question), 1)
@@ -1245,10 +1279,17 @@ async def collect(
     numeric_inputs = normalize_inputs(draft)
     record = record.model_copy(update={"numeric_inputs": numeric_inputs})
     session.state.quantities[record.id] = record
+    conversion = arithmetic_conversion(draft, numeric_inputs)
+    record = record.model_copy(update={"arithmetic_conversion": conversion})
+    session.state.quantities[record.id] = record
+    payload["arithmetic_conversion"] = conversion.model_dump() if conversion else None
     payload["numeric_inputs"] = [n.model_dump() for n in numeric_inputs]
     with operation("quantity.normalize") as span:
         span.set_attribute("quantity.id", record.id)
         span.set_attribute("quantity.numeric_inputs", json.dumps(payload["numeric_inputs"]))
+        span.set_attribute(
+            "quantity.scale_conversion", json.dumps(payload["arithmetic_conversion"])
+        )
         span.set_attribute("quantity.input_statuses", [n.value_status for n in numeric_inputs])
         span.set_attribute(
             "quantity.normalization_errors", [e for n in numeric_inputs for e in n.errors]
@@ -1295,6 +1336,10 @@ async def collect(
         draft = apply_notation_corrections(draft, review)
         numeric_inputs = normalize_inputs(draft)
         payload["numeric_inputs"] = [n.model_dump() for n in numeric_inputs]
+        corrected_conversion = arithmetic_conversion(draft, numeric_inputs)
+        payload["arithmetic_conversion"] = (
+            corrected_conversion.model_dump() if corrected_conversion else None
+        )
         record = record.model_copy(update={"draft": draft, "numeric_inputs": numeric_inputs})
         session.state.quantities[record.id] = record
         with operation("quantity.notation.correct") as span:
@@ -1369,6 +1414,10 @@ async def collect(
             draft = apply_notation_corrections(draft, review)
             numeric_inputs = normalize_inputs(draft)
             payload["numeric_inputs"] = [n.model_dump() for n in numeric_inputs]
+            corrected_conversion = arithmetic_conversion(draft, numeric_inputs)
+            payload["arithmetic_conversion"] = (
+                corrected_conversion.model_dump() if corrected_conversion else None
+            )
         history.append(review)
         issues, errors = grounded_issues(
             review,
@@ -1439,6 +1488,7 @@ async def collect(
             "diagnostic_errors": errors,
             "draft": draft,
             "numeric_inputs": numeric_inputs,
+            "arithmetic_conversion": arithmetic_conversion(draft, numeric_inputs),
             "provisional_values": provisional,
             "ambiguity_results": ambiguity,
         }
@@ -1505,8 +1555,12 @@ async def collect(
                 for operand in draft.operands
             ]
             if images
-            else [u.text for u in selected]
+            else [u.text for u in [*selected, *context_units]]
         )
+        if record.arithmetic_conversion:
+            # Only the independently reviewed target unit supplies its conversion
+            # factor; source numeric displays still require literal witnesses.
+            texts = [*texts, f"Requested output in {draft.result_unit}"]
         failures = verify_calculation(Calculation(expression, values[0]), texts, values[0])
         if failures:
             record = record.model_copy(
@@ -1604,6 +1658,9 @@ async def collect(
                 **({"count_mode": draft.count_mode} if draft.mode == "count" else {}),
                 "application_results": values,
                 "numeric_inputs": [n.model_dump() for n in numeric_inputs],
+                "arithmetic_conversion": record.arithmetic_conversion.model_dump()
+                if record.arithmetic_conversion
+                else None,
                 "absence_confirmed": record.absence_confirmed,
                 "interpretation_results": record.ambiguity_results,
                 "draft": semantic_draft(draft),
@@ -1611,7 +1668,9 @@ async def collect(
                 "counted_occurrences": [count_items(g) for g in draft.groups],
             },
             ensure_ascii=False,
-            indent=2,
+            # Keep every witness and receipt field; formatting whitespace must
+            # not consume the source-evidence admission budget.
+            separators=(",", ":"),
         )
         parent_block = next(
             b for b in session.deps.ledger.blocks if b.payload["evidence_id"] == unit.evidence_id
@@ -1638,7 +1697,8 @@ async def collect(
                         "parent_support_ids": selection.support_ids,
                     },
                 )
-            ]
+            ],
+            checked_result=True,
         )
         if admitted:
             record = record.model_copy(update={"proof_support_ids": list(session.selected)})

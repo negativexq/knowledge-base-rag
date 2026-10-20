@@ -142,6 +142,43 @@ async def complete_sources(
     # Keep the actual task authoritative: a draft/reviewer can itself misbind a
     # population. Its missing-field description must not replace the question.
     query = (" ".join(dict.fromkeys(gaps))[:300] + " " + session.state.task.question)[:500]
+    need = session.state.evidence_needs.get(parent.need_id)
+    missing_operands = [
+        parent.draft.operands[i.index].label
+        for i in parent.assessments[-1].issues
+        if i.kind == "missing_item"
+        and i.target == "operand"
+        and i.index is not None
+        and i.index < len(parent.draft.operands)
+    ]
+    if need and missing_operands and parent.assessments[-1].operation == "supported":
+        # Locate one missing input rather than reranking the entire known
+        # calculation again. Scope comes from question-grounded need constraints;
+        # the original question remains authoritative during independent review.
+        scope = [c.value for c in need.spec.constraints if c.dimension in {"entity", "period"}]
+        if scope:
+            query = " ".join([missing_operands[0], *scope])[:500]
+    prior = next(
+        (
+            r
+            for r in reversed(list(session.state.quantity_gap_searches.values()))
+            if (r.source_id, r.document_version, r.query)
+            == (unit.source_id, unit.document_version, query)
+        ),
+        None,
+    )
+    offset = 0
+    retained = []
+    if prior is not None:
+        retained = [key for key in prior.candidate_support_ids if key in session.units()]
+        if (
+            not prior.has_more
+            or prior.next_offset is None
+            or not prior.offset < prior.next_offset <= 2000
+        ):
+            # Exhaustion/stalled scanning is not evidence that the answer is absent.
+            return prior.model_copy(update={"parent_id": parent.id, "status": "unresolved"})
+        offset = prior.next_offset
     session.deps.observations.tool_calls += 1
     before = set(session.units())
     with operation("quantity.source.complete") as span:
@@ -164,6 +201,7 @@ async def complete_sources(
                     query=query,
                     search_mode="ranked",
                     limit=3,
+                    offset=offset,
                 )
             )
         chunks = targeted_chunks(found.blocks, query)
@@ -180,7 +218,14 @@ async def complete_sources(
         # Prefer the complete chunks returned by this search over their detached
         # pre-existing paragraphs. This retains captions, populations and values.
         chunk_texts = {str(c.payload.get("text", "")) for c in chunks}
-        selected = sorted(ranked, key=lambda key: candidates[key].text not in chunk_texts)[:6]
+        selected = list(
+            dict.fromkeys(
+                [
+                    *sorted(ranked, key=lambda key: candidates[key].text not in chunk_texts),
+                    *retained,
+                ]
+            )
+        )[:6]
         if selected:
             session.selected = tuple(selected)
         admitted = sorted(set(session.units()) - before)
@@ -196,8 +241,16 @@ async def complete_sources(
         span.set_attribute("evidence.selected_ids", selected)
         span.set_attribute("evidence.search_has_more", found.has_more)
         span.set_attribute("evidence.search_scan_limited", found.scan_limited)
+        span.set_attribute("evidence.search_offset", offset)
+        span.set_attribute("evidence.search_next_offset", found.next_offset or -1)
         receipt = QuantityGapSearch(
             parent_id=parent.id,
+            source_id=unit.source_id,
+            document_version=unit.document_version,
+            offset=offset,
+            next_offset=found.next_offset,
+            has_more=found.has_more,
+            scan_limited=found.scan_limited or bool(prior and prior.scan_limited),
             requirements=parent.assessments[-1].issues,
             query=query,
             candidate_support_ids=selected,
