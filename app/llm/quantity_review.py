@@ -101,6 +101,18 @@ check their individual roles instead of imposing one population on the whole que
 For an empty list, inspect absence evidence against the entire requested source object
 and condition. Empty is not evidence of absence on an unreadable or partial view.
 An objection to an absence claim uses target=absence and index=null.
+Independently check each numeric operand even when another is unavailable. Return
+supported_operand_indexes for readable, correctly bound operands; a missing operand
+does not invalidate another printed value. Do not include an operand with a binding
+or readability objection. This preserves partial facts without executing a partial formula.
+When the source justifies an explanation, source_disposition may describe a conflict,
+a field not reported in a bounded object, or a necessary clarification. Bind its
+question_quote, witnesses and boundaries to the supplied sources and physical pages.
+Its judgment checks question_binding, object_identity and question-required scope
+separately. Unknown identity cannot certify absence. A partial window cannot close
+a document; list remaining candidates and leave scope_complete false. A report's
+publication year is not the year of every observation. Prefer a qualified answer
+when a corrected premise supplies a material answer; mark material_answer_available.
 """
 
 

@@ -46,6 +46,7 @@ from app.llm.premise import (
 )
 from app.llm.prompt import NOT_FOUND_PHRASE, build_messages
 from app.llm.provider import ChatProvider
+from app.llm.research_dispositions import disposition_text
 from app.llm.research_events import with_progress
 from app.llm.visual_answer import (
     PageRenderer,
@@ -1460,6 +1461,7 @@ async def _support_unit_answer_events(
         if not candidate.access_current():
             candidate.failure_code = "DOCUMENT_ACCESS_REVOKED"
             candidate.clarification, candidate.visual, candidate.comparison = None, None, []
+            candidate.source_disposition = None
             if candidate.authorization_context is not None:
                 candidate.blocks = filter_authorized_candidates(
                     candidate.blocks, candidate.authorization_context
@@ -1836,6 +1838,27 @@ async def _support_unit_answer_events(
         # Failed research is not proof that the document contains no answer.
         # Keep this application-owned; never release an unvalidated draft.
         rendered = "I could not obtain enough evidence to answer this question."
+        if candidate.source_disposition is not None and candidate.failure_code is None:
+            available = {u.support_unit_id: u for u in units}
+            receipt = candidate.source_disposition
+            if (
+                receipt.question == query
+                and all(
+                    w.support_id in available
+                    and available[w.support_id].authorized
+                    and available[w.support_id].model_visible
+                    and (
+                        available[w.support_id].source_id,
+                        available[w.support_id].document_version,
+                    )
+                    == (w.source_id, w.document_version)
+                    for w in receipt.evidence
+                )
+                and all(
+                    s in available for value in receipt.partial_values for s in value.support_ids
+                )
+            ):
+                rendered = disposition_text(receipt) or rendered
     user_visible = validation.top_level_valid and bool(rendered)
     if capture is not None:
         capture.set_visible_outcome(

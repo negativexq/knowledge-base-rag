@@ -159,6 +159,8 @@ async def test_checked_absence_is_persisted_and_finalizes_without_an_answer_mode
     answer = await collect(active, need)
     record = next(iter(active.state.quantities.values()))
     assert answer.abstain and record.absence_confirmed and record.has_result
+    assert record.absence_scope == "inspected_material"
+    assert not active.state.source_dispositions
     assert record.numeric_inputs[0].source_value is None
     restored = type(active.state).model_validate_json(active.state.model_dump_json())
     assert restored.quantities[record.id].absence_confirmed

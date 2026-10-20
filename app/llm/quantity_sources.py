@@ -304,7 +304,29 @@ def bind_gap_source(
 ) -> QuantitySource:
     """Carry one bounded fresh search candidate into inspection, without asserting its truth."""
     units = session.units()
-    for key in gap.candidate_support_ids:
+    session.require([*parent.support_ids, *selection.support_ids, *selection.context_support_ids])
+
+    def source_pages(key: str) -> set[int]:
+        unit = units[key]
+        return set(range(unit.page_number or 1, (unit.page_end or unit.page_number or 1) + 1))
+
+    # A representation change on an old page can be useful, but must not hide a
+    # newly located page when the actual defect is missing source coverage.
+    candidates = [key for key in gap.candidate_support_ids if key in units]
+    candidates.sort(key=lambda key: not bool(source_pages(key) - set(parent.pages)))
+    prerequisite_pages: set[int] = set()
+    prerequisites_bounded = bool(parent.supported_operand_indexes)
+    for index in parent.supported_operand_indexes:
+        operand = parent.draft.operands[index]
+        operand_pages = {operand.page} if operand.page is not None else set()
+        if not operand_pages:
+            for ref in operand.source_ranges:
+                if ref.support_id in units:
+                    operand_pages.update(source_pages(ref.support_id))
+        if not operand_pages or len(operand_pages) > 3:
+            prerequisites_bounded = False
+        prerequisite_pages.update(operand_pages)
+    for key in candidates:
         session.require([key])
         unit = units[key]
         if (unit.source_id, unit.document_version) != (parent.source_id, parent.document_version):
@@ -331,6 +353,29 @@ def bind_gap_source(
                 ],
             ]
         chosen_pages = sorted(set([*selection.pages, *pages]))
+        if (
+            len(chosen_pages) > 3
+            and selection.modality == "image"
+            and prerequisites_bounded
+            and set(pages) - set(parent.pages)
+        ):
+            # Replace irrelevant old windows, retaining every checked prerequisite
+            # page. The previous record remains intact; no value is inferred here.
+            replacement = set(pages) | prerequisite_pages
+            if len(replacement) <= 3:
+                ids = list(
+                    dict.fromkeys(
+                        [
+                            key,
+                            *(
+                                s
+                                for s in [*parent.support_ids, *selection.support_ids]
+                                if source_pages(s) & replacement
+                            ),
+                        ]
+                    )
+                )
+                chosen_pages = sorted(replacement)
         if len(ids) > 3 or len(chosen_pages) > 3:
             continue
         proposed = selection.model_copy(
@@ -347,6 +392,8 @@ def bind_gap_source(
             span.set_attribute("evidence.gap_candidate_id", key)
             span.set_attribute("evidence.input_support_ids", ids)
             span.set_attribute("evidence.physical_pages", chosen_pages)
+            span.set_attribute("evidence.previous_physical_pages", selection.pages)
+            span.set_attribute("evidence.checked_prerequisite_pages", sorted(prerequisite_pages))
         return proposed
     return selection
 

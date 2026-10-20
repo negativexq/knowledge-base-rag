@@ -233,7 +233,9 @@ source-supported result once, with its run, answer, latency, and model-call coun
 
 | Evaluation | Result | Scope |
 | --- | --- | --- |
-| Agentic question coverage | **120 distinct questions tried: 79 source-correct answers, 2 qualified calculations, 4 verified refusals, 35 unresolved** | [Answered questions and evidence](docs/adaptive-solved-questions.md); historical results across development revisions. |
+| Agentic question coverage | **120 distinct questions tried: 79 source-correct answers, 2 qualified calculations, 15 correct refusals, 24 unresolved** | [Answered questions and evidence](docs/adaptive-solved-questions.md); historical results across development revisions. |
+| Latest answerable controls | **9/10 correct; one answer withheld** | [Report](artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/normal-ten/REPORT.md); 727 exposes a conflict between checked image values and parser text. |
+| Source-negative controls | **11/11 safe answer-not-found outcomes** | [Report](artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/negative-eleven/REPORT.md); source-audited questions, no invented answers. |
 | Earlier MMLongBench-Doc pipeline | **79/120 (66%)**; 19/21 unanswerable questions refused | [Report](artifacts/mmlongbench-v2/luna-full-v3/report.md); lenient contains-match, not the official score. |
 | TechQA HOLDOUT50 | **26/50 (52%)** useful on the evaluated production path; 2% materially incorrect | [Report](artifacts/ragbench/techqa-production-v1/report.md); a separate pipeline evaluation. |
 | Multilingual reranker selection | Recall@5 1.00 TR→EN and EN→TR, 220 questions | [Decision](docs/reranking.md). |

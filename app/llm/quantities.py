@@ -69,6 +69,7 @@ from app.llm.quantity_state import (
     SourceRange,
 )
 from app.llm.quantity_units import arithmetic_conversion
+from app.llm.research_dispositions import DispositionPartialValue, admit_disposition
 from app.llm.research_state import decimal_value, signature
 from app.llm.scope_validation import scope_lines
 from app.llm.source_acquisition import open_quantity_pages
@@ -239,6 +240,84 @@ def semantic_draft(draft: QuantityDraft) -> dict[str, Any]:
     if data.get("absence") is None:
         data.pop("absence", None)
     return data
+
+
+def checkpoint_review_evidence(
+    session: AdaptiveSession,
+    record: QuantityRecord,
+    review: QuantityAssessment,
+    errors: list[str],
+    checker_units: dict[str, SupportUnit],
+    image_bindings: list[QuantityImageBinding],
+) -> QuantityRecord:
+    """Keep checked partial inputs and scoped reasons before repair/execution."""
+    disputed = {i.index for i in review.issues if i.target == "operand"}
+    proposed = (
+        range(len(record.draft.operands))
+        if review.inputs == "supported"
+        else review.supported_operand_indexes
+    )
+    supported = sorted(
+        {
+            i
+            for i in proposed
+            if not errors
+            and 0 <= i < len(record.draft.operands)
+            and i not in disputed
+            and i < len(record.numeric_inputs)
+            and record.numeric_inputs[i].value_status == "readable"
+            and not record.numeric_inputs[i].errors
+        }
+    )
+    record = record.model_copy(update={"supported_operand_indexes": supported})
+    if review.source_disposition is not None:
+        pending = [
+            key
+            for gap in session.state.quantity_gap_searches.values()
+            if gap.source_id == record.source_id and gap.document_version == record.document_version
+            for key in gap.candidate_support_ids
+            if key not in gap.inspected_support_ids
+        ]
+        receipt = admit_disposition(
+            review.source_disposition,
+            session.state.task.question,
+            checker_units,
+            image_pages={
+                (b.source_id, b.document_version, b.physical_page)
+                for b in image_bindings
+                if b.document_version
+            },
+            pending_support_ids=pending,
+            quantity_id=record.id,
+            evidence_snapshot_ids=list(session.units()),
+        )
+        receipt = receipt.model_copy(
+            update={
+                "partial_values": [
+                    DispositionPartialValue(
+                        label=record.draft.operands[i].label,
+                        value=record.draft.operands[i].value or "",
+                        unit=record.draft.operands[i].unit,
+                        source_scale=record.numeric_inputs[i].source_scale,
+                        support_ids=record.support_ids,
+                    )
+                    for i in supported
+                ]
+            }
+        )
+        session.state.source_dispositions = [
+            r for r in session.state.source_dispositions if r.quantity_id != record.id
+        ] + [receipt]
+        with operation("research.disposition.admit") as span:
+            span.set_attribute("research.disposition_id", receipt.id)
+            span.set_attribute("research.disposition_kind", receipt.kind)
+            span.set_attribute("research.disposition_verified", receipt.verified)
+            span.set_attribute("research.disposition_errors", receipt.diagnostic_errors)
+            span.set_attribute(
+                "evidence.input_support_ids", [w.support_id for w in receipt.evidence]
+            )
+    session.state.quantities[record.id] = record
+    return record
 
 
 def execute_lookup(draft: QuantityDraft) -> tuple[list[str], str]:
@@ -1369,6 +1448,14 @@ async def collect(
     session.state.quantities[record.id] = record
     # Checkpoint review BEFORE any provisional execution. A numeric conversion
     # failure cannot erase a returned assessment or prevent its repair route.
+    record = checkpoint_review_evidence(
+        session,
+        record,
+        review,
+        errors,
+        {u.support_unit_id: u for u in [*selected, *context_units]},
+        image_bindings if images else [],
+    )
     if review.inputs == "supported" and draft.complete:
         try:
             early_provisional = execute(draft)[0]
@@ -1503,6 +1590,14 @@ async def collect(
         span.set_attribute("quantity.diagnostic_errors", errors)
         span.set_attribute("quantity.parent_id", record.parent_id or "")
         span.set_attribute("quantity.interpretation_results", json.dumps(ambiguity))
+    record = checkpoint_review_evidence(
+        session,
+        record,
+        review,
+        errors,
+        {u.support_unit_id: u for u in [*selected, *context_units]},
+        image_bindings if images else [],
+    )
     if not check.accepted or not check.complete or check.reason != "supported":
         if (
             status in {"rejected", "indeterminate"}
@@ -1580,6 +1675,18 @@ async def collect(
             "absence_confirmed": bool(numeric_inputs)
             and draft.mode == "read"
             and all(n.value_status == "not_found" for n in numeric_inputs),
+            "absence_scope": (
+                "bounded_object"
+                if any(
+                    r.quantity_id == record.id and r.verified and r.kind == "not_reported_in_scope"
+                    for r in session.state.source_dispositions
+                )
+                else "inspected_material"
+            )
+            if draft.mode == "read"
+            and numeric_inputs
+            and all(n.value_status == "not_found" for n in numeric_inputs)
+            else "none",
         }
     )
     # Successful computation is stored before admission and survives a full ledger.
@@ -1662,6 +1769,7 @@ async def collect(
                 if record.arithmetic_conversion
                 else None,
                 "absence_confirmed": record.absence_confirmed,
+                "absence_scope": record.absence_scope,
                 "interpretation_results": record.ambiguity_results,
                 "draft": semantic_draft(draft),
                 "expanded_expression": expression,

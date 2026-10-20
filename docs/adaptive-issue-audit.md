@@ -6,6 +6,28 @@ harness hashes still match the completed frozen runs. No runtime fixes are inclu
 
 ## Conclusion
 
+Implementation after the audit: the [answer-local correction](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/answer-local-validation/REPORT.md)
+removes an unsuccessful finalizer extension, permits separately validated
+calculations past a failed-collection veto, and retains explicit clarification
+export and typed observability. It adds no judge loop. Source-disposition production
+and acquisition gaps remain open. The audit findings below retain their original
+observation dates.
+
+Follow-up on 21 October: the [source-disposition lifecycle audit](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/AUDIT.md)
+reviews twelve completed runs and the current implementation without runtime
+changes or paid calls. Typed receipt production is optional and produces none in
+these runs; finalization cannot create a missing source finding. The audit also
+separates 508's positive-binding/outcome mismatch, 1017's incomplete acquisition
+and timeout, and 830's clarification export defect. Its proposed fixes remain open;
+current ledger totals are 79 supported / 2 qualified / 4 verified refusals /
+35 unresolved across 120 distinct questions.
+
+Follow-up: the [thirteen-question source audit](../artifacts/mmlongbench-v2/adaptive-negative-thirteen-audit-20261020/REPORT.md)
+reviews original PDFs and archived traces against merged main `45402ee`. It
+distinguishes source conflict, scoped absence, corrected premise and clarification
+from incomplete research. This documentation-only follow-up leaves the current
+120-question ledger totals unchanged; counts below describe the original audit.
+
 The issue list mixed product defects, strict audit incompleteness, reference
 ambiguities and historical bugs already contained by code. It also missed concrete
 repair failures visible in `ResearchState.needs`. The highest-confidence execution
@@ -389,3 +411,21 @@ routing, not the narrow gap-query path; mixed actions and repeated finalization 
 an observed efficiency defect. Whole-guide visual inventory in 662 and document-wide
 absence proof in 730 remain open. Counts are now 79 supported / 2 qualified / 4 verified
 refusals / 35 unresolved, across 120 distinct questions.
+
+## Scoped disposition and partial-input follow-up
+
+The [implementation report](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/REPORT.md)
+adds application-owned, source/version-bound dispositions and independently checked
+partial operands. A wrong or incomplete object does not certify source-wide absence;
+new evidence and known successes prevent automatic reuse of negative receipts.
+Checked reasons can finalize without a paraphrasing call. Whole-document absence still
+requires multi-window closure and is not claimed by this change. The thirteen audited
+workflows remain open pending original-source review of the live measurements.
+
+## Eleven-question safe-negative acceptance follow-up
+
+The [frozen sequential check](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/negative-eleven/REPORT.md) passes 11/11 under the user-approved safe answer-not-found criterion. No values are invented and all terminal abstentions pass validation without technical failure. These source-audited outcomes move to correct refusals; totals are 79 supported / 2 qualified / 15 correct refusals / 24 unresolved across 120 questions. Runtime closure receipts remain optional diagnostic work rather than this batch's success gate. The batch uses 96 main requests; efficiency remains open.
+
+## Answerable-control follow-up: visual authority conflict
+
+The [ten-question measurement](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/normal-ten/REPORT.md) yields 9/10 correct positive answers. In 727, independent image collection/review succeeds twice and deterministic arithmetic computes 12, but two scope judgments prefer parser 42 over the checked visual 12. The system withholds a correct answer after ten requests. PROV-002 records this source-authority conflict; no runtime changes or paid after-run reviewer were used.

@@ -19,6 +19,7 @@ from app.llm.quantity_state import (
     QuantityRecord,
     QuantitySourceInspection,
 )
+from app.llm.research_dispositions import DispositionReceipt, TerminalAssessment
 from app.llm.scope_diagnostics import ScopeDiagnostic
 
 
@@ -344,6 +345,8 @@ class ResearchState(BaseModel):
     quantity_page_catalog: list[QuantityCatalogPage] = Field(default_factory=list, max_length=72)
     quantity_gap_searches: dict[str, QuantityGapSearch] = Field(default_factory=dict)
     collection_outcomes: list[CollectionOutcome] = Field(default_factory=list)
+    source_dispositions: list[DispositionReceipt] = Field(default_factory=list)
+    terminal_assessments: list[TerminalAssessment] = Field(default_factory=list)
     page_acquisitions: list[PageAcquisition] = Field(default_factory=list)
     page_read_checkpoints: dict[str, PageReadCheckpoint] = Field(default_factory=dict)
     page_contexts: list[PageContextReceipt] = Field(default_factory=list)
