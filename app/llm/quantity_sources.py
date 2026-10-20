@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import asyncio
+import re
 import time
 from typing import TYPE_CHECKING
 
 from app.evidence.documents import DocumentRead, DocumentRef
+from app.evidence.support_units import SupportUnit
 from app.llm.agent_observability import operation
 from app.llm.quantity_state import (
     QuantityCatalogPage,
@@ -23,6 +25,92 @@ if TYPE_CHECKING:
     from app.llm.adaptive import AdaptiveSession
 
 
+def visual_page_supports(
+    selection: QuantitySource,
+    inputs: list[SupportUnit],
+    context: list[SupportUnit],
+) -> list[str]:
+    """Authorize explicitly requested images without discarding a context-role page."""
+    requested = set(selection.pages)
+    if not requested or len(requested) > 3 or len(requested) != len(selection.pages):
+        raise ValueError("NUMERIC_SOURCE_REQUIRES_BOUNDED_PAGE_CHECK")
+    identities = {(u.source_id, u.document_version) for u in inputs}
+    if len(identities) != 1:
+        raise ValueError("QUANTITY_SOURCE_VERSION_MISMATCH")
+
+    def pages(unit: SupportUnit) -> set[int]:
+        return set(range(unit.page_number or 1, (unit.page_end or unit.page_number or 1) + 1))
+
+    covered = {p for unit in inputs for p in pages(unit)}
+    missing = requested - covered
+    authorities = list(inputs)
+    for unit in context:
+        if not missing.intersection(pages(unit)):
+            continue
+        if (unit.source_id, unit.document_version) not in identities:
+            raise ValueError("QUANTITY_SOURCE_VERSION_MISMATCH")
+        authorities.append(unit)
+        covered.update(pages(unit))
+    if not requested <= covered:
+        raise ValueError("QUANTITY_PAGE_OUTSIDE_SOURCE")
+    if any(not u.authorized or not u.model_visible for u in authorities):
+        raise ValueError("QUANTITY_SOURCE_NOT_VISIBLE")
+    return list(dict.fromkeys(u.support_unit_id for u in authorities))
+
+
+def relationship_context(parent: QuantityRecord, units: dict[str, SupportUnit]) -> list[str]:
+    """Locate bounded definition passages for contrasted labels, without asserting a join.
+
+    Names come from grounded objections, never a document-specific alias dictionary.
+    A passage may establish a distinction rather than equivalence; only independent
+    source review can decide that. This local selection changes no retrieval scores.
+    """
+    if not parent.assessments:
+        return []
+    gaps = " ".join(
+        i.needed_evidence
+        for i in parent.assessments[-1].issues
+        if i.evidence_kind == "entity_inventory"
+        or (
+            parent.draft.mode == "lookup"
+            and i.kind in {"wrong_binding", "missing_item", "operation"}
+        )
+    )
+    names = set(re.findall(r"\b[A-Z][A-Za-z0-9]*(?:[-_][A-Za-z0-9]+)*\b", gaps))
+    names = {name for name in names if len(name) >= 3}
+    if len(names) < 2:
+        return []
+    ranked = []
+    for key, unit in units.items():
+        if (
+            not unit.authorized
+            or not unit.model_visible
+            or len(unit.text) > 6000
+            or (unit.source_id, unit.document_version)
+            != (parent.source_id, parent.document_version)
+            or key in [*parent.proof_support_ids, *parent.support_ids, *parent.context_support_ids]
+        ):
+            continue
+        matches = sum(
+            bool(
+                re.search(r"(?<![\w-])" + re.escape(name) + r"(?![\w-])", unit.text, re.IGNORECASE)
+            )
+            for name in names
+        )
+        definitions = len(
+            re.findall(
+                r"\b(?:defined?|definition|refers?|called|denotes?|aliases|alias|subset)\b"
+                r"|\bwe (?:use|call)\b",
+                unit.text,
+                re.IGNORECASE,
+            )
+        )
+        if matches >= 2 and definitions:
+            ranked.append((key, matches, definitions, len(unit.text)))
+    ranked.sort(key=lambda entry: (-entry[1], -entry[2], entry[3]))
+    return [entry[0] for entry in ranked[:3]]
+
+
 async def complete_sources(
     session: AdaptiveSession, parent: QuantityRecord
 ) -> QuantityGapSearch | None:
@@ -32,7 +120,8 @@ async def complete_sources(
     gaps = [
         i.needed_evidence
         for i in parent.assessments[-1].issues
-        if i.kind in {"missing_item", "boundary"} and i.needed_evidence.strip()
+        if (i.kind in {"missing_item", "boundary"} or i.evidence_kind == "entity_inventory")
+        and i.needed_evidence.strip()
     ]
     if not gaps:
         return None
@@ -52,7 +141,7 @@ async def complete_sources(
     # Descriptions locate evidence, never supply source facts or page guesses.
     # Keep the actual task authoritative: a draft/reviewer can itself misbind a
     # population. Its missing-field description must not replace the question.
-    query = (session.state.task.question + " " + " ".join(dict.fromkeys(gaps)))[:500]
+    query = (" ".join(dict.fromkeys(gaps))[:300] + " " + session.state.task.question)[:500]
     session.deps.observations.tool_calls += 1
     before = set(session.units())
     with operation("quantity.source.complete") as span:

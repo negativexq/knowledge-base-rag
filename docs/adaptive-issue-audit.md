@@ -283,3 +283,18 @@ Raw diagnostics live in ignored
 cohort-diagnostics JSON). No runtime or test files were modified; no paid requests
 or benchmark reruns were made. The current register is
 [adaptive-open-issues.md](adaptive-open-issues.md).
+
+## Repair and evidence handoff implementation
+
+The follow-up [implementation report](../artifacts/mmlongbench-v2/adaptive-repair-handoff-20261020/REPORT.md)
+records operand-only source repairs, per-entry mixed text/image provenance and
+preservation of explicitly requested authorized visual context pages. These changes
+address REPAIR-001, REPAIR-002 and PAGE-001. The historical failures and audit scores
+above remain unchanged; new live checks are recorded separately in that report.
+
+The [numeric authority follow-up](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md)
+adds live evidence for notation-metadata correction and semantic-only checking of
+reexecuted application arithmetic. It restores 1021's correct quotient despite
+another false arithmetic objection from the separate after-run reviewer, and
+records the remaining relationship-context investigation for 641. Historical audit
+scores above remain frozen.

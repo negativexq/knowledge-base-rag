@@ -9,6 +9,7 @@ from typing import Literal
 from app.llm.quantity_state import (
     NumberFormat,
     NumberScale,
+    QuantityAssessment,
     QuantityDraft,
     QuantityNumberReceipt,
     QuantityNumericOperand,
@@ -76,11 +77,7 @@ def normalize_inputs(draft: QuantityDraft) -> list[QuantityNumberReceipt]:
         # Retaining the exact same displayed unit needs no scale conversion.
         # Resolve default multipliers from its explicit unit label in this case;
         # contradictory or cross-unit declarations must still fail below.
-        if (
-            read
-            and source_scale == output_scale == "1"
-            and output_unit == operand.unit
-        ):
+        if read and source_scale == output_scale == "1" and output_unit == operand.unit:
             try:
                 source_scale = output_scale = unit_scale(operand.unit)
             except ValueError:
@@ -127,3 +124,31 @@ def normalize_inputs(draft: QuantityDraft) -> list[QuantityNumberReceipt]:
                 base.model_copy(update={"value_status": "invalid", "errors": [str(exc)]})
             )
     return receipts
+
+
+def apply_notation_corrections(draft: QuantityDraft, review: QuantityAssessment) -> QuantityDraft:
+    """A source reviewer may correct notation metadata, never the printed value."""
+    operands = list(draft.operands)
+    seen: set[int] = set()
+    for correction in review.notation_corrections:
+        if correction.index in seen or correction.index >= len(operands):
+            raise ValueError("NUMERIC_NOTATION_CORRECTION_INVALID")
+        seen.add(correction.index)
+        old = operands[correction.index]
+        if not isinstance(old, QuantityNumericOperand) or old.value is None:
+            raise ValueError("NUMERIC_NOTATION_CORRECTION_INVALID")
+        if correction.number_format == old.number_format:
+            continue
+        # It is not permissible to reinterpret an already valid number (e.g.
+        # 1,234 between decimal-comma and decimal-point conventions).
+        try:
+            source_decimal(old.value, old.number_format)
+        except ValueError:
+            pass
+        else:
+            raise ValueError("NUMERIC_NOTATION_ALREADY_VALID")
+        source_decimal(old.value, correction.number_format)
+        operands[correction.index] = old.model_copy(
+            update={"number_format": correction.number_format}
+        )
+    return draft.model_copy(update={"operands": operands})

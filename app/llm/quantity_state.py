@@ -85,8 +85,10 @@ class NumericReading(QuantityData):
 
     @model_validator(mode="after")
     def status_matches_value(self) -> NumericReading:
-        if (self.value_status == "readable") != (self.value is not None):
-            raise ValueError("Only a readable numeric input carries a source value")
+        if self.value_status == "readable" and self.value is None:
+            raise ValueError("A readable numeric input requires a source value")
+        if self.value_status in {"not_found", "unreadable"} and self.value is not None:
+            raise ValueError("An unavailable numeric input cannot carry a source value")
         return self
 
 
@@ -103,6 +105,7 @@ class QuantityReadOperand(QuantityNumericOperand):
 
 
 class QuantityLookupOperand(QuantityNumericOperand):
+    binding_status: Literal["supported", "unknown"] = "supported"
     population: str = Field(default="", max_length=300)
     series: str = Field(default="", max_length=200)
     period: str = Field(default="", max_length=200)
@@ -116,6 +119,7 @@ class QuantityOperation(QuantityData):
     select_mode: Literal["minimum", "maximum"] = "minimum"
     list_order: Literal["source", "ascending", "descending"] = "source"
     list_unique: bool = False
+    output_decimals: int | None = Field(default=None, ge=0, le=10)
 
 
 class QuantityLookupChoice(QuantityData):
@@ -182,6 +186,8 @@ class QuantityDraft(QuantityOperation):
             raise ValueError("List formatting only applies to listing")
         if self.mode not in {"select", "lookup"} and self.select_mode != "minimum":
             raise ValueError("Selection operation only applies to selection")
+        if self.mode not in {"read", "lookup"} and self.output_decimals is not None:
+            raise ValueError("Output precision only applies to numeric read/lookup")
         return self
 
 
@@ -206,6 +212,11 @@ class QuantityIssue(QuantityData):
     evidence_kind: Literal["unspecified", "printed_values", "entity_inventory"] = "unspecified"
 
 
+class QuantityNotationCorrection(QuantityData):
+    index: int = Field(ge=0, le=19)
+    number_format: NumberFormat
+
+
 class QuantityAssessment(QuantityData):
     inputs: Literal["supported", "mismatch", "unknown"]
     coverage: Literal["complete", "incomplete", "unknown"]
@@ -218,6 +229,9 @@ class QuantityAssessment(QuantityData):
     issues: list[QuantityIssue] = Field(default_factory=list, max_length=10)
     alternatives: list[Literal["per_group", "total", "distinct"]] = Field(
         default_factory=list, max_length=3
+    )
+    notation_corrections: list[QuantityNotationCorrection] = Field(
+        default_factory=list, max_length=20
     )
 
 
@@ -236,6 +250,8 @@ class QuantityImageBinding(QuantityData):
     source_id: str
     document_version: str | None
     physical_page: int
+    support_ids: list[str] = Field(default_factory=list, max_length=9)
+    evidence_role: Literal["input", "context"] = "input"
 
 
 class QuantityGapSearch(QuantityData):

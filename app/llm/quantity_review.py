@@ -35,10 +35,19 @@ notation conversion separately. Verify the source unit and scale from its actual
 and context. For read, also assess output unit/scale and signed versus magnitude convention
 against the ORIGINAL question. Accounting parentheses mean a negative source movement;
 they alone do not authorize a positive answer or a unit conversion.
+If the numeric display is readable but its declared notation is invalid, return
+notation_corrections with operand index and source-supported number_format, then judge
+the inputs under that corrected notation. Never correct the value or reinterpret an
+already valid number. An invalid metadata convention is not an unreadable source.
 value_status=not_found can be supported with complete coverage only when the entire
 requested source object and location establish absence. Inspect the whole relevant
 legend/table/page; a narrow excerpt without the requested value is not proof of absence.
-unreadable and ambiguous values cannot be approved as numeric inputs. Never replace an
+unreadable and ambiguous numeric readings cannot be approved as numeric inputs. A readable
+lookup cell with binding_status=unknown has a separate relationship defect; inspect the
+supplied context_sources for definitions, subset descriptions and aliases before deciding
+the join. A subset is not automatically equivalent to its parent dataset: verify the
+evaluation setting and source's stated dataset usage, not merely similar names.
+Never replace an
 unavailable input with zero or confuse a correctly transcribed absence with a number.
 Application code can compare their results when full entity lists are present.
 Set entity_identity=supported only when the source labels permit the requested entity
@@ -50,6 +59,8 @@ source_ranges; in image mode give a supplied physical page and transcribe its vi
 anchor in witness. Point missing-item issues to the omitted source item; point boundary
 issues to the actual continuation/category boundary. Operation issues also select the
 one-based question segment range establishing the requirement.
+When retained_sources accompany images, those literal text sources remain valid
+evidence for retained inputs; objections to them may use their source_ranges.
 When inventory_replacement is true, verify the full new source inventory against the
 original question AND that previously supported items in previous_inputs remain covered,
 allowing source-supported spelling/alias variants. Missing a valid prior item is incomplete
@@ -119,14 +130,14 @@ def grounded_issues(
         if not target_ok:
             errors.append("ISSUE_TARGET_INVALID")
             continue
-        if pages:
-            source_ok = issue.page in pages and bool(issue.witness.strip())
-        else:
-            source_ok = bool(issue.source_ranges)
+        if issue.source_ranges:
+            source_ok = True
             for ref in issue.source_ranges:
                 lines = scope_lines(sources.get(ref.support_id, ""))
                 if not (1 <= ref.start_line <= ref.end_line <= len(lines)):
                     source_ok = False
+        else:
+            source_ok = issue.page in pages and bool(issue.witness.strip())
         if issue.target == "operation":
             source_ok = source_ok and 1 <= issue.question_start <= issue.question_end <= len(
                 scope_lines(question)
@@ -281,6 +292,9 @@ def merge_repair(
         or replacement.result_unit != original.draft.result_unit
         or replacement.interpretation != original.draft.interpretation
         or replacement.expression != original.draft.expression
+        or replacement.decimals != original.draft.decimals
+        or replacement.choices != original.draft.choices
+        or replacement.output_decimals != original.draft.output_decimals
         or replacement.count_mode != original.draft.count_mode
         or replacement.select_mode != original.draft.select_mode
         or replacement.list_order != original.draft.list_order
@@ -290,6 +304,14 @@ def merge_repair(
         or len(replacement.items) != len(original.draft.items)
     ):
         raise ValueError("REPAIR_CHANGED_UNTARGETED_STRUCTURE")
+    if [o.name for o in replacement.operands] != [o.name for o in original.draft.operands]:
+        raise ValueError("REPAIR_OPERAND_IDENTITIES_CHANGED")
+    if original.draft.mode == "read" and any(
+        new.model_dump(include={"output_unit", "output_scale", "sign_convention"})
+        != old.model_dump(include={"output_unit", "output_scale", "sign_convention"})
+        for old, new in zip(original.draft.operands, replacement.operands, strict=True)
+    ):
+        raise ValueError("REPAIR_CHANGED_OUTPUT_CONVENTION")
     return replacement.model_copy(
         update={
             "operands": [

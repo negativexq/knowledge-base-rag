@@ -39,6 +39,8 @@ from app.llm.calculation import Calculation, evaluate_decimal_expression, verify
 from app.llm.quantities import candidate as quantity_candidate
 from app.llm.quantities import collect as collect_quantities
 from app.llm.quantities import semantic_draft
+from app.llm.quantity_scope import INSTRUCTIONS as QUANTITY_SCOPE_INSTRUCTIONS
+from app.llm.quantity_scope import semantic_scope_projection
 from app.llm.quantity_sources import inspect_pages
 from app.llm.research_budget import ResearchPolicy
 from app.llm.research_events import publish
@@ -1595,6 +1597,11 @@ class AdaptiveSession:
                         n.spec.model_dump() for n in self.state.evidence_needs.values()
                     ],
                 }
+            judge_payload, scoped_records = semantic_scope_projection(
+                judge_payload, self.state.quantities.values()
+            )
+            scope_instructions = "\n" + QUANTITY_SCOPE_INSTRUCTIONS if scoped_records else ""
+            span.set_attribute("quantity.scope_projection_ids", scoped_records)
             if self.compact_context:
                 projected = line_scope_payload(judge_payload)
                 if len(json.dumps(projected)) > MAX_SCOPE_PAYLOAD_CHARS:
@@ -1603,6 +1610,7 @@ class AdaptiveSession:
                     "scope_validator",
                     DiagnosticScopeJudgment if set(cited) & set(owned) else LineScopeJudgment,
                     LINE_SCOPE_INSTRUCTIONS
+                    + scope_instructions
                     + ("\n" + SCOPE_DIAGNOSTIC_INSTRUCTIONS if set(cited) & set(owned) else ""),
                     projected,
                     research=False,
@@ -1621,7 +1629,7 @@ class AdaptiveSession:
                 checked = await self.call(
                     "scope_validator",
                     ScopeJudgment,
-                    SCOPE_INSTRUCTIONS,
+                    SCOPE_INSTRUCTIONS + scope_instructions,
                     judge_payload,
                     research=False,
                 )

@@ -1,11 +1,12 @@
 # Answered questions — source-verified results
 
 Updated: **20 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **70**, across **120 distinct questions tried**.
-There are also **four correct refusals** and **46 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+source-supported published answer: **71**, across **120 distinct questions tried**.
+There is also **one qualified interpreted calculation**, alongside **four correct refusals**
+and **44 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 70 have passed on the
+This is a historical success ledger, not a claim that all 71 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -83,6 +84,7 @@ runtime release checks.
 | 834 | Critical Thinking Case Studies across course assignments. `f8d3a162ab9507e021d83dd109118b60.pdf` | **3**; full-year summary manually checked | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 41.38 s / 5 |
 | 1022 | Costco FY2021 total liabilities. `COSTCO_2021_10K.pdf` | **USD 41,190 million**; direct lookup | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 19.43 s / 3 |
 | 1073 | Best Buy after-tax return on average equity, fiscal year ending January 28, 2023. `BESTBUY_2023_10K.pdf` | **48.805%**, equivalent to ratio **0.488** at three decimals; explicit average-equity formula | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) | 42.78 s / 6 |
+| 1016 | Costco FY2021 long-term debt including long-term operating and finance leases. `COSTCO_2021_10K.pdf` | **10,314 million** = 6692+2642+980 | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md) | 51.19 s / 6 |
 
 Row 642's stored gold label is `[64.3, 62.4, 62.2]`. The PDF values 64.35 and
 62.46 do not match that label under standard one-decimal rounding. This ledger
@@ -90,7 +92,35 @@ records source correctness rather than exact label matching. Row 1018 rejected
 three incorrect intermediate calculation drafts before releasing the correct
 answer. The linked reports retain the details.
 
+## Qualified interpreted calculations
+
+These answers state their chosen calculation convention. Their source inputs and
+arithmetic are supported, but the source does not establish a unique metric definition.
+They are counted separately from source-verified answers and unresolved workflows.
+
+| Row | Question | Qualified answer | Run |
+| --- | --- | --- | --- |
+| 1072 | Best Buy ROCE for the fiscal year ending January 28, 2023. | **26.304%** using operating income / (ending total assets − ending current liabilities); approximately 0.263 as a three-decimal ratio. The published answer states the formula; the source does not define ROCE. | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md); 57.12 s / 6 calls |
+
 ## Latest runs
+
+The [numeric authority follow-up](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md)
+remeasured the same five questions sequentially. It recovers 1016, restores 1021,
+retains 1086 and publishes 1072 under an explicit formula convention. Row 641
+remains unresolved after three targeted follow-ups: its graph/table values and
+new dataset-definition context reach independent review without schema/page errors,
+but the evaluation-population join is still not accepted. No source-specific alias
+rule or benchmark-value override was introduced. The unique-question total stays 120.
+
+
+A targeted [five-row repair regression](../artifacts/mmlongbench-v2/adaptive-repair-handoff-20261020/REPORT.md)
+remeasured 1016, 1072, 641, 1021 and 1086 sequentially after the repair handoff changes.
+Only 1086 published an answer. The previous success for 1021 is retained above as
+historical evidence; that earlier run falsely refused its correct 0.715 calculation
+because the LLM scope judge asserts incorrect arithmetic. These are remeasurements,
+so the unique-question total stays 120. Aggregate scores below refer to their
+frozen audit artifacts, not a recomputation including this follow-up.
+
 
 **All 120 manifest rows have now been tried.** The [full-set audit](../artifacts/mmlongbench-v2/adaptive-full-set-audit-20261020/REPORT.md)
 reports the shared automatic comparison: earlier 79/120 versus adaptive latest
@@ -305,9 +335,7 @@ implemented corrections from unresolved outcomes.
 | 663 | How many connection graphs are contained in the guidebook? | Connection-diagram counting unit/scope unresolved. Reviewer sees at least four diagrams on two pages but cannot certify guide-wide closure. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 728 | How many more Tweets are attributed to Germanwings than Boeing? | Label-compatible; Boeing operand unavailable and search incomplete. Wrong chart binding rejected, but absence not established. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 830 | When will the market open? | Label-compatible; market/time request underspecified in a course document. Repeated no-progress searches; reviewer source_answer is itself uninformative. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
-| 1016 | what is long-term debt of Costco in FY 2021, including long-term operating and finance lease liabilities? Anwser in millions. | Grouped numeric displays rejected under incompatible notation; subsequent repair fails. Required long-term debt+leases total is 10314 million. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 1017 | what is total debt of COSTCO in FY 2021, taking total debt as long-term debt including its current portion as reported on the balance sheet, plus all operating and finance lease liabilities? Answer in millions. | Lease evidence not fully consumed; missing note page prevents total 11407 million from being assembled. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
-| 1072 | what is Return on Capital Employed for the fiscal year ending January 28, 2023? round your answer to three decimal places | Scale/header context repair raises ValueError. Common stated ROCE interpretation could yield 0.263; source does not define formula. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 1074 | What is Interest to Average Total Debt for the fiscal year ending January 28, 2023? Answer in percentage term, round to three decimal places | Header/scale context and notation repair remain unresolved; reviewer derives 2.911% under stated debt definition. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 1075 | what is capitalization ratio for Best Buy for the fiscal year ending January 28, 2023? Answer in percentage term, round to one decimal places. | Formula choice remains disputed. Excluding current portion gives 29.3%; adding current long-term debt 16 to 1160 gives 29.6%. Do not declare reference wrong from arithmetic alone. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 1084 | what is interest coverage ratio for AMCOR'FY 2020? round your answer to three decimal? | Expected by label; AMCOR FY2020 request in Best Buy source. No-progress termination, no verified mismatch receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |

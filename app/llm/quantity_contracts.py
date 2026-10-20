@@ -19,6 +19,7 @@ from app.llm.quantity_state import (
     QuantityIssue,
     QuantityLookupChoice,
     QuantityMode,
+    QuantityOperation,
     SourceNumber,
     TextQuantityDraft,
 )
@@ -28,6 +29,8 @@ def collection_contract(
     kind: QuantityMode,
     bindings: list[QuantityImageBinding],
     support_ids: list[str],
+    *,
+    repair_operation: QuantityDraft | None = None,
 ) -> type[BaseModel]:
     """Expose exactly one executable operation, with bounded source handles."""
     image = bool(bindings)
@@ -53,11 +56,12 @@ def collection_contract(
             "population": (str, Field(max_length=300)),
             "series": (str, Field(max_length=200)),
             "period": (str, Field(max_length=200)),
+            "binding_status": (Literal["supported", "unknown"], "supported"),
         }
         if kind == "lookup"
         else {}
     )
-    if kind == "read":
+    if kind == "read" and repair_operation is None:
         bindings_fields.update(
             output_unit=(str, Field(default="", max_length=100)),
             output_scale=(NumberScale, "1"),
@@ -66,7 +70,12 @@ def collection_contract(
     operand = create_model(
         "CollectionOperand",
         __base__=NumericReading,
-        name=(str, Field(pattern=r"^[a-z][a-z0-9_]{0,30}$")),
+        name=(
+            Literal[tuple(o.name for o in repair_operation.operands)]
+            if repair_operation and repair_operation.operands
+            else str,
+            Field(pattern=r"^[a-z][a-z0-9_]{0,30}$"),
+        ),
         label=(str, Field(min_length=1, max_length=200)),
         value=(SourceNumber | None, ...),
         unit=(str, Field(max_length=100)),
@@ -82,6 +91,16 @@ def collection_contract(
         **locator,
     )
     fields: dict[str, Any] = {"mode": (Literal[kind], kind), "complete": (bool, ...)}
+    if kind in {"read", "lookup"}:
+        fields["output_decimals"] = (
+            int | None,
+            Field(
+                default=None,
+                ge=0,
+                le=10,
+                description="Requested decimal places; null if unspecified",
+            ),
+        )
     if kind in {"read", "arithmetic", "select", "lookup"}:
         fields["operands"] = (
             GenericAlias(list, operand),
@@ -129,21 +148,54 @@ def collection_contract(
             groups=(GenericAlias(list, group), Field(min_length=1, max_length=10)),
             count_mode=(Literal["per_group", "total", "distinct"], ...),
         )
+    if repair_operation is not None:
+        if repair_operation.mode != kind:
+            raise ValueError("REPAIR_CHANGED_GOAL_OPERATION")
+        for key in operation_fields() - {"mode"}:
+            fields.pop(key, None)
     return create_model(
-        f'Collect{kind.title()}{"Image" if image else "Text"}', __base__=QuantityData, **fields
+        f'{"Repair" if repair_operation else "Collect"}{kind.title()}'
+        f'{"Image" if image else "Text"}',
+        __base__=QuantityData,
+        **fields,
     )
+
+
+def operation_fields() -> set[str]:
+    """Fields owned by the application during source-only repair."""
+    return set(QuantityOperation.model_fields) | {"expression", "decimals", "choices"}
 
 
 def bind_collection(
     output: BaseModel,
     bindings: list[QuantityImageBinding],
     units: dict[str, SupportUnit],
+    *,
+    repair_operation: QuantityDraft | None = None,
 ) -> QuantityDraft:
     """Map supplied handles to source pages; never infer a page from visible print."""
     data = output.model_dump(mode="json")
     if isinstance(output, QuantityDraft | ImageQuantityDraft | TextQuantityDraft):
         # Legacy serialized/application fixtures are distinct from native wire contracts.
         return QuantityDraft.model_validate(data)
+    if repair_operation is not None:
+        if (set(data) & (operation_fields() - {"mode"})) or (
+            data.get("mode") != repair_operation.mode
+        ):
+            raise ValueError("REPAIR_OPERATION_FIELDS_NOT_ALLOWED")
+        data = repair_operation.model_dump(mode="json", include=operation_fields()) | data
+        if repair_operation.operands:
+            supplied = data.get("operands", [])
+            by_name = {o["name"]: o for o in supplied}
+            expected = [o.name for o in repair_operation.operands]
+            if len(by_name) != len(supplied) or set(by_name) != set(expected):
+                raise ValueError("REPAIR_OPERAND_IDENTITIES_CHANGED")
+            data["operands"] = [by_name[name] for name in expected]
+            if repair_operation.mode == "read":
+                for old, new in zip(repair_operation.operands, data["operands"], strict=True):
+                    new.update(
+                        old.model_dump(include={"output_unit", "output_scale", "sign_convention"})
+                    )
     images = {b.image_id: b for b in bindings}
     entries = [*data.get("operands", []), *data.get("items", [])]
     if data.get("absence") is not None:
