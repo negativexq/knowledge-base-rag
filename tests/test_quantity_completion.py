@@ -386,3 +386,81 @@ def test_gap_binding_keeps_hard_page_limit():
     )
     assert bind_gap_source(active, parent, selection, gap) is selection
     assert not fresh_source_view(active, parent, selection)
+
+
+def test_gap_window_prioritizes_new_pages_over_reencoding_old_pages_and_keeps_checked_inputs():
+    from app.llm.quantity_state import QuantityGapSearch, QuantitySource
+
+    active, _ = active_session()
+    for page in [2, 3, 7]:
+        active.admit([block(f"Page {page} source", id=f"source-{page}", page_number=page)])
+    parent = missing_record()
+    first = parent.draft.operands[0].model_copy(update={"page": 1})
+    parent = parent.model_copy(
+        update={
+            "support_ids": ["E1.S1", "E2.S1", "E3.S1"],
+            "pages": [1, 2, 3],
+            "modality": "text",
+            "supported_operand_indexes": [0],
+            "draft": parent.draft.model_copy(
+                update={"operands": [first, parent.draft.operands[1]]}
+            ),
+        }
+    )
+    active.state.quantities[parent.id] = parent
+    selection = QuantitySource(
+        available=True,
+        support_ids=parent.support_ids,
+        pages=parent.pages,
+        modality="image",
+    )
+    gap = QuantityGapSearch(
+        parent_id=parent.id,
+        requirements=parent.assessments[-1].issues,
+        query="Missing input",
+        candidate_support_ids=["E1.S1", "E4.S1"],
+    )
+    chosen = bind_gap_source(active, parent, selection, gap)
+    assert chosen.pages == [1, 7]
+    assert chosen.support_ids == ["E4.S1", "E1.S1"]
+    assert active.state.quantities[parent.id] is parent
+    assert parent.draft.operands[0].value == "3"
+    assert fresh_source_view(active, parent, chosen)
+
+
+def test_new_window_cannot_drop_a_checked_prerequisite_outside_its_limit():
+    from app.llm.quantity_state import QuantityGapSearch, QuantitySource, SourceRange
+
+    active, _ = active_session()
+    active.admit([block("All prerequisites", id="wide", page_number=1, page_end=3)])
+    active.admit([block("New missing input", id="new", page_number=7)])
+    parent = missing_record()
+    first = parent.draft.operands[0].model_copy(
+        update={
+            "source_ranges": [SourceRange(support_id="E2.S1", start_line=1, end_line=1)],
+        }
+    )
+    parent = parent.model_copy(
+        update={
+            "support_ids": ["E2.S1"],
+            "pages": [1, 2, 3],
+            "modality": "image",
+            "supported_operand_indexes": [0],
+            "draft": parent.draft.model_copy(
+                update={"operands": [first, parent.draft.operands[1]]}
+            ),
+        }
+    )
+    selection = QuantitySource(
+        available=True,
+        support_ids=parent.support_ids,
+        pages=parent.pages,
+        modality="image",
+    )
+    gap = QuantityGapSearch(
+        parent_id=parent.id,
+        requirements=parent.assessments[-1].issues,
+        query="Missing input",
+        candidate_support_ids=["E3.S1"],
+    )
+    assert bind_gap_source(active, parent, selection, gap) is selection

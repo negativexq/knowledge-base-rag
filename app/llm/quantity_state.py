@@ -6,6 +6,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.llm.research_dispositions import ReviewedDisposition
 from app.llm.scope_diagnostics import ScopeDiagnostic
 
 QuantityMode = Literal["read", "arithmetic", "count", "select", "lookup", "list"]
@@ -238,6 +239,12 @@ class QuantityAssessment(QuantityData):
     notation_corrections: list[QuantityNotationCorrection] = Field(
         default_factory=list, max_length=20
     )
+    supported_operand_indexes: list[int] = Field(
+        default_factory=list,
+        max_length=20,
+        description="Independently supported operands, even when other inputs are missing",
+    )
+    source_disposition: ReviewedDisposition | None = None
 
 
 class QuantityCatalogPage(QuantityData):
@@ -328,6 +335,8 @@ class QuantityRecord(QuantityData):
     numeric_inputs: list[QuantityNumberReceipt] = Field(default_factory=list)
     arithmetic_conversion: QuantityArithmeticConversion | None = None
     absence_confirmed: bool = False
+    absence_scope: Literal["none", "inspected_material", "bounded_object"] = "none"
+    supported_operand_indexes: list[int] = Field(default_factory=list)
     inventory_context: dict[str, Any] = Field(default_factory=dict)
     inventory_errors: list[str] = Field(default_factory=list)
 

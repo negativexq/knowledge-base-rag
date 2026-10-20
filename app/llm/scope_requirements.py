@@ -37,6 +37,15 @@ an application proof's generated label cannot establish a source relationship.
 If a port/range, object location, category or inventory scope conflicts, do not approve
 the answer because a different part of the question was satisfied. Missing evidence
 is unknown, not mismatch or verified absence. This adds no answer-writing stage.
+For a source-backed explanation rather than a positive requested value, you may
+return source_disposition with independently checked object identity, question
+binding, witnesses and complete boundaries. Do not require an absent target to
+appear in the source first; verify the requested table/legend/section instead.
+An unknown positive requirement stays unknown. Only a separate, established
+source finding can explain it. A partial view or wrong object cannot close the
+question's source scope; report remaining candidates and incomplete scope.
+For disposition witnesses and boundaries, use supplied start_line/end_line locators
+when available; the application copies the exact source text without model rewriting.
 """
 
 

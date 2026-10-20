@@ -174,7 +174,6 @@ async def test_numeric_lookup_retains_need_constraints_and_unavailable_tool_resu
 @pytest.mark.asyncio
 async def test_failed_quantity_does_not_hide_independently_checked_fact_at_finalization():
     from app.llm.adaptive import finalize_research
-    from app.llm.agentic import AgentAnswer
     from app.llm.quantity_state import QuantityAssessment, QuantityRecord
     from app.llm.research_state import DataExtraction, EvidenceRef, ObservedValue
     from tests.test_adaptive import session
@@ -206,7 +205,7 @@ async def test_failed_quantity_does_not_hide_independently_checked_fact_at_final
     async def call(role, output_type, instructions, data, *, research, images=None):
         calls.append(role)
         assert role == "finalizer" and data["facts"]
-        return AgentAnswer.model_validate(answer("3"))
+        return output_type.model_validate(answer("3"))
 
     active.call = call
     result, _ = await finalize_research(active)

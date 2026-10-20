@@ -254,15 +254,116 @@ async def test_failed_review_resumes_research_without_releasing_an_unchecked_gue
                     },
                 )
             return reply(info, {"action": "stop"})
-        pytest.fail("Finalizer must not regenerate numbers from unchanged rejected inputs")
+        assert "abstain" in props
+        return reply(info, {"abstain": True})
 
     result = await run_adaptive_agent(
         FunctionModel(model), dependencies, state=state, fast_path=True, max_requests=10
     )
     assert json.loads(result.raw)["abstain"] and state.research_stop == "MODEL_STOP"
-    assert len(calls) == 7
+    assert len(calls) == 8
+    assert result.failure_code is None
+    assert state.terminal_assessments[-1].outcome == "insufficient_evidence"
     assert state.collection_outcomes[-1].status == "review_unresolved"
     assert any("QUANTITY_REVIEW_REQUIRES_EVIDENCE" in n for n in state.needs)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "expression,result,accepted",
+    [("3 + 7", "10", True), ("3 + 7", "11", False), ("3 + 99", "102", False)],
+)
+async def test_failed_collection_does_not_veto_a_separately_validated_calculation(
+    expression, result, accepted
+):
+    from app.llm.agentic import AgentAnswer
+    from tests.test_adaptive import answer, scope, session
+
+    source = "North 3\nSouth 7"
+    active = session(
+        deps(
+            source,
+            question="What is North plus South?",
+            derived_answers=True,
+            scope_validation_enabled=True,
+        )
+    )
+    old = QuantityRecord(
+        id="unresolved",
+        need_id="",
+        support_ids=["E1.S1"],
+        source_id="manual",
+        document_version="v1",
+        pages=[1],
+        modality="text",
+        draft=arithmetic(),
+        assessments=[
+            QuantityAssessment(inputs="supported", coverage="unknown", operation="supported")
+        ],
+    )
+    active.state.quantities[old.id] = old
+    calls = []
+
+    def model(messages, info):
+        calls.append(1)
+        return scope(info, quote=source)
+
+    active.model = FunctionModel(model)
+    data = answer(result)
+    data["answer_parts"][0]["calculation"] = {"expression": expression, "result": result}
+    candidate = AgentAnswer.model_validate(data)
+    if accepted:
+        checked, receipt = await active.verify(candidate)
+        assert not checked.abstain and receipt.accepts(
+            active.deps.question, checked.raw_answer(), active.deps.ledger.units
+        )
+        assert calls == [1]  # Only the existing semantic scope check.
+    else:
+        with pytest.raises(ValueError):
+            await active.verify(candidate, allow_repair=False)
+        assert calls == []  # Application arithmetic/source checks reject first.
+    assert active.state.quantities[old.id] == old
+
+
+@pytest.mark.asyncio
+async def test_new_calculation_still_requires_semantic_binding_after_failed_collection():
+    from app.llm.agentic import AgentAnswer
+    from tests.test_adaptive import answer, session
+
+    active = session(
+        deps(
+            "North 3\nSouth 7",
+            question="What is East plus West?",
+            derived_answers=True,
+            scope_validation_enabled=True,
+        )
+    )
+    active.state.quantities["old"] = QuantityRecord(
+        id="old",
+        need_id="",
+        support_ids=["E1.S1"],
+        source_id="manual",
+        document_version="v1",
+        pages=[1],
+        modality="text",
+        draft=arithmetic(),
+    )
+
+    def model(messages, info):
+        return reply(
+            info,
+            {
+                "checks": [
+                    dict(claim_index=0, verdict="mismatch", reason="ENTITY_MISMATCH", witnesses=[])
+                ]
+            },
+        )
+
+    active.model = FunctionModel(model)
+    data = answer("10")
+    data["answer_parts"][0]["calculation"] = {"expression": "3 + 7", "result": "10"}
+    with pytest.raises(ValueError, match="SCOPE_ENTITY_MISMATCH"):
+        await active.verify(AgentAnswer.model_validate(data), allow_repair=False)
 
 
 def test_scope_rejection_requires_claim_question_and_source_locations():
@@ -364,7 +465,9 @@ async def test_budget_stop_keeps_finished_input_review_without_rewriting_answer(
         record.provisional_values == ["10"] and len(record.assessments) == 1 and not record.values
     )
     result, _ = await finalize_research(active)
-    assert result.abstain and "finalizer" not in seen
+    assert result.abstain and seen[-1] == "finalizer"
+    assert next(iter(active.state.quantities.values())) == record
+    assert active.state.terminal_assessments[-1].diagnostic_errors == ["REQUEST_RESERVE"]
 
 
 @pytest.mark.asyncio

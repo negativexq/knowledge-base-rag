@@ -64,6 +64,7 @@ from app.llm.calculation import Calculation, evaluate_expression, verify_calcula
 from app.llm.operand_resolver import Retrieve
 from app.llm.premise import missing_question_dates, missing_question_years
 from app.llm.research_budget import ResearchBudget, ResearchPolicy
+from app.llm.research_dispositions import DispositionReceipt
 from app.llm.research_events import publish
 from app.llm.scope_validation import (
     MAX_SCOPE_PAYLOAD_CHARS,
@@ -300,6 +301,7 @@ class AgentCandidate:
     scope_validation_required: bool = False
     scope_receipt: ScopeReceipt | None = None
     authorization_context: RetrievalContext | None = None
+    source_disposition: DispositionReceipt | None = None
 
     def access_current(self) -> bool:
         return self.authorization_context is None or len(
