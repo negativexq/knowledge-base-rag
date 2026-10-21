@@ -127,6 +127,7 @@ class QuantityOperation(QuantityData):
     list_unique: bool = False
     output_decimals: int | None = Field(default=None, ge=0, le=10)
     output_order: Literal["source", "ascending", "descending"] = "source"
+    count_output: Literal["count", "pages", "count_and_pages"] = "count"
 
 
 class QuantityLookupChoice(QuantityData):
@@ -197,6 +198,8 @@ class QuantityDraft(QuantityOperation):
             raise ValueError("Output precision only applies to numeric read/lookup")
         if self.mode != "read" and self.output_order != "source":
             raise ValueError("Numeric output ordering only applies to read")
+        if self.mode != "count" and self.count_output != "count":
+            raise ValueError("Page inventory output only applies to count")
         return self
 
 
@@ -342,6 +345,9 @@ class QuantityRecord(QuantityData):
     supported_operand_indexes: list[int] = Field(default_factory=list)
     inventory_context: dict[str, Any] = Field(default_factory=dict)
     inventory_errors: list[str] = Field(default_factory=list)
+    inventory_scope: Literal["document", "bounded_object", "unknown"] = "unknown"
+    document_inventory_id: str | None = None
+
 
     @property
     def has_result(self) -> bool:
@@ -354,6 +360,35 @@ class QuantityRecord(QuantityData):
                 and self.execution_status == "completed"
             )
         )
+
+
+class InventoryItemRef(QuantityData):
+    """A checked source occurrence, never a model-authored running summary."""
+
+    occurrence_id: str
+    quantity_id: str
+    group_index: int = Field(ge=0)
+    item_index: int = Field(ge=0)
+
+
+class InventoryWindow(QuantityData):
+    quantity_id: str
+    pages: list[int]
+    input_status: Literal["pending", "supported", "rejected"]
+    coverage: Literal["complete", "incomplete", "unknown"]
+
+
+class InventoryProgress(QuantityData):
+    id: str
+    need_id: str
+    source_id: str
+    document_version: str
+    windows: list[InventoryWindow] = Field(default_factory=list)
+    items: list[InventoryItemRef] = Field(default_factory=list)
+    conflicts: list[str] = Field(default_factory=list)
+    # This record accumulates observations. It cannot certify global completeness.
+    complete: Literal[False] = False
+
 
 
 class TextQuantityOperand(QuantityOperand):
@@ -461,9 +496,50 @@ class ImageEntityInventoryDraft(ImageQuantityDraft):
         return self
 
 
+class InventoryPageDecision(QuantityData):
+    page: int = Field(ge=1, le=2000)
+    action: Literal["inspect", "exclude", "uncertain"]
+    reason: str = Field(min_length=1, max_length=300)
+
+
+class DocumentInventoryPlan(QuantityData):
+    counting_unit: str = Field(min_length=1, max_length=300)
+    output: Literal["count", "pages", "count_and_pages"]
+    pages: list[InventoryPageDecision] = Field(min_length=1, max_length=36)
+
+
+class InventoryWindowReview(QuantityData):
+    window_index: int = Field(ge=0, le=11)
+    inputs: Literal["supported", "mismatch", "unknown"]
+    local_coverage: Literal["complete", "incomplete", "unknown"]
+
+
+class DocumentInventoryReview(QuantityData):
+    windows: list[InventoryWindowReview] = Field(min_length=1, max_length=12)
+    document_coverage: Literal["complete", "incomplete", "unknown"]
+    operation: Literal["supported", "mismatch", "ambiguous", "unknown"]
+    issues: list[str] = Field(default_factory=list, max_length=12)
+
+
+class DocumentInventoryRun(QuantityData):
+    id: str
+    need_id: str
+    source_id: str
+    document_version: str
+    seed_support_id: str
+    page_count: int
+    plan: DocumentInventoryPlan
+    window_ids: list[str] = Field(default_factory=list)
+    reviewed: bool = False
+    review: DocumentInventoryReview | None = None
+    complete: bool = False
+    aggregate_id: str | None = None
+
+
 class QuantitySelection(QuantitySource):
     # The selector must explicitly choose context or state that none is needed.
     context_support_ids: list[str] = Field(max_length=3)
+    document_plan: DocumentInventoryPlan | None = None
 
 
 class QuantityPageQuality(QuantityData):

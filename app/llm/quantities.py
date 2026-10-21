@@ -24,6 +24,8 @@ from app.llm.calculation import (
     numeric_function,
     verify_calculation,
 )
+from app.llm.document_inventory import PLAN as DOCUMENT_INVENTORY_PLAN
+from app.llm.document_inventory import collect_document, overview
 from app.llm.inventory_evidence import (
     extend_inventory_window,
     inventory_issues,
@@ -31,6 +33,7 @@ from app.llm.inventory_evidence import (
     numbered_window_hints,
     prefer_document_inventory_window,
 )
+from app.llm.inventory_progress import checkpoint_inventory
 from app.llm.page_acquisition import attach_original_context
 from app.llm.quantity_contracts import bind_collection, collection_contract, review_contract
 from app.llm.quantity_numbers import apply_notation_corrections, normalize_inputs, read_order
@@ -236,7 +239,7 @@ def semantic_draft(draft: QuantityDraft) -> dict[str, Any]:
     fields = {
         "read": {"operands", "output_decimals", "output_order"},
         "arithmetic": {"operands", "expression", "decimals", "result_unit", "interpretation"},
-        "count": {"groups", "count_mode"},
+        "count": {"groups", "count_mode", "count_output"},
         "select": {"operands", "select_mode"},
         "lookup": {"operands", "choices", "select_mode", "output_decimals"},
         "list": {"items", "list_order", "list_unique", "absence"},
@@ -572,6 +575,12 @@ def candidate(record: QuantityRecord) -> AgentAnswer:
             if record.draft.count_mode == "per_group"
             else record.values[0]
         )
+        if record.draft.count_output != "count":
+            pages = sorted({i.page for g in record.draft.groups for i in g.items if i.page})
+            page_text = json.dumps([str(page) for page in pages])
+            text = page_text if record.draft.count_output == "pages" else (
+                "Total: " + text + "; pages " + page_text
+            )
         counts = (
             (
                 [AgentCount(items=distinct_items(record.draft))]
@@ -761,6 +770,7 @@ async def collect(
     if repairs_left is None:
         repairs_left = min(1, session.policy.max_validation_repairs)
     need_hint = need.spec.model_dump() if need is not None else None
+    document_overview = await overview(session, need_id) if parent is None else None
     requirement = repair_requirement(parent) if parent else None
     inventory_repair = requirement is not None and requirement.evidence_kind == "entity_inventory"
     coverage_repair = requirement is not None and requirement.evidence_kind == "coverage_completion"
@@ -880,7 +890,7 @@ async def collect(
         selection = await session.call(
             "quantity_selector",
             QuantitySelection,
-            SELECT,
+            SELECT + ("\n" + DOCUMENT_INVENTORY_PLAN if document_overview else ""),
             {
                 "question": session.state.task.question,
                 "need": need_hint,
@@ -892,6 +902,9 @@ async def collect(
                 ),
                 "completion_search": gap_search.model_dump() if gap_search else None,
                 "relationship_context_candidates": relationship_ids,
+                **({"document_overview": {
+                    key: value for key, value in document_overview.items() if key != "images"
+                }} if document_overview else {}),
                 **(
                     {
                         "repair_only": [i.model_dump() for i in parent.assessments[-1].issues],
@@ -910,9 +923,22 @@ async def collect(
                 ),
             },
             research=True,
+            images=document_overview["images"] if document_overview else None,
         )
     if not selection.available:
         return None
+    if (
+        document_overview and selection.inventory_scope == "document"
+        and isinstance(selection, QuantitySelection) and selection.document_plan is not None
+    ):
+        session.require([*selection.support_ids, *selection.context_support_ids])
+        if any(
+            (session.units()[sid].source_id, session.units()[sid].document_version)
+            != (document_overview["source_id"], document_overview["document_version"])
+            for sid in selection.support_ids
+        ):
+            raise ValueError("INVENTORY_SOURCE_VERSION_MISMATCH")
+        return await collect_document(session, need_id, selection.document_plan, document_overview)
     previous_selection = selection
     if session.deps.visual_answers:
         selection = prefer_document_inventory_window(
@@ -1142,7 +1168,7 @@ async def collect(
         "physical_pages": selection.pages,
         "source_images": [b.model_dump() for b in image_bindings],
         "inventory_replacement": inventory_replacement,
-        "native_inventory": inventory_model_view(native_inventory),
+        "native_inventory": inventory_model_view(native_inventory, image_authority=bool(images)),
         "context_sources": [
             {
                 "support_id": u.support_unit_id,
@@ -1285,6 +1311,7 @@ async def collect(
         image_bindings=image_bindings,
         inventory_replacement=inventory_replacement,
         inventory_context=native_inventory,
+        inventory_scope=selection.inventory_scope,
     )
     # Draft survives a checker timeout, but cannot be used as accepted evidence.
     session.state.quantities[record.id] = record
@@ -1296,6 +1323,7 @@ async def collect(
     )
     record = record.model_copy(update={"draft": draft})
     session.state.quantities[record.id] = record
+    checkpoint_inventory(session.state, record)
     counted = [
         (index, operand)
         for index, operand in enumerate(draft.operands)
@@ -1474,6 +1502,7 @@ async def collect(
         {u.support_unit_id: u for u in [*selected, *context_units]},
         image_bindings if images else [],
     )
+    checkpoint_inventory(session.state, record)
     if review.inputs == "supported" and draft.complete:
         try:
             early_provisional = execute(draft)[0]
@@ -1616,6 +1645,7 @@ async def collect(
         {u.support_unit_id: u for u in [*selected, *context_units]},
         image_bindings if images else [],
     )
+    checkpoint_inventory(session.state, record)
     if not check.accepted or not check.complete or check.reason != "supported":
         if (
             status in {"rejected", "indeterminate"}

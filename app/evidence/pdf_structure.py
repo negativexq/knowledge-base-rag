@@ -51,6 +51,28 @@ class PdfStructure:
         self.snapshot = snapshot
 
     @serialized_pdf
+    def inventory_overview(self) -> dict[str, Any] | None:
+        """Bounded full-page contact sheets, not an asserted semantic inventory."""
+        with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
+            if not 1 <= doc.page_count <= 36:
+                return None
+            images = []
+            for start in range(0, doc.page_count, 12):
+                with fitz.open() as sheet:
+                    page = sheet.new_page(width=900, height=1680)
+                    for i, number in enumerate(range(start, min(start + 12, doc.page_count))):
+                        left, top = (i % 3) * 300, (i // 3) * 420
+                        page.insert_text(
+                            (left + 8, top + 13), f"Physical page {number+1}", fontsize=10
+                        )
+                        if doc[number].get_contents():
+                            page.show_pdf_page(
+                                fitz.Rect(left + 3, top + 20, left + 297, top + 417), doc, number
+                            )
+                    images.append(page.get_pixmap().tobytes("png"))
+            return {"page_count": doc.page_count, "images": images}
+
+    @serialized_pdf
     def inventory_context(self, pages: list[int]) -> dict[str, Any]:
         """Literal native lines and typography, never a semantic inventory assertion."""
         if not pages or len(pages) > 3 or len(set(pages)) != len(pages):

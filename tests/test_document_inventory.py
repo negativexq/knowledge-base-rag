@@ -1,0 +1,266 @@
+"""A document plan drives bounded windows and one independent batch review."""
+
+import hashlib
+from dataclasses import replace
+
+import fitz
+import pytest
+
+from app.llm.adaptive import ResearchClosed
+from app.llm.document_inventory import InventoryReview, collect_document, overview, validate_plan
+from app.llm.quantities import collect
+from app.llm.quantity_scope import checked_scope_images, semantic_scope_projection
+from app.llm.quantity_state import DocumentInventoryPlan, QuantitySelection
+from app.llm.scope_validation import scope_payload
+from app.llm.visual_answer import PdfPages
+from tests.test_quantities import active_session
+
+
+def plan(count=6):
+    return DocumentInventoryPlan(
+        counting_unit="Individual diagrams",
+        output="count_and_pages",
+        pages=[
+            dict(page=p, action="inspect", reason="Visible diagram") for p in range(1, count + 1)
+        ],
+    )
+
+
+def prepared(tmp_path):
+    path = tmp_path / "manual.pdf"
+    with fitz.open() as doc:
+        for page in range(1, 7):
+            p = doc.new_page()
+            p.insert_text((30, 40), f"Diagram {page}\nRepeated source label")
+            p.draw_rect(fitz.Rect(30, 60, 170, 120))
+        doc.save(path)
+    active, need_id = active_session(
+        "Diagram 1", visual_answers=True, render_page=PdfPages(str(tmp_path))
+    )
+    version = hashlib.sha256(path.read_bytes()).hexdigest()
+    active.deps.ledger.blocks[0].payload.update(source_id="manual_pdf", document_version=version)
+    active.deps.ledger.source_ids = frozenset({"manual_pdf"})
+    need = active.state.evidence_needs[need_id]
+    active.state.evidence_needs[need_id] = need.model_copy(
+        update={
+            "spec": need.spec.model_copy(
+                update={"operation": "count", "inventory_scope": "document"}
+            )
+        }
+    )
+    return active, need_id
+
+
+def calls(active, *, complete=True, stop_check=False):
+    seen = []
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        seen.append(role)
+        if role == "quantity_selector":
+            assert images and data["document_overview"]["page_count"] == 6
+            return QuantitySelection(
+                available=True,
+                operation_kind="count",
+                inventory_scope="document",
+                support_ids=["E1.S1"],
+                context_support_ids=[],
+                pages=[1],
+                modality="image",
+                document_plan=plan(),
+            )
+        if role == "extractor":
+            assert len(images) == 3 and "previous_inputs" not in data
+            assert set(output_type.model_fields) == {"items", "complete"}
+            return output_type.model_validate(
+                dict(
+                    complete=True,
+                    items=[
+                        dict(
+                            label="Repeated source label",
+                            page=p,
+                            position=1,
+                            witness=f"Diagram {p}",
+                        )
+                        for p in data["window_pages"]
+                    ],
+                )
+            )
+        assert role == "quantity_checker" and output_type is InventoryReview
+        assert len(data["windows"]) == 2 and len(images) == 7
+        assert data["application_operation"]["count_output"] == "count_and_pages"
+        assert all("draft" not in w and "count_output" not in w for w in data["windows"])
+        if stop_check:
+            raise ResearchClosed("TOKEN_RESERVE")
+        return InventoryReview(
+            windows=[
+                dict(window_index=i, inputs="supported", local_coverage="complete")
+                for i in range(2)
+            ],
+            document_coverage="complete" if complete else "incomplete",
+            operation="supported",
+        )
+
+    active.call = call
+    return seen
+
+
+@pytest.mark.asyncio
+async def test_plan_executes_two_windows_with_no_reselection_and_one_batch_check(tmp_path):
+    active, need = prepared(tmp_path)
+    seen = calls(active)
+    answer = await collect(active, need)
+    assert answer.answer_parts[0].text == 'Total: 6; pages ["1", "2", "3", "4", "5", "6"]'
+    assert seen == [
+        "quantity_selector",
+        "extractor",
+        "extractor",
+        "quantity_checker",
+    ]
+    assert not active.deps.validation(answer).failure_codes
+    run = next(iter(active.state.document_inventories.values()))
+    assert run.complete and run.aggregate_id
+    record = active.state.quantities[run.aggregate_id]
+    assert len(record.draft.groups[0].items) == 6
+    assert len({b.image_id for b in record.image_bindings}) == 6
+    images, metadata = await checked_scope_images(active, [record.id])
+    assert len(images) == 7 and metadata[-1]["overview_pages"] == list(range(1, 7))
+    payload, ids = semantic_scope_projection(
+        scope_payload(active.deps.question, answer.raw_answer(), active.deps.ledger.units), [record]
+    )
+    assert ids == [record.id]
+    assert payload["verified_operations"][0]["count_output"] == "count_and_pages"
+
+
+@pytest.mark.asyncio
+async def test_incomplete_document_review_preserves_all_supported_items_without_total(tmp_path):
+    active, need = prepared(tmp_path)
+    calls(active, complete=False)
+    assert await collect(active, need) is None
+    run = next(iter(active.state.document_inventories.values()))
+    assert run.reviewed and not run.complete and not run.aggregate_id
+    assert len(next(iter(active.state.inventories.values())).items) == 6
+    assert all(not r.has_result for r in active.state.quantities.values())
+
+
+@pytest.mark.asyncio
+async def test_prepared_windows_resume_after_checker_stop_without_retranscription(tmp_path):
+    active, need = prepared(tmp_path)
+    seen = calls(active, stop_check=True)
+    view = await overview(active, need)
+    with pytest.raises(ResearchClosed, match="TOKEN_RESERVE"):
+        await collect_document(active, need, plan(), view)
+    assert seen == ["extractor", "extractor", "quantity_checker"]
+    state = type(active.state).model_validate_json(active.state.model_dump_json())
+    active.state = state
+    seen = calls(active)
+    answer = await collect_document(active, need, plan(), view)
+    assert answer and seen == ["quantity_checker"]
+
+
+def test_page_plan_cannot_hide_unknown_pages_or_repeat_one_page():
+    assert validate_plan(plan(), 6) == list(range(1, 7))
+    with pytest.raises(ValueError, match="PAGE_COVERAGE_INVALID"):
+        validate_plan(plan(5), 6)
+    duplicate = plan().model_copy(update={"pages": [plan().pages[0]] * 6})
+    with pytest.raises(ValueError, match="PAGE_COVERAGE_INVALID"):
+        validate_plan(duplicate, 6)
+    uncertain = plan().model_copy(
+        update={"pages": [p.model_copy(update={"action": "uncertain"}) for p in plan().pages]}
+    )
+    assert validate_plan(uncertain, 6) == list(range(1, 7))
+
+
+@pytest.mark.asyncio
+async def test_version_change_is_rejected_before_collection(tmp_path):
+    active, need = prepared(tmp_path)
+    view = await overview(active, need)
+    view["document_version"] = "stale"
+    seen = calls(active)
+    with pytest.raises(ValueError, match="VERSION_MISMATCH"):
+        await collect_document(active, need, plan(), view)
+    assert not seen
+
+
+@pytest.mark.asyncio
+async def test_a_global_complete_flag_cannot_override_an_incomplete_local_window(tmp_path):
+    active, need = prepared(tmp_path)
+    calls(active)
+    original = active.call
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        result = await original(role, output_type, instructions, data, **kwargs)
+        if role == "quantity_checker":
+            result = result.model_copy(
+                update={
+                    "windows": [
+                        w.model_copy(update={"local_coverage": "unknown"})
+                        if w.window_index == 0
+                        else w
+                        for w in result.windows
+                    ]
+                }
+            )
+        return result
+
+    active.call = call
+    assert await collect(active, need) is None
+    run = next(iter(active.state.document_inventories.values()))
+    assert run.review.document_coverage == "complete" and not run.complete
+    assert run.aggregate_id is None
+
+
+@pytest.mark.asyncio
+async def test_source_visibility_is_rechecked_before_resume(tmp_path):
+    active, need = prepared(tmp_path)
+    seen = calls(active)
+    await collect(active, need)
+    run = next(iter(active.state.document_inventories.values()))
+    for block in active.deps.ledger.blocks:
+        block.payload["model_visible"] = False
+    with pytest.raises(ValueError):
+        await checked_scope_images(active, [run.aggregate_id])
+    assert seen.count("extractor") == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("compact", [False, True])
+async def test_full_verification_accepts_original_detail_and_overview_images(tmp_path, compact):
+    active, need = prepared(tmp_path)
+    seen = calls(active)
+    answer = await collect(active, need)
+    active.deps = replace(active.deps, scope_validation_enabled=True)
+    active.compact_context = compact
+    original = active.call
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        if role != "scope_validator":
+            return await original(role, output_type, instructions, data, **kwargs)
+        seen.append(role)
+        assert kwargs["research"] is False
+        assert len(kwargs["images"]) == 7
+        assert data["source_images"][-1]["overview_pages"] == list(range(1, 7))
+        assert data["claims"][0]["claim"]["text"] == answer.answer_parts[0].text
+        assert "counts" not in data["claims"][0]["claim"]
+        assert "calculation" not in data["claims"][0]["claim"]
+        source_id = answer.answer_parts[0].support_ids[1]
+        return output_type.model_validate(
+            dict(
+                checks=[
+                    dict(
+                        claim_index=0,
+                        verdict="supported",
+                        reason="NONE",
+                        witnesses=[
+                            dict(support_id=source_id, field="text", start_line=2, end_line=2)
+                            if compact
+                            else dict(support_id=source_id, quote="Repeated source label")
+                        ],
+                    )
+                ]
+            )
+        )
+
+    active.call = call
+    verified, receipt = await active.verify(answer)
+    assert verified == answer and receipt and not receipt.failure_codes
+    assert seen[-1] == "scope_validator"

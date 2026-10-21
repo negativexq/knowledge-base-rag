@@ -349,6 +349,7 @@ def merge_repair(
         or replacement.output_decimals != original.draft.output_decimals
         or replacement.output_order != original.draft.output_order
         or replacement.count_mode != original.draft.count_mode
+        or replacement.count_output != original.draft.count_output
         or replacement.select_mode != original.draft.select_mode
         or replacement.list_order != original.draft.list_order
         or replacement.list_unique != original.draft.list_unique

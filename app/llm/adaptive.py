@@ -43,6 +43,7 @@ from app.llm.answer_coverage import CoverageScopeJudgment, LocatedOmission, loca
 from app.llm.answer_repair import AnswerCompletion, AnswerPatch, AnswerRepair
 from app.llm.calculation import Calculation, evaluate_decimal_expression, verify_calculation
 from app.llm.calculation_sources import calculation_inspection_targets
+from app.llm.inventory_progress import inventory_view
 from app.llm.quantities import candidate as quantity_candidate
 from app.llm.quantities import collect as collect_quantities
 from app.llm.quantities import semantic_draft
@@ -703,6 +704,7 @@ class AdaptiveSession:
                 for r in partial_records
                 if all(s in visible for s in r.support_ids)
             ],
+            "partial_inventories": inventory_view(self.state, available),
             "source_dispositions": [
                 {
                     **r.model_dump(exclude={"evidence_snapshot_ids"}),
@@ -2048,7 +2050,10 @@ class AdaptiveSession:
                 judge_payload["source_images"] = source_images
             span.set_attribute("evidence.scope_image_count", len(scope_images))
             span.set_attribute(
-                "evidence.scope_image_pages", [p["physical_page"] for p in source_images]
+                "evidence.scope_image_pages", [
+                    page for image in source_images
+                    for page in (image.get("overview_pages") or [image["physical_page"]])
+                ]
             )
             references: LineScopeJudgment | None = None
             omissions: list[LocatedOmission] = []

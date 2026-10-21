@@ -1,16 +1,22 @@
 # Open adaptive workflow issues
 
+The [latency audit](adaptive-latency-audit.md) analyzes 353 saved attempts across 120 questions, including all 76 recent attempts. The general optimization target is repeated selection, extraction and review across unchanged dependencies. Selection churn can reset progress despite revisiting known evidence; reranking adds a median of about six seconds per retrieval. Proposed work starts with meaningful cumulative progress and missing-part completion, preserving source coverage and independent release checks. This audit adds no benchmark results or ledger promotions.
+
 Updated 21 October 2026. This register separates confirmed code defects, semantic
 acceptance failures, partial fixes and source/metric adjudication. The detailed
 [code-and-trace audit](adaptive-issue-audit.md) contains source anchors and offline
 replays. Prior run reports retain unsuccessful attempts.
 
-There are **20 unresolved question/workflow outcomes** in the
+There are **19 unresolved question/workflow outcomes** in the
 [120-row ledger](adaptive-solved-questions.md). Two additional questions have qualified interpreted calculations. These are not independently proven
 code bugs. One row can exercise multiple families; counts below are not additive.
 The shared matcher scores and strict source/workflow audit remain separate.
 
 ## Current priorities
+
+The [document-inventory follow-up](../artifacts/mmlongbench-v2/adaptive-inventory-progress-20261021/REPORT.md) recovers 662: nine figures, six distinct pages, six calls / 104.89 seconds. Typed accumulation, one-time full-source planning, narrow extraction, combined coverage checking and application count/page publication preserve the result. The 382 control remains correct but takes eight calls / 110.06 seconds. Latency remains open; 636/663 are not newly validated. Current historical totals: **81 supported / 2 qualified / 18 correct refusals / 19 unresolved**, or **101/120 (84.2%)**. Failed intermediate attempts remain in the report.
+
+The [inventory loss audit](adaptive-inventory-loss-audit.md) traces 636/662/663 through saved state and current-code offline replay. In 662, five supported readings remain in the parent while the active repair draft contains only two new items; its checker is blocked by token reservation. Pages 12 and 20 are not opened. In 663, four items survive but guide-wide coverage and the counting unit remain unresolved. The old 636 witness-size guard is already corrected; its remaining source scope has not been remeasured. No runtime edits or new benchmark results follow from this read-only audit.
 
 The [material-coverage correction](../artifacts/mmlongbench-v2/adaptive-material-coverage-20261021/REPORT.md) recovers 831 in five calls / 72.47 seconds, preserving supported parts and appending three missing activity groups. The final Rick Scott control remains a three-call short answer. Full-inventory output and planner classification were removed after an overlarge failed attempt; the final design uses one sparse omission channel and a bounded follow-up. Prepared completion drafts survive timeouts without full-answer regeneration. Current historical totals: **80 supported / 2 qualified / 18 correct refusals / 20 unresolved**, or **100/120 (83.3%)** including qualified calculations. The [numeric presentation handoff](../artifacts/mmlongbench-v2/adaptive-numeric-presentation-20261021/REPORT.md) also recovers 642 in six calls / 94.04 seconds without repeated extraction; historical coverage is unchanged.
 
@@ -69,7 +75,7 @@ lacks a verified source explanation. Counts remain unchanged.
 | UNITS-001: arithmetic output transformation | Implemented; 380 recovered live | Typed source/base/output receipts produce **8,367,277,000 rupees** from source amounts in lacs. Ratios and percentages remain correct in controls. | Keep source-scale and metric review; no exchange-rate inference or silent formula rewriting. [Report](../artifacts/mmlongbench-v2/adaptive-unit-arithmetic-20261020/REPORT.md). |
 | CALC-001: named function becomes missing operand | Implemented; abs verified live, min/max/mean offline | Bounded allowlisted functions now execute as operators, with every argument source-checked. Row 366 releases 35.821% under an explicit relative-shortfall convention. | Metric adjudication remains INTERPRET-001; support for an operator does not establish the intended formula. |
 | FINAL-001: completed calculation cannot publish proof | Implemented; targeted publication recovered | A protected allocation inside the existing evidence total preserves checked proofs; page reads no longer pay for fragments plus a duplicate view. 1086 now publishes 13,929 million; 380 publishes 8,367,277,000 rupees in the preceding frozen pair. | Broaden coverage for oversized/multiple results; initial unit-context repair can still cost another image pass. Source/scope review remains mandatory. [Report](../artifacts/mmlongbench-v2/adaptive-result-reservation-20261020/REPORT.md). |
-| COVER-001: incomplete source-object coverage | Partially implemented; 1017 recovered, visual closure remains open | Page/search cursors and authorized source buffers survive checkpoints. 1017 now releases 11,407 million from the balance sheet and lease note. 730/728 lack document-wide absence closure; 662/663 lack guide-wide visual inventory; 641 population join remains unresolved. | Multi-window inventory accumulation/closure and source-scoped negative receipts; acquisition exhaustion alone is not semantic completeness. |
+| COVER-001: incomplete source-object coverage | Partially implemented; 1017 recovered, visual closure remains open | Page/search cursors and authorized source buffers survive checkpoints. 1017 now releases 11,407 million from the balance sheet and lease note. 730/728 lack document-wide absence closure; 663 lacks guide-wide visual inventory; 662 is recovered in the targeted follow-up; 641 population join remains unresolved. | Multi-window inventory accumulation/closure and source-scoped negative receipts; acquisition exhaustion alone is not semantic completeness. |
 | COMPOSE-001: denominator/population/plan composition | P1; observed; some reference assumptions disputed | 206/225/219 require approximate survey headcounts; 216 cannot borrow Dem/Lean Dem base for Democrats; 1015 needs a stated EBITDA definition. | Keep population, denominator, period, metric definition and approximation status with observations. |
 | CALL-001: mixed answer/calculate decisions and repeated finalization | Observed; open efficiency defect | 1017 has the correct six-input formula by request 5, but two reader outputs mix answer and calculation actions. Search repeats; a broad source locator also causes a finalizer retry. Final answer is correct at ten requests. | Operation-specific decision contracts and prepared-calculation handoff; preserve source/unit/scope validation rather than accepting malformed mixed actions. |
 | PRESENT-001: prepared numeric-list presentation repair | Fixed for measured case | Typed read preserves source labels/digits; application numeric order and display rounding are included in the generated proof. The original text-list route sorted labels; the first correction exposed local validation rejecting rounded values absent from its proof. | Final 642 publishes [64.4, 62.5, 62.2] in six calls / 94.04 seconds, no repair or recollection. Four distinct controls remain correct across the sequential checks. See [measurement and limits](../artifacts/mmlongbench-v2/adaptive-numeric-presentation-20261021/REPORT.md). |
@@ -239,7 +245,7 @@ approves cautious abstention. Current totals: **79 supported / 2 qualified / 4 v
 refusals / 35 unresolved**, across 120 distinct questions.
 
 
-## Primary-blocker distribution of the 20 unresolved questions
+## Primary-blocker distribution of the 19 unresolved questions
 
 This is a mutually exclusive grouping by each row's latest recorded principal blocker,
 not a count of implementation bugs or a new current-code measurement. Several rows have
@@ -249,10 +255,10 @@ adjudication; they are not automatically verified refusals.
 | Primary blocker | Questions | Rows |
 | --- | --- | --- |
 | Correctable premise or underspecified-request handling | 2 | 384, 830 |
-| Incomplete inventory or source-object coverage | 3 | 636, 662, 663 |
+| Incomplete inventory or source-object coverage | 2 | 636, 663 |
 | Visual target-location acquisition | 1 | 393 |
 | Entity/period/unit binding and cross-source relationships | 5 | 510, 641, 1015, 1070, 1074 |
 | Population, denominator and approximate headcount composition | 4 | 206, 216, 219, 225 |
 | Question, counting-unit or formula adjudication | 4 | 214, 658, 732, 1075 |
 | Unestablished source reading | 1 | 661 |
-| **Total** | **20** | Each unresolved ledger row appears once. |
+| **Total** | **19** | Each unresolved ledger row appears once. |

@@ -14,6 +14,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.llm.answer_repair import AnswerRepair
 from app.llm.quantity_state import (
+    DocumentInventoryRun,
+    InventoryProgress,
     QuantityCatalogPage,
     QuantityGapSearch,
     QuantityRecord,
@@ -243,6 +245,11 @@ class EvidenceNeedSpec(ResearchRecord):
     constraints: list[NeedConstraint] = Field(min_length=1, max_length=12)
     acquisition: Literal["unknown", "text", "image"] = "unknown"
     operation: Literal["lookup", "compare", "calculate", "sort", "count"] = "lookup"
+    inventory_scope: Literal["document", "bounded_object", "unknown"] = Field(
+        default="unknown",
+        description="For count: document when all relevant objects across the source are needed; "
+        "bounded_object for a specific table/figure/group/page; unknown otherwise",
+    )
     presentation: NumericPresentation | None = None
 
 
@@ -351,6 +358,8 @@ class ResearchState(BaseModel):
     page_read_checkpoints: dict[str, PageReadCheckpoint] = Field(default_factory=dict)
     page_contexts: list[PageContextReceipt] = Field(default_factory=list)
     quantity_repairs: int = 0
+    inventories: dict[str, InventoryProgress] = Field(default_factory=dict)
+    document_inventories: dict[str, DocumentInventoryRun] = Field(default_factory=dict)
     quantity_scope_diagnostics: list[ScopeDiagnostic] = Field(default_factory=list)
     answer_repairs: list[AnswerRepair] = Field(default_factory=list)
     needs: list[str] = Field(default_factory=list)
