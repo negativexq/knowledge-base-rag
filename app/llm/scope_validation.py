@@ -239,7 +239,11 @@ def line_scope_payload(payload: dict[str, Any]) -> dict[str, Any]:
     return projected
 
 
-def resolve_line_judgment(payload: dict[str, Any], judgment: LineScopeJudgment) -> ScopeJudgment:
+def resolve_line_judgment(
+    payload: dict[str, Any], judgment: LineScopeJudgment, *,
+    independently_verified_claims: set[int] | None = None,
+    diagnostics: dict[str, int] | None = None,
+) -> ScopeJudgment:
     """Resolve claim-local references exactly, never fuzzy-match generated text."""
     claims = {c["claim_index"]: c for c in payload["claims"]}
     checks = []
@@ -249,12 +253,19 @@ def resolve_line_judgment(payload: dict[str, Any], judgment: LineScopeJudgment) 
             raise ValueError("SCOPE_CHECK_INVALID")
         units = {u["support_unit_id"]: u for u in claim["cited_evidence"]}
         witnesses = []
+        ignored = 0
         for ref in check.witnesses:
             unit = units.get(ref.support_id)
             if unit is None:
                 raise ValueError("SCOPE_CHECK_INVALID")
             lines = scope_lines(unit[ref.field] or "")
             if not (1 <= ref.start_line <= ref.end_line <= len(lines)):
+                if (
+                    check.claim_index in (independently_verified_claims or set())
+                    and check.verdict == "supported" and check.reason == "NONE"
+                ):
+                    ignored += 1
+                    continue
                 raise ValueError("SCOPE_CHECK_INVALID")
             quote = "".join(lines[ref.start_line - 1 : ref.end_line])
             if not quote.strip():
@@ -272,5 +283,10 @@ def resolve_line_judgment(payload: dict[str, Any], judgment: LineScopeJudgment) 
                 witnesses.append(Witness(support_id=ref.support_id, quote=chunk))
             if len(witnesses) > 20:
                 raise ValueError("SCOPE_CHECK_INVALID")
+        if ignored and not witnesses:
+            raise ValueError("SCOPE_CHECK_INVALID")
+        if ignored and diagnostics is not None:
+            name = "ignored_verified_claim_ocr_locators"
+            diagnostics[name] = diagnostics.get(name, 0) + ignored
         checks.append(ScopeCheck(**check.model_dump(exclude={"witnesses"}), witnesses=witnesses))
     return ScopeJudgment(checks=checks)

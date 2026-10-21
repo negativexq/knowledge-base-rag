@@ -454,6 +454,57 @@ def test_image_repair_cannot_launder_unknown_text_reference():
         resolve_draft(draft, {"E1.S1": "6"}, image_bindings=[image_binding()])
 
 
+@pytest.mark.asyncio
+async def test_localized_wrong_image_operand_reuses_source_and_preserves_other_input(tmp_path):
+    active, need, _ = pdf_session(tmp_path, page_end=1, page_texts=("A 3\nB 7",))
+    calls = []
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        calls.append(role)
+        if role == "quantity_selector":
+            assert calls.count(role) == 1
+            return QuantitySource(
+                available=True, support_ids=["E1.S1"], pages=[1], modality="image"
+            )
+        repairing = calls.count("quantity_collector") > 1
+        if role == "quantity_collector":
+            repairing = calls.count(role) > 1
+            raw = dict(
+                mode="arithmetic", complete=True,
+                operands=[wire_operand("a", "3" if repairing else "9"),
+                          wire_operand("b", "999" if repairing else "7")],
+            )
+            if repairing:
+                assert data["operation_owned_by_application"]
+                assert "expression" not in output_type.model_fields
+            else:
+                raw.update(expression="a + b", decimals=0, result_unit="items",
+                           interpretation="Total items.")
+            return output_type.model_validate(raw)
+        if not repairing:
+            return QuantityAssessment(
+                inputs="mismatch", coverage="complete", operation="supported",
+                supported_operand_indexes=[1],
+                issues=[QuantityIssue(
+                    target="operand", index=0, kind="wrong_binding", page=1,
+                    witness="A 3", description="The A row is 3, not 9.",
+                )],
+            )
+        assert data["draft"]["operands"][1]["value"] == "7"
+        return QuantityAssessment(inputs="supported", coverage="complete", operation="supported")
+
+    active.call = call
+    answer = await collect(active, need)
+    assert answer.answer_parts[0].text == "10 items (Total items.)"
+    assert calls == ["quantity_selector", "quantity_collector", "quantity_checker",
+                     "quantity_collector", "quantity_checker"]
+    parent, child = list(active.state.quantities.values())
+    assert child.parent_id == parent.id and child.execution_status == "completed"
+    assert parent.draft.operands[0].value == "9"
+    assert child.draft.operands[0].value == "3"
+    assert child.draft.operands[1].value == "7"
+
+
 def test_retained_text_objection_is_still_grounded_during_image_review():
     issue = parent_record().assessments[0].issues[0]
     review = QuantityAssessment(

@@ -1,5 +1,7 @@
 # Adaptive workflow latency audit
 
+The [finalization-contract follow-up](../artifacts/mmlongbench-v2/adaptive-finalization-contracts-20261021/REPORT.md) reruns the five failed baseline cases plus six controls: **11/11 expected outcomes**, including all five recovered answers and two retained safe refusals. Grounded semantic restrictions replace capitalized-token matching; exact application arithmetic stays visible to final coverage; localized image-operand repair reuses its source selection and preserves valid inputs. On the same eleven rows, requests fall **83 → 65**, median time **60.17 → 54.10 s**, p90 **92.06 → 87.73 s**; p95 stays essentially unchanged (**115.14 → 114.99 s**). One attempt per row is descriptive, not a universal performance guarantee. 380 reads correctly on the first live pass; its new repair branch is covered offline. Historical coverage remains **101/120**, with no new distinct questions. **2,471 tests pass**. Multi-page acquisition and safe dependency-based review reuse remain open.
+
 Date: 21 October 2026. Read-only analysis of saved results and OpenTelemetry spans; no new API runs and no runtime edits for this audit.
 
 ## Finding
@@ -113,6 +115,16 @@ Compare per-question total time, request count, reread occurrences, repeated sou
 
 Additional spans should expose first-time source exposure, reused accepted extraction, unchanged review reused, obligation opened/resolved, and prepare-to-release time. Existing IDs/counters are sufficient; do not include raw document text in spans. No API price estimate is possible while model pricing is unconfigured.
 
+## Implementation follow-up
+
+The [cumulative search-progress follow-up](../artifacts/mmlongbench-v2/adaptive-search-progress-20261021/REPORT.md) implements first-exposure tracking for generic search. All six sequential controls retain their established source outcomes (five answers and one safe negative); 2,438 offline tests pass. Model requests are 36 versus 38 in historical saved baselines, but the difference comes from a different count-selection path, not demonstrated savings from progress tracking. The invariant is fixed; a causal latency gain is not established. The same batch confirms that the current fast path still calls the need planner, and 642 spends 31.12 seconds on an unsuccessful direct-answer attempt before necessary tools. Direct dispatch from an adequate typed need plan is a separate next optimization.
+
+## Numeric-dispatch and inventory authority follow-up
+
+The [direct-dispatch report](../artifacts/mmlongbench-v2/adaptive-direct-numeric-dispatch-20261021/REPORT.md) implements numeric presentation dispatch from existing typed needs without a speculative answer. The final 642 check retains the source-correct result in five calls / 52.56 seconds, versus six / 80.46 seconds in the preceding frozen check. The initial narrow predicate missed a valid lookup-classified plan; the final predicate uses explicit numeric precision/order across lookup, compare and sort. Scalar, prose and composite fast-answer paths remain available.
+
+The same control group exposes two inventory authority problems in 662: a planning narrative conflicts with the application's page projection, then a redundant OCR locator defeats valid original-image requirement evidence. Both failed live attempts are retained. Planner narratives are removed from source review/generated proof, and invalid optional OCR locators can no longer erase independently valid original-image support for the same requirement. Unknown sources, image/claim mismatches, unsupported verdicts and strict primary-claim checks remain blocking. An exact saved-judgment replay passes with no model calls; the complete final run is recorded in the report. The coverage continuation is now implemented: at most one extra window with up to three model-requested missing physical pages, preserving original checked windows and enforcing remaining request capacity. The final primary-locator correction is limited to exact reexecuted image-backed application candidates with supported semantic review and at least one valid remaining source witness. Final live 662 again publishes nine figures and six pages in six calls / 81.18 seconds; prior locator/coverage failures remain in the report. 2,467 tests pass. No aggregate tail-latency claim follows from these small development checks.
+
 ## Audited recent attempt manifest
 
 All 76 recent attempts below are included, including intermediate failures. “Published” means validation passed and the result is not an abstention; it is not a fresh correctness label. Paths identify ignored local raw artifacts. Source reports retain interpretation of correctness and failures.
@@ -195,3 +207,9 @@ All 76 recent attempts below are included, including intermediate failures. “P
 | 1079 | 55.43 | 8 | Published | `adaptive-checked-visual-scope-20261021/runs/row1079` |
 | 1079 | 47.34 | 6 | Published | `adaptive-numeric-presentation-20261021/row1079` |
 | 1084 | 81.97 | 9 | Abstention | `adaptive-source-dispositions-20261021/negative-eleven/runs/row1084` |
+
+## Frozen 20-question follow-up measurement
+
+The [fixed mixed baseline](../artifacts/mmlongbench-v2/adaptive-fixed-latency-baseline-20261021/REPORT.md) ran 20 existing questions sequentially with frozen application/harness hashes: **15/20 expected outcomes** (13 answers, two audited negatives), five answerable abstentions; median **47.55 s**, p90 **79.63 s**, p95 **92.06 s** using nearest-rank tails. This is a current-code baseline, not a controlled speedup or a replacement for historical 120-question coverage.
+
+At that baseline, the priorities were two finalization/authority handoff families (lexical entity guards on 507/223 and computed-total visibility on 729/1017), plus typed source-correction recovery on 380. The subsequent finalization-contract follow-up at the top of this document recovers these five cases. Scope took 33.0% of baseline model time. Preserve useful checks: 380 catches a real wrong subtotal, 831 completes real missing activities, and 662 reads distinct windows. Fix these contracts before claiming success from caching repeated checks. No runtime changes were made during the batch.

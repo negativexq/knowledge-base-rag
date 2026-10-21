@@ -907,6 +907,95 @@ async def test_later_search_and_empty_result_do_not_hide_previous_search_input()
 
 
 @pytest.mark.asyncio
+async def test_search_cycling_previously_exposed_evidence_is_not_progress_after_restore():
+    sources = {
+        key: block(f"Source {key} contains a useful witness.", id=key, contributing_chunk_ids=[key])
+        for key in ("a", "b")
+    }
+
+    async def retrieve(query):
+        return [sources[query]]
+
+    active = session(deps(retrieve=retrieve))
+    for query in ("a", "b"):
+        assert await active.execute(ResearchDecision(action="search", query=query))
+        active.context()
+    restored = ResearchState.model_validate_json(active.state.model_dump_json())
+    active = session(active.deps, restored)
+    for query in ("a", "b", "a"):
+        assert not await active.execute(ResearchDecision(action="search", query=query))
+        active.context()
+    assert len(active.state.search_evidence) == 2
+    assert not active.state.facts and active.usage.requests == 0
+
+
+@pytest.mark.asyncio
+async def test_search_exposing_hidden_admitted_evidence_still_counts_as_progress():
+    found = block("Hidden denominator: 24.", id="hidden", contributing_chunk_ids=["hidden"])
+
+    async def retrieve(_):
+        return [found]
+
+    active = session(deps(retrieve=retrieve))
+    active.deps.ledger.add(
+        [block(f"Background {i}.", id=f"background-{i}") for i in range(8)] + [found]
+    )
+    before = set(active.units())
+    hidden = next(key for key, unit in active.units().items() if unit.text == found.payload["text"])
+    # Select enough other evidence to keep this admitted unit out of the actual
+    # bounded context. A catalog preview does not count as a full exposure.
+    active.selected = tuple(key for key in active.units() if key != hidden)
+    active.context()
+    assert hidden not in active.state.evidence_exposures
+    assert await active.execute(ResearchDecision(action="search", query="denominator"))
+    assert set(active.units()) == before
+    assert active.state.search_evidence[-1].newly_exposed_support_ids == [hidden]
+    active.context()
+    assert not await active.execute(ResearchDecision(action="search", query="population size"))
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("publish_answer", [True, False])
+async def test_search_churn_stops_acquisition_without_losing_finalization(publish_answer):
+    sources = [
+        block("The service uses TLS.", id="tls", contributing_chunk_ids=["tls"]),
+        block("The service supports HTTPS.", id="https", contributing_chunk_ids=["https"]),
+    ]
+    queries = []
+
+    async def retrieve(query):
+        queries.append(query)
+        return [sources[(len(queries) - 1) % 2]]
+
+    dependencies = deps(retrieve=retrieve, scope_validation_enabled=publish_answer)
+    dependencies.ledger.add(sources)
+    state = ResearchState(task=TaskSpec(question=dependencies.question))
+
+    def model(messages, info):
+        data = payload(messages)
+        props = info.output_tools[0].parameters_json_schema["properties"]
+        if "action" in props:
+            return reply(info, {"action": "search", "query": f"missing context {len(queries)}"})
+        if "checks" in props:
+            return scope(info)
+        assert data["evidence"] and state.evidence_exposures
+        return reply(info, answer() if publish_answer else {"abstain": True})
+
+    result = await run_adaptive_agent(
+        FunctionModel(model), dependencies, state=state, max_requests=10
+    )
+    # The first search exposes the second, previously deduplicated TLS witness;
+    # it counts once. Two subsequent revisits do not reset acquisition progress.
+    assert len(queries) == 3
+    assert [event.status for event in state.events] == ["ok", "not_found", "not_found"]
+    assert state.research_stop == "NO_RESEARCH_PROGRESS"
+    assert state.finalization == ("answered" if publish_answer else "abstained")
+    assert result.failure_code is None
+    assert len(dependencies.ledger.units) == 3
+    assert ("TLS" in result.raw) == publish_answer
+
+
+@pytest.mark.asyncio
 async def test_search_selection_only_uses_ledger_admitted_parents():
     async def retrieve(_):
         return [

@@ -82,6 +82,8 @@ def validate_requirements(
     judgment: RequiredScopeJudgment,
     generated_ids: set[str],
     source_images: list[dict[str, Any]] | None = None,
+    *,
+    diagnostics: dict[str, int] | None = None,
 ) -> list[str]:
     images = {image["image_id"]: image for image in source_images or []}
     bindings = {b.requirement_index: b for b in judgment.requirement_bindings}
@@ -142,16 +144,25 @@ def validate_requirements(
                 if witness.support_id not in generated_ids:
                     evidence.extend(w.quote for w in resolved.checks[0].witnesses)
             except ValueError:
-                errors.append("SCOPE_REQUIREMENT_WITNESS_INVALID")
+                # An original-image witness is an independent source authority.
+                # A malformed optional OCR line on the same claim must not erase
+                # it. Unknown support IDs, wrong image/claim bindings and semantic
+                # mismatch remain errors; never repair or invent a source quote.
+                if image_evidence:
+                    if diagnostics is not None:
+                        key = "ignored_optional_text_witnesses"
+                        diagnostics[key] = diagnostics.get(key, 0) + 1
+                else:
+                    errors.append("SCOPE_REQUIREMENT_WITNESS_INVALID")
         if requirement["dimension"] == "condition" and not (evidence or image_evidence):
             errors.append("SCOPE_CONDITION_SOURCE_UNGROUNDED")
-        if (
-            requirement["dimension"] in {"entity", "population"}
-            and binding.binding_basis != "linguistic_equivalence"
+        # Relationship meaning belongs to the independently grounded scope
+        # judgment, not a capitalization heuristic over the question's wording.
+        # Table headers, aliases and ordinary capitalized words need not appear
+        # verbatim in every witness. Generated proofs alone still cannot bind
+        # the requested entity or population (including linguistic equivalents).
+        if requirement["dimension"] in {"entity", "population"} and not (
+            evidence or image_evidence
         ):
-            names = set(re.findall(r"\b[A-Z][A-Za-z]{2,}\b", requirement["question_quote"]))
-            names -= {"The", "Which", "What", "How", "Please", "According", "For", "All"}
-            source = " ".join([*evidence, *image_evidence]).casefold()
-            if any(name.casefold() not in source for name in names):
-                errors.append("SCOPE_NAMED_ENTITY_RELATION_UNGROUNDED")
+            errors.append("SCOPE_NAMED_ENTITY_RELATION_UNGROUNDED")
     return list(dict.fromkeys(errors))

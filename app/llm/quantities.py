@@ -776,6 +776,18 @@ async def collect(
     coverage_repair = requirement is not None and requirement.evidence_kind == "coverage_completion"
     scope_repair = requirement is not None and requirement.evidence_kind == "scope_research"
     existing_scope = requirement is not None and requirement.evidence_kind == "existing_scope"
+    localized_image_repair = bool(
+        parent
+        and requirement
+        and requirement.evidence_kind == "source_correction"
+        and parent.modality == "image"
+        and parent.pages
+        and parent.assessments[-1].issues
+        and all(
+            i.target == "operand" and i.page in parent.pages
+            for i in parent.assessments[-1].issues
+        )
+    )
     relationship_ids = relationship_context(parent, session.units()) if parent else []
     known_inventory = bool(
         inventory_repair
@@ -791,6 +803,7 @@ async def collect(
         with operation("quantity.repair.route") as span:
             span.set_attribute("quantity.parent_id", parent.id if parent else "")
             span.set_attribute("quantity.repair_kind", requirement.evidence_kind)
+            span.set_attribute("quantity.reuses_source_selection", localized_image_repair)
             span.set_attribute(
                 "quantity.requires_fresh_source",
                 scope_repair or coverage_repair or (inventory_repair and not known_inventory),
@@ -855,6 +868,7 @@ async def collect(
     if parent and (
         known_inventory
         or existing_scope
+        or localized_image_repair
         or (
             parent.inventory_errors
             and requirement

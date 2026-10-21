@@ -181,9 +181,12 @@ def judgment(**changes):
 def test_source_relationship_needs_a_positive_entity_bridge_not_generated_proof_text():
     reqs = [dict(dimension="entity", question_quote="Westhaven")]
     assert not validate_requirements(binding_payload(), reqs, judgment(), set())
-    assert "SCOPE_NAMED_ENTITY_RELATION_UNGROUNDED" in validate_requirements(
-        binding_payload("North District"), reqs, judgment(), set()
-    )
+    # An absent relationship is a semantic unknown/mismatch, not a failed
+    # capitalization match. Neither verdict can release a positive answer.
+    for verdict in ("unknown", "mismatch"):
+        assert "SCOPE_REQUIREMENT_UNRESOLVED" in validate_requirements(
+            binding_payload("North District"), reqs, judgment(verdict=verdict), set()
+        )
     assert "SCOPE_NAMED_ENTITY_RELATION_UNGROUNDED" in validate_requirements(
         binding_payload(), reqs, judgment(), {"E1.S1"}
     )
@@ -227,6 +230,38 @@ def test_condition_cannot_use_generated_transcription_as_independent_evidence():
         assert "SCOPE_REQUIREMENT_IMAGE_INVALID" in validate_requirements(
             payload, requirements, visual, {"E1.S1"}, invalid
         )
+
+
+@pytest.mark.parametrize("case", [
+    "valid_image", "no_image", "unknown_image", "wrong_image_claim", "unknown_support",
+    "unknown_verdict",
+])
+def test_original_image_authority_is_independent_of_optional_ocr_locator(case):
+    requirements = [dict(dimension="condition", question_quote="blue background")]
+    payload = binding_payload("An OCR label without color information.")
+    proposed = judgment(
+        witnesses=[dict(
+            support_id="E99.S1" if case == "unknown_support" else "E1.S1",
+            start_line=88, end_line=88,
+        )],
+        image_witnesses=[] if case == "no_image" else [dict(
+            image_id="scope_image_1", observation="The label is inside the blue background."
+        )],
+        verdict="unknown" if case == "unknown_verdict" else "supported",
+    )
+    images = [dict(
+        image_id="scope_image_2" if case == "unknown_image" else "scope_image_1",
+        claim_indexes=[1] if case == "wrong_image_claim" else [0],
+    )]
+    diagnostics = {}
+    errors = validate_requirements(
+        payload, requirements, proposed, {"E1.S1"}, images, diagnostics=diagnostics
+    )
+    if case == "valid_image":
+        assert not errors and diagnostics == {"ignored_optional_text_witnesses": 1}
+    else:
+        assert errors
+        assert not diagnostics
 
 
 @pytest.mark.asyncio
@@ -837,4 +872,21 @@ def test_document_window_dispatch_stays_source_scoped_and_never_overrides_a_subs
         assert (
             prefer_document_inventory_window(original, catalog, "How many tests?", invalid)
             == original
+        )
+
+
+@pytest.mark.parametrize("quote,dimension,source", [
+    ("Among the Higher-income seniors", "population", "Income $75,000+: 90%"),
+    ("EPS Code AR01", "entity", "Little Rock | AR01"),
+    ("Westhaven", "entity", "West Haven belongs to North District."),
+])
+def test_grounded_semantic_bindings_do_not_require_question_word_tokens(quote, dimension, source):
+    requirements = [dict(dimension=dimension, question_quote=quote)]
+    payload = binding_payload(source)
+    assert not validate_requirements(payload, requirements, judgment(), set())
+    # This changes no source authority: a generated statement of a relationship
+    # cannot replace an original source, even when called an equivalent name.
+    for basis in ("explicit", "source_relationship", "linguistic_equivalence"):
+        assert validate_requirements(
+            payload, requirements, judgment(binding_basis=basis), {"E1.S1"}
         )
