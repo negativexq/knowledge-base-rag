@@ -40,7 +40,11 @@ in source units; numeric_inputs.output_value is the converted base-unit value. C
 both against the original source and requested formula/unit; do not require the printed
 source value to already be converted. Verify the source unit and scale from its actual headers
 and context. For read, also assess output unit/scale and signed versus magnitude convention
-against the ORIGINAL question. Accounting parentheses mean a negative source movement;
+against the ORIGINAL question.
+For read, output_order sorts comparable numeric values in application code before
+display rounding; input operands remain in source order with their original digits.
+Text list_order is alphabetical and is not an operation on numeric measurements.
+Accounting parentheses mean a negative source movement;
 they alone do not authorize a positive answer or a unit conversion.
 If the numeric display is readable but its declared notation is invalid, return
 notation_corrections with operand index and source-supported number_format, then judge
@@ -343,6 +347,7 @@ def merge_repair(
         or replacement.decimals != original.draft.decimals
         or replacement.choices != original.draft.choices
         or replacement.output_decimals != original.draft.output_decimals
+        or replacement.output_order != original.draft.output_order
         or replacement.count_mode != original.draft.count_mode
         or replacement.select_mode != original.draft.select_mode
         or replacement.list_order != original.draft.list_order

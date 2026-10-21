@@ -4,6 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.llm.answer_coverage import CoverageScopeJudgment
 from app.llm.research_dispositions import ReviewedDisposition
 from app.llm.scope_validation import (
     LineScopeJudgment,
@@ -31,7 +32,7 @@ class ScopeObjection(BaseModel):
     ] = "missing_source"
 
 
-class DiagnosticScopeJudgment(LineScopeJudgment):
+class DiagnosticScopeJudgment(CoverageScopeJudgment):
     objections: list[ScopeObjection] = Field(default_factory=list, max_length=50)
     source_disposition: ReviewedDisposition | None = None
 

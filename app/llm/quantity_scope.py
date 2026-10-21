@@ -40,7 +40,11 @@ question. Do not reject a checked image item merely because the indexed text omi
 it or require the image transcription to be printed as a numeric total. Concrete
 source contradictions remain grounds for rejection. Counting checked items and
 formatting their scalar/vector result belong to the application.
-For list operations, the actual answer list remains visible. Independently checked
+Numeric read operations retain numeric operands and their labels separately. For
+read operations, the application owns numeric ordering and display rounding; check
+the original inputs' identities, units and source bindings rather than requiring
+the rounded array to be printed verbatim in the document. The actual array remains
+visible for semantic review. Textual lists also remain visible. Independently checked
 labels do not establish the requested visual condition or object identity. Inspect
 the supplied original pages for the question's conditions and the item's location;
 the collector's description is a proposal, not independent evidence of those facts.
@@ -187,12 +191,15 @@ def semantic_scope_projection(
         actual = claim["claim"]
         for record in records:
             if (
-                record.draft.mode not in {"arithmetic", "count", "list"}
+                record.draft.mode not in {"arithmetic", "count", "list", "read"}
                 or record.execution_status != "completed"
             ):
                 continue
             try:
-                expected = candidate(record).answer_parts[0].model_dump(mode="json")
+                answer = candidate(record)
+                if answer.abstain or len(answer.answer_parts) != 1:
+                    continue
+                expected = answer.answer_parts[0].model_dump(mode="json")
                 values, expression = execute(record.draft)
             except (ValueError, DecimalException):
                 continue
@@ -205,7 +212,22 @@ def semantic_scope_projection(
                 continue
             if actual != expected:
                 continue
-            if record.draft.mode == "list":
+            if record.draft.mode == "read":
+                operation = {
+                    "claim_index": claim["claim_index"],
+                    "record_id": record.id,
+                    "operation": "read",
+                    "checked_inputs": semantic_draft(record.draft)["operands"],
+                    "output_order": record.draft.output_order,
+                    "output_decimals": record.draft.output_decimals,
+                    "source_support_ids": record.support_ids,
+                    "context_support_ids": record.context_support_ids,
+                    "input_authority": "independently_checked_original_images"
+                    if record.modality == "image"
+                    else "independently_checked_source_text",
+                    "image_bindings": [b.model_dump() for b in record.image_bindings],
+                }
+            elif record.draft.mode == "list":
                 operation = {
                     "claim_index": claim["claim_index"],
                     "record_id": record.id,
@@ -256,7 +278,7 @@ def semantic_scope_projection(
                         "declared_interpretation_unless_question_or_source_conflicts"
                     ),
                 }
-            if record.draft.mode != "list":
+            if record.draft.mode not in {"list", "read"}:
                 claim["claim"] = {
                     "text": (
                         "Computed result under the independently reviewed source-input operation."

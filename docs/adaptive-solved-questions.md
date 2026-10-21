@@ -1,6 +1,8 @@
 # Answered questions — source-verified results
 
-Latest follow-up: [visual-condition handoff](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) retains correct 634/637/659 answers and obtains safe insufficient-evidence outcomes for source-audited 635/638/660. Those three move to correct refusals. The generic image-fact path now supplies the original page to scope; source selection catches the negative grey case. Repeated mismatch repairs remain an efficiency issue.
+Latest follow-up: [material answer coverage](../artifacts/mmlongbench-v2/adaptive-material-coverage-20261021/REPORT.md) recovers **831** in five calls / 72.47 seconds. Original interview/team content is retained and the three omitted activity groups are appended from the same visible source. The final short-answer control, **Rick Scott.**, passes in three calls with no completion. Earlier failed attempts, including the overlarge inventory/timeout, remain in the report. The [numeric presentation follow-up](../artifacts/mmlongbench-v2/adaptive-numeric-presentation-20261021/REPORT.md) recovers 642 with application-owned numeric sorting/rounding and a complete display proof in six calls / 94.04 seconds; historical coverage is unchanged.
+
+Earlier follow-up: [visual-condition handoff](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) retains correct 634/637/659 answers and obtains safe insufficient-evidence outcomes for source-audited 635/638/660. Those three move to correct refusals. The generic image-fact path now supplies the original page to scope; source selection catches the negative grey case. Repeated mismatch repairs remain an efficiency issue.
 
 Earlier follow-up: [checked visual scope authority](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) recovers **727 = 12 Tweets** in six calls / 42.16 seconds. The four answerable controls and one missing-input control pass **5/5 expected outcomes**. The earlier ten-answerable batch remains recorded at 9/10; 727's image/OCR regression is now recovered in the targeted recheck. These are reruns, so historical totals do not increase.
 
@@ -10,12 +12,12 @@ insufficiency without inventing a market; it is not promoted to a verified
 source-scoped refusal. These reruns add no distinct questions or ledger promotions.
 
 Updated: **21 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **79**, across **120 distinct questions tried**.
+source-supported published answer: **80**, across **120 distinct questions tried**.
 There are also **two qualified interpreted calculations**, alongside **18 correct refusals**
-and **21 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+and **20 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 79 have passed on the
+This is a historical success ledger, not a claim that all 80 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -24,7 +26,7 @@ runtime release checks.
 | Row | Question / document | Source-supported answer | Successful run | Time / model calls |
 | --- | --- | --- | --- | --- |
 | 210 | Election-news attention for the party with the higher combined good-policy/ethics rating. `05-03-18-political-release.pdf` | **21%**; Democrats / Democratic leaners | [Report](../artifacts/mmlongbench-v2/adaptive-pair-20261019/REPORT.md) | 28.25 s / 3 |
-| 642 | ProgramFC / FLAN-T5-small gold-evidence F1, descending. `2023.acl-long.386.pdf` | **64.4, 62.5, 62.2**; HOVER 2-hop, 4-hop, 3-hop | [Report](../artifacts/mmlongbench-v2/adaptive-pair-20261019/REPORT.md) | 66.11 s / 8 |
+| 642 | ProgramFC / FLAN-T5-small gold-evidence F1, descending. `2023.acl-long.386.pdf` | **64.4, 62.5, 62.2**; HOVER 2-hop, 4-hop, 3-hop | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-presentation-20261021/REPORT.md) | 94.04 s / 6 |
 | 223 | Internet, smartphone, and tablet use among high-income older adults, descending. `PIP_Seniors-and-Tech-Use_040314.pdf` | **90%, 42%, 39%**; income $75,000+ | [Report](../artifacts/mmlongbench-v2/adaptive-pair2-20261019/REPORT.md) | 46.42 s / 9 |
 | 1018 | FY2021 debt / EBITDA, including current long-term debt and lease liabilities. `COSTCO_2021_10K.pdf` | **1.344×** = (799+6692+3916)/(6708+1781) | [Report](../artifacts/mmlongbench-v2/adaptive-row1018-targeted-v4-20261019/REPORT.md) | 68.02 s / 9 |
 | 1079 | Gross profit / total assets for the year ending January 28, 2023. `BESTBUY_2023_10K.pdf` | **0.627** = 9912/15803 | [Report](../artifacts/mmlongbench-v2/adaptive-row1079-targeted-20261019/REPORT.md) | 29.86 s / 5 |
@@ -102,6 +104,7 @@ runtime release checks.
 | 517 | Larger geographic market: CA19 or Covina and West Covina. `8dfc21ec151fb9d3578fc32d5c4e5df9.pdf` | **Covina and West Covina (CA23)**; original-map qualitative comparison, no numeric area claim | [Report](../artifacts/mmlongbench-v2/adaptive-source-acquisition-20261020/REPORT.md) | 50.20 s / 7 |
 | 380 | Income less shareholders’ funds, year ended March 31, 2003. `afe620b9beac86c1027b96d31d396407.pdf` | **8,367,277,000 rupees** = (109638.91−25966.14)×100000; source amounts in lacs | [Report](../artifacts/mmlongbench-v2/adaptive-unit-arithmetic-20261020/REPORT.md) | 50.29 s / 6 |
 | 1017 | Costco FY2021 total debt including current long-term debt and all operating/finance lease liabilities. `COSTCO_2021_10K.pdf` | **USD 11,407 million** = 799+6692+222+2642+72+980; balance sheet and Note 6 | [Report](../artifacts/mmlongbench-v2/adaptive-context-coverage-20261020/REPORT.md) | 103.09 s / 10 |
+| 831 | Quarter 3 Preparing for Tomorrow’s Workplace Skills activities. `f8d3a162ab9507e021d83dd109118b60.pdf` | **Motivation interview; supplier research/comparison; local-business resources and supply-chain investigation; frequently used product selection**, with supported team activity retained | [Report](../artifacts/mmlongbench-v2/adaptive-material-coverage-20261021/REPORT.md) | 72.47 s / 5 |
 
 Row 642's stored gold label is `[64.3, 62.4, 62.2]`. The PDF values 64.35 and
 62.46 do not match that label under standard one-decimal rounding. This ledger
@@ -357,7 +360,6 @@ implemented corrections from unresolved outcomes.
 | 661 | Reference answer 0.0 V for the P2.7 ENABLE low/baseline waveform. | Scalar reading routed as multi-input selection; later source inference remained unverified. The voltage is not explicitly annotated on that trace. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md) |
 | 658 | N-prefix part count in the merged PACKAGES table. | Published 4, reference 2; automatic review agrees with 4, but counting unit and merged-cell membership need adjudication. No verified success claimed. | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) |
 | 1070 | Best Buy FY2022-to-FY2021 gross-margin change. | Correct numeric inputs normalized, but isolated-table identity review and context repair fail; no answer. Direction/unit semantics differ from unsigned label. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
-| 831 | Quarter 3 workplace-skills activities. | Selected evidence includes additional relevant tasks, but published answer covers only motivation interview/team activities; scope checks pass. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
 | 1015 | Costco FY2021 EBITDA, with explicit definition. | No answer; period/header and operand binding unresolved. Common operating-income-plus-D&A definition gives 8489 million. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 384 | Producer of a document revised May 2018; recorded source says May 2016. | Source-consistent abstention, but ModelRetry termination; no clean mismatch receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 225 | 65+ sample headcount online every day or 3–5 times weekly. | No answer; denominator/composition missing. About 738 is a rounded estimate, not a directly reported exact count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
