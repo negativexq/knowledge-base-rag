@@ -433,3 +433,8 @@ The [ten-question measurement](../artifacts/mmlongbench-v2/adaptive-source-dispo
 ## Checked visual authority correction
 
 The [follow-up](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) reuses the independently checked original page inside the existing scope model call. Same-source/version/page and visibility checks gate this handoff; conflicting parser digits remain derivative context. 727 now publishes 12 in six requests, and all five selected controls have the expected outcome. Semantic source binding still requires approval and release fingerprints are unchanged. No extra model loop is introduced. Offline checks: 2,387 passed, four skipped, five deselected; Ruff and mypy pass.
+
+
+## Visual-condition provenance follow-up — 21 October 2026
+
+The [focused audit](adaptive-visual-condition-audit.md) traces 635/638/660 restrictions through planning and acceptance. The [implementation and measurements](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) now supply original images for exact checked list candidates and admitted generic image facts, classify transcriptions as generated, and bind visual requirement observations to supplied images/claims. No additional model stage is introduced. The final affected pair retains correct 634 and safely abstains on 635; preceding controls retain 637/659 and safely abstain on 638/660. These three source-audited negatives meet the existing acceptance criterion. Current historical totals are 79 supported, two qualified, 18 correct refusals and 21 unresolved (120 distinct). Repeated mismatch repair and model visual calibration remain open. Verification: 2,392 tests passed; Ruff and mypy pass.

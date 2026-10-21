@@ -204,6 +204,31 @@ def test_leading_named_target_must_satisfy_question_range_without_constraining_c
     assert not range_conflicts("How many people ages 10-13?", claims("4 people."))
 
 
+def test_condition_cannot_use_generated_transcription_as_independent_evidence():
+    requirements = [dict(dimension="condition", question_quote="blue background")]
+    payload = binding_payload("The label is on a blue background.")
+    assert not validate_requirements(payload, requirements, judgment(), set())
+    assert "SCOPE_CONDITION_SOURCE_UNGROUNDED" in validate_requirements(
+        payload, requirements, judgment(), {"E1.S1"}
+    )
+    images = [dict(image_id="scope_image_1", claim_indexes=[0])]
+    visual = judgment(
+        witnesses=[],
+        image_witnesses=[
+            dict(image_id="scope_image_1", observation="The label is inside the blue box")
+        ],
+    )
+    assert not validate_requirements(payload, requirements, visual, {"E1.S1"}, images)
+    for invalid in [
+        [],
+        [dict(image_id="scope_image_2", claim_indexes=[0])],
+        [dict(image_id="scope_image_1", claim_indexes=[1])],
+    ]:
+        assert "SCOPE_REQUIREMENT_IMAGE_INVALID" in validate_requirements(
+            payload, requirements, visual, {"E1.S1"}, invalid
+        )
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("initial_modality", ["image", "text"])
 async def test_native_omission_repairs_in_same_view_without_another_selector_call(

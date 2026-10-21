@@ -13,6 +13,7 @@ from app.llm.quantities import candidate, execute, semantic_draft
 from app.llm.quantity_numbers import normalize_inputs
 from app.llm.quantity_state import QuantityRecord
 from app.llm.quantity_units import arithmetic_conversion
+from app.llm.research_state import EvidenceRef
 
 if TYPE_CHECKING:
     from app.llm.adaptive import AdaptiveSession
@@ -39,6 +40,10 @@ question. Do not reject a checked image item merely because the indexed text omi
 it or require the image transcription to be printed as a numeric total. Concrete
 source contradictions remain grounds for rejection. Counting checked items and
 formatting their scalar/vector result belong to the application.
+For list operations, the actual answer list remains visible. Independently checked
+labels do not establish the requested visual condition or object identity. Inspect
+the supplied original pages for the question's conditions and the item's location;
+the collector's description is a proposal, not independent evidence of those facts.
 The original source IDs remain available for source-grounded witnesses and objections.
 An explicitly declared, independently reviewed conventional formula is an interpretation,
 not a claim that the document defines or reports that metric. It need not appear in the
@@ -49,8 +54,48 @@ source metric by substituting an unstated calculation for it.
 """
 
 
+def checked_visual_fact_sources(session: AdaptiveSession) -> dict[str, EvidenceRef]:
+    """Recover original provenance only for admitted, independently checked facts."""
+    units = session.units()
+    bound = {fid for need in session.state.evidence_needs.values() for fid in need.fact_ids}
+    scoped = session.need_workflow is not None and session.state.need_planning == "ready"
+    parents = {
+        unit.support_unit_id: block.payload.get("parent_support_id")
+        for unit in units.values()
+        for block in session.deps.ledger.blocks
+        if block.payload["evidence_id"] == unit.evidence_id
+        and block.payload.get("reading_method") == "image_checked"
+    }
+    sources = {}
+    for fact in session.state.facts.values():
+        key = fact.evidence.support_id
+        if fact.method != "image_checked" or (scoped and fact.id not in bound):
+            continue
+        parent = parents.get(key)
+        if not parent:
+            continue
+        for extraction in session.state.extractions:
+            ref = extraction.evidence
+            if (
+                extraction.method == "image_checked"
+                and ref.support_id == parent
+                and (ref.source_id, ref.document_version, ref.page)
+                == (fact.evidence.source_id, fact.evidence.document_version, fact.evidence.page)
+                and any(
+                    0 <= i < len(extraction.extraction.values)
+                    and extraction.extraction.values[i] == fact.observation
+                    for i in extraction.accepted_indexes
+                )
+            ):
+                sources[key] = ref
+                break
+    return sources
+
+
 async def checked_scope_images(
-    session: AdaptiveSession, record_ids: list[str]
+    session: AdaptiveSession,
+    record_ids: list[str],
+    fact_sources: dict[str, EvidenceRef] | None = None,
 ) -> tuple[list[bytes], list[dict[str, Any]]]:
     """Reuse only reviewed original pages in the existing semantic scope call."""
     pages: dict[tuple[str, str, int], dict[str, Any]] = {}
@@ -83,6 +128,33 @@ async def checked_scope_images(
             identity = (binding.source_id, record.document_version, binding.physical_page)
             page = pages.setdefault(identity, {**binding.model_dump(), "reviewed_bindings": []})
             page["reviewed_bindings"].append({"record_id": record.id, "image_id": binding.image_id})
+    for key, ref in (fact_sources or {}).items():
+        session.require([key, ref.support_id])
+        derived, original = units[key], units[ref.support_id]
+        if (
+            not ref.document_version
+            or ref.page is None
+            or any(
+                not unit.authorized
+                or not unit.model_visible
+                or (unit.source_id, unit.document_version) != (ref.source_id, ref.document_version)
+                or not unit.page_number
+                or not unit.page_number <= ref.page <= (unit.page_end or unit.page_number)
+                for unit in [derived, original]
+            )
+        ):
+            raise ValueError("CHECKED_IMAGE_BINDING_STALE")
+        page = pages.setdefault(
+            (ref.source_id, ref.document_version, ref.page),
+            {
+                "source_id": ref.source_id,
+                "document_version": ref.document_version,
+                "physical_page": ref.page,
+                "support_ids": [ref.support_id],
+                "reviewed_bindings": [],
+            },
+        )
+        page.setdefault("fact_support_ids", []).append(key)
     images = []
     for page in pages.values():
         structure, _ = await session.deps.pdf_structure(page["support_ids"][0])
@@ -115,7 +187,7 @@ def semantic_scope_projection(
         actual = claim["claim"]
         for record in records:
             if (
-                record.draft.mode not in {"arithmetic", "count"}
+                record.draft.mode not in {"arithmetic", "count", "list"}
                 or record.execution_status != "completed"
             ):
                 continue
@@ -133,7 +205,20 @@ def semantic_scope_projection(
                 continue
             if actual != expected:
                 continue
-            if record.draft.mode == "count":
+            if record.draft.mode == "list":
+                operation = {
+                    "claim_index": claim["claim_index"],
+                    "record_id": record.id,
+                    "operation": "list",
+                    "checked_inputs": semantic_draft(record.draft),
+                    "source_support_ids": record.support_ids,
+                    "context_support_ids": record.context_support_ids,
+                    "input_authority": "independently_checked_original_images"
+                    if record.modality == "image"
+                    else "independently_checked_source_text",
+                    "image_bindings": [b.model_dump() for b in record.image_bindings],
+                }
+            elif record.draft.mode == "count":
                 operation = {
                     "claim_index": claim["claim_index"],
                     "record_id": record.id,
@@ -171,10 +256,13 @@ def semantic_scope_projection(
                         "declared_interpretation_unless_question_or_source_conflicts"
                     ),
                 }
-            claim["claim"] = {
-                "text": "Computed result under the independently reviewed source-input operation.",
-                "support_ids": actual["support_ids"],
-            }
+            if record.draft.mode != "list":
+                claim["claim"] = {
+                    "text": (
+                        "Computed result under the independently reviewed source-input operation."
+                    ),
+                    "support_ids": actual["support_ids"],
+                }
             # Generated proof text contains the result. The scope model receives
             # checked inputs explicitly and original sources, not the result again.
             claim["cited_evidence"] = [

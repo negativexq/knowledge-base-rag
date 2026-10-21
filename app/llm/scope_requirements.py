@@ -11,6 +11,12 @@ from app.llm.scope_diagnostics import DiagnosticScopeJudgment
 from app.llm.scope_validation import LineScopeJudgment, LineWitness, resolve_line_judgment
 
 
+class ImageRequirementWitness(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    image_id: str = Field(min_length=1, max_length=100)
+    observation: str = Field(min_length=1, max_length=600)
+
+
 class RequirementBinding(BaseModel):
     model_config = ConfigDict(extra="forbid")
     requirement_index: int = Field(ge=0, description="Zero-based index in question_requirements")
@@ -20,6 +26,7 @@ class RequirementBinding(BaseModel):
     ]
     claim_indexes: list[int] = Field(min_length=1, max_length=50)
     witnesses: list[LineWitness] = Field(default_factory=list, max_length=12)
+    image_witnesses: list[ImageRequirementWitness] = Field(default_factory=list, max_length=6)
 
 
 class RequiredScopeJudgment(DiagnosticScopeJudgment):
@@ -34,6 +41,12 @@ number or title. Distinguish literal support, linguistic equivalents, and a rela
 established by source evidence. Geographic containment, category membership and an
 object's position are relationships, not linguistic equivalents. Outside knowledge or
 an application proof's generated label cannot establish a source relationship.
+For a requirement established visually, use image_witnesses with a supplied
+source_images image_id and a short direct observation of the relevant object and
+condition. Inspect the original image; do not repeat the collector's description
+as proof. A text witness may establish a textual condition, but generated proof
+text alone cannot establish a condition. Do not equate readable labels with a
+matching color, location or range. Image witnesses must apply to the listed claims.
 If a port/range, object location, category or inventory scope conflicts, do not approve
 the answer because a different part of the question was satisfied. Missing evidence
 is unknown, not mismatch or verified absence. This adds no answer-writing stage.
@@ -68,7 +81,9 @@ def validate_requirements(
     requirements: list[dict[str, str]],
     judgment: RequiredScopeJudgment,
     generated_ids: set[str],
+    source_images: list[dict[str, Any]] | None = None,
 ) -> list[str]:
+    images = {image["image_id"]: image for image in source_images or []}
     bindings = {b.requirement_index: b for b in judgment.requirement_bindings}
     if len(bindings) != len(judgment.requirement_bindings) or set(bindings) != set(
         range(len(requirements))
@@ -80,12 +95,21 @@ def validate_requirements(
         if binding.verdict != "supported" or binding.binding_basis == "unestablished":
             errors.append("SCOPE_REQUIREMENT_UNRESOLVED")
             continue
-        if not binding.witnesses or not set(binding.claim_indexes) <= set(
-            range(len(payload["claims"]))
-        ):
+        if not (binding.witnesses or binding.image_witnesses) or not set(
+            binding.claim_indexes
+        ) <= set(range(len(payload["claims"]))):
             errors.append("SCOPE_REQUIREMENT_WITNESS_INVALID")
             continue
         evidence: list[str] = []
+        image_evidence: list[str] = []
+        for image_witness in binding.image_witnesses:
+            image = images.get(image_witness.image_id)
+            if image is None or not set(binding.claim_indexes) & set(
+                image.get("claim_indexes", [])
+            ):
+                errors.append("SCOPE_REQUIREMENT_IMAGE_INVALID")
+            else:
+                image_evidence.append(image_witness.observation)
         for witness in binding.witnesses:
             claim = next(
                 (
@@ -119,13 +143,15 @@ def validate_requirements(
                     evidence.extend(w.quote for w in resolved.checks[0].witnesses)
             except ValueError:
                 errors.append("SCOPE_REQUIREMENT_WITNESS_INVALID")
+        if requirement["dimension"] == "condition" and not (evidence or image_evidence):
+            errors.append("SCOPE_CONDITION_SOURCE_UNGROUNDED")
         if (
             requirement["dimension"] in {"entity", "population"}
             and binding.binding_basis != "linguistic_equivalence"
         ):
             names = set(re.findall(r"\b[A-Z][A-Za-z]{2,}\b", requirement["question_quote"]))
             names -= {"The", "Which", "What", "How", "Please", "According", "For", "All"}
-            source = " ".join(evidence).casefold()
+            source = " ".join([*evidence, *image_evidence]).casefold()
             if any(name.casefold() not in source for name in names):
                 errors.append("SCOPE_NAMED_ENTITY_RELATION_UNGROUNDED")
     return list(dict.fromkeys(errors))
