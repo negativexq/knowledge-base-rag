@@ -39,7 +39,9 @@ boundaries. Verify that this inventory's category, location and coverage answer 
 question. Do not reject a checked image item merely because the indexed text omitted
 it or require the image transcription to be printed as a numeric total. Concrete
 source contradictions remain grounds for rejection. Counting checked items and
-formatting their scalar/vector result belong to the application.
+formatting their scalar/vector result belong to the application. The actual published
+count/page-list text stays visible for material-answer coverage. Calculation/count
+proof fields are omitted from that semantic view, not the answer itself.
 Numeric read operations retain numeric operands and their labels separately. For
 read operations, the application owns numeric ordering and display rounding; check
 the original inputs' identities, units and source bindings rather than requiring
@@ -172,7 +174,33 @@ async def checked_scope_images(
             raise ValueError("CHECKED_IMAGE_PAGE_UNAVAILABLE")
         images.append(image)
         page["image_id"] = f"scope_image_{len(images)}"
-    return images, list(pages.values())
+    source_images = list(pages.values())
+    for run in session.state.document_inventories.values():
+        if not run.complete or run.aggregate_id not in record_ids:
+            continue
+        session.require([run.seed_support_id])
+        seed = units[run.seed_support_id]
+        if (seed.source_id, seed.document_version) != (run.source_id, run.document_version):
+            raise ValueError("CHECKED_IMAGE_BINDING_STALE")
+        structure, _ = await session.deps.pdf_structure(run.seed_support_id)
+        overview = await asyncio.to_thread(structure.inventory_overview)
+        if overview is None or overview["page_count"] != run.page_count:
+            raise ValueError("CHECKED_IMAGE_BINDING_STALE")
+        for index, png in enumerate(overview["images"]):
+            images.append(png)
+            source_images.append(
+                {
+                    "image_id": f"scope_image_{len(images)}",
+                    "source_id": run.source_id,
+                    "document_version": run.document_version,
+                    "overview_pages": list(
+                        range(index * 12 + 1, min((index + 1) * 12, run.page_count) + 1)
+                    ),
+                    "reviewed_bindings": [{"record_id": run.aggregate_id, "image_id": "overview"}],
+                    "document_plan": run.plan.model_dump(),
+                }
+            )
+    return images, source_images
 
 
 def semantic_scope_projection(
@@ -246,6 +274,8 @@ def semantic_scope_projection(
                     "record_id": record.id,
                     "operation": "count",
                     "count_mode": record.draft.count_mode,
+                    "count_output": record.draft.count_output,
+                    "document_inventory_id": record.document_inventory_id,
                     "checked_inputs": semantic_draft(record.draft)["groups"],
                     "source_support_ids": record.support_ids,
                     "context_support_ids": record.context_support_ids,
@@ -278,7 +308,12 @@ def semantic_scope_projection(
                         "declared_interpretation_unless_question_or_source_conflicts"
                     ),
                 }
-            if record.draft.mode not in {"list", "read"}:
+            if record.draft.mode == "count":
+                claim["claim"] = {
+                    "text": actual["text"],
+                    "support_ids": actual["support_ids"],
+                }
+            elif record.draft.mode not in {"list", "read"}:
                 claim["claim"] = {
                     "text": (
                         "Computed result under the independently reviewed source-input operation."

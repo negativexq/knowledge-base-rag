@@ -1,6 +1,8 @@
 # Answered questions — source-verified results
 
-Latest follow-up: [material answer coverage](../artifacts/mmlongbench-v2/adaptive-material-coverage-20261021/REPORT.md) recovers **831** in five calls / 72.47 seconds. Original interview/team content is retained and the three omitted activity groups are appended from the same visible source. The final short-answer control, **Rick Scott.**, passes in three calls with no completion. Earlier failed attempts, including the overlarge inventory/timeout, remain in the report. The [numeric presentation follow-up](../artifacts/mmlongbench-v2/adaptive-numeric-presentation-20261021/REPORT.md) recovers 642 with application-owned numeric sorting/rounding and a complete display proof in six calls / 94.04 seconds; historical coverage is unchanged.
+Latest follow-up: [document inventory](../artifacts/mmlongbench-v2/adaptive-inventory-progress-20261021/REPORT.md) recovers **662** with nine source-verified waveform figures and their six distinct pages. Row 382 remains correct. Historical coverage is **101/120 (84.2%)**; 19 questions remain unresolved. The final pair takes 104.89 / 110.06 seconds; latency remains open.
+
+Earlier follow-up: [material answer coverage](../artifacts/mmlongbench-v2/adaptive-material-coverage-20261021/REPORT.md) recovers **831** in five calls / 72.47 seconds. Original interview/team content is retained and the three omitted activity groups are appended from the same visible source. The final short-answer control, **Rick Scott.**, passes in three calls with no completion. Earlier failed attempts, including the overlarge inventory/timeout, remain in the report. The [numeric presentation follow-up](../artifacts/mmlongbench-v2/adaptive-numeric-presentation-20261021/REPORT.md) recovers 642 with application-owned numeric sorting/rounding and a complete display proof in six calls / 94.04 seconds; historical coverage is unchanged.
 
 Earlier follow-up: [visual-condition handoff](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) retains correct 634/637/659 answers and obtains safe insufficient-evidence outcomes for source-audited 635/638/660. Those three move to correct refusals. The generic image-fact path now supplies the original page to scope; source selection catches the negative grey case. Repeated mismatch repairs remain an efficiency issue.
 
@@ -12,12 +14,12 @@ insufficiency without inventing a market; it is not promoted to a verified
 source-scoped refusal. These reruns add no distinct questions or ledger promotions.
 
 Updated: **21 October 2026**. Historical distinct questions with a correct,
-source-supported published answer: **80**, across **120 distinct questions tried**.
+source-supported published answer: **81**, across **120 distinct questions tried**.
 There are also **two qualified interpreted calculations**, alongside **18 correct refusals**
-and **20 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+and **19 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
-This is a historical success ledger, not a claim that all 80 have passed on the
+This is a historical success ledger, not a claim that all 81 have passed on the
 latest code or that the complete benchmark has been evaluated. Runs are scoped
 to the question's source document; open-corpus document discovery needs separate
 evaluation. Original-PDF review supports the source answer independently of the
@@ -25,6 +27,7 @@ runtime release checks.
 
 | Row | Question / document | Source-supported answer | Successful run | Time / model calls |
 | --- | --- | --- | --- | --- |
+| 662 | Waveform figures throughout the guidebook for 272318. `DSA-278777.pdf` | **9 figures; pages ["11", "12", "13", "16", "18", "20"]** | [Report](../artifacts/mmlongbench-v2/adaptive-inventory-progress-20261021/REPORT.md) | 104.89 s / 6 |
 | 210 | Election-news attention for the party with the higher combined good-policy/ethics rating. `05-03-18-political-release.pdf` | **21%**; Democrats / Democratic leaners | [Report](../artifacts/mmlongbench-v2/adaptive-pair-20261019/REPORT.md) | 28.25 s / 3 |
 | 642 | ProgramFC / FLAN-T5-small gold-evidence F1, descending. `2023.acl-long.386.pdf` | **64.4, 62.5, 62.2**; HOVER 2-hop, 4-hop, 3-hop | [Report](../artifacts/mmlongbench-v2/adaptive-numeric-presentation-20261021/REPORT.md) | 94.04 s / 6 |
 | 223 | Internet, smartphone, and tablet use among high-income older adults, descending. `PIP_Seniors-and-Tech-Use_040314.pdf` | **90%, 42%, 39%**; income $75,000+ | [Report](../artifacts/mmlongbench-v2/adaptive-pair2-20261019/REPORT.md) | 46.42 s / 9 |
@@ -372,7 +375,6 @@ implemented corrections from unresolved outcomes.
 | 510 | According to this document, how many geographic markers in the Oxford? | Unsupported Oxford-to-Northern-Mississippi membership inference. Original page labels neither Oxford nor its location; no verified geographic join. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 636 | How many prompts examples are shown in the paper's main body? | Shown prompt-example inventory unresolved. K=20 examples used by a model is a different scope from examples shown in the paper; do not accept reviewer substitution. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 641 | What is the performance of the InstructGPT model with Self-Ask in the closed-book setting on the dataset with the highest ProgramFC retrieval recall at 10? Please write down the answer in float format with 1 decimal. | Graph/table values and dataset-definition context now reach independent review; the evaluation-population join is still not accepted, so no answer is released. | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md) |
-| 662 | How many waveform figures are contained in the guidebook for 272318? List the page numbers in the list format in ascending order,e.g., ["1","2"] | Whole-guide waveform page inventory incomplete; three-page windows do not establish all pages. Figure count and page list also differ. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 663 | How many connection graphs are contained in the guidebook? | Connection-diagram counting unit/scope unresolved. Reviewer sees at least four diagrams on two pages but cannot certify guide-wide closure. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 830 | When will the market open? | Label-compatible; market/time request underspecified in a course document. Repeated no-progress searches; reviewer source_answer is itself uninformative. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 1074 | What is Interest to Average Total Debt for the fiscal year ending January 28, 2023? Answer in percentage term, round to three decimal places | Header/scale context and notation repair remain unresolved; reviewer derives 2.911% under stated debt definition. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |

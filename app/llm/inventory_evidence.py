@@ -156,7 +156,9 @@ def prefer_document_inventory_window(
     )
 
 
-def inventory_model_view(context: dict[str, Any]) -> dict[str, Any]:
+def inventory_model_view(
+    context: dict[str, Any], *, image_authority: bool = False
+) -> dict[str, Any]:
     """Keep every native line; send geometry only for structural location hints."""
     if not context:
         return {}
@@ -169,11 +171,11 @@ def inventory_model_view(context: dict[str, Any]) -> dict[str, Any]:
                     {
                         "id": line["id"],
                         "text": line["text"],
-                        **({"heading": True} if line["heading"] else {}),
-                        **({"caption": True} if line["caption"] else {}),
+                        **({"heading": True} if line["heading"] and not image_authority else {}),
+                        **({"caption": True} if line["caption"] and not image_authority else {}),
                         **(
                             {"bbox": line["bbox"], "size": line["size"]}
-                            if line["heading"] or line["caption"]
+                            if not image_authority and (line["heading"] or line["caption"])
                             else {}
                         ),
                     }
