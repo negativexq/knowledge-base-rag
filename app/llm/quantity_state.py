@@ -126,6 +126,7 @@ class QuantityOperation(QuantityData):
     list_order: Literal["source", "ascending", "descending"] = "source"
     list_unique: bool = False
     output_decimals: int | None = Field(default=None, ge=0, le=10)
+    output_order: Literal["source", "ascending", "descending"] = "source"
 
 
 class QuantityLookupChoice(QuantityData):
@@ -194,6 +195,8 @@ class QuantityDraft(QuantityOperation):
             raise ValueError("Selection operation only applies to selection")
         if self.mode not in {"read", "lookup"} and self.output_decimals is not None:
             raise ValueError("Output precision only applies to numeric read/lookup")
+        if self.mode != "read" and self.output_order != "source":
+            raise ValueError("Numeric output ordering only applies to read")
         return self
 
 

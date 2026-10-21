@@ -18,6 +18,22 @@ from app.llm.quantity_units import normalize_arithmetic, unit_scale
 from app.llm.research_state import decimal_value
 
 
+def read_order(draft: QuantityDraft, inputs: list[QuantityNumberReceipt]) -> list[int]:
+    """Stable numeric ordering over checked converted values, before rounding."""
+    indexes = list(range(len(inputs)))
+    if draft.output_order == "source":
+        return indexes
+    if any(n.value_status != "readable" or n.errors or n.output_value is None for n in inputs):
+        raise ValueError("QUANTITY_NUMERIC_INPUT_UNRESOLVED")
+    if len({(n.output_unit.strip().casefold(), decimal_value(n.output_scale)) for n in inputs}) > 1:
+        raise ValueError("NUMERIC_ORDER_INCOMPATIBLE_UNITS")
+    return sorted(
+        indexes,
+        key=lambda i: decimal_value(inputs[i].output_value),
+        reverse=draft.output_order == "descending",
+    )
+
+
 def source_decimal(value: str, notation: NumberFormat) -> Decimal:
     """No locale inference, missing-as-zero coercion, or implicit absolute value."""
     text = value.strip().replace("−", "-")
