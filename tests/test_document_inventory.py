@@ -88,6 +88,8 @@ def calls(active, *, complete=True, stop_check=False):
         assert role == "quantity_checker" and output_type is InventoryReview
         assert len(data["windows"]) == 2 and len(images) == 7
         assert data["application_operation"]["count_output"] == "count_and_pages"
+        assert "plan" not in data and "counting_unit" not in data
+        assert data["question"] == active.state.task.question
         assert all("draft" not in w and "count_output" not in w for w in data["windows"])
         if stop_check:
             raise ResearchClosed("TOKEN_RESERVE")
@@ -140,6 +142,95 @@ async def test_incomplete_document_review_preserves_all_supported_items_without_
     assert run.reviewed and not run.complete and not run.aggregate_id
     assert len(next(iter(active.state.inventories.values())).items) == 6
     assert all(not r.has_result for r in active.state.quantities.values())
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("operation", ["supported", "mismatch"])
+async def test_inventory_review_uses_question_and_source_without_planner_output_rules(
+    tmp_path, operation
+):
+    active, need = prepared(tmp_path)
+    seen = calls(active)
+    original = active.call
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        result = await original(role, output_type, instructions, data, **kwargs)
+        if role == "quantity_checker":
+            assert data["application_operation"]["page_unique"] is True
+            assert "Record a page for every figure" not in str(data)
+            return result.model_copy(update={"operation": operation})
+        return result
+
+    active.call = call
+    proposed = plan().model_copy(update={
+        "counting_unit": "Individual diagrams. Record a page for every figure."
+    })
+    view = await overview(active, need)
+    result = await collect_document(active, need, proposed, view)
+    assert seen == ["extractor", "extractor", "quantity_checker"]
+    run = next(iter(active.state.document_inventories.values()))
+    assert len(next(iter(active.state.inventories.values())).items) == 6
+    if operation == "supported":
+        assert result is not None and run.complete
+        aggregate = active.state.quantities[run.aggregate_id]
+        assert aggregate.draft.groups[0].label == "Source objects"
+        assert "Record a page for every figure" not in result.raw_answer()
+        assert all(
+            "Record a page for every figure" not in active.units()[sid].text
+            for sid in aggregate.proof_support_ids
+        )
+    else:
+        assert result is None and not run.complete and not run.aggregate_id
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("case", ["complete", "budget", "unresolved", "invalid_page"])
+async def test_coverage_gap_opens_only_requested_page_and_preserves_checked_windows(tmp_path, case):
+    active, need = prepared(tmp_path)
+    active.limits.request_limit = 4 if case == "budget" else 10
+    proposed = plan().model_copy(update={"pages": [
+        p.model_copy(update={"action": "exclude"}) if p.page == 6 else p for p in plan().pages
+    ]})
+    reads, reviews = [], []
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        active.usage.requests += 1
+        if role == "extractor":
+            pages = data["window_pages"]
+            reads.append(pages)
+            return output_type.model_validate(dict(complete=True, items=[
+                dict(label="Repeated source label", page=p, position=1, witness=f"Diagram {p}")
+                for p in pages if p != 6
+            ]))
+        assert role == "quantity_checker"
+        reviews.append(data)
+        first = len(reviews) == 1
+        return output_type.model_validate(dict(
+            windows=[dict(window_index=i, inputs="supported", local_coverage="complete")
+                     for i in range(len(data["windows"]))],
+            operation="supported",
+            document_coverage="incomplete" if first or case == "unresolved" else "complete",
+            missing_detail_pages=([7 if case == "invalid_page" else 6] if first else []),
+        ))
+
+    active.call = call
+    view = await overview(active, need)
+    result = await collect_document(active, need, proposed, view)
+    run = next(iter(active.state.document_inventories.values()))
+    assert reads[:2] == [[1, 2, 3], [4, 5]]
+    assert len(next(iter(active.state.inventories.values())).items) == 5
+    if case in {"complete", "unresolved"}:
+        assert reads == [[1, 2, 3], [4, 5], [6]]
+        assert active.usage.requests == 5
+        assert reviews[-1]["previous_coverage_review"]["missing_detail_pages"] == [6]
+        assert len(run.previous_reviews) == 1
+    else:
+        assert len(reads) == 2 and len(reviews) == 1 and active.usage.requests == 3
+    if case == "complete":
+        assert result.answer_parts[0].text == 'Total: 5; pages ["1", "2", "3", "4", "5"]'
+        assert run.complete
+    else:
+        assert result is None and not run.complete and run.aggregate_id is None
 
 
 @pytest.mark.asyncio
@@ -253,7 +344,10 @@ async def test_full_verification_accepts_original_detail_and_overview_images(tmp
                         witnesses=[
                             dict(support_id=source_id, field="text", start_line=2, end_line=2)
                             if compact
-                            else dict(support_id=source_id, quote="Repeated source label")
+                            else dict(support_id=source_id, quote="Repeated source label"),
+                            *([dict(
+                                support_id=source_id, field="text", start_line=999, end_line=999
+                            )] if compact else [])
                         ],
                     )
                 ]

@@ -350,6 +350,40 @@ def test_invalid_line_references_fail_closed(reference):
         )
 
 
+@pytest.mark.parametrize("case", [
+    "verified", "ordinary", "only_invalid", "unknown_source", "mismatch"
+])
+def test_redundant_bad_locator_requires_independent_authority_and_retained_valid_witness(case):
+    from app.llm.scope_validation import LineScopeJudgment, resolve_line_judgment
+
+    data = line_judgment().model_dump()
+    data["checks"][0]["witnesses"].append(dict(
+        support_id="E99.S1" if case == "unknown_source" else "E1.S1",
+        start_line=99, end_line=99,
+    ))
+    if case == "only_invalid":
+        data["checks"][0]["witnesses"] = data["checks"][0]["witnesses"][1:]
+    if case == "mismatch":
+        data["checks"][0].update(verdict="mismatch", reason="PERIOD_MISMATCH")
+    proposed = LineScopeJudgment.model_validate(data)
+    original = scope_payload("Protocol?", raw(), ledger().units)
+    diagnostics = {}
+    if case == "verified":
+        checked = resolve_line_judgment(
+            original, proposed, independently_verified_claims={0}, diagnostics=diagnostics
+        )
+        assert not validate_judgment(original, checked).failure_codes
+        assert len(checked.checks[0].witnesses) == 1
+        assert diagnostics == {"ignored_verified_claim_ocr_locators": 1}
+    else:
+        with pytest.raises(ValueError, match="SCOPE_CHECK_INVALID"):
+            resolve_line_judgment(
+                original, proposed,
+                independently_verified_claims=set() if case == "ordinary" else {0},
+                diagnostics=diagnostics,
+            )
+
+
 @pytest.mark.parametrize("text", [" \n"])
 def test_empty_or_oversized_line_witnesses_fail_closed(text):
     from app.llm.scope_validation import resolve_line_judgment

@@ -19,7 +19,9 @@ if TYPE_CHECKING:
     from app.llm.adaptive import AdaptiveSession
 
 INSTRUCTIONS = """For verified_operations, arithmetic execution and rounding belong to the
-application. The claim shown is a semantic projection, not a new answer. Check the
+application. The actual published result remains visible for answer coverage; its
+presence is not a claim that the PDF prints the computed number. The claim shown is
+a semantic projection, not a new answer. Check the
 entity, period, population, source-unit bindings and whether the named-input formula
 answers the actual question. Do not recompute a quotient or invent a competing result.
 checked_inputs are independently reviewed transcriptions; they are not original PDF text.
@@ -206,7 +208,7 @@ async def checked_scope_images(
 def semantic_scope_projection(
     payload: dict[str, Any], records: Iterable[QuantityRecord]
 ) -> tuple[dict[str, Any], list[str]]:
-    """Hide computed numbers only for exact server candidates rechecked locally.
+    """Keep exact server output visible, separating execution from source authority.
 
     The original payload remains the release fingerprint. Ordinary/model-written
     claims, stale results and changed units/formulas keep full scope validation.
@@ -308,20 +310,14 @@ def semantic_scope_projection(
                         "declared_interpretation_unless_question_or_source_conflicts"
                     ),
                 }
-            if record.draft.mode == "count":
+            if record.draft.mode in {"arithmetic", "count"}:
                 claim["claim"] = {
                     "text": actual["text"],
                     "support_ids": actual["support_ids"],
                 }
-            elif record.draft.mode not in {"list", "read"}:
-                claim["claim"] = {
-                    "text": (
-                        "Computed result under the independently reviewed source-input operation."
-                    ),
-                    "support_ids": actual["support_ids"],
-                }
-            # Generated proof text contains the result. The scope model receives
-            # checked inputs explicitly and original sources, not the result again.
+            # Generated proofs cannot establish original-source relationships.
+            # Keep the actual answer visible while supplying checked inputs and
+            # original sources as independent authority for semantic bindings.
             claim["cited_evidence"] = [
                 u
                 for u in claim["cited_evidence"]

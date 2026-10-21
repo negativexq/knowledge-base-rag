@@ -509,16 +509,21 @@ class DocumentInventoryPlan(QuantityData):
 
 
 class InventoryWindowReview(QuantityData):
-    window_index: int = Field(ge=0, le=11)
+    window_index: int = Field(ge=0, le=12)
     inputs: Literal["supported", "mismatch", "unknown"]
     local_coverage: Literal["complete", "incomplete", "unknown"]
 
 
 class DocumentInventoryReview(QuantityData):
-    windows: list[InventoryWindowReview] = Field(min_length=1, max_length=12)
+    windows: list[InventoryWindowReview] = Field(min_length=1, max_length=13)
     document_coverage: Literal["complete", "incomplete", "unknown"]
     operation: Literal["supported", "mismatch", "ambiguous", "unknown"]
     issues: list[str] = Field(default_factory=list, max_length=12)
+    missing_detail_pages: list[int] = Field(
+        default_factory=list, max_length=3,
+        description="Original physical pages needing detail images to resolve incomplete or "
+        "unknown document coverage; empty when no missing-page inspection can resolve it",
+    )
 
 
 class DocumentInventoryRun(QuantityData):
@@ -532,6 +537,8 @@ class DocumentInventoryRun(QuantityData):
     window_ids: list[str] = Field(default_factory=list)
     reviewed: bool = False
     review: DocumentInventoryReview | None = None
+    previous_reviews: list[DocumentInventoryReview] = Field(default_factory=list, max_length=1)
+    additional_pages: list[int] = Field(default_factory=list, max_length=3)
     complete: bool = False
     aggregate_id: str | None = None
 

@@ -6,9 +6,161 @@ import pytest
 from pydantic_ai.models.function import FunctionModel
 
 from app.llm.adaptive import run_adaptive_agent
-from app.llm.research_state import EvidenceNeedSpec, NeedConstraint, ResearchState, TaskSpec
+from app.llm.research_state import (
+    EvidenceNeedSpec,
+    NeedConstraint,
+    NumericPresentation,
+    ResearchState,
+    TaskSpec,
+)
 from tests.test_adaptive import answer, block, deps, payload, reply
 from tests.test_quantities import text_arithmetic
+
+
+def numeric_sort_state(dependencies):
+    state = ResearchState(task=TaskSpec(question=dependencies.question), need_planning="ready")
+    state.add_need(EvidenceNeedSpec(
+        description="Read the scores and present them in the requested numeric order",
+        operation="sort",
+        acquisition="text",
+        constraints=[NeedConstraint(dimension="metric", value="scores", question_quote="scores")],
+        presentation=NumericPresentation(
+            decimals=1, order="descending", question_quote="descending order with one decimal place"
+        ),
+    ))
+    return state
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("operation", ["lookup", "compare", "sort"])
+async def test_planned_numeric_presentation_dispatches_without_speculative_answer(operation):
+    dependencies = deps(
+        "Alpha 10.14\nBeta 8.26",
+        question="List the scores in descending order with one decimal place.",
+        derived_answers=True,
+    )
+    state = numeric_sort_state(dependencies)
+    need = next(iter(state.evidence_needs.values()))
+    state.evidence_needs[need.id] = need.model_copy(
+        update={"spec": need.spec.model_copy(update={"operation": operation})}
+    )
+    roles = []
+
+    def model(messages, info):
+        props = info.output_tools[0].parameters_json_schema["properties"]
+        assert "missing" not in props, "Executable numeric presentation needs no answer attempt"
+        if "available" in props:
+            roles.append("selector")
+            assert payload(messages)["need"]["presentation"]["decimals"] == 1
+            return reply(info, dict(
+                available=True, operation_kind="read", support_ids=["E1.S1"], context_support_ids=[]
+            ))
+        if "operands" in props:
+            roles.append("collector")
+            return reply(info, dict(mode="read", complete=True, operands=[
+                dict(name=name.lower(), label=name, value=value, unit="score", source_ranges=[
+                    dict(support_id="E1.S1", start_line=line, end_line=line)
+                ]) for name, value, line in [("Alpha", "10.14", 1), ("Beta", "8.26", 2)]
+            ]))
+        assert "inputs" in props
+        roles.append("checker")
+        return reply(info, dict(inputs="supported", coverage="complete", operation="supported"))
+
+    result = await run_adaptive_agent(
+        FunctionModel(model), dependencies, state=state, fast_path=True
+    )
+    assert result.failure_code is None, state.needs
+    assert roles == ["selector", "collector", "checker"]
+    assert json.loads(result.raw)["answer_parts"][0]["text"] == '["10.1", "8.3"]'
+    record = next(iter(state.quantities.values()))
+    assert [o.value for o in record.draft.operands] == ["10.14", "8.26"]
+    assert record.draft.output_order == "descending" and record.draft.output_decimals == 1
+
+
+@pytest.mark.asyncio
+async def test_direct_numeric_presentation_unavailable_source_keeps_research_and_finalization():
+    dependencies = deps(
+        "Partial source", derived_answers=True,
+        question="List the scores in descending order with one decimal place.",
+    )
+    state = numeric_sort_state(dependencies)
+    roles = []
+
+    def model(messages, info):
+        props = info.output_tools[0].parameters_json_schema["properties"]
+        assert "missing" not in props
+        if "available" in props:
+            roles.append("selector")
+            return reply(info, dict(available=False, support_ids=[], context_support_ids=[]))
+        if "action" in props:
+            roles.append("research")
+            assert payload(messages)["collection_outcomes"][-1]["status"] == "not_found"
+            return reply(info, dict(action="stop"))
+        roles.append("finalizer")
+        return reply(info, dict(abstain=True))
+
+    result = await run_adaptive_agent(
+        FunctionModel(model), dependencies, state=state, fast_path=True
+    )
+    assert roles == ["selector", "research", "finalizer"]
+    assert result.failure_code is None and json.loads(result.raw)["abstain"]
+    assert not state.quantities
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("case", [
+    "text_sort", "lookup", "composite", "no_tools", "no_derived", "unready", "satisfied",
+    "no_collection_requests",
+])
+async def test_direct_numeric_dispatch_does_not_displace_existing_fast_answers(monkeypatch, case):
+    dependencies = deps(
+        "Alpha 10.14\nBeta 8.26", derived_answers=case != "no_derived",
+        question="List the scores in descending order with one decimal place.",
+    )
+    state = numeric_sort_state(dependencies)
+    need = next(iter(state.evidence_needs.values()))
+    changes = {}
+    if case == "text_sort":
+        changes["presentation"] = need.spec.presentation.model_copy(update={"decimals": None})
+    if case == "lookup":
+        changes["operation"] = "lookup"
+        changes["presentation"] = need.spec.presentation.model_copy(update={"order": "source"})
+    if changes:
+        state.evidence_needs[need.id] = need.model_copy(
+            update={"spec": need.spec.model_copy(update=changes)}
+        )
+    if case == "composite":
+        state.add_need(EvidenceNeedSpec(
+            description="Identify the scoring metric", operation="lookup",
+            constraints=[NeedConstraint(
+                dimension="metric", value="scores", question_quote="scores"
+            )],
+        ))
+    if case == "unready":
+        state.need_planning = "failed"
+    if case == "satisfied":
+        state.evidence_needs[need.id] = need.model_copy(update={"status": "satisfied"})
+
+    async def forbidden(*args, **kwargs):
+        pytest.fail("Existing direct-answer capability must be preserved")
+
+    monkeypatch.setattr("app.llm.adaptive.collect_quantities", forbidden)
+    calls = []
+
+    def model(messages, info):
+        assert "missing" in info.output_tools[0].parameters_json_schema["properties"]
+        calls.append("fast")
+        return reply(info, dict(answer=dict(answer_parts=[dict(
+            text="Alpha 10.14; Beta 8.26", support_ids=["E1.S1"]
+        )])))
+
+    result = await run_adaptive_agent(
+        FunctionModel(model), dependencies, state=state, fast_path=True,
+        max_tool_calls=0 if case == "no_tools" else 8,
+        max_requests=2 if case == "no_collection_requests" else 6,
+    )
+    assert result.failure_code is None and not json.loads(result.raw)["abstain"]
+    assert calls == ["fast"]
 
 
 @pytest.mark.asyncio

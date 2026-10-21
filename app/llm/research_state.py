@@ -199,6 +199,7 @@ class SearchEvidence(ResearchRecord):
     need_id: str = ""
     admitted_support_ids: list[str]
     selected_support_ids: list[str]
+    newly_exposed_support_ids: list[str] = Field(default_factory=list)
 
 
 class TextCalculationPlan(ResearchRecord):
@@ -345,6 +346,9 @@ class ResearchState(BaseModel):
     read_coverage: dict[str, ReadCoverage] = Field(default_factory=dict)
     read_recovery: ReadRecovery | None = None
     search_evidence: list[SearchEvidence] = Field(default_factory=list)
+    # Fingerprints of actual full evidence projections, not catalog previews.
+    # Reordering previously exposed evidence is not new research progress.
+    evidence_exposures: dict[str, str] = Field(default_factory=dict)
     initial_support_ids: list[str] = Field(default_factory=list)
     text_computations: dict[str, TextCalculationResult] = Field(default_factory=dict)
     quantities: dict[str, QuantityRecord] = Field(default_factory=dict)

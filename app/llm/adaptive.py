@@ -621,6 +621,10 @@ class AdaptiveSession:
         )[:12]
         evidence = [available[item].as_dict() for item in chosen if item in available]
         visible = {item["support_unit_id"] for item in evidence}
+        for item in evidence:
+            self.state.evidence_exposures[item["support_unit_id"]] = signature(
+                "evidence_exposure", item, 0
+            )
         with operation("research.context") as span:
             span.set_attribute("evidence.available_ids", list(available))
             span.set_attribute("evidence.selected_ids", sorted(visible))
@@ -1147,11 +1151,25 @@ class AdaptiveSession:
                         preserve_anchors=False,
                     )[:6]
                 )
-                progressed = progressed or bool(set(self.selected) - set(previous))
+            newly_exposed = [
+                key
+                for key in self.selected
+                if key in candidates
+                and key not in previous
+                and self.state.evidence_exposures.get(key)
+                != signature("evidence_exposure", candidates[key].as_dict(), 0)
+            ]
+            # An existing but previously hidden chunk is useful progress. Merely
+            # cycling A -> B -> A after both were shown is not. This measures
+            # acquisition only; extraction/calculation have their own progress.
+            progressed = progressed or bool(newly_exposed)
             with operation("evidence.search.focus") as span:
                 span.set_attribute("evidence.search_chunks", len(focused))
                 span.set_attribute("evidence.reused_support_ids", sorted(reused))
                 span.set_attribute("evidence.selected_ids", list(self.selected))
+                span.set_attribute("evidence.newly_exposed_support_ids", newly_exposed)
+                span.set_attribute("research.progressed", progressed)
+                span.set_attribute("research.progress_policy", "cumulative_evidence_exposure_v1")
                 outcome(span, "completed")
             if progressed:
                 self.state.search_evidence.append(
@@ -1160,6 +1178,7 @@ class AdaptiveSession:
                         need_id=decision.need_id,
                         admitted_support_ids=sorted(set(self.units()) - before),
                         selected_support_ids=list(self.selected),
+                        newly_exposed_support_ids=newly_exposed,
                     )
                 )
             return progressed
@@ -2086,10 +2105,14 @@ class AdaptiveSession:
                     raise
                 span.set_attribute("validator.material_omission_count", len(omissions))
                 if isinstance(references, RequiredScopeJudgment):
+                    requirement_diagnostics: dict[str, int] = {}
                     requirement_errors = validate_requirements(
-                        payload, question_requirements, references, generated, source_images
+                        payload, question_requirements, references, generated, source_images,
+                        diagnostics=requirement_diagnostics,
                     )
                     span.set_attribute("validator.requirement_failure_codes", requirement_errors)
+                    for name, count in requirement_diagnostics.items():
+                        span.set_attribute(f"validator.{name}", count)
                 if isinstance(references, DiagnosticScopeJudgment):
                     errors = validate_objections(payload, references)
                     self.state.quantity_scope_diagnostics.append(
@@ -2106,7 +2129,22 @@ class AdaptiveSession:
                     if errors:
                         raise ValueError("SCOPE_REVIEW_INDETERMINATE")
                 assert references is not None
-                checked = resolve_line_judgment(payload, references)
+                # Only exact, locally recomputed image-backed candidates have
+                # independent input authority. Ordinary/model-edited claims keep
+                # strict locator validation. Semantic requirements must pass too.
+                independently_verified = {
+                    op["claim_index"]
+                    for op in judge_payload.get("verified_operations", [])
+                    if op.get("input_authority") == "independently_checked_original_images"
+                    and any(op["claim_index"] in i["claim_indexes"] for i in source_images)
+                } if not requirement_errors else set()
+                claim_diagnostics: dict[str, int] = {}
+                checked = resolve_line_judgment(
+                    payload, references, independently_verified_claims=independently_verified,
+                    diagnostics=claim_diagnostics,
+                )
+                for name, count in claim_diagnostics.items():
+                    span.set_attribute(f"validator.{name}", count)
             else:
                 checked = await self.call(
                     "scope_validator",
@@ -2477,11 +2515,40 @@ async def run_adaptive_agent(
                 and deps.derived_answers
                 and any(n.spec.operation == "count" for n in quantitative)
             )
+            # Numeric ordering with explicit precision already has an executable
+            # read/presentation contract. Do not speculate an answer before
+            # acquiring its operands. Ambiguous or composite plans keep the
+            # existing fast-answer/research path.
+            direct_read_need = next(
+                (
+                    n
+                    for n in state.evidence_needs.values()
+                    if n.status != "satisfied"
+                    and n.spec.operation in {"lookup", "compare", "sort"}
+                    and n.spec.presentation is not None
+                    and n.spec.presentation.decimals is not None
+                    and n.spec.presentation.order in {"ascending", "descending"}
+                    and (
+                        n.spec.acquisition != "image"
+                        or (deps.visual_answers and deps.render_page is not None)
+                    )
+                ),
+                None,
+            ) if (
+                fast_path
+                and state.need_planning == "ready"
+                and len(state.evidence_needs) == 1
+                and deps.derived_answers
+                and session.units()
+                and deps.observations.tool_calls < min(max_tool_calls, policy.max_tool_attempts)
+                and session.usage.requests + 3 + int(deps.scope_validation_enabled) <= max_requests
+            ) else None
             visual_need = next(
                 (
                     n
                     for n in state.evidence_needs.values()
                     if n.spec.acquisition == "image"
+                    and (direct_read_need is None or n.id != direct_read_need.id)
                     and n.spec.operation not in {"count", "calculate"}
                     and n.status != "satisfied"
                 ),
@@ -2542,7 +2609,23 @@ async def run_adaptive_agent(
             collection_operation = "count" if needs_inventory else "unknown"
             if quantitative and not needs_inventory:
                 collection_operation = "calculate"
-            if fast_path and not needs_inventory:
+            if direct_read_need is not None:
+                collection_operation = "numeric_lookup"
+            with operation("research.fast_answer.route") as span:
+                span.set_attribute("research.fast_path_enabled", fast_path)
+                span.set_attribute("research.fast_answer_skipped", bool(
+                    fast_path and (needs_inventory or direct_read_need is not None)
+                ))
+                span.set_attribute("research.route_reason", (
+                    "disabled" if not fast_path else
+                    "planned_count" if needs_inventory else
+                    "planned_numeric_presentation" if direct_read_need is not None else
+                    "direct_answer_eligible"
+                ))
+                span.set_attribute(
+                    "research.need_ids", [direct_read_need.id] if direct_read_need else []
+                )
+            if fast_path and not needs_inventory and direct_read_need is None:
                 with operation("research.fast_answer") as span:
                     try:
                         attempt: AnswerAttempt = await session.call(

@@ -222,6 +222,7 @@ async def test_only_exact_checked_application_result_gets_semantic_projection():
     projected, ids = semantic_scope_projection(original, [record])
     assert ids == [record.id] and original == saved
     assert "calculation" not in projected["claims"][0]["claim"]
+    assert projected["claims"][0]["claim"]["text"] == original["claims"][0]["claim"]["text"]
     assert all(
         u["support_unit_id"] not in record.proof_support_ids
         for u in projected["claims"][0]["cited_evidence"]
@@ -252,6 +253,7 @@ async def test_semantic_projection_still_needs_positive_scope_and_original_relea
     async def scope(role, output_type, instructions, data, **kwargs):
         assert role == "scope_validator" and data["verified_operations"]
         assert "calculation" not in data["claims"][0]["claim"]
+        assert data["claims"][0]["claim"]["text"] == answer.answer_parts[0].text
         if reject:
             return DiagnosticScopeJudgment.model_validate(
                 dict(
