@@ -5,12 +5,14 @@ acceptance failures, partial fixes and source/metric adjudication. The detailed
 [code-and-trace audit](adaptive-issue-audit.md) contains source anchors and offline
 replays. Prior run reports retain unsuccessful attempts.
 
-There are **24 unresolved question/workflow outcomes** in the
+There are **21 unresolved question/workflow outcomes** in the
 [120-row ledger](adaptive-solved-questions.md). Two additional questions have qualified interpreted calculations. These are not independently proven
 code bugs. One row can exercise multiple families; counts below are not additive.
 The shared matcher scores and strict source/workflow audit remain separate.
 
 ## Current priorities
+
+The [visual-condition handoff](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) preserves correct 634/637/659 answers and obtains safe negatives for 635/638/660. Original-image scope now covers both exact checked lists and admitted generic visual facts. Generated transcription alone cannot establish a condition. The three source-audited negatives move to correct refusals: **79 supported / 2 qualified / 18 correct refusals / 21 unresolved**. Visual judgment calibration and repeated mismatch repair remain open; no universal color/location guarantee is claimed.
 
 The [checked-image authority correction](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) recovers 727's previously withheld 12-Tweet answer. The existing scope call now sees the same reviewed original page, with version/page/visibility checks; raw parser text cannot substitute for that image reading. Four answerable controls and one missing-input control pass **5/5 expected outcomes**. PROV-002 is fixed for the targeted case; no extra model loop is added.
 
@@ -72,7 +74,7 @@ lacks a verified source explanation. Counts remain unchanged.
 | SCHEMA-001: numeric readability mixed with binding ambiguity | P1; schema correction implemented; relationship review remains required | Prior 641 reads 56.82 but sets ambiguous status because dataset identity is uncertain; native NumericReading rejects a non-null value with that status. | Ambiguous numeric displays survive checkpoints without executing; lookup binding status is separate. Same-snapshot definition context is supplied for independent join review. |
 | EVAL-001: judge/image coverage and missed constraints | P1; confirmed audit weakness | Reference-page-only review omits images for many negative rows and relevant pages for 1086/834. Reviewers approve wrong grouping/range/location in 399/660/638. | Audit actual observed pages and independent required source scope; calibrate both false acceptance and false refusal. |
 | EVAL-002: clarification missing from trace export | Implemented; captured 830 replay and export tests pass | Typed clarification survives normalization. The harness now exports explicit terminal kind/clarification; empty answer tokens are preserved without misclassifying them as runtime silence. | Retain separate clarification/answer evaluation. See [follow-up](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/answer-local-validation/REPORT.md). |
-| VIS-001: visual-condition acceptance | P1; semantic defect open | 635 accepts blue Fact Checker as grey; 475 correctly rejects a non-red bar but does not close the color defect. | Original-source visual condition and object binding; no color-specific document rule. |
+| VIS-001: visual-condition acceptance | Implemented handoff; targeted negative/positive outcomes pass | 635 safely abstains; 634 retains Fact Checker with original-page scope review. 638 rejects the wrong figure, and 660 rejects the unsupported range. | Retain independent original-source condition checks across list and generic extraction routes; broaden visual calibration without color-specific rules. Repeated mismatch calls remain an efficiency issue. |
 | COUNT-001 / INTERPRET-001 | Adjudication + observed workflow failures | 658 merged N-prefix memberships; 663 connection-graph unit; 366 relative shortfall vs percentage points; 732 panels vs numeric figure; 1075 current-debt inclusion. | Establish task/counting unit/metric definition before certifying or forcing a reference answer. |
 | SRC-001 | Source limitation open | 661 waveform low voltage is not explicitly annotated; 0 V interpretation is not independently established. | Source adjudication, not a prompt rule requiring the gold number. |
 
@@ -232,7 +234,7 @@ approves cautious abstention. Current totals: **79 supported / 2 qualified / 4 v
 refusals / 35 unresolved**, across 120 distinct questions.
 
 
-## Primary-blocker distribution of the 24 unresolved questions
+## Primary-blocker distribution of the 21 unresolved questions
 
 This is a mutually exclusive grouping by each row's latest recorded principal blocker,
 not a count of implementation bugs or a new current-code measurement. Several rows have
@@ -243,9 +245,9 @@ adjudication; they are not automatically verified refusals.
 | --- | --- | --- |
 | Correctable premise or underspecified-request handling | 2 | 384, 830 |
 | Incomplete inventory or source-object coverage | 4 | 636, 662, 663, 831 |
-| Visual condition or target-location acquisition | 4 | 393, 635, 638, 660 |
+| Visual target-location acquisition | 1 | 393 |
 | Entity/period/unit binding and cross-source relationships | 5 | 510, 641, 1015, 1070, 1074 |
 | Population, denominator and approximate headcount composition | 4 | 206, 216, 219, 225 |
 | Question, counting-unit or formula adjudication | 4 | 214, 658, 732, 1075 |
 | Unestablished source reading | 1 | 661 |
-| **Total** | **24** | Each unresolved ledger row appears once. |
+| **Total** | **21** | Each unresolved ledger row appears once. |

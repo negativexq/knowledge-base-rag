@@ -44,7 +44,11 @@ from app.llm.quantities import collect as collect_quantities
 from app.llm.quantities import semantic_draft
 from app.llm.quantity_review import repair_requirement
 from app.llm.quantity_scope import INSTRUCTIONS as QUANTITY_SCOPE_INSTRUCTIONS
-from app.llm.quantity_scope import checked_scope_images, semantic_scope_projection
+from app.llm.quantity_scope import (
+    checked_scope_images,
+    checked_visual_fact_sources,
+    semantic_scope_projection,
+)
 from app.llm.quantity_sources import inspect_pages
 from app.llm.research_budget import ResearchPolicy
 from app.llm.research_dispositions import (
@@ -671,6 +675,8 @@ class AdaptiveSession:
             "extraction_coverage": [
                 {
                     "support_id": record.evidence.support_id,
+                    "method": record.method,
+                    "physical_page": record.evidence.page,
                     "observations": len(record.extraction.values),
                     "accepted": len(record.accepted_indexes),
                     "unreadable": sum(v.status != "readable" for v in record.extraction.values),
@@ -1752,6 +1758,16 @@ class AdaptiveSession:
                 for proof in record.proof_support_ids
             }
         )
+        visual_fact_sources = checked_visual_fact_sources(self)
+        owned.update({key: [ref.support_id] for key, ref in visual_fact_sources.items()})
+        generated = set(owned) | {
+            unit.support_unit_id
+            for unit in self.units().values()
+            for block in self.deps.ledger.blocks
+            if block.payload["evidence_id"] == unit.evidence_id
+            and block.payload.get("reading_method") == "image_checked"
+            and block.payload.get("parent_support_id")
+        }
         unresolved_sources = {
             key
             for r in self.state.quantities.values()
@@ -1896,7 +1912,7 @@ class AdaptiveSession:
                 judge_payload = {
                     **payload,
                     "question_requirements": question_requirements,
-                    "generated_support_ids": sorted(owned),
+                    "generated_support_ids": sorted(generated),
                 }
             requirement_errors: list[str] = []
             judge_payload, scoped_records = semantic_scope_projection(
@@ -1904,7 +1920,27 @@ class AdaptiveSession:
             )
             scope_instructions = "\n" + QUANTITY_SCOPE_INSTRUCTIONS if scoped_records else ""
             span.set_attribute("quantity.scope_projection_ids", scoped_records)
-            scope_images, source_images = await checked_scope_images(self, scoped_records)
+            scope_images, source_images = await checked_scope_images(
+                self,
+                scoped_records,
+                {key: ref for key, ref in visual_fact_sources.items() if key in cited},
+            )
+            for image in source_images:
+                record_ids = {binding["record_id"] for binding in image["reviewed_bindings"]}
+                image["claim_indexes"] = [
+                    operation["claim_index"]
+                    for operation in judge_payload.get("verified_operations", [])
+                    if operation["record_id"] in record_ids
+                ]
+                image["claim_indexes"] = sorted(
+                    set(image["claim_indexes"])
+                    | {
+                        claim["claim_index"]
+                        for claim in payload["claims"]
+                        if set(claim["claim"]["support_ids"])
+                        & set(image.get("fact_support_ids", []))
+                    }
+                )
             if source_images:
                 judge_payload["source_images"] = source_images
             span.set_attribute("evidence.scope_image_count", len(scope_images))
@@ -1933,7 +1969,7 @@ class AdaptiveSession:
                 )
                 if isinstance(references, RequiredScopeJudgment):
                     requirement_errors = validate_requirements(
-                        payload, question_requirements, references, set(owned)
+                        payload, question_requirements, references, generated, source_images
                     )
                     span.set_attribute("validator.requirement_failure_codes", requirement_errors)
                 if isinstance(references, DiagnosticScopeJudgment):

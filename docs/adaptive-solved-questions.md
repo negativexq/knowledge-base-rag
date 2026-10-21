@@ -1,6 +1,8 @@
 # Answered questions — source-verified results
 
-Latest follow-up: [checked visual scope authority](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) recovers **727 = 12 Tweets** in six calls / 42.16 seconds. The four answerable controls and one missing-input control pass **5/5 expected outcomes**. The earlier ten-answerable batch remains recorded at 9/10; 727's image/OCR regression is now recovered in the targeted recheck. These are reruns, so historical totals do not increase.
+Latest follow-up: [visual-condition handoff](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) retains correct 634/637/659 answers and obtains safe insufficient-evidence outcomes for source-audited 635/638/660. Those three move to correct refusals. The generic image-fact path now supplies the original page to scope; source selection catches the negative grey case. Repeated mismatch repairs remain an efficiency issue.
+
+Earlier follow-up: [checked visual scope authority](../artifacts/mmlongbench-v2/adaptive-checked-visual-scope-20261021/REPORT.md) recovers **727 = 12 Tweets** in six calls / 42.16 seconds. The four answerable controls and one missing-input control pass **5/5 expected outcomes**. The earlier ten-answerable batch remains recorded at 9/10; 727's image/OCR regression is now recovered in the targeted recheck. These are reruns, so historical totals do not increase.
 
 Earlier follow-up on 21 October: [three sequential regression controls](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/answer-local-validation/REPORT.md)
 retain the correct 380 calculation and 387 prose answer. 508 safely returns generic
@@ -9,8 +11,8 @@ source-scoped refusal. These reruns add no distinct questions or ledger promotio
 
 Updated: **21 October 2026**. Historical distinct questions with a correct,
 source-supported published answer: **79**, across **120 distinct questions tried**.
-There are also **two qualified interpreted calculations**, alongside **15 correct refusals**
-and **24 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+There are also **two qualified interpreted calculations**, alongside **18 correct refusals**
+and **21 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
 This is a historical success ledger, not a claim that all 79 have passed on the
@@ -318,7 +320,7 @@ reports.
 
 ## Correct refusals
 
-The [eleven-question acceptance batch](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/negative-eleven/REPORT.md) passes **11/11** under the user-approved safe-negative criterion. Prior source review plus clean live abstention supports these outcomes; a new runtime absence certificate is not required. This brings correct refusals to **15**.
+The [eleven-question acceptance batch](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/negative-eleven/REPORT.md) passes **11/11** under the user-approved safe-negative criterion. Prior source review plus clean live abstention supports these outcomes; a new runtime absence certificate is not required. That batch brought correct refusals to **15**. The [visual-condition follow-up](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) adds three source-audited safe negatives, bringing the current count to **18**.
 
 A justified refusal is a successful unanswerable task outcome, but is not counted
 as a source-supported published answer in the table above.
@@ -340,6 +342,9 @@ as a source-supported published answer in the table above.
 | 521 | According to this slides, what age range accounts for the most users of the Amazon? | Safe answer not found; no invented value or technical terminal failure. Amazon audience-age series not reported. | [Report](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/negative-eleven/REPORT.md) |
 | 728 | How many more Tweets are attributed to Germanwings than Boeing? | Safe answer not found; no invented value or technical terminal failure. Boeing operand unavailable for the difference. | [Report](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/negative-eleven/REPORT.md) |
 | 1084 | what is interest coverage ratio for AMCOR'FY 2020? round your answer to three decimal? | Safe answer not found; no invented value or technical terminal failure. AMCOR request; source is Best Buy. | [Report](../artifacts/mmlongbench-v2/adaptive-source-dispositions-20261021/negative-eleven/REPORT.md) |
+| 635 | Grey-background execution functions in Figure 1. | Safe insufficient evidence; the original function boxes are blue, pink and green. Final follow-up does not invent a grey-function list or ask for an already available figure. | [Report](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) |
+| 638 | Complete in-context examples in the bottom figure on printed page 6985. | Safe insufficient evidence; the checker rejects the upper Figure 2 example as evidence for lower Figure 3. | [Report](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) |
+| 660 | Capture trigger from requested port range 10–13. | Safe insufficient evidence; P1.1 is not substituted for the unsupported requested range. Repeated repair remains inefficient. | [Report](../artifacts/mmlongbench-v2/adaptive-visual-conditions-20261021/REPORT.md) |
 
 ## Unresolved questions
 
@@ -350,14 +355,12 @@ implemented corrections from unresolved outcomes.
 | Row | Required result / evidence | Observed failure | Run |
 | --- | --- | --- | --- |
 | 661 | Reference answer 0.0 V for the P2.7 ENABLE low/baseline waveform. | Scalar reading routed as multi-input selection; later source inference remained unverified. The voltage is not explicitly annotated on that trace. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-20261019/REPORT.md) |
-| 635 | Grey-background execution functions in Figure 1; none are shown. | Initial repair exception; subsequent run incorrectly accepted a blue Fact Checker box as grey. | [Report](../artifacts/mmlongbench-v2/adaptive-evidence-completion-20261019/REPORT.md) |
 | 658 | N-prefix part count in the merged PACKAGES table. | Published 4, reference 2; automatic review agrees with 4, but counting unit and merged-cell membership need adjudication. No verified success claimed. | [Report](../artifacts/mmlongbench-v2/adaptive-pattern-ten-20261019/REPORT.md) |
 | 1070 | Best Buy FY2022-to-FY2021 gross-margin change. | Correct numeric inputs normalized, but isolated-table identity review and context repair fail; no answer. Direction/unit semantics differ from unsigned label. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
 | 831 | Quarter 3 workplace-skills activities. | Selected evidence includes additional relevant tasks, but published answer covers only motivation interview/team activities; scope checks pass. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
 | 1015 | Costco FY2021 EBITDA, with explicit definition. | No answer; period/header and operand binding unresolved. Common operating-income-plus-D&A definition gives 8489 million. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 384 | Producer of a document revised May 2018; recorded source says May 2016. | Source-consistent abstention, but ModelRetry termination; no clean mismatch receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 225 | 65+ sample headcount online every day or 3–5 times weekly. | No answer; denominator/composition missing. About 738 is a rounded estimate, not a directly reported exact count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
-| 660 | Capture trigger in requested port range 10–13. | Published P1.1 from actual ports 0–3, ignoring requested range; reviewer also overlooks constraint. Not certified as a label error. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 206 | Survey respondents rating ethical standards poor. | No answer; value/denominator not composed. About 541 is an estimate from 36% of 1503, not an exact observed count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 732 | Airbus-related figures. | Published one chart panel; label/reviewer use Tweet value 5. Original page contains both; intended task/counting unit remains disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 214 | What is the percentage gap between the youngest age group and the oldest age group that strongly disapproves of the way the president, who started his job in 2018, was handling his job in the survey of U.S. adults conducted April 25-May 1, 2018? Please write the answer in float format | Original image produces 65−49=16.000; the 2018-start premise remains unestablished. Request reserve and finalization failure; no released answer. The label 7.0 is disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) |
@@ -366,7 +369,6 @@ implemented corrections from unresolved outcomes.
 | 393 | What are the top2 texts of the red words in the document? | Visual ordered red-heading task does not acquire the relevant strategy-map page. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 510 | According to this document, how many geographic markers in the Oxford? | Unsupported Oxford-to-Northern-Mississippi membership inference. Original page labels neither Oxford nor its location; no verified geographic join. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 636 | How many prompts examples are shown in the paper's main body? | Shown prompt-example inventory unresolved. K=20 examples used by a model is a different scope from examples shown in the paper; do not accept reviewer substitution. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
-| 638 | How many complete in-context examples are shown in the figure at the bottom of page 6985? Please write down the answer with integer format. | Question asks bottom figure on printed 6985; accepted Figure 2 example is at top. Manual page inspection overrides reviewer approval. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 641 | What is the performance of the InstructGPT model with Self-Ask in the closed-book setting on the dataset with the highest ProgramFC retrieval recall at 10? Please write down the answer in float format with 1 decimal. | Graph/table values and dataset-definition context now reach independent review; the evaluation-population join is still not accepted, so no answer is released. | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md) |
 | 662 | How many waveform figures are contained in the guidebook for 272318? List the page numbers in the list format in ascending order,e.g., ["1","2"] | Whole-guide waveform page inventory incomplete; three-page windows do not establish all pages. Figure count and page list also differ. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 663 | How many connection graphs are contained in the guidebook? | Connection-diagram counting unit/scope unresolved. Reviewer sees at least four diagrams on two pages but cannot certify guide-wide closure. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
