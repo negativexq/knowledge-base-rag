@@ -1,6 +1,7 @@
 import { AnswerFeedback } from "@/components/AnswerFeedback"
 import { ResearchActivity } from "@/components/ResearchActivity"
 import { CalculationCard } from "@/components/CalculationCard"
+import { CoverageBadge } from "@/components/CoverageBadge"
 import { followUpQuestions } from "@/lib/followUps"
 import { ClarificationPrompt } from "@/components/ClarificationPrompt"
 import { ComparisonTable } from "@/components/ComparisonTable"
@@ -600,6 +601,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                   <MessageSquarePlus className="h-3.5 w-3.5" />
                   New chat
                 </button>
+                <CoverageBadge />
                 <span className="ml-auto hidden truncate text-[11px] text-[var(--color-subtle-foreground)] lg:inline">
                   Enter to ask · Shift+Enter for a new line
                 </span>
