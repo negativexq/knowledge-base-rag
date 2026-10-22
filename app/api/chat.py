@@ -1,4 +1,5 @@
 import json
+import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import aclosing
 from dataclasses import dataclass
@@ -24,6 +25,7 @@ from app.llm.agent_observability import RequestUsage, load_prices, outcome
 from app.llm.citation_location import location_for
 from app.llm.prompt import NOT_FOUND_PHRASE
 from app.llm.query_rewrite import ChatTurn, RewriteResult
+from app.llm.research_stages import stage_event
 from app.research.traces import TraceStore, request_trace
 from app.retrieval.filters import filter_authorized_candidates
 from app.retrieval.hybrid_search import SearchResult
@@ -326,6 +328,11 @@ async def _sse_event_stream(
                 # answerability and the answer model all see the same text.
                 question = rewrite.question
             scope = {"source_ids": source_ids} if source_ids else {}
+            if deps.agentic_rag_enabled:
+                # Research answers can take a while; say so before the first search.
+                retrieval_started = time.monotonic()
+                retrieval_stage = stage_event("retrieval", "retrieval", "running")
+                yield f"event: research_progress\ndata: {json.dumps(retrieval_stage)}\n\n"
             chunks = await deps.search_fn(question, context, report, **scope)
             if rewrite is not None:
                 detail: dict = {"outcome": rewrite.outcome, "history_turns": len(history)}
@@ -465,6 +472,14 @@ async def _sse_event_stream(
             # are exactly the chunks generation receives — post-ACL,
             # post-rerank — so "what the UI shows as evidence" and "what the
             # model was actually given" cannot drift apart.
+            if deps.agentic_rag_enabled:
+                retrieval_stage = stage_event(
+                    "retrieval",
+                    "retrieval",
+                    "completed",
+                    duration_ms=round((time.monotonic() - retrieval_started) * 1000),
+                )
+                yield f"event: research_progress\ndata: {json.dumps(retrieval_stage)}\n\n"
             sources = [source_payload(i, c) for i, c in enumerate(chunks, start=1)]
             yield f"event: sources\ndata: {json.dumps({'sources': sources})}\n\n"
             yield f"event: retrieval\ndata: {json.dumps(report.as_dict())}\n\n"

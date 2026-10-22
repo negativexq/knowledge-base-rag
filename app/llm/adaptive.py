@@ -2748,6 +2748,7 @@ async def run_adaptive_agent(
                         "id": key[:12],
                         "operation": "collect",
                         "status": "failed" if collect_status == "error" else "completed",
+                        "added_evidence": len(set(session.units()) - before_ids),
                     }
                 )
                 new_records = [
@@ -2918,6 +2919,7 @@ async def run_adaptive_agent(
                         "id": key[:12],
                         "operation": decision.action,
                         "status": "failed" if status == "error" else "completed",
+                        "added_evidence": len(set(session.units()) - before_ids),
                     }
                 )
                 session.no_progress = 0 if progressed else session.no_progress + 1

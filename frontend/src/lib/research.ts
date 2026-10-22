@@ -23,6 +23,9 @@ export interface ResearchTurn {
   lastTokenAt: number | null
   groundingAt: number | null
   askStartedAt: number | null
+  // Wall clock (Date.now()) for the research progress timer; not persisted.
+  researchStartedAt?: number | null
+  researchFinishedAt?: number | null
 }
 
 export interface EvidencePin {
@@ -189,4 +192,14 @@ export function downloadResearch(session: ResearchSession): void {
   link.click()
   link.remove()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+// What the finished research established, for its progress summary.
+export function researchOutcome(turn: ResearchTurn): "answered" | "unverified" | "stopped" | undefined {
+  if (turn.streaming) return undefined
+  if (turn.errorMessage) return "stopped"
+  if (turn.metadata?.generation_skipped) return "unverified"
+  if (turn.validation && (!turn.validation.passed || turn.validation.abstain)) return "unverified"
+  if (turn.grounding && !turn.grounding.grounded) return "unverified"
+  return "answered"
 }

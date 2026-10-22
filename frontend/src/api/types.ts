@@ -459,9 +459,19 @@ export interface GroundingResult {
 
 export interface ResearchStep {
   id: string
+  // "stage": a user-facing research stage; otherwise a single tool operation.
+  kind?: "stage"
   operation: string
   status: "running" | "completed" | "retrying" | "failed"
   failure_codes?: string[]
+  stage?: string
+  // Fixed application text for the stage or its reason code, never model output.
+  message?: string
+  reason?: string
+  duration_ms?: number
+  added_evidence?: number
+  // Client clock (Date.now()) when this step was first seen as running.
+  receivedAt?: number
 }
 export interface Clarification { question: string; options: string[] }
 export interface ClarificationReply { question: string; answer: string }

@@ -7,6 +7,8 @@ from collections.abc import AsyncIterator, Awaitable, Callable
 from contextvars import ContextVar
 from typing import Any
 
+from app.llm.research_stages import StageTracker, tracking
+
 _emitter: ContextVar[Callable[[dict[str, Any]], None] | None] = ContextVar(
     "research_progress_emitter", default=None
 )
@@ -30,8 +32,21 @@ async def with_progress(work: Awaitable[Any]) -> AsyncIterator[dict[str, Any]]:
 
         loop.call_soon_threadsafe(enqueue)
 
+    tracker = StageTracker(emit)
+
+    async def run() -> Any:
+        try:
+            result = await work
+        except BaseException as exc:
+            if not isinstance(exc, asyncio.CancelledError):
+                tracker.finish(exc)
+            raise
+        tracker.finish()
+        return result
+
     token = _emitter.set(emit)
-    task = asyncio.ensure_future(work)
+    with tracking(tracker):
+        task = asyncio.ensure_future(run())
     _emitter.reset(token)
     pending: asyncio.Task[dict[str, Any]] | None = None
     try:

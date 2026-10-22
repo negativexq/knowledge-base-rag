@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import type { Identity } from "@/api/types"
-import { newResearchSession, readResearchSessions, researchMarkdown, researchScope, resolvePin, type ResearchSession } from "@/lib/research"
+import { newResearchSession, readResearchSessions, researchMarkdown, researchOutcome, researchScope, resolvePin, type ResearchSession, type ResearchTurn } from "@/lib/research"
 
 const identity: Identity = { tenant_id: "tenant-a", user_id: "user-a", roles: ["USER"], is_admin: false, can_sync: false, auth_enabled: true }
 export function researchFixture(): ResearchSession {
@@ -69,4 +69,15 @@ it("rejects malformed saved workflow payloads instead of crashing the workspace"
   expect(readResearchSessions("workflow", JSON.stringify([malformed]))).toEqual([])
   const valid = { ...session, turns: [{ ...session.turns[0], steps: [{ id: "s", operation: "search", status: "completed" }] }] }
   expect(readResearchSessions("workflow", JSON.stringify([valid]))).toHaveLength(1)
+})
+
+describe("researchOutcome", () => {
+  const turn = (patch: Partial<ResearchTurn>) => ({ streaming: false, errorMessage: null, validation: null, grounding: null, metadata: null, ...patch }) as ResearchTurn
+  it("never calls an abstention or failed check a completed answer", () => {
+    expect(researchOutcome(turn({ streaming: true }))).toBeUndefined()
+    expect(researchOutcome(turn({}))).toBe("answered")
+    expect(researchOutcome(turn({ errorMessage: "Cancelled." }))).toBe("stopped")
+    expect(researchOutcome(turn({ validation: { passed: true, abstain: true } as ResearchTurn["validation"] }))).toBe("unverified")
+    expect(researchOutcome(turn({ validation: { passed: false, abstain: false } as ResearchTurn["validation"] }))).toBe("unverified")
+  })
 })
