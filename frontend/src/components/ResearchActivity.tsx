@@ -85,7 +85,7 @@ function TechnicalDetails({ steps, rows }: { steps: ResearchStep[]; rows: Resear
     <summary className="cursor-pointer text-[var(--color-muted-foreground)]">Technical details</summary>
     <ul className="mt-2 space-y-1 font-mono text-[11px] text-[var(--color-muted-foreground)]">
       {operations.map((step) => <li key={step.id} className="flex flex-wrap gap-x-3">
-        <span>{labels[step.operation] ?? "Research operation"}</span>
+        <span>{labels[step.operation ?? ""] ?? "Research operation"}</span>
         <span>{step.status}</span>
         {!!step.added_evidence && <span>+{step.added_evidence} evidence</span>}
         {step.failure_codes?.map((code) => <span key={code}>{code}</span>)}
@@ -125,7 +125,7 @@ export function ResearchActivity({ steps, streaming, startedAt, finishedAt, outc
       <summary className="cursor-pointer font-medium">Research activity · {steps.length} steps</summary>
       <ol aria-label="Research activity" aria-live="polite" className="mt-3 space-y-2">
         {steps.map((step) => <li key={step.id} className="flex items-center justify-between gap-3">
-          <span>{labels[step.operation] ?? "Research operation"}</span>
+          <span>{labels[step.operation ?? ""] ?? "Research operation"}</span>
           <span className="text-[var(--color-muted-foreground)]">{step.status === "running" && !streaming ? "Stopped" : step.status}</span>
         </li>)}
       </ol>

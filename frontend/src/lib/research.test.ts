@@ -63,6 +63,17 @@ it("exports comparison aspects and clarification replies with resolved footnotes
   expect(output).toContain("| Root cause | Configuration drift [^a1r1] |")
 })
 
+it("keeps saved answers whose research timeline has stage events", () => {
+  const session = researchFixture()
+  session.turns[0].steps = [
+    { id: "stage-1", kind: "stage", stage: "retrieval", status: "completed", message: "Searching the documents", duration_ms: 12 },
+    { id: "op-1", operation: "search", status: "completed" },
+  ] as ResearchTurn["steps"]
+  expect(readResearchSessions("scope", JSON.stringify([session]))[0]?.turns[0].steps).toHaveLength(2)
+  session.turns[0].steps = [{ id: "stage-1", kind: "stage", status: "completed" }] as unknown as ResearchTurn["steps"]
+  expect(readResearchSessions("scope", JSON.stringify([session]))).toEqual([])
+})
+
 it("rejects malformed saved workflow payloads instead of crashing the workspace", () => {
   const session = researchFixture()
   const malformed = { ...session, turns: [{ ...session.turns[0], comparison: [{ cells: "invalid" }] }] }

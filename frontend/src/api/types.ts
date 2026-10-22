@@ -483,7 +483,8 @@ export interface ResearchStep {
   id: string
   // "stage": a user-facing research stage; otherwise a single tool operation.
   kind?: "stage"
-  operation: string
+  // Absent on stage events.
+  operation?: string
   status: "running" | "completed" | "retrying" | "failed"
   failure_codes?: string[]
   stage?: string
