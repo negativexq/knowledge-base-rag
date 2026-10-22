@@ -1,5 +1,11 @@
 # Answered questions — source-verified results
 
+The [population contract follow-up](../artifacts/mmlongbench-v2/adaptive-population-contracts-20261022/REPORT.md) publishes **approximately 541 for 206** and **approximately 738 for 225**, explicitly qualified as survey sample-equivalent estimates. These two move to qualified calculations: **81 source-supported answers / 4 qualified calculations / 18 correct refusals / 17 unresolved**, or **103/120 (85.8%)** historical accepted outcomes. Row 219 produces a focused category clarification; 216 preserves the known percentage without inventing an incompatible subgroup count. Neither is added to the accepted total. Failed intermediate attempts and latency costs remain documented.
+
+The [four-question population recheck](../artifacts/mmlongbench-v2/adaptive-population-four-20261022/REPORT.md) runs 206/219/225/216 sequentially without application changes. All four return generic insufficiency: three approximate-composition cases remain unrecovered; 216 safely avoids the unsupported count but suppresses a useful limitation draft. 206 computes 541 then fails semantic entity scope; 219 reads percentages without a base join; 225 attempts a person inventory instead of derived-headcount arithmetic. All use nine model requests (36 total); median 135.45 seconds. A logging-only trace-harness stage-event compatibility fix was needed before the completed batch. Historical coverage and 19 unresolved workflows stay unchanged.
+
+[Population and interpretation source audit](../artifacts/mmlongbench-v2/adaptive-composition-audit-20261022/REPORT.md): 206/219/225 permit explicitly approximate derivations; 216 has incompatible subgroup bases. Original-chart inspection corrects the prior 214 diagnosis: **46−39=7**, not 65−49=16. This documentation-only audit adds no live results or historical successes.
+
 The [finalization-contract follow-up](../artifacts/mmlongbench-v2/adaptive-finalization-contracts-20261021/REPORT.md) reruns the five failed baseline cases plus six controls: **11/11 expected outcomes**, including all five recovered answers and two retained safe refusals. Grounded semantic restrictions replace capitalized-token matching; exact application arithmetic stays visible to final coverage; localized image-operand repair reuses its source selection and preserves valid inputs. On the same eleven rows, requests fall **83 → 65**, median time **60.17 → 54.10 s**, p90 **92.06 → 87.73 s**; p95 stays essentially unchanged (**115.14 → 114.99 s**). One attempt per row is descriptive, not a universal performance guarantee. 380 reads correctly on the first live pass; its new repair branch is covered offline. Historical coverage remains **101/120**, with no new distinct questions. **2,471 tests pass**. Multi-page acquisition and safe dependency-based review reuse remain open.
 
 Latest efficiency follow-up: [numeric dispatch and inventory authority](../artifacts/mmlongbench-v2/adaptive-direct-numeric-dispatch-20261021/REPORT.md) retains **642** in five calls / 52.56 seconds and publishes **662** with nine figures and six distinct pages in six calls / 81.18 seconds. Four unrelated controls retain their expected outcomes in the initial mixed group. Intermediate 662 failures and exact offline replays remain documented. These are reruns: historical coverage stays **101/120 (84.2%)**, with 19 unresolved questions.
@@ -17,10 +23,10 @@ retain the correct 380 calculation and 387 prose answer. 508 safely returns gene
 insufficiency without inventing a market; it is not promoted to a verified
 source-scoped refusal. These reruns add no distinct questions or ledger promotions.
 
-Updated: **21 October 2026**. Historical distinct questions with a correct,
+Updated: **22 October 2026**. Historical distinct questions with a correct,
 source-supported published answer: **81**, across **120 distinct questions tried**.
-There are also **two qualified interpreted calculations**, alongside **18 correct refusals**
-and **19 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
+There are also **four qualified calculations**, alongside **18 correct refusals**
+and **17 unresolved questions/workflows**, tracked separately below. Each question appears once; rerunning
 the same question does not add to the count.
 
 This is a historical success ledger, not a claim that all 81 have passed on the
@@ -121,14 +127,17 @@ answer. The linked reports retain the details.
 
 ## Qualified interpreted calculations
 
-These answers state their chosen calculation convention. Their source inputs and
-arithmetic are supported, but the source does not establish a unique metric definition.
+These answers state their calculation convention or approximation status. Their source
+inputs and arithmetic are supported; the qualification distinguishes a chosen metric
+definition or a sample-equivalent estimate from a directly reported exact count.
 They are counted separately from source-verified answers and unresolved workflows.
 
 | Row | Question | Qualified answer | Run |
 | --- | --- | --- | --- |
 | 1072 | Best Buy ROCE for the fiscal year ending January 28, 2023. | **26.304%** using operating income / (ending total assets − ending current liabilities); approximately 0.263 as a three-decimal ratio. The published answer states the formula; the source does not define ROCE. | [Report](../artifacts/mmlongbench-v2/adaptive-quantity-authority-20261020/REPORT.md); 57.12 s / 6 calls |
 | 366 | India GDP forecast 6.7% versus actual 4.3%. | **35.821%** relative shortfall, explicitly calculated as abs((6.7−4.3)/6.7)×100. The absolute gap is **2.4 percentage points**; the question/reference metric remains ambiguous. | [Report](../artifacts/mmlongbench-v2/adaptive-unit-arithmetic-20261020/REPORT.md); 58.34 s / 6 calls |
+| 206 | Adults rating Trump administration officials’ ethical standards as poor in the April–May 2018 survey. | **Approximately 541 adults**, from 36% × 1,503. Rounded survey rates produce a sample-equivalent estimate, not an observed exact respondent count. | [Report](../artifacts/mmlongbench-v2/adaptive-population-contracts-20261022/REPORT.md); 109.40 s / 5 calls |
+| 225 | 65+ sample headcount online daily or 3–5 times weekly. | **Approximately 738 people**, from 1,526 × 59% × (71% + 11%). Preserves the source’s “Every day or almost every day” category and the approximate sample-equivalent qualification. | [Report](../artifacts/mmlongbench-v2/adaptive-population-contracts-20261022/REPORT.md); 195.82 s / 8 calls |
 
 ## Latest runs
 
@@ -369,12 +378,10 @@ implemented corrections from unresolved outcomes.
 | 1070 | Best Buy FY2022-to-FY2021 gross-margin change. | Correct numeric inputs normalized, but isolated-table identity review and context repair fail; no answer. Direction/unit semantics differ from unsigned label. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-ten-next-20261019/REPORT.md) |
 | 1015 | Costco FY2021 EBITDA, with explicit definition. | No answer; period/header and operand binding unresolved. Common operating-income-plus-D&A definition gives 8489 million. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 384 | Producer of a document revised May 2018; recorded source says May 2016. | Source-consistent abstention, but ModelRetry termination; no clean mismatch receipt. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
-| 225 | 65+ sample headcount online every day or 3–5 times weekly. | No answer; denominator/composition missing. About 738 is a rounded estimate, not a directly reported exact count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
-| 206 | Survey respondents rating ethical standards poor. | No answer; value/denominator not composed. About 541 is an estimate from 36% of 1503, not an exact observed count. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
 | 732 | Airbus-related figures. | Published one chart panel; label/reviewer use Tweet value 5. Original page contains both; intended task/counting unit remains disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-unseen-fifteen-20261019/REPORT.md) |
-| 214 | What is the percentage gap between the youngest age group and the oldest age group that strongly disapproves of the way the president, who started his job in 2018, was handling his job in the survey of U.S. adults conducted April 25-May 1, 2018? Please write the answer in float format | Original image produces 65−49=16.000; the 2018-start premise remains unestablished. Request reserve and finalization failure; no released answer. The label 7.0 is disputed. | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) |
-| 216 | How many Demoncratic people in the survey of U.S. adults conducted April 25- May 1, 2018 said neither the Republican Party nor the Democratic Party  has ‘high ethical standards'? | Exact Democratic headcount unsupported by subgroup denominator; 128 assumes 18% of Dem/Lean Dem n=710. Population/estimate adjudication needed. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
-| 219 | How many people who do not go online or only use SNS in the Older Adults and Technology by Princeton Survey Research Associates International from July 18 to September 30, 2013? | Approximate 1038 could be derived from 68% of n=1526, with weighting/rounding caveats. Composition remains unresolved. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 214 | What is the percentage gap between the youngest age group and the oldest age group that strongly disapproves of the way the president, who started his job in 2018, was handling his job in the survey of U.S. adults conducted April 25-May 1, 2018? Please write the answer in float format | Source re-audit corrects the prior finding: strongly-disapprove values are 46 and 39, giving 7 percentage points. The saved 65−49=16 reading used total disapproval. The 2018-start premise remains unestablished; no current qualified answer is newly measured. | [Report](../artifacts/mmlongbench-v2/adaptive-routing-scope-20261020/REPORT.md) |
+| 216 | How many Demoncratic people in the survey of U.S. adults conducted April 25- May 1, 2018 said neither the Republican Party nor the Democratic Party  has ‘high ethical standards'? | Current runs explain the known 18% without inventing a count. The Democratic-only base is not established; 128 borrows the combined Dem/Lean Dem n=710. Benchmark/source adjudication remains separate from this safe limitation. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
+| 219 | How many people who do not go online or only use SNS in the Older Adults and Technology by Princeton Survey Research Associates International from July 18 to September 30, 2013? | Current run asks whether “only use SNS” means the reported “Use SNS” group or SNS-exclusive use. Approximately 1038 requires the broader chart-group interpretation; no exclusive-subgroup count is invented. Clarification is not promoted to an accepted numeric answer. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 393 | What are the top2 texts of the red words in the document? | Visual ordered red-heading task does not acquire the relevant strategy-map page. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 510 | According to this document, how many geographic markers in the Oxford? | Unsupported Oxford-to-Northern-Mississippi membership inference. Original page labels neither Oxford nor its location; no verified geographic join. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |
 | 636 | How many prompts examples are shown in the paper's main body? | Shown prompt-example inventory unresolved. K=20 examples used by a model is a different scope from examples shown in the paper; do not accept reviewer substitution. | [Report](../artifacts/mmlongbench-v2/adaptive-remaining-thirty-20261020/REPORT.md) |

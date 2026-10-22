@@ -55,7 +55,7 @@ from app.llm.quantity_scope import (
     checked_visual_fact_sources,
     semantic_scope_projection,
 )
-from app.llm.quantity_sources import inspect_pages
+from app.llm.quantity_sources import inspect_pages, partial_value_sources
 from app.llm.research_budget import ResearchPolicy
 from app.llm.research_dispositions import (
     REVIEW_INSTRUCTIONS as DISPOSITION_REVIEW_INSTRUCTIONS,
@@ -154,15 +154,32 @@ for extraction. Source selection checks the actual object before extraction. A c
 page/page_end is a range, not an exact figure location. A source mismatch means continue
 locating evidence, not that no answer exists. Prefer need-bound facts over unrelated data.
 Clarify material ambiguity or stop when evidence cannot support an answer.
+For aggregate population needs, distinguish a reported count from a derived estimate.
+Locate rates and their compatible sample bases; do not enumerate hypothetical people.
+An explicitly approximate sample-equivalent estimate may use rounded/weighted rates,
+but never an unmatched subgroup base. Preserve all conditional population relationships.
+When the cited material cannot establish a requested number, answer_kind=source_limitation
+may state the supported rate and the missing/incompatible base instead. This is a
+source-bound explanation, not a guessed value or a document-wide absence claim.
 For a source-backed stop, reuse a verified source_dispositions ID in disposition_id,
 or propose disposition with question/source witnesses and object boundaries. A new
 proposal is independently checked. No proposal is needed for a safe generic stop.
 Partial search or an entity mismatch in one excerpt is not document-wide absence.
 Use checked_partial_inputs without discarding them when another operand is missing.
+Their unresolved_bindings identify the actual remaining issue; do not search again for
+a supported input. If the issue requires interpreting the user's intended category,
+ask a focused clarification rather than hunting for an unrelated missing number.
 """.strip()
 
 FINAL_INSTRUCTIONS = """Produce a concise answer to the original question using only the
 supplied evidence and application computation results. Cite authorized support IDs.
+Preserve approximate versus exact status. For a numerical request unsupported by the
+cited material, use answer_kind=source_limitation to explain its specific missing or
+incompatible input and retain useful supported facts. Do not attach a calculation to
+a limitation, import a denominator, or infer whole-document absence from a bounded view.
+Name the cited table/excerpt's limitation rather than implying the entire document
+was exhausted. If the remaining issue is the user's intended category, return a
+focused clarification instead of guessing or searching again for already checked inputs.
 Research may have stopped because of budget; that is not evidence that the answer is
 absent. Use successful results already present. Preserve entity, period and units.
 Equivalent wording is allowed. State material limitations; abstain if no material answer
@@ -598,6 +615,7 @@ class AdaptiveSession:
             and all(s in available for s in r.support_ids)
         ][-3:]
         successful_sources = [f.evidence.support_id for f in focused_facts]
+        partial_candidates = {r.id: partial_value_sources(r, available) for r in partial_records}
         fallback = [] if self.compact_context and finalizing and self.selected else diverse
         # Retain a bounded pair of witnesses from each recent search, even when
         # a later search focuses on another missing input. These are raw evidence,
@@ -613,6 +631,8 @@ class AdaptiveSession:
                 [
                     *successful_sources,
                     *(s for r in partial_records for s in r.support_ids),
+                    *(s for groups in partial_candidates.values()
+                      for sources in groups.values() for s in sources),
                     *(key for key in self.state.initial_support_ids[:3] if key in available),
                     *self.selected,
                     *retained,
@@ -705,6 +725,13 @@ class AdaptiveSession:
                         r.draft.operands[i].model_dump() for i in r.supported_operand_indexes
                     ],
                     "formula_complete": r.has_result,
+                    "candidate_value_support_ids": {
+                        i: [s for s in sources if s in visible]
+                        for i, sources in partial_candidates[r.id].items()
+                    },
+                    "unresolved_bindings": [
+                        i.model_dump() for i in r.assessments[-1].issues
+                    ] if r.assessments and not r.diagnostic_errors else [],
                 }
                 for r in partial_records
                 if all(s in visible for s in r.support_ids)
@@ -1915,12 +1942,16 @@ class AdaptiveSession:
             reviewed_calculation = (
                 part.calculation is not None and self.deps.scope_validation_enabled
             )
+            reviewed_limitation = (
+                part.answer_kind == "source_limitation" and self.deps.scope_validation_enabled
+            )
             if (
                 cited_ids
                 and cited_ids <= unresolved_sources
                 and not cited_ids & set(owned)
                 and not independent_fact
                 and not reviewed_calculation
+                and not reviewed_limitation
             ):
                 raise ValueError("QUANTITY_REVIEW_REQUIRES_EVIDENCE")
         if owned and answer.answer_parts:
@@ -2407,7 +2438,18 @@ async def _finalize(session: AdaptiveSession) -> tuple[AgentAnswer, ScopeReceipt
                 session.context(finalizing=True),
                 research=False,
             )
-            return await session.verify(draft)
+            try:
+                return await session.verify(draft)
+            except ValueError:
+                if draft.answer_parts and all(
+                    p.answer_kind == "source_limitation" for p in draft.answer_parts
+                ):
+                    # An unverified explanation is not verified absence. Once
+                    # research is closed, keep the safe no-answer outcome rather
+                    # than retrying the explanation or labeling it a runtime fault.
+                    session.terminal_errors.append("SOURCE_LIMITATION_UNVERIFIED")
+                    return AgentAnswer(abstain=True), None
+                raise
         except ResearchClosed as exc:
             # Hard request/token/time exhaustion is not evidence of absence.
             # Preserve checkpoints and finish with scoped insufficiency.
@@ -2508,13 +2550,15 @@ async def run_adaptive_agent(
                 n
                 for n in state.evidence_needs.values()
                 if n.spec.operation in {"count", "calculate"}
+                or n.spec.quantity_basis == "aggregate_population"
             ]
             # A count needs an inventory plus category boundaries. Merely listing
             # a supported subset is insufficient, even when its length is correct.
             needs_inventory = (
                 state.need_planning == "ready"
                 and deps.derived_answers
-                and any(n.spec.operation == "count" for n in quantitative)
+                and any(n.spec.operation == "count"
+                        and n.spec.quantity_basis != "aggregate_population" for n in quantitative)
             )
             # Numeric ordering with explicit precision already has an executable
             # read/presentation contract. Do not speculate an answer before
@@ -2544,12 +2588,22 @@ async def run_adaptive_agent(
                 and deps.observations.tool_calls < min(max_tool_calls, policy.max_tool_attempts)
                 and session.usage.requests + 3 + int(deps.scope_validation_enabled) <= max_requests
             ) else None
+            population_need = next(
+                (n for n in quantitative if n.status != "satisfied"
+                 and n.spec.quantity_basis == "aggregate_population"), None
+            ) if (
+                fast_path and state.need_planning == "ready"
+                and len(state.evidence_needs) == 1 and deps.derived_answers and session.units()
+                and deps.observations.tool_calls < min(max_tool_calls, policy.max_tool_attempts)
+                and session.usage.requests + 3 + int(deps.scope_validation_enabled) <= max_requests
+            ) else None
             visual_need = next(
                 (
                     n
                     for n in state.evidence_needs.values()
                     if n.spec.acquisition == "image"
                     and (direct_read_need is None or n.id != direct_read_need.id)
+                    and (population_need is None or n.id != population_need.id)
                     and n.spec.operation not in {"count", "calculate"}
                     and n.status != "satisfied"
                 ),
@@ -2615,18 +2669,24 @@ async def run_adaptive_agent(
             with operation("research.fast_answer.route") as span:
                 span.set_attribute("research.fast_path_enabled", fast_path)
                 span.set_attribute("research.fast_answer_skipped", bool(
-                    fast_path and (needs_inventory or direct_read_need is not None)
+                    fast_path and (needs_inventory or direct_read_need is not None
+                                   or population_need is not None)
                 ))
                 span.set_attribute("research.route_reason", (
                     "disabled" if not fast_path else
                     "planned_count" if needs_inventory else
                     "planned_numeric_presentation" if direct_read_need is not None else
+                    "planned_population_quantity" if population_need is not None else
                     "direct_answer_eligible"
                 ))
                 span.set_attribute(
-                    "research.need_ids", [direct_read_need.id] if direct_read_need else []
+                    "research.need_ids", [direct_read_need.id] if direct_read_need else
+                    [population_need.id] if population_need else []
                 )
-            if fast_path and not needs_inventory and direct_read_need is None:
+            if (
+                fast_path and not needs_inventory and direct_read_need is None
+                and population_need is None
+            ):
                 with operation("research.fast_answer") as span:
                     try:
                         attempt: AnswerAttempt = await session.call(
@@ -2692,6 +2752,8 @@ async def run_adaptive_agent(
                         n.id
                         for n in state.evidence_needs.values()
                         if n.spec.operation in required_operations
+                        or (collection_operation == "calculate"
+                            and n.spec.quantity_basis == "aggregate_population")
                     ),
                     "",
                 )

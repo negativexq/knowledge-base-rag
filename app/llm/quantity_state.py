@@ -99,7 +99,9 @@ class NumericReading(QuantityData):
 
 
 class QuantityNumericOperand(QuantityOperand, NumericReading):
-    pass
+    population: str = Field(default="", max_length=300)
+    denominator_population: str = Field(default="", max_length=300)
+    period: str = Field(default="", max_length=200)
 
 
 class QuantityReadOperand(QuantityNumericOperand):
@@ -120,7 +122,8 @@ class QuantityLookupOperand(QuantityNumericOperand):
 class QuantityOperation(QuantityData):
     mode: QuantityMode
     result_unit: str = Field(default="", max_length=100)
-    interpretation: str = Field(default="", max_length=300)
+    interpretation: str = Field(default="", max_length=800)
+    result_kind: Literal["exact", "approximate"] = "exact"
     count_mode: Literal["per_group", "total", "distinct"] = "per_group"
     select_mode: Literal["minimum", "maximum"] = "minimum"
     list_order: Literal["source", "ascending", "descending"] = "source"
@@ -163,6 +166,8 @@ class QuantityDraft(QuantityOperation):
 
     @model_validator(mode="after")
     def coherent(self) -> QuantityDraft:
+        if self.result_kind == "approximate" and self.mode != "arithmetic":
+            raise ValueError("Approximate derivations require an arithmetic operation")
         if self.mode in {"read", "arithmetic", "select", "lookup"}:
             if not self.operands or self.groups or self.items or self.count_mode != "per_group":
                 raise ValueError("Numeric operations require named inputs, no item groups")
@@ -547,6 +552,14 @@ class QuantitySelection(QuantitySource):
     # The selector must explicitly choose context or state that none is needed.
     context_support_ids: list[str] = Field(max_length=3)
     document_plan: DocumentInventoryPlan | None = None
+
+
+class PopulationQuantitySelection(QuantitySelection):
+    """Aggregates are reported numbers or arithmetic, not respondent inventories."""
+
+    operation_kind: Literal["read", "arithmetic"] = "arithmetic"
+    inventory_scope: Literal["bounded_object", "unknown"] = "unknown"
+    document_plan: None = None
 
 
 class QuantityPageQuality(QuantityData):

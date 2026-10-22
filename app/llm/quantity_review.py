@@ -13,9 +13,10 @@ from app.llm.quantity_state import (
     QuantityRecord,
     QuantityRepairRequirement,
 )
-from app.llm.scope_validation import scope_lines
+from app.llm.scope_validation import SOURCE_INTERPRETATION_INSTRUCTIONS, scope_lines
 
-CHECK = """Review the proposed source inputs against the ORIGINAL question and supplied source.
+CHECK = SOURCE_INTERPRETATION_INSTRUCTIONS + "\n\n" + """
+Review the proposed source inputs against the ORIGINAL question and supplied source.
 Return three independent judgments: inputs (transcription and bindings), coverage (all
 requested inputs/items present), and operation (the requested operation on these inputs).
 A supported input remains supported even if the operation is ambiguous. Read category
@@ -24,6 +25,16 @@ continuations until the next heading, including supplied continuation pages.
 Use the question's actual requirements. Do not add uniqueness, rounding, unit or period
 requirements the question does not establish. Assess the proposed operation together
 with its explicit interpretation and output unit.
+For population arithmetic, independently check every operand's population, period
+and denominator_population against the source. A percentage and sample size are
+compatible only when their source populations match, or an explicit conditional
+chain connects them. Sum only disjoint categories on the same base. A combined
+subgroup sample is not a denominator for one constituent subgroup's percentage.
+Rounded/weighted survey percentages applied to an unweighted sample can yield an
+explicitly approximate sample-equivalent estimate, never an exact respondent count;
+require result_kind=approximate and a transparent interpretation for that operation.
+Approximate status cannot excuse incompatible populations or missing inputs. Do not
+require individual respondent records when a qualified aggregate estimate suffices.
 Another possible interpretation alone does not invalidate a defensible, clearly labeled
 one. Use ambiguous when a material choice cannot be responsibly stated; mismatch needs
 a conflict with the actual question or source. For material count ambiguity list the alternative
@@ -117,6 +128,11 @@ separately. Unknown identity cannot certify absence. A partial window cannot clo
 a document; list remaining candidates and leave scope_complete false. A report's
 publication year is not the year of every observation. Prefer a qualified answer
 when a corrected premise supplies a material answer; mark material_answer_available.
+When a witnessed, material ambiguity in the user's intended category cannot be
+responsibly resolved or stated as a qualified answer, use the existing
+source_disposition kind=needs_clarification with a focused clarification_question.
+This does not require closing the whole document. Missing inputs alone are not
+an intent ambiguity; continue acquisition for those instead of asking prematurely.
 """
 
 
@@ -341,6 +357,7 @@ def merge_repair(
         )
     if (
         replacement.mode != original.draft.mode
+        or replacement.result_kind != original.draft.result_kind
         or replacement.result_unit != original.draft.result_unit
         or replacement.interpretation != original.draft.interpretation
         or replacement.expression != original.draft.expression

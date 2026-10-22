@@ -25,6 +25,14 @@ a semantic projection, not a new answer. Check the
 entity, period, population, source-unit bindings and whether the named-input formula
 answers the actual question. Do not recompute a quotient or invent a competing result.
 checked_inputs are independently reviewed transcriptions; they are not original PDF text.
+For result_kind=approximate, the output is a declared derived estimate, not an exact
+observed count. Check each rate's population/denominator_population and conditional
+base chain against the original source. A weighted/rounded rate applied to a compatible
+sample can support that qualified estimate; do not require the source to print the
+derived headcount. A combined subgroup base cannot establish a constituent subgroup's
+count. Approximate wording does not repair a missing or incompatible base. Evaluate
+the source's actual described metric, not a hypothetical finer distinction absent
+from both the question's intent and the source's measurement.
 For arithmetic with input_authority=independently_checked_original_images, image_bindings
 identify the original document/version/pages already reviewed. Check the formula and
 the inputs' entity, period and unit relationships. Missing indexed/OCR text alone is
@@ -229,7 +237,7 @@ def semantic_scope_projection(
                 answer = candidate(record)
                 if answer.abstain or len(answer.answer_parts) != 1:
                     continue
-                expected = answer.answer_parts[0].model_dump(mode="json")
+                expected = answer.answer_parts[0].claim_dict()
                 values, expression = execute(record.draft)
             except (ValueError, DecimalException):
                 continue
@@ -294,6 +302,7 @@ def semantic_scope_projection(
                     "formula": record.draft.expression,
                     "interpretation": record.draft.interpretation,
                     "result_unit": record.draft.result_unit,
+                    "result_kind": record.draft.result_kind,
                     "decimals": record.draft.decimals,
                     "checked_inputs": semantic_draft(record.draft)["operands"],
                     "unit_conversion": record.arithmetic_conversion.model_dump()

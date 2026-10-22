@@ -233,6 +233,17 @@ class AgentAnswerPart(StrictModel):
     support_ids: list[str] = Field(min_length=1, max_length=100)
     calculation: AgentCalculation | None = None
     counts: list[AgentCount] = Field(default_factory=list, max_length=20)
+    answer_kind: Literal["answer", "source_limitation"] = Field(
+        default="answer",
+        description="source_limitation explains why the cited material cannot establish "
+        "the requested value; requires independent source-scope validation, not a value guess",
+    )
+
+    def claim_dict(self) -> dict[str, Any]:
+        return self.model_dump(
+            mode="json",
+            exclude={"source_id", *({"answer_kind"} if self.answer_kind == "answer" else set())},
+        )
 
 
 class AgentClarification(StrictModel):
@@ -277,7 +288,7 @@ class AgentAnswer(StrictModel):
         return json.dumps(
             {
                 "answer_parts": [
-                    p.model_dump(exclude={"source_id"})
+                    p.claim_dict()
                     for p in (
                         [cell for row in self.comparison for cell in row.cells]
                         if self.comparison
@@ -468,6 +479,7 @@ class AgentDependencies:
             validator_version=self.validator_version,
             shadow_enabled=self.shadow_enabled,
             architecture_v2_shadow_enabled=self.architecture_v2_shadow_enabled,
+            allow_source_limitations=self.scope_validation_enabled,
         )
 
     def check_premise(self) -> None:

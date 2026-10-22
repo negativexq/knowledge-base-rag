@@ -246,6 +246,11 @@ class EvidenceNeedSpec(ResearchRecord):
     constraints: list[NeedConstraint] = Field(min_length=1, max_length=12)
     acquisition: Literal["unknown", "text", "image"] = "unknown"
     operation: Literal["lookup", "compare", "calculate", "sort", "count"] = "lookup"
+    quantity_basis: Literal["unspecified", "aggregate_population"] = Field(
+        default="unspecified",
+        description="Aggregate survey/population headcount, potentially derived from rates "
+        "and compatible sample bases; not an inventory of individual source occurrences",
+    )
     inventory_scope: Literal["document", "bounded_object", "unknown"] = Field(
         default="unknown",
         description="For count: document when all relevant objects across the source are needed; "

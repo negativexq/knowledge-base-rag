@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from decimal import Decimal, DecimalException, localcontext
-from typing import Literal
+from typing import Literal, get_args
 
 from app.llm.quantity_state import (
     NumberFormat,
@@ -135,8 +135,6 @@ def apply_notation_corrections(draft: QuantityDraft, review: QuantityAssessment)
         old = operands[correction.index]
         if not isinstance(old, QuantityNumericOperand) or old.value is None:
             raise ValueError("NUMERIC_NOTATION_CORRECTION_INVALID")
-        if correction.number_format == old.number_format:
-            continue
         # It is not permissible to reinterpret an already valid number (e.g.
         # 1,234 between decimal-comma and decimal-point conventions).
         try:
@@ -157,3 +155,28 @@ def apply_notation_corrections(draft: QuantityDraft, review: QuantityAssessment)
             update={"number_format": correction.number_format}
         )
     return draft.model_copy(update={"operands": operands})
+
+
+def notation_options(draft: QuantityDraft) -> dict[int, list[NumberFormat]]:
+    """Syntax options, never a locale guess or permission to change a valid value."""
+    options = {}
+    for index, operand in enumerate(draft.operands):
+        if not isinstance(operand, QuantityNumericOperand) or operand.value_status != "readable":
+            continue
+        if operand.value is None:
+            continue
+        try:
+            original = source_decimal(operand.value, operand.number_format)
+        except ValueError:
+            original = None
+        formats = []
+        for notation in get_args(NumberFormat):
+            try:
+                proposed = source_decimal(operand.value, notation)
+            except ValueError:
+                continue
+            if original is None or proposed == original:
+                formats.append(notation)
+        if formats:
+            options[index] = formats
+    return options

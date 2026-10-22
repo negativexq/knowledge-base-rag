@@ -10,9 +10,12 @@ from typing import TYPE_CHECKING
 from app.evidence.documents import DocumentRead, DocumentRef
 from app.evidence.support_units import SupportUnit
 from app.llm.agent_observability import operation
+from app.llm.quantity_numbers import normalize_inputs
 from app.llm.quantity_state import (
     QuantityCatalogPage,
+    QuantityDraft,
     QuantityGapSearch,
+    QuantityNumericOperand,
     QuantityPageQuality,
     QuantityRecord,
     QuantitySource,
@@ -23,6 +26,126 @@ from app.llm.search_context import targeted_chunks
 
 if TYPE_CHECKING:
     from app.llm.adaptive import AdaptiveSession
+
+
+def bind_catalog_pages(
+    selection: QuantitySource,
+    catalog: list[QuantityCatalogPage],
+    units: dict[str, SupportUnit],
+) -> QuantitySource:
+    """Resolve requested catalog pages to existing authority, never arbitrary pages."""
+    if not selection.pages or not selection.support_ids:
+        return selection
+    anchor = units[selection.support_ids[0]]
+    context = list(selection.context_support_ids)
+    covered = {
+        page for key in [*selection.support_ids, *context]
+        for page in range(units[key].page_number or 1,
+                          (units[key].page_end or units[key].page_number or 1) + 1)
+    }
+    for page in selection.pages:
+        if page in covered:
+            continue
+        candidates = [
+            key for entry in catalog if entry.physical_page == page
+            and (entry.source_id, entry.document_version)
+            == (anchor.source_id, anchor.document_version)
+            for key in entry.support_ids if key in units
+            and units[key].authorized and units[key].model_visible
+            and (units[key].source_id, units[key].document_version)
+            == (anchor.source_id, anchor.document_version)
+            and (units[key].page_number or 1) <= page
+            <= (units[key].page_end or units[key].page_number or 1)
+        ]
+        if not candidates or len(context) >= 3:
+            raise ValueError("QUANTITY_PAGE_OUTSIDE_SOURCE")
+        context.append(candidates[0])
+        covered.add(page)
+    return selection.model_copy(update={"context_support_ids": list(dict.fromkeys(context))})
+
+
+def rate_binding_sources(
+    draft: QuantityDraft, anchor: SupportUnit, units: dict[str, SupportUnit]
+) -> dict[int, dict[str, SupportUnit]]:
+    """Find literal same-source rate context; a value match never certifies a join."""
+    from app.evaluation.critical_occurrences import extract_critical_occurrences
+
+    if draft.mode != "arithmetic" or not anchor.source_id or not anchor.document_version:
+        return {}
+    values = {
+        index: number.canonical_value
+        for index, (operand, number) in enumerate(
+            zip(draft.operands, normalize_inputs(draft), strict=True)
+        )
+        if isinstance(operand, QuantityNumericOperand)
+        and operand.denominator_population.strip()
+        and number.value_status == "readable" and not number.errors
+        and number.canonical_value is not None
+    }
+    if not values:
+        return {}
+    eligible = {
+        key: unit for key, unit in units.items()
+        if unit.authorized and unit.model_visible and len(unit.text) <= 1500
+        and len(re.findall(r"[^\W\d_]{3,}", unit.text)) >= 5
+        and (unit.source_id, unit.document_version) == (anchor.source_id, anchor.document_version)
+    }
+    occurrences = {
+        key: {o.normalized_value for o in extract_critical_occurrences(unit.text)}
+        for key, unit in eligible.items()
+    }
+    return {
+        index: {key: unit for key, unit in eligible.items() if value in occurrences[key]}
+        for index, value in values.items()
+    }
+
+
+def partial_value_sources(
+    record: QuantityRecord, units: dict[str, SupportUnit]
+) -> dict[int, list[str]]:
+    """Locate value-bearing source units, not just an image's admitted heading.
+
+    These bounded same-snapshot candidates are navigation hints, not automatic
+    citations or independent source certification. Normal release checks remain.
+    """
+    from app.evaluation.critical_occurrences import extract_critical_occurrences
+
+    if not record.document_version or record.diagnostic_errors:
+        return {}
+    numbers = record.numeric_inputs or normalize_inputs(record.draft)
+    eligible = [
+        unit for unit in units.values()
+        if unit.authorized and unit.model_visible
+        and (unit.source_id, unit.document_version) == (record.source_id, record.document_version)
+        and unit.support_unit_id not in record.proof_support_ids
+    ]
+    cached: dict[str, set[str]] = {}
+    result: dict[int, list[str]] = {}
+    for index in record.supported_operand_indexes:
+        if index >= len(record.draft.operands) or index >= len(numbers):
+            continue
+        value = numbers[index].canonical_value
+        operand = record.draft.operands[index]
+        pages = {operand.page} if operand.page is not None else set(record.pages)
+        if value is None:
+            continue
+        for unit in eligible:
+            if pages:
+                if unit.page_number is None or not any(
+                    unit.page_number <= page <= (unit.page_end or unit.page_number)
+                    for page in pages
+                ):
+                    continue
+            elif unit.support_unit_id not in record.support_ids:
+                continue
+            key = unit.support_unit_id
+            if key not in cached:
+                cached[key] = {o.normalized_value for o in extract_critical_occurrences(unit.text)}
+            if value in cached[key]:
+                result.setdefault(index, []).append(key)
+                if len(result[index]) == 2:
+                    break
+    return result
 
 
 def visual_page_supports(

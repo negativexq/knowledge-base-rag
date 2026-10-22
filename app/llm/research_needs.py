@@ -45,6 +45,12 @@ Constraints contain only restrictions actually supplied by the question. Don't t
 may be resolved from source captions/legends; don't add a condition that their meaning
 must already be spelled out in the question. Unknown details remain unspecified.
 Use semantic equivalents, not rigid keyword matching.
+For survey/population headcounts set quantity_basis=aggregate_population. This asks
+for a reported count or source-backed arithmetic, not a list of individual respondents.
+The source may supply percentages and a compatible sample base. Preserve conditional
+populations; do not assume that a subgroup shares the whole sample's denominator.
+Use count for enumerating actual source occurrences, not merely because a question
+says how many. Quantity basis describes the task, never permission to invent inputs.
 Set acquisition=image when the question requires spatial boundaries, color, layout or
 other visual relationships; text when literal source text suffices; unknown otherwise.
 A qualitative visual comparison does not require numeric area measurements.

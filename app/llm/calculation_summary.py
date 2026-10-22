@@ -53,12 +53,12 @@ def calculation_summaries(state: ResearchState, units: Mapping[str, Any]) -> lis
                 "support_ids": sorted({*proof, *(i["support_id"] for i in inputs)}),
             }
         )
-    for result in state.text_computations.values():
+    for text_result in state.text_computations.values():
         summaries.append(
             {
-                "id": result.id[:16],
-                "expression": result.plan.expression,
-                "result": result.value,
+                "id": text_result.id[:16],
+                "expression": text_result.plan.expression,
+                "result": text_result.value,
                 "unit": "",
                 "inputs": [
                     {
@@ -69,10 +69,10 @@ def calculation_summaries(state: ResearchState, units: Mapping[str, Any]) -> lis
                         "support_id": ref.support_id,
                         "page": ref.page,
                     }
-                    for ref in result.sources
+                    for ref in text_result.sources
                 ],
                 "support_ids": sorted(
-                    {*result.proof_support_ids, *(r.support_id for r in result.sources)}
+                    {*text_result.proof_support_ids, *(r.support_id for r in text_result.sources)}
                 ),
             }
         )
