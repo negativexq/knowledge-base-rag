@@ -1,6 +1,7 @@
 import { AnswerFeedback } from "@/components/AnswerFeedback"
 import { ResearchActivity } from "@/components/ResearchActivity"
 import { CalculationCard } from "@/components/CalculationCard"
+import { followUpQuestions } from "@/lib/followUps"
 import { ClarificationPrompt } from "@/components/ClarificationPrompt"
 import { ComparisonTable } from "@/components/ComparisonTable"
 import { ComparisonComposer } from "@/components/ComparisonComposer"
@@ -70,6 +71,11 @@ function searchedAs(report: RetrievalReportPayload | null): string | null {
 
 function segmentsOf(turn: Turn): AnswerSegment[] {
   return splitAnswerIntoSegments(turn.answer, turn.sources, turn.metadata?.support_units ?? [])
+}
+
+function followUpsOf(turn: Turn): string[] {
+  const citedUnits = segmentsOf(turn).flatMap((segment) => segment.type === "citation" && segment.valid && segment.unit ? [segment.unit] : [])
+  return followUpQuestions({ question: turn.question, outcome: researchOutcome(turn), sources: turn.sources, citedUnits, calculations: calculationsOf(turn) })
 }
 
 // Calculations behind a verified answer that the answer itself cites.
@@ -521,6 +527,16 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                             className="flex w-fit items-center gap-2 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
                             <FileText className="h-3.5 w-3.5" /> Supporting evidence <span className="font-technical">{turn.sources.length}</span>
                           </button>
+                        )}
+                        {!turn.streaming && i === turns.length - 1 && followUpsOf(turn).length > 0 && (
+                          <div aria-label="Suggested follow-up questions" className="flex flex-wrap gap-2">
+                            {followUpsOf(turn).map((text) => (
+                              <button key={text} type="button" onClick={() => { setQuestion(text); requestAnimationFrame(() => { const el = composerRef.current; if (el) { el.focus(); fitComposer(el) } }) }}
+                                className="rounded-full border border-[var(--color-border)] px-3 py-1 text-left text-xs text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
+                                {text}
+                              </button>
+                            ))}
+                          </div>
                         )}
                         {!turn.streaming && turn.answer && <AnswerFeedback turn={turn} />}
                         {!turn.streaming && turn.answer && (
