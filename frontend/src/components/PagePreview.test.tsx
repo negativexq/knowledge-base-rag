@@ -8,7 +8,7 @@ describe("PagePreview", () => {
   afterEach(() => vi.unstubAllGlobals())
 
   it("requests the version-pinned page with the cited text and says whether it was found", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(new Blob(["png"]), { headers: { "X-Highlight-Found": "1" } }))
+    const fetchMock = vi.fn().mockResolvedValue(new Response(new Uint8Array([137, 80, 78, 71]), { headers: { "X-Highlight-Found": "1" } }))
     vi.stubGlobal("fetch", fetchMock)
     URL.createObjectURL = vi.fn(() => "blob:page")
     URL.revokeObjectURL = vi.fn()

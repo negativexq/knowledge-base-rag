@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 import json
 import sqlite3
 import threading
@@ -166,7 +167,7 @@ class FeedbackStore:
             )
             return candidate
 
-    def candidates(self, tenant: str) -> list[dict[str, Any]]:
+    def candidates(self, tenant: str) -> builtins.list[dict[str, Any]]:
         with self._lock:
             return [
                 json.loads(row["row"])
