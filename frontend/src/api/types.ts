@@ -411,6 +411,8 @@ export interface SupportUnitRef {
   source_id: string | null
   section_label: string | null
   text: string
+  page_number?: number | null
+  page_end?: number | null
 }
 
 export interface ChatMetadata {
@@ -426,6 +428,26 @@ export interface ChatMetadata {
   prompt_fit?: PromptFit | null
   // Set when the model was not called at all (no evidence), with the reason.
   generation_skipped?: string
+  // Application-computed results with their cited inputs (research mode).
+  calculations?: CalculationSummary[]
+}
+
+export interface CalculationInput {
+  name: string
+  label: string
+  value: string | null
+  unit: string
+  support_id: string | null
+  page: number | null
+}
+
+export interface CalculationSummary {
+  id: string
+  expression: string
+  result: string
+  unit: string
+  inputs: CalculationInput[]
+  support_ids: string[]
 }
 
 export interface PromptFit {

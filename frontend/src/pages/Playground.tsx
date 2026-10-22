@@ -1,9 +1,10 @@
 import { AnswerFeedback } from "@/components/AnswerFeedback"
 import { ResearchActivity } from "@/components/ResearchActivity"
+import { CalculationCard } from "@/components/CalculationCard"
 import { ClarificationPrompt } from "@/components/ClarificationPrompt"
 import { ComparisonTable } from "@/components/ComparisonTable"
 import { ComparisonComposer } from "@/components/ComparisonComposer"
-import type { ResearchStep, Clarification, ClarificationReply, ComparisonRow } from "@/api/types"
+import type { CalculationSummary, ResearchStep, Clarification, ClarificationReply, ComparisonRow } from "@/api/types"
 import { useEffect, useRef, useState } from "react"
 import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Download, History, NotebookPen, Pin, Columns2, Search, Sparkles, Square } from "lucide-react"
 
@@ -69,6 +70,13 @@ function searchedAs(report: RetrievalReportPayload | null): string | null {
 
 function segmentsOf(turn: Turn): AnswerSegment[] {
   return splitAnswerIntoSegments(turn.answer, turn.sources, turn.metadata?.support_units ?? [])
+}
+
+// Calculations behind a verified answer that the answer itself cites.
+function calculationsOf(turn: Turn): CalculationSummary[] {
+  if (researchOutcome(turn) !== "answered") return []
+  const cited = new Set(segmentsOf(turn).flatMap((segment) => segment.type === "citation" && segment.valid && segment.unit ? [segment.unit.support_id] : []))
+  return (turn.metadata?.calculations ?? []).filter((calculation) => calculation.support_ids.some((id) => cited.has(id)))
 }
 
 // Support units the answer actually cites, by source card rank.
@@ -504,6 +512,10 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                             </>
                           )}
                         </div>
+                        {calculationsOf(turn).map((calculation) => (
+                          <CalculationCard key={calculation.id} calculation={calculation} units={turn.metadata?.support_units ?? []}
+                            onCite={(rank, supportId) => { setInspectedTurn(i); focusSource(rank, supportId) }} />
+                        ))}
                         {!turn.streaming && turn.sources.length > 0 && (
                           <button type="button" aria-controls="evidence-inspector" aria-expanded={inspectorOpen && activeTab === "sources" && (inspectedTurn ?? turns.length - 1) === i} onClick={() => { setInspectedTurn(i); const citation = segmentsOf(turn).find((segment) => segment.type === "citation" && segment.valid && segment.source); focusSource(citation?.source?.rank ?? turn.sources[0].rank, citation?.unit?.support_id ?? null) }}
                             className="flex w-fit items-center gap-2 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">

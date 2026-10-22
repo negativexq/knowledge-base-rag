@@ -1462,6 +1462,7 @@ async def _support_unit_answer_events(
             candidate.failure_code = "DOCUMENT_ACCESS_REVOKED"
             candidate.clarification, candidate.visual, candidate.comparison = None, None, []
             candidate.source_disposition = None
+            candidate.calculations = []
             if candidate.authorization_context is not None:
                 candidate.blocks = filter_authorized_candidates(
                     candidate.blocks, candidate.authorization_context
@@ -1537,6 +1538,11 @@ async def _support_unit_answer_events(
         "support_units": support_unit_citation_map(units, blocks),
         "prompt_fit": prompt_fit,
         **({"agentic": candidate.telemetry} if candidate is not None else {}),
+        **(
+            {"calculations": candidate.calculations}
+            if candidate is not None and candidate.calculations
+            else {}
+        ),
     }
     generation_kwargs = {
         "model": model,
