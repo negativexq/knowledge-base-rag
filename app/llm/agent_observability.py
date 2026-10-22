@@ -16,6 +16,7 @@ from opentelemetry.context import Context
 from opentelemetry.trace import Status, StatusCode
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.llm import research_stages
 from app.shared.tracing import get_tracer, mark_llm_generation
 
 
@@ -168,13 +169,16 @@ def operation(
     tracer = tracer or get_tracer("app.llm.agentic")
     # Exception messages, stack traces, arguments and model content are never exported.
     parent = trace.get_current_span().get_span_context()
-    with tracer.start_as_current_span(
-        name,
-        context=Context() if new_root else None,
-        links=[trace.Link(parent)] if new_root and parent.is_valid else None,
-        record_exception=False,
-        set_status_on_exception=False,
-    ) as span:
+    with (
+        tracer.start_as_current_span(
+            name,
+            context=Context() if new_root else None,
+            links=[trace.Link(parent)] if new_root and parent.is_valid else None,
+            record_exception=False,
+            set_status_on_exception=False,
+        ) as span,
+        research_stages.observe(name),
+    ):
         span.set_attribute("langfuse.observation.type", kind)
         span.set_attribute("research.outcome", "running")
         for key, value in (attributes or {}).items():

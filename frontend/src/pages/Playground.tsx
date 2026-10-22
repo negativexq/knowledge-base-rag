@@ -27,7 +27,7 @@ import { useRegisterWorkspaceCommands } from "@/lib/workspaceCommands"
 import { ResearchHistory } from "@/components/ResearchHistory"
 import { PinnedEvidence } from "@/components/PinnedEvidence"
 import { useResearchLibrary } from "@/hooks/useResearchLibrary"
-import { downloadResearch, researchScope, samePin, type EvidencePin, type ResearchTurn as Turn } from "@/lib/research"
+import { downloadResearch, researchOutcome, researchScope, samePin, type EvidencePin, type ResearchTurn as Turn } from "@/lib/research"
 import { classifyError } from "@/api/client"
 import { ErrorState } from "@/components/ErrorState"
 import { LoadingRows } from "@/components/LoadingSkeleton"
@@ -189,6 +189,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
         lastTokenAt: null,
         groundingAt: null,
         askStartedAt: performance.now(),
+        researchStartedAt: Date.now(),
       },
     ])
     setInspectedTurn(null)
@@ -216,7 +217,9 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
             const turn = copy[copy.length - 1]
             const steps = [...(turn.steps ?? [])]
             const index = steps.findIndex((item) => item.id === step.id)
-            if (index < 0) steps.push(step); else steps[index] = step
+            // Elapsed time per step comes from the browser clock, not the server.
+            const receivedAt = index < 0 ? Date.now() : steps[index].receivedAt
+            if (index < 0) steps.push({ ...step, receivedAt }); else steps[index] = { ...step, receivedAt }
             copy[copy.length - 1] = { ...turn, steps }
             return copy
           })
@@ -259,8 +262,8 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
         },
         onGrounding: (grounding) =>
           patchTurn({ grounding: grounding as GroundingResult, groundingAt: performance.now() }),
-        onDone: () => patchTurn({ streaming: false }),
-        onError: (message) => patchTurn({ streaming: false, errorMessage: message }),
+        onDone: () => patchTurn({ streaming: false, researchFinishedAt: Date.now() }),
+        onError: (message) => patchTurn({ streaming: false, errorMessage: message, researchFinishedAt: Date.now() }),
       },
       controller.signal,
       { ...(sourceIds?.length ? { source_ids: sourceIds } : {}), ...(clarification ? { clarification } : {}), ...(parentTraceId && /^[a-f0-9]{32}$/.test(parentTraceId) ? { parent_trace_id: parentTraceId } : {}) },
@@ -276,7 +279,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
 
   function newChat() {
     abortRef.current?.abort()
-    if (current?.streaming) updateCurrent({ streaming: false, errorMessage: "Cancelled." })
+    if (current?.streaming) updateCurrent({ streaming: false, errorMessage: "Cancelled.", researchFinishedAt: Date.now() })
     const nextSessionId = library.newSession()
     const projectId = organization.assignments[library.active.id]
     if (projectId) organization.assign(nextSessionId, projectId)
@@ -304,7 +307,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
 
   function cancel() {
     abortRef.current?.abort()
-    updateCurrent({ streaming: false, errorMessage: "Cancelled." })
+    updateCurrent({ streaming: false, errorMessage: "Cancelled.", researchFinishedAt: Date.now() })
   }
 
   function focusSource(rank: number, supportId: string | null = null) {
@@ -472,7 +475,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                         <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
                       </span>
                       <div className="flex min-w-0 flex-1 flex-col gap-3">
-                        <ResearchActivity steps={turn.steps ?? []} streaming={turn.streaming} />
+                        <ResearchActivity steps={turn.steps ?? []} streaming={turn.streaming} startedAt={turn.researchStartedAt} finishedAt={turn.researchFinishedAt} outcome={researchOutcome(turn)} />
                         {turn.clarification && <ClarificationPrompt clarification={turn.clarification} disabled={Boolean(current?.streaming) || i !== turns.length - 1} onReply={(answer) => void ask(turn.question, { question: turn.clarification!.question, answer }, turn.sourceIds, turn.metadata?.trace_id)} />}
                         <div className="text-[15px] leading-7 text-[var(--color-foreground)]">
                           {turn.errorMessage && turn.answer === "" ? (

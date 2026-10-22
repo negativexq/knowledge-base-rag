@@ -200,7 +200,8 @@ async def test_closing_answer_stream_cancels_agent_and_resets_request_context():
     )
     previous = current_capture()
     events = _sse_event_stream("Question", chat, RetrievalContext("a"))
-    while "event: research_progress" not in await anext(events):
+    # The retrieval stage arrives first; wait for the agent's own operation.
+    while '"operation": "search"' not in await anext(events):
         pass
     await events.aclose()
     assert stopped.is_set()

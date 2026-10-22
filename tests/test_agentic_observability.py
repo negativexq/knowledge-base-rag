@@ -215,7 +215,8 @@ async def test_cancellation_closes_spans_and_finishes_trace_index(tracing, tmp_p
         trace_store=store,
         user_id="user",
     )
-    while '"status": "running"' not in await anext(stream):
+    # The retrieval stage arrives first; wait for the agent's own search.
+    while '"operation": "search", "status": "running"' not in await anext(stream):
         pass
     await stream.aclose()
     assert store.list("a", "user")[0]["outcome"] == "cancelled"

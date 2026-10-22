@@ -6195,3 +6195,28 @@ the evidence pages with the benchmark's lenient matcher.
 So the parser is not the general loss. The specific gap is chart structure:
 values detached from their labels. Rebuilding rows needs a figure region plus
 positions, which Docling supplies; tables do not justify a parser switch.
+
+### Research progress UX (2026-10-22)
+
+Research answers take 30-90 seconds, and the browser showed one generic step
+("Collecting and checking source inputs") for most of that time.
+
+- `app/llm/research_stages.py` maps the workflow's existing operation spans
+  (`quantity.source.select`, `quantity.review`, `answer.repair.coverage`, ...)
+  to eleven user-facing stages. `operation()` reports them through the existing
+  `research_progress` channel, so no workflow code had to publish them by hand,
+  and a stage appears only when its work runs. A nested stage hands back to its
+  parent. A stage that failed and was followed by more work is `retrying`; a
+  failure that ends the request is `failed`.
+- Messages are fixed text keyed by stage or reason code; a test checks that
+  source text and the question never reach the events.
+- `/chat` in research mode sends the retrieval stage before the first search.
+- Tool events carry `added_evidence`, the number of new support units.
+- `ResearchActivity` shows the active stage with its elapsed time, the last five
+  stages, the total time on the client clock and technical details. When the
+  answer finishes it collapses to a summary that says "Sufficient evidence could
+  not be verified" for abstained or failed answers. There is no percentage.
+- Checked in the browser with a scripted stage sequence; screenshots are in
+  `docs/assets/research-progress-*.jpg`. Not yet watched on a live research run.
+
+`make test`: 2481 passed, 4 skipped. Frontend: 117 passed.

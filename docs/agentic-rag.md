@@ -183,7 +183,29 @@ they do not invent a user reply or count them as correct answers.
 
 Research activity lists operation names and running/completed/retrying/failed
 states through SSE `research_progress` events, not model reasoning or raw tool
-arguments. Closing the response or cancelling in the composer closes the nested
+arguments. Research mode also streams user-facing stages (`kind: "stage"`):
+retrieval, answer check, evidence planning, source selection, source reading,
+extraction, input review, calculation, scope validation, evidence repair and
+finalization. `app/llm/research_stages.py` derives them from the workflow's own
+operation spans, so a stage appears only when that work actually runs; its
+message is fixed application text keyed by stage or reason code
+(`incomplete_coverage`, `scope_mismatch`, `check_failed`, `timeout`, ...), never
+model output. The API sends the retrieval stage before the first search. The
+browser shows the active stage with its elapsed time, the recent completed
+stages and the total time, all measured on the client clock. A stage the
+workflow retried shows as "Needed another look", not as an error. There is no
+percentage, because the number of steps is not known in advance. Tool
+operations, evidence counts, stage durations and reason codes sit under
+"Technical details". When the answer finishes, the panel collapses to
+"Research completed · 58 s · 7 stages", or "Sufficient evidence could not be
+verified" when the answer abstained or failed validation.
+
+| Live stages | Recheck and technical details | Finished |
+| --- | --- | --- |
+| ![Active stage with its elapsed time](assets/research-progress-live.jpg) | ![A retried review and evidence repair](assets/research-progress-recheck.jpg) | ![Collapsed research summary](assets/research-progress-done.jpg) |
+
+The screenshots feed a scripted stage sequence to the browser; the stage
+names and messages are the ones the backend emits. Closing the response or cancelling in the composer closes the nested
 streams and cancels pending agent work. Already issued external operations cannot
 be undone. The client ignores late events after cancellation. SSE events retain
 their type and content when transport chunks split a frame at arbitrary bytes.
