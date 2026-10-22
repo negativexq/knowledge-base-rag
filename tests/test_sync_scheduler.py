@@ -6,6 +6,14 @@ from app.sync.models import TRIGGER_SCHEDULED
 from app.sync.scheduler import SyncScheduler
 
 
+async def _until(condition, timeout: float = 5.0) -> None:
+    """Waits for the scheduler to reach a state instead of a fixed time, so a
+    slow machine only makes the test slower, never wrong."""
+    async with asyncio.timeout(timeout):
+        while not condition():
+            await asyncio.sleep(0.005)
+
+
 class _SpySyncManager:
     def __init__(self):
         self.calls: list[tuple[str, str]] = []
@@ -20,7 +28,7 @@ async def test_scheduler_triggers_sync_repeatedly_at_the_configured_interval():
     scheduler = SyncScheduler(spy, intervals={"filesystem": 0.05})
 
     scheduler.start()
-    await asyncio.sleep(0.23)
+    await _until(lambda: len(spy.calls) >= 3)
     await scheduler.stop()
 
     assert len(spy.calls) >= 3
@@ -30,10 +38,10 @@ async def test_scheduler_triggers_sync_repeatedly_at_the_configured_interval():
 @pytest.mark.asyncio
 async def test_scheduler_uses_a_separate_interval_per_connector():
     spy = _SpySyncManager()
-    scheduler = SyncScheduler(spy, intervals={"fast": 0.03, "slow": 0.12})
+    scheduler = SyncScheduler(spy, intervals={"fast": 0.01, "slow": 0.2})
 
     scheduler.start()
-    await asyncio.sleep(0.2)
+    await _until(lambda: ("slow", TRIGGER_SCHEDULED) in spy.calls)
     await scheduler.stop()
 
     fast_calls = [c for c in spy.calls if c[0] == "fast"]
@@ -48,7 +56,7 @@ async def test_stop_prevents_further_triggers():
     scheduler = SyncScheduler(spy, intervals={"filesystem": 0.03})
 
     scheduler.start()
-    await asyncio.sleep(0.1)
+    await _until(lambda: len(spy.calls) >= 1)
     await scheduler.stop()
     count_after_stop = len(spy.calls)
     await asyncio.sleep(0.15)
@@ -71,7 +79,7 @@ async def test_a_failing_trigger_does_not_kill_the_loop():
     scheduler = SyncScheduler(flaky, intervals={"filesystem": 0.03})
 
     scheduler.start()
-    await asyncio.sleep(0.13)
+    await _until(lambda: flaky.attempts >= 2)
     await scheduler.stop()
 
     assert flaky.attempts >= 2  # kept going after the first failure
