@@ -6281,4 +6281,12 @@ abstained, through a different path with no quantity steps, so this is
 variance downstream of the plan. Releasing 0 for an empty inventory is a
 separate issue to fix.
 
+A second paid A/B on ten other rows
+(`artifacts/mmlongbench-v2/plan-prefetch-ab10-20261023/REPORT.md`) cut the
+plan wait from 48.8 s to 3.7 s, about 4.5 s per question. The five lookups,
+which took the same path in both modes, went from 117.7 s to 94.1 s in total.
+Request counts matched on eight rows; the other two took different paths.
+Off answered 8 of 10 correctly and on answered 9 of 10; the one difference
+(row 210) is run-to-run variance in the research path.
+
 `make test`: 2530 passed, 4 skipped.
