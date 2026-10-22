@@ -6276,8 +6276,9 @@ for the plan fell from 16.2 s to 0.6 s over three rows, about 5 s per
 question. 387 and 1079 gave the same answers with the same request counts.
 730 (gold: not answerable) produced the same plan in both modes, but the
 prefetch run then released `0` from an empty count inventory, where the other
-run and all earlier runs abstained. That looks like downstream variance, but
-one pair cannot show it, and releasing 0 for an empty inventory is a separate
-issue to fix.
+run and all earlier runs abstained. A rerun of 730 with the prefetch on
+abstained, through a different path with no quantity steps, so this is
+variance downstream of the plan. Releasing 0 for an empty inventory is a
+separate issue to fix.
 
 `make test`: 2530 passed, 4 skipped.
