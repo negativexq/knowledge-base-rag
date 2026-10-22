@@ -318,6 +318,14 @@ async def ask(
     report.forensic_capture = ForensicCapture.create(question.question, raw_text=True)
     started = time.perf_counter()
     scope = retrieval_scope(question.doc_id, open_corpus)
+    offer = None
+    if deps.agentic_rag_enabled and deps.plan_prefetch_fn is not None:
+        # As POST /chat does: the evidence plan runs alongside retrieval.
+        from app.llm.research_needs import offer_plan
+
+        offer = offer_plan(
+            question.question, asyncio.create_task(deps.plan_prefetch_fn(question.question))
+        )
     results = await deps.search_fn(
         question.question, context, report, **({"source_ids": scope} if scope else {})
     )
@@ -339,7 +347,6 @@ async def ask(
     comparison = []
     token = set_current_capture(report.forensic_capture)
     try:
-
         from app.api.chat import _scoped_retrieve
 
         retrieve = _scoped_retrieve(deps, context, {"source_ids": scope} if scope else {})
@@ -371,6 +378,8 @@ async def ask(
                 validation = event
     finally:
         reset_current_capture(token)
+        if offer is not None:
+            await offer.close()
     seconds = round(time.perf_counter() - started, 1)
 
     leaked = await deps.search_fn(

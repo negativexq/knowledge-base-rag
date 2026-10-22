@@ -1,9 +1,10 @@
+import asyncio
 import json
 import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import aclosing
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
@@ -25,6 +26,7 @@ from app.llm.agent_observability import RequestUsage, load_prices, outcome
 from app.llm.citation_location import location_for
 from app.llm.prompt import NOT_FOUND_PHRASE
 from app.llm.query_rewrite import ChatTurn, RewriteResult
+from app.llm.research_needs import PlanOffer, offer_plan
 from app.llm.research_stages import stage_event
 from app.research.traces import TraceStore, request_trace
 from app.retrieval.filters import filter_authorized_candidates
@@ -189,6 +191,9 @@ class ChatDependencies:
     # serves only the version-pinned PDFs of page_preview_tenant.
     page_preview_fn: Callable[[str, str, int, str | None], tuple[bytes, bool] | None] | None = None
     page_preview_tenant: str | None = None
+    # Starts the research evidence plan from the question alone, so it runs
+    # alongside retrieval instead of after it.
+    plan_prefetch_fn: Callable[[str], Awaitable[Any]] | None = None
 
 
 @dataclass(frozen=True)
@@ -273,6 +278,7 @@ async def _sse_event_stream(
         else None
     )
     capture_token = set_current_capture(capture)
+    offer: PlanOffer | None = None
     # Wraps the whole request (search + generate), including every yield
     # below — a Python context manager stays entered across a generator's
     # yields, only closing once the generator is exhausted. This is the
@@ -332,6 +338,8 @@ async def _sse_event_stream(
                 # answerability and the answer model all see the same text.
                 question = rewrite.question
             scope = {"source_ids": source_ids} if source_ids else {}
+            if deps.agentic_rag_enabled and deps.plan_prefetch_fn is not None:
+                offer = offer_plan(question, asyncio.create_task(deps.plan_prefetch_fn(question)))
             if deps.agentic_rag_enabled:
                 # Research answers can take a while; say so before the first search.
                 retrieval_started = time.monotonic()
@@ -607,6 +615,8 @@ async def _sse_event_stream(
         if capture is not None:
             capture.write(deps.forensic_capture_dir)
     finally:
+        if offer is not None:
+            await offer.close()
         reset_current_capture(capture_token)
 
 

@@ -96,6 +96,8 @@ class Settings(BaseSettings):
     adaptive_rag_enabled: bool = False
     adaptive_fast_path_enabled: bool = False
     adaptive_evidence_needs_enabled: bool = False
+    # The evidence plan reads only the question, so it starts alongside retrieval.
+    adaptive_plan_prefetch_enabled: bool = True
     adaptive_extraction_reasoning: Literal["none", "low", "medium", "high"] = "low"
     adaptive_final_reasoning: Literal["none", "low", "medium", "high"] = "medium"
     # "escalate": the fixed answer path runs first and the agent only handles

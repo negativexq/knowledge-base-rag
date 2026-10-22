@@ -258,6 +258,62 @@ def build_chat_dependencies(
             render_page=page_renderer,
         )
 
+    def role_model_settings():
+        return {
+            role: {
+                "openai_reasoning_effort": effort,
+                "max_tokens": 8192 if effort != "none" else 1024,
+                # A None override omits inherited temperature for reasoning.
+                "temperature": None if effort != "none" else 0.0,
+            }
+            for role, effort in {
+                "extractor": settings.adaptive_extraction_reasoning,
+                "extraction_checker": settings.adaptive_extraction_reasoning,
+                "finalizer": settings.adaptive_final_reasoning,
+                "answerer": settings.adaptive_final_reasoning,
+                "need_planner": settings.adaptive_final_reasoning,
+                "source_selector": settings.adaptive_final_reasoning,
+                "quantity_selector": settings.adaptive_final_reasoning,
+                "quantity_collector": settings.adaptive_final_reasoning,
+                "quantity_checker": settings.adaptive_final_reasoning,
+                "answer_repair": settings.adaptive_final_reasoning,
+                "scoped_extraction_checker": settings.adaptive_final_reasoning,
+                "scope_validator": settings.adaptive_final_reasoning,
+            }.items()
+        }
+
+    async def plan_prefetch(question: str):
+        """The evidence plan reads only the question, so it starts with retrieval."""
+        from app.llm.adaptive import plan_needs_early
+        from app.llm.agent_observability import RequestUsage, current_usage, load_prices
+        from app.llm.agentic import (
+            AgentDependencies,
+            EvidenceLedger,
+            agent_model,
+            agent_model_settings,
+        )
+
+        context_tokens = default_context_tokens(settings)
+        budget = min(settings.agentic_evidence_token_budget, context_tokens // 2)
+        plan_deps = AgentDependencies(
+            question,
+            EvidenceLedger(count_prompt_tokens, budget),
+            observations=current_usage() or RequestUsage(load_prices(settings.model_pricing_json)),
+            provider_name=settings.generation_provider,
+            scope_validation_enabled=settings.agentic_scope_validation_enabled,
+        )
+        async with agent_model(settings) as native_model:
+            return await plan_needs_early(
+                native_model,
+                plan_deps,
+                timeout_seconds=settings.agentic_timeout_seconds,
+                model_settings=agent_model_settings(settings, context_tokens),
+                role_model_settings=(
+                    role_model_settings() if settings.generation_provider == "openai" else {}
+                ),
+                research_policy=settings.agentic_research_policy,
+            )
+
     async def agent_stream(question: str, chunks: list[SearchResult], retrieve, documents, first):
         from app.llm.agentic import (
             PIPELINE_VERSION,
@@ -355,30 +411,7 @@ def build_chat_dependencies(
                         else {}
                     ),
                     **(
-                        {
-                            "role_model_settings": {
-                                role: {
-                                    "openai_reasoning_effort": effort,
-                                    "max_tokens": 8192 if effort != "none" else 1024,
-                                    # A None override omits inherited temperature for reasoning.
-                                    "temperature": None if effort != "none" else 0.0,
-                                }
-                                for role, effort in {
-                                    "extractor": settings.adaptive_extraction_reasoning,
-                                    "extraction_checker": settings.adaptive_extraction_reasoning,
-                                    "finalizer": settings.adaptive_final_reasoning,
-                                    "answerer": settings.adaptive_final_reasoning,
-                                    "need_planner": settings.adaptive_final_reasoning,
-                                    "source_selector": settings.adaptive_final_reasoning,
-                                    "quantity_selector": settings.adaptive_final_reasoning,
-                                    "quantity_collector": settings.adaptive_final_reasoning,
-                                    "quantity_checker": settings.adaptive_final_reasoning,
-                                    "answer_repair": settings.adaptive_final_reasoning,
-                                    "scoped_extraction_checker": settings.adaptive_final_reasoning,
-                                    "scope_validator": settings.adaptive_final_reasoning,
-                                }.items()
-                            }
-                        }
+                        {"role_model_settings": role_model_settings()}
                         if settings.adaptive_rag_enabled
                         and settings.generation_provider == "openai"
                         else {}
@@ -478,6 +511,11 @@ def build_chat_dependencies(
                 qdrant_client, collection_name, context, source_ids
             ),
             page_preview_fn=page_preview,
+            plan_prefetch_fn=plan_prefetch
+            if settings.adaptive_rag_enabled
+            and settings.adaptive_evidence_needs_enabled
+            and settings.adaptive_plan_prefetch_enabled
+            else None,
             page_preview_tenant=settings.filesystem_tenant_id,
             pipeline_version=(
                 "pipeline_adaptive_v1"

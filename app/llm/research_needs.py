@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import re
+from contextvars import ContextVar
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import Field
@@ -29,7 +32,10 @@ from app.llm.research_state import (
 )
 
 if TYPE_CHECKING:
+    from pydantic_ai.usage import RunUsage
+
     from app.llm.adaptive import AdaptiveSession, ResearchDecision
+    from app.llm.agent_observability import RequestUsage
 
 PLAN_INSTRUCTIONS = """Describe what evidence the question requires, not its answer.
 Use only the question. Separate necessary entity, metric, period, population, condition
@@ -98,6 +104,51 @@ class NeedPlan(StrictModel):
     evidence_needs: list[EvidenceNeedSpec] = Field(min_length=1, max_length=6)
 
 
+@dataclass
+class EarlyPlan:
+    """A plan requested before retrieval finished, with what it cost. A failed
+    request keeps its usage, so the research budget counts it either way."""
+
+    usage: RunUsage
+    observations: RequestUsage
+    plan: NeedPlan | None = None
+    error: Exception | None = None
+
+
+class PlanOffer:
+    """An early plan for one question, used at most once. Closing the offer
+    cancels a plan the research never took, so an unused one is not paid for."""
+
+    def __init__(self, question: str, task: asyncio.Task[EarlyPlan]):
+        self.question, self.task = question, task
+        self.taken = self.closed = False
+
+    def take(self, question: str) -> asyncio.Task[EarlyPlan] | None:
+        if self.closed or self.taken or question != self.question:
+            return None
+        self.taken = True
+        return self.task
+
+    async def close(self) -> None:
+        self.closed = True
+        if self.taken:
+            return
+        self.task.cancel()
+        with contextlib.suppress(asyncio.CancelledError, Exception):
+            await self.task
+
+
+# Not reset on close: a streamed response may close from another context, and a
+# closed offer is inert anyway.
+_offered: ContextVar[PlanOffer | None] = ContextVar("early_need_plan", default=None)
+
+
+def offer_plan(question: str, task: asyncio.Task[EarlyPlan]) -> PlanOffer:
+    offer = PlanOffer(question, task)
+    _offered.set(offer)
+    return offer
+
+
 class ScopedExtractionCheck(StrictModel):
     accepted_indexes: list[int] = Field(default_factory=list, max_length=100)
     relevant_indexes: list[int] = Field(default_factory=list, max_length=100)
@@ -114,15 +165,21 @@ class NeedWorkflow:
         state = self.session.state
         if state.need_planning == "ready" and state.evidence_needs:
             return
+        offer = _offered.get()
+        early = offer.take(state.task.question) if offer is not None else None
         with operation("research.requirements") as span:
+            span.set_attribute("research.plan_started_early", early is not None)
             try:
-                plan: NeedPlan = await self.session.call(
-                    "need_planner",
-                    NeedPlan,
-                    PLAN_INSTRUCTIONS,
-                    {"question": state.task.question},
-                    research=True,
-                )
+                if early is not None:
+                    result = await early
+                    self.session.usage.incr(result.usage)
+                    self.session.deps.observations.merge(result.observations)
+                    if result.error is not None:
+                        raise result.error
+                    assert result.plan is not None
+                    plan = result.plan
+                else:
+                    plan = await self.request_plan()
                 # Validate the entire proposal before mutating application state.
                 if any(
                     c.question_quote not in state.task.question
@@ -143,6 +200,16 @@ class NeedWorkflow:
             except Exception:
                 state.need_planning = "failed"
                 raise
+
+    async def request_plan(self) -> NeedPlan:
+        plan: NeedPlan = await self.session.call(
+            "need_planner",
+            NeedPlan,
+            PLAN_INSTRUCTIONS,
+            {"question": self.session.state.task.question},
+            research=True,
+        )
+        return plan
 
     def need_id(self, requested: str) -> str:
         state = self.session.state
