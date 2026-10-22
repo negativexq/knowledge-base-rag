@@ -11,6 +11,8 @@ import type { Identity } from "@/api/types"
 import { useIdentity } from "@/hooks/useIdentity"
 import Playground from "@/pages/Playground"
 import { readResearchSessions, researchScope } from "@/lib/research"
+import { resetResearchRuns } from "@/lib/researchRuns"
+import { act } from "@testing-library/react"
 
 vi.mock("@/api/chat", () => ({ chatApi: { ask: vi.fn() } }))
 vi.mock("@/api/ui", () => ({ uiApi: { trace: vi.fn() } }))
@@ -40,6 +42,7 @@ function renderPlayground(withSidebar = false) {
 describe("Playground evidence flow", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resetResearchRuns()
     vi.mocked(useIdentity).mockReturnValue({ data: identity } as ReturnType<typeof useIdentity>)
     vi.mocked(uiApi.trace).mockResolvedValue({
       trace_id: "trace-1",
@@ -768,4 +771,39 @@ describe("Playground answer confidence and why-this-answer", () => {
     expect(screen.getByText("Stopped")).toBeInTheDocument()
   })
 
+  it("keeps research running in the background while another session is open", async () => {
+    let handlers: Parameters<typeof chatApi.ask>[2] | undefined
+    vi.mocked(chatApi.ask).mockImplementation(async (_question, _history, incoming) => { handlers = incoming })
+    renderPlayground()
+    fireEvent.change(screen.getByLabelText("Question"), { target: { value: "Long investigation" } })
+    fireEvent.keyDown(screen.getByLabelText("Question"), { key: "Enter" })
+    await screen.findByRole("button", { name: "Cancel" })
+    fireEvent.click(screen.getByRole("button", { name: "New chat" }))
+
+    expect(vi.mocked(chatApi.ask).mock.calls[0][3]?.aborted).toBe(false)
+    expect(screen.getByText("1 research is still running")).toBeInTheDocument()
+    act(() => handlers!.onToken("Background answer"))
+    fireEvent.click(screen.getByRole("button", { name: "Long investigation" }))
+    expect(await screen.findByText("Background answer")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("button", { name: "New chat" }))
+    act(() => handlers!.onDone())
+    await waitFor(() => expect(readResearchSessions(researchScope(identity)).flatMap((session) => session.turns.map((turn) => turn.answer))).toEqual(["Background answer"]))
+  })
+
+  it("does not cancel research when the workspace is left", async () => {
+    let handlers: Parameters<typeof chatApi.ask>[2] | undefined
+    vi.mocked(chatApi.ask).mockImplementation(async (_question, _history, incoming) => { handlers = incoming })
+    const { unmount } = renderPlayground()
+    fireEvent.change(screen.getByLabelText("Question"), { target: { value: "Leave and come back" } })
+    fireEvent.keyDown(screen.getByLabelText("Question"), { key: "Enter" })
+    await screen.findByRole("button", { name: "Cancel" })
+    unmount()
+
+    expect(vi.mocked(chatApi.ask).mock.calls[0][3]?.aborted).toBe(false)
+    handlers!.onToken("Finished while away")
+    handlers!.onDone()
+    const [session] = readResearchSessions(researchScope(identity))
+    expect(session.turns[0]).toMatchObject({ question: "Leave and come back", answer: "Finished while away", streaming: false })
+  })
 })

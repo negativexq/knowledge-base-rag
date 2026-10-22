@@ -1,6 +1,7 @@
 import { useEffect, useState, type SetStateAction } from "react"
 
 import { readOrganization, writeOrganization, RESEARCH_EVENT } from "@/lib/organization"
+import { attachLibrary, appendTurn, isRunning } from "@/lib/researchRuns"
 import { newResearchSession, readResearchSessions, samePin, type EvidencePin, type ResearchSession, type ResearchNote, type ResearchTurn } from "@/lib/research"
 
 interface Library { sessions: ResearchSession[]; activeId: string; launch?: { sessionId: string; projectId: string } }
@@ -37,8 +38,16 @@ export function useResearchLibrary(scope: string) {
     }
   }, [scope, library.launch])
 
+  // Research finished in the background lands in this library, including a
+  // draft session that was left before its first answer arrived.
+  useEffect(() => attachLibrary(scope, (sessionId, turn) => setLibrary((value) => ({
+    ...value,
+    sessions: value.sessions.some((session) => session.id === sessionId)
+      ? value.sessions.map((session) => session.id === sessionId ? appendTurn(session, turn) : session)
+      : [...value.sessions, appendTurn({ ...newResearchSession(), id: sessionId }, turn)],
+  }))), [scope])
+
   useEffect(() => {
-    if (library.sessions.find((session) => session.id === library.activeId)?.turns.some((turn) => turn.streaming)) return
     let cancelled = false
     // Persist completed snapshots; never restore a half-finished SSE turn.
     void Promise.resolve().then(() => {
@@ -69,13 +78,13 @@ export function useResearchLibrary(scope: string) {
 
   function newSession() {
     const draft = newResearchSession()
-    setLibrary((value) => ({ sessions: [...value.sessions.filter((session) => session.turns.length > 0 || (session.notes ?? []).length > 0), draft], activeId: draft.id }))
+    setLibrary((value) => ({ sessions: [...value.sessions.filter((session) => session.turns.length > 0 || (session.notes ?? []).length > 0 || isRunning(session.id)), draft], activeId: draft.id }))
     return draft.id
   }
 
   function openSession(id: string) {
     setLibrary((value) => value.sessions.some((session) => session.id === id)
-      ? { sessions: value.sessions.filter((session) => session.turns.length > 0 || (session.notes ?? []).length > 0 || session.id === id), activeId: id }
+      ? { sessions: value.sessions.filter((session) => session.turns.length > 0 || (session.notes ?? []).length > 0 || isRunning(session.id) || session.id === id), activeId: id }
       : value)
   }
 
