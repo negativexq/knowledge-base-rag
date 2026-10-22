@@ -71,6 +71,7 @@ def test_arithmetic_cannot_emit_count_settings_or_model_written_result():
         "decimals",
         "result_unit",
         "interpretation",
+        "result_kind",
     }
 
 

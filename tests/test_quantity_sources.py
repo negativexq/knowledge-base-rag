@@ -333,3 +333,57 @@ async def test_full_inventory_replacement_keeps_parent_without_requiring_four_im
     assert all(i.page == 3 for i in child.draft.items)
     assert active.state.quantities[parent.id] == parent
     assert roles == ["quantity_selector", "quantity_collector", "quantity_checker"]
+
+
+@pytest.mark.parametrize("defect", [None, "foreign", "stale", "hidden", "not_in_catalog"])
+def test_catalog_page_binding_uses_only_existing_visible_same_version_authority(defect):
+    from dataclasses import replace
+
+    from app.llm.quantity_sources import bind_catalog_pages
+    from app.llm.quantity_state import QuantityCatalogPage, QuantitySource
+
+    active, _ = active_session()
+    anchor = active.units()["E1.S1"]
+    page = replace(anchor, support_unit_id="page2", page_number=2, page_end=2)
+    if defect == "foreign":
+        page = replace(page, source_id="other")
+    if defect == "stale":
+        page = replace(page, document_version="old")
+    if defect == "hidden":
+        page = replace(page, model_visible=False)
+    units = {"E1.S1": anchor, "page2": page}
+    catalog = [QuantityCatalogPage(
+        source_id=anchor.source_id, document_version=anchor.document_version,
+        physical_page=2, support_ids=["page2"],
+    )]
+    selection = QuantitySource(available=True, support_ids=["E1.S1"], pages=[1, 2])
+    if defect:
+        with pytest.raises(ValueError, match="PAGE_OUTSIDE_SOURCE"):
+            bind_catalog_pages(selection, [] if defect == "not_in_catalog" else catalog, units)
+    else:
+        bound = bind_catalog_pages(selection, catalog, units)
+        assert bound.support_ids == selection.support_ids
+        assert bound.context_support_ids == ["page2"]
+        assert bind_catalog_pages(bound, catalog, units) == bound
+
+
+def test_native_catalog_prefers_specific_labels_over_repeated_query_boilerplate():
+    from app.evidence.pdf_structure import PdfStructure
+    from app.llm.visual_answer import PdfSnapshot
+
+    with fitz.open() as pdf:
+        for index in range(2):
+            page = pdf.new_page()
+            page.insert_text((30, 30), "Shared survey report")
+            page.insert_text((30, 55), "Shared survey methods")
+            page.insert_text((30, 80), "Shared report context")
+            page.insert_text((30, 180), "Voltage latency measurements" if index == 0
+                             else "Other observed measurements")
+            page.insert_text((30, 760), "Shared survey report")
+        content = pdf.tobytes()
+    structure = PdfStructure(PdfSnapshot("manual", content))
+    query = "Shared survey report voltage latency"
+    hints = structure.page_catalog([1, 2], query)
+    assert "Voltage latency measurements" in hints[0]["native_lines"]
+    assert all(len(h["native_lines"]) <= 6 for h in hints)
+    assert "Voltage latency measurements" in structure.page_catalog([1], query)[0]["native_lines"]

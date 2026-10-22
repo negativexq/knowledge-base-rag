@@ -225,6 +225,7 @@ class SupportUnitAnswerPart:
     # Counts of items the cited units list, behind a counted number; checked
     # by app/llm/counting.py.
     counts: tuple[Count, ...] = ()
+    answer_kind: str = "answer"
 
 
 @dataclass(frozen=True)
@@ -661,18 +662,23 @@ def parse_support_unit_answer(raw: str) -> SupportUnitAnswer:
             "support_ids",
             "calculation",
             "counts",
+            "answer_kind",
         }:
             raise ValueError(f"invalid support-unit part {index}")
         if not isinstance(part["text"], str) or not isinstance(part["support_ids"], list):
             raise ValueError(f"invalid support-unit values {index}")
         if not all(isinstance(item, str) for item in part["support_ids"]):
             raise ValueError(f"invalid support-unit IDs {index}")
+        kind = part.get("answer_kind", "answer")
+        if not isinstance(kind, str) or kind not in {"answer", "source_limitation"}:
+            raise ValueError(f"invalid support-unit answer kind {index}")
         parsed.append(
             SupportUnitAnswerPart(
                 _without_self_written_citations(part["text"].strip()),
                 list(part["support_ids"]),
                 _parse_calculation(part.get("calculation"), index),
                 _parse_counts(part.get("counts"), index),
+                kind,
             )
         )
     if abstain and parsed:
@@ -695,6 +701,7 @@ def validate_support_unit_answer(
     shadow_enabled: bool = False,
     architecture_v2_shadow_enabled: bool = False,
     question: str | None = None,
+    allow_source_limitations: bool = False,
 ) -> SupportUnitValidation:
     available = support_unit_map(units)
     if answer.abstain:
@@ -825,12 +832,18 @@ def validate_support_unit_answer(
         if any(unit is not None and not unit.authorized for unit in selected):
             part_codes.append("UNAUTHORIZED_SUPPORT_ID")
         support_texts = [unit.text for unit in selected if unit is not None]
+        limitation = part.answer_kind == "source_limitation"
+        if limitation and (
+            not allow_source_limitations or part.calculation is not None or part.counts
+        ):
+            part_codes.append("SOURCE_LIMITATION_REQUIRES_SCOPE_VALIDATION")
         if unsupported_colors(question, support_texts):
             # The question picks things out by a color the cited units never name.
             part_codes.append("QUERY_COLOR_NOT_IN_SUPPORT")
         if (
             part.calculation is None
             and not part.counts
+            and not (limitation and allow_source_limitations)
             and asks_count_answers_percent(question, part.text)
         ):
             # A count was asked; a percentage with no count or calculation is
@@ -1588,6 +1601,7 @@ async def _support_unit_answer_events(
                 shadow_enabled=shadow_enabled,
                 architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
                 question=query,
+                allow_source_limitations=bool(candidate and candidate.scope_validation_required),
             )
             check.set_attribute("validator.failure_codes", validation.failure_codes)
             outcome(check, "rejected" if validation.failure_codes else "completed")

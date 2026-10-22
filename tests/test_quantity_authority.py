@@ -437,3 +437,81 @@ def test_requested_lookup_precision_changes_only_published_display():
         update={"draft": draft.model_copy(update={"output_decimals": None})}
     )
     assert candidate(unrounded).answer_parts[0].text == "70.26 %"
+
+
+def test_review_schema_excludes_invalid_notation_but_preserves_real_locale_choice():
+    from pydantic import ValidationError
+
+    from app.llm.quantity_contracts import review_contract
+    from app.llm.quantity_numbers import notation_options
+
+    draft = invalid_notation()
+    assert notation_options(draft)[0] == ["decimal_point", "decimal_comma"]
+    schema = review_contract(draft)
+    for notation, result in [("decimal_point", "4328"), ("decimal_comma", "11")]:
+        review = schema.model_validate(supported(
+            notation_corrections=[dict(index=0, number_format=notation)]
+        ).model_dump())
+        assert execute(apply_notation_corrections(draft, review))[0] == [result]
+    for notation in ["canonical", "space_grouped"]:
+        with pytest.raises(ValidationError):
+            schema.model_validate(supported(
+                notation_corrections=[dict(index=0, number_format=notation)]
+            ).model_dump())
+    with pytest.raises(ValueError, match="NUMERIC_NOTATION_INVALID"):
+        apply_notation_corrections(draft, supported(
+            notation_corrections=[dict(index=0, number_format="canonical")]
+        ))
+
+
+def test_review_schema_cannot_change_a_valid_number_to_another_locale_value():
+    from pydantic import ValidationError
+
+    from app.llm.quantity_contracts import review_contract
+
+    draft = apply_notation_corrections(invalid_notation(), supported(
+        notation_corrections=[dict(index=0, number_format="decimal_point")]
+    ))
+    with pytest.raises(ValidationError):
+        review_contract(draft).model_validate(supported(
+            notation_corrections=[dict(index=0, number_format="decimal_comma")]
+        ).model_dump())
+
+
+@pytest.mark.asyncio
+async def test_automatic_page_context_cannot_overflow_explicit_required_context(monkeypatch):
+    from app.llm.quantity_state import QuantitySource
+    from tests.test_adaptive import block
+    from tests.test_quantities import text_arithmetic
+
+    active, need = active_session()
+    active.admit([block("Required metadata " + "x" * 3200, id="required", page_number=1)])
+    required = next(k for k, u in active.units().items()
+                    if u.parent_evidence_block_id == "required")
+    active.admit([block("Automatic page duplicate " + "x" * 4200, id="native", page_number=1)])
+    native = next(k for k, u in active.units().items()
+                  if u.parent_evidence_block_id == "native")
+
+    async def attach(session, selection):
+        return selection.model_copy(update={"context_support_ids": [required, native]})
+
+    monkeypatch.setattr("app.llm.quantities.attach_original_context", attach)
+    roles = []
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        roles.append(role)
+        if role == "quantity_selector":
+            return QuantitySource(available=True, support_ids=["E1.S1"],
+                                  context_support_ids=[required])
+        if role == "quantity_collector":
+            assert [s["support_id"] for s in data["context_sources"]] == [required]
+            return output_type.model_validate(text_arithmetic())
+        return supported()
+
+    active.call = call
+    answer = await collect(active, need)
+    assert answer.answer_parts[0].calculation.result == "10"
+    assert roles == ["quantity_selector", "quantity_collector", "quantity_checker"]
+    record = next(iter(active.state.quantities.values()))
+    assert required in record.context_support_ids and native not in record.context_support_ids
+    assert native in active.units(), "An omitted automatic duplicate stays in application state"

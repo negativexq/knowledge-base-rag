@@ -236,7 +236,11 @@ async def run(args):
             ):
                 events.append(event)
                 if event["type"] == "research_progress":
-                    print(event["operation"], event["status"], flush=True)
+                    print(
+                        event.get("operation", event.get("stage", "research")),
+                        event.get("status", "running"),
+                        flush=True,
+                    )
         terminal = terminal_result(events)
         answer = terminal["answer"]
         validation = next((e for e in events if e["type"] == "security_validation"), {})

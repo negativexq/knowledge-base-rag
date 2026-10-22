@@ -1,5 +1,11 @@
 # Open adaptive workflow issues
 
+The [population contract follow-up](../artifacts/mmlongbench-v2/adaptive-population-contracts-20261022/REPORT.md) publishes **approximately 541 for 206** and **approximately 738 for 225**, explicitly qualified as survey sample-equivalent estimates. These two move to qualified calculations: **81 source-supported answers / 4 qualified calculations / 18 correct refusals / 17 unresolved**, or **103/120 (85.8%)** historical accepted outcomes. Row 219 produces a focused category clarification; 216 preserves the known percentage without inventing an incompatible subgroup count. Neither is added to the accepted total. Failed intermediate attempts and latency costs remain documented.
+
+The [four-question population recheck](../artifacts/mmlongbench-v2/adaptive-population-four-20261022/REPORT.md) runs 206/219/225/216 sequentially without application changes. All four return generic insufficiency: three approximate-composition cases remain unrecovered; 216 safely avoids the unsupported count but suppresses a useful limitation draft. 206 computes 541 then fails semantic entity scope; 219 reads percentages without a base join; 225 attempts a person inventory instead of derived-headcount arithmetic. All use nine model requests (36 total); median 135.45 seconds. A logging-only trace-harness stage-event compatibility fix was needed before the completed batch. Historical coverage and 19 unresolved workflows stay unchanged.
+
+The [population and interpretation source audit](../artifacts/mmlongbench-v2/adaptive-composition-audit-20261022/REPORT.md) distinguishes compatible approximate derivations (206/219/225), incompatible subgroup bases (216), count/formula interpretations (658/732/1075) and corrected-premise handling. **214’s previous source diagnosis was wrong: 46−39=7 strongly-disapprove points; 65−49=16 uses total disapproval.** No paid calls, runtime changes or ledger promotions.
+
 The [finalization-contract follow-up](../artifacts/mmlongbench-v2/adaptive-finalization-contracts-20261021/REPORT.md) reruns the five failed baseline cases plus six controls: **11/11 expected outcomes**, including all five recovered answers and two retained safe refusals. Grounded semantic restrictions replace capitalized-token matching; exact application arithmetic stays visible to final coverage; localized image-operand repair reuses its source selection and preserves valid inputs. On the same eleven rows, requests fall **83 → 65**, median time **60.17 → 54.10 s**, p90 **92.06 → 87.73 s**; p95 stays essentially unchanged (**115.14 → 114.99 s**). One attempt per row is descriptive, not a universal performance guarantee. 380 reads correctly on the first live pass; its new repair branch is covered offline. Historical coverage remains **101/120**, with no new distinct questions. **2,471 tests pass**. Multi-page acquisition and safe dependency-based review reuse remain open.
 
 The [numeric dispatch and inventory authority](../artifacts/mmlongbench-v2/adaptive-direct-numeric-dispatch-20261021/REPORT.md) follow-up retains 642 in **five calls / 52.56 seconds** by skipping speculative answering for an explicit typed numeric-presentation need. Final 662 again publishes the correct nine figures and six pages in **six calls / 81.18 seconds**. Failed intermediate source/locator handoffs are retained in the report. Planner hypotheses no longer become source/output authority; a bounded missing-page continuation preserves checked windows, and exact independently image-verified results do not lose valid proof because of redundant malformed OCR locators. Ordinary/model-edited claims and unknown sources remain strict. Historical coverage stays **101/120**, 19 unresolved. Larger-cohort tail latency and duplicate review remain open.
@@ -8,19 +14,19 @@ The [cumulative search-progress follow-up](../artifacts/mmlongbench-v2/adaptive-
 
 The [latency audit](adaptive-latency-audit.md) analyzes 353 saved attempts across 120 questions, including all 76 recent attempts. The general optimization target is repeated selection, extraction and review across unchanged dependencies. Selection churn can reset progress despite revisiting known evidence; reranking adds a median of about six seconds per retrieval. Proposed work starts with meaningful cumulative progress and missing-part completion, preserving source coverage and independent release checks. This audit adds no benchmark results or ledger promotions.
 
-Updated 21 October 2026. This register separates confirmed code defects, semantic
+Updated 22 October 2026. This register separates confirmed code defects, semantic
 acceptance failures, partial fixes and source/metric adjudication. The detailed
 [code-and-trace audit](adaptive-issue-audit.md) contains source anchors and offline
 replays. Prior run reports retain unsuccessful attempts.
 
-There are **19 unresolved question/workflow outcomes** in the
-[120-row ledger](adaptive-solved-questions.md). Two additional questions have qualified interpreted calculations. These are not independently proven
+There are **17 unresolved question/workflow outcomes** in the
+[120-row ledger](adaptive-solved-questions.md). Four additional questions have qualified calculations. These are not independently proven
 code bugs. One row can exercise multiple families; counts below are not additive.
 The shared matcher scores and strict source/workflow audit remain separate.
 
 ## Current priorities
 
-The [document-inventory follow-up](../artifacts/mmlongbench-v2/adaptive-inventory-progress-20261021/REPORT.md) recovers 662: nine figures, six distinct pages, six calls / 104.89 seconds. Typed accumulation, one-time full-source planning, narrow extraction, combined coverage checking and application count/page publication preserve the result. The 382 control remains correct but takes eight calls / 110.06 seconds. Latency remains open; 636/663 are not newly validated. Current historical totals: **81 supported / 2 qualified / 18 correct refusals / 19 unresolved**, or **101/120 (84.2%)**. Failed intermediate attempts remain in the report.
+The [document-inventory follow-up](../artifacts/mmlongbench-v2/adaptive-inventory-progress-20261021/REPORT.md) recovers 662: nine figures, six distinct pages, six calls / 104.89 seconds. Typed accumulation, one-time full-source planning, narrow extraction, combined coverage checking and application count/page publication preserve the result. The 382 control remains correct but takes eight calls / 110.06 seconds. Latency remains open; 636/663 are not newly validated. At that follow-up, historical totals were **81 supported / 2 qualified / 18 correct refusals / 19 unresolved**, or **101/120 (84.2%)**. Failed intermediate attempts remain in the report.
 
 The [inventory loss audit](adaptive-inventory-loss-audit.md) traces 636/662/663 through saved state and current-code offline replay. In 662, five supported readings remain in the parent while the active repair draft contains only two new items; its checker is blocked by token reservation. Pages 12 and 20 are not opened. In 663, four items survive but guide-wide coverage and the counting unit remain unresolved. The old 636 witness-size guard is already corrected; its remaining source scope has not been remeasured. No runtime edits or new benchmark results follow from this read-only audit.
 
@@ -260,14 +266,14 @@ adjudication; they are not automatically verified refusals.
 
 | Primary blocker | Questions | Rows |
 | --- | --- | --- |
-| Correctable premise or underspecified-request handling | 2 | 384, 830 |
+| Correctable premise or underspecified-request handling | 3 | 214, 384, 830 |
 | Incomplete inventory or source-object coverage | 2 | 636, 663 |
 | Visual target-location acquisition | 1 | 393 |
 | Entity/period/unit binding and cross-source relationships | 5 | 510, 641, 1015, 1070, 1074 |
-| Population, denominator and approximate headcount composition | 4 | 206, 216, 219, 225 |
-| Question, counting-unit or formula adjudication | 4 | 214, 658, 732, 1075 |
+| Population denominator or exclusive-category adjudication | 2 | 216, 219 |
+| Question, counting-unit or formula adjudication | 3 | 658, 732, 1075 |
 | Unestablished source reading | 1 | 661 |
-| **Total** | **19** | Each unresolved ledger row appears once. |
+| **Total** | **17** | Each unresolved ledger row appears once. |
 
 ## Frozen 20-question follow-up measurement
 

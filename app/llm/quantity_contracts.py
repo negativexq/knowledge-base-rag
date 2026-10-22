@@ -8,6 +8,7 @@ from typing import Any, Literal, cast
 from pydantic import BaseModel, Field, create_model
 
 from app.evidence.support_units import SupportUnit
+from app.llm.quantity_numbers import notation_options
 from app.llm.quantity_state import (
     ImageQuantityDraft,
     NumberScale,
@@ -19,6 +20,7 @@ from app.llm.quantity_state import (
     QuantityIssue,
     QuantityLookupChoice,
     QuantityMode,
+    QuantityNotationCorrection,
     QuantityOperation,
     SourceNumber,
     TextQuantityDraft,
@@ -68,7 +70,15 @@ def collection_contract(
             output_scale=(NumberScale, "1"),
             sign_convention=(Literal["signed", "magnitude"], "signed"),
         )
+    if kind == "arithmetic":
+        bindings_fields.update(
+            population=(str, Field(default="", max_length=300)),
+            denominator_population=(str, Field(default="", max_length=300)),
+            period=(str, Field(default="", max_length=200)),
+        )
     operand = create_model(
+        # Aggregate arithmetic retains each rate's base independently from its
+        # source numeric display; the checker verifies those relationships.
         "CollectionOperand",
         __base__=NumericReading,
         name=(
@@ -109,10 +119,11 @@ def collection_contract(
         )
     if kind == "arithmetic":
         fields.update(
+            result_kind=(Literal["exact", "approximate"], "exact"),
             expression=(str, Field(min_length=1, max_length=500)),
             decimals=(int, Field(ge=0, le=10)),
             result_unit=(str, Field(max_length=100)),
-            interpretation=(str, Field(max_length=300)),
+            interpretation=(str, Field(max_length=800)),
         )
     elif kind in {"select", "lookup"}:
         fields["select_mode"] = (Literal["minimum", "maximum"], ...)
@@ -260,4 +271,17 @@ def review_contract(draft: QuantityDraft) -> type[QuantityAssessment]:
             Field(default_factory=cast(Any, list), max_length=10),
         )
     }
+    corrections: Any = None
+    for index, formats in notation_options(draft).items():
+        correction = create_model(
+            f"Operand{index}NotationCorrection",
+            __base__=QuantityNotationCorrection,
+            index=(Literal[index], ...),
+            number_format=(Literal[tuple(formats)], ...),
+        )
+        corrections = correction if corrections is None else corrections | correction
+    fields["notation_corrections"] = (
+        GenericAlias(list, corrections or QuantityNotationCorrection),
+        Field(default_factory=cast(Any, list), max_length=20 if corrections else 0),
+    )
     return create_model(f"Review{draft.mode.title()}", __base__=QuantityAssessment, **fields)

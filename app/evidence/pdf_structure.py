@@ -7,7 +7,9 @@ are accepted from the model.
 
 from __future__ import annotations
 
+import math
 import re
+from collections import Counter
 from dataclasses import dataclass
 from typing import Any
 
@@ -189,6 +191,7 @@ class PdfStructure:
         budget = min(600, 12000 // len(pages))
         result = []
         with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
+            page_lines = {}
             for number in pages:
                 if not 1 <= number <= min(doc.page_count, 2000):
                     raise ValueError("PDF_PAGE_OUT_OF_RANGE")
@@ -197,12 +200,31 @@ class PdfStructure:
                     raise ValueError("PDF_PAGE_TOO_LARGE")
                 lines = [line.strip() for line in page.get_text(sort=True).splitlines()]
                 lines = [line for line in lines if line]
-                terms = {w[:4] for w in re.findall(r"[a-z]{4,}", query.casefold())}
-                relevant = [
-                    i
-                    for i, line in enumerate(lines)
-                    if any(re.search(r"\b" + re.escape(term), line, re.I) for term in terms)
-                ][:2]
+                page_lines[number] = lines
+            terms = {w[:4] for w in re.findall(r"[a-z]{3,}", query.casefold())}
+            matches = {
+                number: [
+                    {term for term in terms if re.search(r"\b" + re.escape(term), line, re.I)}
+                    for line in lines
+                ] for number, lines in page_lines.items()
+            }
+            frequency = Counter(
+                term for groups in matches.values() for term in set().union(*groups)
+            )
+            for number, lines in page_lines.items():
+                scores = [
+                    sum(
+                        math.log((1 + len(pages)) / (1 + frequency[t]))
+                        if len(pages) > 1 else 1 for t in group
+                    )
+                    for group in matches[number]
+                ]
+                # Repeated report names and survey footers must not hide the
+                # page's actual question-specific labels in the same small budget.
+                relevant = sorted(
+                    (i for i, score in enumerate(scores) if score > 0),
+                    key=lambda i: -scores[i],
+                )[:2]
                 indexes = list(
                     dict.fromkeys(
                         relevant

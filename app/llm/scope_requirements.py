@@ -35,6 +35,15 @@ class RequiredScopeJudgment(DiagnosticScopeJudgment):
 
 INSTRUCTIONS = """question_requirements contain verbatim restrictions from the question,
 not inferred planning values. Return one requirement_bindings entry for every index.
+For a source_limitation claim, bind the cited source scope and the stated limitation
+to the requested entity/metric/period, not a nonexistent positive value. A supported
+limitation can describe a known mismatch: return mismatch with original witnesses
+for that restriction while supporting the truthful limitation claim itself. Unknown
+identity or incomplete inspection still cannot establish a contradiction or absence.
+The application never uses such a mismatch to approve a positive requested value. A supported
+limitation must have original-source evidence for the actual missing/incompatible
+input; incomplete searching alone does not establish absence. An ordinary paraphrase
+does not invent a finer measurement than the question or source actually distinguishes.
 Evaluate them against the answer as a whole, pointing to the applicable claim_indexes.
 Supported needs source witnesses for that specific restriction, not merely a nearby
 number or title. Distinguish literal support, linguistic equivalents, and a relationship
@@ -94,7 +103,24 @@ def validate_requirements(
     errors = []
     for index, requirement in enumerate(requirements):
         binding = bindings[index]
-        if binding.verdict != "supported" or binding.binding_basis == "unestablished":
+        limited_claims = [
+            c for c in payload["claims"] if c["claim_index"] in binding.claim_indexes
+        ]
+        primary = {c.claim_index: c for c in judgment.checks}
+        verified_contrast = (
+            binding.verdict == "mismatch"
+            and bool(limited_claims)
+            and all(
+                c["claim"].get("answer_kind") == "source_limitation"
+                and c["claim_index"] in primary
+                and primary[c["claim_index"]].verdict == "supported"
+                and primary[c["claim_index"]].reason == "NONE"
+                for c in limited_claims
+            )
+        )
+        if (
+            binding.verdict != "supported" and not verified_contrast
+        ) or binding.binding_basis == "unestablished":
             errors.append("SCOPE_REQUIREMENT_UNRESOLVED")
             continue
         if not (binding.witnesses or binding.image_witnesses) or not set(
