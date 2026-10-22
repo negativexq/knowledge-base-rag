@@ -22,6 +22,21 @@ class FeedbackRequest(BaseModel):
     note: str = Field(default="", max_length=4000)
     support_ids: list[str] = Field(default_factory=list, max_length=100)
     trace_id: str | None = Field(default=None, max_length=64)
+    # What the reporter says is right; a reviewer must confirm it before it
+    # becomes an evaluation candidate.
+    expected_answer: str = Field(default="", max_length=2000)
+    expected_source: str = Field(default="", max_length=500)
+    expected_page: int | None = Field(default=None, ge=1, le=2000)
+
+
+class Promotion(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    # Overrides the reporter's expected answer when the reviewer corrects it.
+    expected_answer: str = Field(default="", max_length=2000)
+
+
+class PromotionError(ValueError):
+    pass
 
 
 class FeedbackReview(BaseModel):
@@ -47,6 +62,10 @@ class FeedbackStore:
             "CREATE INDEX IF NOT EXISTS feedback_tenant_date "
             "ON research_feedback(tenant_id, created_at)"
         )
+        self._db.execute("""CREATE TABLE IF NOT EXISTS evaluation_candidates (
+            id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, feedback_id TEXT NOT NULL UNIQUE,
+            reviewer_id TEXT NOT NULL, row TEXT NOT NULL, created_at TEXT NOT NULL
+        )""")
         self._db.commit()
 
     @staticmethod
@@ -104,6 +123,59 @@ class FeedbackStore:
                 "SELECT * FROM research_feedback WHERE tenant_id=? AND id=?", (tenant, id)
             ).fetchone()
             return self._record(row) if row else None
+
+    def promote(
+        self, tenant: str, id: str, reviewer: str, body: Promotion
+    ) -> dict[str, Any] | None:
+        """Turn a reviewed report into an evaluation candidate; None if absent."""
+        with self._lock, self._db:
+            row = self._db.execute(
+                "SELECT * FROM research_feedback WHERE tenant_id=? AND id=?", (tenant, id)
+            ).fetchone()
+            if row is None:
+                return None
+            report = self._record(row)
+            expected = body.expected_answer.strip() or report.get("expected_answer", "").strip()
+            if not expected:
+                raise PromotionError("An expected answer is required")
+            now = datetime.now(UTC).isoformat()
+            candidate = {
+                "id": str(uuid.uuid4()),
+                "question": report["question"],
+                "expected_answer": expected,
+                "expected_source": report.get("expected_source", ""),
+                "expected_page": report.get("expected_page"),
+                "reason": report["reason"],
+                "origin": "user_feedback",
+                "feedback_id": id,
+                "created_at": now,
+            }
+            try:
+                self._db.execute(
+                    "INSERT INTO evaluation_candidates "
+                    "(id, tenant_id, feedback_id, reviewer_id, row, created_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (candidate["id"], tenant, id, reviewer, json.dumps(candidate), now),
+                )
+            except sqlite3.IntegrityError as exc:
+                raise PromotionError("Already promoted") from exc
+            self._db.execute(
+                "UPDATE research_feedback SET status='resolved', reviewer_id=?, updated_at=? "
+                "WHERE tenant_id=? AND id=?",
+                (reviewer, now, tenant, id),
+            )
+            return candidate
+
+    def candidates(self, tenant: str) -> list[dict[str, Any]]:
+        with self._lock:
+            return [
+                json.loads(row["row"])
+                for row in self._db.execute(
+                    "SELECT row FROM evaluation_candidates WHERE tenant_id=? "
+                    "ORDER BY created_at, id",
+                    (tenant,),
+                )
+            ]
 
     def close(self) -> None:
         with self._lock:

@@ -530,6 +530,12 @@ export type FeedbackReason = "incorrect" | "unsupported" | "outdated" | "incompl
 export interface FeedbackSubmission {
   question: string; answer: string; claim: string; reason: FeedbackReason; note: string
   support_ids: string[]; trace_id: string | null
+  // What the reporter says is right; reviewers confirm it before promotion.
+  expected_answer?: string; expected_source?: string; expected_page?: number | null
+}
+export interface EvaluationCandidate {
+  id: string; question: string; expected_answer: string; expected_source: string
+  expected_page: number | null; reason: FeedbackReason; origin: "user_feedback"; feedback_id: string; created_at: string
 }
 export interface FeedbackRecord extends FeedbackSubmission {
   id: string; user_id: string; status: "open" | "triaged" | "resolved" | "dismissed"

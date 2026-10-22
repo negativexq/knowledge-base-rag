@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { researchApi } from "@/api/research"
+import { fetchEvaluationCandidates, researchApi } from "@/api/research"
 import type { FeedbackRecord } from "@/api/types"
 import { useIdentity } from "@/hooks/useIdentity"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,13 @@ function Report({ report, reviewer, onReviewed }: { report: FeedbackRecord; revi
   const [status, setStatus] = useState<"triaged" | "resolved" | "dismissed">(report.status === "open" ? "triaged" : report.status)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(false)
+  const [expected, setExpected] = useState(report.expected_answer ?? "")
+  const [promotion, setPromotion] = useState<"idle" | "saving" | "done" | "failed">("idle")
+  async function promote() {
+    setPromotion("saving")
+    try { await researchApi.promote(report.id, expected.trim()); setPromotion("done"); onReviewed() }
+    catch { setPromotion("failed") }
+  }
   async function review() {
     setSaving(true); setError(false)
     try { await researchApi.review(report.id, status, note); onReviewed() }
@@ -21,12 +28,19 @@ function Report({ report, reviewer, onReviewed }: { report: FeedbackRecord; revi
     <h2 className="text-sm font-medium">{report.question}</h2>
     {report.claim && <blockquote className="whitespace-pre-wrap border-l-2 border-[var(--color-warning)] pl-3 text-sm">{report.claim}</blockquote>}
     {report.note && <p className="whitespace-pre-wrap text-sm">{report.note}</p>}
+    {(report.expected_answer || report.expected_source) && <p className="text-sm">Reporter's answer: <strong>{report.expected_answer || "—"}</strong>{report.expected_source && <span className="text-[var(--color-muted-foreground)]"> · {report.expected_source}{report.expected_page ? `, p. ${report.expected_page}` : ""}</span>}</p>}
     <details className="text-xs"><summary className="cursor-pointer">Submitted answer snapshot</summary><p className="mt-2 text-[var(--color-muted-foreground)]">User-submitted report; this snapshot is not independently verified evidence.</p><pre className="mt-2 whitespace-pre-wrap font-sans">{report.answer}</pre>{report.support_ids.length > 0 && <p className="mt-2 break-all">Reported citations: {report.support_ids.join(", ")}</p>}{report.trace_id && <p className="mt-2 break-all">Trace: {report.trace_id}</p>}</details>
     {reviewer ? <form className="space-y-2 border-t border-[var(--color-border)] pt-3" onSubmit={(event) => { event.preventDefault(); void review() }}>
       <label className="block text-xs">Review status<select value={status} onChange={(event) => setStatus(event.target.value as typeof status)} className="ml-2 rounded border border-[var(--color-border)] bg-[var(--color-surface)] p-1"><option value="triaged">Triaged</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></label>
       <label className="block text-xs">Reviewer note<textarea value={note} maxLength={4000} onChange={(event) => setNote(event.target.value)} className="mt-1 block w-full rounded border border-[var(--color-border)] bg-transparent p-2" /></label>
       {error && <p role="alert" className="text-xs">Review could not be saved.</p>}
       <Button size="sm" disabled={saving}>{saving ? "Saving…" : "Save review"}</Button>
+      <div className="space-y-2 border-t border-[var(--color-border)] pt-3">
+        <label className="block text-xs">Confirmed correct answer<input value={expected} maxLength={2000} onChange={(event) => setExpected(event.target.value)} className="mt-1 block w-full rounded border border-[var(--color-border)] bg-transparent p-2" /></label>
+        {promotion === "done" ? <p role="status" className="text-xs">Added to the evaluation set and marked resolved.</p>
+          : <Button type="button" size="sm" variant="secondary" disabled={!expected.trim() || promotion === "saving"} onClick={() => void promote()}>{promotion === "saving" ? "Adding…" : "Add to evaluation set"}</Button>}
+        {promotion === "failed" && <p role="alert" className="text-xs">It could not be added; it may already be in the evaluation set.</p>}
+      </div>
     </form> : report.reviewer_note && <p className="text-xs">Reviewer response: {report.reviewer_note}</p>}
   </article>
 }
@@ -39,10 +53,19 @@ export default function Feedback() {
   const client = useQueryClient()
   const reports = useQuery({ queryKey: ["feedback", identity.data?.tenant_id, identity.data?.user_id, reviewer, offset, status],
     queryFn: () => researchApi.reports(reviewer, offset, status), enabled: Boolean(identity.data) })
+  async function exportCandidates() {
+    const text = await fetchEvaluationCandidates()
+    const link = document.createElement("a")
+    link.href = URL.createObjectURL(new Blob([text], { type: "application/x-ndjson" }))
+    link.download = "evaluation-candidates.jsonl"
+    link.click()
+    URL.revokeObjectURL(link.href)
+  }
   if (identity.isError) return <p role="alert" className="p-6">Your identity could not be loaded.</p>
   return <div className="mx-auto max-w-4xl space-y-4 p-6">
     <h1 className="text-xl font-semibold">Answer feedback</h1>
     <p className="text-sm text-[var(--color-muted-foreground)]">{reviewer ? "Review reported answer issues within your organization." : "Your submitted issues and reviewer responses."}</p>
+    {reviewer && <Button size="sm" variant="secondary" onClick={() => void exportCandidates()}>Export evaluation candidates (JSONL)</Button>}
     {reviewer && <label className="block text-xs">Filter status<select value={status} onChange={(event) => { setStatus(event.target.value); setOffset(0) }} className="ml-2 rounded border border-[var(--color-border)] bg-[var(--color-surface)] p-1"><option value="">All</option>{["open", "triaged", "resolved", "dismissed"].map((item) => <option key={item}>{item}</option>)}</select></label>}
     {reports.isPending && <p role="status">Loading feedback…</p>}
     {reports.isError && <p role="alert">Feedback could not be loaded. <button type="button" onClick={() => void reports.refetch()}>Retry</button></p>}

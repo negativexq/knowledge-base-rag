@@ -1,6 +1,7 @@
 """Authenticated research tools. No model calls are made by these endpoints."""
 
 import asyncio
+import json
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
@@ -8,7 +9,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from app.api.chat import _enforce_chat_rate_limit
 from app.api.deps import get_current_user, require_role, retrieval_context
 from app.evidence.documents import DocumentRead
-from app.research.feedback import FeedbackRequest, FeedbackReview, FeedbackStore
+from app.research.feedback import (
+    FeedbackRequest,
+    FeedbackReview,
+    FeedbackStore,
+    Promotion,
+    PromotionError,
+)
 from app.security.audit import log_audit_event
 from app.security.document_permissions import (
     DocumentPermissionStore,
@@ -126,6 +133,35 @@ async def review_feedback(
     if result is None:
         raise HTTPException(404, "Feedback not found")
     return result
+
+
+@router.post("/feedback/{id}/promote", status_code=201)
+async def promote_feedback(
+    id: str,
+    body: Promotion,
+    request: Request,
+    user: UserContext = Depends(require_role(Role.OPERATOR)),
+) -> dict[str, Any]:
+    """A reviewed report becomes a candidate question for the evaluation set."""
+    try:
+        result = feedback_store(request).promote(user.tenant_id, id, user.user_id, body)
+    except PromotionError as exc:
+        status = 409 if "Already" in str(exc) else 422
+        raise HTTPException(status, str(exc)) from exc
+    if result is None:
+        raise HTTPException(404, "Feedback not found")
+    return result
+
+
+@router.get("/evaluation-candidates.jsonl")
+async def evaluation_candidates(
+    request: Request, user: UserContext = Depends(require_role(Role.OPERATOR))
+) -> Response:
+    rows = feedback_store(request).candidates(user.tenant_id)
+    return Response(
+        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
+        media_type="application/x-ndjson",
+    )
 
 
 def permission_store(request: Request) -> DocumentPermissionStore:
