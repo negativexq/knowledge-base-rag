@@ -13,6 +13,7 @@ from app.connectors.notion import NotionConnector
 from app.evaluation.forensic_capture import current_capture, metadata_for_chunks
 from app.evaluation.semantic_answerability import OllamaSemanticEvaluator
 from app.evidence.documents import DocumentReader
+from app.evidence.page_preview import render_preview
 from app.evidence.section_aware import SectionAwareEvidenceBuilder, serialize_section_aware_context
 from app.ingestion.chunking_config import QWEN3_EMBEDDING_TOKENIZER, QWEN3_TOKENIZER_REVISION
 from app.ingestion.fingerprint import build_pipeline_fingerprint
@@ -232,6 +233,10 @@ def build_chat_dependencies(
         )
 
     page_renderer = pdf_page_renderer(settings.filesystem_root_path)
+
+    def page_preview(source_id: str, version: str, page: int, highlight: str | None):
+        snapshot = page_renderer.snapshot(source_id, version)
+        return render_preview(snapshot.content, page, highlight) if snapshot else None
 
     def classic_stream(question: str, chunks: list[SearchResult], retrieve=None):
         return stream_support_unit_answer(
@@ -472,6 +477,8 @@ def build_chat_dependencies(
             documents_factory=lambda context, source_ids: DocumentReader(
                 qdrant_client, collection_name, context, source_ids
             ),
+            page_preview_fn=page_preview,
+            page_preview_tenant=settings.filesystem_tenant_id,
             pipeline_version=(
                 "pipeline_adaptive_v1"
                 if settings.adaptive_rag_enabled

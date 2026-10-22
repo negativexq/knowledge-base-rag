@@ -189,5 +189,6 @@ def create_app(
             allow_credentials=False,
             allow_methods=["GET", "POST", "PUT"],
             allow_headers=["Authorization", "Content-Type"],
+            expose_headers=["X-Highlight-Found"],
         )
     return app
