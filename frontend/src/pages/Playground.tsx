@@ -3,12 +3,13 @@ import { ResearchActivity } from "@/components/ResearchActivity"
 import { CalculationCard } from "@/components/CalculationCard"
 import { CoverageBadge } from "@/components/CoverageBadge"
 import { followUpQuestions } from "@/lib/followUps"
+import { downloadAnswerReport } from "@/lib/report"
 import { ClarificationPrompt } from "@/components/ClarificationPrompt"
 import { ComparisonTable } from "@/components/ComparisonTable"
 import { ComparisonComposer } from "@/components/ComparisonComposer"
 import type { CalculationSummary, ResearchStep, Clarification, ClarificationReply, ComparisonRow } from "@/api/types"
 import { useEffect, useRef, useState } from "react"
-import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Download, History, NotebookPen, Pin, Columns2, Search, Sparkles, Square } from "lucide-react"
+import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Download, History, NotebookPen, Pin, Columns2, Search, Share2, Sparkles, Square } from "lucide-react"
 
 import { chatApi } from "@/api/chat"
 import type {
@@ -129,6 +130,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
   const [compareOpen, setCompareOpen] = useState(false)
   const [exportError, setExportError] = useState("")
   const [copiedTurn, setCopiedTurn] = useState<number | null>(null)
+  const [sharingTurn, setSharingTurn] = useState<number | null>(null)
   const [question, setQuestion] = useState("")
   const workspaceView = useResearchView(researchScope(identity))
   const { mode, setMode, tab: activeTab, setTab: setActiveTab, open: inspectorOpen, setOpen: setInspectorOpen } = workspaceView
@@ -150,6 +152,11 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
   function exportResearch() {
     try { downloadResearch(library.active); setExportError("") }
     catch { setExportError("The Markdown file could not be downloaded. Try again.") }
+  }
+
+  async function shareReport(index: number, turn: Turn) {
+    setSharingTurn(index)
+    try { await downloadAnswerReport(turn) } finally { setSharingTurn(null) }
   }
 
   async function copyAnswer(index: number, answer: string) {
@@ -543,6 +550,21 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                         {!turn.streaming && turn.answer && (
                           <div className="flex items-start justify-between gap-2">
                             {statusOf(turn) ? <AnswerStatusLine status={statusOf(turn)!} /> : <span />}
+                            <span className="flex shrink-0 items-center gap-1">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  onClick={() => void shareReport(i, turn)}
+                                  aria-label={sharingTurn === i ? "Preparing report" : "Download shareable report"}
+                                  disabled={sharingTurn === i}
+                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--color-subtle-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] disabled:opacity-50"
+                                >
+                                  <Share2 className="h-3.5 w-3.5" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>Download a shareable report with sources and pages</TooltipContent>
+                            </Tooltip>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <button
@@ -556,6 +578,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                               </TooltipTrigger>
                               <TooltipContent>{copiedTurn === i ? "Copied" : "Copy answer"}</TooltipContent>
                             </Tooltip>
+                            </span>
                           </div>
                         )}
                       </div>
