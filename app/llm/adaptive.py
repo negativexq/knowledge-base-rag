@@ -43,6 +43,7 @@ from app.llm.answer_coverage import CoverageScopeJudgment, LocatedOmission, loca
 from app.llm.answer_repair import AnswerCompletion, AnswerPatch, AnswerRepair
 from app.llm.calculation import Calculation, evaluate_decimal_expression, verify_calculation
 from app.llm.calculation_sources import calculation_inspection_targets
+from app.llm.calculation_summary import calculation_summaries
 from app.llm.inventory_progress import inventory_view
 from app.llm.quantities import candidate as quantity_candidate
 from app.llm.quantities import collect as collect_quantities
@@ -3046,4 +3047,7 @@ async def run_adaptive_agent(
             scope_receipt=receipt,
             authorization_context=deps.ledger.context,
             source_disposition=terminal_disposition,
+            calculations=[]
+            if candidate.abstain or failure is not None
+            else calculation_summaries(state, session.units()),
         )

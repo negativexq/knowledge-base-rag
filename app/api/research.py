@@ -1,13 +1,21 @@
 """Authenticated research tools. No model calls are made by these endpoints."""
 
-from typing import Any, Literal
+import asyncio
+import json
+from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
 from app.api.chat import _enforce_chat_rate_limit
 from app.api.deps import get_current_user, require_role, retrieval_context
 from app.evidence.documents import DocumentRead
-from app.research.feedback import FeedbackRequest, FeedbackReview, FeedbackStore
+from app.research.feedback import (
+    FeedbackRequest,
+    FeedbackReview,
+    FeedbackStore,
+    Promotion,
+    PromotionError,
+)
 from app.security.audit import log_audit_event
 from app.security.document_permissions import (
     DocumentPermissionStore,
@@ -46,6 +54,40 @@ async def read_document(
         "current_version": record.content_hash if record else None,
         "status": record.status if record else None,
     }
+
+
+@router.get("/documents/page")
+async def document_page(
+    request: Request,
+    source_type: Annotated[str, Query(max_length=100)],
+    source_id: Annotated[str, Query(min_length=1, max_length=500)],
+    document_version: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
+    page: Annotated[int, Query(ge=1, le=2000)],
+    highlight: Annotated[str | None, Query(max_length=600)] = None,
+    user: UserContext = Depends(get_current_user),
+) -> Response:
+    """A cited page as PNG, pinned to the cited document version."""
+    deps = request.app.state.chat_deps
+    if deps is None or deps.page_preview_fn is None:
+        raise HTTPException(503, "Page previews are unavailable")
+    context = retrieval_context(request, user)
+    allowed = context.document_permissions is None or (
+        context.document_permissions.rules().allows(source_type, source_id)
+    )
+    # One answer for every refusal, so a probe cannot tell them apart.
+    if source_type != "filesystem" or user.tenant_id != deps.page_preview_tenant or not allowed:
+        raise HTTPException(404, "Page not found")
+    rendered = await asyncio.to_thread(
+        deps.page_preview_fn, source_id, document_version, page, highlight
+    )
+    if rendered is None:
+        raise HTTPException(404, "Page not found")
+    png, found = rendered
+    return Response(
+        png,
+        media_type="image/png",
+        headers={"Cache-Control": "private, max-age=300", "X-Highlight-Found": str(int(found))},
+    )
 
 
 def feedback_store(request: Request) -> FeedbackStore:
@@ -91,6 +133,35 @@ async def review_feedback(
     if result is None:
         raise HTTPException(404, "Feedback not found")
     return result
+
+
+@router.post("/feedback/{id}/promote", status_code=201)
+async def promote_feedback(
+    id: str,
+    body: Promotion,
+    request: Request,
+    user: UserContext = Depends(require_role(Role.OPERATOR)),
+) -> dict[str, Any]:
+    """A reviewed report becomes a candidate question for the evaluation set."""
+    try:
+        result = feedback_store(request).promote(user.tenant_id, id, user.user_id, body)
+    except PromotionError as exc:
+        status = 409 if "Already" in str(exc) else 422
+        raise HTTPException(status, str(exc)) from exc
+    if result is None:
+        raise HTTPException(404, "Feedback not found")
+    return result
+
+
+@router.get("/evaluation-candidates.jsonl")
+async def evaluation_candidates(
+    request: Request, user: UserContext = Depends(require_role(Role.OPERATOR))
+) -> Response:
+    rows = feedback_store(request).candidates(user.tenant_id)
+    return Response(
+        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
+        media_type="application/x-ndjson",
+    )
 
 
 def permission_store(request: Request) -> DocumentPermissionStore:

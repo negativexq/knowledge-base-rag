@@ -4,6 +4,7 @@ import { ChevronRight, FileText, Pin } from "lucide-react"
 
 import type { RetrievedSource, SupportUnitRef } from "@/api/types"
 import { HighlightedPassage } from "@/components/HighlightedPassage"
+import { PagePreview } from "@/components/PagePreview"
 import { Badge } from "@/components/ui/badge"
 import { cn, formatScore } from "@/lib/utils"
 
@@ -22,6 +23,8 @@ export function SourceCard({ source, cited, highlighted, technical = false, sear
   cardRef?: (el: HTMLDivElement | null) => void
 }) {
   const [reading, setReading] = useState(false)
+  const [previewing, setPreviewing] = useState(false)
+  const previewable = source.source_type === "filesystem" && source.page_number != null && Boolean(source.source_id) && /^[0-9a-f]{64}$/.test(source.document_version ?? "")
   const [expanded, setExpanded] = useState<boolean | null>(null)
   const open = Boolean(searchQuery.trim()) || (expanded ?? highlighted)
   const location = source.heading_path?.length ? source.heading_path.join(" / ") : null
@@ -80,7 +83,10 @@ export function SourceCard({ source, cited, highlighted, technical = false, sear
         {source.document_version && <div className="mt-3 text-xs text-[var(--color-muted-foreground)]">
           <span title={source.document_version}>Evidence version {source.document_version.slice(0, 12)}</span>
           <button type="button" onClick={() => setReading(!reading)} aria-expanded={reading} className="ml-3 rounded px-2 py-1 text-[var(--color-accent)]">{reading ? "Close document reader" : "Read full context"}</button>
+          {previewable && <button type="button" onClick={() => setPreviewing(!previewing)} aria-expanded={previewing} className="ml-1 rounded px-2 py-1 text-[var(--color-accent)]">{previewing ? "Hide page" : "View page"}</button>}
         </div>}
+        {previewing && previewable && <PagePreview sourceId={source.source_id!} documentVersion={source.document_version!} page={source.page_number!}
+          highlight={(citedUnits.find((unit) => unit.support_id === highlightedUnitId) ?? citedUnits[0])?.text ?? source.snippet} />}
         {reading && source.document_version && source.source_id && source.source_type && <DocumentExplorer document={{ source_type: source.source_type, source_id: source.source_id, document_version: source.document_version }} initialPage={source.page_number ?? 1} />}
         {technical && <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 border-t border-[var(--color-border)] pt-2 font-technical text-[11px] text-[var(--color-subtle-foreground)]">
           <span>{source.source_type}</span>

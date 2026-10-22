@@ -2,6 +2,7 @@ import { type ReactNode, useState } from "react"
 
 import { WorkspaceCommandsProvider } from "@/components/WorkspaceCommandsProvider"
 import { CommandPalette } from "@/components/CommandPalette"
+import { ResearchRunNotices } from "@/components/ResearchRunNotices"
 import { Sidebar } from "@/components/Sidebar"
 import { TopBar } from "@/components/TopBar"
 import { ThemeProvider } from "@/lib/theme"
@@ -42,6 +43,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </div>
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <ResearchRunNotices />
       </WorkspaceCommandsProvider>
     </ThemeProvider>
   )

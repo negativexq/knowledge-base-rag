@@ -1,11 +1,15 @@
 import { AnswerFeedback } from "@/components/AnswerFeedback"
 import { ResearchActivity } from "@/components/ResearchActivity"
+import { CalculationCard } from "@/components/CalculationCard"
+import { CoverageBadge } from "@/components/CoverageBadge"
+import { followUpQuestions } from "@/lib/followUps"
+import { downloadAnswerReport } from "@/lib/report"
 import { ClarificationPrompt } from "@/components/ClarificationPrompt"
 import { ComparisonTable } from "@/components/ComparisonTable"
 import { ComparisonComposer } from "@/components/ComparisonComposer"
-import type { ResearchStep, Clarification, ClarificationReply, ComparisonRow } from "@/api/types"
+import type { CalculationSummary, ResearchStep, Clarification, ClarificationReply, ComparisonRow } from "@/api/types"
 import { useEffect, useRef, useState } from "react"
-import { ArrowUp, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Download, History, NotebookPen, Pin, Columns2, Search, Sparkles, Square } from "lucide-react"
+import { ArrowUp, Bell, Check, Copy, BookOpen, FileText, MessageSquarePlus, PanelRight, Download, History, NotebookPen, Pin, Columns2, Search, Share2, Sparkles, Square } from "lucide-react"
 
 import { chatApi } from "@/api/chat"
 import type {
@@ -27,6 +31,7 @@ import { useRegisterWorkspaceCommands } from "@/lib/workspaceCommands"
 import { ResearchHistory } from "@/components/ResearchHistory"
 import { PinnedEvidence } from "@/components/PinnedEvidence"
 import { useResearchLibrary } from "@/hooks/useResearchLibrary"
+import { cancelRun, OPEN_RESEARCH_EVENT, setViewing, startRun, useResearchRuns } from "@/lib/researchRuns"
 import { downloadResearch, researchOutcome, researchScope, samePin, type EvidencePin, type ResearchTurn as Turn } from "@/lib/research"
 import { classifyError } from "@/api/client"
 import { ErrorState } from "@/components/ErrorState"
@@ -71,6 +76,18 @@ function segmentsOf(turn: Turn): AnswerSegment[] {
   return splitAnswerIntoSegments(turn.answer, turn.sources, turn.metadata?.support_units ?? [])
 }
 
+function followUpsOf(turn: Turn): string[] {
+  const citedUnits = segmentsOf(turn).flatMap((segment) => segment.type === "citation" && segment.valid && segment.unit ? [segment.unit] : [])
+  return followUpQuestions({ question: turn.question, outcome: researchOutcome(turn), sources: turn.sources, citedUnits, calculations: calculationsOf(turn) })
+}
+
+// Calculations behind a verified answer that the answer itself cites.
+function calculationsOf(turn: Turn): CalculationSummary[] {
+  if (researchOutcome(turn) !== "answered") return []
+  const cited = new Set(segmentsOf(turn).flatMap((segment) => segment.type === "citation" && segment.valid && segment.unit ? [segment.unit.support_id] : []))
+  return (turn.metadata?.calculations ?? []).filter((calculation) => calculation.support_ids.some((id) => cited.has(id)))
+}
+
 // Support units the answer actually cites, by source card rank.
 function citedUnitsByRank(turn: Turn | undefined): Map<number, SupportUnitRef[]> {
   const byRank = new Map<number, SupportUnitRef[]>()
@@ -107,13 +124,17 @@ export default function Playground() {
 }
 
 function ResearchWorkspace({ identity }: { identity: Identity }) {
-  const library = useResearchLibrary(researchScope(identity))
-  const organization = useOrganization(researchScope(identity))
-  const turns = library.active.turns
-  const setTurns = library.setTurns
+  const scope = researchScope(identity)
+  const library = useResearchLibrary(scope)
+  const organization = useOrganization(scope)
+  const runs = useResearchRuns()
+  const live = runs.live.get(library.active.id)
+  const turns = live ? [...library.active.turns, live] : library.active.turns
+  const background = runs.running.filter((run) => run.scope === scope && run.sessionId !== library.active.id)
   const [compareOpen, setCompareOpen] = useState(false)
   const [exportError, setExportError] = useState("")
   const [copiedTurn, setCopiedTurn] = useState<number | null>(null)
+  const [sharingTurn, setSharingTurn] = useState<number | null>(null)
   const [question, setQuestion] = useState("")
   const workspaceView = useResearchView(researchScope(identity))
   const { mode, setMode, tab: activeTab, setTab: setActiveTab, open: inspectorOpen, setOpen: setInspectorOpen } = workspaceView
@@ -123,18 +144,27 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
   const [inspectedTurn, setInspectedTurn] = useState<number | null>(null)
   const [highlightedRank, setHighlightedRank] = useState<number | null>(null)
   const [highlightedUnit, setHighlightedUnit] = useState<string | null>(null)
-  const abortRef = useRef<AbortController | null>(null)
   const composerRef = useRef<HTMLTextAreaElement | null>(null)
   const sourceRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const current = turns[turns.length - 1]
   const evidenceTurn = turns[inspectedTurn ?? turns.length - 1]
 
-  useEffect(() => () => abortRef.current?.abort(), [])
+  // Leaving the page or the session no longer cancels research: it keeps
+  // running and reports back when it finishes.
+  useEffect(() => {
+    setViewing(library.active.id)
+    return () => setViewing(null)
+  }, [library.active.id])
 
   function exportResearch() {
     try { downloadResearch(library.active); setExportError("") }
     catch { setExportError("The Markdown file could not be downloaded. Try again.") }
+  }
+
+  async function shareReport(index: number, turn: Turn) {
+    setSharingTurn(index)
+    try { await downloadAnswerReport(turn) } finally { setSharingTurn(null) }
   }
 
   async function copyAnswer(index: number, answer: string) {
@@ -154,23 +184,13 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
     refetchInterval: (query) => (query.state.data?.available ? false : 2000),
   })
 
-  function updateCurrent(patch: Partial<Turn>) {
-    setTurns((prev) => {
-      const copy = [...prev]
-      copy[copy.length - 1] = { ...copy[copy.length - 1], ...patch }
-      return copy
-    })
-  }
-
   async function ask(overrideQuestion?: string, clarification?: ClarificationReply, sourceIds?: string[], parentTraceId?: string) {
     const q = (overrideQuestion ?? question).trim()
     if (!q || current?.streaming) return
     const history = historyFrom(turns)
     setQuestion("")
     requestAnimationFrame(() => fitComposer(composerRef.current))
-    setTurns((prev) => [
-      ...prev,
-      {
+    const run = startRun(scope, library.active.id, {
         question: q,
         sourceIds,
         clarificationReply: clarification,
@@ -190,19 +210,13 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
         groundingAt: null,
         askStartedAt: performance.now(),
         researchStartedAt: Date.now(),
-      },
-    ])
+    })
     setInspectedTurn(null)
     setActiveTab("sources")
     setHighlightedRank(null)
     setHighlightedUnit(null)
 
-    const controller = new AbortController()
-    abortRef.current = controller
-
-    const patchTurn = (patch: Partial<Turn>) => {
-      if (!controller.signal.aborted) updateCurrent(patch)
-    }
+    const patchTurn = (patch: Partial<Turn>) => run.update((turn) => ({ ...turn, ...patch }))
     let answerBuffer = ""
     let firstTokenAt: number | null = null
     await chatApi.ask(
@@ -210,18 +224,14 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
       history,
       {
         onProgress: (payload) => {
-          if (controller.signal.aborted) return
           const step = payload as ResearchStep
-          setTurns((prev) => {
-            const copy = [...prev]
-            const turn = copy[copy.length - 1]
+          run.update((turn) => {
             const steps = [...(turn.steps ?? [])]
             const index = steps.findIndex((item) => item.id === step.id)
             // Elapsed time per step comes from the browser clock, not the server.
             const receivedAt = index < 0 ? Date.now() : steps[index].receivedAt
             if (index < 0) steps.push({ ...step, receivedAt }); else steps[index] = { ...step, receivedAt }
-            copy[copy.length - 1] = { ...turn, steps }
-            return copy
+            return { ...turn, steps }
           })
         },
         onClarification: (payload) => patchTurn({ clarification: payload as Clarification }),
@@ -229,32 +239,18 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
         onSources: (sources) => patchTurn({ sources: sources as RetrievedSource[] }),
         onRetrieval: (report) => patchTurn({ report: report as RetrievalReportPayload }),
         onSecurity: (security) => {
-          if (controller.signal.aborted) return
           if (isAnswerValidation(security)) {
             patchTurn({ validation: security, groundingAt: performance.now() })
           }
-          setTurns((prev) => {
-            const copy = [...prev]
-            const currentTurn = copy[copy.length - 1]
-            if (!currentTurn?.report) return prev
-            copy[copy.length - 1] = {
-              ...currentTurn,
-              report: {
-                ...currentTurn.report,
-                security: { ...currentTurn.report.security, ...(security as object) },
-              },
-            }
-            return copy
-          })
+          run.update((currentTurn) => currentTurn.report ? {
+            ...currentTurn,
+            report: {
+              ...currentTurn.report,
+              security: { ...currentTurn.report.security, ...(security as object) },
+            },
+          } : currentTurn)
         },
-        onMetadata: (metadata) => {
-          if (controller.signal.aborted) return
-          setTurns((prev) => {
-            const copy = [...prev], turn = copy[copy.length - 1]
-            copy[copy.length - 1] = { ...turn, metadata: { ...turn.metadata, ...(metadata as ChatMetadata) } }
-            return copy
-          })
-        },
+        onMetadata: (metadata) => run.update((turn) => ({ ...turn, metadata: { ...turn.metadata, ...(metadata as ChatMetadata) } })),
         onToken: (token) => {
           if (firstTokenAt === null) firstTokenAt = performance.now()
           answerBuffer += token
@@ -262,10 +258,10 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
         },
         onGrounding: (grounding) =>
           patchTurn({ grounding: grounding as GroundingResult, groundingAt: performance.now() }),
-        onDone: () => patchTurn({ streaming: false, researchFinishedAt: Date.now() }),
-        onError: (message) => patchTurn({ streaming: false, errorMessage: message, researchFinishedAt: Date.now() }),
+        onDone: () => run.finish(),
+        onError: (message) => run.finish({ errorMessage: message }),
       },
-      controller.signal,
+      run.signal,
       { ...(sourceIds?.length ? { source_ids: sourceIds } : {}), ...(clarification ? { clarification } : {}), ...(parentTraceId && /^[a-f0-9]{32}$/.test(parentTraceId) ? { parent_trace_id: parentTraceId } : {}) },
     )
   }
@@ -278,8 +274,6 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
   }
 
   function newChat() {
-    abortRef.current?.abort()
-    if (current?.streaming) updateCurrent({ streaming: false, errorMessage: "Cancelled.", researchFinishedAt: Date.now() })
     const nextSessionId = library.newSession()
     const projectId = organization.assignments[library.active.id]
     if (projectId) organization.assign(nextSessionId, projectId)
@@ -293,7 +287,6 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
   }
 
   function openResearch(id: string) {
-    if (current?.streaming) return
     library.openSession(id)
     setNoteLink(null)
     setCopiedTurn(null)
@@ -305,10 +298,29 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
     setExportError("")
   }
 
-  function cancel() {
-    abortRef.current?.abort()
-    updateCurrent({ streaming: false, errorMessage: "Cancelled.", researchFinishedAt: Date.now() })
+  const [notifyPermission, setNotifyPermission] = useState(() => typeof Notification === "undefined" ? "unsupported" : Notification.permission)
+
+  async function askToNotify() {
+    try { setNotifyPermission(await Notification.requestPermission()) } catch { setNotifyPermission("denied") }
   }
+
+  function cancel() {
+    cancelRun(library.active.id)
+  }
+
+  function removeResearch(id: string) {
+    cancelRun(id)
+    library.remove(id)
+    if (id === library.active.id) { setInspectedTurn(null); setHighlightedRank(null); setHighlightedUnit(null); setActiveTab("sources") }
+  }
+
+  const openRef = useRef(openResearch)
+  useEffect(() => { openRef.current = openResearch })
+  useEffect(() => {
+    const listener = (event: Event) => openRef.current((event as CustomEvent<string>).detail)
+    window.addEventListener(OPEN_RESEARCH_EVENT, listener)
+    return () => window.removeEventListener(OPEN_RESEARCH_EVENT, listener)
+  }, [])
 
   function focusSource(rank: number, supportId: string | null = null) {
     setInspectorOpen(true)
@@ -335,15 +347,12 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
 
   useRegisterWorkspaceCommands([
     { id: "research-history", label: "Open research history", icon: History, run: () => setHistoryOpen(true) },
-    { id: "research-new", label: "New research", icon: MessageSquarePlus, disabled: Boolean(current?.streaming), run: newChat },
+    { id: "research-new", label: "New research", icon: MessageSquarePlus, run: newChat },
     { id: "research-export", label: "Export research as Markdown", icon: Download, disabled: Boolean(current?.streaming) || (!turns.some((turn) => !turn.streaming) && !library.active.notes.length), run: exportResearch },
     { id: "research-pinned", label: "Open pinned evidence", icon: Pin, run: () => { setActiveTab("pinned"); setInspectorOpen(true) } },
     { id: "research-compare", label: "Compare pinned evidence", hint: "Select two passages", icon: Columns2, run: () => { setActiveTab("pinned"); setInspectorOpen(true) } },
     { id: "research-notes", label: "Open research notes", icon: NotebookPen, run: () => { setActiveTab("notes"); setInspectorOpen(true) } },
-    ...researchSessionCommands(library, openResearch, Boolean(current?.streaming), (id) => {
-      library.remove(id)
-      if (id === library.active.id) { setInspectedTurn(null); setHighlightedRank(null); setHighlightedUnit(null); setActiveTab("sources") }
-    }),
+    ...researchSessionCommands(library, openResearch, false, removeResearch),
   ])
 
   const citedUnits = citedUnitsByRank(evidenceTurn)
@@ -393,11 +402,8 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-1">
-        <ResearchHistory open={historyOpen} onOpenChange={setHistoryOpen} sessions={library.sessions} activeId={library.active.id} streaming={Boolean(current?.streaming)}
-          onOpen={openResearch} onNew={newChat} onRename={library.rename} onStar={library.star} onRemove={(id) => {
-            library.remove(id)
-            if (id === library.active.id) { setInspectedTurn(null); setHighlightedRank(null); setHighlightedUnit(null); setActiveTab("sources") }
-          }} onUndo={library.undoRemove} removedTitle={library.removed?.title} />
+        <ResearchHistory open={historyOpen} onOpenChange={setHistoryOpen} sessions={library.sessions} activeId={library.active.id} streaming={false}
+          onOpen={openResearch} onNew={newChat} onRename={library.rename} onStar={library.star} onRemove={removeResearch} onUndo={library.undoRemove} removedTitle={library.removed?.title} />
         <button type="button" aria-label="Export research as Markdown" disabled={(!turns.some((turn) => !turn.streaming) && !library.active.notes.length) || Boolean(current?.streaming)} onClick={exportResearch}
           className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] disabled:opacity-40">
           <Download className="h-3.5 w-3.5" /><span className="hidden sm:inline">Export</span>
@@ -419,6 +425,14 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
       </div>
       {compareOpen && <div className="shrink-0 overflow-y-auto border-b border-[var(--color-border)] p-4" style={{ maxHeight: "45vh" }}><ComparisonComposer disabled={Boolean(current?.streaming)} onCompare={(q, ids) => { setCompareOpen(false); void ask(q, undefined, ids) }} /></div>}
       {(library.storageError || organization.error || exportError) && <p role="status" className="border-b border-[var(--color-border)] px-6 py-2 text-xs text-[var(--color-warning)]">{exportError || organization.error || "Browser storage is unavailable or full. This research is available for this visit; export it to keep a copy."}</p>}
+      {background.length > 0 && (
+        <div role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-[var(--color-border)] px-6 py-2 text-xs text-[var(--color-muted-foreground)]">
+          <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" aria-hidden />{background.length === 1 ? "1 research is" : `${background.length} researches are`} still running</span>
+          {background.map((run) => (
+            <button key={run.sessionId} type="button" onClick={() => openResearch(run.sessionId)} className="max-w-64 truncate rounded px-1.5 py-0.5 text-[var(--color-foreground)] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]" title={run.question}>{run.question}</button>
+          ))}
+        </div>
+      )}
       {turns.length > 0 && <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-6 py-2 text-xs text-[var(--color-subtle-foreground)]"><span className="truncate" title={library.active.title}>{library.active.customTitle ? library.active.title : "Research session"}</span><span className="ml-auto shrink-0">Local research</span></div>}
       <div className="flex min-h-0 flex-1 overflow-hidden">
       {/* Conversation */}
@@ -504,16 +518,45 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                             </>
                           )}
                         </div>
+                        {calculationsOf(turn).map((calculation) => (
+                          <CalculationCard key={calculation.id} calculation={calculation} units={turn.metadata?.support_units ?? []}
+                            onCite={(rank, supportId) => { setInspectedTurn(i); focusSource(rank, supportId) }} />
+                        ))}
                         {!turn.streaming && turn.sources.length > 0 && (
                           <button type="button" aria-controls="evidence-inspector" aria-expanded={inspectorOpen && activeTab === "sources" && (inspectedTurn ?? turns.length - 1) === i} onClick={() => { setInspectedTurn(i); const citation = segmentsOf(turn).find((segment) => segment.type === "citation" && segment.valid && segment.source); focusSource(citation?.source?.rank ?? turn.sources[0].rank, citation?.unit?.support_id ?? null) }}
                             className="flex w-fit items-center gap-2 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 text-xs text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
                             <FileText className="h-3.5 w-3.5" /> Supporting evidence <span className="font-technical">{turn.sources.length}</span>
                           </button>
                         )}
+                        {!turn.streaming && i === turns.length - 1 && followUpsOf(turn).length > 0 && (
+                          <div aria-label="Suggested follow-up questions" className="flex flex-wrap gap-2">
+                            {followUpsOf(turn).map((text) => (
+                              <button key={text} type="button" onClick={() => { setQuestion(text); requestAnimationFrame(() => { const el = composerRef.current; if (el) { el.focus(); fitComposer(el) } }) }}
+                                className="rounded-full border border-[var(--color-border)] px-3 py-1 text-left text-xs text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]">
+                                {text}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         {!turn.streaming && turn.answer && <AnswerFeedback turn={turn} />}
                         {!turn.streaming && turn.answer && (
                           <div className="flex items-start justify-between gap-2">
                             {statusOf(turn) ? <AnswerStatusLine status={statusOf(turn)!} /> : <span />}
+                            <span className="flex shrink-0 items-center gap-1">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  onClick={() => void shareReport(i, turn)}
+                                  aria-label={sharingTurn === i ? "Preparing report" : "Download shareable report"}
+                                  disabled={sharingTurn === i}
+                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--color-subtle-foreground)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] disabled:opacity-50"
+                                >
+                                  <Share2 className="h-3.5 w-3.5" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>Download a shareable report with sources and pages</TooltipContent>
+                            </Tooltip>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <button
@@ -527,6 +570,7 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                               </TooltipTrigger>
                               <TooltipContent>{copiedTurn === i ? "Copied" : "Copy answer"}</TooltipContent>
                             </Tooltip>
+                            </span>
                           </div>
                         )}
                       </div>
@@ -572,9 +616,16 @@ function ResearchWorkspace({ identity }: { identity: Identity }) {
                   <MessageSquarePlus className="h-3.5 w-3.5" />
                   New chat
                 </button>
+                <CoverageBadge />
                 <span className="ml-auto hidden truncate text-[11px] text-[var(--color-subtle-foreground)] lg:inline">
                   Enter to ask · Shift+Enter for a new line
                 </span>
+                {current?.streaming && notifyPermission === "default" && (
+                  <button type="button" onClick={askToNotify} title="Get a browser notification when this research finishes in another tab"
+                    className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-xs text-[var(--color-muted-foreground)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)]">
+                    <Bell className="h-3.5 w-3.5" /> Notify me
+                  </button>
+                )}
                 {current?.streaming ? (
                   <button
                     type="button"

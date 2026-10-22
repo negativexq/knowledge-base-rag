@@ -127,6 +127,27 @@ the research completed.
 | --- | --- | --- |
 | ![Active research stage with its elapsed time](docs/assets/research-progress-live.jpg) | ![A retried input review followed by evidence repair](docs/assets/research-progress-recheck.jpg) | ![Collapsed research summary above the answer](docs/assets/research-progress-done.jpg) |
 
+### Answers you can check and share
+
+- **How it was calculated.** A computed answer lists the formula, each input
+  value with the passage it came from, and the result. The application ran
+  that arithmetic, not the model.
+- **The cited page.** "View page" renders the PDF page from the exact
+  document version the answer cited, with the cited text highlighted.
+- **Follow-up questions** built from the answer's own evidence: the inputs it
+  used, the section it cited, and the other documents it searched.
+- **Coverage before asking.** The composer shows how many documents a
+  question will search. It also says which have OCR-read scanned pages, were
+  flagged at ingestion, or are not searchable right now.
+- **Background research.** You can switch sessions or pages while research
+  runs. When it finishes, a notice links back to the answer. You can also turn
+  on a browser notification for when the tab is hidden.
+- **Shareable report.** Download one answer as a self-contained HTML page with
+  its citations, calculation, quoted passages, and cited page images.
+- **Feedback becomes evaluation data.** A reporter can give the correct answer,
+  document, and page. An operator can then promote the report to an evaluation
+  candidate and export the set as JSONL.
+
 ## Workspace and platform features
 
 - **Research workspace.** A chat-style workspace with numbered citations.

@@ -411,6 +411,8 @@ export interface SupportUnitRef {
   source_id: string | null
   section_label: string | null
   text: string
+  page_number?: number | null
+  page_end?: number | null
 }
 
 export interface ChatMetadata {
@@ -426,6 +428,26 @@ export interface ChatMetadata {
   prompt_fit?: PromptFit | null
   // Set when the model was not called at all (no evidence), with the reason.
   generation_skipped?: string
+  // Application-computed results with their cited inputs (research mode).
+  calculations?: CalculationSummary[]
+}
+
+export interface CalculationInput {
+  name: string
+  label: string
+  value: string | null
+  unit: string
+  support_id: string | null
+  page: number | null
+}
+
+export interface CalculationSummary {
+  id: string
+  expression: string
+  result: string
+  unit: string
+  inputs: CalculationInput[]
+  support_ids: string[]
 }
 
 export interface PromptFit {
@@ -461,7 +483,8 @@ export interface ResearchStep {
   id: string
   // "stage": a user-facing research stage; otherwise a single tool operation.
   kind?: "stage"
-  operation: string
+  // Absent on stage events.
+  operation?: string
   status: "running" | "completed" | "retrying" | "failed"
   failure_codes?: string[]
   stage?: string
@@ -508,6 +531,12 @@ export type FeedbackReason = "incorrect" | "unsupported" | "outdated" | "incompl
 export interface FeedbackSubmission {
   question: string; answer: string; claim: string; reason: FeedbackReason; note: string
   support_ids: string[]; trace_id: string | null
+  // What the reporter says is right; reviewers confirm it before promotion.
+  expected_answer?: string; expected_source?: string; expected_page?: number | null
+}
+export interface EvaluationCandidate {
+  id: string; question: string; expected_answer: string; expected_source: string
+  expected_page: number | null; reason: FeedbackReason; origin: "user_feedback"; feedback_id: string; created_at: string
 }
 export interface FeedbackRecord extends FeedbackSubmission {
   id: string; user_id: string; status: "open" | "triaged" | "resolved" | "dismissed"

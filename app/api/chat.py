@@ -185,6 +185,10 @@ class ChatDependencies:
     operand_resolver_enabled: bool = False
     agentic_rag_enabled: bool = False
     documents_factory: DocumentReaderFactory | None = None
+    # (source_id, document_version, page, highlight) -> (png, highlight_found);
+    # serves only the version-pinned PDFs of page_preview_tenant.
+    page_preview_fn: Callable[[str, str, int, str | None], tuple[bytes, bool] | None] | None = None
+    page_preview_tenant: str | None = None
 
 
 @dataclass(frozen=True)

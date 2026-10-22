@@ -302,6 +302,8 @@ class AgentCandidate:
     scope_receipt: ScopeReceipt | None = None
     authorization_context: RetrievalContext | None = None
     source_disposition: DispositionReceipt | None = None
+    # Checked application calculations for the browser (app/llm/calculation_summary.py).
+    calculations: list[dict[str, Any]] = field(default_factory=list)
 
     def access_current(self) -> bool:
         return self.authorization_context is None or len(
