@@ -6220,3 +6220,40 @@ Research answers take 30-90 seconds, and the browser showed one generic step
   `docs/assets/research-progress-*.jpg`. Not yet watched on a live research run.
 
 `make test`: 2481 passed, 4 skipped. Frontend: 117 passed.
+
+### Research product features (2026-10-22)
+
+Seven additions that help a reader check and reuse an answer:
+
+- **Calculation card.** `app/llm/calculation_summary.py` lists the
+  application's own arithmetic: computations, text computations, and
+  reviewed quantities. Each comes with its formula, result, and inputs, and
+  every input carries the support unit it was read from. It only goes into
+  the final metadata of an answered turn, and it is cleared when access is
+  revoked.
+- **Page preview.** `GET /research/documents/page` returns the cited page as a
+  PNG from the pinned document version, with the cited text highlighted. Every
+  refusal returns the same 404, so a probe cannot tell them apart.
+- **Follow-up questions.** These are built in the browser from the answer's
+  calculation inputs, the cited section, and the other searched documents. No
+  model call is made.
+- **Coverage badge.** The composer shows the searchable, OCR-read, flagged,
+  and unavailable documents from the registry.
+- **Evaluation candidates.** Feedback can carry an expected answer, document,
+  and page. Operators promote a report with
+  `POST /research/feedback/{id}/promote` and export the candidates with
+  `GET /research/evaluation-candidates.jsonl`.
+- **Shareable report.** This is one self-contained HTML file with no scripts.
+  It holds the escaped answer, footnoted passages, the calculation, and up to
+  four cited page images.
+- **Background research.** `lib/researchRuns.ts` owns the streams outside the
+  workspace component, so switching sessions or pages no longer cancels them.
+  A finished turn goes to the mounted library, or to browser storage when no
+  library is mounted, and a notice links back to it. A hidden tab gets a
+  browser notification if the user allowed it.
+- **Fix.** Saved turns whose timeline had stage events failed validation on
+  reload, because stage events carry no `operation`, so they were silently
+  dropped from history. Found while checking background research in the
+  browser.
+
+`make test`: 2493 passed, 4 skipped. Frontend: 136 passed.
