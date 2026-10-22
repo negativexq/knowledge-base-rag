@@ -109,6 +109,24 @@ OpenTelemetry spans connect retrieval, evidence admission and selection,
 source inspection, extraction, computation, validation, and release. They make
 it possible to locate where a value was lost, misread, or rejected.
 
+### Research you can watch
+
+A research answer can take a minute, so the workspace shows what the workflow
+is doing while it runs. The same operation spans that build the trace drive
+the live timeline. You see a stage only when that work actually runs:
+retrieval, source selection, extraction, input review, calculation, scope
+validation, and evidence repair. Each stage shows its own elapsed time next to
+the total. Stage messages are fixed application text, never model output. A
+stage the workflow retries shows as a recheck rather than an error, and
+"Technical details" lists tool calls, evidence counts, durations, and reason
+codes. When the answer finishes, the panel collapses to a one-line summary. If
+the evidence could not be verified, the summary says so instead of claiming
+the research completed.
+
+| Live stages | A recheck and its technical details | Finished |
+| --- | --- | --- |
+| ![Active research stage with its elapsed time](docs/assets/research-progress-live.jpg) | ![A retried input review followed by evidence repair](docs/assets/research-progress-recheck.jpg) | ![Collapsed research summary above the answer](docs/assets/research-progress-done.jpg) |
+
 ## Workspace and platform features
 
 - **Research workspace.** A chat-style workspace with numbered citations.
