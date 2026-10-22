@@ -114,6 +114,20 @@ class RequestUsage:
             json.dumps({"input": cost_in, "output": cost_out, "total": cost}),
         )
 
+    def merge(self, other: RequestUsage) -> None:
+        """Adds usage recorded by work that started before this request's research."""
+        if other is self:
+            return
+        self.requests += other.requests
+        self.input_tokens += other.input_tokens
+        self.output_tokens += other.output_tokens
+        self.cached_tokens += other.cached_tokens
+        self.priced_requests += other.priced_requests
+        self.usage_requests += other.usage_requests
+        self.known_cost_usd += other.known_cost_usd
+        self.tool_calls += other.tool_calls
+        self.retries += other.retries
+
     def snapshot(self) -> dict[str, Any]:
         complete = self.priced_requests == self.requests
         return {

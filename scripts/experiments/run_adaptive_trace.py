@@ -42,6 +42,7 @@ from app.llm.agentic import agent_model
 from app.llm.embedding_models import active_embedding_config
 from app.llm.ollama_client import OllamaClient
 from app.llm.research_budget import ResearchPolicy
+from app.llm.research_needs import offer_plan
 from app.llm.visual_answer import PdfPages
 from app.retrieval.report import RetrievalReport
 from app.retrieval.sparse import SparseEncoder
@@ -120,6 +121,7 @@ async def run(args):
             "adaptive_rag_enabled": True,
             "adaptive_fast_path_enabled": args.fast_path,
             "adaptive_evidence_needs_enabled": args.evidence_needs,
+            "adaptive_plan_prefetch_enabled": args.plan_prefetch,
             "agentic_rag_enabled": False,
             "derived_answers_enabled": True,
             "visual_answers_enabled": True,
@@ -147,6 +149,7 @@ async def run(args):
         "pipeline": "pipeline_adaptive_v1",
         "fast_path_enabled": args.fast_path,
         "evidence_needs_enabled": args.evidence_needs,
+        "plan_prefetch_enabled": args.plan_prefetch,
         "embedding": active_embedding_config(settings).key,
         "candidate_k": settings.reranker_candidate_k,
         "top_n": settings.reranker_top_n,
@@ -215,12 +218,21 @@ async def run(args):
         settings, client, ollama, SparseEncoder(), collection
     )
     events = []
+    offers = []
     capture_token = set_current_capture(capture)
     started = time.monotonic()
     try:
         print(f"row={args.row} model={args.model} retrieving", flush=True)
         with get_tracer(__name__).start_as_current_span("chat_request") as span, usage_scope(usage):
             trace_id = format(span.get_span_context().trace_id, "032x")
+            if dependencies.plan_prefetch_fn is not None:
+                # As POST /chat does: the evidence plan runs alongside retrieval.
+                offers.append(
+                    offer_plan(
+                        question.question,
+                        asyncio.create_task(dependencies.plan_prefetch_fn(question.question)),
+                    )
+                )
             blocks = await dependencies.search_fn(
                 question.question, context, report, source_ids=scope
             )
@@ -241,6 +253,8 @@ async def run(args):
                         event.get("status", "running"),
                         flush=True,
                     )
+            for offer in offers:
+                await offer.close()
         terminal = terminal_result(events)
         answer = terminal["answer"]
         validation = next((e for e in events if e["type"] == "security_validation"), {})
@@ -265,6 +279,8 @@ async def run(args):
         if args.review:
             await review_saved(args)
     finally:
+        for offer in offers:
+            await offer.close()
         reset_current_capture(capture_token)
         provider.force_flush(timeout_millis=5000)
         await chat.aclose()
@@ -435,6 +451,11 @@ if __name__ == "__main__":
     parser.add_argument("--review", action="store_true")
     parser.add_argument("--fast-path", action="store_true")
     parser.add_argument("--evidence-needs", action="store_true")
+    parser.add_argument(
+        "--plan-prefetch",
+        action="store_true",
+        help="start the evidence plan alongside retrieval (needs --evidence-needs)",
+    )
     parser.add_argument("--review-only", action="store_true")
     args = parser.parse_args()
     asyncio.run(review_saved(args) if args.review_only else run(args))

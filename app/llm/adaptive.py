@@ -73,6 +73,7 @@ from app.llm.research_events import publish
 from app.llm.research_needs import (
     SCOPED_CHECK_INSTRUCTIONS,
     SCOPED_EXTRACT_INSTRUCTIONS,
+    EarlyPlan,
     NeedWorkflow,
     ScopedExtractionCheck,
 )
@@ -2468,6 +2469,45 @@ async def _finalize(session: AdaptiveSession) -> tuple[AgentAnswer, ScopeReceipt
             else:
                 session.state.needs.append(f"Candidate requires correction: {exc}")
     raise AssertionError("Unreachable")
+
+
+async def plan_needs_early(
+    model: Model,
+    deps: AgentDependencies,
+    *,
+    timeout_seconds: float = 120,
+    model_settings: ModelSettings | None = None,
+    role_model_settings: dict[str, ModelSettings] | None = None,
+    research_policy: ResearchPolicy | None = None,
+) -> EarlyPlan:
+    """Request the evidence plan while retrieval is still running.
+
+    The plan reads only the question. Its usage is returned rather than charged
+    here, so the research run that takes it counts it against its own budget.
+    """
+    if current_usage() is not None:
+        deps.observations = current_usage() or deps.observations
+    policy = research_policy or ResearchPolicy()
+    deadline = time.monotonic() + timeout_seconds
+    session = AdaptiveSession(
+        model,
+        deps,
+        ResearchState(task=TaskSpec(question=deps.question)),
+        policy,
+        RunUsage(),
+        UsageLimits(request_limit=None, total_tokens_limit=None),
+        deadline,
+        deadline - min(policy.finalize_reserve_seconds, timeout_seconds / 3),
+        model_settings,
+        None,
+        role_model_settings or {},
+    )
+    result = EarlyPlan(usage=session.usage, observations=deps.observations)
+    try:
+        result.plan = await NeedWorkflow(session).request_plan()
+    except Exception as exc:
+        result.error = exc
+    return result
 
 
 async def run_adaptive_agent(

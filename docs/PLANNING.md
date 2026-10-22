@@ -6257,3 +6257,27 @@ Seven additions that help a reader check and reuse an answer:
   browser.
 
 `make test`: 2493 passed, 4 skipped. Frontend: 136 passed.
+
+### Evidence plan alongside retrieval (2026-10-23)
+
+The need planner reads only the question, but it ran after retrieval had
+finished. It now starts from `POST /chat` right after the query rewrite, while
+search and rerank run. The research run takes the plan only if it belongs to
+the same question, uses it once, and counts its requests and tokens in the
+same budget. An invalid early plan takes the same fallback as a late one. A
+plan that research never uses is cancelled when the response closes. Answer
+mode never starts one. `ADAPTIVE_PLAN_PREFETCH_ENABLED` (default on) turns it
+off. The trace and benchmark scripts start the plan the same way, and the
+trace script takes `--plan-prefetch`.
+
+Paid A/B on rows 387, 730 and 1079
+(`artifacts/mmlongbench-v2/plan-prefetch-ab-20261023/REPORT.md`): the wait
+for the plan fell from 16.2 s to 0.6 s over three rows, about 5 s per
+question. 387 and 1079 gave the same answers with the same request counts.
+730 (gold: not answerable) produced the same plan in both modes, but the
+prefetch run then released `0` from an empty count inventory, where the other
+run and all earlier runs abstained. That looks like downstream variance, but
+one pair cannot show it, and releasing 0 for an empty inventory is a separate
+issue to fix.
+
+`make test`: 2530 passed, 4 skipped.
