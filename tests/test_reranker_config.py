@@ -98,4 +98,29 @@ def test_the_reranker_batch_size_reaches_the_model(monkeypatch):
     reranker.rerank("q", [SearchResult(score=1.0, id="c", payload={"text": "t"})], top_n=1)
 
     assert calls == [{"batch_size": 4}]
-    assert Settings(_env_file=None).reranker_batch_size is None
+
+
+def test_the_default_batch_size_is_two_pairs(monkeypatch):
+    # The library sorts pairs by length, then pads each batch to its longest
+    # pair. With 15 candidates of very different lengths, batches of 2 halved
+    # rerank time on 120 recorded searches with identical rankings
+    # (artifacts/reranker-batch-size-20261023/REPORT.md).
+    import app.reranker.cross_encoder as cross_encoder
+    import app.wiring as wiring
+    from app.retrieval.hybrid_search import SearchResult
+
+    calls = []
+
+    class _Model:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def predict(self, pairs, **kwargs):
+            calls.append(kwargs)
+            return [0.0] * len(pairs)
+
+    monkeypatch.setattr(cross_encoder, "CrossEncoder", _Model)
+    reranker = wiring.build_reranker(Settings(_env_file=None))
+    reranker.rerank("q", [SearchResult(score=1.0, id="c", payload={"text": "t"})], top_n=1)
+
+    assert calls == [{"batch_size": 2}]

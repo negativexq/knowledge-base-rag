@@ -6282,3 +6282,15 @@ variance downstream of the plan. Releasing 0 for an empty inventory is a
 separate issue to fix.
 
 `make test`: 2530 passed, 4 skipped.
+
+### Reranker batch size (2026-10-23)
+
+Rerank was 21% of the wall time in the traced research runs. The library
+sorts pairs by length but padded all 15 candidates in one batch (default 32)
+to the longest one, so 44% of the computed tokens were padding. On 120
+recorded searches, scored offline on MPS, batch 2 cut the mean rerank time
+from 10.05 s to 5.07 s (p90 17.5 s to 7.3 s), and every search kept exactly
+the same ranking (`artifacts/reranker-batch-size-20261023/REPORT.md`).
+`RERANKER_BATCH_SIZE` now defaults to 2; other hardware can retune it.
+
+`make test`: 2531 passed, 4 skipped.
