@@ -1,0 +1,250 @@
+{
+  "model": "gpt-6-luna",
+  "recorded_effort": "medium",
+  "calls": 11,
+  "low": {
+    "passes_agree_with_recorded": 9,
+    "identical_verdict": 9,
+    "mean_seconds": 3.9,
+    "mean_output_tokens": 358
+  },
+  "medium_replay": {
+    "passes_agree_with_recorded": 10,
+    "identical_verdict": 10,
+    "mean_seconds": 7.5,
+    "mean_output_tokens": 849
+  },
+  "low_vs_medium_replay_passes_agree": 10,
+  "tokens": {
+    "collection": {
+      "input": 275283,
+      "output": 19652
+    },
+    "replay": {
+      "input": 175614,
+      "output": 13277
+    }
+  },
+  "per_call": [
+    {
+      "role": "scope_validator",
+      "row": "row1013",
+      "stage": "adaptive_model_3_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 3.72,
+          "output_tokens": 274
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 4.23,
+          "output_tokens": 459
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row210",
+      "stage": "adaptive_model_3_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": false,
+          "same_verdict": false,
+          "seconds": 7.57,
+          "output_tokens": 986
+        },
+        "medium": {
+          "passes": false,
+          "same_verdict": false,
+          "seconds": 20.99,
+          "output_tokens": 2774
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row370",
+      "stage": "adaptive_model_3_scope_validator",
+      "recorded_passes": false,
+      "replays": {
+        "low": {
+          "passes": false,
+          "same_verdict": true,
+          "seconds": 3.68,
+          "output_tokens": 437
+        },
+        "medium": {
+          "passes": false,
+          "same_verdict": true,
+          "seconds": 7.79,
+          "output_tokens": 979
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row370",
+      "stage": "adaptive_model_5_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": false,
+          "same_verdict": false,
+          "seconds": 4.19,
+          "output_tokens": 584
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 5.11,
+          "output_tokens": 569
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row383",
+      "stage": "adaptive_model_3_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 2.22,
+          "output_tokens": 193
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 3.51,
+          "output_tokens": 357
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row472",
+      "stage": "adaptive_model_3_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 2.9,
+          "output_tokens": 256
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 3.65,
+          "output_tokens": 394
+        }
+      }
+    },
+    {
+      "role": "quantity_checker",
+      "row": "row509",
+      "stage": "adaptive_model_4_quantity_checker",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 2.04,
+          "output_tokens": 60
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 5.22,
+          "output_tokens": 340
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row509",
+      "stage": "adaptive_model_5_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 4.18,
+          "output_tokens": 360
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 7.07,
+          "output_tokens": 764
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row659",
+      "stage": "adaptive_model_3_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 3.78,
+          "output_tokens": 252
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 12.69,
+          "output_tokens": 1597
+        }
+      }
+    },
+    {
+      "role": "quantity_checker",
+      "row": "row727",
+      "stage": "adaptive_model_5_quantity_checker",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 3.89,
+          "output_tokens": 132
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 4.81,
+          "output_tokens": 269
+        }
+      }
+    },
+    {
+      "role": "scope_validator",
+      "row": "row727",
+      "stage": "adaptive_model_6_scope_validator",
+      "recorded_passes": true,
+      "replays": {
+        "low": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 5.09,
+          "output_tokens": 399
+        },
+        "medium": {
+          "passes": true,
+          "same_verdict": true,
+          "seconds": 6.96,
+          "output_tokens": 842
+        }
+      }
+    }
+  ]
+}

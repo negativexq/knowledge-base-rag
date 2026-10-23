@@ -8,6 +8,7 @@ The existing ledger, PDF snapshots, ACLs and release validators remain authorita
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import math
 import re
@@ -1039,6 +1040,16 @@ class AdaptiveSession:
                             {
                                 "role": role,
                                 "raw_model_output": json.dumps(outputs, ensure_ascii=False),
+                                # Raw-text captures only: enough to replay this exact call.
+                                "raw_model_input": {
+                                    "instructions": instructions,
+                                    "prompt_text": text,
+                                    "output_schema": output_type.model_json_schema(),
+                                    "model_settings": settings,
+                                    "images_png_base64": [
+                                        base64.b64encode(blob).decode() for blob in images or []
+                                    ],
+                                },
                             },
                         )
                     if self.usage.requests > before_requests:
