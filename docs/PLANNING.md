@@ -6306,4 +6306,14 @@ set of alternatives as a subset of `{"total"}`, cleared the objection, and
 the empty group was counted as 0. An operation patch is now applied only when
 the checker names exactly one count mode; any other objection stands.
 
-`make test`: 2533 passed, 4 skipped.
+A rerun of 730 on the fix abstained, but through another path. This time the
+checker accepted, and an empty group whose closure was `unresolved` was still
+counted as 0 internally. Only scope validation stopped it. `execute` now
+refuses to release a zero from an unclosed group (`QUANTITY_ZERO_UNCLOSED`):
+a per-group count with an unresolved empty group, or a total of zero with
+any unresolved group. A bounded object or a declared inventory still
+supports 0, and found items still count under a total. One existing test
+expected an unresolved empty group to release 0; it now gives that group a
+bounded closure.
+
+`make test`: 2535 passed, 4 skipped.

@@ -448,6 +448,48 @@ async def test_an_empty_count_the_checker_rejects_is_never_released_as_zero():
     assert record.assessments[-1].operation == "mismatch"
 
 
+def test_zero_needs_a_closed_group():
+    # Row 730 again, after the checker accepted: a group with no items whose
+    # closure was "unresolved" was counted as 0. Without a bounded object or a
+    # declared inventory, an empty group only says nothing was found yet.
+    closed = inventory([])
+    unclosed = closed.model_copy(
+        update={"groups": [closed.groups[0].model_copy(update={"closure_basis": "unresolved"})]}
+    )
+    with pytest.raises(ValueError, match="QUANTITY_ZERO_UNCLOSED"):
+        execute(unclosed)
+    assert execute(inventory([]))[0] == ["0"]
+    found = inventory(["Ann", "Ben"]).groups[0]
+    empty = found.model_copy(
+        update={"label": "Beta team", "items": [], "closure_basis": "unresolved"}
+    )
+    mixed = inventory([]).model_copy(update={"groups": [found, empty]})
+    assert execute(mixed)[0] == ["2"]
+    with pytest.raises(ValueError, match="QUANTITY_ZERO_UNCLOSED"):
+        execute(mixed.model_copy(update={"count_mode": "per_group"}))
+
+
+@pytest.mark.asyncio
+async def test_an_accepted_empty_count_without_closure_is_never_released_as_zero():
+    from tests.test_quantities import enumeration, fake_calls
+
+    active, need = active_session("Benefits until Risks on page 2\nFast\nReliable\nAffordable")
+    draft = enumeration()
+    fake_calls(
+        active,
+        draft=draft.model_copy(
+            update={
+                "count_mode": "total",
+                "groups": [draft.groups[0].model_copy(update={"items": []})],
+            }
+        ),
+    )
+    result = await collect(active, need)
+    assert not (result and not result.abstain and result.answer_parts)
+    record = next(iter(active.state.quantities.values()))
+    assert record.values != ["0"] and record.execution_status != "completed"
+
+
 @pytest.mark.asyncio
 async def test_count_operation_patch_finishes_without_another_collection_call():
     from tests.test_quantities import enumeration
@@ -539,7 +581,14 @@ async def test_checked_empty_group_uses_application_result_without_an_empty_coun
 
     active, need = active_session("Benefits until Risks on page 2\nFast\nReliable\nAffordable")
     original = enumeration().groups[0]
-    empty = original.model_copy(update={"label": "Empty inspected category", "items": []})
+    empty = original.model_copy(
+        update={
+            "label": "Empty inspected category",
+            "items": [],
+            "closure_basis": "bounded_object",
+            "closure_anchor": "Risks",
+        }
+    )
     groups = [empty] if all_empty else [original, empty]
     draft = enumeration().model_copy(update={"groups": groups, "count_mode": "total"})
     fake_calls(active, draft=draft)

@@ -483,6 +483,13 @@ def execute(draft: QuantityDraft) -> tuple[list[str], str]:
             if len(locations) != len(set(locations)):
                 raise ValueError("QUANTITY_DUPLICATE_SOURCE_OCCURRENCE")
         counts = [len(g.items) for g in draft.groups]
+        # A released zero needs a closed group (a bounded object or a declared
+        # inventory). An unresolved empty group only says nothing was found yet.
+        unclosed = [not g.items and g.closure_basis == "unresolved" for g in draft.groups]
+        if (any(unclosed) and draft.count_mode == "per_group") or (
+            not sum(counts) and any(g.closure_basis == "unresolved" for g in draft.groups)
+        ):
+            raise ValueError("QUANTITY_ZERO_UNCLOSED")
         if draft.count_mode == "total":
             return [str(sum(counts))], " + ".join(map(str, counts))
         if draft.count_mode == "distinct":
