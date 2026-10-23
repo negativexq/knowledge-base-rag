@@ -380,6 +380,74 @@ def test_operation_only_correction_never_changes_source_items_or_approves_missin
         assert correct_count_operation(draft, untouched) == (draft, untouched)
 
 
+def test_an_operation_objection_without_a_named_count_mode_is_not_rewritten_as_total():
+    # Row 730: the table has no Boeing row. The checker objected that counting
+    # the empty list turns an unreported value into zero and named no count
+    # mode. An empty set is a subset of {"total"}, so this objection was read
+    # as "count the total" and cleared, and 0 was released.
+    from app.llm.quantity_review import correct_count_operation
+
+    draft = inventory(["Ann", "Ben"]).model_copy(update={"count_mode": "per_group"})
+    empty = draft.model_copy(update={"groups": [draft.groups[0].model_copy(update={"items": []})]})
+    review = QuantityAssessment(
+        inputs="supported",
+        coverage="complete",
+        operation="mismatch",
+        alternatives=[],
+        issues=[
+            dict(
+                target="operation",
+                kind="operation",
+                description="No Boeing row; counting the empty list would report zero",
+            )
+        ],
+    )
+    for current in (draft, empty):
+        assert correct_count_operation(current, review) == (current, review)
+
+
+@pytest.mark.asyncio
+async def test_an_empty_count_the_checker_rejects_is_never_released_as_zero():
+    from tests.test_quantities import enumeration
+
+    active, need = active_session("Benefits until Risks on page 2\nFast\nReliable\nAffordable")
+    calls = []
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        calls.append(role)
+        if role == "quantity_selector":
+            return QuantitySource(operation_kind="count", available=True, support_ids=["E1.S1"])
+        if role == "quantity_collector":
+            draft = enumeration()
+            return draft.model_copy(
+                update={
+                    "count_mode": "per_group",
+                    "groups": [draft.groups[0].model_copy(update={"items": []})],
+                }
+            )
+        return QuantityAssessment(
+            inputs="supported",
+            coverage="complete",
+            operation="mismatch",
+            alternatives=[],
+            issues=[
+                dict(
+                    target="operation",
+                    kind="operation",
+                    description="The requested entity is not listed; zero is not reported",
+                    source_ranges=[dict(support_id="E1.S1", start_line=1, end_line=1)],
+                )
+            ],
+        )
+
+    active.call = call
+    result = await collect(active, need)
+    assert not (result and not result.abstain and result.answer_parts)
+    record = next(iter(active.state.quantities.values()))
+    assert record.values != ["0"] and record.execution_status != "completed"
+    assert record.assessments[-1].operation == "mismatch"
+
+
 @pytest.mark.asyncio
 async def test_count_operation_patch_finishes_without_another_collection_call():
     from tests.test_quantities import enumeration

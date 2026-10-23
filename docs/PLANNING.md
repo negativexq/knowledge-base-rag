@@ -6294,3 +6294,16 @@ the same ranking (`artifacts/reranker-batch-size-20261023/REPORT.md`).
 `RERANKER_BATCH_SIZE` now defaults to 2; other hardware can retune it.
 
 `make test`: 2531 passed, 4 skipped.
+
+### Empty counts released as zero (2026-10-23)
+
+Row 730 ("How many Tweets are attributed to Boeing?", gold: not answerable)
+released `0` in one paid run. The table on page 16 has no Boeing row. The
+quantity checker objected that counting the empty list would turn an
+unreported value into zero, named no count mode, and proposed a
+not-reported-in-scope disposition. `correct_count_operation` treated an empty
+set of alternatives as a subset of `{"total"}`, cleared the objection, and
+the empty group was counted as 0. An operation patch is now applied only when
+the checker names exactly one count mode; any other objection stands.
+
+`make test`: 2533 passed, 4 skipped.
