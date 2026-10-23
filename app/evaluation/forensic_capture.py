@@ -32,6 +32,7 @@ _RAW_KEYS = {
     "raw_query",
     "raw_model_answer",
     "raw_model_output",
+    "raw_model_input",
     "raw_visible_text",
     "raw_evidence_text",
     "raw_support_text",

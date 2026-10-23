@@ -1,6 +1,7 @@
 import logging
 import time
 from contextlib import aclosing
+from typing import Any
 
 from fastapi import FastAPI
 from qdrant_client import QdrantClient
@@ -109,6 +110,36 @@ def connector_tenant_ids(settings: Settings) -> dict[str, str]:
     return {
         "filesystem": settings.filesystem_tenant_id,
         "notion": settings.notion_tenant_id,
+    }
+
+
+def adaptive_role_settings(settings: Settings) -> dict[str, dict[str, Any]]:
+    """Per-role OpenAI reasoning for the adaptive pipeline. Scope validation and
+    quantity checking default to the final reasoning and can be set apart."""
+    final = settings.adaptive_final_reasoning
+    scope = settings.adaptive_scope_reasoning or final
+    check = settings.adaptive_check_reasoning or final
+    return {
+        role: {
+            "openai_reasoning_effort": effort,
+            "max_tokens": 8192 if effort != "none" else 1024,
+            # A None override omits inherited temperature for reasoning.
+            "temperature": None if effort != "none" else 0.0,
+        }
+        for role, effort in {
+            "extractor": settings.adaptive_extraction_reasoning,
+            "extraction_checker": settings.adaptive_extraction_reasoning,
+            "finalizer": final,
+            "answerer": final,
+            "need_planner": final,
+            "source_selector": final,
+            "quantity_selector": final,
+            "quantity_collector": final,
+            "quantity_checker": check,
+            "answer_repair": final,
+            "scoped_extraction_checker": check,
+            "scope_validator": scope,
+        }.items()
     }
 
 
@@ -258,30 +289,6 @@ def build_chat_dependencies(
             render_page=page_renderer,
         )
 
-    def role_model_settings():
-        return {
-            role: {
-                "openai_reasoning_effort": effort,
-                "max_tokens": 8192 if effort != "none" else 1024,
-                # A None override omits inherited temperature for reasoning.
-                "temperature": None if effort != "none" else 0.0,
-            }
-            for role, effort in {
-                "extractor": settings.adaptive_extraction_reasoning,
-                "extraction_checker": settings.adaptive_extraction_reasoning,
-                "finalizer": settings.adaptive_final_reasoning,
-                "answerer": settings.adaptive_final_reasoning,
-                "need_planner": settings.adaptive_final_reasoning,
-                "source_selector": settings.adaptive_final_reasoning,
-                "quantity_selector": settings.adaptive_final_reasoning,
-                "quantity_collector": settings.adaptive_final_reasoning,
-                "quantity_checker": settings.adaptive_final_reasoning,
-                "answer_repair": settings.adaptive_final_reasoning,
-                "scoped_extraction_checker": settings.adaptive_final_reasoning,
-                "scope_validator": settings.adaptive_final_reasoning,
-            }.items()
-        }
-
     async def plan_prefetch(question: str):
         """The evidence plan reads only the question, so it starts with retrieval."""
         from app.llm.adaptive import plan_needs_early
@@ -309,7 +316,9 @@ def build_chat_dependencies(
                 timeout_seconds=settings.agentic_timeout_seconds,
                 model_settings=agent_model_settings(settings, context_tokens),
                 role_model_settings=(
-                    role_model_settings() if settings.generation_provider == "openai" else {}
+                    adaptive_role_settings(settings)
+                    if settings.generation_provider == "openai"
+                    else {}
                 ),
                 research_policy=settings.agentic_research_policy,
             )
@@ -411,7 +420,7 @@ def build_chat_dependencies(
                         else {}
                     ),
                     **(
-                        {"role_model_settings": role_model_settings()}
+                        {"role_model_settings": adaptive_role_settings(settings)}
                         if settings.adaptive_rag_enabled
                         and settings.generation_provider == "openai"
                         else {}

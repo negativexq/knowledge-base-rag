@@ -100,6 +100,9 @@ class Settings(BaseSettings):
     adaptive_plan_prefetch_enabled: bool = True
     adaptive_extraction_reasoning: Literal["none", "low", "medium", "high"] = "low"
     adaptive_final_reasoning: Literal["none", "low", "medium", "high"] = "medium"
+    # Scope validation and quantity/extraction checking; None uses the final reasoning.
+    adaptive_scope_reasoning: Literal["none", "low", "medium", "high"] | None = None
+    adaptive_check_reasoning: Literal["none", "low", "medium", "high"] | None = None
     # "escalate": the fixed answer path runs first and the agent only handles
     # withheld answers (and multi-document requests); "always": agent first.
     agentic_mode: Literal["escalate", "always"] = "escalate"

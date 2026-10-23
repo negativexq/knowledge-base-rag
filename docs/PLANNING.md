@@ -6317,3 +6317,19 @@ expected an unresolved empty group to release 0; it now gives that group a
 bounded closure.
 
 `make test`: 2535 passed, 4 skipped.
+
+### Scope and check reasoning effort (2026-10-23)
+
+Scope validation and quantity checking spend most of their output on
+reasoning (73% and 83%). `ADAPTIVE_SCOPE_REASONING` and
+`ADAPTIVE_CHECK_REASONING` now set their effort apart from the final
+reasoning; unset, they inherit it, so the defaults do not change. Raw-text
+forensic captures now keep each model call's exact input (instructions,
+prompt, output schema, settings, images), and
+`scripts/experiments/replay_model_calls.py` replays recorded calls at
+another effort. On 11 calls from 10 rows, low halved latency (3.9 s vs
+7.5 s) and agreed with the medium replay on pass/fail in 10 cases. The one
+disagreement was a false rejection at low, so medium stays the default
+(`artifacts/mmlongbench-v2/scope-check-reasoning-20261023/REPORT.md`).
+
+`make test`: 2539 passed, 4 skipped.
