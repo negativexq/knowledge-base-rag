@@ -217,9 +217,11 @@ class Settings(BaseSettings):
     # sentence-transformers choose. The container has CPU only.
     reranker_device: str | None = None
     # Pairs per cross-encoder forward pass; None keeps the library default
-    # (32). Attention memory grows with batch x length^2, so a smaller batch
-    # caps peak memory on a 16 GB Mac without changing the scores.
-    reranker_batch_size: int | None = Field(default=None, gt=0)
+    # (32). The library sorts pairs by length and pads each batch to its
+    # longest pair, so small batches skip most padding: 2 halved rerank time
+    # on MPS with identical rankings (artifacts/reranker-batch-size-20261023).
+    # A smaller batch also caps peak attention memory on a 16 GB Mac.
+    reranker_batch_size: int | None = Field(default=2, gt=0)
     # Tokens per (query, chunk) pair the cross-encoder reads; None keeps the
     # model's own limit (8192 for bge-reranker-v2-m3). 512 matches chunks
     # sized for it (chunking_mode="element_aware") and truncates longer ones.
