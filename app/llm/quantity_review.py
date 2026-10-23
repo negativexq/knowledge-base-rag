@@ -236,9 +236,9 @@ def correct_count_operation(
         or any(i.target != "operation" for i in review.issues)
     ):
         return draft, review
+    # Only a count mode the checker named is applied. An objection naming none
+    # (e.g. "the entity is not listed, so zero is not reported") stays standing.
     choices = set(review.alternatives)
-    if len(draft.groups) == 1 and draft.count_mode == "per_group" and choices <= {"total"}:
-        choices = {"total"}
     if len(choices) != 1:
         return draft, review
     mode = next(iter(choices))

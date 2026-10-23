@@ -6294,3 +6294,26 @@ the same ranking (`artifacts/reranker-batch-size-20261023/REPORT.md`).
 `RERANKER_BATCH_SIZE` now defaults to 2; other hardware can retune it.
 
 `make test`: 2531 passed, 4 skipped.
+
+### Empty counts released as zero (2026-10-23)
+
+Row 730 ("How many Tweets are attributed to Boeing?", gold: not answerable)
+released `0` in one paid run. The table on page 16 has no Boeing row. The
+quantity checker objected that counting the empty list would turn an
+unreported value into zero, named no count mode, and proposed a
+not-reported-in-scope disposition. `correct_count_operation` treated an empty
+set of alternatives as a subset of `{"total"}`, cleared the objection, and
+the empty group was counted as 0. An operation patch is now applied only when
+the checker names exactly one count mode; any other objection stands.
+
+A rerun of 730 on the fix abstained, but through another path. This time the
+checker accepted, and an empty group whose closure was `unresolved` was still
+counted as 0 internally. Only scope validation stopped it. `execute` now
+refuses to release a zero from an unclosed group (`QUANTITY_ZERO_UNCLOSED`):
+a per-group count with an unresolved empty group, or a total of zero with
+any unresolved group. A bounded object or a declared inventory still
+supports 0, and found items still count under a total. One existing test
+expected an unresolved empty group to release 0; it now gives that group a
+bounded closure.
+
+`make test`: 2535 passed, 4 skipped.
