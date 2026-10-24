@@ -502,6 +502,21 @@ class QuestionOutcome:
 REFUSAL_KINDS = ("model_abstained", "validator_blocked")
 
 
+def _only_source_limitations(result: dict[str, Any]) -> bool:
+    """Every released part only explains what the cited source lacks: a
+    refusal in other words, not an answer."""
+    raw = (result.get("trace") or {}).get("raw_model_output")
+    if not isinstance(raw, str):
+        return False
+    try:
+        parts = json.loads(raw)["answer_parts"]
+    except (ValueError, KeyError, TypeError):
+        return False
+    return isinstance(parts, list) and bool(parts) and all(
+        isinstance(p, dict) and p.get("answer_kind") == "source_limitation" for p in parts
+    )
+
+
 def response_kind(result: dict[str, Any]) -> str:
     """How a response ended, from its validation event fields."""
     abstain = result.get("abstain")
@@ -512,7 +527,9 @@ def response_kind(result: dict[str, Any]) -> str:
         # A released answer that leads with the refusal sentence is a refusal
         # the model chose to explain; the user reads it as one.
         answer = _SUPPORT_ID.sub(" ", str(result.get("answer") or "")).strip()
-        return "model_abstained" if answer.startswith(NOT_FOUND_PHRASE) else "answered"
+        if answer.startswith(NOT_FOUND_PHRASE) or _only_source_limitations(result):
+            return "model_abstained"
+        return "answered"
     codes = codes or []
     if any(code.endswith("_INVALID") for code in codes):
         return "output_invalid"

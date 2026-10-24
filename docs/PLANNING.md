@@ -6356,7 +6356,9 @@ changes, each with tests:
 - Scope is judged sentence by sentence. A check lists unsupported
   sentences in `removed_sentences`; the adaptive path releases the claim
   without them under a receipt for the reduced answer. Code blocks are not
-  split. Other callers still reject such a claim.
+  split. Other callers still reject such a claim. A supported check may
+  give one objection per removed sentence; that was first read as a
+  missing objection and blocked all four Q275 attempts.
 - A source that documents an error pattern with example values applies to
   the user's report of the same pattern with their own values (a missing
   `CLEAR_LWY` tool in the manual, `Close` in the user's output).
@@ -6369,4 +6371,18 @@ from the 21 October baseline: no wrong answers, both safe refusals kept,
 507 and 223 now correct, 831 drops one of four activity groups; 65
 requests vs 69. TechQA has not been rerun on the final code.
 
-`make test`: 2552 passed, 4 skipped.
+A source_limitation part now leaves a fact, cause or step that answers
+part of the question to its own answer part, and an answer made only of
+limitations is scored as a refusal. Before this, Q252 and Q277 put a
+remedy in a limitation part and Q157's bare "the evidence does not
+provide" counted as answered. TechQA 10 on the final code: 7 answered,
+3 refused (Q157, Q250 not in the reranked top 5, Q018), from 4 answered
+and 6 refused by the same count; 66 requests vs 61. On the 12 MMLongBench
+rows it kept 11 outcomes on 51 requests vs 65, but 223 released the fast
+path's "the tablet share is missing" instead of researching it. A fast
+answer made only of limitations is now a research need, not a finding;
+rerun on the five rows whose fast path returned one: 223 answers
+90/42/39% again, 365 and 728 still refuse, 1024 still answers, TechQA
+Q018 still refuses (36 requests).
+
+`make test`: 2556 passed, 4 skipped.

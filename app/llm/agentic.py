@@ -236,7 +236,9 @@ class AgentAnswerPart(StrictModel):
     answer_kind: Literal["answer", "source_limitation"] = Field(
         default="answer",
         description="source_limitation explains why the cited material cannot establish "
-        "the requested value; requires independent source-scope validation, not a value guess",
+        "the requested value; requires independent source-scope validation, not a value guess. "
+        "It may keep context such as a supported rate whose base is missing; a supported fact, "
+        "cause or step that itself answers part of the question goes in its own answer part",
     )
 
     def claim_dict(self) -> dict[str, Any]:
