@@ -513,10 +513,17 @@ class DocumentInventoryPlan(QuantityData):
     pages: list[InventoryPageDecision] = Field(min_length=1, max_length=36)
 
 
+class InventoryRepeat(QuantityData):
+    item_index: int = Field(ge=0, description="item_index of the repeated mention in this window")
+    repeats_window: int = Field(ge=0, le=12, description="window_index of the first transcription")
+    repeats_item: int = Field(ge=0, description="item_index of the first transcription")
+
+
 class InventoryWindowReview(QuantityData):
     window_index: int = Field(ge=0, le=12)
     inputs: Literal["supported", "mismatch", "unknown"]
     local_coverage: Literal["complete", "incomplete", "unknown"]
+    repeats: list[InventoryRepeat] = Field(default_factory=list, max_length=200)
 
 
 class DocumentInventoryReview(QuantityData):

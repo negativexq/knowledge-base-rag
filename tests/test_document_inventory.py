@@ -426,3 +426,64 @@ async def test_an_inventory_that_cannot_fit_states_why_instead_of_stopping_silen
     assert await collect_document(active, need, plan(), view) is None
     assert not reads
     assert any(n.startswith("Document-wide count inventory stopped") for n in active.state.needs)
+
+
+def repeating(active, reads, repeats):
+    async def call(role, output_type, instructions, data, **kwargs):
+        active.usage.requests += 1
+        if role == "extractor":
+            reads.append(data["window_pages"])
+            return output_type.model_validate(dict(complete=True, items=[
+                dict(label=f"Quiz #{p if p < 6 else 1}", page=p, position=1, witness=f"Diagram {p}")
+                for p in data["window_pages"]
+            ]))
+        assert role == "quantity_checker"
+        assert "repeats" in instructions
+        assert [w["items"][0]["item_index"] for w in data["windows"]] == [0, 0]
+        return output_type.model_validate(dict(
+            windows=[
+                dict(
+                    window_index=i,
+                    inputs="supported",
+                    local_coverage="complete",
+                    repeats=repeats if i == 1 else [],
+                )
+                for i in range(len(data["windows"]))
+            ],
+            operation="supported",
+            document_coverage="complete",
+        ))
+
+    active.call = call
+
+
+@pytest.mark.asyncio
+async def test_a_summary_that_repeats_a_listed_item_is_counted_once(tmp_path):
+    # MMLongBench 381/834: the course summary on pages 15-16 relists the
+    # quizzes and case studies of the units. The checker rejected that window
+    # or called the unit ambiguous; the distinct items were the gold answer.
+    active, need = prepared(tmp_path)
+    reads: list = []
+    repeating(active, reads, [dict(item_index=2, repeats_window=0, repeats_item=0)])
+    view = await overview(active, need)
+    result = await collect_document(active, need, plan(), view)
+    assert reads == [[1, 2, 3], [4, 5, 6]]
+    assert result.answer_parts[0].text == 'Total: 5; pages ["1", "2", "3", "4", "5"]'
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "repeat",
+    [
+        dict(item_index=2, repeats_window=1, repeats_item=2),
+        dict(item_index=2, repeats_window=4, repeats_item=0),
+        dict(item_index=2, repeats_window=0, repeats_item=9),
+        dict(item_index=7, repeats_window=0, repeats_item=0),
+    ],
+)
+async def test_a_repeat_must_point_to_another_transcribed_item(tmp_path, repeat):
+    active, need = prepared(tmp_path)
+    repeating(active, [], [repeat])
+    view = await overview(active, need)
+    with pytest.raises(ValueError, match="INVENTORY_REPEAT_INVALID"):
+        await collect_document(active, need, plan(), view)

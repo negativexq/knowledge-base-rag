@@ -6592,4 +6592,11 @@ kept coverage incomplete. 398 and 730 stay correct. 636 took a bounded
 count this time (no inventory) and published 3 against gold 2, a visual
 count outside this change; it had refused before.
 
-`make test`: 2571 passed, 4 skipped.
+The inventory review can now list a mention as a repeat of an item
+transcribed in another window (each window's items carry an
+`item_index`). The application counts each object once and drops the
+repeated mentions from the total and its pages. A repeat must point to
+another transcribed item that is not itself a repeat; anything else fails
+`INVENTORY_REPEAT_INVALID`.
+
+`make test`: 2576 passed, 4 skipped.
