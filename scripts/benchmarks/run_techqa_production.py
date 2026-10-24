@@ -14,6 +14,14 @@ and ACL leaks. Semantic quality is graded afterwards against the reference
 answer (--scores, a CSV of qid,label) with the canonical rubric.
 
   python scripts/benchmarks/run_techqa_production.py --parquet PATH [--rows Q1,Q2]
+
+--questions-from takes the frozen questions from an earlier results.jsonl
+instead of the parquet (the corpus must already be ingested, --skip-ingest).
+--adaptive runs the adaptive research pipeline with the settings the
+MMLongBench traces use (scripts/experiments/run_adaptive_trace.py), the
+evidence plan starting alongside retrieval as POST /chat does. Each question
+then records its model usage, prints every span as it ends, and keeps its
+spans and full forensic capture under OUT/<qid>/.
 """
 
 # ruff: noqa: E402
@@ -34,6 +42,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 import pyarrow.parquet as pq
+from opentelemetry.sdk.trace import ReadableSpan, SpanProcessor
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from qdrant_client import QdrantClient
 
 from app.api.chat import _scoped_retrieve
@@ -50,17 +61,22 @@ from app.evaluation.techqa import (
     cited_sources,
     doc_file_name,
     holdout_questions,
+    recorded_questions,
 )
 from app.ingestion.fingerprint import build_pipeline_fingerprint
 from app.ingestion.ingest import ingest_connector
 from app.ingestion.qdrant_store import QdrantStore
+from app.llm.agent_observability import RequestUsage, load_prices, usage_scope
 from app.llm.embedding_models import active_embedding_config
 from app.llm.ollama_client import OllamaClient
+from app.llm.research_budget import ResearchPolicy
+from app.llm.research_needs import offer_plan
 from app.registry.store import DocumentRegistry
 from app.retrieval.report import RetrievalReport
 from app.retrieval.sparse import SparseEncoder
 from app.security.models import RetrievalContext
 from app.shared.config import Settings
+from app.shared.tracing import get_tracer, setup_tracing
 from scripts.benchmarks.run_mmlongbench_pilot import (
     free_accelerator_memory,
     generation_model,
@@ -78,6 +94,42 @@ CORPUS = CANONICAL / "techqa-reranker-corrected-holdout-execution-v2/01-corpus"
 DATA = ROOT / "data/benchmarks/techqa-holdout50"
 OUT = ROOT / "artifacts/ragbench/techqa-production-v1"
 PARQUET_SHA256 = "426f360d12b5d3589b66293c3417d3686a9d69eba3e82938e93d3e1545681264"
+
+
+# Span attributes worth a glance while a question runs.
+STEP_ATTRIBUTES = {
+    "research.model_role": "role",
+    "gen_ai.usage.input_tokens": "in",
+    "gen_ai.usage.output_tokens": "out",
+    "research.action": "action",
+    "research.route_reason": "route",
+    "research.finalization": "final",
+    "research.stop_reason": "stop",
+    "validator.failure_codes": "fail",
+    "validator.objection_count": "objections",
+    "retrieve.candidate_count": "candidates",
+    "rerank.top_n": "top_n",
+}
+
+
+class StepPrinter(SpanProcessor):
+    """Print each span when it ends, offset from the question's start."""
+
+    def __init__(self) -> None:
+        self.started_ns = 0
+
+    def on_end(self, span: ReadableSpan) -> None:
+        if not self.started_ns or span.start_time is None or span.end_time is None:
+            return
+        attributes = span.attributes or {}
+        details = " ".join(
+            f"{label}={attributes[key]}"
+            for key, label in STEP_ATTRIBUTES.items()
+            if key in attributes and attributes[key] not in ("", [], ())
+        )
+        offset = (span.start_time - self.started_ns) / 1e9
+        seconds = (span.end_time - span.start_time) / 1e9
+        print(f"  {offset:7.1f}s +{seconds:5.1f}s  {span.name} {details}".rstrip(), flush=True)
 
 
 def canonical_corpus() -> dict[str, str]:
@@ -148,13 +200,28 @@ def sources_of(client: QdrantClient, ids: list) -> list[str]:
     return sources
 
 
-async def ask(deps, client: QdrantClient, question) -> dict:
+async def ask(deps, client: QdrantClient, question, usage: RequestUsage | None = None) -> dict:
+    usage = usage or RequestUsage()
+    with get_tracer(__name__).start_as_current_span("chat_request"), usage_scope(usage):
+        raw, capture = await _ask(deps, client, question)
+    raw["usage"] = usage.snapshot()
+    raw["capture"] = capture
+    return raw
+
+
+async def _ask(deps, client: QdrantClient, question) -> tuple[dict, ForensicCapture]:
     context = RetrievalContext(tenant_id=TENANT)
     report = RetrievalReport()
     # Benchmark text, not user data: keep the raw output so a blocked answer
     # can be told apart from a wrong one.
     report.forensic_capture = ForensicCapture.create(question.question, raw_text=True)
     started = time.perf_counter()
+    offer = None
+    if deps.agentic_rag_enabled and deps.plan_prefetch_fn is not None:
+        # As POST /chat does: the evidence plan runs alongside retrieval.
+        offer = offer_plan(
+            question.question, asyncio.create_task(deps.plan_prefetch_fn(question.question))
+        )
     results = await deps.search_fn(question.question, context, report)
     stages = report.forensic_capture.record["stages"]
     candidate_ids = stages.get("reranker", {}).get("input_candidate_ids", [])
@@ -194,6 +261,8 @@ async def ask(deps, client: QdrantClient, question) -> dict:
                 validation = event
     finally:
         reset_current_capture(token)
+        if offer is not None:
+            await offer.close()
     seconds = round(time.perf_counter() - started, 1)
     leaked = await deps.search_fn(
         question.question, RetrievalContext(tenant_id=OTHER_TENANT), RetrievalReport()
@@ -222,7 +291,7 @@ async def ask(deps, client: QdrantClient, question) -> dict:
         "acl_leaks": len(leaked),
         "seconds": seconds,
         "trace": validation_trace(report.forensic_capture.record.get("stages", {})),
-    }
+    }, report.forensic_capture
 
 
 def read_scores(path: Path | None) -> dict[str, str] | None:
@@ -285,9 +354,46 @@ def write_markdown(report: dict, meta: dict, path: Path) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def adaptive_settings(base: Settings) -> Settings:
+    """The adaptive pipeline as run_adaptive_trace.py configures it."""
+    return Settings(
+        **{
+            **base.model_dump(),
+            "generation_provider": "openai",
+            "adaptive_rag_enabled": True,
+            "adaptive_fast_path_enabled": True,
+            "adaptive_evidence_needs_enabled": True,
+            "adaptive_plan_prefetch_enabled": True,
+            "agentic_rag_enabled": False,
+            "derived_answers_enabled": True,
+            "operand_resolver_enabled": True,
+            "visual_answers_enabled": True,
+            "agentic_reasoning": "low",
+            "adaptive_final_reasoning": "medium",
+            "adaptive_extraction_reasoning": "low",
+            "agentic_max_requests": 10,
+            "agentic_max_tokens": 120000,
+            "agentic_timeout_seconds": 240,
+            "agentic_research_policy": ResearchPolicy(
+                max_research_requests=6,
+                max_tool_attempts=6,
+                max_no_progress=2,
+                model_timeout_seconds=60,
+                tool_timeout_seconds=60,
+                finalize_reserve_seconds=60,
+            ),
+        }
+    )
+
+
 async def run(settings: Settings, questions, skip_ingest: bool, checkpoint: Path):
     from app.wiring import build_chat_dependencies
 
+    provider = setup_tracing(endpoint=settings.otel_exporter_otlp_endpoint)
+    spans = InMemorySpanExporter()
+    printer = StepPrinter()
+    provider.add_span_processor(SimpleSpanProcessor(spans))
+    provider.add_span_processor(printer)
     client = QdrantClient(url=settings.qdrant_url)
     ollama = OllamaClient(base_url=settings.ollama_base_url)
     deps, chat_provider = build_chat_dependencies(
@@ -305,7 +411,18 @@ async def run(settings: Settings, questions, skip_ingest: bool, checkpoint: Path
             if question.row_idx in done:
                 raws.append(done[question.row_idx])
                 continue
-            raw = await ask(deps, client, question)
+            print(f"[{index}/{len(questions)}] {question.qid} started", flush=True)
+            spans.clear()
+            printer.started_ns = time.time_ns()
+            raw = await ask(
+                deps, client, question, RequestUsage(load_prices(settings.model_pricing_json))
+            )
+            printer.started_ns = 0
+            folder = checkpoint.parent / question.qid
+            folder.mkdir(parents=True, exist_ok=True)
+            raw.pop("capture").write(str(folder / "03-captures/records"))
+            finished = [json.loads(span.to_json()) for span in spans.get_finished_spans()]
+            (folder / "spans.json").write_text(json.dumps(finished, indent=2) + "\n")
             raws.append(raw)
             save_checkpoint(checkpoint, raw)
             free_accelerator_memory()
@@ -323,7 +440,12 @@ async def run(settings: Settings, questions, skip_ingest: bool, checkpoint: Path
 
 async def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--parquet", type=Path, required=True, help="RAGBench techqa test parquet")
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--parquet", type=Path, help="RAGBench techqa test parquet")
+    source.add_argument(
+        "--questions-from", type=Path, help="an earlier results.jsonl with the frozen questions"
+    )
+    parser.add_argument("--adaptive", action="store_true", help="adaptive research pipeline")
     parser.add_argument("--rows", help="run only these question ids, e.g. techqa_DEV_Q252")
     parser.add_argument("--skip-ingest", action="store_true")
     parser.add_argument("--out", type=Path, default=OUT)
@@ -331,23 +453,37 @@ async def main() -> None:
     parser.add_argument("--scores", type=Path, help="CSV qid,label with the semantic grades")
     args = parser.parse_args()
 
-    digest = hashlib.sha256(args.parquet.read_bytes()).hexdigest()
-    if digest != PARQUET_SHA256:
-        raise SystemExit(f"parquet sha256 {digest} is not the pinned {PARQUET_SHA256}")
-    rows = pq.read_table(args.parquet).to_pylist()
     ids = json.loads(HOLDOUT.read_text(encoding="utf-8"))["selected_dataset_ids"]
     if args.rows:
         wanted = set(args.rows.split(","))
         ids = [qid for qid in ids if qid in wanted]
-    questions = holdout_questions(rows, ids)
-    corpus = canonical_corpus()
-    missing = [
-        q.qid for q in questions for name in all_documents([rows[q.row_idx]]) if name not in corpus
-    ]
-    if missing:
-        raise SystemExit(f"questions with documents outside the canonical corpus: {missing}")
+    digest = None
+    if args.questions_from:
+        if not args.skip_ingest:
+            raise SystemExit("--questions-from has no documents to ingest; pass --skip-ingest")
+        recorded = [
+            json.loads(line)
+            for line in args.questions_from.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        questions = recorded_questions(recorded, ids)
+    else:
+        digest = hashlib.sha256(args.parquet.read_bytes()).hexdigest()
+        if digest != PARQUET_SHA256:
+            raise SystemExit(f"parquet sha256 {digest} is not the pinned {PARQUET_SHA256}")
+        rows = pq.read_table(args.parquet).to_pylist()
+        questions = holdout_questions(rows, ids)
+        corpus = canonical_corpus()
+        missing = [
+            q.qid
+            for q in questions
+            for name in all_documents([rows[q.row_idx]])
+            if name not in corpus
+        ]
+        if missing:
+            raise SystemExit(f"questions with documents outside the canonical corpus: {missing}")
 
-    settings = Settings()
+    settings = adaptive_settings(Settings()) if args.adaptive else Settings()
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
     if args.from_results:
@@ -364,6 +500,7 @@ async def main() -> None:
         meta = {
             "dataset": "RAGBench TechQA HOLDOUT50",
             "parquet_sha256": digest,
+            "questions_from": str(args.questions_from) if args.questions_from else None,
             "documents": documents,
             "collection": COLLECTION,
             "tenant": TENANT,
@@ -375,6 +512,7 @@ async def main() -> None:
             "flags": {
                 "AGENTIC_RAG_ENABLED": settings.agentic_rag_enabled,
                 "AGENTIC_MODE": settings.agentic_mode,
+                "ADAPTIVE_RAG_ENABLED": settings.adaptive_rag_enabled,
                 "DERIVED_ANSWERS_ENABLED": settings.derived_answers_enabled,
                 "OPERAND_RESOLVER_ENABLED": settings.operand_resolver_enabled,
                 "VISUAL_ANSWERS_ENABLED": settings.visual_answers_enabled,
