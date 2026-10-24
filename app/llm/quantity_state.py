@@ -544,6 +544,7 @@ class DocumentInventoryRun(QuantityData):
     review: DocumentInventoryReview | None = None
     previous_reviews: list[DocumentInventoryReview] = Field(default_factory=list, max_length=1)
     additional_pages: list[int] = Field(default_factory=list, max_length=3)
+    window_size: int | None = Field(default=None, ge=1)
     complete: bool = False
     aggregate_id: str | None = None
 

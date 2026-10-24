@@ -132,6 +132,31 @@ async def overview(session: AdaptiveSession, need_id: str) -> dict[str, Any] | N
     )
 
 
+# Pages per extractor window: three by default, wider only when the whole
+# document would otherwise not fit the remaining requests.
+WINDOW_PAGES = 3
+MAX_WINDOW_PAGES = 8
+
+
+def window_size(session: AdaptiveSession, page_count: int) -> int | None:
+    """Fewest pages per window that let every window, the review and the scope check run."""
+    limit = session.limits.request_limit
+    if limit is None:
+        return WINDOW_PAGES
+    available = limit - session.usage.requests - 1 - int(session.deps.scope_validation_enabled)
+    if available < 1:
+        return None
+    size = max(WINDOW_PAGES, -(-page_count // available))
+    return size if size <= MAX_WINDOW_PAGES else None
+
+
+def stopped(session: AdaptiveSession, run: DocumentInventoryRun, reason: str) -> None:
+    session.state.needs.append(f"Document-wide count inventory stopped before review: {reason}")
+    with operation("inventory.stopped") as span:
+        span.set_attribute("inventory.id", run.id)
+        span.set_attribute("inventory.stop_reason", reason)
+
+
 def validate_plan(plan: DocumentInventoryPlan, page_count: int) -> list[int]:
     pages = [p.page for p in plan.pages]
     if len(pages) != len(set(pages)) or set(pages) != set(range(1, page_count + 1)):
@@ -186,7 +211,14 @@ async def collect_document(
         record = session.state.quantities[run.aggregate_id]
         session.require([*record.support_ids, *record.proof_support_ids])
         return candidate(record)
-    windows = [pages[start:start + 3] for start in range(0, len(pages), 3)]
+    size = run.window_size or window_size(session, len(pages))
+    if size is None:
+        stopped(session, run, "its windows do not fit the remaining requests")
+        return None
+    if run.window_size is None:
+        run = run.model_copy(update={"window_size": size})
+        session.state.document_inventories[run.id] = run
+    windows = [pages[start:start + size] for start in range(0, len(pages), size)]
     if run.additional_pages:
         windows.append(run.additional_pages)
         pages = sorted(set(pages) | set(run.additional_pages))
@@ -197,6 +229,7 @@ async def collect_document(
     if session.limits.request_limit is not None and (
         session.usage.requests + needed_requests > session.limits.request_limit
     ):
+        stopped(session, run, "its windows do not fit the remaining requests")
         return None
     all_images: list[bytes] = []
     for window_index, window_pages in enumerate(windows):
@@ -214,14 +247,14 @@ async def collect_document(
             session.usage.requests + 2 + int(session.deps.scope_validation_enabled)
             > session.limits.request_limit
         ):
+            stopped(session, run, "the next window does not fit the remaining requests")
             return None
-        raw = await asyncio.to_thread(structure.inventory_context, window_pages)
         ids = []
-        for page in raw["pages"]:
-            block_id = "inventory-source-" + key([run.id, page["page"]])
-            text = "\n".join(line["text"] for line in page["lines"]) or (
-                f'Original PDF visual page {page["page"]}'
-            )
+        for page in window_pages:
+            block_id = "inventory-source-" + key([run.id, page])
+            # The window is read and reviewed from the original page image; its
+            # native text would spend the shared evidence budget unread.
+            text = f"Original PDF visual page {page}"
             admitted = session.admit(
                 [
                     SearchResult(
@@ -233,16 +266,17 @@ async def collect_document(
                             "section_chunks": [],
                             "evidence_block_id": block_id,
                             "contributing_chunk_ids": [block_id],
-                            "page_number": page["page"],
-                            "page_end": page["page"],
+                            "page_number": page,
+                            "page_end": page,
                             "heading_path": [],
                             "section_path": ["Original PDF inventory page"],
-                            "reading_method": "native_pdf_text",
+                            "reading_method": "original_page_image",
                         },
                     )
                 ]
             )
             if not admitted:
+                stopped(session, run, f"page {page} could not be admitted as evidence")
                 return None
             ids.append(session.selected[0])
         bindings = [

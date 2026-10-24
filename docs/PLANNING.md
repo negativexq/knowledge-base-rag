@@ -6558,3 +6558,27 @@ linguistic equivalent ("Butter" as an OCR reading of "Buffer"), so every
 requirement was supported and the identity release was not needed.
 
 `make test`: 2568 passed, 4 skipped.
+
+### Document inventories fit their budgets (2026-10-25)
+
+MMLongBench 381, 834 and 732 were filed as count completeness. The traces
+show the document-wide inventory never reached its review:
+
+- 381 (10 candidate pages) and 834 (16): every inspected page's native
+  text was admitted as evidence, about 800 tokens a page. The shared
+  budget ran out on the third window, the admission failed and the
+  inventory returned nothing. In 834 the reader's four later searches
+  were all dropped for the same exhausted budget.
+- 732 (23 pages): eight three-page windows plus the review and scope check
+  exceeded the 10-request limit, so no window was read.
+
+Each case returned silently. Inventory pages are now admitted with their
+location only, since windows are read and reviewed from the original
+images; windows widen (up to 8 pages) so every window, the review and the
+scope check fit the remaining requests; and an inventory that still
+cannot run records why in the research needs.
+
+A scope check of an inventory answer can no longer quote a page's native
+text; it relies on the original page images it already receives.
+
+`make test`: 2571 passed, 4 skipped.

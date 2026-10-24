@@ -26,12 +26,14 @@ def plan(count=6):
     )
 
 
-def prepared(tmp_path):
+def prepared(tmp_path, filler=""):
     path = tmp_path / "manual.pdf"
     with fitz.open() as doc:
         for page in range(1, 7):
             p = doc.new_page()
             p.insert_text((30, 40), f"Diagram {page}\nRepeated source label")
+            if filler:
+                p.insert_textbox(fitz.Rect(30, 130, 580, 820), filler, fontsize=6)
             p.draw_rect(fitz.Rect(30, 60, 170, 120))
         doc.save(path)
     active, need_id = active_session(
@@ -342,9 +344,11 @@ async def test_full_verification_accepts_original_detail_and_overview_images(tmp
                         verdict="supported",
                         reason="NONE",
                         witnesses=[
-                            dict(support_id=source_id, field="text", start_line=2, end_line=2)
+                            # Inventory pages carry their location, not native text:
+                            # the items were read and reviewed on the original images.
+                            dict(support_id=source_id, field="text", start_line=1, end_line=1)
                             if compact
-                            else dict(support_id=source_id, quote="Repeated source label"),
+                            else dict(support_id=source_id, quote="Original PDF visual page"),
                             *([dict(
                                 support_id=source_id, field="text", start_line=999, end_line=999
                             )] if compact else [])
@@ -358,3 +362,67 @@ async def test_full_verification_accepts_original_detail_and_overview_images(tmp
     verified, receipt = await active.verify(answer)
     assert verified == answer and receipt and not receipt.failure_codes
     assert seen[-1] == "scope_validator"
+
+
+@pytest.mark.asyncio
+async def test_page_text_does_not_spend_the_evidence_budget_of_an_image_inventory(tmp_path):
+    # MMLongBench 381/834: each inspected page's native text was admitted as
+    # evidence; the budget ran out on the third window and the inventory was
+    # dropped. The windows are read from the original page images.
+    active, need = prepared(tmp_path, filler="course schedule and reading notes " * 120)
+    ledger = active.deps.ledger
+    ledger._budget -= ledger.remaining_tokens - 500
+    calls(active)
+    answer = await collect(active, need)
+    assert answer.answer_parts[0].text == 'Total: 6; pages ["1", "2", "3", "4", "5", "6"]'
+    pages = [b for b in ledger.blocks if str(b.id).startswith("inventory-source-")]
+    assert len(pages) == 6 and all(len(b.payload["text"]) < 40 for b in pages)
+
+
+def counting(active, reads):
+    async def call(role, output_type, instructions, data, **kwargs):
+        active.usage.requests += 1
+        if role == "extractor":
+            reads.append(data["window_pages"])
+            return output_type.model_validate(dict(complete=True, items=[
+                dict(label="Repeated source label", page=p, position=1, witness=f"Diagram {p}")
+                for p in data["window_pages"]
+            ]))
+        assert role == "quantity_checker"
+        return output_type.model_validate(dict(
+            windows=[dict(window_index=i, inputs="supported", local_coverage="complete")
+                     for i in range(len(data["windows"]))],
+            operation="supported",
+            document_coverage="complete",
+        ))
+
+    active.call = call
+
+
+@pytest.mark.asyncio
+async def test_windows_widen_so_the_whole_document_fits_the_request_limit(tmp_path):
+    # MMLongBench 732: 23 candidate pages in three-page windows needed more
+    # requests than the limit allowed, so the inventory never started.
+    active, need = prepared(tmp_path)
+    scope = int(active.deps.scope_validation_enabled)
+    active.limits.request_limit = 2 + scope
+    reads: list = []
+    counting(active, reads)
+    view = await overview(active, need)
+    result = await collect_document(active, need, plan(), view)
+    assert reads == [[1, 2, 3, 4, 5, 6]]
+    assert result.answer_parts[0].text == 'Total: 6; pages ["1", "2", "3", "4", "5", "6"]'
+    run = next(iter(active.state.document_inventories.values()))
+    assert run.window_size == 6
+
+
+@pytest.mark.asyncio
+async def test_an_inventory_that_cannot_fit_states_why_instead_of_stopping_silently(tmp_path):
+    active, need = prepared(tmp_path)
+    active.limits.request_limit = 1 + int(active.deps.scope_validation_enabled)
+    reads: list = []
+    counting(active, reads)
+    view = await overview(active, need)
+    assert await collect_document(active, need, plan(), view) is None
+    assert not reads
+    assert any(n.startswith("Document-wide count inventory stopped") for n in active.state.needs)
