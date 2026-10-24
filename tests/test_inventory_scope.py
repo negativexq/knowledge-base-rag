@@ -305,6 +305,10 @@ def test_an_unproven_identity_rejected_twice_is_stated_once_instead():
     scoped: list = []
     assert not validate_requirements(binding_payload(), reqs, released, set(), scoped=scoped)
     assert scoped == [dict(question_quote="Westhaven", claim_indexes=[0])]
+    # A claim whose inputs the application checked on the original page image
+    # needs no text witness; an image-only page has none to give (MMLongBench 524).
+    gap = identity_gap(check=dict(witnesses=[]))
+    assert release_unknown_identity(binding_payload(), reqs, gap, verified={0})[1] == [0]
     limitation = binding_payload()
     limitation["claims"][0]["claim"]["answer_kind"] = "source_limitation"
     # Only an identity the source neither confirms nor contradicts is stated;

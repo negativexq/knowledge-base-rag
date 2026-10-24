@@ -500,6 +500,49 @@ def test_a_checked_lookup_reaches_scope_review_with_its_original_sources():
     assert [c["label"] for c in operation["choices"]] == ["A", "B"]
 
 
+def test_a_checked_selection_reaches_scope_review_with_its_original_sources():
+    # MMLongBench 524: the accepted image selection (rural 11 % in 2013, 17 % in
+    # 2014) was left out of the projection, so its claim had no independent
+    # input authority and needed text witnesses an image-only page cannot give.
+    from app.llm.quantities import candidate
+    from app.llm.quantity_scope import semantic_scope_projection
+    from app.llm.quantity_state import QuantityCheck
+    from app.llm.scope_validation import scope_payload
+
+    active, _ = active_session("Rural 2013 11; 2014 17")
+    draft = QuantityDraft(
+        mode="select",
+        complete=True,
+        select_mode="minimum",
+        operands=[
+            dict(name=f"rural_{year}", label=year, value=value, unit="%", witness=f"{year} {value}")
+            for year, value in [("2013", "11"), ("2014", "17")]
+        ],
+    )
+    values, expression = execute(draft)
+    record = missing_record().model_copy(
+        update={
+            "id": "select",
+            "draft": draft,
+            "assessments": [],
+            "check": QuantityCheck(accepted=True, complete=True, reason="supported"),
+            "execution_status": "completed",
+            "values": values,
+            "expression": expression,
+        }
+    )
+    answer = candidate(record)
+    payload = scope_payload(
+        active.state.task.question, answer.raw_answer(), active.deps.ledger.units
+    )
+    projected, verified = semantic_scope_projection(payload, [record])
+    assert verified == ["select"]
+    operation = projected["verified_operations"][0]
+    assert operation["operation"] == "select" and operation["select_mode"] == "minimum"
+    assert operation["source_support_ids"] == ["E1.S1"]
+    assert [o["label"] for o in operation["checked_inputs"]] == ["2013", "2014"]
+
+
 @pytest.mark.asyncio
 async def test_a_checked_lookup_answer_passes_the_critical_value_check(tmp_path):
     # MMLongBench 212: the accepted image lookup published "92 %", but its

@@ -2155,9 +2155,18 @@ class AdaptiveSession:
                     span.set_attribute("validator.coverage_failure_codes", [str(exc)])
                     raise
                 span.set_attribute("validator.material_omission_count", len(omissions))
+                # Only exact, locally recomputed image-backed candidates have
+                # independent input authority. Ordinary/model-edited claims keep
+                # strict locator validation. Semantic requirements must pass too.
+                image_verified = {
+                    op["claim_index"]
+                    for op in judge_payload.get("verified_operations", [])
+                    if op.get("input_authority") == "independently_checked_original_images"
+                    and any(op["claim_index"] in i["claim_indexes"] for i in source_images)
+                }
                 if isinstance(references, RequiredScopeJudgment):
                     references, released = release_unknown_identity(
-                        payload, question_requirements, references
+                        payload, question_requirements, references, verified=image_verified
                     )
                     span.set_attribute("validator.identity_released_claims", released)
                     requirement_diagnostics: dict[str, int] = {}
@@ -2184,15 +2193,7 @@ class AdaptiveSession:
                     if errors:
                         raise ValueError("SCOPE_REVIEW_INDETERMINATE")
                 assert references is not None
-                # Only exact, locally recomputed image-backed candidates have
-                # independent input authority. Ordinary/model-edited claims keep
-                # strict locator validation. Semantic requirements must pass too.
-                independently_verified = {
-                    op["claim_index"]
-                    for op in judge_payload.get("verified_operations", [])
-                    if op.get("input_authority") == "independently_checked_original_images"
-                    and any(op["claim_index"] in i["claim_indexes"] for i in source_images)
-                } if not requirement_errors else set()
+                independently_verified = image_verified if not requirement_errors else set()
                 claim_diagnostics: dict[str, int] = {}
                 checked = resolve_line_judgment(
                     payload, references, independently_verified_claims=independently_verified,

@@ -83,12 +83,18 @@ unestablished with the answer instead of rejecting the claim for it.
 
 
 def release_unknown_identity(
-    payload: dict[str, Any], requirements: list[dict[str, str]], judgment: RequiredScopeJudgment
+    payload: dict[str, Any],
+    requirements: list[dict[str, str]],
+    judgment: RequiredScopeJudgment,
+    *,
+    verified: set[int] | None = None,
 ) -> tuple[RequiredScopeJudgment, list[int]]:
     """Judge a claim held back only by an unknown quoted identity on its content.
 
     The same gap is already an unknown requirement binding, which states it with
     the answer; counting it again as the claim's verdict would erase the claim.
+    A claim whose inputs were checked on the original page images (``verified``)
+    needs no text witness.
     """
     bindings = {b.requirement_index: b for b in judgment.requirement_bindings}
     kinds = {c["claim_index"]: c["claim"].get("answer_kind") for c in payload["claims"]}
@@ -102,7 +108,7 @@ def release_unknown_identity(
         if (
             check.verdict == "insufficient"
             and check.reason == "SCOPE_NOT_ESTABLISHED"
-            and check.witnesses
+            and (check.witnesses or check.claim_index in (verified or set()))
             and check.claim_index in kinds
             and kinds[check.claim_index] != "source_limitation"
             and objections[0].repair_kind in {"missing_source", "source_binding"}

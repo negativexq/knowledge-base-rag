@@ -6538,4 +6538,11 @@ refuses: the check linked its objection to the unknown tool-list
 condition, but the claim is an image-verified selection and its check
 carried no text witnesses, so it was not released.
 
-`make test`: 2567 passed, 4 skipped.
+524's claim came from a checked selection on an image-only page, and
+selections were not projected as verified operations, so the claim had no
+independent input authority either. Selections are now projected like
+lookups, and a claim whose inputs were checked on the original page
+images is released without a text witness. Only 524 and 639 used a
+selection in the full 120-row run.
+
+`make test`: 2568 passed, 4 skipped.
