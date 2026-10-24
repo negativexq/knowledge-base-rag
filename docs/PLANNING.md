@@ -6429,3 +6429,28 @@ refuses. Requests fell from 81 to 52 on the 9 questions, with no wrong
 answer released. Nine questions are within run variance for any one row.
 
 `make test`: 2560 passed, 4 skipped.
+
+### Checkpoint (2026-10-24)
+
+Scored from the 24 October full runs plus the 9-question rerun on this
+branch; the other questions were not rerun on the final code.
+
+TechQA 50 keeps all 50 questions in the denominator. A refusal counts as
+correct where RAGBench's reference itself says the context does not
+answer (Q181, Q044, Q297). Six references that do not answer their own
+question (Q085, Q237, Q172, Q251, Q157, Q238) are reported apart, never
+dropped silently.
+
+| TechQA 50 | Count |
+|---|---|
+| Correct (18 answered, 3 correct refusals) | 21 |
+| Partly correct | 6 |
+| Reference unusable | 6 |
+| Answer not in the reranked top 5 | 10 |
+| Refused with evidence visible (Q008, Q267, Q205, Q239, Q018, Q173, Q246) | 7 |
+| Wrong answer released | 0 |
+
+Without the six unusable references: 21 of 44 correct, 6 partly.
+
+MMLongBench 120: 88 by the matcher, 93 after the five scorer errors in the
+audit (368, 1027, 365, 730, 475); 2 wrong answers released (658, 831).
