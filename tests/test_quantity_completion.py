@@ -498,3 +498,67 @@ def test_a_checked_lookup_reaches_scope_review_with_its_original_sources():
     operation = projected["verified_operations"][0]
     assert operation["operation"] == "lookup" and operation["source_support_ids"] == ["E1.S1"]
     assert [c["label"] for c in operation["choices"]] == ["A", "B"]
+
+
+@pytest.mark.asyncio
+async def test_a_checked_lookup_answer_passes_the_critical_value_check(tmp_path):
+    # MMLongBench 212: the accepted image lookup published "92 %", but its
+    # proof listed only the bare result, so the critical-value check could not
+    # tie the answer to any support and returned CRITICAL_VALUE_INDETERMINATE.
+    import hashlib
+
+    import fitz
+
+    from app.llm.visual_answer import PdfPages
+
+    path = tmp_path / "survey.pdf"
+    with fitz.open() as pdf:
+        pdf.new_page().insert_text((30, 30), "Party ratings chart")
+        pdf.save(path)
+    active, need = active_session(
+        "Party ratings chart", visual_answers=True, render_page=PdfPages(str(tmp_path))
+    )
+    active.deps.ledger.blocks[0].payload.update(
+        source_id="survey_pdf", document_version=hashlib.sha256(path.read_bytes()).hexdigest()
+    )
+    active.deps.ledger.source_ids = frozenset({"survey_pdf"})
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        if role == "quantity_selector":
+            return output_type(
+                available=True,
+                operation_kind="lookup",
+                support_ids=["E1.S1"],
+                context_support_ids=[],
+                pages=[1],
+                modality="image",
+            )
+        if role == "quantity_collector":
+            raw = lookup().model_dump(include={"mode", "complete", "select_mode", "choices"})
+            raw["operands"] = [
+                dict(
+                    name=o.name,
+                    label=o.label,
+                    value=o.value,
+                    unit=o.unit,
+                    witness=o.witness,
+                    image_ids=["image_1"],
+                    population="Registered voters",
+                    series=o.name,
+                    period="2018",
+                )
+                for o in lookup().operands
+            ]
+            return output_type.model_validate(raw)
+        return QuantityAssessment(
+            inputs="supported",
+            coverage="complete",
+            operation="supported",
+            entity_identity="supported",
+            supported_operand_indexes=list(range(6)),
+        )
+
+    active.call = call
+    result = await collect(active, need, repairs_left=0)
+    assert result is not None and result.answer_parts[0].text == "70 %"
+    assert not active.deps.validation(result).failure_codes
