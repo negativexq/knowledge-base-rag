@@ -6506,3 +6506,55 @@ images and bound every requirement to original text or image witnesses,
 so the projection change from the previous fix is now exercised too.
 
 `make test`: 2564 passed, 4 skipped.
+
+### An unknown identity is not counted twice (2026-10-25)
+
+TechQA Q008 and MMLongBench 524 still refused after the scoped release.
+The scope check marked the quoted identity unknown ("DataPower Gateway"
+against a source naming the DataPower SOA appliance; the OCR'd tool list
+reading "Butter" for "Buffer") and, for the same reason, judged the claim
+itself insufficient. The release only applies to claims the check
+supported, so it never fired. In 524 the quantity check had accepted
+both values (11 % in 2013, 17 % in 2014).
+
+An objection now names the `question_requirements` index it concerns. A
+claim whose single objection is a missing source or source binding for an
+unknown entity or condition binding is judged on its content, and the
+answer states the identity as unestablished. A mismatch, any other gap,
+an asked-for metric, period, unit or population, a limitation claim or a
+source finding still rejects.
+
+Of the five rows filed under product-name literalness, only Q008 and 524
+are this mechanism. 641 is a document definition the check did not apply
+(the paper calls its evaluation subset FEVEROUS-S; the table header reads
+FEVEROUS). Q205's reference document concerns exit code 8096, not the
+asked -1, so refusing is correct. Q239's relevant document never reached
+the model, a retrieval miss.
+
+Rerun of five rows: Q008 now answers with the crypto-export procedure
+and the note that the sources do not establish it for the DataPower
+Gateway (7 requests vs 8). Q275, Q186 and 212 stay correct. 524 still
+refuses: the check linked its objection to the unknown tool-list
+condition, but the claim is an image-verified selection and its check
+carried no text witnesses, so it was not released.
+
+524's claim came from a checked selection on an image-only page, and
+selections were not projected as verified operations, so the claim had no
+independent input authority either. Selections are now projected like
+lookups, and a claim whose inputs were checked on the original page
+images is released without a text witness. Only 524 and 639 used a
+selection in the full 120-row run.
+
+Rerun of 524 and 639: 639 stays correct (Subtask, 3 requests). 524 still
+refuses, but this run never reached the selection: the answerer saw the
+2014 rural cell as garbled text, two image inspections did not produce a
+reading, research stopped on `REPEATED_OPERATION` and the finalizer wrote
+only a limitation. The change was not exercised on 524.
+
+Second rerun of 524: answers 2013 (gold 2013) on 6 requests. The
+selection reached the scope check as a verified operation with both
+original page images, and the check bound the tool-list condition as a
+linguistic equivalent ("Butter" as an OCR reading of "Buffer"), so every
+requirement was supported and the identity release was not needed.
+
+`make test`: 2568 passed, 4 skipped.
