@@ -6531,4 +6531,11 @@ FEVEROUS). Q205's reference document concerns exit code 8096, not the
 asked -1, so refusing is correct. Q239's relevant document never reached
 the model, a retrieval miss.
 
+Rerun of five rows: Q008 now answers with the crypto-export procedure
+and the note that the sources do not establish it for the DataPower
+Gateway (7 requests vs 8). Q275, Q186 and 212 stay correct. 524 still
+refuses: the check linked its objection to the unknown tool-list
+condition, but the claim is an image-verified selection and its check
+carried no text witnesses, so it was not released.
+
 `make test`: 2567 passed, 4 skipped.
