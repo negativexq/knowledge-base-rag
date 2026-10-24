@@ -6599,4 +6599,15 @@ repeated mentions from the total and its pages. A repeat must point to
 another transcribed item that is not itself a repeat; anything else fails
 `INVENTORY_REPEAT_INVALID`.
 
+Rerun of 381, 834 and 398 hit the total token limit (120k), not the
+request limit. The selector planned more candidate pages this time (381:
+all 17), so all windows were read but the batch review never ran:
+`TOKEN_RESERVE`. In 398 the review accepted five appendices with the
+repeats marked, then the scope check closed on `TOKEN_RESERVE` and the row
+failed; it had answered from text before, when the inventory dropped out
+early. The budget check estimates 4,096 tokens per image while the
+recorded calls used about 1,700 (three-page windows: 13.2k estimated,
+5.1k actual), so image-heavy inventories are closed long before the real
+limit. As it stands this branch can turn a text answer into a failure.
+
 `make test`: 2576 passed, 4 skipped.
