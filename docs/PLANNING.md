@@ -6415,6 +6415,17 @@ Replaying the new requirement gate over every recorded scope judgment of
 both runs changes 7 of them, all to release: TechQA Q047, Q186 (first
 check), Q267, Q275 (from its first check) and MMLongBench 833, which
 would pass on its first check with the answer it was scored correct on.
-No recorded judgment releases a wrong answer. Not yet measured end to end.
+No recorded judgment releases a wrong answer.
+
+Measured on the 9 affected questions (TechQA 6, MMLongBench 3), all of
+which had been refused or lost at the check on 24 October: TechQA Q275 and
+Q186 now answer correctly, Q149 and Q047 partly, and Q008 and Q267 still
+refuse. Q267 never drafted this time: the reader searched four times for
+an exact license entitlement. In Q008 the unchanged-draft skip fired once
+before the request reserve closed research. The scope note was added in
+Q275, Q186 and Q047. MMLongBench 372 is now correct (5 of 5 directors,
+5 requests vs 10), 833 stays correct on 3 requests vs 5, and 214 still
+refuses. Requests fell from 81 to 52 on the 9 questions, with no wrong
+answer released. Nine questions are within run variance for any one row.
 
 `make test`: 2560 passed, 4 skipped.
