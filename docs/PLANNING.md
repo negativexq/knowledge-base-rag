@@ -6356,7 +6356,9 @@ changes, each with tests:
 - Scope is judged sentence by sentence. A check lists unsupported
   sentences in `removed_sentences`; the adaptive path releases the claim
   without them under a receipt for the reduced answer. Code blocks are not
-  split. Other callers still reject such a claim.
+  split. Other callers still reject such a claim. A supported check may
+  give one objection per removed sentence; that was first read as a
+  missing objection and blocked all four Q275 attempts.
 - A source that documents an error pattern with example values applies to
   the user's report of the same pattern with their own values (a missing
   `CLEAR_LWY` tool in the manual, `Close` in the user's output).
@@ -6369,4 +6371,4 @@ from the 21 October baseline: no wrong answers, both safe refusals kept,
 507 and 223 now correct, 831 drops one of four activity groups; 65
 requests vs 69. TechQA has not been rerun on the final code.
 
-`make test`: 2552 passed, 4 skipped.
+`make test`: 2553 passed, 4 skipped.

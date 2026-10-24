@@ -393,6 +393,48 @@ def test_scope_rejection_requires_claim_question_and_source_locations():
     assert not validate_objections(payload, supported)
 
 
+def test_a_supported_claim_may_explain_each_sentence_it_removes():
+    """TechQA Q275 and Q112: a supported check that drops sentences gave one
+    objection per dropped sentence; that was read as a missing objection and
+    blocked every otherwise accepted answer."""
+    active, _ = active_session()
+    raw = json.dumps(
+        {"answer_parts": [{"text": "10. Also 12. And 14.", "support_ids": ["E1.S1"]}]}
+    )
+    payload = scope_payload("Total?", raw, active.deps.ledger.units)
+    location = {"support_id": "E1.S1", "start_line": 1, "end_line": 1}
+    objection = {
+        "claim_index": 0,
+        "description": "Not in the source.",
+        "question_start": 1,
+        "question_end": 1,
+        "source_locations": [location],
+    }
+
+    def judgment(removed, objections):
+        return DiagnosticScopeJudgment.model_validate(
+            {
+                "checks": [
+                    {
+                        "claim_index": 0,
+                        "verdict": "supported",
+                        "reason": "NONE",
+                        "witnesses": [location],
+                        "removed_sentences": removed,
+                    }
+                ],
+                "objections": objections,
+            }
+        )
+
+    assert not validate_objections(payload, judgment([2, 3], [objection, objection]))
+    assert not validate_objections(payload, judgment([2, 3], []))
+    # An objection to a supported claim that keeps every sentence is unexplained.
+    assert validate_objections(payload, judgment([], [objection])) == [
+        "SCOPE_OBJECTION_MISSING_OR_DUPLICATE"
+    ]
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "count_mode,identity",
