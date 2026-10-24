@@ -548,6 +548,10 @@ def distinct_items(draft: QuantityDraft) -> list[str]:
     return list(found.values())
 
 
+def lookup_unit(draft: QuantityDraft) -> str:
+    return next(o.unit for o in draft.operands if o.name == draft.choices[0].value_operand)
+
+
 def candidate(record: QuantityRecord) -> AgentAnswer:
     """Deterministic output. Labels/items come from a checked source collection."""
     if (
@@ -594,9 +598,7 @@ def candidate(record: QuantityRecord) -> AgentAnswer:
             support_ids=ids,
         )
     elif record.draft.mode == "lookup":
-        unit = next(
-            o.unit for o in record.draft.operands if o.name == record.draft.choices[0].value_operand
-        )
+        unit = lookup_unit(record.draft)
         part = AgentAnswerPart(
             text="; ".join(v + (f" {unit}" if unit else "") for v in displayed), support_ids=ids
         )
@@ -1960,7 +1962,11 @@ async def collect(
                     if draft.output_decimals is not None
                     else value
                     for value in values
-                ] if draft.mode == "read" else [],
+                ] if draft.mode == "read" else [
+                    # A lookup publishes its chosen value with that value's unit.
+                    f"{value} {lookup_unit(draft)}".strip()
+                    for value in values
+                ] if draft.mode == "lookup" else [],
                 "numeric_inputs": [n.model_dump() for n in numeric_inputs],
                 "arithmetic_conversion": record.arithmetic_conversion.model_dump()
                 if record.arithmetic_conversion
