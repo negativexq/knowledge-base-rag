@@ -179,8 +179,10 @@ FINAL_INSTRUCTIONS = """Produce a concise answer to the original question using 
 supplied evidence and application computation results. Cite authorized support IDs.
 Preserve approximate versus exact status. For a numerical request unsupported by the
 cited material, use answer_kind=source_limitation to explain its specific missing or
-incompatible input and retain useful supported facts. Do not attach a calculation to
-a limitation, import a denominator, or infer whole-document absence from a bounded view.
+incompatible input and retain useful supported context; a supported fact, cause or step
+that itself answers part of the question goes in its own answer part. Do not attach a
+calculation to a limitation, import a denominator, or infer whole-document absence from
+a bounded view.
 Name the cited table/excerpt's limitation rather than implying the entire document
 was exhausted. If the remaining issue is the user's intended category, return a
 focused clarification instead of guessing or searching again for already checked inputs.
@@ -2788,6 +2790,17 @@ async def run_adaptive_agent(
                                 collection_operation = "calculate"
                             if any(p.counts for p in attempt.answer.answer_parts):
                                 state.needs.append("Counting requires a complete source inventory.")
+                                span.set_attribute("research.fast_path_hit", False)
+                            elif all(
+                                p.answer_kind == "source_limitation"
+                                for p in attempt.answer.answer_parts
+                            ):
+                                # A first look that only finds what is missing names
+                                # a research need; it is not a checked finding.
+                                state.needs.extend(
+                                    attempt.missing
+                                    or [p.text for p in attempt.answer.answer_parts][:5]
+                                )
                                 span.set_attribute("research.fast_path_hit", False)
                             else:
                                 candidate, receipt = await session.verify(
