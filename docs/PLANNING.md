@@ -6377,7 +6377,12 @@ limitations is scored as a refusal. Before this, Q252 and Q277 put a
 remedy in a limitation part and Q157's bare "the evidence does not
 provide" counted as answered. TechQA 10 on the final code: 7 answered,
 3 refused (Q157, Q250 not in the reranked top 5, Q018), from 4 answered
-and 6 refused by the same count; 66 requests vs 61. MMLongBench has not
-been rerun with this prompt change.
+and 6 refused by the same count; 66 requests vs 61. On the 12 MMLongBench
+rows it kept 11 outcomes on 51 requests vs 65, but 223 released the fast
+path's "the tablet share is missing" instead of researching it. A fast
+answer made only of limitations is now a research need, not a finding;
+rerun on the five rows whose fast path returned one: 223 answers
+90/42/39% again, 365 and 728 still refuse, 1024 still answers, TechQA
+Q018 still refuses (36 requests).
 
 `make test`: 2556 passed, 4 skipped.

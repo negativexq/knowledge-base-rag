@@ -1270,3 +1270,38 @@ def test_a_limitation_part_leaves_answering_facts_to_their_own_part():
     assert "its own answer part" in kind
     assert "retain useful supported facts" not in FINAL_INSTRUCTIONS
     assert "its own answer part" in FINAL_INSTRUCTIONS
+
+
+@pytest.mark.asyncio
+async def test_a_fast_limitation_is_a_research_need_not_a_finding():
+    """MMLongBench 223: the first look said the tablet share was missing and
+    released that; research found it in the earlier run."""
+    calls = []
+    limitation = answer("The excerpt does not give the tablet share.")
+    limitation["answer_parts"][0]["answer_kind"] = "source_limitation"
+    del limitation["abstain"]
+
+    def model(messages, info):
+        properties = info.output_tools[0].parameters_json_schema["properties"]
+        if "checks" in properties:
+            calls.append("scope")
+            check = {
+                "claim_index": 0,
+                "verdict": "supported",
+                "reason": "NONE",
+                "witnesses": [{"support_id": "E1.S1", "start_line": 1, "end_line": 1}],
+            }
+            return reply(info, {"checks": [check], "material_omissions": []})
+        if "action" in properties:
+            calls.append("reader")
+            return reply(info, {"action": "answer", "answer": answer("The service uses TLS.")})
+        calls.append("answerer")
+        return reply(
+            info,
+            {"evidence_operation": "text", "answer": limitation, "missing": ["Tablet share."]},
+        )
+
+    dependencies = deps(scope_validation_enabled=True)
+    result = await run_adaptive_agent(FunctionModel(model), dependencies, fast_path=True)
+    assert calls[:2] == ["answerer", "reader"]
+    assert json.loads(result.raw)["answer_parts"][0]["text"] == "The service uses TLS."

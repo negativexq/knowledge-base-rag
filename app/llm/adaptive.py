@@ -2791,6 +2791,17 @@ async def run_adaptive_agent(
                             if any(p.counts for p in attempt.answer.answer_parts):
                                 state.needs.append("Counting requires a complete source inventory.")
                                 span.set_attribute("research.fast_path_hit", False)
+                            elif all(
+                                p.answer_kind == "source_limitation"
+                                for p in attempt.answer.answer_parts
+                            ):
+                                # A first look that only finds what is missing names
+                                # a research need; it is not a checked finding.
+                                state.needs.extend(
+                                    attempt.missing
+                                    or [p.text for p in attempt.answer.answer_parts][:5]
+                                )
+                                span.set_attribute("research.fast_path_hit", False)
                             else:
                                 candidate, receipt = await session.verify(
                                     attempt.answer.as_answer()
