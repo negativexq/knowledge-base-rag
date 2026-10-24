@@ -6581,4 +6581,15 @@ cannot run records why in the research needs.
 A scope check of an inventory answer can no longer quote a page's native
 text; it relies on the original page images it already receives.
 
+Rerun of six rows: every inventory now reaches its review (381: 3
+windows, 834: 3, 732: 4) and none stopped on a budget. None of the three
+is answered yet, for a new reason: the course summaries on pages 15–16
+repeat items already listed in their units. In 381 the checker rejected
+that window as repeated quizzes; in 834 it called the counting unit
+ambiguous. Distinct items are Quiz #1–#7 and three case studies, the gold
+answers. 732's review found pages 1, 6 and 23 possibly uninspected and
+kept coverage incomplete. 398 and 730 stay correct. 636 took a bounded
+count this time (no inventory) and published 3 against gold 2, a visual
+count outside this change; it had refused before.
+
 `make test`: 2571 passed, 4 skipped.
