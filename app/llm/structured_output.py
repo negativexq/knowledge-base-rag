@@ -702,6 +702,7 @@ def validate_support_unit_answer(
     architecture_v2_shadow_enabled: bool = False,
     question: str | None = None,
     allow_source_limitations: bool = False,
+    question_scope_reviewed: bool = False,
 ) -> SupportUnitValidation:
     available = support_unit_map(units)
     if answer.abstain:
@@ -812,11 +813,17 @@ def validate_support_unit_answer(
         "occurrence_identity_error_count": 0,
         "role_classification_error_count": 0,
     }
-    from app.evaluation.critical_roles import grounded_query_values
+    from app.evaluation.critical_roles import grounded_query_values, question_values
 
     # Question values the evidence also holds are premises the answer repeats.
-    query_values = grounded_query_values(
-        question, (unit.text for unit in units if unit.model_visible and unit.authorized)
+    # With a scope review after this check, so are values only the user's own
+    # report holds (an error code from their trace).
+    query_values = (
+        question_values(question)
+        if question_scope_reviewed
+        else grounded_query_values(
+            question, (unit.text for unit in units if unit.model_visible and unit.authorized)
+        )
     )
     for index, part in enumerate(answer.answer_parts):
         part_codes: list[str] = []
@@ -1602,6 +1609,7 @@ async def _support_unit_answer_events(
                 architecture_v2_shadow_enabled=architecture_v2_shadow_enabled,
                 question=query,
                 allow_source_limitations=bool(candidate and candidate.scope_validation_required),
+                question_scope_reviewed=bool(candidate and candidate.scope_validation_required),
             )
             check.set_attribute("validator.failure_codes", validation.failure_codes)
             outcome(check, "rejected" if validation.failure_codes else "completed")

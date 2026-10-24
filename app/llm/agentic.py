@@ -480,6 +480,7 @@ class AgentDependencies:
             shadow_enabled=self.shadow_enabled,
             architecture_v2_shadow_enabled=self.architecture_v2_shadow_enabled,
             allow_source_limitations=self.scope_validation_enabled,
+            question_scope_reviewed=self.scope_validation_enabled,
         )
 
     def check_premise(self) -> None:

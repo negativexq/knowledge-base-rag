@@ -109,3 +109,71 @@ def test_without_a_question_every_value_is_validated_as_before():
     validation = _validate("Costco's total liabilities in FY 2021 were $41,190 million.", None)
 
     assert _outcome(validation) == "REJECT"
+
+
+TRACE_QUESTION = (
+    "How to resolve the StaleConnectionException? My trace shows "
+    "java.sql.SQLException: ORA-02396: exceeded maximum idle time"
+)
+POOL_TEXT = "Set Minimum connections to 0 so idle pooled connections are not retained."
+
+
+def _validate_text(text: str, support: str, question: str, *, scope_reviewed: bool):
+    units = build_support_units(
+        [
+            SearchResult(
+                score=1.0,
+                id="chunk-1",
+                payload={
+                    "evidence_id": "E1",
+                    "evidence_block_id": "block-1",
+                    "source_id": "technote",
+                    "document_version": "v1",
+                    "tenant_id": "tenant-a",
+                    "heading_path": ["Technote"],
+                    "contributing_chunk_ids": ["chunk-1"],
+                    "text": support,
+                },
+            )
+        ]
+    )
+    answer = parse_support_unit_answer(
+        json.dumps(
+            {
+                "answer_parts": [{"text": text, "support_ids": [units[0].support_unit_id]}],
+                "abstain": False,
+            }
+        )
+    )
+    return validate_support_unit_answer(
+        answer, units, question=question, question_scope_reviewed=scope_reviewed
+    )
+
+
+def test_a_question_value_the_evidence_lacks_is_a_premise_when_scope_review_follows():
+    # TechQA Q252: the answer repeats the user's own Oracle error code, which
+    # the cited technote never prints; the pool setting is still checked.
+    text = "Your trace shows ORA-02396, so set Minimum connections to 0."
+
+    reviewed = _validate_text(text, POOL_TEXT, TRACE_QUESTION, scope_reviewed=True)
+    unreviewed = _validate_text(text, POOL_TEXT, TRACE_QUESTION, scope_reviewed=False)
+
+    assert _outcome(reviewed) == "PASS"
+    assert _outcome(unreviewed) == "REJECT"
+
+
+def test_an_answer_value_outside_the_question_is_validated_when_scope_review_follows():
+    text = "Your trace shows ORA-02396, so set Minimum connections to 5."
+
+    assert _outcome(_validate_text(text, POOL_TEXT, TRACE_QUESTION, scope_reviewed=True)) == (
+        "REJECT"
+    )
+
+
+def test_an_answer_of_only_question_values_is_validated_when_scope_review_follows():
+    question = "Were Costco's total liabilities 36,851 in FY 2019?"
+    text = "Yes, total liabilities in FY 2019 were 36,851."
+
+    validation = _validate_text(text, f"{HEADER}\n\n{ROW}", question, scope_reviewed=True)
+
+    assert _outcome(validation) != "PASS"

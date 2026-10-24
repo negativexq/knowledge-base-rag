@@ -6,7 +6,13 @@ from pydantic_ai.messages import ModelResponse, RetryPromptPart, ToolCallPart, T
 from pydantic_ai.models.function import FunctionModel
 
 from app.llm.agentic import AgentCandidate, AgentDependencies, EvidenceLedger, run_agent
-from app.llm.scope_validation import ScopeJudgment, scope_payload, validate_judgment
+from app.llm.scope_validation import (
+    ScopeJudgment,
+    claim_sentences,
+    remove_sentences,
+    scope_payload,
+    validate_judgment,
+)
 from app.llm.structured_output import stream_support_unit_answer
 from app.retrieval.hybrid_search import SearchResult
 
@@ -425,3 +431,76 @@ def test_locally_split_source_ranges_still_enforce_witness_count_limit():
     count = len(line_scope_payload(original)["claims"][0]["cited_evidence"][0]["text"])
     with pytest.raises(ValueError, match="SCOPE_CHECK_INVALID"):
         resolve_line_judgment(original, line_judgment(start_line=1, end_line=count))
+
+
+async def test_final_release_treats_question_values_as_premises_after_scope_review():
+    # TechQA Q252: the reviewed answer repeats the user's Oracle error code,
+    # which the cited technote never prints.
+    question = "How to fix it? My trace shows ORA-02396: exceeded maximum idle time"
+    text = "Set Minimum connections to 0."
+    answer = raw("Your trace shows ORA-02396, so set Minimum connections to 0.")
+    units = ledger(text).units
+    receipt = validate_judgment(
+        scope_payload(question, answer, units), ScopeJudgment.model_validate(judgment(quote=text))
+    )
+    candidate = AgentCandidate(
+        answer, [block(text)], scope_validation_required=True, scope_receipt=receipt
+    )
+
+    async def generate(*_):
+        return candidate
+
+    events = [
+        e
+        async for e in stream_support_unit_answer(
+            question, [], None, model="fake", candidate_generator=generate
+        )
+    ]
+    security = next(e for e in events if e["type"] == "security_validation")
+    assert not security["application_forced_abstention"], security["validator_failure_codes"]
+    assert "Minimum connections" in "".join(e["content"] for e in events if e["type"] == "token")
+
+
+def test_claim_sentences_split_prose_but_never_code():
+    text = (
+        "Query LONGDESCRIPTION instead. For example:\n\n```sql\nSELECT LDTEXT. FROM X;\n```\n\n"
+        "Version 7.0.1.13 fixed it! Check `a. b` too?"
+    )
+    sentences = claim_sentences(text)
+    assert sentences == [
+        "Query LONGDESCRIPTION instead.",
+        "For example:\n\n```sql\nSELECT LDTEXT. FROM X;\n```",
+        "Version 7.0.1.13 fixed it!",
+        "Check `a. b` too?",
+    ]
+
+
+def sentence_judgment(removed, verdict="supported"):
+    data = judgment(verdict=verdict)
+    data["checks"][0]["removed_sentences"] = removed
+    return ScopeJudgment.model_validate(data)
+
+
+TWO_SENTENCES = raw("The backup service uses TLS. The primary service also uses TLS.")
+
+
+def test_a_removed_sentence_is_dropped_only_where_the_caller_applies_removal():
+    units = ledger().units
+    payload = scope_payload("Protocol?", TWO_SENTENCES, units)
+
+    unapplied = validate_judgment(payload, sentence_judgment([2]))
+    applied = validate_judgment(payload, sentence_judgment([2]), allow_sentence_removal=True)
+
+    assert unapplied.failure_codes and unapplied.rejected_claims == (0,)
+    assert not applied.failure_codes
+    reduced = remove_sentences(TWO_SENTENCES, sentence_judgment([2]))
+    assert json.loads(reduced)["answer_parts"][0]["text"] == "The backup service uses TLS."
+
+
+@pytest.mark.parametrize("removed", [[1, 2], [3], [0]])
+def test_removing_every_sentence_or_an_unknown_one_fails_closed(removed):
+    payload = scope_payload("Protocol?", TWO_SENTENCES, ledger().units)
+
+    receipt = validate_judgment(payload, sentence_judgment(removed), allow_sentence_removal=True)
+
+    assert receipt.failure_codes

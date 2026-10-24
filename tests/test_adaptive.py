@@ -1202,3 +1202,57 @@ def test_ranked_document_search_ignores_unmatched_qualifiers_but_keeps_complete_
         [*noise, target], "FY2021 operating margin, dollars in millions"
     )
     assert ranked[0].id == "target" and ranked[0].payload["text"] == target.payload["text"]
+
+
+@pytest.mark.asyncio
+async def test_an_answer_rejected_three_times_for_one_reason_on_the_same_evidence_stops():
+    # TechQA Q252: the reader re-sent reworded drafts of one answer, and each
+    # drew the same objection, until the request budget ran out.
+    calls = []
+
+    def model(messages, info):
+        properties = info.output_tools[0].parameters_json_schema["properties"]
+        if "checks" in properties:
+            calls.append("scope")
+            check = {"claim_index": 0, "verdict": "mismatch", "reason": "ENTITY_MISMATCH"}
+            return reply(info, {"checks": [{**check, "witnesses": []}]})
+        if "action" in properties:
+            calls.append("reader")
+            return reply(info, {"action": "answer", "answer": answer()})
+        calls.append("final")
+        return reply(info, {"abstain": True, "answer_parts": []})
+
+    result = await run_adaptive_agent(
+        FunctionModel(model), deps(scope_validation_enabled=True), max_requests=10
+    )
+    assert result.telemetry["research_stop"] == "REPEATED_ANSWER_REJECTION"
+    assert calls.count("reader") == 3
+
+
+@pytest.mark.asyncio
+async def test_a_sentence_the_scope_check_removes_is_dropped_from_the_released_answer():
+    # TechQA Q112: one overreaching sentence used to reject the whole answer.
+    text = "The service uses TLS. The same cause also breaks the export command."
+
+    def model(messages, info):
+        properties = info.output_tools[0].parameters_json_schema["properties"]
+        if "checks" in properties:
+            sentences = payload(messages)["claims"][0]["claim_sentences"]
+            assert [s["sentence"] for s in sentences] == [1, 2]
+            check = {
+                "claim_index": 0,
+                "verdict": "supported",
+                "reason": "NONE",
+                "witnesses": [{"support_id": "E1.S1", "start_line": 1, "end_line": 1}],
+                "removed_sentences": [2],
+            }
+            return reply(info, {"checks": [check], "material_omissions": []})
+        if "action" in properties:
+            return reply(info, {"action": "answer", "answer": answer(text)})
+        return reply(info, {"evidence_operation": "text", "answer": answer(text), "missing": []})
+
+    dependencies = deps(scope_validation_enabled=True)
+    result = await run_adaptive_agent(FunctionModel(model), dependencies, fast_path=True)
+    assert result.failure_code is None
+    assert json.loads(result.raw)["answer_parts"][0]["text"] == "The service uses TLS."
+    assert result.scope_receipt.accepts(dependencies.question, result.raw, dependencies.ledger.units)

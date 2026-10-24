@@ -6333,3 +6333,40 @@ disagreement was a false rejection at low, so medium stays the default
 (`artifacts/mmlongbench-v2/scope-check-reasoning-20261023/REPORT.md`).
 
 `make test`: 2539 passed, 4 skipped.
+
+### Adaptive validation on technical support questions (2026-10-24)
+
+On ten TechQA questions the adaptive path answered three: the validators
+treated the user's own report as claims the manuals had to prove. Five
+changes, each with tests:
+
+- The value check treats every question value as a premise when a scope
+  review follows it (the release check too), so an error code from the
+  user's trace (`ORA-02396`, an OID) no longer conflicts. Without scope
+  review the old rule stands: only question values the evidence holds.
+  Offline on recorded drafts this changed 0 of 367 MMLongBench parts and
+  29 of 272 TechQA parts, all Q252/Q126 rejections that became passes.
+- A third rejection for the same reason on the same evidence ends the
+  reader loop (`REPEATED_ANSWER_REJECTION`). Two would have cut one
+  recorded MMLongBench answer that passed on its second retry (639).
+- A question requirement may be `user_context`: the user's configuration,
+  output or attempts, which no source can establish. It conditions the
+  answer instead of blocking it; metric, period, unit and population
+  requirements cannot take it.
+- Scope is judged sentence by sentence. A check lists unsupported
+  sentences in `removed_sentences`; the adaptive path releases the claim
+  without them under a receipt for the reduced answer. Code blocks are not
+  split. Other callers still reject such a claim.
+- A source that documents an error pattern with example values applies to
+  the user's report of the same pattern with their own values (a missing
+  `CLEAR_LWY` tool in the manual, `Close` in the user's output).
+
+Measured: TechQA 10 with the first three changes answered 4 (from 3;
+Q126 and Q275 gained, Q206 lost) on 17% fewer input tokens. Replaying the
+12 Q112/Q206/Q252 scope calls from that run passed 0 as recorded, 3 with
+sentence-level scope and 7 with the pattern rule. On 12 MMLongBench rows
+from the 21 October baseline: no wrong answers, both safe refusals kept,
+507 and 223 now correct, 831 drops one of four activity groups; 65
+requests vs 69. TechQA has not been rerun on the final code.
+
+`make test`: 2552 passed, 4 skipped.

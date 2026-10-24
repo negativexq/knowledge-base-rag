@@ -198,6 +198,22 @@ def test_source_relationship_needs_a_positive_entity_bridge_not_generated_proof_
     ]
 
 
+def test_the_users_own_situation_is_a_condition_not_a_source_requirement():
+    # TechQA Q112/Q275: the user's error output and own sheet name cannot be
+    # found in any manual; they condition the answer instead of blocking it.
+    context = judgment(verdict="user_context", binding_basis="unestablished", witnesses=[])
+    for dimension in ("condition", "entity"):
+        reqs = [dict(dimension=dimension, question_quote="Westhaven")]
+        assert not validate_requirements(binding_payload("North District"), reqs, context, set())
+    # What the question asks for (its period, unit, metric, population) stays
+    # a requirement the source must establish.
+    for dimension in ("period", "unit", "metric", "population"):
+        reqs = [dict(dimension=dimension, question_quote="Westhaven")]
+        assert "SCOPE_REQUIREMENT_UNRESOLVED" in validate_requirements(
+            binding_payload("North District"), reqs, context, set()
+        )
+
+
 def test_leading_named_target_must_satisfy_question_range_without_constraining_computed_numbers():
     def claims(text):
         return [dict(claim=dict(text=text))]

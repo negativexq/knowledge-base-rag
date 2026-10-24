@@ -181,14 +181,23 @@ def _is_rejected_premise(
     )
 
 
+def question_values(question: str | None) -> frozenset[QueryValue]:
+    """Every value the question states. They are premises an answer repeats
+    when an independent scope review checks the answer's question binding
+    (a period the evidence lacks is a scope mismatch there)."""
+    if not question:
+        return frozenset()
+    return frozenset(
+        (o.normalized_value, o.lexical_type) for o in extract_critical_occurrences(question)
+    )
+
+
 def grounded_query_values(
     question: str | None, evidence_texts: Iterable[str]
 ) -> frozenset[QueryValue]:
     """Values the question states that the evidence also holds ("FY 2021",
     "65+"): premises an answer repeats, not values it claims."""
-    if not question:
-        return frozenset()
-    asked = {(o.normalized_value, o.lexical_type) for o in extract_critical_occurrences(question)}
+    asked = question_values(question)
     if not asked:
         return frozenset()
     held = {
