@@ -6454,3 +6454,35 @@ Without the six unusable references: 21 of 44 correct, 6 partly.
 
 MMLongBench 120: 88 by the matcher, 93 after the five scorer errors in the
 audit (368, 1027, 365, 730, 475); 2 wrong answers released (658, 831).
+
+### Three false alarms on checked quantities (2026-10-24)
+
+The audit scorer read `terminal_kind` instead of `response_kind` and
+compared "Not answerable or 0 or none" literally; corrected, the 24 October
+run scores 90 by the matcher (365, 730, 475 now count), 91 with 372 from
+the checkpoint rerun. 368 and 1027 stay matcher misses graded correct by
+hand; the matcher is not loosened for them.
+
+Three accepted quantities were then discarded by deterministic checks,
+each fixed with a test:
+
+- 380: amounts read from page images in lacs were checked with their
+  source scale, but the factor 100000 needed a literal witness and the
+  difference failed as `CALCULATION_OPERAND_UNSUPPORTED`. For image inputs
+  the reviewed conversion's source factors now support themselves.
+- 515: the fifth video starts at the bottom of page 1 and is numbered 1 on
+  page 2. It resolved to page 1 and collided with the first video as a
+  duplicate occurrence. An occurrence is now its page, the images it was
+  read from and its position.
+- 212: lookup records were left out of the scope projection, so the
+  scope check saw only the generated proof and could not ground the
+  question's population on the original page. Lookups are now projected
+  with their choices and source ids.
+
+Replaying the recorded drafts: 515 now executes to 5 and 380's
+calculation verifies at 8,367,277,000, both the gold answers. 212 needs a
+new scope call and is not measured. 658 is a misread merged table cell
+that the checker accepted; no code change, it joins the visual-reading
+losses.
+
+`make test`: 2563 passed, 4 skipped.

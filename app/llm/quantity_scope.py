@@ -33,6 +33,9 @@ derived headcount. A combined subgroup base cannot establish a constituent subgr
 count. Approximate wording does not repair a missing or incompatible base. Evaluate
 the source's actual described metric, not a hypothetical finer distinction absent
 from both the question's intent and the source's measurement.
+For lookup, the application picks the choice whose score_expression is the select_mode
+extreme and publishes that choice's value_operand; check that each choice's score inputs
+and output value bind the question's entity, population and period.
 For arithmetic with input_authority=independently_checked_original_images, image_bindings
 identify the original document/version/pages already reviewed. Check the formula and
 the inputs' entity, period and unit relationships. Missing indexed/OCR text alone is
@@ -229,7 +232,7 @@ def semantic_scope_projection(
         actual = claim["claim"]
         for record in records:
             if (
-                record.draft.mode not in {"arithmetic", "count", "list", "read"}
+                record.draft.mode not in {"arithmetic", "count", "list", "lookup", "read"}
                 or record.execution_status != "completed"
             ):
                 continue
@@ -260,6 +263,23 @@ def semantic_scope_projection(
                     "output_decimals": record.draft.output_decimals,
                     "source_support_ids": record.support_ids,
                     "context_support_ids": record.context_support_ids,
+                    "input_authority": "independently_checked_original_images"
+                    if record.modality == "image"
+                    else "independently_checked_source_text",
+                    "image_bindings": [b.model_dump() for b in record.image_bindings],
+                }
+            elif record.draft.mode == "lookup":
+                checked = semantic_draft(record.draft)
+                operation = {
+                    "claim_index": claim["claim_index"],
+                    "record_id": record.id,
+                    "operation": "lookup",
+                    "select_mode": record.draft.select_mode,
+                    "checked_inputs": checked["operands"],
+                    "choices": checked["choices"],
+                    "source_support_ids": record.support_ids,
+                    "context_support_ids": record.context_support_ids,
+                    "execution_authority": "application_lookup",
                     "input_authority": "independently_checked_original_images"
                     if record.modality == "image"
                     else "independently_checked_source_text",

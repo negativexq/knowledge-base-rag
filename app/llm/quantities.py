@@ -418,6 +418,12 @@ def execute_lookup(draft: QuantityDraft) -> tuple[list[str], str]:
     ], ""
 
 
+def occurrence(item: QuantityItem) -> tuple[int | None, tuple[str, ...], int]:
+    """Where an item is printed: its page and the images it was read from. An
+    item continuing onto the next page is numbered there, not on its first."""
+    return (item.page, tuple(item.image_ids), item.position)
+
+
 def execute(draft: QuantityDraft) -> tuple[list[str], str]:
     """No model-written results or arbitrary code; named inputs expand to decimals."""
     if not draft.complete:
@@ -463,7 +469,7 @@ def execute(draft: QuantityDraft) -> tuple[list[str], str]:
             )
         ), ""
     if draft.mode == "list":
-        locations = [(i.page, i.position) for i in draft.items]
+        locations = [occurrence(i) for i in draft.items]
         if len(locations) != len(set(locations)):
             raise ValueError("QUANTITY_DUPLICATE_SOURCE_OCCURRENCE")
         values = [i.text for i in draft.items]
@@ -479,7 +485,7 @@ def execute(draft: QuantityDraft) -> tuple[list[str], str]:
         if any(not g.complete for g in draft.groups):
             raise ValueError("QUANTITY_GROUP_INCOMPLETE")
         for group in draft.groups:
-            locations = [(i.page, i.position) for i in group.items]
+            locations = [occurrence(i) for i in group.items]
             if len(locations) != len(set(locations)):
                 raise ValueError("QUANTITY_DUPLICATE_SOURCE_OCCURRENCE")
         counts = [len(g.items) for g in draft.groups]
@@ -1835,6 +1841,12 @@ async def collect(
             # Only the independently reviewed target unit supplies its conversion
             # factor; source numeric displays still require literal witnesses.
             texts = [*texts, f"Requested output in {draft.result_unit}"]
+            if images:
+                # The checker verified each image's source scale against the
+                # page it read; a witness transcribes values, not unit headers.
+                texts.append(
+                    " ".join(record.arithmetic_conversion.source_factors.values())
+                )
         failures = verify_calculation(Calculation(expression, values[0]), texts, values[0])
         if failures:
             record = record.model_copy(

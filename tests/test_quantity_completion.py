@@ -464,3 +464,37 @@ def test_new_window_cannot_drop_a_checked_prerequisite_outside_its_limit():
         candidate_support_ids=["E3.S1"],
     )
     assert bind_gap_source(active, parent, selection, gap) is selection
+
+
+def test_a_checked_lookup_reaches_scope_review_with_its_original_sources():
+    # MMLongBench 212: an accepted image lookup was left out of the projection,
+    # so the scope check saw only the generated proof and could not ground the
+    # question's population in the original page.
+    from app.llm.quantities import candidate
+    from app.llm.quantity_scope import semantic_scope_projection
+    from app.llm.quantity_state import QuantityCheck
+    from app.llm.scope_validation import scope_payload
+
+    active, _ = active_session("a_one 20; a_two 30; a_output 80; b_one 25; b_two 35; b_output 70")
+    draft = lookup()
+    values, expression = execute(draft)
+    record = missing_record().model_copy(
+        update={
+            "id": "lookup",
+            "draft": draft,
+            "assessments": [],
+            "check": QuantityCheck(accepted=True, complete=True, reason="supported"),
+            "execution_status": "completed",
+            "values": values,
+            "expression": expression,
+        }
+    )
+    answer = candidate(record)
+    payload = scope_payload(
+        active.state.task.question, answer.raw_answer(), active.deps.ledger.units
+    )
+    projected, verified = semantic_scope_projection(payload, [record])
+    assert verified == ["lookup"]
+    operation = projected["verified_operations"][0]
+    assert operation["operation"] == "lookup" and operation["source_support_ids"] == ["E1.S1"]
+    assert [c["label"] for c in operation["choices"]] == ["A", "B"]
