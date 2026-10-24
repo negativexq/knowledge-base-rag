@@ -6490,3 +6490,19 @@ that the checker accepted; no code change, it joins the visual-reading
 losses.
 
 `make test`: 2563 passed, 4 skipped.
+
+### Lookup proof states the published value (2026-10-24)
+
+MMLongBench 212 still refused after the lookup projection: the accepted
+image lookup published "92 %", but its proof listed only the bare result,
+so the critical-value check found no support tied to the answer and
+returned `CRITICAL_VALUE_INDETERMINATE` before any scope check. A read
+already listed its published values; a lookup now lists its chosen value
+with that value's unit.
+
+Rerun of 212: answers 92 % (gold 92%) on 6 requests vs 9. The scope check
+received the lookup as a verified operation with both original page
+images and bound every requirement to original text or image witnesses,
+so the projection change from the previous fix is now exercised too.
+
+`make test`: 2564 passed, 4 skipped.
