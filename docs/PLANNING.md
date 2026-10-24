@@ -6386,3 +6386,71 @@ rerun on the five rows whose fast path returned one: 223 answers
 Q018 still refuses (36 requests).
 
 `make test`: 2556 passed, 4 skipped.
+
+### Unproven entity or condition and repeated rejections (2026-10-24)
+
+A joint audit of TechQA 50 and MMLongBench 120 on `b25ba69` found 17
+correct or partly correct drafts lost at the final check. The most common
+cause was one quoted entity or condition left `unknown` while every claim
+was judged supported: `SCOPE_REQUIREMENT_UNRESOLVED` rejected the whole
+answer (TechQA Q267, Q275, Q186, Q047). The reader then re-sent reworded
+drafts citing the same unit over unchanged evidence, and each spent a
+scope check on the same rejection (Q008, Q149, Q275: four checks each).
+
+Two changes, each with tests:
+
+- An `unknown` entity or condition binding no longer rejects positive
+  claims the same check supported with reason `NONE`. The answer gets a
+  `source_limitation` part saying the cited sources do not establish that
+  it applies to the quoted restriction. Metric, period, unit and
+  population stay strict, `mismatch` still rejects, and a claim made only
+  of limitations or a judgment carrying a source disposition is not
+  released this way.
+- In the research loop, a draft citing the same units over the same
+  evidence as an already rejected draft is not checked again. The reader
+  gets the earlier reason and is told to acquire different evidence or
+  stop; the third same-reason rejection still ends research.
+
+Replaying the new requirement gate over every recorded scope judgment of
+both runs changes 7 of them, all to release: TechQA Q047, Q186 (first
+check), Q267, Q275 (from its first check) and MMLongBench 833, which
+would pass on its first check with the answer it was scored correct on.
+No recorded judgment releases a wrong answer.
+
+Measured on the 9 affected questions (TechQA 6, MMLongBench 3), all of
+which had been refused or lost at the check on 24 October: TechQA Q275 and
+Q186 now answer correctly, Q149 and Q047 partly, and Q008 and Q267 still
+refuse. Q267 never drafted this time: the reader searched four times for
+an exact license entitlement. In Q008 the unchanged-draft skip fired once
+before the request reserve closed research. The scope note was added in
+Q275, Q186 and Q047. MMLongBench 372 is now correct (5 of 5 directors,
+5 requests vs 10), 833 stays correct on 3 requests vs 5, and 214 still
+refuses. Requests fell from 81 to 52 on the 9 questions, with no wrong
+answer released. Nine questions are within run variance for any one row.
+
+`make test`: 2560 passed, 4 skipped.
+
+### Checkpoint (2026-10-24)
+
+Scored from the 24 October full runs plus the 9-question rerun on this
+branch; the other questions were not rerun on the final code.
+
+TechQA 50 keeps all 50 questions in the denominator. A refusal counts as
+correct where RAGBench's reference itself says the context does not
+answer (Q181, Q044, Q297). Six references that do not answer their own
+question (Q085, Q237, Q172, Q251, Q157, Q238) are reported apart, never
+dropped silently.
+
+| TechQA 50 | Count |
+|---|---|
+| Correct (18 answered, 3 correct refusals) | 21 |
+| Partly correct | 6 |
+| Reference unusable | 6 |
+| Answer not in the reranked top 5 | 10 |
+| Refused with evidence visible (Q008, Q267, Q205, Q239, Q018, Q173, Q246) | 7 |
+| Wrong answer released | 0 |
+
+Without the six unusable references: 21 of 44 correct, 6 partly.
+
+MMLongBench 120: 88 by the matcher, 93 after the five scorer errors in the
+audit (368, 1027, 365, 730, 475); 2 wrong answers released (658, 831).

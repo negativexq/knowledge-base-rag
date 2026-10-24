@@ -1230,6 +1230,35 @@ async def test_an_answer_rejected_three_times_for_one_reason_on_the_same_evidenc
 
 
 @pytest.mark.asyncio
+async def test_a_rejected_answer_from_unchanged_sources_is_not_sent_to_the_scope_check_again():
+    # TechQA Q008/Q149/Q275: reworded drafts citing the same unit over the same
+    # evidence each spent a scope check and drew the same rejection.
+    calls = []
+    drafts = iter(["First wording.", "Second wording.", "Third wording."])
+
+    def model(messages, info):
+        properties = info.output_tools[0].parameters_json_schema["properties"]
+        if "checks" in properties:
+            calls.append("scope")
+            check = {"claim_index": 0, "verdict": "mismatch", "reason": "ENTITY_MISMATCH"}
+            return reply(info, {"checks": [{**check, "witnesses": []}]})
+        if "action" in properties:
+            calls.append("reader")
+            contexts.append(json.dumps(payload(messages)))
+            return reply(info, {"action": "answer", "answer": answer(next(drafts))})
+        calls.append("final")
+        return reply(info, {"abstain": True, "answer_parts": []})
+
+    contexts = []
+    result = await run_adaptive_agent(
+        FunctionModel(model), deps(scope_validation_enabled=True), max_requests=10
+    )
+    assert result.telemetry["research_stop"] == "REPEATED_ANSWER_REJECTION"
+    assert calls.count("reader") == 3 and calls.count("scope") == 1
+    assert "not checked again" not in contexts[1] and "not checked again" in contexts[2]
+
+
+@pytest.mark.asyncio
 async def test_a_sentence_the_scope_check_removes_is_dropped_from_the_released_answer():
     # TechQA Q112: one overreaching sentence used to reject the whole answer.
     text = "The service uses TLS. The same cause also breaks the export command."

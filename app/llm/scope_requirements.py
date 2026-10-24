@@ -99,6 +99,7 @@ def validate_requirements(
     source_images: list[dict[str, Any]] | None = None,
     *,
     diagnostics: dict[str, int] | None = None,
+    scoped: list[dict[str, Any]] | None = None,
 ) -> list[str]:
     images = {image["image_id"]: image for image in source_images or []}
     bindings = {b.requirement_index: b for b in judgment.requirement_bindings}
@@ -130,6 +131,31 @@ def validate_requirements(
                 for c in limited_claims
             )
         )
+        # An entity or condition the source neither confirms nor contradicts
+        # qualifies claims the same check supported; it does not erase them.
+        # The answer states that scope instead. An absence claim or negative
+        # finding is not established by it, and what is asked for must still
+        # be sourced.
+        if (
+            binding.verdict == "unknown"
+            and requirement["dimension"] in {"entity", "condition"}
+            and judgment.source_disposition is None
+            and any(c["claim"].get("answer_kind") != "source_limitation" for c in limited_claims)
+            and all(
+                c["claim_index"] in primary
+                and primary[c["claim_index"]].verdict == "supported"
+                and primary[c["claim_index"]].reason == "NONE"
+                for c in limited_claims
+            )
+        ):
+            if scoped is not None:
+                scoped.append(
+                    dict(
+                        question_quote=requirement["question_quote"],
+                        claim_indexes=[c["claim_index"] for c in limited_claims],
+                    )
+                )
+            continue
         if (
             binding.verdict != "supported" and not verified_contrast
         ) or binding.binding_basis == "unestablished":

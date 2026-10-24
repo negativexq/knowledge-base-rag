@@ -181,21 +181,84 @@ def judgment(**changes):
 def test_source_relationship_needs_a_positive_entity_bridge_not_generated_proof_text():
     reqs = [dict(dimension="entity", question_quote="Westhaven")]
     assert not validate_requirements(binding_payload(), reqs, judgment(), set())
-    # An absent relationship is a semantic unknown/mismatch, not a failed
-    # capitalization match. Neither verdict can release a positive answer.
-    for verdict in ("unknown", "mismatch"):
-        assert "SCOPE_REQUIREMENT_UNRESOLVED" in validate_requirements(
-            binding_payload("North District"), reqs, judgment(verdict=verdict), set()
-        )
+    # A contradicted relationship is a semantic mismatch, not a failed
+    # capitalization match. It cannot release a positive answer.
+    assert "SCOPE_REQUIREMENT_UNRESOLVED" in validate_requirements(
+        binding_payload("North District"), reqs, judgment(verdict="mismatch"), set()
+    )
     assert "SCOPE_NAMED_ENTITY_RELATION_UNGROUNDED" in validate_requirements(
         binding_payload(), reqs, judgment(), {"E1.S1"}
     )
-    for changes in [dict(witnesses=[]), dict(claim_indexes=[2]), dict(verdict="unknown")]:
+    for changes in [dict(witnesses=[]), dict(claim_indexes=[2])]:
         assert validate_requirements(binding_payload(), reqs, judgment(**changes), set())
     empty = judgment().model_copy(update={"requirement_bindings": []})
     assert validate_requirements(binding_payload(), reqs, empty, set()) == [
         "SCOPE_REQUIREMENT_COVERAGE_INVALID"
     ]
+
+
+def test_unproven_entity_or_condition_releases_a_supported_claim_with_its_scope_stated():
+    # TechQA Q267/Q275 and MMLongBench 214: every claim was judged supported,
+    # but one quoted restriction stayed unknown and the whole answer was lost.
+    unknown = judgment(verdict="unknown", binding_basis="unestablished", witnesses=[])
+    for dimension in ("entity", "condition"):
+        reqs = [dict(dimension=dimension, question_quote="Westhaven")]
+        scoped: list = []
+        assert not validate_requirements(
+            binding_payload("North District"), reqs, unknown, set(), scoped=scoped
+        )
+        assert scoped == [dict(question_quote="Westhaven", claim_indexes=[0])]
+    # What the question asks for still has to be established by the source.
+    for dimension in ("period", "unit", "metric", "population"):
+        reqs = [dict(dimension=dimension, question_quote="Westhaven")]
+        scoped = []
+        assert "SCOPE_REQUIREMENT_UNRESOLVED" in validate_requirements(
+            binding_payload("North District"), reqs, unknown, set(), scoped=scoped
+        )
+        assert not scoped
+    reqs = [dict(dimension="entity", question_quote="Westhaven")]
+    # The scope note only qualifies positive claims the same check supported;
+    # it never rescues a rejected claim, an absence claim or a negative finding.
+    rejected = RequiredScopeJudgment.model_validate(
+        {
+            **unknown.model_dump(),
+            "checks": [dict(claim_index=0, verdict="insufficient", reason="SCOPE_NOT_ESTABLISHED")],
+        }
+    )
+    finding = RequiredScopeJudgment.model_validate(
+        {
+            **unknown.model_dump(),
+            "source_disposition": dict(
+                proposal=dict(
+                    kind="not_reported_in_scope",
+                    question_quote="Westhaven",
+                    requested="Westhaven district",
+                    source_object="district list",
+                    scope="bounded_object",
+                    witnesses=[dict(support_id="E1.S1", start_line=1, end_line=1)],
+                    boundaries=[dict(support_id="E1.S1", start_line=1, end_line=1)],
+                ),
+                judgment=dict(
+                    question_binding="supported",
+                    object_identity="supported",
+                    scope_complete=False,
+                    alternatives_excluded=False,
+                ),
+            ),
+        }
+    )
+    limitation = binding_payload("North District")
+    limitation["claims"][0]["claim"]["answer_kind"] = "source_limitation"
+    for data, blocked in [
+        (binding_payload("North District"), rejected),
+        (binding_payload("North District"), finding),
+        (limitation, unknown),
+    ]:
+        scoped = []
+        assert "SCOPE_REQUIREMENT_UNRESOLVED" in validate_requirements(
+            data, reqs, blocked, set(), scoped=scoped
+        )
+        assert not scoped
 
 
 def test_the_users_own_situation_is_a_condition_not_a_source_requirement():
@@ -275,6 +338,9 @@ def test_original_image_authority_is_independent_of_optional_ocr_locator(case):
     )
     if case == "valid_image":
         assert not errors and diagnostics == {"ignored_optional_text_witnesses": 1}
+    elif case == "unknown_verdict":
+        # An unproven condition on a supported claim is stated, not dropped.
+        assert not errors and not diagnostics
     else:
         assert errors
         assert not diagnostics
