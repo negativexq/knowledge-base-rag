@@ -6480,8 +6480,12 @@ each fixed with a test:
   with their choices and source ids.
 
 Replaying the recorded drafts: 515 now executes to 5 and 380's
-calculation verifies at 8,367,277,000, both the gold answers. 212 needs a
-new scope call and is not measured. 658 is a misread merged table cell
+calculation verifies at 8,367,277,000, both the gold answers. Rerun end to
+end: 380 answers 8,367,277,000 (6 requests vs 9) and 515 answers 5 (5 vs
+9). 212 still refuses: the lookup's own answer failed
+`CRITICAL_VALUE_INDETERMINATE` before any scope check, so the projection
+was never exercised; the reader's rewrites then missed the projection.
+That gate is a separate follow-up. 658 is a misread merged table cell
 that the checker accepted; no code change, it joins the visual-reading
 losses.
 
