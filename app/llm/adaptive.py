@@ -179,8 +179,10 @@ FINAL_INSTRUCTIONS = """Produce a concise answer to the original question using 
 supplied evidence and application computation results. Cite authorized support IDs.
 Preserve approximate versus exact status. For a numerical request unsupported by the
 cited material, use answer_kind=source_limitation to explain its specific missing or
-incompatible input and retain useful supported facts. Do not attach a calculation to
-a limitation, import a denominator, or infer whole-document absence from a bounded view.
+incompatible input and retain useful supported context; a supported fact, cause or step
+that itself answers part of the question goes in its own answer part. Do not attach a
+calculation to a limitation, import a denominator, or infer whole-document absence from
+a bounded view.
 Name the cited table/excerpt's limitation rather than implying the entire document
 was exhausted. If the remaining issue is the user's intended category, return a
 focused clarification instead of guessing or searching again for already checked inputs.

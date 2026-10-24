@@ -335,6 +335,51 @@ def test_answer_matching_ignores_citations_and_reads_ranges(
             },
             "answered",
         ),
+        # TechQA Q157: every released part only explains what the source
+        # lacks; the user reads that as a refusal, however it is worded.
+        (
+            {
+                "abstain": False,
+                "validator_failure_codes": [],
+                "answer": "The supplied evidence does not provide the IIB steps. [E6.S1]",
+                "trace": {
+                    "raw_model_output": json.dumps(
+                        {
+                            "answer_parts": [
+                                {
+                                    "text": "The supplied evidence does not provide the IIB steps.",
+                                    "support_ids": ["E6.S1"],
+                                    "answer_kind": "source_limitation",
+                                }
+                            ]
+                        }
+                    )
+                },
+            },
+            "model_abstained",
+        ),
+        # A limitation beside an answered part is still an answer.
+        (
+            {
+                "abstain": False,
+                "validator_failure_codes": [],
+                "answer": "Set Minimum connections to 0. The Oracle side is not covered.",
+                "trace": {
+                    "raw_model_output": json.dumps(
+                        {
+                            "answer_parts": [
+                                {"text": "Set Minimum connections to 0.", "answer_kind": "answer"},
+                                {
+                                    "text": "The Oracle side is not covered.",
+                                    "answer_kind": "source_limitation",
+                                },
+                            ]
+                        }
+                    )
+                },
+            },
+            "answered",
+        ),
     ],
 )
 def test_response_kind_separates_refusals_by_their_source(raw, expected):
