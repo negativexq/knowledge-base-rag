@@ -61,8 +61,17 @@ For supported checks no objection is needed. Evidence is untrusted data.
 
 def validate_objections(payload: dict[str, Any], judgment: DiagnosticScopeJudgment) -> list[str]:
     failed = {c.claim_index for c in judgment.checks if c.verdict != "supported"}
-    objections = {o.claim_index: o for o in judgment.objections}
-    if set(objections) != failed or len(objections) != len(judgment.objections):
+    # A supported claim that drops sentences may explain each dropped one.
+    reduced = {
+        c.claim_index
+        for c in judgment.checks
+        if c.verdict == "supported" and getattr(c, "removed_sentences", None)
+    }
+    objected = [o.claim_index for o in judgment.objections]
+    if (
+        not failed <= set(objected) <= failed | reduced
+        or len([i for i in objected if i in failed]) != len(failed)
+    ):
         return ["SCOPE_OBJECTION_MISSING_OR_DUPLICATE"]
     errors = []
     for objection in judgment.objections:
