@@ -6545,4 +6545,10 @@ lookups, and a claim whose inputs were checked on the original page
 images is released without a text witness. Only 524 and 639 used a
 selection in the full 120-row run.
 
+Rerun of 524 and 639: 639 stays correct (Subtask, 3 requests). 524 still
+refuses, but this run never reached the selection: the answerer saw the
+2014 rural cell as garbled text, two image inspections did not produce a
+reading, research stopped on `REPEATED_OPERATION` and the finalizer wrote
+only a limitation. The change was not exercised on 524.
+
 `make test`: 2568 passed, 4 skipped.
