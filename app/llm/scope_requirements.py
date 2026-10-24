@@ -20,7 +20,7 @@ class ImageRequirementWitness(BaseModel):
 class RequirementBinding(BaseModel):
     model_config = ConfigDict(extra="forbid")
     requirement_index: int = Field(ge=0, description="Zero-based index in question_requirements")
-    verdict: Literal["supported", "mismatch", "unknown"]
+    verdict: Literal["supported", "mismatch", "unknown", "user_context"]
     binding_basis: Literal[
         "explicit", "linguistic_equivalence", "source_relationship", "unestablished"
     ]
@@ -59,6 +59,12 @@ matching color, location or range. Image witnesses must apply to the listed clai
 If a port/range, object location, category or inventory scope conflicts, do not approve
 the answer because a different part of the question was satisfied. Missing evidence
 is unknown, not mismatch or verified absence. This adds no answer-writing stage.
+Return user_context, with binding_basis unestablished and no witnesses, when the
+quote reports the user's own situation (their configuration, screen or file names,
+error output, or what they tried) rather than restricting which source fact is
+requested. No source can establish it; the answer must not claim the source does.
+A restriction on the requested entity, period, unit, metric or population is never
+user_context.
 For a source-backed explanation rather than a positive requested value, you may
 return source_disposition with independently checked object identity, question
 binding, witnesses and complete boundaries. Do not require an absent target to
@@ -103,6 +109,12 @@ def validate_requirements(
     errors = []
     for index, requirement in enumerate(requirements):
         binding = bindings[index]
+        if binding.verdict == "user_context":
+            # The user's own setup, output or attempts cannot be source-verified;
+            # the answer may only condition on them. What is asked for cannot.
+            if requirement["dimension"] in {"metric", "period", "unit", "population"}:
+                errors.append("SCOPE_REQUIREMENT_UNRESOLVED")
+            continue
         limited_claims = [
             c for c in payload["claims"] if c["claim_index"] in binding.claim_indexes
         ]

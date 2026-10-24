@@ -119,7 +119,9 @@ from app.llm.scope_validation import (
     LineScopeJudgment,
     ScopeJudgment,
     ScopeReceipt,
+    fingerprint,
     line_scope_payload,
+    remove_sentences,
     resolve_line_judgment,
     scope_payload,
     validate_judgment,
@@ -2198,7 +2200,7 @@ class AdaptiveSession:
                     research=False,
                     images=scope_images or None,
                 )
-            receipt = validate_judgment(payload, checked)
+            receipt = validate_judgment(payload, checked, allow_sentence_removal=True)
             if range_conflicts(self.deps.question, payload["claims"]):
                 requirement_errors.append("SCOPE_REQUEST_RANGE_MISMATCH")
             if requirement_errors:
@@ -2243,6 +2245,28 @@ class AdaptiveSession:
                         list(receipt.failure_codes),
                     )
                 raise ValueError(";".join(receipt.failure_codes))
+            removed = sum(len(c.removed_sentences) for c in checked.checks)
+            if removed:
+                # A sentence the check found unsupported is dropped, not rewritten;
+                # each remaining sentence was judged on the same cited evidence.
+                kept = json.loads(remove_sentences(raw, checked))["answer_parts"]
+                texts = [p["text"] for p in kept]
+                answer = answer.model_copy(
+                    update={
+                        "answer_parts": [
+                            part.model_copy(update={"text": text})
+                            for part, text in zip(answer.answer_parts, texts)
+                        ]
+                    }
+                )
+                validation = self.deps.validation(answer)
+                if validation.failure_codes or validation.application_abstain:
+                    raise ValueError(";".join(validation.failure_codes) or "ANSWER_NOT_SUPPORTED")
+                reduced = scope_payload(
+                    self.deps.question, answer.raw_answer(), self.deps.ledger.units
+                )
+                receipt = ScopeReceipt(fingerprint(reduced), (), ())
+                span.set_attribute("validator.removed_sentences", removed)
             if omissions:
                 span.set_attribute("validator.failure_codes", ["SCOPE_MATERIAL_OMISSION"])
                 outcome(span, "incomplete")
@@ -2894,6 +2918,10 @@ async def run_adaptive_agent(
                     with operation("research.collection.resume") as span:
                         span.set_attribute("quantity.record_ids", [r.id for r in new_records])
                         span.set_attribute("research.collection_status", collect_status)
+            # Rewording one draft rarely changes how it is judged: a third
+            # rejection for the same reason on the same evidence ends research
+            # (one recorded MMLongBench answer passed on its second retry).
+            rejections: dict[tuple[str, frozenset[str]], int] = {}
             for _ in range(policy.max_research_requests):
                 if candidate is not None:
                     break
@@ -2950,6 +2978,10 @@ async def run_adaptive_agent(
                         candidate, receipt = await session.verify(decision.answer)
                         break
                     except ValueError as exc:
+                        rejection = (str(exc), frozenset(session.units()))
+                        rejections[rejection] = rejections.get(rejection, 0) + 1
+                        if rejections[rejection] >= 3:
+                            raise ResearchClosed("REPEATED_ANSWER_REJECTION") from None
                         state.needs.append(f"Candidate requires correction: {exc}")
                         continue
                 if decision.action == "stop":
