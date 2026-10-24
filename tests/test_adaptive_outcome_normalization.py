@@ -146,6 +146,70 @@ async def test_same_scope_checker_can_return_a_negative_finding_without_positive
 
 
 @pytest.mark.asyncio
+async def test_supported_answer_with_an_unproven_entity_is_released_with_the_source_scope_stated():
+    # TechQA Q267: the source names the Tools & Utilities key; whether it covers
+    # the asked-for Architect Floating license stays unknown. Say so, keep it.
+    question = "How do I enable the reporter with an Architect Floating license?"
+    source = "The reporter is enabled by the Tools and Utilities license key."
+    a = session(deps(source, question=question, scope_validation_enabled=True))
+    a.state.add_need(
+        EvidenceNeedSpec(
+            description="How to enable the reporter",
+            constraints=[
+                NeedConstraint(
+                    dimension="entity",
+                    value="Architect Floating license",
+                    question_quote="Architect Floating license",
+                ),
+            ],
+        )
+    )
+    a.state.need_planning = "ready"
+    calls = []
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        calls.append(role)
+        assert output_type is RequiredScopeJudgment
+        return output_type.model_validate(
+            dict(
+                checks=[
+                    dict(
+                        claim_index=0,
+                        verdict="supported",
+                        reason="NONE",
+                        witnesses=[
+                            dict(support_id="E1.S1", field="text", start_line=1, end_line=1),
+                        ],
+                    )
+                ],
+                objections=[],
+                requirement_bindings=[
+                    dict(
+                        requirement_index=0,
+                        verdict="unknown",
+                        binding_basis="unestablished",
+                        claim_indexes=[0],
+                        witnesses=[],
+                    )
+                ],
+            )
+        )
+
+    a.call = call
+    proposed = AdaptiveAnswer.model_validate(
+        answer("The reporter is enabled by the Tools and Utilities license key.")
+    )
+    result, receipt = await a.verify(proposed)
+    assert calls == ["scope_validator"]
+    assert receipt is not None and not receipt.failure_codes
+    assert [p.answer_kind for p in result.answer_parts] == ["answer", "source_limitation"]
+    note = result.answer_parts[1]
+    assert note.support_ids == ["E1.S1"]
+    assert '"Architect Floating license"' in note.text
+    assert "do not establish" in note.text
+
+
+@pytest.mark.asyncio
 async def test_checked_text_computation_finalizes_from_its_canonical_proof_without_a_finalizer():
     a = session(deps("North 3; South 7", derived_answers=True))
     a.calculate_text(TextCalculationPlan(support_ids=["E1.S1"], expression="3 + 7", decimals=0))

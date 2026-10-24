@@ -6386,3 +6386,35 @@ rerun on the five rows whose fast path returned one: 223 answers
 Q018 still refuses (36 requests).
 
 `make test`: 2556 passed, 4 skipped.
+
+### Unproven entity or condition and repeated rejections (2026-10-24)
+
+A joint audit of TechQA 50 and MMLongBench 120 on `b25ba69` found 17
+correct or partly correct drafts lost at the final check. The most common
+cause was one quoted entity or condition left `unknown` while every claim
+was judged supported: `SCOPE_REQUIREMENT_UNRESOLVED` rejected the whole
+answer (TechQA Q267, Q275, Q186, Q047). The reader then re-sent reworded
+drafts citing the same unit over unchanged evidence, and each spent a
+scope check on the same rejection (Q008, Q149, Q275: four checks each).
+
+Two changes, each with tests:
+
+- An `unknown` entity or condition binding no longer rejects positive
+  claims the same check supported with reason `NONE`. The answer gets a
+  `source_limitation` part saying the cited sources do not establish that
+  it applies to the quoted restriction. Metric, period, unit and
+  population stay strict, `mismatch` still rejects, and a claim made only
+  of limitations or a judgment carrying a source disposition is not
+  released this way.
+- In the research loop, a draft citing the same units over the same
+  evidence as an already rejected draft is not checked again. The reader
+  gets the earlier reason and is told to acquire different evidence or
+  stop; the third same-reason rejection still ends research.
+
+Replaying the new requirement gate over every recorded scope judgment of
+both runs changes 7 of them, all to release: TechQA Q047, Q186 (first
+check), Q267, Q275 (from its first check) and MMLongBench 833, which
+would pass on its first check with the answer it was scored correct on.
+No recorded judgment releases a wrong answer. Not yet measured end to end.
+
+`make test`: 2560 passed, 4 skipped.
