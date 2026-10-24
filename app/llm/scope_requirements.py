@@ -74,7 +74,59 @@ source finding can explain it. A partial view or wrong object cannot close the
 question's source scope; report remaining candidates and incomplete scope.
 For disposition witnesses and boundaries, use supplied start_line/end_line locators
 when available; the application copies the exact source text without model rewriting.
+When an objection concerns a restriction in question_requirements, set its
+requirement_index to that requirement. When a claim's only gap is the identity of a
+quoted entity or condition the source neither confirms nor contradicts, return that
+one objection with an unknown binding; the application states the identity as
+unestablished with the answer instead of rejecting the claim for it.
 """
+
+
+def release_unknown_identity(
+    payload: dict[str, Any], requirements: list[dict[str, str]], judgment: RequiredScopeJudgment
+) -> tuple[RequiredScopeJudgment, list[int]]:
+    """Judge a claim held back only by an unknown quoted identity on its content.
+
+    The same gap is already an unknown requirement binding, which states it with
+    the answer; counting it again as the claim's verdict would erase the claim.
+    """
+    bindings = {b.requirement_index: b for b in judgment.requirement_bindings}
+    kinds = {c["claim_index"]: c["claim"].get("answer_kind") for c in payload["claims"]}
+    released = []
+    for check in judgment.checks:
+        objections = [o for o in judgment.objections if o.claim_index == check.claim_index]
+        if len(objections) != 1 or objections[0].requirement_index is None:
+            continue
+        index = objections[0].requirement_index
+        binding = bindings.get(index)
+        if (
+            check.verdict == "insufficient"
+            and check.reason == "SCOPE_NOT_ESTABLISHED"
+            and check.witnesses
+            and check.claim_index in kinds
+            and kinds[check.claim_index] != "source_limitation"
+            and objections[0].repair_kind in {"missing_source", "source_binding"}
+            and judgment.source_disposition is None
+            and index < len(requirements)
+            and requirements[index]["dimension"] in {"entity", "condition"}
+            and binding is not None
+            and binding.verdict == "unknown"
+            and check.claim_index in binding.claim_indexes
+        ):
+            released.append(check.claim_index)
+    if not released:
+        return judgment, []
+    return judgment.model_copy(
+        update={
+            "checks": [
+                c.model_copy(update={"verdict": "supported", "reason": "NONE"})
+                if c.claim_index in released
+                else c
+                for c in judgment.checks
+            ],
+            "objections": [o for o in judgment.objections if o.claim_index not in released],
+        }
+    ), released
 
 
 def range_conflicts(question: str, claims: list[dict[str, Any]]) -> bool:

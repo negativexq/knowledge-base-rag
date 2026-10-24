@@ -110,6 +110,7 @@ from app.llm.scope_requirements import (
 from app.llm.scope_requirements import (
     RequiredScopeJudgment,
     range_conflicts,
+    release_unknown_identity,
     validate_requirements,
 )
 from app.llm.scope_validation import (
@@ -2155,6 +2156,10 @@ class AdaptiveSession:
                     raise
                 span.set_attribute("validator.material_omission_count", len(omissions))
                 if isinstance(references, RequiredScopeJudgment):
+                    references, released = release_unknown_identity(
+                        payload, question_requirements, references
+                    )
+                    span.set_attribute("validator.identity_released_claims", released)
                     requirement_diagnostics: dict[str, int] = {}
                     requirement_errors = validate_requirements(
                         payload, question_requirements, references, generated, source_images,

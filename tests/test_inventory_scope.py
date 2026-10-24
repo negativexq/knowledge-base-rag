@@ -10,7 +10,12 @@ import pytest
 from app.llm.inventory_evidence import extend_inventory_window, inventory_issues
 from app.llm.quantities import collect, execute
 from app.llm.quantity_state import QuantityAssessment, QuantityDraft, QuantitySource
-from app.llm.scope_requirements import RequiredScopeJudgment, range_conflicts, validate_requirements
+from app.llm.scope_requirements import (
+    RequiredScopeJudgment,
+    range_conflicts,
+    release_unknown_identity,
+    validate_requirements,
+)
 from app.llm.scope_validation import scope_payload
 from app.llm.visual_answer import PdfPages
 from tests.test_quantities import active_session
@@ -259,6 +264,64 @@ def test_unproven_entity_or_condition_releases_a_supported_claim_with_its_scope_
             data, reqs, blocked, set(), scoped=scoped
         )
         assert not scoped
+
+
+def identity_gap(**changes):
+    objection = dict(
+        claim_index=0,
+        description="The source does not establish that this is the asked-for Westhaven.",
+        question_start=1,
+        question_end=1,
+        source_locations=[dict(support_id="E1.S1", start_line=1, end_line=1)],
+        repair_kind="missing_source",
+        requirement_index=0,
+    )
+    objection.update(changes.pop("objection", {}))
+    check = dict(
+        claim_index=0,
+        verdict="insufficient",
+        reason="SCOPE_NOT_ESTABLISHED",
+        witnesses=[dict(support_id="E1.S1", start_line=1, end_line=1)],
+    )
+    check.update(changes.pop("check", {}))
+    binding = dict(
+        requirement_index=0, verdict="unknown", binding_basis="unestablished", claim_indexes=[0]
+    )
+    binding.update(changes.pop("binding", {}))
+    return RequiredScopeJudgment.model_validate(
+        dict(checks=[check], objections=[objection], requirement_bindings=[binding], **changes)
+    )
+
+
+def test_an_unproven_identity_rejected_twice_is_stated_once_instead():
+    # TechQA Q008 and MMLongBench 524: the same unknown product name or OCR'd
+    # tool label marked the binding unknown and the claim insufficient, so the
+    # supported content was never released with its scope stated.
+    reqs = [dict(dimension="entity", question_quote="Westhaven")]
+    released, claims = release_unknown_identity(binding_payload(), reqs, identity_gap())
+    assert claims == [0]
+    assert [(c.verdict, c.reason) for c in released.checks] == [("supported", "NONE")]
+    assert not released.objections
+    scoped: list = []
+    assert not validate_requirements(binding_payload(), reqs, released, set(), scoped=scoped)
+    assert scoped == [dict(question_quote="Westhaven", claim_indexes=[0])]
+    limitation = binding_payload()
+    limitation["claims"][0]["claim"]["answer_kind"] = "source_limitation"
+    # Only an identity the source neither confirms nor contradicts is stated;
+    # a contradiction, another gap, an asked-for value or a finding still rejects.
+    for data, dimension, gap in [
+        (binding_payload(), "entity", identity_gap(objection=dict(repair_kind="mismatch"))),
+        (binding_payload(), "entity", identity_gap(objection=dict(requirement_index=None))),
+        (binding_payload(), "entity", identity_gap(objection=dict(requirement_index=3))),
+        (binding_payload(), "entity", identity_gap(binding=dict(verdict="mismatch"))),
+        (binding_payload(), "entity", identity_gap(check=dict(reason="ENTITY_MISMATCH"))),
+        (binding_payload(), "entity", identity_gap(check=dict(verdict="mismatch"))),
+        (binding_payload(), "entity", identity_gap(check=dict(witnesses=[]))),
+        (binding_payload(), "metric", identity_gap()),
+        (limitation, "entity", identity_gap()),
+    ]:
+        reqs = [dict(dimension=dimension, question_quote="Westhaven")]
+        assert release_unknown_identity(data, reqs, gap) == (gap, [])
 
 
 def test_the_users_own_situation_is_a_condition_not_a_source_requirement():

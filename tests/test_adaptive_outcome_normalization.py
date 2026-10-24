@@ -268,3 +268,75 @@ async def test_overlapping_page_hint_needs_complete_original_numeric_support(
     original = [(["E1.S1"], []), (["E2.S1"], [])]
     targets = await calculation_inspection_targets(a, part, original)
     assert targets == ([(["E1.S1"], [1]), (["E2.S1"], [6])] if native_matches else original)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("repair_kind", ["missing_source", "mismatch"])
+async def test_a_claim_rejected_only_for_the_unproven_entity_is_released_with_its_scope(
+    repair_kind,
+):
+    # TechQA Q008: the check marked the asked-for product unknown and, for the
+    # same reason, the claim insufficient. State the scope once instead; a
+    # contradiction still rejects.
+    question = "How do I export a private key from a DataPower Gateway?"
+    source = "On a DataPower SOA appliance, export the key with crypto-export."
+    a = session(deps(source, question=question, scope_validation_enabled=True))
+    a.state.add_need(
+        EvidenceNeedSpec(
+            description="How to export a private key",
+            constraints=[
+                NeedConstraint(
+                    dimension="entity",
+                    value="DataPower Gateway",
+                    question_quote="DataPower Gateway",
+                ),
+            ],
+        )
+    )
+    a.state.need_planning = "ready"
+    witness = dict(support_id="E1.S1", field="text", start_line=1, end_line=1)
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        assert "requirement_index" in instructions
+        return output_type.model_validate(
+            dict(
+                checks=[
+                    dict(
+                        claim_index=0,
+                        verdict="insufficient",
+                        reason="SCOPE_NOT_ESTABLISHED",
+                        witnesses=[witness],
+                    )
+                ],
+                objections=[
+                    dict(
+                        claim_index=0,
+                        description="The source names a DataPower SOA appliance, not the Gateway.",
+                        question_start=1,
+                        question_end=1,
+                        source_locations=[witness],
+                        repair_kind=repair_kind,
+                        requirement_index=0,
+                    )
+                ],
+                requirement_bindings=[
+                    dict(
+                        requirement_index=0,
+                        verdict="unknown",
+                        binding_basis="unestablished",
+                        claim_indexes=[0],
+                    )
+                ],
+            )
+        )
+
+    a.call = call
+    proposed = AdaptiveAnswer.model_validate(answer("Export the key with crypto-export."))
+    if repair_kind == "mismatch":
+        with pytest.raises(ValueError):
+            await a.verify(proposed, allow_repair=False)
+        return
+    result, receipt = await a.verify(proposed)
+    assert receipt is not None and not receipt.failure_codes
+    assert [p.answer_kind for p in result.answer_parts] == ["answer", "source_limitation"]
+    assert '"DataPower Gateway"' in result.answer_parts[1].text

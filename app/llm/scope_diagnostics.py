@@ -30,6 +30,9 @@ class ScopeObjection(BaseModel):
         "presentation",
         "mismatch",
     ] = "missing_source"
+    requirement_index: int | None = Field(
+        default=None, ge=0, description="Zero-based question_requirements index it concerns"
+    )
 
 
 class DiagnosticScopeJudgment(CoverageScopeJudgment):

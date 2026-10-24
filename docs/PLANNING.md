@@ -6506,3 +6506,29 @@ images and bound every requirement to original text or image witnesses,
 so the projection change from the previous fix is now exercised too.
 
 `make test`: 2564 passed, 4 skipped.
+
+### An unknown identity is not counted twice (2026-10-25)
+
+TechQA Q008 and MMLongBench 524 still refused after the scoped release.
+The scope check marked the quoted identity unknown ("DataPower Gateway"
+against a source naming the DataPower SOA appliance; the OCR'd tool list
+reading "Butter" for "Buffer") and, for the same reason, judged the claim
+itself insufficient. The release only applies to claims the check
+supported, so it never fired. In 524 the quantity check had accepted
+both values (11 % in 2013, 17 % in 2014).
+
+An objection now names the `question_requirements` index it concerns. A
+claim whose single objection is a missing source or source binding for an
+unknown entity or condition binding is judged on its content, and the
+answer states the identity as unestablished. A mismatch, any other gap,
+an asked-for metric, period, unit or population, a limitation claim or a
+source finding still rejects.
+
+Of the five rows filed under product-name literalness, only Q008 and 524
+are this mechanism. 641 is a document definition the check did not apply
+(the paper calls its evaluation subset FEVEROUS-S; the table header reads
+FEVEROUS). Q205's reference document concerns exit code 8096, not the
+asked -1, so refusing is correct. Q239's relevant document never reached
+the model, a retrieval miss.
+
+`make test`: 2567 passed, 4 skipped.
