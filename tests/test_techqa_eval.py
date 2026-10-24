@@ -3,6 +3,7 @@ from app.evaluation.techqa import (
     cited_sources,
     doc_file_name,
     holdout_questions,
+    recorded_questions,
     source_id_for_text,
 )
 
@@ -100,3 +101,21 @@ def test_build_report_without_scores_leaves_semantic_empty():
     questions = holdout_questions([_row("Q1")], ["Q1"])
     report = build_report(questions, [_raw("Q1")], top_n=5, candidate_k=20)
     assert report["semantic"] is None
+
+
+def test_recorded_questions_rebuild_the_frozen_questions_from_a_results_file():
+    raws = [
+        {
+            "qid": "Q2",
+            "row_idx": 4,
+            "question": "second",
+            "reference": "gold",
+            "relevant_sources": ["techqa_a_md"],
+            "answer": "ignored",
+        },
+        {"qid": "Q1", "row_idx": 1, "question": "first", "reference": "", "relevant_sources": []},
+    ]
+    questions = recorded_questions(raws, ["Q1", "Q2"])
+    assert [q.qid for q in questions] == ["Q1", "Q2"]
+    assert questions[1].row_idx == 4 and questions[1].relevant_sources == ("techqa_a_md",)
+    assert questions[0].question == "first" and questions[0].reference == ""

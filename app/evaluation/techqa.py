@@ -80,6 +80,25 @@ def holdout_questions(rows: list[dict[str, Any]], ids: list[str]) -> list[TechQA
     ]
 
 
+def recorded_questions(raws: list[dict[str, Any]], ids: list[str]) -> list[TechQAQuestion]:
+    """The frozen questions as an earlier run's results recorded them, in the
+    order of ids, so a rerun does not need the dataset file again."""
+    by_qid = {str(raw["qid"]): raw for raw in raws}
+    missing = [qid for qid in ids if qid not in by_qid]
+    if missing:
+        raise ValueError(f"holdout ids not in the results: {missing}")
+    return [
+        TechQAQuestion(
+            qid=qid,
+            row_idx=int(by_qid[qid]["row_idx"]),
+            question=str(by_qid[qid]["question"]),
+            reference=str(by_qid[qid].get("reference") or ""),
+            relevant_sources=tuple(by_qid[qid].get("relevant_sources") or ()),
+        )
+        for qid in ids
+    ]
+
+
 def all_documents(rows: Iterable[dict[str, Any]]) -> dict[str, str]:
     """Every distinct document text by its file name."""
     return {
