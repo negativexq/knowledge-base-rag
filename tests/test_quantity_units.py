@@ -289,3 +289,76 @@ def test_unusable_notation_suggestion_preserves_valid_display_and_its_scale():
     assert corrected == draft
     assert execute(corrected)[0] == ["-13929.000"]
     assert review.inputs == "unknown"  # Numeric validity does not approve source binding.
+
+
+@pytest.mark.asyncio
+async def test_a_checked_image_scale_supports_its_factor_without_a_printed_witness(tmp_path):
+    # MMLongBench 380: both balance-sheet amounts were read from the page image
+    # in lacs and checked, but the factor 100000 had no literal witness and the
+    # accepted difference failed as CALCULATION_OPERAND_UNSUPPORTED.
+    import hashlib
+
+    import fitz
+
+    from app.llm.visual_answer import PdfPages
+
+    path = tmp_path / "report.pdf"
+    with fitz.open() as pdf:
+        pdf.new_page().insert_text((30, 30), "Rupees in lacs\nNorth 3\nSouth 7")
+        pdf.save(path)
+    active, need = active_session(
+        "Report page", visual_answers=True, render_page=PdfPages(str(tmp_path))
+    )
+    active.deps.ledger.blocks[0].payload.update(
+        source_id="report_pdf", document_version=hashlib.sha256(path.read_bytes()).hexdigest()
+    )
+    active.deps.ledger.source_ids = frozenset({"report_pdf"})
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        if role == "quantity_selector":
+            return QuantitySource(
+                available=True,
+                support_ids=["E1.S1"],
+                pages=[1],
+                modality="image",
+                operation_kind="arithmetic",
+            )
+        if role == "quantity_collector":
+            return output_type.model_validate(
+                dict(
+                    mode="arithmetic",
+                    complete=True,
+                    expression="b - a",
+                    decimals=0,
+                    result_unit="rupees",
+                    interpretation="South minus North in rupees",
+                    operands=[
+                        dict(
+                            name=name,
+                            label=label,
+                            value=value,
+                            source_scale="100000",
+                            unit="rupees in lacs",
+                            witness=f"{label} {value}",
+                            number_format="canonical",
+                            value_status="readable",
+                            image_ids=["image_1"],
+                        )
+                        for name, label, value in [("a", "North", "3"), ("b", "South", "7")]
+                    ],
+                )
+            )
+        return QuantityAssessment(
+            inputs="supported",
+            coverage="complete",
+            operation="supported",
+            entity_identity="supported",
+            supported_operand_indexes=[0, 1],
+        )
+
+    active.call = call
+    result = await collect(active, need, repairs_left=0)
+    record = next(iter(active.state.quantities.values()))
+    assert record.diagnostic_errors == []
+    assert result is not None and result.answer_parts[0].text.startswith("400000")
+    assert record.arithmetic_conversion is not None

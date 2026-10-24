@@ -114,6 +114,23 @@ def test_application_totals_inputs_without_model_result():
             execute(arithmetic().model_copy(update={"expression": expression}))
 
 
+def test_items_read_from_different_images_are_different_occurrences():
+    # MMLongBench 515: the fifth video starts at the bottom of page 1 and is
+    # numbered 1 on page 2. It resolved to page 1, collided with the first
+    # video and the accepted count of 5 was never released.
+    d = enumeration()
+    group = d.groups[0]
+    first = group.items[0].model_copy(update={"page": 1, "image_ids": ["image_1"]})
+    spanning = group.items[1].model_copy(
+        update={"page": 1, "position": 1, "image_ids": ["image_1", "image_2"]}
+    )
+    counted = group.model_copy(update={"items": [first, spanning]})
+    assert execute(d.model_copy(update={"groups": [counted]}))[0] == ["2"]
+    twice = group.model_copy(update={"items": [first, first]})
+    with pytest.raises(ValueError, match="DUPLICATE_SOURCE_OCCURRENCE"):
+        execute(d.model_copy(update={"groups": [twice]}))
+
+
 def test_incomplete_and_duplicate_source_occurrences_are_not_counted():
     d = enumeration()
     with pytest.raises(ValueError, match="INCOMPLETE"):
