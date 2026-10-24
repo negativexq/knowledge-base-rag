@@ -6551,4 +6551,10 @@ refuses, but this run never reached the selection: the answerer saw the
 reading, research stopped on `REPEATED_OPERATION` and the finalizer wrote
 only a limitation. The change was not exercised on 524.
 
+Second rerun of 524: answers 2013 (gold 2013) on 6 requests. The
+selection reached the scope check as a verified operation with both
+original page images, and the check bound the tool-list condition as a
+linguistic equivalent ("Butter" as an OCR reading of "Buffer"), so every
+requirement was supported and the identity release was not needed.
+
 `make test`: 2568 passed, 4 skipped.
