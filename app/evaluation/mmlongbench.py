@@ -506,11 +506,13 @@ def _only_source_limitations(result: dict[str, Any]) -> bool:
     """Every released part only explains what the cited source lacks: a
     refusal in other words, not an answer."""
     raw = (result.get("trace") or {}).get("raw_model_output")
+    if not isinstance(raw, str):
+        return False
     try:
-        parts = json.loads(raw)["answer_parts"] if isinstance(raw, str) else None
+        parts = json.loads(raw)["answer_parts"]
     except (ValueError, KeyError, TypeError):
         return False
-    return bool(parts) and all(
+    return isinstance(parts, list) and bool(parts) and all(
         isinstance(p, dict) and p.get("answer_kind") == "source_limitation" for p in parts
     )
 
