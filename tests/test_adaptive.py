@@ -1255,4 +1255,6 @@ async def test_a_sentence_the_scope_check_removes_is_dropped_from_the_released_a
     result = await run_adaptive_agent(FunctionModel(model), dependencies, fast_path=True)
     assert result.failure_code is None
     assert json.loads(result.raw)["answer_parts"][0]["text"] == "The service uses TLS."
-    assert result.scope_receipt.accepts(dependencies.question, result.raw, dependencies.ledger.units)
+    assert result.scope_receipt.accepts(
+        dependencies.question, result.raw, dependencies.ledger.units
+    )
