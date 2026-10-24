@@ -6371,4 +6371,13 @@ from the 21 October baseline: no wrong answers, both safe refusals kept,
 507 and 223 now correct, 831 drops one of four activity groups; 65
 requests vs 69. TechQA has not been rerun on the final code.
 
-`make test`: 2553 passed, 4 skipped.
+A source_limitation part now leaves a fact, cause or step that answers
+part of the question to its own answer part, and an answer made only of
+limitations is scored as a refusal. Before this, Q252 and Q277 put a
+remedy in a limitation part and Q157's bare "the evidence does not
+provide" counted as answered. TechQA 10 on the final code: 7 answered,
+3 refused (Q157, Q250 not in the reranked top 5, Q018), from 4 answered
+and 6 refused by the same count; 66 requests vs 61. MMLongBench has not
+been rerun with this prompt change.
+
+`make test`: 2556 passed, 4 skipped.
