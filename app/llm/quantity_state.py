@@ -341,6 +341,7 @@ class QuantityRecord(QuantityData):
     ambiguity_results: dict[str, list[str]] = Field(default_factory=dict)
     execution_status: Literal["pending", "completed", "failed"] = "pending"
     image_bindings: list[QuantityImageBinding] = Field(default_factory=list)
+    search_coverage: dict[str, Any] | None = None
     scope_diagnostic: ScopeDiagnostic | None = None
     inventory_replacement: bool = False
     numeric_inputs: list[QuantityNumberReceipt] = Field(default_factory=list)

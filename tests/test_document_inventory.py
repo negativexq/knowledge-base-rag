@@ -451,6 +451,10 @@ async def test_written_labels_are_counted_from_searched_lines_without_page_image
     assert payload["verified_operations"][0]["input_authority"] == (
         "independently_checked_source_text"
     )
+    assert payload["verified_operations"][0]["coverage_authority"] == (
+        "application_native_text_search"
+    )
+    assert payload["verified_operations"][0]["search_coverage"] == proof["search_coverage"]
 
 
 @pytest.mark.asyncio

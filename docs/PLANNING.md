@@ -6633,4 +6633,11 @@ again left "in the entire course" unknown, citing the projected count's
 unresolved closure basis rather than the proof. A scope repair answered 7
 (correct) from the summary table, 10 requests.
 
+The scope check reads a count through its projected operation, where the
+group's closure basis says unresolved and the search was absent. A
+searched count's projection now carries coverage_authority
+application_native_text_search with the same search coverage as its
+proof, and the scope instructions treat that coverage as the inventory
+boundary in place of closure_basis.
+
 `make test`: 2578 passed, 4 skipped.
