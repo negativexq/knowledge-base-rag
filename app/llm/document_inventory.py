@@ -118,7 +118,7 @@ async def overview(session: AdaptiveSession, need_id: str) -> dict[str, Any] | N
     if (
         not need
         or need.spec.operation != "count"
-        or (need.spec.inventory_scope != "document")
+        or need.spec.inventory_scope == "bounded_object"
         or not session.deps.visual_answers
     ):
         return None

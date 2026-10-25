@@ -2881,6 +2881,17 @@ async def run_adaptive_agent(
                     ),
                     "",
                 )
+                needs = list(state.evidence_needs.values())
+                if (
+                    not collection_need and collection_operation == "count"
+                    and len(needs) == 1 and needs[0].spec.operation == "lookup"
+                ):
+                    # The answerer counted from the evidence; the planner saw only the
+                    # question. Collect its single lookup as the count it turned out to be.
+                    state.evidence_needs[needs[0].id] = needs[0].model_copy(
+                        update={"spec": needs[0].spec.model_copy(update={"operation": "count"})}
+                    )
+                    collection_need = needs[0].id
                 key = signature("collect_quantities", {"need": collection_need}, 0)
                 publish({"id": key[:12], "operation": "collect", "status": "running"})
                 collect_status: Literal["ok", "not_found", "error"] = "not_found"

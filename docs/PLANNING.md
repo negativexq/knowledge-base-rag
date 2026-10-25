@@ -6601,4 +6601,15 @@ the course summary table on the bounded quantity path. In the second run
 total was not established. The search path has not run on 381 since the
 prompt split; the planner's route choice decides whether it is reached.
 
-`make test`: 2573 passed, 4 skipped.
+The route depends on the need planner, which sees only the question: 381
+was planned as a document count in three runs and as a lookup with
+unknown scope in two. In the lookup runs the fast answer still counted
+from the evidence, but the count collection found no planned count need
+and ran with none, so the document overview and search path never opened
+although the source selector chose a document count. A counted fast
+answer now collects the plan's single lookup need as a count, and the
+overview is offered for counts whose scope is unknown as well as
+document-wide; a planned bounded object keeps the bounded path. Plans
+with more than one need are unchanged.
+
+`make test`: 2578 passed, 4 skipped.

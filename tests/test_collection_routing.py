@@ -363,3 +363,47 @@ async def test_failed_quantity_does_not_hide_independently_checked_fact_at_final
     result, _ = await finalize_research(active)
     assert not result.abstain and result.answer_parts[0].text == "3"
     assert calls == ["finalizer"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("needs", [1, 2])
+async def test_a_counted_fast_answer_collects_its_single_planned_lookup_as_a_count(
+    monkeypatch, needs
+):
+    dependencies = deps(
+        "Quiz #1\nQuiz #2",
+        derived_answers=True,
+        question="How many quizzes are there in the course?",
+    )
+    state = ResearchState(task=TaskSpec(question=dependencies.question), need_planning="ready")
+    for metric in ["quizzes", "course"][:needs]:
+        state.add_need(EvidenceNeedSpec(
+            description=f"Total number of {metric}",
+            operation="lookup",
+            constraints=[NeedConstraint(dimension="metric", value=metric, question_quote=metric)],
+        ))
+    collected = []
+
+    async def collect(session, need_id, **kwargs):
+        need = session.state.evidence_needs.get(need_id)
+        collected.append((need_id, need.spec.operation if need else None))
+        return None
+
+    monkeypatch.setattr("app.llm.adaptive.collect_quantities", collect)
+
+    def model(messages, info):
+        props = info.output_tools[0].parameters_json_schema["properties"]
+        if "missing" in props:
+            return reply(info, dict(answer=dict(answer_parts=[dict(
+                text="2", support_ids=["E1.S1"], counts=[dict(items=["Quiz #1", "Quiz #2"])]
+            )])))
+        if "action" in props:
+            return reply(info, {"action": "finalize"})
+        return reply(info, dict(answer_parts=[dict(
+            text="The source does not establish the total.", support_ids=["E1.S1"],
+            answer_kind="source_limitation",
+        )]))
+
+    await run_adaptive_agent(FunctionModel(model), dependencies, state=state, fast_path=True)
+    lookup = next(iter(state.evidence_needs))
+    assert collected == ([(lookup, "count")] if needs == 1 else [("", None)])
