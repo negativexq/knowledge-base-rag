@@ -1,6 +1,7 @@
 """A document plan drives bounded windows and one independent batch review."""
 
 import hashlib
+import json
 from dataclasses import replace
 
 import fitz
@@ -430,6 +431,19 @@ async def test_written_labels_are_counted_from_searched_lines_without_page_image
     assert [i.witness for i in record.draft.groups[0].items] == [
         f"Diagram {p}" for p in range(1, 6)
     ]
+    proof = json.loads(active.units()[record.proof_support_ids[0]].text)
+    assert proof["search_coverage"] == dict(
+        searched_pages=6,
+        textless_pages=[],
+        search_terms=["diagram"],
+        hit_lines=6,
+        items=5,
+        repeated_lines=["Diagram 6"] if last == "repeat" else [],
+        excluded_lines=[dict(text="Diagram 6", page=6, reason="Contents entry, not a diagram")]
+        if last == "excluded"
+        else [],
+    )
+    assert "every line containing" in record.draft.groups[0].boundary_witness
     assert await checked_scope_images(active, [record.id]) == ([], [])
     payload, _ = semantic_scope_projection(
         scope_payload(active.deps.question, answer.raw_answer(), active.deps.ledger.units), [record]

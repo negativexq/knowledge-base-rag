@@ -6612,4 +6612,17 @@ overview is offered for counts whose scope is unknown as well as
 document-wide; a planned bounded object keeps the bounded path. Plans
 with more than one need are unchanged.
 
+Rerun of 381 and 834: both were planned as document counts and took the
+search path; 381's reading listed exactly Quiz #1-#7 with the summary
+lines as repeats and 834 listed 3, both reviewed complete. The scope
+check rejected both as not establishing course-wide coverage: the proof
+said nothing about the search and its boundary text described image
+windows. A scope repair then counted 7 and 3 (both correct) from the
+summary table on the bounded path, 9 requests each.
+
+The proof of a searched count now states its coverage: every page has
+native text, the terms, the number of matching lines and items, each
+repeated line, and each excluded line with its reason. The group boundary
+says that every matching line was assigned and reviewed.
+
 `make test`: 2578 passed, 4 skipped.
