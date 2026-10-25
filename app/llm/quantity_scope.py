@@ -191,7 +191,11 @@ async def checked_scope_images(
         page["image_id"] = f"scope_image_{len(images)}"
     source_images = list(pages.values())
     for run in session.state.document_inventories.values():
-        if not run.complete or run.aggregate_id not in record_ids:
+        if (
+            not run.complete
+            or run.aggregate_id not in record_ids
+            or session.state.quantities[run.aggregate_id].modality != "image"
+        ):
             continue
         session.require([run.seed_support_id])
         seed = units[run.seed_support_id]

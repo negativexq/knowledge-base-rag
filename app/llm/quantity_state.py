@@ -511,6 +511,11 @@ class DocumentInventoryPlan(QuantityData):
     counting_unit: str = Field(min_length=1, max_length=300)
     output: Literal["count", "pages", "count_and_pages"]
     pages: list[InventoryPageDecision] = Field(min_length=1, max_length=36)
+    native_text: bool = Field(
+        default=False,
+        description="True only when every counted item is a written label in the pages' "
+        "native text; false for figures, photos, charts or diagrams",
+    )
 
 
 class InventoryWindowReview(QuantityData):

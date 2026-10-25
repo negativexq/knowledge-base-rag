@@ -6558,3 +6558,16 @@ linguistic equivalent ("Butter" as an OCR reading of "Buffer"), so every
 requirement was supported and the identity release was not needed.
 
 `make test`: 2568 passed, 4 skipped.
+
+Document-wide counts of written labels (MMLongBench 381 quizzes, 834
+case studies) read every candidate page as images in three-page windows,
+although the PDF has native text on every page; 381 needed four windows
+and stopped on `REQUEST_RESERVE`. The inventory plan now marks whether
+every counted item is a written label. When it is and every candidate
+page has native text, the pages are read once from that text in one
+window with no page images; each item's witness must be literal text of
+its own page, and repeats in summaries or schedules are not separate
+items. Figure, photo, chart and diagram counts, and textless pages, keep
+the image windows. 732's PDF has no native text, so this does not reach it.
+
+`make test`: 2570 passed, 4 skipped.

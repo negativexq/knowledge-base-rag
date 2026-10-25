@@ -358,3 +358,80 @@ async def test_full_verification_accepts_original_detail_and_overview_images(tmp
     verified, receipt = await active.verify(answer)
     assert verified == answer and receipt and not receipt.failure_codes
     assert seen[-1] == "scope_validator"
+
+
+def text_calls(active):
+    seen = []
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        seen.append(role)
+        if role == "quantity_selector":
+            return QuantitySelection(
+                available=True,
+                operation_kind="count",
+                inventory_scope="document",
+                support_ids=["E1.S1"],
+                context_support_ids=[],
+                pages=[1],
+                modality="text",
+                document_plan=plan().model_copy(update={"native_text": True}),
+            )
+        if role == "extractor":
+            assert not images and data["window_pages"] == list(range(1, 7))
+            assert [s["physical_page"] for s in data["source_text"]] == list(range(1, 7))
+            return output_type.model_validate(
+                dict(
+                    complete=True,
+                    items=[
+                        dict(label=f"Diagram {p}", page=p, position=1, witness=f"Diagram {p}")
+                        for p in data["window_pages"]
+                    ],
+                )
+            )
+        assert role == "quantity_checker" and not images and not data["source_images"]
+        assert len(data["windows"]) == 1 and len(data["source_text"]) == 6
+        return InventoryReview(
+            windows=[dict(window_index=0, inputs="supported", local_coverage="complete")],
+            document_coverage="complete",
+            operation="supported",
+        )
+
+    active.call = call
+    return seen
+
+
+@pytest.mark.asyncio
+async def test_written_labels_are_counted_from_native_text_in_one_window_without_images(tmp_path):
+    active, need = prepared(tmp_path)
+    seen = text_calls(active)
+    answer = await collect(active, need)
+    assert seen == ["quantity_selector", "extractor", "quantity_checker"]
+    assert answer.answer_parts[0].text == 'Total: 6; pages ["1", "2", "3", "4", "5", "6"]'
+    run = next(iter(active.state.document_inventories.values()))
+    record = active.state.quantities[run.aggregate_id]
+    assert record.modality == "text" and not record.image_bindings
+    assert await checked_scope_images(active, [record.id]) == ([], [])
+    payload, _ = semantic_scope_projection(
+        scope_payload(active.deps.question, answer.raw_answer(), active.deps.ledger.units), [record]
+    )
+    assert payload["verified_operations"][0]["input_authority"] == (
+        "independently_checked_source_text"
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_text_count_witness_must_be_literal_page_text(tmp_path):
+    active, need = prepared(tmp_path)
+    text_calls(active)
+    original = active.call
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        if role == "extractor":
+            return output_type.model_validate(
+                dict(complete=True, items=[dict(label="Quiz", page=1, position=1, witness="Quiz")])
+            )
+        return await original(role, output_type, instructions, data, **kwargs)
+
+    active.call = call
+    with pytest.raises(ValueError, match="QUANTITY_WITNESS_NOT_LITERAL"):
+        await collect(active, need)
