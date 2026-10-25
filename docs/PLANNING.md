@@ -6640,4 +6640,10 @@ application_native_text_search with the same search coverage as its
 proof, and the scope instructions treat that coverage as the inventory
 boundary in place of closure_basis.
 
+Rerun of 381 and 834: both answer correctly on the search path and pass
+the scope check first time, 5 requests each (381: 7, 27k input tokens;
+834: 3, 23k), against 9 requests and no answer for each before this
+work. Both were planned as document counts in this run, so the lookup
+fallback was not exercised here; it was in the previous rerun.
+
 `make test`: 2578 passed, 4 skipped.
