@@ -6592,4 +6592,13 @@ The search path now has its own reader and checker prompts with no image
 rules, and the release inspection checks a text count's pages in groups
 of three instead of rejecting more than three.
 
+Two reruns of 381 and 834. 834 took the search path in the second run:
+4 hit pages, 3 items, document coverage complete, scope supported, 3
+(gold 3) on 5 requests and 22k input tokens. In the first run 834 and 381
+were planned as direct answers and counted 3 and 7 (both correct) from
+the course summary table on the bounded quantity path. In the second run
+381 was again a direct answer, found quizzes #1-#5 and stated that the
+total was not established. The search path has not run on 381 since the
+prompt split; the planner's route choice decides whether it is reached.
+
 `make test`: 2573 passed, 4 skipped.
