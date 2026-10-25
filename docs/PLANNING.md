@@ -6601,4 +6601,49 @@ the course summary table on the bounded quantity path. In the second run
 total was not established. The search path has not run on 381 since the
 prompt split; the planner's route choice decides whether it is reached.
 
-`make test`: 2573 passed, 4 skipped.
+The route depends on the need planner, which sees only the question: 381
+was planned as a document count in three runs and as a lookup with
+unknown scope in two. In the lookup runs the fast answer still counted
+from the evidence, but the count collection found no planned count need
+and ran with none, so the document overview and search path never opened
+although the source selector chose a document count. A counted fast
+answer now collects the plan's single lookup need as a count, and the
+overview is offered for counts whose scope is unknown as well as
+document-wide; a planned bounded object keeps the bounded path. Plans
+with more than one need are unchanged.
+
+Rerun of 381 and 834: both were planned as document counts and took the
+search path; 381's reading listed exactly Quiz #1-#7 with the summary
+lines as repeats and 834 listed 3, both reviewed complete. The scope
+check rejected both as not establishing course-wide coverage: the proof
+said nothing about the search and its boundary text described image
+windows. A scope repair then counted 7 and 3 (both correct) from the
+summary table on the bounded path, 9 requests each.
+
+The proof of a searched count now states its coverage: every page has
+native text, the terms, the number of matching lines and items, each
+repeated line, and each excluded line with its reason. The group boundary
+says that every matching line was assigned and reviewed.
+
+Rerun of 381 and 834: 834 answers 3 on the search path and passes the
+scope check first time (5 requests, 22k input tokens). 381 was planned as
+a lookup again; the counted fast answer now reached the search path,
+which listed Quiz #1-#7 and was reviewed complete, but the scope check
+again left "in the entire course" unknown, citing the projected count's
+unresolved closure basis rather than the proof. A scope repair answered 7
+(correct) from the summary table, 10 requests.
+
+The scope check reads a count through its projected operation, where the
+group's closure basis says unresolved and the search was absent. A
+searched count's projection now carries coverage_authority
+application_native_text_search with the same search coverage as its
+proof, and the scope instructions treat that coverage as the inventory
+boundary in place of closure_basis.
+
+Rerun of 381 and 834: both answer correctly on the search path and pass
+the scope check first time, 5 requests each (381: 7, 27k input tokens;
+834: 3, 23k), against 9 requests and no answer for each before this
+work. Both were planned as document counts in this run, so the lookup
+fallback was not exercised here; it was in the previous rerun.
+
+`make test`: 2578 passed, 4 skipped.

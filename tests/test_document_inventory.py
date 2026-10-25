@@ -1,6 +1,7 @@
 """A document plan drives bounded windows and one independent batch review."""
 
 import hashlib
+import json
 from dataclasses import replace
 
 import fitz
@@ -430,6 +431,19 @@ async def test_written_labels_are_counted_from_searched_lines_without_page_image
     assert [i.witness for i in record.draft.groups[0].items] == [
         f"Diagram {p}" for p in range(1, 6)
     ]
+    proof = json.loads(active.units()[record.proof_support_ids[0]].text)
+    assert proof["search_coverage"] == dict(
+        searched_pages=6,
+        textless_pages=[],
+        search_terms=["diagram"],
+        hit_lines=6,
+        items=5,
+        repeated_lines=["Diagram 6"] if last == "repeat" else [],
+        excluded_lines=[dict(text="Diagram 6", page=6, reason="Contents entry, not a diagram")]
+        if last == "excluded"
+        else [],
+    )
+    assert "every line containing" in record.draft.groups[0].boundary_witness
     assert await checked_scope_images(active, [record.id]) == ([], [])
     payload, _ = semantic_scope_projection(
         scope_payload(active.deps.question, answer.raw_answer(), active.deps.ledger.units), [record]
@@ -437,6 +451,10 @@ async def test_written_labels_are_counted_from_searched_lines_without_page_image
     assert payload["verified_operations"][0]["input_authority"] == (
         "independently_checked_source_text"
     )
+    assert payload["verified_operations"][0]["coverage_authority"] == (
+        "application_native_text_search"
+    )
+    assert payload["verified_operations"][0]["search_coverage"] == proof["search_coverage"]
 
 
 @pytest.mark.asyncio
@@ -488,3 +506,15 @@ async def test_a_searched_count_over_more_than_three_pages_reaches_scope_review(
     verified, receipt = await active.verify(answer)
     assert verified == answer and receipt and not receipt.failure_codes
     assert seen == ["scope_validator"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("scope", ["document", "unknown", "bounded_object"])
+async def test_the_overview_lets_the_selector_decide_an_unknown_count_scope(tmp_path, scope):
+    active, need = prepared(tmp_path)
+    spec = active.state.evidence_needs[need].spec
+    active.state.evidence_needs[need] = active.state.evidence_needs[need].model_copy(
+        update={"spec": spec.model_copy(update={"inventory_scope": scope})}
+    )
+    view = await overview(active, need)
+    assert (view is None) == (scope == "bounded_object")

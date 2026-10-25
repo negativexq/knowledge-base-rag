@@ -118,7 +118,7 @@ async def overview(session: AdaptiveSession, need_id: str) -> dict[str, Any] | N
     if (
         not need
         or need.spec.operation != "count"
-        or (need.spec.inventory_scope != "document")
+        or need.spec.inventory_scope == "bounded_object"
         or not session.deps.visual_answers
     ):
         return None
@@ -518,6 +518,25 @@ async def collect_document(
     identities = [(i.page, i.position, normalized(i.source_object)) for i in items]
     if len(identities) != len(set(identities)):
         raise ValueError("INVENTORY_DUPLICATE_SOURCE_OCCURRENCE")
+    coverage = None
+    if hits and run.search_reading:
+        # The search itself is the boundary: every page has native text and every
+        # matching line was assigned and independently reviewed.
+        text_by_id = {h["id"]: h for h in hits}
+        reading = run.search_reading
+        coverage = dict(
+            searched_pages=run.page_count,
+            textless_pages=[],
+            search_terms=plan.search_terms,
+            hit_lines=len(hits),
+            items=len(reading["items"]),
+            repeated_lines=[text_by_id[r]["text"] for i in reading["items"] for r in i["repeats"]],
+            excluded_lines=[
+                dict(text=text_by_id[e["line"]]["text"], page=text_by_id[e["line"]]["page"],
+                     reason=e["reason"])
+                for e in reading["excluded"]
+            ],
+        )
     aggregate = QuantityDraft(
         mode="count",
         complete=True,
@@ -529,7 +548,11 @@ async def collect_document(
                 items=items,
                 complete=True,
                 boundary_witness=(
-                    "Original whole-source overview and detail windows independently reviewed"
+                    f"All {run.page_count} pages have native text; every line containing "
+                    f"{', '.join(plan.search_terms)} ({len(hits)} lines) was assigned to an item, "
+                    "a repeat or an exclusion and independently reviewed"
+                    if coverage and hits
+                    else "Original whole-source overview and detail windows independently reviewed"
                 ),
             )
         ],
@@ -555,6 +578,7 @@ async def collect_document(
         execution_status="completed",
         inventory_scope="document",
         document_inventory_id=run.id,
+        search_coverage=coverage,
     )
     session.state.quantities[record.id] = record
     result = candidate(record)
@@ -567,6 +591,7 @@ async def collect_document(
                 else "independently_checked_original_images"
             ),
             "counting_unit": "one checked source-object occurrence",
+            **({"search_coverage": coverage} if coverage else {}),
             "document_pages": run.page_count,
             "application_count": values,
             "counted_occurrences": [count_items(g) for g in aggregate.groups],

@@ -57,6 +57,9 @@ source contradictions remain grounds for rejection. Counting checked items and
 formatting their scalar/vector result belong to the application. The actual published
 count/page-list text stays visible for material-answer coverage. Calculation/count
 proof fields are omitted from that semantic view, not the answer itself.
+With coverage_authority=application_native_text_search, search_coverage is the
+application's own search of every page's native text: its terms, matching lines, repeats
+and exclusions are the inventory boundary in place of closure_basis.
 Numeric read operations retain numeric operands and their labels separately. For
 read operations, the application owns numeric ordering and display rounding; check
 the original inputs' identities, units and source bindings rather than requiring
@@ -335,6 +338,14 @@ def semantic_scope_projection(
                     if record.modality == "image"
                     else "independently_checked_source_text",
                     "image_bindings": [b.model_dump() for b in record.image_bindings],
+                    **(
+                        {
+                            "coverage_authority": "application_native_text_search",
+                            "search_coverage": record.search_coverage,
+                        }
+                        if record.search_coverage
+                        else {}
+                    ),
                 }
             else:
                 operation = {
