@@ -6625,4 +6625,12 @@ native text, the terms, the number of matching lines and items, each
 repeated line, and each excluded line with its reason. The group boundary
 says that every matching line was assigned and reviewed.
 
+Rerun of 381 and 834: 834 answers 3 on the search path and passes the
+scope check first time (5 requests, 22k input tokens). 381 was planned as
+a lookup again; the counted fast answer now reached the search path,
+which listed Quiz #1-#7 and was reviewed complete, but the scope check
+again left "in the entire course" unknown, citing the projected count's
+unresolved closure basis rather than the proof. A scope repair answered 7
+(correct) from the summary table, 10 requests.
+
 `make test`: 2578 passed, 4 skipped.
