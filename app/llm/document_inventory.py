@@ -578,6 +578,7 @@ async def collect_document(
         execution_status="completed",
         inventory_scope="document",
         document_inventory_id=run.id,
+        search_coverage=coverage,
     )
     session.state.quantities[record.id] = record
     result = candidate(record)
