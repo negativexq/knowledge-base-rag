@@ -6558,3 +6558,47 @@ linguistic equivalent ("Butter" as an OCR reading of "Buffer"), so every
 requirement was supported and the identity release was not needed.
 
 `make test`: 2568 passed, 4 skipped.
+
+Document-wide counts of written labels (MMLongBench 381 quizzes, 834
+case studies) read candidate pages as images in three-page windows,
+although the PDF has native text on every page, and stopped on the
+request budget. A first attempt read every candidate page's native text
+in one window; 381 overflowed the evidence budget after 8 of 14 pages and
+834's plan never chose text, so it was closed (PR #142).
+
+The inventory plan now gives literal search terms when every counted item
+is a written label. The application searches every page's native text and
+the reader sees only the matching lines (381: 17 lines, 852 characters,
+instead of about 50,000). Each hit must be used exactly once: as an item's
+own line, as a repeat of an item (summaries, schedules) or excluded with
+a reason, otherwise the reading is rejected; the item's witness is the hit
+itself and the application counts. The checker sees the same hits and the
+assignment and judges from the page catalog whether an item could lack
+every term. A document with any textless page keeps the image windows, so
+732 (no native text) is not reached.
+
+Rerun of 381, 834 and 398: 834 answers 3 (gold 3) on 6 requests; 398 stays
+correct (5). 381 still refuses: the search found all 17 quiz lines and the
+reader excluded the generic page-17 lines, but it entered the page 15-16
+summary lines as six new items (13) instead of repeats; the checker
+rejected that. The search lines had been appended to the image-window
+prompts, which say to keep repeated labels at distinct positions and to
+ask for page images when keywords are absent. 398's checked count of 5
+also failed release: the numeric page-quality inspection accepts at most
+three pages and the searched count spans six, so 398 was answered by the
+reader instead.
+
+The search path now has its own reader and checker prompts with no image
+rules, and the release inspection checks a text count's pages in groups
+of three instead of rejecting more than three.
+
+Two reruns of 381 and 834. 834 took the search path in the second run:
+4 hit pages, 3 items, document coverage complete, scope supported, 3
+(gold 3) on 5 requests and 22k input tokens. In the first run 834 and 381
+were planned as direct answers and counted 3 and 7 (both correct) from
+the course summary table on the bounded quantity path. In the second run
+381 was again a direct answer, found quizzes #1-#5 and stated that the
+total was not established. The search path has not run on 381 since the
+prompt split; the planner's route choice decides whether it is reached.
+
+`make test`: 2573 passed, 4 skipped.

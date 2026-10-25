@@ -511,6 +511,12 @@ class DocumentInventoryPlan(QuantityData):
     counting_unit: str = Field(min_length=1, max_length=300)
     output: Literal["count", "pages", "count_and_pages"]
     pages: list[InventoryPageDecision] = Field(min_length=1, max_length=36)
+    search_terms: list[Annotated[str, Field(min_length=2, max_length=60)]] = Field(
+        default_factory=list,
+        max_length=4,
+        description="Literal words every counted written label contains; empty for figures, "
+        "photos, charts or diagrams",
+    )
 
 
 class InventoryWindowReview(QuantityData):
@@ -544,6 +550,7 @@ class DocumentInventoryRun(QuantityData):
     review: DocumentInventoryReview | None = None
     previous_reviews: list[DocumentInventoryReview] = Field(default_factory=list, max_length=1)
     additional_pages: list[int] = Field(default_factory=list, max_length=3)
+    search_reading: dict[str, Any] | None = None
     complete: bool = False
     aggregate_id: str | None = None
 

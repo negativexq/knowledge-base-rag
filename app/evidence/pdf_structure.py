@@ -75,6 +75,26 @@ class PdfStructure:
             return {"page_count": doc.page_count, "images": images}
 
     @serialized_pdf
+    def term_lines(self, terms: list[str]) -> dict[str, Any] | None:
+        """Every native line containing a term; textless pages cannot be searched."""
+        needles = [term.casefold() for term in terms]
+        hits: list[dict[str, Any]] = []
+        textless = []
+        with fitz.open(stream=self.snapshot.content, filetype="pdf") as doc:
+            if not 1 <= doc.page_count <= 36:
+                return None
+            for number, page in enumerate(doc, 1):
+                lines = [line.strip() for line in page.get_text().splitlines() if line.strip()]
+                if not lines:
+                    textless.append(number)
+                for line in lines:
+                    if any(needle in line.casefold() for needle in needles):
+                        hits.append(dict(id=f"H{len(hits) + 1}", page=number, text=line))
+                if len(hits) > 120:
+                    return None
+            return dict(page_count=doc.page_count, hits=hits, textless_pages=textless)
+
+    @serialized_pdf
     def inventory_context(self, pages: list[int]) -> dict[str, Any]:
         """Literal native lines and typography, never a semantic inventory assertion."""
         if not pages or len(pages) > 3 or len(set(pages)) != len(pages):

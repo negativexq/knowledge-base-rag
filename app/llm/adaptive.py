@@ -2009,9 +2009,11 @@ class AdaptiveSession:
             )
             targets = await calculation_inspection_targets(self, part, targets)
             for ids, pages in targets:
-                quality = await inspect_pages(self, ids, pages)
-                if any(p.requires_image for p in quality):
-                    raise ValueError("NUMERIC_SOURCE_REQUIRES_IMAGE_CHECK")
+                # A searched inventory can span many pages; inspect them in bounded groups.
+                for start in range(0, max(len(pages), 1), 3):
+                    quality = await inspect_pages(self, ids, pages[start : start + 3])
+                    if any(p.requires_image for p in quality):
+                        raise ValueError("NUMERIC_SOURCE_REQUIRES_IMAGE_CHECK")
         raw = answer.raw_answer()
         # The existing final renderer still revalidates this candidate on release.
         if answer.visual_reading_id or answer.comparison:

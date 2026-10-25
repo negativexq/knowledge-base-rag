@@ -7,7 +7,14 @@ import fitz
 import pytest
 
 from app.llm.adaptive import ResearchClosed
-from app.llm.document_inventory import InventoryReview, collect_document, overview, validate_plan
+from app.llm.document_inventory import (
+    SEARCH_CHECK,
+    SEARCH_COLLECT,
+    InventoryReview,
+    collect_document,
+    overview,
+    validate_plan,
+)
 from app.llm.quantities import collect
 from app.llm.quantity_scope import checked_scope_images, semantic_scope_projection
 from app.llm.quantity_state import DocumentInventoryPlan, QuantitySelection
@@ -26,12 +33,13 @@ def plan(count=6):
     )
 
 
-def prepared(tmp_path):
+def prepared(tmp_path, textless=None):
     path = tmp_path / "manual.pdf"
     with fitz.open() as doc:
         for page in range(1, 7):
             p = doc.new_page()
-            p.insert_text((30, 40), f"Diagram {page}\nRepeated source label")
+            if page != textless:
+                p.insert_text((30, 40), f"Diagram {page}\nRepeated source label")
             p.draw_rect(fitz.Rect(30, 60, 170, 120))
         doc.save(path)
     active, need_id = active_session(
@@ -358,3 +366,125 @@ async def test_full_verification_accepts_original_detail_and_overview_images(tmp
     verified, receipt = await active.verify(answer)
     assert verified == answer and receipt and not receipt.failure_codes
     assert seen[-1] == "scope_validator"
+
+
+
+def search_calls(active, assignment):
+    seen = []
+
+    async def call(role, output_type, instructions, data, *, research, images=None):
+        seen.append(role)
+        if role == "quantity_selector":
+            return QuantitySelection(
+                available=True,
+                operation_kind="count",
+                inventory_scope="document",
+                support_ids=["E1.S1"],
+                context_support_ids=[],
+                pages=[1],
+                modality="text",
+                document_plan=plan().model_copy(update={"search_terms": ["diagram"]}),
+            )
+        if role == "extractor":
+            if images:
+                raise ResearchClosed("IMAGE_WINDOW")
+            assert instructions == SEARCH_COLLECT
+            assert [(h["id"], h["page"], h["text"]) for h in data["search_hits"]] == [
+                (f"H{p}", p, f"Diagram {p}") for p in range(1, 7)
+            ]
+            return output_type.model_validate(assignment)
+        assert role == "quantity_checker" and not images and "source_images" not in data
+        assert instructions == SEARCH_CHECK and "overview_sheet_count" not in data
+        assert data["search_reading"] == assignment and len(data["search_hits"]) == 6
+        return InventoryReview(
+            windows=[dict(window_index=0, inputs="supported", local_coverage="complete")],
+            document_coverage="complete",
+            operation="supported",
+        )
+
+    active.call = call
+    return seen
+
+
+def assignment(last):
+    items = [dict(label=f"Diagram {p}", line=f"H{p}", repeats=[]) for p in range(1, 6)]
+    excluded = []
+    if last == "repeat":
+        items[0]["repeats"] = ["H6"]
+    elif last == "excluded":
+        excluded = [dict(line="H6", reason="Contents entry, not a diagram")]
+    return dict(complete=True, items=items, excluded=excluded)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("last", ["repeat", "excluded"])
+async def test_written_labels_are_counted_from_searched_lines_without_page_images(tmp_path, last):
+    active, need = prepared(tmp_path)
+    seen = search_calls(active, assignment(last))
+    answer = await collect(active, need)
+    assert seen == ["quantity_selector", "extractor", "quantity_checker"]
+    assert answer.answer_parts[0].text == 'Total: 5; pages ["1", "2", "3", "4", "5"]'
+    run = next(iter(active.state.document_inventories.values()))
+    record = active.state.quantities[run.aggregate_id]
+    assert record.modality == "text" and not record.image_bindings
+    assert [i.witness for i in record.draft.groups[0].items] == [
+        f"Diagram {p}" for p in range(1, 6)
+    ]
+    assert await checked_scope_images(active, [record.id]) == ([], [])
+    payload, _ = semantic_scope_projection(
+        scope_payload(active.deps.question, answer.raw_answer(), active.deps.ledger.units), [record]
+    )
+    assert payload["verified_operations"][0]["input_authority"] == (
+        "independently_checked_source_text"
+    )
+
+
+@pytest.mark.asyncio
+async def test_every_searched_line_must_be_counted_repeated_or_excluded(tmp_path):
+    active, need = prepared(tmp_path)
+    search_calls(active, assignment("dropped"))
+    with pytest.raises(ValueError, match="INVENTORY_SEARCH_HIT_UNACCOUNTED"):
+        await collect(active, need)
+
+
+@pytest.mark.asyncio
+async def test_a_page_without_native_text_keeps_image_windows(tmp_path):
+    active, need = prepared(tmp_path, textless=6)
+    seen = search_calls(active, assignment("excluded"))
+    with pytest.raises(ResearchClosed, match="IMAGE_WINDOW"):
+        await collect(active, need)
+    assert seen == ["quantity_selector", "extractor"]
+
+
+@pytest.mark.asyncio
+async def test_a_searched_count_over_more_than_three_pages_reaches_scope_review(tmp_path):
+    active, need = prepared(tmp_path)
+    search_calls(active, assignment("excluded"))
+    answer = await collect(active, need)
+    active.deps = replace(active.deps, scope_validation_enabled=True)
+    source_id = next(
+        key for key in answer.answer_parts[0].support_ids
+        if active.units()[key].text == "Diagram 1"
+    )
+    seen = []
+
+    async def call(role, output_type, instructions, data, **kwargs):
+        seen.append(role)
+        assert not kwargs["images"]
+        return output_type.model_validate(
+            dict(
+                checks=[
+                    dict(
+                        claim_index=0,
+                        verdict="supported",
+                        reason="NONE",
+                        witnesses=[dict(support_id=source_id, quote="Diagram 1")],
+                    )
+                ]
+            )
+        )
+
+    active.call = call
+    verified, receipt = await active.verify(answer)
+    assert verified == answer and receipt and not receipt.failure_codes
+    assert seen == ["scope_validator"]
