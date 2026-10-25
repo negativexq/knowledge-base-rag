@@ -6577,4 +6577,19 @@ assignment and judges from the page catalog whether an item could lack
 every term. A document with any textless page keeps the image windows, so
 732 (no native text) is not reached.
 
-`make test`: 2572 passed, 4 skipped.
+Rerun of 381, 834 and 398: 834 answers 3 (gold 3) on 6 requests; 398 stays
+correct (5). 381 still refuses: the search found all 17 quiz lines and the
+reader excluded the generic page-17 lines, but it entered the page 15-16
+summary lines as six new items (13) instead of repeats; the checker
+rejected that. The search lines had been appended to the image-window
+prompts, which say to keep repeated labels at distinct positions and to
+ask for page images when keywords are absent. 398's checked count of 5
+also failed release: the numeric page-quality inspection accepts at most
+three pages and the searched count spans six, so 398 was answered by the
+reader instead.
+
+The search path now has its own reader and checker prompts with no image
+rules, and the release inspection checks a text count's pages in groups
+of three instead of rejecting more than three.
+
+`make test`: 2573 passed, 4 skipped.
