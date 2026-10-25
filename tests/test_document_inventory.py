@@ -488,3 +488,15 @@ async def test_a_searched_count_over_more_than_three_pages_reaches_scope_review(
     verified, receipt = await active.verify(answer)
     assert verified == answer and receipt and not receipt.failure_codes
     assert seen == ["scope_validator"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("scope", ["document", "unknown", "bounded_object"])
+async def test_the_overview_lets_the_selector_decide_an_unknown_count_scope(tmp_path, scope):
+    active, need = prepared(tmp_path)
+    spec = active.state.evidence_needs[need].spec
+    active.state.evidence_needs[need] = active.state.evidence_needs[need].model_copy(
+        update={"spec": spec.model_copy(update={"inventory_scope": scope})}
+    )
+    view = await overview(active, need)
+    assert (view is None) == (scope == "bounded_object")
